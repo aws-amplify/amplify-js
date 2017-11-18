@@ -5,6 +5,7 @@ AWS Amplify is not limited to AWS or React. The library is designed to support d
 * [Configuration](#configuration)
 * [More Analytics](#more-analytics)
 * [Bind Authentications](#bind-authentications)
+* [React Native Development](#react-native-development)
 
 You can begin with an existing React application. Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app).
 
@@ -126,3 +127,79 @@ This will gate the entire application inside an Authentication UI. Only signed i
 
 For more about Authenticator, click [here](../packages/aws-amplify-react/media/authenticator.md)
 
+## React Native Development
+
+React Native installation is a little bit different.
+
+First of all, the package is `aws-amplify-react-native`, which includes core library and React Native components.
+
+Secondly, authentication requires some computation power for security reason. Because of that, some native code are included. As a result, you need to [Link Libraries](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) to your project.
+
+Let's follow steps to create a new app.
+
+**Create React Native App**
+
+Follow steps [here](https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html)
+
+```bash
+npm i -g create-react-native-app
+$ create-react-native-app myProject
+$ cd myProject
+$ npm start
+```
+
+Note: project name in camalCase will save you trouble when testing on a physical iOS phone.
+
+**Install AWS Amplify**
+
+```bash
+npm install --save aws-amplify-react-native
+```
+
+**React Native Link**
+
+Now link library `amazon-cognito-identity-js`. Before that, you have to `eject` the project.
+
+```bash
+npm install
+npm run eject
+```
+
+Answer a few questions, project ejected.
+
+Then link the library
+
+```bash
+react-native link amazon-cognito-identity-js
+```
+
+Run app
+
+```bash
+react-native run-ios
+```
+
+**Include Authenticator**
+
+Now, modify `App.js`
+
+```js
+...
+
+import Amplify, { withAuthenticator } from 'aws-amplify-react-native';
+import aws_exports from './aws-exports';
+
+Amplify.configure(aws_exports);
+
+class App extends React.Component {
+
+...
+
+}
+
+export default withAuthenticator(App);
+
+...
+```
+
+Reload app
