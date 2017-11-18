@@ -1,6 +1,6 @@
 # Storage
 
-AWS-Amplify Storage enables you to configure your App with Amazon S3 for easy management of your App's user data files. 
+AWS Amplify Storage module gives a simple mechanism for managing user content in public or private storage.
 
 * [Installation](#installation)
 * [Configuration](#configuration)
@@ -15,24 +15,29 @@ AWS-Amplify Storage enables you to configure your App with Amazon S3 for easy ma
 
 ## Installation
 
-For Web development, regardless of framework, `aws-amplify` provides core Auth APIs
+For Web development, regardless of framework, `aws-amplify` provides core Storage APIs:
+
 ```
 npm install aws-amplify
 ```
 
-On React app, we have provided some helpful components in `aws-amplify-react`
+On React app, helpful components are provided in `aws-amplify-react`:
+
 ```
 npm install aws-amplify-react
 ```
 
-In React Native development, we package core APIs and components into one `aws-amplify-react-native`
+In React Native development, core APIs and components are packaged into `aws-amplify-react-native`
+
 ```
 npm install aws-amplify-react-native
 ```
 
 ## Configuration
 
-You are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. AWS Amplify also require the AWS S3 bucket. Amazon Cognito Identity Pool requires to have access to Amazon S3 using Amazon IAM. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup)!
+The default implementation of the Storage module leverages Amazon S3.
+
+You are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. AWS Amplify also requires an Amazon S3 bucket. Amazon Cognito Identity Pool requires to have access to Amazon S3 using Amazon IAM. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup).
 
 ### Manual Setup
 [Amazon Cognito Identity](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-identity-pools.html)
@@ -85,60 +90,70 @@ This will create a project that works with Analytics category fully functioning.
 
 ![Mobile Hub](mobile_hub_1.png)
 
-Download aws-exports.js
+Download `aws-exports.js` into your project directory.
 
-Then copy the file to `/src` folder of the project
 ![Download](mobile_hub_2.png)
 
-Now you can simply import the file and pass it as the configuration to the Amplify library:
+Next, import the file and pass it as the configuration to the Amplify library:
+
+```
+import Amplify from 'aws-amplify';
+import aws_exports from './aws-exports.js';
+
+Amplify.configure(aws_exports);
+```
 
 ## Access Level
 
 If you used Automated Setup or use AWS Mobile Hub to create your resources, Storage has two access levels: `public` and `private`. 
 
-Files with public access level can be accessed by all users who is using app. In S3, they are stored under `public/` path of your S3 bucket.
+Files with public access level can be accessed by all users who is using the app. In S3, they are stored under the `public/` path in your S3 bucket.
 
-Files with private access level is only accessible by the specific authenticated user alone. In S3, they are stored under `private/{user_identity_id}/`
+Files with private access level are only accessible by the specific authenticated user alone. In S3, they are stored under `private/{user_identity_id}/` where the ID corresponds to a unique Amazon Cognito Identity ID, generated for that user.
 
-Access level can be configured at Storage object, affects globally. Or at individual function call. By default the access level is `public`
+The access level can be configured on the Storage object globally. Alternatively it can be set on an individual function call. By default the access level is `public`.
 
-On Storage
+Configuration on the Storage object
+
 ```
 Storage.configure({ level: 'private' });
 
 Storage.get('welcome.png'); // Gets the welcome.png belongs to current user
 ```
 
-When calling API
+Configuration when calling the API
+
 ```
 Storage.get('welcome.png', { level: 'public' }); // Gets welcome.png in public space
 ```
 
-By default, the access level is `public`
+Default, the access level of `public`:
 ```
 Storage.get('welcome.png'); // Get welcome.png in public space
 ```
 
-There is a shortcut `vault`, which is merely a Storage instance with `private` level set.
+There is also a shortcut `vault`, which is merely a Storage instance with `private` level set:
+
 ```
 Storage.vault.get('welcome.png'); // Get the welcome.png belonging to current user
 ```
 
 ## Integration
 
-1. Import Storage from the aws-amplify library into your App file as follows:
+1. Import Storage from the aws-amplify library into your App:
 ```
 import { Storage } from 'aws-amplify';
 ```
 
-2. Configure Storage with your AWS resources as follows : 
+2. Configure Storage with your AWS resources: 
 
-    a. Use aws-exports object (here named awsmobile) to configure Storage (for details on object structure, refer: [Need to add link here]:
+    a. Use `aws-exports` object (here named awsmobile) to configure Storage:
     ```
         Storage.configure(awsmobile);
     ``` 
 
     b. Use your resource values to configure Storage as: 
+
     ```
     Storage.configure({
         bucket: //Your bucket ARN;
@@ -149,7 +164,7 @@ import { Storage } from 'aws-amplify';
 
 ### Call APIs
 
-* 'public': Objects can be read or written by everyone who uses App.
+* 'public': Objects can be read or written by everyone who uses the App.
 * 'private': Objects can only be read or written by the current user.
 
 #### 1. Put
@@ -239,7 +254,7 @@ Private
 
 #### S3Image
 
-`S3Image` component renders Amazon S3 key to image
+`S3Image` component renders Amazon S3 key as an image:
 
 ```
 import { S3Image } from 'aws-amplify-react';
@@ -250,12 +265,14 @@ import { S3Image } from 'aws-amplify-react';
     }
 ```
 
-For private image, supply `level` property
+For private image, supply the `level` property:
+
 ```
         return <S3Image level="private" path={path} />
 ```
 
-To upload, set the body property to S3Image
+To upload, set the body property to S3Image:
+
 ```
 import { S3Image } from 'aws-amplify-react';
 
@@ -266,14 +283,17 @@ import { S3Image } from 'aws-amplify-react';
 ```
 
 **Image URL**
-`S3Image` converts path to actual URL. To get the URL, listen to `onReady` event
+
+`S3Image` converts path to actual URL. To get the URL, listen to the `onReady` event:
+
 ```
     <S3Imag path={path} onReady={url => console.log(url)}
 ```
 
 #### S3Album
 
-`S3Album` holds a list of S3Image
+`S3Album` holds a list of S3Image objects:
+
 ```
 import { S3Album } from 'aws-amplify-react';
 
@@ -282,12 +302,14 @@ import { S3Album } from 'aws-amplify-react';
         return <S3Album path={path} />
 ```
 
-For private album, supply `level` property
+For private album, supply the `level` property:
+
 ```
         return <S3Album level="private" path={path} />
 ```
 
-Might have non-image files in album, use `filter`
+You might have non-image files in an album from your bucket. In this case you can use a `filter` prop:
+
 ```
         return <S3Album
                     level="private"
@@ -299,11 +321,13 @@ Might have non-image files in album, use `filter`
 **Photo Picker**
 
 Set `picker` property to true on `S3Album`. A `PhotoPicker` let user pick photos on his/her device.
+
 ```
     <S3Album path={path} picker />
 ```
 
-By default the photo picker saves photo on S3 with filename as key. To have custom key, add a callback
+By default the photo picker saves photo on S3 with filename as key. To have custom key you can provide a callback:
+
 ```
 function fileToKey(data) {
     const { name, size, type } = data;
@@ -311,8 +335,7 @@ function fileToKey(data) {
 }
 
 ...
-
     <S3Album path={path} picker fileToKey={fileToKey}/>
 ```
 
-`S3Album` will escape all spaces in key to underscore. So 'a b' becomes 'a_b'
+`S3Album` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
