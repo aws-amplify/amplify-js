@@ -34,7 +34,7 @@ class MyClass {
 
 ## Channel
 
-AWS Amplify Auth publish in `auth` channel when 'signIn', 'signUp', and 'signOut' happens. You may create your listener to act upon event happens.
+AWS Amplify Auth publish in `auth` channel when 'signIn', 'signUp', and 'signOut' happens. You may create your listener to act upon event notifications.
 
 ```
 import { Hub, Logger } from 'aws-amplify';
