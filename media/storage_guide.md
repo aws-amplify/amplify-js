@@ -107,7 +107,7 @@ Amplify.configure(aws_exports);
 
 If you used Automated Setup or use AWS Mobile Hub to create your resources, Storage has two access levels: `public` and `private`. 
 
-Files with public access level can be accessed by all users who is using the app. In S3, they are stored under the `public/` path in your S3 bucket.
+Files with public access level can be accessed by all users who are using the app. In S3, they are stored under the `public/` path in your S3 bucket.
 
 Files with private access level are only accessible by the specific authenticated user alone. In S3, they are stored under `private/{user_identity_id}/` where the ID corresponds to a unique Amazon Cognito Identity ID, generated for that user.
 
