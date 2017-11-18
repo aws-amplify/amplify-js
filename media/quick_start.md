@@ -204,4 +204,4 @@ export default withAuthenticator(App);
 
 Reload app
 
-![React Native with Authenticator](react_native_with_authenticator.png)
+<img src="react_native_with_authenticator.png" width="360px"/>
