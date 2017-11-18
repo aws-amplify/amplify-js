@@ -15,7 +15,7 @@ AWS Amplify API module provides a simple solution when making HTTP requests. It 
 
 ## Installation
 
-For Web development, regardless of framework, `aws-amplify` provides core functionality
+For Web development, regardless of framework, `aws-amplify` provides core functionality:
 
 ```
 npm install aws-amplify
