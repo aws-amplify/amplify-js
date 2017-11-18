@@ -1,0 +1,6 @@
+#!/bin/bash
+ if [ $# -eq 0 ]; then
+     npm run build
+ else
+     npm run "$@"
+ fi

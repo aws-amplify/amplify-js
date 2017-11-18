@@ -1,0 +1,226 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`signUp normal case render correctly with authState signedIn 1`] = `
+<div
+  className="amplify-nav-bar"
+  style={
+    Object {
+      "borderBottom": "1px solid #00fff6",
+      "marginBottom": "0.5em",
+      "padding": "0.5em 0.5em 0.2em",
+    }
+  }
+>
+  <div
+    className="amplify-nav-right"
+    style={
+      Object {
+        "fontSize": "0.8em",
+        "textAlign": "right",
+      }
+    }
+  >
+    Please Sign In / Sign Up
+  </div>
+</div>
+`;
+
+exports[`signUp render corrently with other authStates 1`] = `
+<div
+  className="amplify-nav-bar"
+  style={
+    Object {
+      "borderBottom": "1px solid #00fff6",
+      "marginBottom": "0.5em",
+      "padding": "0.5em 0.5em 0.2em",
+    }
+  }
+>
+  <div
+    className="amplify-nav-right"
+    style={
+      Object {
+        "fontSize": "0.8em",
+        "textAlign": "right",
+      }
+    }
+  >
+    Please Sign In / Sign Up
+  </div>
+</div>
+`;
+
+exports[`signUp render corrently with other authStates 2`] = `
+<div
+  className="amplify-nav-bar"
+  style={
+    Object {
+      "borderBottom": "1px solid #00fff6",
+      "marginBottom": "0.5em",
+      "padding": "0.5em 0.5em 0.2em",
+    }
+  }
+>
+  <div
+    className="amplify-nav-right"
+    style={
+      Object {
+        "fontSize": "0.8em",
+        "textAlign": "right",
+      }
+    }
+  >
+    Please Sign In / Sign Up
+  </div>
+</div>
+`;
+
+exports[`signUp render corrently with other authStates 3`] = `
+<div
+  className="amplify-nav-bar"
+  style={
+    Object {
+      "borderBottom": "1px solid #00fff6",
+      "marginBottom": "0.5em",
+      "padding": "0.5em 0.5em 0.2em",
+    }
+  }
+>
+  <div
+    className="amplify-nav-right"
+    style={
+      Object {
+        "fontSize": "0.8em",
+        "textAlign": "right",
+      }
+    }
+  >
+    Please Sign In / Sign Up
+  </div>
+</div>
+`;
+
+exports[`signUp render corrently with other authStates 4`] = `
+<div
+  className="amplify-nav-bar"
+  style={
+    Object {
+      "borderBottom": "1px solid #00fff6",
+      "marginBottom": "0.5em",
+      "padding": "0.5em 0.5em 0.2em",
+    }
+  }
+>
+  <div
+    className="amplify-nav-right"
+    style={
+      Object {
+        "fontSize": "0.8em",
+        "textAlign": "right",
+      }
+    }
+  >
+    Please Sign In / Sign Up
+  </div>
+</div>
+`;
+
+exports[`signUp render corrently with other authStates 5`] = `
+<div
+  className="amplify-nav-bar"
+  style={
+    Object {
+      "borderBottom": "1px solid #00fff6",
+      "marginBottom": "0.5em",
+      "padding": "0.5em 0.5em 0.2em",
+    }
+  }
+>
+  <div
+    className="amplify-nav-right"
+    style={
+      Object {
+        "fontSize": "0.8em",
+        "textAlign": "right",
+      }
+    }
+  >
+    Please Sign In / Sign Up
+  </div>
+</div>
+`;
+
+exports[`signUp render corrently with other authStates 6`] = `
+<div
+  className="amplify-nav-bar"
+  style={
+    Object {
+      "borderBottom": "1px solid #00fff6",
+      "marginBottom": "0.5em",
+      "padding": "0.5em 0.5em 0.2em",
+    }
+  }
+>
+  <div
+    className="amplify-nav-right"
+    style={
+      Object {
+        "fontSize": "0.8em",
+        "textAlign": "right",
+      }
+    }
+  >
+    Please Sign In / Sign Up
+  </div>
+</div>
+`;
+
+exports[`signUp render corrently with other authStates 7`] = `
+<div
+  className="amplify-nav-bar"
+  style={
+    Object {
+      "borderBottom": "1px solid #00fff6",
+      "marginBottom": "0.5em",
+      "padding": "0.5em 0.5em 0.2em",
+    }
+  }
+>
+  <div
+    className="amplify-nav-right"
+    style={
+      Object {
+        "fontSize": "0.8em",
+        "textAlign": "right",
+      }
+    }
+  >
+    Please Sign In / Sign Up
+  </div>
+</div>
+`;
+
+exports[`signUp render corrently with other authStates 8`] = `
+<div
+  className="amplify-nav-bar"
+  style={
+    Object {
+      "borderBottom": "1px solid #00fff6",
+      "marginBottom": "0.5em",
+      "padding": "0.5em 0.5em 0.2em",
+    }
+  }
+>
+  <div
+    className="amplify-nav-right"
+    style={
+      Object {
+        "fontSize": "0.8em",
+        "textAlign": "right",
+      }
+    }
+  >
+    Please Sign In / Sign Up
+  </div>
+</div>
+`;

@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`hoc tests withAuthenticator test when not signed in 1`] = `
+<Authenticator
+  amplifyConfig="amplifyConfig"
+  onStateChange={[Function]}
+/>
+`;
+
+exports[`hoc tests withAuthenticator test when signed in 1`] = `
+<div>
+  <MockComp
+    authState="signedIn"
+    onStateChange={[Function]}
+  />
+</div>
+`;

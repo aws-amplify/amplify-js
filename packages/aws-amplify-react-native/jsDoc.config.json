@@ -1,0 +1,7 @@
+{
+    "source": {
+        "exclude": [
+            "./src/lib"
+        ]
+    }
+}

@@ -1,0 +1,164 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AmplifyUi test render ButtonRow correctly 1`] = `
+<div
+  className="amplify-action-row"
+  style={
+    Object {
+      "marginTop": "1.5em",
+      "textAlign": "right",
+    }
+  }
+>
+  <button
+    style={
+      Object {
+        "background": "#fff",
+        "border": "1px solid #007bff",
+        "color": "#007bff",
+        "fontSize": "1em",
+        "margin": "auto 0.3em",
+        "padding": "0.3em 0.5em",
+      }
+    }
+    theme={null}
+  />
+</div>
+`;
+
+exports[`AmplifyUi test render CheckboxRow correctly 1`] = `
+<div
+  className="amplify-form-row"
+  style={
+    Object {
+      "marginBottom": "0.5em",
+      "textAlign": "left",
+    }
+  }
+>
+  <input
+    className="amplify-checkbox"
+    id="_undefined"
+    theme={null}
+    type="checkbox"
+  />
+  <label
+    className="amplify-label"
+    htmlFor="_undefined"
+    style={
+      Object {
+        "margin": "auto 0.5em",
+      }
+    }
+  />
+</div>
+`;
+
+exports[`AmplifyUi test render Footer correctly 1`] = `
+<div
+  className="amplify-section-footer"
+  style={
+    Object {
+      "background": "#fff",
+      "borderBottom": "1px solid #00fff6",
+      "color": "#000",
+      "fontSize": "0.8em",
+      "padding": "1em",
+      "textAlign": "left",
+    }
+  }
+/>
+`;
+
+exports[`AmplifyUi test render Header correctly 1`] = `
+<div
+  className="amplify-section-header"
+  style={
+    Object {
+      "background": "#007bff",
+      "color": "#fff",
+      "fontSize": "1.2em",
+      "fontWeight": "normal",
+      "padding": "0.6em",
+      "textAlign": "center",
+    }
+  }
+/>
+`;
+
+exports[`AmplifyUi test render InputRow correctly 1`] = `
+<div
+  className="amplify-form-row"
+  style={
+    Object {
+      "marginBottom": "0.5em",
+      "textAlign": "left",
+    }
+  }
+>
+  <input
+    className="amplify-input"
+    style={
+      Object {
+        "border": "1px solid #aaa",
+        "fontSize": "1em",
+        "fontWeight": "200",
+        "padding": "4px 2px",
+        "width": "15em",
+      }
+    }
+    theme={null}
+  />
+</div>
+`;
+
+exports[`AmplifyUi test render Link correctly 1`] = `
+<a
+  style={
+    Object {
+      "textDecoration": "underline",
+    }
+  }
+  theme={null}
+/>
+`;
+
+exports[`AmplifyUi test render MessageRow correctly 1`] = `
+<div
+  className="amplify-form-row"
+  style={
+    Object {
+      "marginBottom": "0.5em",
+      "textAlign": "left",
+    }
+  }
+/>
+`;
+
+exports[`AmplifyUi test render RadioRow correctly 1`] = `
+<div
+  className="amplify-form-row"
+  style={
+    Object {
+      "marginBottom": "0.5em",
+      "textAlign": "left",
+    }
+  }
+>
+  <input
+    className="amplify-radio"
+    id="_undefined"
+    theme={null}
+    type="radio"
+  />
+  <label
+    className="amplify-label"
+    htmlFor="_undefined"
+    style={
+      Object {
+        "margin": "auto 0.5em",
+      }
+    }
+  />
+</div>
+`;

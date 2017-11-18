@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`S3Image render correctly if has srcs 1`] = `
+<img
+  onLoad={[Function]}
+  src="src"
+  style={
+    Object {
+      "display": "inline-block",
+      "margin": "0.2%",
+      "verticalAlign": "top",
+      "width": "32.5%",
+    }
+  }
+/>
+`;
+
+exports[`S3Image render nothing if no src 1`] = `""`;
