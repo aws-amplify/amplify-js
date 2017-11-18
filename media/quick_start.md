@@ -129,13 +129,11 @@ For more about Authenticator, click [here](../packages/aws-amplify-react/media/a
 
 ## React Native Development
 
-React Native installation is a little bit different.
+React Native installation is slightly different.
 
-First of all, the package is `aws-amplify-react-native`, which includes core library and React Native components.
+First, the you install package is `aws-amplify-react-native`, which includes core library and React Native components.
 
-Secondly, authentication requires some computation power for security reasons. Some native code are needed to improve performance. As a result, you need to [Link Libraries](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) to your project.
-
-Let's follow steps to create a new app.
+Second, authentication requires a native bridge for mathematical performance not available in the JavaScript runtime. As a result, you need to [Link Libraries](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) to your project. The below steps outline how you can do this with a new React Native application:
 
 **Create React Native App**
 
@@ -148,7 +146,7 @@ $ cd myProject
 $ npm start
 ```
 
-Note: project name in camalCase will save you trouble when testing on a physical iOS phone.
+Note: project name is in camalCase to avoid problems when testing on a physical iOS phone.
 
 **Install AWS Amplify**
 
@@ -158,22 +156,20 @@ npm install --save aws-amplify-react-native
 
 **React Native Link**
 
-Now link library `amazon-cognito-identity-js`. Before that, you have to `eject` the project.
+Now you can link `amazon-cognito-identity-js`, but first you must `eject` the project:
 
 ```bash
 npm install
 npm run eject
 ```
 
-Answer a few questions, project ejected.
-
-Then link the library
+Answer a few questions and upon completion link the library:
 
 ```bash
 react-native link amazon-cognito-identity-js
 ```
 
-Run app
+Now run your application as normal:
 
 ```bash
 react-native run-ios
@@ -181,7 +177,7 @@ react-native run-ios
 
 **Include Authenticator**
 
-Now, modify `App.js`
+Modify `App.js`:
 
 ```js
 ...
@@ -202,6 +198,6 @@ export default withAuthenticator(App);
 ...
 ```
 
-Reload app
+Reload your application on the physical phone or emulator/simulator:
 
 <img src="react_native_with_authenticator.png" width="360px"/>
