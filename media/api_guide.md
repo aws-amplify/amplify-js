@@ -1,6 +1,6 @@
 # API
 
-AWS Amplify API module provides a simple solution when making HTTP request to Amazon API Gateway. 
+AWS Amplify API module provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
 
 * [Installation](#installation)
 * [Configuration](#configuration)
@@ -23,7 +23,11 @@ npm install aws-amplify
 
 ## Configuration
 
-You are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. AWS Amplify also require a list of your API, you must provide a name for identify it later and the endpoint. Amazon Cognito Identity Pool requires to have access to the API using Amazon IAM. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup)!
+The API module can be used out of the box for signed requests against Amazon API Gateway when the API Authorization is set to **AWS_IAM**. 
+
+You are required to pass in an Amazon Cognito Identity Pool ID, allowing the library to retrieve base credentials for a user even in an UnAuthenticated state. AWS Amplify also requires a list of your APIs, comprised of a friendly name for the API and the endpoint URL. 
+
+Amazon Cognito Identity Pool requires to have access to the API using Amazon IAM. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup)!
 
 ### Manual Setup
 
@@ -76,11 +80,10 @@ This will create a project that works with API category fully functioning. Befor
 
 ![Mobile Hub](console.gif)
 
-Then copy the file to a visible folder of your project
 
-Now you can simply import the file and pass it as the configuration to the Amplify library:
+Import the file and pass it as configuration to the Amplify library:
 
-Add these lines to your source.
+
 ```
 import Amplify, { API } from 'aws-amplify';
 import aws_exports from './PATH_TO_EXPORTS/aws-exports.js';
@@ -91,11 +94,11 @@ Amplify.configure(aws_exports);
 
 ## Integration
 
-First check the name of the API that you want to invoke. In case you manually configure the API you already know the API name. If you use Automated Setup or configure your API on AWS Mobile Hub you can check the API name in the Mobile Hub console by clicking Cloud Logic tile. You can use the below code as is if you use Automated Setup.
+First note the name of the API that you want to invoke. If you manually configured the API, you most likely already know the API name. If you use Automated Setup or configure your API on AWS Mobile Hub you can check the API name in the Mobile Hub console by clicking Cloud Logic tile. 
 
-Now you can invoke your API with GET, POST, PUT, DELETE and HEAD methods.
+The below code assumes use of the Automated Setup.
 
-Each method of Amplify's API module returns a Promise which is seen in the below examples on different HTTP verbs. Configure the apiName, path and headers according to your settings.
+Each method of Amplify's API module returns a Promise which is seen in the below examples with different HTTP verbs. Configure the `apiName`, `path` and `headers` according to your settings.
 
 ### **GET**
 
@@ -126,16 +129,18 @@ async function getData() {
 getData();
 ```
 ### Note about headers
-To use custom headers on your HTTP request you need to add this on Amazon API Gateway first. For more info about configuring headers go [here](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html)
 
-If you use one click import or AWS Mobile Hub to create your API, you can do the following:
+To use custom headers on your HTTP request you need to add these to Amazon API Gateway first. For more info about configuring headers go [here](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html)
+
+If you used one click import or AWS Mobile Hub to create your API, you can do the following:
+
 1. Go to your project on AWS Mobile Hub console.
 2. Go to resources and click the link on Amazon API Gateway section. This will redirect you to Amazon API Gateway console.
 3. On Amazon API Gateway console, click on the path you want to configure (e.g. /{proxy+})
-4. Then click on Actions and select Enable CORS
-5. You can add your custom header (e.g. my-custom-header) on the text field Access-Control-Allow-Headers like this: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,my-custom-header'
+4. Then click the Actions dropdown and select **Enable CORS**
+5. Add your custom header (e.g. my-custom-header) on the text field Access-Control-Allow-Headers, separated by commas, like so: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,my-custom-header'
 6. Click on 'Enable CORS and replace existing CORS headers' and confirm.
-7. Last step, on the same path you click on step 3, click on Actions and select Deploy API. Select 'Development' on deployment stage and click Deploy. (Deployment could take a couple of minutes).
+7. Finally, similar to step 3, click the Actions dropdown and then **Deploy API**. Select **Development** on deployment stage and then **Deploy**. (Deployment could take a couple of minutes).
 
 ### **POST**
 
