@@ -1,6 +1,6 @@
 # Developer Guide
 
-AWS Amplify is a library with building blocks for frontend and mobile developers to interact with the Cloud. You can mix and match the categories below as needed.
+AWS Amplify provides a library of building blocks to frontend developers.
 
 * [Authentication](authentication_guide.md)
 * [Analytics](analytics_guide.md)

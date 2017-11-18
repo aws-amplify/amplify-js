@@ -1,6 +1,6 @@
 # Analytics
 
-AWS Amplify Analytics module helps you quickly collect analytics for user sessions, custom attributes or metrics.
+AWS Amplify Analytics module helps developer collect analytic metrics.
 
 * [Installation](#installation)
 * [Configuration](#configuration)
@@ -12,27 +12,24 @@ AWS Amplify Analytics module helps you quickly collect analytics for user sessio
 
 ## Installation
 
-For Web development, regardless of framework, `aws-amplify` provides core Analytics APIs:
-
-```bash
+For Web development, regardless of framework, `aws-amplify` provides core Auth APIs
+```
 npm install aws-amplify
 ```
 
-On React app, we have provided some helpful components in `aws-amplify-react`:
-
-```bash
+On React app, we have provided some helpful components in `aws-amplify-react`
+```
 npm install aws-amplify-react
 ```
 
-In React Native development, we package the core APIs and components into one `aws-amplify-react-native`:
-
-```bash
+In React Native development, we package core APIs and components into one `aws-amplify-react-native`
+```
 npm install aws-amplify-react-native
 ```
 
 ## Configuration
 
-```js
+```
 import Amplify from 'aws-amplify';
 
 Amplify.configure(
@@ -68,18 +65,20 @@ AWS Mobile Hub streamlines the steps above for you. Simply click the button:
   </a>
 </p>
 
-This will create a project that works with Analytics category fully functioning. After the project is created in the Mobile Hub console download the `aws-exports.js` configuration file by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
+This will create a project that works with Analytics category fully functioning. After the project is created in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
 
 ![Mobile Hub](mobile_hub_1.png)
 
-Download `aws-exports.js` to your project source directory.
+Download aws-exports.js
 
+Then copy the file to `/src` folder of the project
 ![Download](mobile_hub_2.png)
 
 
-Next, import the file and pass it as the configuration to the Amplify library:
+Now you can simply import the file and pass it as the configuration to the Amplify library:
 
-```js
+Add these lines to your source.
+```
 import Amplify from 'aws-amplify';
 import aws_exports from './aws-exports.js';
 
@@ -94,13 +93,15 @@ After configuration, user session metrics are automatically collected and send t
 
 ### 1. Collect Session Data
 
-Without any additional code, the Analytics module starts collect session data. All you need to do is to configure Analytics module. See [configuration](#configuration)
+Without additional code. Once correctly configured, Analytics module starts collect session data.
+
+All you need to do is to configure Analytics module. See [configuration](#configuration)
 
 ### 2. Record Event
 
-To record an event, call the `record` method:
+To record an event, call `record` method
 
-```js
+```
 import { Analytics } from 'aws-amplify';
 
 Analytics.record('albumVisit');
@@ -108,9 +109,9 @@ Analytics.record('albumVisit');
 
 ### 3. Record Event with Attributes
 
-The `record` method lets you add additional attributes to an event. For example:
+`record` method let you add additional attributes to event. For example,
 
-```js
+```
 import { Analytics } from 'aws-amplify';
 
 Analytics.record('albumVisit', { genre: '', artist: '' });
@@ -118,9 +119,9 @@ Analytics.record('albumVisit', { genre: '', artist: '' });
 
 ### 4. Record Event with Metrics
 
-Metrics can also be added to an event:
+Metrics can be added to event too.
 
-```js
+```
 import { Analytics } from 'aws-amplify';
 
 Analytics.record('albumVisit', {}, { minutesListened: 30 });

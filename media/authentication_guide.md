@@ -1,6 +1,6 @@
 # Authentication
 
-The AWS Amplify Auth module provides Authentication APIs and building blocks to developers wishing to use pre-build components or scaffold out custom UX. Depending on needs, Auth can be integrated at different levels.
+AWS Amplify Auth module provides Authentication APIs and building blocks to developer. Depending on needs, Auth can be integrated in different levels.
 
 * [Installation](#installation)
 * [Configuration](#configuration)
@@ -19,37 +19,32 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
 ## Installation
 
 For Web development, regardless of framework, `aws-amplify` provides core Auth APIs
-
-```bash
+```
 npm install aws-amplify
 ```
 
-On React app, there are helper components in `aws-amplify-react`
-
-```bash
+On React app, we have provided some helpful components in `aws-amplify-react`
+```
 npm install aws-amplify-react
 ```
 
-In React Native development, core APIs and components are packaged into `aws-amplify-react-native`
-
-```bash
+In React Native development, we package core APIs and components into one `aws-amplify-react-native`
+```
 npm install aws-amplify-react-native
 ```
 
-You will need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) libraries in your project for the Auth module on React Native. Follow the instructions [here](https://github.com/aws/aws-amplify/blob/master/media/quick_start.md#react-native-development).
-
 ## Configuration
 
-You are required to pass in an Amazon Cognito Identity Pool ID, allowing the library to retrieve base credentials for a user even in an UnAuthenticated state. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup).
+You are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup)!
 
-Note: If using Mobile Hub, ensure that user sign-in is set to optional in your app. To do so, go your project on [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home.html#/) and click on your project, and then click on the **User Sign-in** tile. Verify that **Optional**
+Note: Ensure that user sign-in is set to optional in your app. To do so, go your project on [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home.html#/) and click on your project, and then click on the **User Sign-in** tile. Verify that **Optional**
 button is selected in the options for Sign-In required.
 
 ### Manual Setup
 
-At the top of your application entry point, add in the following code to configure the library:
+At the top of your application entry point add in the following code before your first in order to configure the library.
 
-```js
+```
 import Amplify from 'aws-amplify';
 
 Amplify.configure({
@@ -62,7 +57,7 @@ Amplify.configure({
 });
 ```
 
-The above configuration requires an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. You will also need to include Amazon Cognito User Pool ID and Web Client ID.
+In the above configuration you are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. Also you need to include Amazon Cognito User Pool ID and Web Client ID.
 
 [Amazon Cognito Identity](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-identity-pools.html)
 
@@ -70,7 +65,7 @@ The above configuration requires an Amazon Cognito Identity Pool ID so that the 
 
 ### Automated Setup
 
-AWS Mobile Hub streamlines the steps above for you. Simply click this button:
+AWS Mobile Hub streamlines the steps above for you. Simply click the button:
 
 <p align="center">
   <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home?#/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/user-signin.zip">
@@ -80,17 +75,18 @@ AWS Mobile Hub streamlines the steps above for you. Simply click this button:
   </a>
 </p>
 
-This creates a project is fully functioning with the Auth category. After the project is created in the Mobile Hub console download the `aws-exports.js` configuration file by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
+This will create a project that works with Auth category fully functioning. After the project is created in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
 
 ![Mobile Hub](mobile_hub_1.png)
 
-Download `aws-exports.js` into your project source directory.
+Download aws-exports.js
 
+Then copy the file to a visible folder of your project
 ![Download](mobile_hub_2.png)
 
-Now import the file and pass it as configuration to the Amplify library:
+Now you can simply import the file and pass it as the configuration to the Amplify library:
 
-```js
+```
 import Amplify from 'aws-amplify';
 import awsmobile from './YOUR_PATH_TO_EXPORTS/aws-exports'
 
@@ -101,10 +97,10 @@ Amplify.configure(awsmobile});
 
 ### 1. Call APIs
 
-APIs can be used in any Javascript framework. [API Reference](api_reference.md) has full list. Below are some examples to get started.
+APIs can be used in any Javascript framework. [API Reference](api_reference.md) has full list. Here are some examples
 
 #### Sign In
-```js
+```
 import { Auth } from 'aws-amplify';
 
 Auth.signIn(username, password)
@@ -113,7 +109,7 @@ Auth.signIn(username, password)
 ```
 
 #### Sign Up
-```js
+```
 import { Auth } from 'aws-amplify';
 
 Auth.signUp(username, password, email, phone)
@@ -122,7 +118,7 @@ Auth.signUp(username, password, email, phone)
 ```
 
 #### Sign Out
-```js
+```
 import { Auth } from 'aws-amplify';
 
 Auth.signOut()
@@ -134,9 +130,9 @@ Auth.signOut()
 
 For React app, then simpliest way to add Auth flows into your app is to use `withAuthenticator`.
 
-Just add these two lines to your `App.js`:
+Just add these two lines to your `App.js`
 
-```js
+```
 import { withAuthenticator } from 'aws-amplify-react';
 
 ...
@@ -148,22 +144,21 @@ Now your app is guarded by complete Auth flow. Only signed in user can access th
 
 #### Sign Out Button
 
-The default `withAuthenticator` renders just the App component after a user is signed in, preventing interference with your app. Then question comes, how does the user sign out?
+The default `withAuthenticator` renders just your App component after user is signed in. So it does not interfere with your App. Then question comes, how does the user sign out?
 
-To expose this, set the second parameter to true, which means `includeGreetings = true`. It will put a greeting row on top of your app.
-
-```js
+You just set second parameter to true, which means `includeGreetings = true`. It would put a greeting row on top of your app.
+```
 export default withAuthenticator(App, true);
 ```
 
 ### 3. Authenticate Component
 
-The `withAuthenticator` HOC essentially just wraps `Authenticator` component. You can use the `Authenticator` directly to give yourself more customization options.
+The `withAuthenticator` HOC essentially just wraps `Authenticator` component inside. Use the `Authenticator` directly to give yourself more customization options.
 
-#### Example: Put App inside Authenticator
+#### Put App inside Authenticator
 
 App.js
-```js
+```
 import { Authenticator } from 'aws-amplify-react';
 
 ...
@@ -183,18 +178,18 @@ class AppWithAuth extends Component {
 export default AppWithAuth;
 ```
 
-#### Example: Only show App when signed in
+#### Only show App when signed in
 
 In the above example you'll see the App rendered even before the user is signed in. This is easy to change.
 
-When inside `Authenticator`, the App component will get a few properties.
+When inside `Authenticator`, App component will get a few properties.
 
 * authState - current authentication state, signIn | signUp | confirmSignIn | confirmSignUp | forgotPassword | verifyContact | signedIn
 * authData - additional data to the authState, when signedIn it is an user object
 * onStateChange - callback function, for what's inside `Authenticator` to notify authState changes.
 
-With that, to control when to render App component, simply add the following line to the `render()` method of the `App` component:
-```js
+With that, to control when to render App component, simply add the following line to render() method of the `App` component:
+```
     render() {
         if (this.props.authState !== 'signedIn') { return null; }
     ...
@@ -202,23 +197,22 @@ With that, to control when to render App component, simply add the following lin
 
 ### 4. Compose Authenticator
 
-`Authenticator` is designed as a container, which contains a number of Auth components. Each component does one job, for example SignIn, SignUp etc.
+`Authenticator` is designed as a container, which contains a number of Auth Pieces. Each Auth Piece does one job, for example SignIn, SignUp etc.
 
-You can compose your own Authenticator, but you must set `hideDefault={true}`.
+You can compose your own Authenticator, don't forget to set `hideDefault` to true.
 
-For example, this Authenticator only shows Greetings component which has a Sign Out button:
-
-```jsx
+For example, this Authenticator only shows Greetings component, which has Sign Out button
+```
     <Authenticator hideDefault={true}>
         <Greetings />
     </Authenticator>
 ```
 
-#### Greeting message
+#### Greetings message
 
-The Greetings component has messages for two different auth states: signedIn, and signedOut. To customize the messages, set properties `signedInMessage` and `signedOutMessage` using a string or function.
+Greetings component has messages for two different auth state: signedIn, and signedOut. To customize the messages, set properties `signedInMessage` and `signedOutMessage`, string or function.
 
-```jsx
+```
     <Authenticator hideDefault={true}>
         <Greetings
             signedInMessage={(username) => 'Hello ' + username}
@@ -229,15 +223,13 @@ The Greetings component has messages for two different auth states: signedIn, an
 
 ### 5. Write Your Own Auth UI
 
-You may write your own Auth UI. JTo do this your component will leverage the following properties:
-
+You may write your own Auth Piece. Just make your component to be aware of these properties:
 * authState
 * authData
 * onStateChange
 
-This example creates an `AlwaysOn` Auth UI, which shows the current auth state.
-
-```jsx
+This example creates an `AlwaysOn` Auth Piece, which shows current auth state.
+```
 import { Authenticator, SignIn, SignOut, ConfirmSignUp, Greetings } from 'aws-amplify-react’;
 
 const AlwaysOn = (props) => {
@@ -266,23 +258,21 @@ render() {
 }
 ```
 
-## Extensions
+## Extension
 
 ### Component Styling
 
-Amplify UI components are theme based. Check the `AmplifyTheme.js` file for default styling.
+Amplify UI components are theme based. check `AmplifyTheme.js` file for default styling.
 
 You may want to create your own theme, and then pass to Amplify components.
-
-```jsx
+```
 import MyTheme from './MyTheme';
 
 <Authenticator theme={MyTheme} />
 ```
 
-Alternatively, override `AmplifyTheme`:
-
-```jsx
+Or maybe override `AmplifyTheme`
+```
 import { AmplifyTheme } from 'aws-amplify-react';
 
 const MySectionHeader = Object.assign({}, AmplifyTheme.sectionHeader, { background: 'orange' });
@@ -293,11 +283,11 @@ const MyTheme = Object.assign({}, AmplifyTheme, { sectionHeader: MySectionHeader
 
 ### Error Message
 
-During authentication flows, there are some error messages returned from server. Amplify provides a simple way of customizing error messages with a `messageMap` callback.
+During authentication flows, there are some error messages returned from server. Amplify provides a simple way of customizing error messages. A callback `messageMap` function.
 
-The function simply takes the original message as arguments and then outputs the desired message. Check `AmplifyMessageMap.js` to see how Amplify makes the map function.
+The function simply takes the original message then output desired message. Check `AmplifyMessageMap.js` to see how Amplify makes its map function.
 
-```jsx
+```
 const map = (message) => {
     if (/incorrect.*username.*password/i.test(message)) {
         return 'Incorrect username or password';
@@ -309,4 +299,4 @@ const map = (message) => {
 <Authenticator errorMessage={map} />
 ```
 
-You may notice in `AmplifyMessageMap.js` it also handles intenationalization. The topic is covered in [I18n Guide](i18n_guide.md)
+You may notice in `AmplifyMessageMap.js` it also does intenationalization. The topic is covered in [I18n Guide](i18n_guide.md)
