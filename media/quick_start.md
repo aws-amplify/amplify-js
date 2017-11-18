@@ -1,12 +1,12 @@
 # Quick Start
-AWS Amplify is not limited to AWS or React. However for easier demonstration and getting started we showcase the usage with a React application and AWS resources.
+AWS Amplify is not limited to AWS or React. The library is designed to support different contributions across categories for alternative implementations, both on the Cloud interactions as well as the JavaScript framework components. However, there are React & React Native specific extensions that can be leveraged. Additionally, we showcase the usage with AWS resources to streamline getting started.
 
 * [Installation](#installation)
 * [Configuration](#configuration)
 * [More Analytics](#more-analytics)
 * [Bind Authentications](#bind-authentications)
 
-You can begin with an existing React application. Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app)
+You can begin with an existing React application. Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app).
 
 ```
 create-react-app amplify-start
@@ -14,10 +14,10 @@ cd amplify-start
 npm start
 ```
 
-You should see a typical React application running in your browser.
+You should see a basic React application running in your browser.
 
 ## Install Amplify 
-AWS Amplify is available as npm packages. Run the following from the current directory of your application:
+AWS Amplify is available as an npm packages. Run the following from the current directory of your application:
 ```
 npm install --save aws-amplify
 npm install --save aws-amplify-react
@@ -25,7 +25,7 @@ npm install --save aws-amplify-react
 
 ## Configuration
 
-At the top of your application entry point (typically, `App.js` for a React application) add in the following code before your first [Component](https://reactjs.org/docs/components-and-props.html) in order to configure the library .
+At the entry point of your application (typically `App.js` for a React application) add in the following code before your first [Component](https://reactjs.org/docs/components-and-props.html) in order to configure the library:
 
 ```
 import Amplify from 'aws-amplify';
@@ -44,15 +44,19 @@ Amplify.configure({
 });
 ```
 
-In the above configuration you are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. If you pass in properties in the Analytics section for Amazon Pinpoint the library will automatically track some base metrics for you without any effort on your part. 
+In the above configuration you are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. If you pass in properties in the Analytics section for Amazon Pinpoint the library will automatically track some base metrics for you without any extra effort. 
 
 ### Manual Setup
+
+If you wish to you can leverage existing AWS resources by manually setting up the Services listed below:
 
 [Amazon Cognito Identity](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-identity-pools.html)
 
 [Amazon Cognito User Pools](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-cognito-user-pools.html)
 
 [Amazon Pinpoint](http://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started.html)
+
+Alternatively you can automate this process with a single button click outlined in the next section.
 
 ### Automated Setup
 
@@ -66,19 +70,17 @@ AWS Mobile Hub streamlines the steps above for you. Simply click the button:
   </a>
 </p>
 
-This will create a project that works with the Auth and Analytics categories fully functioning. After the project is created in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
+This will create a fully functioning project that works with the Auth and Analytics categories. After the project is created, in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
 
 ![Mobile Hub](mobile_hub_1.png)
 
-Download aws-exports.js
+Download aws-exports.js, then copy the file to `/src` folder of your project.
 
-Then copy the file to `/src` folder of the project
 ![Download](mobile_hub_2.png)
 
 
-Now you can simply import the file and pass it as the configuration to the Amplify library:
+Now simply import the file and pass it as the configuration to the Amplify library:
 
-Open `/src/App.js`, add these lines
 ```
 import Amplify from 'aws-amplify';
 import aws_exports from './aws-exports.js';
@@ -103,13 +105,13 @@ import { Analytics } from 'aws-amplify';
 ...
 ```
 
-This will record an 'appRender' event everytime user opens app.
+This will record an **appRender** event everytime user opens app.
 
 For more about Analytics, click [here](analytics_guide.md)
 
 ## Bind Authentications
 
-Open `/src/App.js`, add one import and modify the last line of code.
+In your `App.js`, add one import and wrap your default component export as seen below:
 ```
 import { withAuthenticator } from 'aws-amplify-react';
 
@@ -118,7 +120,8 @@ import { withAuthenticator } from 'aws-amplify-react';
 export default withAuthenticator(App);
 ```
 
-This will wrap your app inside an Authentication UI. Only signed in user have access to app.
+This will gate the entire application inside an Authentication UI. Only signed in user have access to use your application's features.
+
 <img src="sign_in.png" width="320px"/>
 
 For more about Authenticator, click [here](../packages/aws-amplify-react/media/authenticator.md)
