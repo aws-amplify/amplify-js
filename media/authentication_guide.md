@@ -19,19 +19,24 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
 ## Installation
 
 For Web development, regardless of framework, `aws-amplify` provides core Auth APIs
+
 ```bash
 npm install aws-amplify
 ```
 
 On React app, there are helper components in `aws-amplify-react`
+
 ```bash
 npm install aws-amplify-react
 ```
 
 In React Native development, core APIs and components are packaged into `aws-amplify-react-native`
+
 ```bash
 npm install aws-amplify-react-native
 ```
+
+You will need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) libraries in your project for the Auth module on React Native. Follow the instructions [here](https://github.com/aws/aws-amplify/blob/master/media/quick_start.md#react-native-development).
 
 ## Configuration
 
