@@ -40,7 +40,7 @@ npm install aws-amplify-react-native
 
 ### 1. Collect user session metrics
 
-By default, AWS Amplify can send
+By default, AWS Amplify can send user session information as metrics with a few lines of code:
 
 ```
 import Amplify, { Analytics } from 'aws-amplify';
@@ -50,9 +50,8 @@ Amplify.configure(aws_exports);
 ```
 
 ### 2. Bind app with Authentications
-Take a fresh React app created by `create-react-app` as an example.
+Take a fresh React app created by `create-react-app` as an example and edit the `App.js` file:
 
-App.js
 ```
 import React, { Component } from 'react';
 import logo from './logo.svg';
