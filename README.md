@@ -1,6 +1,6 @@
 # AWS Amplify
 
-AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications. The library is a declaritive interface across different categories of operations in order to make common tasks easier to add into your application. The default implementation works with Amazon Web Services (AWS) resources but is designed to be open and pluggable for usage with other cloud services that wish to provide an implementation or custom backends.
+AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications. The library is a declarative interface across different categories of operations in order to make common tasks easier to add into your application. The default implementation works with Amazon Web Services (AWS) resources but is designed to be open and pluggable for usage with other cloud services that wish to provide an implementation or custom backends.
 
 * [Installation](#installation)
   - [Web Development](#web-development)
@@ -40,7 +40,7 @@ npm install aws-amplify-react-native
 
 ### 1. Collect user session metrics
 
-By default AWS Amplify can send
+By default, AWS Amplify can send
 
 ```
 import Amplify, { Analytics } from 'aws-amplify';
