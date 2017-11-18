@@ -8,7 +8,7 @@ AWS Amplify is not limited to AWS or React. The library is designed to support d
 
 You can begin with an existing React application. Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app).
 
-```
+```bash
 create-react-app amplify-start
 cd amplify-start
 npm start
@@ -18,7 +18,7 @@ You should see a basic React application running in your browser.
 
 ## Install Amplify 
 AWS Amplify is available as an npm packages. Run the following from the current directory of your application:
-```
+```bash
 npm install --save aws-amplify
 npm install --save aws-amplify-react
 ```
@@ -27,7 +27,7 @@ npm install --save aws-amplify-react
 
 At the entry point of your application (typically `App.js` for a React application) add in the following code before your first [Component](https://reactjs.org/docs/components-and-props.html) in order to configure the library:
 
-```
+```js
 import Amplify from 'aws-amplify';
 
 Amplify.configure({
@@ -81,7 +81,7 @@ Download aws-exports.js, then copy the file to `/src` folder of your project.
 
 Now simply import the file and pass it as the configuration to the Amplify library:
 
-```
+```js
 import Amplify from 'aws-amplify';
 import aws_exports from './aws-exports.js';
 
@@ -96,7 +96,7 @@ After configuration, user session metrics are automatically collected and send t
 
 Now that you've got basic tracking for user sessions, you may wish to add additional metrics for analytics recording in your application. Open `/src/App.js`, add two lines of code.
 
-```
+```js
 import { Analytics } from 'aws-amplify';
 
 ...
@@ -112,7 +112,7 @@ For more about Analytics, click [here](analytics_guide.md)
 ## Bind Authentications
 
 In your `App.js`, add one import and wrap your default component export as seen below:
-```
+```js
 import { withAuthenticator } from 'aws-amplify-react';
 
 ...

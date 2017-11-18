@@ -17,7 +17,7 @@ AWS Amplify API module provides a simple solution when making HTTP requests. It 
 
 For Web development, regardless of framework, `aws-amplify` provides core functionality:
 
-```
+```bash
 npm install aws-amplify
 ```
 
@@ -38,7 +38,7 @@ Amazon Cognito Identity Pool requires to have access to the API using Amazon IAM
 [Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started.html)
 
 After configuring this resources you can add these lines to your source code.
-```
+```js
 import Amplify, { API } from 'aws-amplify';
 
 Amplify.configure(
@@ -84,7 +84,7 @@ This will create a project that works with API category fully functioning. Befor
 Import the file and pass it as configuration to the Amplify library:
 
 
-```
+```js
 import Amplify, { API } from 'aws-amplify';
 import aws_exports from './PATH_TO_EXPORTS/aws-exports.js';
 
@@ -102,7 +102,7 @@ Each method of Amplify's API module returns a Promise which is seen in the below
 
 ### **GET**
 
-```
+```js
 let apiName = 'MyApiName';
 let path = '/path'; 
 let myInit = { // OPTIONAL
@@ -116,7 +116,7 @@ API.get(apiName, path, myInit).then(response => {
 
 Example with async/await
 
-```
+```js
 async function getData() { 
     let apiName = 'MyApiName';
     let path = '/path';
@@ -144,7 +144,7 @@ If you used one click import or AWS Mobile Hub to create your API, you can do th
 
 ### **POST**
 
-```
+```js
 let apiName = 'MyApiName'; // replace this with your api name.
 let path = '/path'; //replace this with the path you have configured on your API
 let myInit = {
@@ -160,7 +160,7 @@ API.post(apiName, path, myInit).then(response => {
 
 Example with async/await
 
-```
+```js
 async function postData() { 
     let apiName = 'MyApiName';
     let path = '/path';
@@ -176,7 +176,7 @@ postData();
 
 ### **PUT**
 
-```
+```js
 let apiName = 'MyApiName'; // replace this with your api name.
 let path = '/path'; // replace this with the path you have configured on your API
 let myInit = {
@@ -192,7 +192,7 @@ API.put(apiName, path, myInit).then(response => {
 
 Example with async/await
 
-```
+```js
 async function putData() { 
     let apiName = 'MyApiName';
     let path = '/path';
@@ -208,7 +208,7 @@ putData();
 
 ### **DELETE**
 
-```
+```js
 let apiName = 'MyApiName'; // replace this with your api name.
 let path = '/path'; //replace this with the path you have configured on your API
 let myInit = { // OPTIONAL
@@ -223,7 +223,7 @@ API.del(apiName, path, myInit).then(response => {
 
 Example with async/await
 
-```
+```js
 async function deleteData() { 
     let apiName = 'MyApiName';
     let path = '/path';
@@ -238,7 +238,7 @@ deleteData();
 
 ### **HEAD**
 
-```
+```js
 let apiName = 'MyApiName'; // replace this with your api name.
 let path = '/path'; //replace this with the path you have configured on your API
 let myInit = { // OPTIONAL
@@ -252,7 +252,7 @@ API.head(apiName, path, myInit).then(response => {
 
 Example with async/await
 
-```
+```js
 async function head() { 
     let apiName = 'MyApiName';
     let path = '/path';

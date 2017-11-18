@@ -14,25 +14,25 @@ AWS Amplify Analytics module helps you quickly collect analytics for user sessio
 
 For Web development, regardless of framework, `aws-amplify` provides core Analytics APIs:
 
-```
+```bash
 npm install aws-amplify
 ```
 
 On React app, we have provided some helpful components in `aws-amplify-react`:
 
-```
+```bash
 npm install aws-amplify-react
 ```
 
 In React Native development, we package the core APIs and components into one `aws-amplify-react-native`:
 
-```
+```bash
 npm install aws-amplify-react-native
 ```
 
 ## Configuration
 
-```
+```js
 import Amplify from 'aws-amplify';
 
 Amplify.configure(
@@ -79,7 +79,7 @@ Download `aws-exports.js` to your project source directory.
 
 Next, import the file and pass it as the configuration to the Amplify library:
 
-```
+```js
 import Amplify from 'aws-amplify';
 import aws_exports from './aws-exports.js';
 
@@ -100,7 +100,7 @@ Without any additional code, the Analytics module starts collect session data. A
 
 To record an event, call the `record` method:
 
-```
+```js
 import { Analytics } from 'aws-amplify';
 
 Analytics.record('albumVisit');
@@ -110,7 +110,7 @@ Analytics.record('albumVisit');
 
 The `record` method lets you add additional attributes to an event. For example:
 
-```
+```js
 import { Analytics } from 'aws-amplify';
 
 Analytics.record('albumVisit', { genre: '', artist: '' });
@@ -120,7 +120,7 @@ Analytics.record('albumVisit', { genre: '', artist: '' });
 
 Metrics can also be added to an event:
 
-```
+```js
 import { Analytics } from 'aws-amplify';
 
 Analytics.record('albumVisit', {}, { minutesListened: 30 });

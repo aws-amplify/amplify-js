@@ -17,19 +17,19 @@ AWS Amplify Storage module gives a simple mechanism for managing user content in
 
 For Web development, regardless of framework, `aws-amplify` provides core Storage APIs:
 
-```
+```bash
 npm install aws-amplify
 ```
 
 On React app, helpful components are provided in `aws-amplify-react`:
 
-```
+```bash
 npm install aws-amplify-react
 ```
 
 In React Native development, core APIs and components are packaged into `aws-amplify-react-native`
 
-```
+```bash
 npm install aws-amplify-react-native
 ```
 
@@ -53,7 +53,7 @@ To make calls to your S3 bucket from your App, make sure CORS is turned on:
 1. Go to [AWS S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's userfiles bucket.
 2. Click on the **Permissions** tab for your bucket, and then click on **CORS confguration** tile.
 3. Update your bucket's CORS Policy to look like:
- ```
+ ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
 <CORSRule>
@@ -96,7 +96,7 @@ Download `aws-exports.js` into your project directory.
 
 Next, import the file and pass it as the configuration to the Amplify library:
 
-```
+```js
 import Amplify from 'aws-amplify';
 import aws_exports from './aws-exports.js';
 
@@ -115,7 +115,7 @@ The access level can be configured on the Storage object globally. Alternatively
 
 Configuration on the Storage object
 
-```
+```js
 Storage.configure({ level: 'private' });
 
 Storage.get('welcome.png'); // Gets the welcome.png belongs to current user
@@ -123,38 +123,38 @@ Storage.get('welcome.png'); // Gets the welcome.png belongs to current user
 
 Configuration when calling the API
 
-```
+```js
 Storage.get('welcome.png', { level: 'public' }); // Gets welcome.png in public space
 ```
 
 Default, the access level of `public`:
-```
+```js
 Storage.get('welcome.png'); // Get welcome.png in public space
 ```
 
 There is also a shortcut `vault`, which is merely a Storage instance with `private` level set:
 
-```
+```js
 Storage.vault.get('welcome.png'); // Get the welcome.png belonging to current user
 ```
 
 ## Integration
 
 1. Import Storage from the aws-amplify library into your App:
-```
+```js
 import { Storage } from 'aws-amplify';
 ```
 
 2. Configure Storage with your AWS resources: 
 
     a. Use `aws-exports` object (here named awsmobile) to configure Storage:
-    ```
+    ```js
         Storage.configure(awsmobile);
     ``` 
 
     b. Use your resource values to configure Storage as: 
 
-    ```
+    ```js
     Storage.configure({
         bucket: //Your bucket ARN;
         region: //Specify the region your bucket was created in;
@@ -171,7 +171,7 @@ import { Storage } from 'aws-amplify';
 Put data into Amazon S3.
 
 Public
-```
+```js
     const key = 'xyz.ext';
     const fileObj = 'abc'
     Storage.put(key, fileObj)
@@ -180,7 +180,7 @@ Public
 ```
 
 Private
-``` 
+```js
     Storage.put(key, fileObj, {level: 'private'})
         .then (result => console.log(result))
         .catch(err => console.log(err));
@@ -198,7 +198,7 @@ Private
 Get a public accessible URL for data stored.
 
 Public
-``` 
+```js
     const key = “abc”
     Storage.get(key)
         .then(result => console.log(result))
@@ -206,7 +206,7 @@ Public
 ```
 
 Private
-```  
+```js
     Storage.get(key, {level: 'private'})
         .then(result => console.log(result))
         .catch(err => console.log(err));
@@ -216,7 +216,7 @@ Private
 Delete data stored with key specified.
 
 Public
-```
+```js
     const key = “abc”
     Storage.remove(key)
         .then(result => console.log(result))
@@ -224,7 +224,7 @@ Public
 ```
 
 Private
-```   
+```js
     Storage.remove(key, {level: 'private'})
         .then(result => console.log(result))
         .catch(err => console.log(err));
@@ -234,7 +234,7 @@ Private
 List keys under path specified.
 
 Public
-```
+```js
     const path = ‘my path’;
     Storage.list(path)
         .then(result => console.log(result))
@@ -242,7 +242,7 @@ Public
 ```
 
 Private
-```
+```js
     Storage.list(path, {level: 'private'})
         .then(result => console.log(result))
         .catch(err => console.log(err));
@@ -256,7 +256,7 @@ Private
 
 `S3Image` component renders Amazon S3 key as an image:
 
-```
+```jsx
 import { S3Image } from 'aws-amplify-react';
 
     render() {
@@ -267,13 +267,13 @@ import { S3Image } from 'aws-amplify-react';
 
 For private image, supply the `level` property:
 
-```
+```jsx
         return <S3Image level="private" path={path} />
 ```
 
 To upload, set the body property to S3Image:
 
-```
+```jsx
 import { S3Image } from 'aws-amplify-react';
 
     render() {
@@ -286,7 +286,7 @@ import { S3Image } from 'aws-amplify-react';
 
 `S3Image` converts path to actual URL. To get the URL, listen to the `onReady` event:
 
-```
+```jsx
     <S3Imag path={path} onReady={url => console.log(url)}
 ```
 
@@ -294,7 +294,7 @@ import { S3Image } from 'aws-amplify-react';
 
 `S3Album` holds a list of S3Image objects:
 
-```
+```jsx
 import { S3Album } from 'aws-amplify-react';
 
     render() {
@@ -304,13 +304,13 @@ import { S3Album } from 'aws-amplify-react';
 
 For private album, supply the `level` property:
 
-```
+```jsx
         return <S3Album level="private" path={path} />
 ```
 
 You might have non-image files in an album from your bucket. In this case you can use a `filter` prop:
 
-```
+```jsx
         return <S3Album
                     level="private"
                     path={path}
@@ -322,13 +322,13 @@ You might have non-image files in an album from your bucket. In this case you ca
 
 Set `picker` property to true on `S3Album`. A `PhotoPicker` let user pick photos on his/her device.
 
-```
+```jsx
     <S3Album path={path} picker />
 ```
 
 By default the photo picker saves photo on S3 with filename as key. To have custom key you can provide a callback:
 
-```
+```jsx
 function fileToKey(data) {
     const { name, size, type } = data;
     return 'test_' + name;

@@ -19,17 +19,17 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
 ## Installation
 
 For Web development, regardless of framework, `aws-amplify` provides core Auth APIs
-```
+```bash
 npm install aws-amplify
 ```
 
 On React app, there are helper components in `aws-amplify-react`
-```
+```bash
 npm install aws-amplify-react
 ```
 
 In React Native development, core APIs and components are packaged into `aws-amplify-react-native`
-```
+```bash
 npm install aws-amplify-react-native
 ```
 
@@ -44,7 +44,7 @@ button is selected in the options for Sign-In required.
 
 At the top of your application entry point, add in the following code to configure the library:
 
-```
+```js
 import Amplify from 'aws-amplify';
 
 Amplify.configure({
@@ -85,7 +85,7 @@ Download `aws-exports.js` into your project source directory.
 
 Now import the file and pass it as configuration to the Amplify library:
 
-```
+```js
 import Amplify from 'aws-amplify';
 import awsmobile from './YOUR_PATH_TO_EXPORTS/aws-exports'
 
@@ -99,7 +99,7 @@ Amplify.configure(awsmobile});
 APIs can be used in any Javascript framework. [API Reference](api_reference.md) has full list. Below are some examples to get started.
 
 #### Sign In
-```
+```js
 import { Auth } from 'aws-amplify';
 
 Auth.signIn(username, password)
@@ -108,7 +108,7 @@ Auth.signIn(username, password)
 ```
 
 #### Sign Up
-```
+```js
 import { Auth } from 'aws-amplify';
 
 Auth.signUp(username, password, email, phone)
@@ -117,7 +117,7 @@ Auth.signUp(username, password, email, phone)
 ```
 
 #### Sign Out
-```
+```js
 import { Auth } from 'aws-amplify';
 
 Auth.signOut()
@@ -131,7 +131,7 @@ For React app, then simpliest way to add Auth flows into your app is to use `wit
 
 Just add these two lines to your `App.js`:
 
-```
+```js
 import { withAuthenticator } from 'aws-amplify-react';
 
 ...
@@ -147,7 +147,7 @@ The default `withAuthenticator` renders just the App component after a user is s
 
 To expose this, set the second parameter to true, which means `includeGreetings = true`. It will put a greeting row on top of your app.
 
-```
+```js
 export default withAuthenticator(App, true);
 ```
 
@@ -158,7 +158,7 @@ The `withAuthenticator` HOC essentially just wraps `Authenticator` component. Yo
 #### Example: Put App inside Authenticator
 
 App.js
-```
+```js
 import { Authenticator } from 'aws-amplify-react';
 
 ...
@@ -189,7 +189,7 @@ When inside `Authenticator`, the App component will get a few properties.
 * onStateChange - callback function, for what's inside `Authenticator` to notify authState changes.
 
 With that, to control when to render App component, simply add the following line to the `render()` method of the `App` component:
-```
+```js
     render() {
         if (this.props.authState !== 'signedIn') { return null; }
     ...
@@ -203,7 +203,7 @@ You can compose your own Authenticator, but you must set `hideDefault={true}`.
 
 For example, this Authenticator only shows Greetings component which has a Sign Out button:
 
-```
+```jsx
     <Authenticator hideDefault={true}>
         <Greetings />
     </Authenticator>
@@ -213,7 +213,7 @@ For example, this Authenticator only shows Greetings component which has a Sign 
 
 The Greetings component has messages for two different auth states: signedIn, and signedOut. To customize the messages, set properties `signedInMessage` and `signedOutMessage` using a string or function.
 
-```
+```jsx
     <Authenticator hideDefault={true}>
         <Greetings
             signedInMessage={(username) => 'Hello ' + username}
@@ -232,7 +232,7 @@ You may write your own Auth UI. JTo do this your component will leverage the fol
 
 This example creates an `AlwaysOn` Auth UI, which shows the current auth state.
 
-```
+```jsx
 import { Authenticator, SignIn, SignOut, ConfirmSignUp, Greetings } from 'aws-amplify-react’;
 
 const AlwaysOn = (props) => {
@@ -269,7 +269,7 @@ Amplify UI components are theme based. Check the `AmplifyTheme.js` file for defa
 
 You may want to create your own theme, and then pass to Amplify components.
 
-```
+```jsx
 import MyTheme from './MyTheme';
 
 <Authenticator theme={MyTheme} />
@@ -277,7 +277,7 @@ import MyTheme from './MyTheme';
 
 Alternatively, override `AmplifyTheme`:
 
-```
+```jsx
 import { AmplifyTheme } from 'aws-amplify-react';
 
 const MySectionHeader = Object.assign({}, AmplifyTheme.sectionHeader, { background: 'orange' });
@@ -292,7 +292,7 @@ During authentication flows, there are some error messages returned from server.
 
 The function simply takes the original message as arguments and then outputs the desired message. Check `AmplifyMessageMap.js` to see how Amplify makes the map function.
 
-```
+```jsx
 const map = (message) => {
     if (/incorrect.*username.*password/i.test(message)) {
         return 'Incorrect username or password';

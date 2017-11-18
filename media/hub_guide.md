@@ -5,17 +5,17 @@ AWS Amplify has a lightweight Pub-Sub system called Hub. It is used to share eve
 ## Usage
 
 Import
-```
+```js
 import { Hub } from 'aws-amplify';
 ```
 
 Dispatch an event
-```
+```js
 Hub.dispatch('auth', { event: 'signIn', data: user }, 'Auth');
 ```
 
 Listen to a channel
-```
+```js
 import { Hub, Logger } from 'aws-amplify';
 
 const logger = new Logger('MyClass');
@@ -36,7 +36,7 @@ class MyClass {
 
 AWS Amplify Auth publish in `auth` channel when 'signIn', 'signUp', and 'signOut' happens. You may create your listener to act upon event notifications.
 
-```
+```js
 import { Hub, Logger } from 'aws-amplify';
 
 const logger = new Logger('MyClass');
