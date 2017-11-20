@@ -1,3 +1,3 @@
 # API Reference
 
-[API Reference](../packages/aws-amplify-react-native/docs/index.html)
+[API Reference](https://aws.github.io/aws-amplify/packages/aws-amplify-react-native/docs/index.html)
