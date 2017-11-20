@@ -126,13 +126,24 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
           "verticalAlign": "top",
           "width": "32.5%",
         },
-        "photoPicker": Object {},
+        "photoImg": Object {
+          "maxWidth": "100%",
+        },
+        "photoPicker": Object {
+          "textAlign": "center",
+          "width": "100%",
+        },
         "photoPickerButton": Object {
           "background": "#fff",
           "border": "1px solid #ccc",
           "fontWeight": "200",
+          "width": "100%",
         },
         "photoPickerInput": Object {},
+        "photoPickerPicker": Object {
+          "textAlign": "center",
+          "width": "100%",
+        },
         "section": Object {
           "fontWeight": "200",
         },
@@ -295,13 +306,24 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
             "verticalAlign": "top",
             "width": "32.5%",
           },
-          "photoPicker": Object {},
+          "photoImg": Object {
+            "maxWidth": "100%",
+          },
+          "photoPicker": Object {
+            "textAlign": "center",
+            "width": "100%",
+          },
           "photoPickerButton": Object {
             "background": "#fff",
             "border": "1px solid #ccc",
             "fontWeight": "200",
+            "width": "100%",
           },
           "photoPickerInput": Object {},
+          "photoPickerPicker": Object {
+            "textAlign": "center",
+            "width": "100%",
+          },
           "section": Object {
             "fontWeight": "200",
           },
@@ -447,13 +469,24 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
             "verticalAlign": "top",
             "width": "32.5%",
           },
-          "photoPicker": Object {},
+          "photoImg": Object {
+            "maxWidth": "100%",
+          },
+          "photoPicker": Object {
+            "textAlign": "center",
+            "width": "100%",
+          },
           "photoPickerButton": Object {
             "background": "#fff",
             "border": "1px solid #ccc",
             "fontWeight": "200",
+            "width": "100%",
           },
           "photoPickerInput": Object {},
+          "photoPickerPicker": Object {
+            "textAlign": "center",
+            "width": "100%",
+          },
           "section": Object {
             "fontWeight": "200",
           },
@@ -601,13 +634,24 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
           "verticalAlign": "top",
           "width": "32.5%",
         },
-        "photoPicker": Object {},
+        "photoImg": Object {
+          "maxWidth": "100%",
+        },
+        "photoPicker": Object {
+          "textAlign": "center",
+          "width": "100%",
+        },
         "photoPickerButton": Object {
           "background": "#fff",
           "border": "1px solid #ccc",
           "fontWeight": "200",
+          "width": "100%",
         },
         "photoPickerInput": Object {},
+        "photoPickerPicker": Object {
+          "textAlign": "center",
+          "width": "100%",
+        },
         "section": Object {
           "fontWeight": "200",
         },
@@ -753,13 +797,24 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
             "verticalAlign": "top",
             "width": "32.5%",
           },
-          "photoPicker": Object {},
+          "photoImg": Object {
+            "maxWidth": "100%",
+          },
+          "photoPicker": Object {
+            "textAlign": "center",
+            "width": "100%",
+          },
           "photoPickerButton": Object {
             "background": "#fff",
             "border": "1px solid #ccc",
             "fontWeight": "200",
+            "width": "100%",
           },
           "photoPickerInput": Object {},
+          "photoPickerPicker": Object {
+            "textAlign": "center",
+            "width": "100%",
+          },
           "section": Object {
             "fontWeight": "200",
           },

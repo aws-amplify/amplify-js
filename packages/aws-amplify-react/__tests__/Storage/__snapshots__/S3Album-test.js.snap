@@ -12,8 +12,8 @@ exports[`S3Album render correctly if has images 1`] = `
     }
   >
     <S3Image
+      imgKey="imageKey"
       key="imageKey"
-      path="imageKey"
       style={
         Object {
           "display": "inline-block",
@@ -137,13 +137,24 @@ exports[`S3Album render correctly if has images 1`] = `
             "verticalAlign": "top",
             "width": "32.5%",
           },
-          "photoPicker": Object {},
+          "photoImg": Object {
+            "maxWidth": "100%",
+          },
+          "photoPicker": Object {
+            "textAlign": "center",
+            "width": "100%",
+          },
           "photoPickerButton": Object {
             "background": "#fff",
             "border": "1px solid #ccc",
             "fontWeight": "200",
+            "width": "100%",
           },
           "photoPickerInput": Object {},
+          "photoPickerPicker": Object {
+            "textAlign": "center",
+            "width": "100%",
+          },
           "section": Object {
             "fontWeight": "200",
           },
