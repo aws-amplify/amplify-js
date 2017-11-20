@@ -24,7 +24,7 @@ let _api = null;
 /**
  * Export Cloud Logic APIs
  */
-export default class API {
+class API {
     /**
      * Configure API part with aws configurations
      * @param {Object} config - Configuration of the API
@@ -192,3 +192,5 @@ export default class API {
         return _api.endpoint(apiName);
     }
 }
+
+export default API;
