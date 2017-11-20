@@ -26,7 +26,20 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import {
+            <pre class="prettyprint source linenums"><code>/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+import {
     AWS,
     Cognito,
     ConsoleLogger as Logger,
@@ -34,7 +47,7 @@
     Hub
 } from '../Common';
 
-const logger = new Logger('Auth');
+const logger = new Logger('AuthClass');
 
 const {
     CognitoIdentityCredentials
@@ -121,11 +134,13 @@ class AuthClass {
      */
     signUp(username, password, email, phone_number) {
         if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!username) { return Promise.reject('Username cannot be empty'); }
+        if (!password) { return Promise.reject('Password cannot be empty'); }
 
-        const attributes = [
-            {Name: 'email', Value: email},
-            {Name: 'phone_number', Value: phone_number}
-        ];
+        const attributes = [];
+        if (email) { attributes.push({Name: 'email', Value: email}); }
+        if (phone_number) { attributes.push({Name: 'phone_number', Value: phone_number}); }
+
         return new Promise((resolve, reject) => {
             this.userPool.signUp(username, password, attributes, null, function(err, data) {
                 if (err) { reject(err); } else { resolve(data); }
@@ -141,6 +156,8 @@ class AuthClass {
      */
     confirmSignUp(username, code) {
         if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!username) { return Promise.reject('Username cannot be empty'); }
+        if (!code) { return Promise.reject('Code cannot be empty'); }
 
         const user = new CognitoUser({
             Username: username,
@@ -160,6 +177,7 @@ class AuthClass {
      */
     resendSignUp(username) {
         if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!username) { return Promise.reject('Username cannot be empty'); }
 
         const user = new CognitoUser({
             Username: username,
@@ -180,6 +198,8 @@ class AuthClass {
      */
     signIn(username, password) {
         if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!username) { return Promise.reject('Username cannot be empty'); }
+        if (!password) { return Promise.reject('Password cannot be empty'); }
 
         const { userPoolId, userPoolWebClientId } = this._config;
         const pool = new CognitoUserPool({
@@ -217,6 +237,10 @@ class AuthClass {
                 },
                 newPasswordRequired: (userAttributes, requiredAttributes) => {
                     logger.debug('signIn new password');
+                    resolve({
+                        userAttributes: userAttributes,
+                        requiredAttributes: requiredAttributes
+                    });
                 }
             });
         });
@@ -229,6 +253,8 @@ class AuthClass {
      * @return {Promise} - A promise resolves to CognitoUser if success
      */
     confirmSignIn(user, code) {
+        if (!code) { return Promise.reject('Code cannot be empty'); }
+
         const _auth = this;
         return new Promise((resolve, reject) => {
             user.sendMFACode(code, {
@@ -263,6 +289,30 @@ class AuthClass {
                         if (err) { reject(err); } else { resolve(_auth._attributesToObject(attributes)); }
                     });
                 });
+            });
+    }
+
+    verifiedContact(user) {
+        const that = this;
+        return this.userAttributes(user)
+            .then(attrs => {
+                const verified = {};
+                const unverified = {};
+                if (attrs.email) {
+                    if (attrs.email_verified) {
+                        verified.email = attrs.email;
+                    } else {
+                        unverified.email = attrs.email;
+                    }
+                }
+                if (attrs.phone_number) {
+                    if (attrs.phone_number_verified) {
+                        verified.phone_number = attrs.phone_number;
+                    } else {
+                        unverified.phone_number = attrs.phone_number;
+                    }
+                }
+                return { verified: verified, unverified: unverified };
             });
     }
 
@@ -304,6 +354,14 @@ class AuthClass {
         const user = this.userPool.getCurrentUser();
         if (!user) { return Promise.reject('No current user'); }
         return this.userSession(user);
+    }
+
+    /**
+     * Get current user's session
+     * @return - A promise resolves to session object if success
+     */
+    currentSession() {
+        return this.currentUserSession();
     }
 
     /**
@@ -428,6 +486,7 @@ class AuthClass {
      */
     forgotPassword(username) {
         if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!username) { return Promise.reject('Username cannot be empty'); }
 
         const user = new CognitoUser({
             Username: username,
@@ -456,6 +515,9 @@ class AuthClass {
      */
     forgotPasswordSubmit(username, code, password) {
         if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!username) { return Promise.reject('Username cannot be empty'); }
+        if (!code) { return Promise.reject('Code cannot be empty'); }
+        if (!password) { return Promise.reject('Password cannot be empty'); }
 
         const user = new CognitoUser({
             Username: username,
@@ -487,6 +549,8 @@ class AuthClass {
      * @return {Promise} - A promise resolves to callback data if success
      */
     verifyCurrentUserAttributeSubmit(attr, code) {
+        if (!code) { return Promise.reject('Code cannot be empty'); }
+
         const _auth = this;
         return _auth.currentAuthenticatedUser()
             .then(user => _auth.verifyUserAttributeSubmit(user, attr, code));
@@ -580,7 +644,8 @@ class AuthClass {
     }
 }
 
-export default AuthClass;</code></pre>
+export default AuthClass;
+</code></pre>
         </article>
     </section>
 
@@ -590,13 +655,13 @@ export default AuthClass;</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnalyticsClass.html">AnalyticsClass</a></li><li><a href="AsyncStorageCache.html">AsyncStorageCache</a></li><li><a href="AuthClass.html">AuthClass</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="I18nClass.html">I18nClass</a></li><li><a href="RestClient.html">RestClient</a></li><li><a href="Signer.html">Signer</a></li><li><a href="StorageCache.html">StorageCache</a></li><li><a href="StorageClass.html">StorageClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnalyticsClass.html">AnalyticsClass</a></li><li><a href="AsyncStorageCache.html">AsyncStorageCache</a></li><li><a href="AuthClass.html">AuthClass</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="I18nClass.html">I18nClass</a></li><li><a href="module.exports.html">exports</a></li><li><a href="RestClient.html">RestClient</a></li><li><a href="Signer.html">Signer</a></li><li><a href="StorageCache.html">StorageCache</a></li><li><a href="StorageClass.html">StorageClass</a></li></ul><h3>Global</h3><ul><li><a href="global.html#configure">configure</a></li><li><a href="global.html#createInstance">createInstance</a></li><li><a href="global.html#del">del</a></li><li><a href="global.html#endpoint">endpoint</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#head">head</a></li><li><a href="global.html#post">post</a></li><li><a href="global.html#put">put</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Nov 14 2017 14:18:50 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 19 2017 22:10:26 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>

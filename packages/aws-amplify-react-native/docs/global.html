@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: RestClient</title>
+    <title>JSDoc: Global</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: RestClient</h1>
+    <h1 class="page-title">Global</h1>
 
     
 
@@ -28,19 +28,7 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>RestClient<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description">HTTP Client for REST requests. Send and receive JSON data.
-Sign request with AWS credentials if available
-Usage:
-<pre>
-const restClient = new RestClient();
-restClient.get('...')
-    .then(function(data) {
-        console.log(data);
-    })
-    .catch(err => console.log(err));
-</pre></div>
+        <h2></h2>
         
     
 </header>
@@ -50,17 +38,82 @@ restClient.get('...')
     
         
 
-    
-    <h2>Constructor</h2>
-    
+        
 
-    
-    <h4 class="name" id="RestClient"><span class="type-signature"></span>new RestClient<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-    
+
+<dl class="details">
 
     
 
+    
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="configure"><span class="type-signature"></span>configure<span class="signature">(config)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Configure API part with aws configurations
+</div>
 
 
 
@@ -83,8 +136,6 @@ restClient.get('...')
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
         
 
@@ -97,33 +148,23 @@ restClient.get('...')
 
         <tr>
             
-                <td class="name"><code>options</code></td>
+                <td class="name"><code>config</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">RestClientOptions</span>
+<span class="param-type">Object</span>
 
 
             
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last">Instance options</td>
+            <td class="description last">Configuration of the API</td>
         </tr>
 
     
@@ -164,7 +205,7 @@ restClient.get('...')
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="API_RestClient.js.html">API/RestClient.js</a>, <a href="API_RestClient.js.html#line35">line 35</a>
+        <a href="API_index.js.html">API/index.js</a>, <a href="API_index.js.html#line33">line 33</a>
     </li></ul></dd>
     
 
@@ -187,30 +228,32 @@ restClient.get('...')
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - The current configuration
+</div>
 
 
 
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
 
+
+    </dd>
+</dl>
 
     
-    </div>
 
-    
 
-    
 
-    
 
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
 
         
             
@@ -218,7 +261,7 @@ restClient.get('...')
     
 
     
-    <h4 class="name" id="_signed"><span class="type-signature"></span>_signed<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="createInstance"><span class="type-signature"></span>createInstance<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -226,7 +269,7 @@ restClient.get('...')
 
 
 <div class="description">
-    private methods
+    Create an instance of API for the library
 </div>
 
 
@@ -270,7 +313,7 @@ restClient.get('...')
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="API_RestClient.js.html">API/RestClient.js</a>, <a href="API_RestClient.js.html#line181">line 181</a>
+        <a href="API_index.js.html">API/index.js</a>, <a href="API_index.js.html#line59">line 59</a>
     </li></ul></dd>
     
 
@@ -293,6 +336,16 @@ restClient.get('...')
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - A promise of true if Success
+</div>
+
+
+
+    
 
 
 
@@ -304,7 +357,7 @@ restClient.get('...')
     
 
     
-    <h4 class="name" id="ajax"><span class="type-signature">(async) </span>ajax<span class="signature">(url, method, init<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="del"><span class="type-signature">(async) </span>del<span class="signature">(apiName, path, init<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
 
     
@@ -312,7 +365,7 @@ restClient.get('...')
 
 
 <div class="description">
-    Basic HTTP request. Customizable
+    Make a DEL request
 </div>
 
 
@@ -350,13 +403,13 @@ restClient.get('...')
 
         <tr>
             
-                <td class="name"><code>url</code></td>
+                <td class="name"><code>apiName</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -374,20 +427,20 @@ restClient.get('...')
 
             
 
-            <td class="description last">Full request URL</td>
+            <td class="description last">The api name of the request</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>method</code></td>
+                <td class="name"><code>path</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -405,7 +458,7 @@ restClient.get('...')
 
             
 
-            <td class="description last">Request HTTP method</td>
+            <td class="description last">The path of the request</td>
         </tr>
 
     
@@ -479,7 +532,7 @@ restClient.get('...')
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="API_RestClient.js.html">API/RestClient.js</a>, <a href="API_RestClient.js.html#line62">line 62</a>
+        <a href="API_index.js.html">API/index.js</a>, <a href="API_index.js.html#line142">line 142</a>
     </li></ul></dd>
     
 
@@ -535,187 +588,7 @@ restClient.get('...')
     
 
     
-    <h4 class="name" id="del"><span class="type-signature"></span>del<span class="signature">(url, init)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    DELETE HTTP request
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>url</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Full request URL</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>init</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">JSON</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Request extra params</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="API_RestClient.js.html">API/RestClient.js</a>, <a href="API_RestClient.js.html#line149">line 149</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - A promise that resolves to an object with response status and JSON data, if successful.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="endpoint"><span class="type-signature"></span>endpoint<span class="signature">(apiName)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="endpoint"><span class="type-signature">(async) </span>endpoint<span class="signature">(apiName)</span><span class="type-signature"> &rarr; {String}</span></h4>
     
 
     
@@ -765,7 +638,7 @@ restClient.get('...')
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -816,7 +689,7 @@ restClient.get('...')
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="API_RestClient.js.html">API/RestClient.js</a>, <a href="API_RestClient.js.html#line168">line 168</a>
+        <a href="API_index.js.html">API/index.js</a>, <a href="API_index.js.html#line184">line 184</a>
     </li></ul></dd>
     
 
@@ -854,7 +727,7 @@ restClient.get('...')
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
     </dd>
@@ -872,7 +745,7 @@ restClient.get('...')
     
 
     
-    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(url, init)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="get"><span class="type-signature">(async) </span>get<span class="signature">(apiName, path, init<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
 
     
@@ -880,7 +753,7 @@ restClient.get('...')
 
 
 <div class="description">
-    GET HTTP request
+    Make a GET request
 </div>
 
 
@@ -904,185 +777,7 @@ restClient.get('...')
         <th>Type</th>
 
         
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>url</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Full request URL</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>init</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">JSON</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Request extra params</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="API_RestClient.js.html">API/RestClient.js</a>, <a href="API_RestClient.js.html#line119">line 119</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - A promise that resolves to an object with response status and JSON data, if successful.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="head"><span class="type-signature"></span>head<span class="signature">(url, init)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    HEAD HTTP request
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
+        <th>Attributes</th>
         
 
         
@@ -1096,187 +791,7 @@ restClient.get('...')
 
         <tr>
             
-                <td class="name"><code>url</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Full request URL</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>init</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">JSON</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Request extra params</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="API_RestClient.js.html">API/RestClient.js</a>, <a href="API_RestClient.js.html#line159">line 159</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    - A promise that resolves to an object with response status and JSON data, if successful.
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="post"><span class="type-signature"></span>post<span class="signature">(url, init)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    POST HTTP request
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>url</code></td>
+                <td class="name"><code>apiName</code></td>
             
 
             <td class="type">
@@ -1289,10 +804,49 @@ restClient.get('...')
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last">Full request URL</td>
+            <td class="description last">The api name of the request</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">JSON</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The path of the request'</td>
         </tr>
 
     
@@ -1305,12 +859,22 @@ restClient.get('...')
             <td class="type">
             
                 
-<span class="param-type">JSON</span>
+<span class="param-type">json</span>
 
 
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -1356,7 +920,7 @@ restClient.get('...')
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="API_RestClient.js.html">API/RestClient.js</a>, <a href="API_RestClient.js.html#line139">line 139</a>
+        <a href="API_index.js.html">API/index.js</a>, <a href="API_index.js.html#line76">line 76</a>
     </li></ul></dd>
     
 
@@ -1412,7 +976,7 @@ restClient.get('...')
     
 
     
-    <h4 class="name" id="put"><span class="type-signature"></span>put<span class="signature">(url, init)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="head"><span class="type-signature">(async) </span>head<span class="signature">(apiName, path, init<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
 
     
@@ -1420,7 +984,7 @@ restClient.get('...')
 
 
 <div class="description">
-    PUT HTTP request
+    Make a HEAD request
 </div>
 
 
@@ -1444,6 +1008,8 @@ restClient.get('...')
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -1456,7 +1022,7 @@ restClient.get('...')
 
         <tr>
             
-                <td class="name"><code>url</code></td>
+                <td class="name"><code>apiName</code></td>
             
 
             <td class="type">
@@ -1469,10 +1035,49 @@ restClient.get('...')
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last">Full request URL</td>
+            <td class="description last">The api name of the request</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The path of the request</td>
         </tr>
 
     
@@ -1485,12 +1090,22 @@ restClient.get('...')
             <td class="type">
             
                 
-<span class="param-type">JSON</span>
+<span class="param-type">json</span>
 
 
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -1536,7 +1151,469 @@ restClient.get('...')
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="API_RestClient.js.html">API/RestClient.js</a>, <a href="API_RestClient.js.html#line129">line 129</a>
+        <a href="API_index.js.html">API/index.js</a>, <a href="API_index.js.html#line164">line 164</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - A promise that resolves to an object with response status and JSON data, if successful.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="post"><span class="type-signature">(async) </span>post<span class="signature">(apiName, path, init<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Make a POST request
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>apiName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The api name of the request</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The path of the request</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>init</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">json</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Request extra params</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="API_index.js.html">API/index.js</a>, <a href="API_index.js.html#line98">line 98</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - A promise that resolves to an object with response status and JSON data, if successful.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="put"><span class="type-signature">(async) </span>put<span class="signature">(apiName, path, init<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Make a PUT request
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>apiName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The api name of the request</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The path of the request</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>init</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">json</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Request extra params</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="API_index.js.html">API/index.js</a>, <a href="API_index.js.html#line120">line 120</a>
     </li></ul></dd>
     
 

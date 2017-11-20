@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --coverage",
     "build": "npm run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
-    "generate-docs": "rimraf docs && jsdoc -c ./jsDoc.config.json --readme ../../README.md ./src -r  -d ./docs",
+    "generate-docs": "rimraf docs && jsdoc -c ./jsDoc.config.json ./src -r  -d ./docs",
     "clean": "rimraf dist"
   },
   "devDependencies": {

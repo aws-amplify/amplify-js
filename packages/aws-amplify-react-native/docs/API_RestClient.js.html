@@ -27,18 +27,24 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/*
-Copyright 2017 - 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
-    http://aws.amazon.com/apache2.0/
-or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and limitations under the License.
-*/
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
 
 import Signer from '../Common/Signer';
-import { ConsoleLogger as Logger } from '../Common/Logger';
+import { ConsoleLogger as Logger } from '../Common';
 
+import Auth from '../Auth';
 import * as AWS from 'aws-sdk';
-
+import axios from 'axios';
 const logger = new Logger('RestClient');
 
 /**
@@ -58,31 +64,30 @@ export class RestClient {
     _options;
 
     /**
-     * @param {RestClientOptions} [options] - Instance options
-     */
+    * @param {RestClientOptions} [options] - Instance options
+    */
     constructor(options) {
-        const {endpoints} = options;
+        const { endpoints } = options;
         this._options = options;
+        logger.debug('API Options', this._options);
     }
 
     /**
-     * Update AWS credentials
-     * @param {AWSCredentials} credentials - AWS credentials
-     *
-     updateCredentials(credentials: AWSCredentials) {
-         this.options.credentials = credentials;
-     }
-     */
+    * Update AWS credentials
+    * @param {AWSCredentials} credentials - AWS credentials
+    *
+    updateCredentials(credentials: AWSCredentials) {
+        this.options.credentials = credentials;
+    }
+*/
     /**
-     * Basic HTTP request. Customizable
-     * @method
-     * @param {String} url - Full request URL
-     * @param {String} method - Request HTTP method
-     * @param {JSON} [data] - Request data
-     * @param {Object} [headers] - Additional headers
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    ajax(url, method, data = null, headers = {}) {
+    * Basic HTTP request. Customizable
+    * @param {string} url - Full request URL
+    * @param {string} method - Request HTTP method
+    * @param {json} [init] - Request extra params
+    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+    */
+    async ajax(url, method, init) {
         logger.debug(method + ' ' + url);
 
         var parsed_url = this._parseUrl(url);
@@ -92,107 +97,117 @@ export class RestClient {
             url: url,
             host: parsed_url.host,
             path: parsed_url.path,
-            headers: {
-
-            },
+            headers: {},
             data: null
         };
-        
-        if (data) {
-            params['headers']['content-type'] = 'application/json';
-            //params['origin'] = "http://localhost:3000";
-            params.data = data;
+
+        let libraryHeaders = {}
+
+        if (!init) {
+            init = {}
         }
 
-        const credentials = this._options.credentials;
-        
-        return new Promise((res, rej) => {
-            if (!credentials) {
-                //let value = sessionStorage.getItem(this.options.credentials_key);
-                //if (value) { credentials = JSON.parse(value); }
-                rej("credentials not set for API rest client ");
-            }
-            
-            credentials ? res(this._signed(params, credentials))
-                        : res (this._unsigned(params));
+        if (init.body) {
+            libraryHeaders['content-type'] = 'application/json';
+            params.data = JSON.stringify(init.body);
+        }
+
+        //params.headers = { ...libraryHeaders, ...init.headers }
+
+        if (init.headers) {
+            Object.keys(init.headers).map(key => {
+                params.headers[key] = init.headers[key];
+            })
+        }
+
+        Object.keys(libraryHeaders).map(key => {
+            params.headers[key] = libraryHeaders[key];
+        })
+
+        const credPromise = new Promise((resolve, reject) => {
+            Auth.currentCredentials()
+                .then(resolve)
+                .catch(err => {
+                    // usar guest
+                    Auth.guestCredentials().then(resolve).catch(reject);
+                })
+        });
+
+        return credPromise.then(credentials => {
+            return this._signed(params, credentials);
         });
     }
 
     /**
-     * GET HTTP request
-     * @method
-     * @param {String} url - Full request URL
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    get(url) {
-        return this.ajax(url, 'GET');
+    * GET HTTP request
+    * @param {string} url - Full request URL
+    * @param {JSON} init - Request extra params
+    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+    */
+    get(url, init) {
+        return this.ajax(url, 'GET', init);
     }
 
     /**
-     * PUT HTTP request
-     * @method
-     * @param {String} url - Full request URL
-     * @param {JSON} data - Data to put
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    put(url, data) {
-        return this.ajax(url, 'PUT', data);
+    * PUT HTTP request
+    * @param {String} url - Full request URL
+    * @param {JSON} init - Request extra params
+    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+    */
+    put(url, init) {
+        return this.ajax(url, 'PUT', init);
     }
 
     /**
-     * POST HTTP request
-     * @method
-     * @param {String} url - Full request URL
-     * @param {JSON} data - Data to post
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    post(url, data) {
-        return this.ajax(url, 'POST', data);
+    * POST HTTP request
+    * @param {String} url - Full request URL
+    * @param {JSON} init - Request extra params
+    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+    */
+    post(url, init) {
+        return this.ajax(url, 'POST', init);
     }
 
     /**
-     * DELETE HTTP request
-     * @method
-     * @param {String} url - Full request URL
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    del(url) {
-        return this.ajax(url, 'DELETE');
+    * DELETE HTTP request
+    * @param {string} url - Full request URL
+    * @param {JSON} init - Request extra params
+    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+    */
+    del(url, init) {
+        return this.ajax(url, 'DELETE', init);
     }
 
     /**
-     * HEAD HTTP request
-     * @method
-     * @param {String} url - Full request URL
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    head(url) {
-        return this.ajax(url, 'HEAD');
+    * HEAD HTTP request
+    * @param {string} url - Full request URL
+    * @param {JSON} init - Request extra params
+    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+    */
+    head(url, init) {
+        return this.ajax(url, 'HEAD', init);
     }
 
     /**
-     * Getting endpoint for API
-     * @method
-     * @param {String} apiName - The name of the api
-     * @return {String} - The endpoint of the api
-     */
+    * Getting endpoint for API
+    * @param {string} apiName - The name of the api
+    * @return {string} - The endpoint of the api
+    */
     endpoint(apiName) {
         const cloud_logic_array = this._options.endpoints;
         var response = '';
         cloud_logic_array.forEach((v) => {
-            if (v.name === apiName){
-              response = v.endpoint;
+            if (v.name === apiName) {
+                response = v.endpoint;
             }
         });
         return response;
     }
 
     /** private methods **/
-    /**
-     * @private @method
-     */
+
     _signed(params, credentials) {
-        
+
         let signed_params = Signer.sign(params, {
             secret_key: credentials.secretAccessKey,
             access_key: credentials.accessKeyId,
@@ -201,44 +216,32 @@ export class RestClient {
         if (signed_params.data) {
             signed_params.body = signed_params.data;
         }
-        
+
         logger.debug(signed_params);
 
         delete signed_params.headers['host'];
-        delete signed_params.headers['Content-Length'];
-        
-        return fetch(signed_params.url, signed_params).then(function(response){
-            return Promise.all([response, response.json()]);
-        })
-        .then(function(values) {
-            return {
-                status: values[0].status,
-                data: values[1]
-            }
-        });
+
+        return axios(signed_params)
+            .then(response => response.data)
+            .catch((error) => {
+                console.log(error);
+                throw error;
+            });
     }
 
-    /**
-     * @private @method
-     * @param {Object} params 
-     */
     _unsigned(params) {
-        return fetch(params.url, params).then(function(response){
+        return fetch(params.url, params).then(function (response) {
             return Promise.all([response, response.json()]);
         })
-        .then(function(values) {
-            return {
-                status: values[0].status,
-                headers: values[0].headers,
-                data: values[1]
-            }
-        });
+            .then(function (values) {
+                return {
+                    status: values[0].status,
+                    headers: values[0].headers,
+                    data: values[1]
+                }
+            });
     }
 
-    /**
-     * @private @method
-     * @param {String} url 
-     */
     _parseUrl(url) {
         var parts = url.split('/');
 
@@ -258,13 +261,13 @@ export class RestClient {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnalyticsClass.html">AnalyticsClass</a></li><li><a href="AsyncStorageCache.html">AsyncStorageCache</a></li><li><a href="AuthClass.html">AuthClass</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="I18nClass.html">I18nClass</a></li><li><a href="RestClient.html">RestClient</a></li><li><a href="Signer.html">Signer</a></li><li><a href="StorageCache.html">StorageCache</a></li><li><a href="StorageClass.html">StorageClass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnalyticsClass.html">AnalyticsClass</a></li><li><a href="AsyncStorageCache.html">AsyncStorageCache</a></li><li><a href="AuthClass.html">AuthClass</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="I18nClass.html">I18nClass</a></li><li><a href="module.exports.html">exports</a></li><li><a href="RestClient.html">RestClient</a></li><li><a href="Signer.html">Signer</a></li><li><a href="StorageCache.html">StorageCache</a></li><li><a href="StorageClass.html">StorageClass</a></li></ul><h3>Global</h3><ul><li><a href="global.html#configure">configure</a></li><li><a href="global.html#createInstance">createInstance</a></li><li><a href="global.html#del">del</a></li><li><a href="global.html#endpoint">endpoint</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#head">head</a></li><li><a href="global.html#post">post</a></li><li><a href="global.html#put">put</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Nov 14 2017 14:18:50 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Nov 19 2017 22:10:26 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>
