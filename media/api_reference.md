@@ -1,3 +1,3 @@
 # API Reference
 
-API Reference is on https://aws.github.io/aws-amplify/.
+[API Reference](../packages/aws-amplify-react-native/docs/index.html)
