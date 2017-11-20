@@ -13,10 +13,18 @@
 
 import React, { Component } from 'react';
 
-import { Storage, Logger, Hub, ClientDevice } from 'aws-amplify';
-import { PhotoPicker } from '../Widget';
+import {
+    Storage,
+    Logger,
+    Hub,
+    ClientDevice,
+    JS
+} from 'aws-amplify';
+
+import { Picker } from '../Widget';
 import AmplifyTheme from '../AmplifyTheme';
 import S3Image from './S3Image';
+import S3Text from './S3Text';
 import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Album');
@@ -26,11 +34,13 @@ export default class S3Album extends Component {
         super(props);
 
         this.handlePick = this.handlePick.bind(this);
+        this.list = this.list.bind(this);
+        this.marshal = this.marshal.bind(this);
 
         const theme = this.props.theme || AmplifyTheme;
         this.state = {
             theme: theme,
-            images: []
+            items: []
         };
 
         Hub.listen('window', this, 'S3Album');
@@ -68,20 +78,15 @@ export default class S3Album extends Component {
         Storage.put(key, file, { contentType: type })
             .then(data => {
                 logger.debug('handle pick data', data);
-                that.addImage(data.key);
+                const { items } = this.state;
+                if (items.filter(item => item.key === key).length === 0) {
+                    const list = items.concat(data);
+                    this.marshal(list);
+                } else {
+                    logger.debug('update an item');
+                }
             })
             .catch(err => logger.debug('handle pick error', err));
-    }
-
-    addImage(key) {
-        const theme = this.props.theme || AmplifyTheme;
-        const image = <S3Image key={key} path={key} theme={theme} />
-        const images = this.state.images;
-        if (images.filter(image => image.key === key).length === 0) {
-            this.setState({ images: images.concat(image) });
-        } else {
-            logger.debug('update an image');
-        }
     }
 
     onHubCapsule(capsule) {
@@ -90,37 +95,121 @@ export default class S3Album extends Component {
     }
 
     componentDidMount() {
-        const { path, filter, level } = this.props;
-        logger.debug('Album path: ' + path);
-        Storage.list(path, { level: level? level : 'public' })
+        this.list()
             .then(data => {
-                logger.debug('album list', data);
-                if (filter) { data = filter(data); }
-                this.setState({ images: data });
+                this.marshal(data);
             })
             .catch(err => logger.warn(err));
     }
 
+    list() {
+        const { path, level } = this.props;
+        logger.debug('Album path: ' + path);
+        return Storage.list(path, { level: level? level : 'public' })
+            .then(data => {
+                logger.debug('album list', data);
+                return data;
+            })
+            .catch(err => {
+                logger.warn(err);
+                return [];
+            });
+    }
+
+    contentType(item) {
+        // get contentType by filename
+
+        const key = item.key.toLowerCase();;
+        if (key.endsWith('.txt')) {
+            return 'text/plain';
+        } else if (key.endsWith('.html')) {
+            return 'text/html'
+        } else if (key.endsWith('.js')) {
+            return 'text/javascript'
+        } else if (key.endsWith('.css')) {
+            return 'text/css'
+        } else {
+            return 'image/*'
+        }
+    }
+
+    marshal(list) {
+        const contentType = this.props.contentType || this.contentType;
+        list.forEach(item => {
+            if (item.contentType) { return; }
+            const isString = typeof contentType === 'string';
+            item.contentType = isString? contentType : contentType(item);
+        });
+
+        list = this.filter(list);
+        list = this.sort(list);
+        this.setState({ items: list });
+    }
+
+    filter(list) {
+        const { filter } = this.props;
+        return filter? filter(list) : list;
+    }
+
+    sort(list) {
+        const { sort } = this.props;
+        const typeof_sort = typeof sort;
+        if (typeof_sort === 'function') { return sort(list); }
+
+        if (['string', 'undefined'].includes(typeof_sort)) {
+            const sort_str = sort? sort : 'lastModified';
+            const parts = sort_str.split(/\s+/);
+            const field = parts[0];
+            let dir = parts.length > 1? parts[1] : '';
+            if (field === 'lastModified') {
+                dir = (dir === 'asc')? 'asc' : 'desc';
+            } else {
+                dir = (dir === 'desc')? 'desc' : 'asc';
+            }
+            JS.sortByField(list, field, dir);
+
+            return list;
+        }
+
+        logger.warn('invalid sort. done nothing. should be a string or function');
+        return list;
+    }
+
     render() {
         const { picker } = this.props;
-        const { images } = this.state;
+        const { items } = this.state;
+
+        const pickerTitle = this.props.pickerTitle || 'Pick';
 
         const theme = this.props.theme || AmplifyTheme;
 
-        const list = this.state.images.map(image => {
-            return <S3Image
-                        key={image.key}
-                        imgKey={image.key}
-                        theme={theme}
-                        style={theme.albumPhoto}
-                    />
+        const list = items.map(item => {
+            const isText = item.contentType && item.contentType.startsWith('text');
+            return isText? <S3Text
+                             key={item.key}
+                             textKey={item.key}
+                             theme={theme}
+                             style={theme.albumText}
+                           />
+                         : <S3Image
+                             key={item.key}
+                             imgKey={item.key}
+                             theme={theme}
+                             style={theme.albumPhoto}
+                           />
         });
         return (
             <div>
                 <div style={theme.album}>
                     {list}
                 </div>
-                { picker? <PhotoPicker key="picker" onPick={this.handlePick} theme={theme} />
+                { picker? <Picker
+                            key="picker"
+                            title={pickerTitle}
+                            accept="image/*, text/*"
+                            onPick={this.handlePick}
+                            theme={theme}
+                          />
                         : null
                 }
             </div>

@@ -22,6 +22,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _awsAmplify = require('aws-amplify');
+
 var _AmplifyTheme = require('./AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
@@ -48,11 +50,11 @@ var Footer = exports.Footer = function Footer(props) {
 
 var InputRow = exports.InputRow = function InputRow(props) {
     var theme = props.theme || _AmplifyTheme2['default'];
-    props = Object.assign({}, props, { theme: null });
+    var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
     return _react2['default'].createElement(
         'div',
         { className: 'amplify-form-row', style: theme.formRow },
-        _react2['default'].createElement('input', _extends({}, props, {
+        _react2['default'].createElement('input', _extends({}, p, {
             className: 'amplify-input',
             style: theme.input,
             onChange: props.onChange
@@ -63,11 +65,11 @@ var InputRow = exports.InputRow = function InputRow(props) {
 var RadioRow = exports.RadioRow = function RadioRow(props) {
     var id = props.id || '_' + props.name;
     var theme = props.theme || _AmplifyTheme2['default'];
-    props = Object.assign({}, props, { theme: null });
+    var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
     return _react2['default'].createElement(
         'div',
         { className: 'amplify-form-row', style: theme.formRow },
-        _react2['default'].createElement('input', _extends({}, props, {
+        _react2['default'].createElement('input', _extends({}, p, {
             id: id,
             type: 'radio',
             className: 'amplify-radio',
@@ -89,11 +91,11 @@ var RadioRow = exports.RadioRow = function RadioRow(props) {
 var CheckboxRow = exports.CheckboxRow = function CheckboxRow(props) {
     var id = props.id || '_' + props.name;
     var theme = props.theme || _AmplifyTheme2['default'];
-    props = Object.assign({}, props, { theme: null });
+    var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
     return _react2['default'].createElement(
         'div',
         { className: 'amplify-form-row', style: theme.formRow },
-        _react2['default'].createElement('input', _extends({}, props, {
+        _react2['default'].createElement('input', _extends({}, p, {
             id: id,
             type: 'checkbox',
             className: 'amplify-checkbox',
@@ -123,13 +125,13 @@ var MessageRow = exports.MessageRow = function MessageRow(props) {
 
 var ButtonRow = exports.ButtonRow = function ButtonRow(props) {
     var theme = props.theme || _AmplifyTheme2['default'];
-    props = Object.assign({}, props, { theme: null });
+    var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
     return _react2['default'].createElement(
         'div',
         { className: 'amplify-action-row', style: theme.actionRow },
         _react2['default'].createElement(
             'button',
-            _extends({}, props, { style: theme.button }),
+            _extends({}, p, { style: theme.button }),
             props.children
         )
     );

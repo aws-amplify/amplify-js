@@ -72,7 +72,7 @@ var S3Image = function (_Component) {
                         src: url
                     });
                 })['catch'](function (err) {
-                    return logger.warn(err);
+                    return logger.debug(err);
                 });
             }
 
@@ -104,7 +104,7 @@ var S3Image = function (_Component) {
                         logger.debug(data);
                         that.getImageSource(key, level);
                     })['catch'](function (err) {
-                        return logger.warn(err);
+                        return logger.debug(err);
                     });
                 } else {
                     that.getImageSource(key, level);
@@ -145,9 +145,9 @@ var S3Image = function (_Component) {
             function handlePick(data) {
                 var that = this;
 
+                var path = this.props.path || '';
                 var _props2 = this.props,
                     imgKey = _props2.imgKey,
-                    path = _props2.path,
                     level = _props2.level,
                     fileToKey = _props2.fileToKey;
                 var file = data.file,
@@ -191,17 +191,16 @@ var S3Image = function (_Component) {
         value: function () {
             function render() {
                 var src = this.state.src;
-
-                if (!src) {
-                    return null;
-                }
-
-                var theme = this.props.theme || _AmplifyTheme2['default'];
                 var _props3 = this.props,
                     hidden = _props3.hidden,
                     style = _props3.style,
                     picker = _props3.picker;
 
+                if (!src && !picker) {
+                    return null;
+                }
+
+                var theme = this.props.theme || _AmplifyTheme2['default'];
                 var photoStyle = hidden ? _AmplifyTheme2['default'].hidden : Object.assign({}, theme.photo, style);
 
                 return _react2['default'].createElement(
@@ -216,7 +215,11 @@ var S3Image = function (_Component) {
                     picker ? _react2['default'].createElement(
                         'div',
                         null,
-                        _react2['default'].createElement(_Widget.PhotoPicker, { key: 'picker', onPick: this.handlePick, theme: theme })
+                        _react2['default'].createElement(_Widget.PhotoPicker, {
+                            key: 'picker',
+                            onPick: this.handlePick,
+                            theme: theme
+                        })
                     ) : null
                 );
             }

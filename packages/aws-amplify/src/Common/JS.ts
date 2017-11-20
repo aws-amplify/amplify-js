@@ -15,4 +15,42 @@ export default class JS {
     static isEmpty(obj) {
         return Object.keys(obj).length === 0;
     }
+
+    static sortByField(list, field, dir) {
+        if (!list || !list.sort) { return; }
+
+        const dirX = (dir && dir === 'desc')? -1 : 1;
+        list.sort(function(a, b) {
+            const a_val = a[field];
+            const b_val = b[field];
+
+            if (typeof b_val === 'undefined') {
+                return (typeof a_val === 'undefined')? 0 : 1 * dirX;
+            }
+
+            if (typeof a_val === 'undefined') {
+                return -1 * dirX;
+            }
+
+            if (a_val < b_val) { return -1 * dirX; }
+            if (a_val > b_val) { return 1 * dirX; }
+
+            return 0;
+        });
+    }
+
+    static objectLessAttributes(obj, less) {
+        let ret = Object.assign({}, obj);
+        if (less) {
+            if (typeof less === 'string') {
+                delete ret[less];
+            } else {
+                less.forEach(attr => {
+                    delete ret[attr];
+                });
+            }
+        }
+
+        return ret;
+    }
 }

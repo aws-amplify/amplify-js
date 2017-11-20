@@ -45,7 +45,7 @@ export default class SignUp extends AuthPiece {
                 <Header theme={theme}>{I18n.get('Sign Up Account')}</Header>
                 <div style={theme.sectionBody}>
                     <InputRow
-                        authFocus
+                        autoFocus
                         placeholder={I18n.get('Username')}
                         theme={theme}
                         key="username"
