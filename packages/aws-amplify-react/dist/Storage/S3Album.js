@@ -24,6 +24,10 @@ var _S3Image = require('./S3Image');
 
 var _S3Image2 = _interopRequireDefault(_S3Image);
 
+var _S3Text = require('./S3Text');
+
+var _S3Text2 = _interopRequireDefault(_S3Text);
+
 var _Common = require('./Common');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -56,11 +60,13 @@ var S3Album = function (_Component) {
         var _this = _possibleConstructorReturn(this, (S3Album.__proto__ || Object.getPrototypeOf(S3Album)).call(this, props));
 
         _this.handlePick = _this.handlePick.bind(_this);
+        _this.list = _this.list.bind(_this);
+        _this.marshal = _this.marshal.bind(_this);
 
         var theme = _this.props.theme || _AmplifyTheme2['default'];
         _this.state = {
             theme: theme,
-            images: []
+            items: []
         };
 
         _awsAmplify.Hub.listen('window', _this, 'S3Album');
@@ -101,6 +107,8 @@ var S3Album = function (_Component) {
         key: 'handlePick',
         value: function () {
             function handlePick(data) {
+                var _this2 = this;
+
                 var that = this;
 
                 var path = this.props.path || '';
@@ -112,31 +120,22 @@ var S3Album = function (_Component) {
                 var key = path + this.getKey(data);
                 _awsAmplify.Storage.put(key, file, { contentType: type }).then(function (data) {
                     logger.debug('handle pick data', data);
-                    that.addImage(data.key);
+                    var items = _this2.state.items;
+
+                    if (items.filter(function (item) {
+                        return item.key === key;
+                    }).length === 0) {
+                        var list = items.concat(data);
+                        _this2.marshal(list);
+                    } else {
+                        logger.debug('update an item');
+                    }
                 })['catch'](function (err) {
                     return logger.debug('handle pick error', err);
                 });
             }
 
             return handlePick;
-        }()
-    }, {
-        key: 'addImage',
-        value: function () {
-            function addImage(key) {
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                var image = _react2['default'].createElement(_S3Image2['default'], { key: key, path: key, theme: theme });
-                var images = this.state.images;
-                if (images.filter(function (image) {
-                    return image.key === key;
-                }).length === 0) {
-                    this.setState({ images: images.concat(image) });
-                } else {
-                    logger.debug('update an image');
-                }
-            }
-
-            return addImage;
         }()
     }, {
         key: 'onHubCapsule',
@@ -152,20 +151,10 @@ var S3Album = function (_Component) {
         key: 'componentDidMount',
         value: function () {
             function componentDidMount() {
-                var _this2 = this;
+                var _this3 = this;
 
-                var _props = this.props,
-                    path = _props.path,
-                    filter = _props.filter,
-                    level = _props.level;
-
-                logger.debug('Album path: ' + path);
-                _awsAmplify.Storage.list(path, { level: level ? level : 'public' }).then(function (data) {
-                    logger.debug('album list', data);
-                    if (filter) {
-                        data = filter(data);
-                    }
-                    _this2.setState({ images: data });
+                this.list().then(function (data) {
+                    _this3.marshal(data);
                 })['catch'](function (err) {
                     return logger.warn(err);
                 });
@@ -174,19 +163,132 @@ var S3Album = function (_Component) {
             return componentDidMount;
         }()
     }, {
+        key: 'list',
+        value: function () {
+            function list() {
+                var _props = this.props,
+                    path = _props.path,
+                    level = _props.level;
+
+                logger.debug('Album path: ' + path);
+                return _awsAmplify.Storage.list(path, { level: level ? level : 'public' }).then(function (data) {
+                    logger.debug('album list', data);
+                    return data;
+                })['catch'](function (err) {
+                    logger.warn(err);
+                    return [];
+                });
+            }
+
+            return list;
+        }()
+    }, {
+        key: 'contentType',
+        value: function () {
+            function contentType(item) {
+                // get contentType by filename
+
+                var key = item.key.toLowerCase();;
+                if (key.endsWith('.txt')) {
+                    return 'text/plain';
+                } else if (key.endsWith('.html')) {
+                    return 'text/html';
+                } else if (key.endsWith('.js')) {
+                    return 'text/javascript';
+                } else if (key.endsWith('.css')) {
+                    return 'text/css';
+                } else {
+                    return 'image/*';
+                }
+            }
+
+            return contentType;
+        }()
+    }, {
+        key: 'marshal',
+        value: function () {
+            function marshal(list) {
+                var contentType = this.props.contentType || this.contentType;
+                list.forEach(function (item) {
+                    if (item.contentType) {
+                        return;
+                    }
+                    var isString = typeof contentType === 'string';
+                    item.contentType = isString ? contentType : contentType(item);
+                });
+
+                list = this.filter(list);
+                list = this.sort(list);
+                this.setState({ items: list });
+            }
+
+            return marshal;
+        }()
+    }, {
+        key: 'filter',
+        value: function () {
+            function filter(list) {
+                var filter = this.props.filter;
+
+                return filter ? filter(list) : list;
+            }
+
+            return filter;
+        }()
+    }, {
+        key: 'sort',
+        value: function () {
+            function sort(list) {
+                var sort = this.props.sort;
+
+                var typeof_sort = typeof sort === 'undefined' ? 'undefined' : _typeof(sort);
+                if (typeof_sort === 'function') {
+                    return sort(list);
+                }
+
+                if (['string', 'undefined'].includes(typeof_sort)) {
+                    var sort_str = sort ? sort : 'lastModified';
+                    var parts = sort_str.split(/\s+/);
+                    var field = parts[0];
+                    var dir = parts.length > 1 ? parts[1] : '';
+                    if (field === 'lastModified') {
+                        dir = dir === 'asc' ? 'asc' : 'desc';
+                    } else {
+                        dir = dir === 'desc' ? 'desc' : 'asc';
+                    }
+                    _awsAmplify.JS.sortByField(list, field, dir);
+
+                    return list;
+                }
+
+                logger.warn('invalid sort. done nothing. should be a string or function');
+                return list;
+            }
+
+            return sort;
+        }()
+    }, {
         key: 'render',
         value: function () {
             function render() {
                 var picker = this.props.picker;
-                var images = this.state.images;
+                var items = this.state.items;
 
+
+                var pickerTitle = this.props.pickerTitle || 'Pick';
 
                 var theme = this.props.theme || _AmplifyTheme2['default'];
 
-                var list = this.state.images.map(function (image) {
-                    return _react2['default'].createElement(_S3Image2['default'], {
-                        key: image.key,
-                        imgKey: image.key,
+                var list = items.map(function (item) {
+                    var isText = item.contentType && item.contentType.startsWith('text');
+                    return isText ? _react2['default'].createElement(_S3Text2['default'], {
+                        key: item.key,
+                        textKey: item.key,
+                        theme: theme,
+                        style: theme.albumText
+                    }) : _react2['default'].createElement(_S3Image2['default'], {
+                        key: item.key,
+                        imgKey: item.key,
                         theme: theme,
                         style: theme.albumPhoto
                     });
@@ -199,7 +301,13 @@ var S3Album = function (_Component) {
                         { style: theme.album },
                         list
                     ),
-                    picker ? _react2['default'].createElement(_Widget.PhotoPicker, { key: 'picker', onPick: this.handlePick, theme: theme }) : null
+                    picker ? _react2['default'].createElement(_Widget.Picker, {
+                        key: 'picker',
+                        title: pickerTitle,
+                        accept: 'image/*, text/*',
+                        onPick: this.handlePick,
+                        theme: theme
+                    }) : null
                 );
             }
 

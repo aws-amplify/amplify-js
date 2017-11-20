@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.Hidden = exports.Center = exports.Col6 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Label = exports.A = exports.PhotoPickerInput = exports.PhotoPickerButton = exports.PhotoPickerPicker = exports.PhotoPicker = exports.PhotoImg = exports.Photo = exports.AlbumPhoto = exports.Album = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionFooter = exports.SectionBody = exports.SectionHeader = exports.NavButton = exports.NavRight = exports.NavBar = exports.ErrorSection = exports.FormSection = exports.Section = exports.Container = undefined;
+exports.Hidden = exports.Center = exports.HalfHeight = exports.Col12 = exports.Col10 = exports.Col9 = exports.Col8 = exports.Col6 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Pre = exports.Label = exports.A = exports.PickerInput = exports.PickerButton = exports.PickerPicker = exports.Picker = exports.Text = exports.AlbumText = exports.PhotoImg = exports.Photo = exports.AlbumPhoto = exports.Album = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionFooter = exports.SectionBody = exports.SectionHeader = exports.NavButton = exports.NavRight = exports.NavBar = exports.ErrorSection = exports.FormSection = exports.Section = exports.Container = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /*
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -139,24 +139,42 @@ var PhotoImg = exports.PhotoImg = {
     maxWidth: '100%'
 };
 
-var PhotoPicker = exports.PhotoPicker = {
+var AlbumText = exports.AlbumText = {
+    display: 'inline-block',
+    width: '32.5%',
+    margin: '0.2%',
+    verticalAlign: 'top',
+    maxHeight: 320,
+    overflow: 'scroll'
+};
+
+var Text = exports.Text = {
+    display: 'inline-block',
+    width: '32.5%',
+    margin: '0.2%',
+    verticalAlign: 'top',
+    maxHeight: 320,
+    overflow: 'scroll'
+};
+
+var Picker = exports.Picker = {
     width: '100%',
     textAlign: 'center'
 };
 
-var PhotoPickerPicker = exports.PhotoPickerPicker = {
+var PickerPicker = exports.PickerPicker = {
     width: '100%',
     textAlign: 'center'
 };
 
-var PhotoPickerButton = exports.PhotoPickerButton = {
+var PickerButton = exports.PickerButton = {
     background: '#fff',
     border: '1px solid #ccc',
     fontWeight: '200',
     width: '100%'
 };
 
-var PhotoPickerInput = exports.PhotoPickerInput = {};
+var PickerInput = exports.PickerInput = {};
 
 var A = exports.A = {
     textDecoration: 'underline'
@@ -166,9 +184,17 @@ var Label = exports.Label = {
     margin: 'auto 0.5em'
 };
 
+var Pre = exports.Pre = {
+    textAlign: 'left',
+    margin: '0',
+    padding: '1em',
+    background: '#eee',
+    overflow: 'scroll'
+};
+
 var Col2 = exports.Col2 = {
     display: 'inline-block',
-    width: '16.66%'
+    width: '16.6%'
 };
 
 var Col3 = exports.Col3 = {
@@ -187,6 +213,35 @@ var Col6 = exports.Col6 = {
     display: 'inline-block',
     width: '49.5%',
     margin: '0.2%'
+};
+
+var Col8 = exports.Col8 = {
+    display: 'inline-block',
+    width: '66%',
+    margin: '0.2%'
+};
+
+var Col9 = exports.Col9 = {
+    display: 'inline-block',
+    width: '74.5%',
+    margin: '0.2%'
+};
+
+var Col10 = exports.Col10 = {
+    display: 'inline-block',
+    width: '83.6%',
+    margin: '0.2%'
+};
+
+var Col12 = exports.Col12 = {
+    display: 'inline-block',
+    width: '99.2%',
+    margin: '0.2%'
+};
+
+var HalfHeight = exports.HalfHeight = {
+    height: 320,
+    overflow: 'scroll'
 };
 
 var Center = exports.Center = {
@@ -218,19 +273,27 @@ var AmplifyTheme = {
 
     photo: Photo,
     photoImg: PhotoImg,
+    text: Text,
     album: Album,
     albumPhoto: AlbumPhoto,
-    photoPicker: PhotoPicker,
-    photoPickerPicker: PhotoPickerPicker,
-    photoPickerButton: PhotoPickerButton,
-    photoPickerInput: PhotoPickerInput,
+    albumText: AlbumText,
+    picker: Picker,
+    pickerPicker: PickerPicker,
+    pickerButton: PickerButton,
+    pickerInput: PickerInput,
 
     a: A,
     label: Label,
+    pre: Pre,
 
     col3: Col3,
     col4: Col4,
     col6: Col6,
+    col8: Col8,
+    col9: Col9,
+    col10: Col10,
+    col12: Col12,
+    halfHeight: HalfHeight,
 
     center: Center,
     hidden: Hidden
@@ -253,16 +316,24 @@ var MediaQuery = function () {
                 if (width < 576) {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col6);
                     AmplifyTheme.Photo = Object.assign({}, Photo, Col6);
+                    AmplifyTheme.albumText = Object.assign({}, AlbumText, Col12);
                 } else if (width < 768) {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col4);
                     AmplifyTheme.Photo = Object.assign({}, Photo, Col4);
+                    AmplifyTheme.albumText = Object.assign({}, AlbumText, Col8);
                 } else if (width < 992) {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col3);
                     AmplifyTheme.Photo = Object.assign({}, Photo, Col3);
+                    AmplifyTheme.albumText = Object.assign({}, AlbumText, Col6);
                 } else {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col2);
                     AmplifyTheme.Photo = Object.assign({}, Photo, Col2);
+                    AmplifyTheme.albumPhoto = Object.assign({}, AlbumText, Col4);
                 }
+
+                AmplifyTheme.halfHeight = Object.assign({}, HalfHeight, { height: height / 2 });
+                AmplifyTheme.text = Object.assign({}, AmplifyTheme.text, { maxHeight: height / 2 });
+                AmplifyTheme.albumText = Object.assign({}, AmplifyTheme.albumText, { maxHeight: height / 3 });
             }
 
             return query;

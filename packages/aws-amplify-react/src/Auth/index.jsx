@@ -33,31 +33,35 @@ export function withAuthenticator(Comp, includeGreetings=false) {
 
             this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
 
-            this.state = { auth: props.authState };
+            this.state = {
+                authState: props.authState || null,
+                authData: props.authData || null
+            };
         }
 
         handleAuthStateChange(state, data) {
-            this.setState({ auth: state, authData: data });
+            this.setState({ authState: state, authData: data });
         }
 
         render() {
-            const signedIn = (this.state.auth === 'signedIn');
+            const { authState, authData } = this.state;
+            const signedIn = (authState === 'signedIn');
             if (signedIn) {
                 return (
                     <div>
                         {
                             includeGreetings?
                             <Greetings
-                                authState={this.state.auth}
-                                authData={this.state.authData}
+                                authState={authState}
+                                authData={authData}
                                 onStateChange={this.handleAuthStateChange}
                             />
                             : null
                         }
                         <Comp
                             {...this.props}
-                            authState={this.state.auth}
-                            authData={this.state.authData}
+                            authState={authState}
+                            authData={authData}
                             onStateChange={this.handleAuthStateChange}
                         />
                     </div>

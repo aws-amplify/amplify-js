@@ -105,7 +105,7 @@ var SignUp = function (_AuthPiece) {
                         'div',
                         { style: theme.sectionBody },
                         _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            authFocus: true,
+                            autoFocus: true,
                             placeholder: _awsAmplify.I18n.get('Username'),
                             theme: theme,
                             key: 'username',

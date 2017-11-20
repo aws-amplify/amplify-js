@@ -145,7 +145,10 @@ function withAuthenticator(Comp) {
 
             _this.handleAuthStateChange = _this.handleAuthStateChange.bind(_this);
 
-            _this.state = { auth: props.authState };
+            _this.state = {
+                authState: props.authState || null,
+                authData: props.authData || null
+            };
             return _this;
         }
 
@@ -153,7 +156,7 @@ function withAuthenticator(Comp) {
             key: 'handleAuthStateChange',
             value: function () {
                 function handleAuthStateChange(state, data) {
-                    this.setState({ auth: state, authData: data });
+                    this.setState({ authState: state, authData: data });
                 }
 
                 return handleAuthStateChange;
@@ -162,19 +165,23 @@ function withAuthenticator(Comp) {
             key: 'render',
             value: function () {
                 function render() {
-                    var signedIn = this.state.auth === 'signedIn';
+                    var _state = this.state,
+                        authState = _state.authState,
+                        authData = _state.authData;
+
+                    var signedIn = authState === 'signedIn';
                     if (signedIn) {
                         return _react2['default'].createElement(
                             'div',
                             null,
                             includeGreetings ? _react2['default'].createElement(_Greetings2['default'], {
-                                authState: this.state.auth,
-                                authData: this.state.authData,
+                                authState: authState,
+                                authData: authData,
                                 onStateChange: this.handleAuthStateChange
                             }) : null,
                             _react2['default'].createElement(Comp, _extends({}, this.props, {
-                                authState: this.state.auth,
-                                authData: this.state.authData,
+                                authState: authState,
+                                authData: authData,
                                 onStateChange: this.handleAuthStateChange
                             }))
                         );

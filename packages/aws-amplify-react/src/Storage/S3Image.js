@@ -42,7 +42,7 @@ export default class S3Image extends Component {
                     src: url
                 });
             })
-            .catch(err => logger.warn(err));
+            .catch(err => logger.debug(err));
     }
 
     load() {
@@ -62,7 +62,7 @@ export default class S3Image extends Component {
                 logger.debug(data);
                 that.getImageSource(key, level);
             })
-            .catch(err => logger.warn(err));
+            .catch(err => logger.debug(err));
         } else {
             that.getImageSource(key, level);
         }
@@ -81,7 +81,8 @@ export default class S3Image extends Component {
     handlePick(data) {
         const that = this;
 
-        const { imgKey, path, level, fileToKey } = this.props;
+        const path = this.props.path || '';
+        const { imgKey, level, fileToKey } = this.props;
         const { file, name, size, type } = data;
         const key = imgKey || (path + calcKey(data, fileToKey));
         Storage.put(key, file, { contentType: type })
@@ -91,6 +92,7 @@ export default class S3Image extends Component {
             })
             .catch(err => logger.debug('handle pick error', err));
     }
+
     componentDidMount() {
         this.load();
     }
@@ -103,10 +105,10 @@ export default class S3Image extends Component {
 
     render() {
         const { src } = this.state;
-        if (!src) { return null; }
+        const { hidden, style, picker } = this.props;
+        if (!src && !picker) { return null; }
 
         const theme = this.props.theme || AmplifyTheme;
-        const { hidden, style, picker } = this.props;
         const photoStyle = hidden? AmplifyTheme.hidden
                                  : Object.assign({}, theme.photo, style);
 
@@ -119,7 +121,11 @@ export default class S3Image extends Component {
                     onError={this.handleOnError}
                 />
                 { picker? <div>
-                              <PhotoPicker key="picker" onPick={this.handlePick} theme={theme} />
+                              <PhotoPicker
+                                  key="picker"
+                                  onPick={this.handlePick}
+                                  theme={theme}
+                              />
                           </div>
                         : null
                 }

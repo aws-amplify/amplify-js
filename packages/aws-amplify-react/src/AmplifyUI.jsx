@@ -13,6 +13,8 @@
 
 import React from 'react';
 
+import { JS } from 'aws-amplify';
+
 import AmplifyTheme from './AmplifyTheme';
 
 export const Header = (props) => {
@@ -35,10 +37,10 @@ export const Footer = (props) => {
 
 export const InputRow = (props) => {
     const theme = props.theme || AmplifyTheme;
-    props = Object.assign({}, props, {theme: null});
+    const p = JS.objectLessAttributes(props, 'theme');
     return (
         <div className="amplify-form-row" style={theme.formRow}>
-            <input {...props}
+            <input {...p}
                 className="amplify-input"
                 style={theme.input}
                 onChange={props.onChange}
@@ -50,10 +52,10 @@ export const InputRow = (props) => {
 export const RadioRow = (props) => {
     const id = props.id || '_' + props.name;
     const theme = props.theme || AmplifyTheme;
-    props = Object.assign({}, props, {theme: null});
+    const p = JS.objectLessAttributes(props, 'theme');
     return (
         <div className="amplify-form-row" style={theme.formRow}>
-            <input {...props}
+            <input {...p}
                 id={id}
                 type="radio"
                 className="amplify-radio"
@@ -72,10 +74,10 @@ export const RadioRow = (props) => {
 export const CheckboxRow = (props) => {
     const id = props.id || '_' + props.name;
     const theme = props.theme || AmplifyTheme;
-    props = Object.assign({}, props, {theme: null});
+    const p = JS.objectLessAttributes(props, 'theme');
     return (
         <div className="amplify-form-row" style={theme.formRow}>
-            <input {...props}
+            <input {...p}
                 id={id}
                 type="checkbox"
                 className="amplify-checkbox"
@@ -102,10 +104,10 @@ export const MessageRow = (props) => {
 
 export const ButtonRow = (props) => {
     const theme = props.theme || AmplifyTheme;
-    props = Object.assign({}, props, {theme: null});
+    const p = JS.objectLessAttributes(props, 'theme');
     return (
         <div className="amplify-action-row" style={theme.actionRow}>
-            <button {...props} style={theme.button}>{props.children}</button>
+            <button {...p} style={theme.button}>{props.children}</button>
         </div>
     )
 }
