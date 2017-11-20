@@ -17,6 +17,7 @@ import { Storage, Logger, Hub, ClientDevice } from 'aws-amplify';
 import { PhotoPicker } from '../Widget';
 import AmplifyTheme from '../AmplifyTheme';
 import S3Image from './S3Image';
+import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Album');
 
@@ -105,12 +106,11 @@ export default class S3Album extends Component {
         const { images } = this.state;
 
         const theme = this.props.theme || AmplifyTheme;
-        const pickerContainerStyle = Object.assign({}, theme.album, theme.center);
 
         const list = this.state.images.map(image => {
             return <S3Image
                         key={image.key}
-                        path={image.key}
+                        imgKey={image.key}
                         theme={theme}
                         style={theme.albumPhoto}
                     />
@@ -120,9 +120,7 @@ export default class S3Album extends Component {
                 <div style={theme.album}>
                     {list}
                 </div>
-                { picker? <div style={pickerContainerStyle}>
-                              <PhotoPicker key="picker" onPick={this.handlePick} theme={theme} />
-                          </div>
+                { picker? <PhotoPicker key="picker" onPick={this.handlePick} theme={theme} />
                         : null
                 }
             </div>

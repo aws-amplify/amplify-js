@@ -135,13 +135,25 @@ export const Photo = {
     verticalAlign: 'top'
 }
 
+export const PhotoImg = {
+    maxWidth: '100%'
+}
+
 export const PhotoPicker = {
+    width: '100%',
+    textAlign: 'center'
+}
+
+export const PhotoPickerPicker = {
+    width: '100%',
+    textAlign: 'center'
 }
 
 export const PhotoPickerButton = {
     background: '#fff',
     border: '1px solid #ccc',
-    fontWeight: '200'
+    fontWeight: '200',
+    width: '100%'
 }
 
 export const PhotoPickerInput = {
@@ -206,9 +218,11 @@ const AmplifyTheme = {
     errorSection: ErrorSection,
 
     photo: Photo,
+    photoImg: PhotoImg,
     album: Album,
     albumPhoto: AlbumPhoto,
     photoPicker: PhotoPicker,
+    photoPickerPicker: PhotoPickerPicker,
     photoPickerButton: PhotoPickerButton,
     photoPickerInput: PhotoPickerInput,
 

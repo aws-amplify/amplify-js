@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.AmplifyMessageMapEntries = exports.AmplifyTheme = undefined;
+exports.white1X1 = exports.transparent1X1 = exports.AmplifyMessageMapEntries = exports.AmplifyTheme = undefined;
 
 var _Auth = require('./Auth');
 
@@ -89,6 +89,29 @@ Object.defineProperty(exports, 'AmplifyMessageMapEntries', {
   get: function () {
     function get() {
       return _AmplifyMessageMap.MapEntries;
+    }
+
+    return get;
+  }()
+});
+
+var _AmplifyUI = require('./AmplifyUI');
+
+Object.defineProperty(exports, 'transparent1X1', {
+  enumerable: true,
+  get: function () {
+    function get() {
+      return _AmplifyUI.transparent1X1;
+    }
+
+    return get;
+  }()
+});
+Object.defineProperty(exports, 'white1X1', {
+  enumerable: true,
+  get: function () {
+    function get() {
+      return _AmplifyUI.white1X1;
     }
 
     return get;

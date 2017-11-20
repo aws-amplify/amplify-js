@@ -16,6 +16,12 @@ var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
+var _AmplifyUI = require('../AmplifyUI');
+
+var _Widget = require('../Widget');
+
+var _Common = require('./Common');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -46,22 +52,22 @@ var S3Image = function (_Component) {
         var _this = _possibleConstructorReturn(this, (S3Image.__proto__ || Object.getPrototypeOf(S3Image)).call(this, props));
 
         _this.handleOnLoad = _this.handleOnLoad.bind(_this);
+        _this.handleOnError = _this.handleOnError.bind(_this);
+        _this.handlePick = _this.handlePick.bind(_this);
 
-        _this.state = { src: null };
+        var initSrc = _this.props.src || _AmplifyUI.transparent1X1;
+
+        _this.state = { src: initSrc };
         return _this;
     }
 
     _createClass(S3Image, [{
         key: 'getImageSource',
         value: function () {
-            function getImageSource() {
+            function getImageSource(key, level) {
                 var _this2 = this;
 
-                var _props = this.props,
-                    path = _props.path,
-                    level = _props.level;
-
-                _awsAmplify.Storage.get(path, { level: level ? level : 'public' }).then(function (url) {
+                _awsAmplify.Storage.get(key, { level: level ? level : 'public' }).then(function (url) {
                     _this2.setState({
                         src: url
                     });
@@ -76,30 +82,32 @@ var S3Image = function (_Component) {
         key: 'load',
         value: function () {
             function load() {
-                var _props2 = this.props,
-                    path = _props2.path,
-                    body = _props2.body,
-                    contentType = _props2.contentType,
-                    level = _props2.level;
+                var _props = this.props,
+                    imgKey = _props.imgKey,
+                    path = _props.path,
+                    body = _props.body,
+                    contentType = _props.contentType,
+                    level = _props.level;
 
-                if (!path) {
-                    logger.debug('empty path');
+                if (!imgKey && !path) {
+                    logger.debug('empty imgKey and path');
                     return;
                 }
 
                 var that = this;
-                logger.debug('loading ' + path + '...');
+                var key = imgKey || path;
+                logger.debug('loading ' + key + '...');
                 if (body) {
                     var type = contentType || 'binary/octet-stream';
-                    var ret = _awsAmplify.Storage.put(path, body, type, { level: level ? level : 'public' });
+                    var ret = _awsAmplify.Storage.put(key, body, type, { level: level ? level : 'public' });
                     ret.then(function (data) {
                         logger.debug(data);
-                        that.getImageSource();
+                        that.getImageSource(key, level);
                     })['catch'](function (err) {
                         return logger.warn(err);
                     });
                 } else {
-                    that.getImageSource();
+                    that.getImageSource(key, level);
                 }
             }
 
@@ -109,14 +117,54 @@ var S3Image = function (_Component) {
         key: 'handleOnLoad',
         value: function () {
             function handleOnLoad(evt) {
-                var onReady = this.props.onReady;
+                var onLoad = this.props.onLoad;
 
-                if (onReady) {
-                    onReady(this.state.src);
+                if (onLoad) {
+                    onLoad(this.state.src);
                 }
             }
 
             return handleOnLoad;
+        }()
+    }, {
+        key: 'handleOnError',
+        value: function () {
+            function handleOnError(evt) {
+                var onError = this.props.onError;
+
+                if (onError) {
+                    onError(this.state.src);
+                }
+            }
+
+            return handleOnError;
+        }()
+    }, {
+        key: 'handlePick',
+        value: function () {
+            function handlePick(data) {
+                var that = this;
+
+                var _props2 = this.props,
+                    imgKey = _props2.imgKey,
+                    path = _props2.path,
+                    level = _props2.level,
+                    fileToKey = _props2.fileToKey;
+                var file = data.file,
+                    name = data.name,
+                    size = data.size,
+                    type = data.type;
+
+                var key = imgKey || path + (0, _Common.calcKey)(data, fileToKey);
+                _awsAmplify.Storage.put(key, file, { contentType: type }).then(function (data) {
+                    logger.debug('handle pick data', data);
+                    that.getImageSource(key, level);
+                })['catch'](function (err) {
+                    return logger.debug('handle pick error', err);
+                });
+            }
+
+            return handlePick;
         }()
     }, {
         key: 'componentDidMount',
@@ -151,11 +199,26 @@ var S3Image = function (_Component) {
                 var theme = this.props.theme || _AmplifyTheme2['default'];
                 var _props3 = this.props,
                     hidden = _props3.hidden,
-                    style = _props3.style;
+                    style = _props3.style,
+                    picker = _props3.picker;
 
-                var imgStyle = hidden ? _AmplifyTheme2['default'].hidden : Object.assign({}, theme.photo, style);
+                var photoStyle = hidden ? _AmplifyTheme2['default'].hidden : Object.assign({}, theme.photo, style);
 
-                return _react2['default'].createElement('img', { style: imgStyle, src: src, onLoad: this.handleOnLoad });
+                return _react2['default'].createElement(
+                    'div',
+                    { style: photoStyle },
+                    _react2['default'].createElement('img', {
+                        style: theme.photoImg,
+                        src: src,
+                        onLoad: this.handleOnLoad,
+                        onError: this.handleOnError
+                    }),
+                    picker ? _react2['default'].createElement(
+                        'div',
+                        null,
+                        _react2['default'].createElement(_Widget.PhotoPicker, { key: 'picker', onPick: this.handlePick, theme: theme })
+                    ) : null
+                );
             }
 
             return render;

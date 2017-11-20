@@ -16,6 +16,9 @@ import React, { Component } from 'react';
 import { Storage, Logger } from 'aws-amplify';
 
 import AmplifyTheme from '../AmplifyTheme';
+import { transparent1X1 } from '../AmplifyUI';
+import { PhotoPicker } from '../Widget';
+import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Image');
 
@@ -24,13 +27,16 @@ export default class S3Image extends Component {
         super(props);
 
         this.handleOnLoad = this.handleOnLoad.bind(this);
+        this.handleOnError = this.handleOnError.bind(this);
+        this.handlePick = this.handlePick.bind(this);
 
-        this.state = { src: null };
+        const initSrc = this.props.src || transparent1X1;
+
+        this.state = { src: initSrc };
     }
 
-    getImageSource() {
-        const { path, level } = this.props;
-        Storage.get(path, { level: level? level : 'public' })
+    getImageSource(key, level) {
+        Storage.get(key, { level: level? level : 'public' })
             .then(url => {
                 this.setState({
                     src: url
@@ -40,32 +46,51 @@ export default class S3Image extends Component {
     }
 
     load() {
-        const { path, body, contentType, level } = this.props;
-        if (!path) {
-            logger.debug('empty path');
+        const { imgKey, path, body, contentType, level } = this.props;
+        if (!imgKey && !path) {
+            logger.debug('empty imgKey and path');
             return ;
         }
 
         const that = this;
-        logger.debug('loading ' + path + '...');
+        const key = imgKey || path;
+        logger.debug('loading ' + key + '...');
         if (body) {
             const type = contentType || 'binary/octet-stream';
-            const ret = Storage.put(path, body, type, { level: level? level : 'public' });
+            const ret = Storage.put(key, body, type, { level: level? level : 'public' });
             ret.then(data => {
                 logger.debug(data);
-                that.getImageSource();
+                that.getImageSource(key, level);
             })
             .catch(err => logger.warn(err));
         } else {
-            that.getImageSource();
+            that.getImageSource(key, level);
         }
     }
 
     handleOnLoad(evt) {
-        const { onReady } = this.props;
-        if (onReady) { onReady(this.state.src); }
+        const { onLoad } = this.props;
+        if (onLoad) { onLoad(this.state.src); }
     }
 
+    handleOnError(evt) {
+        const { onError } = this.props;
+        if (onError) { onError(this.state.src); }
+    }
+
+    handlePick(data) {
+        const that = this;
+
+        const { imgKey, path, level, fileToKey } = this.props;
+        const { file, name, size, type } = data;
+        const key = imgKey || (path + calcKey(data, fileToKey));
+        Storage.put(key, file, { contentType: type })
+            .then(data => {
+                logger.debug('handle pick data', data);
+                that.getImageSource(key, level);
+            })
+            .catch(err => logger.debug('handle pick error', err));
+    }
     componentDidMount() {
         this.load();
     }
@@ -81,10 +106,24 @@ export default class S3Image extends Component {
         if (!src) { return null; }
 
         const theme = this.props.theme || AmplifyTheme;
-        const { hidden, style } = this.props;
-        const imgStyle = hidden? AmplifyTheme.hidden
-                            : Object.assign({}, theme.photo, style);
+        const { hidden, style, picker } = this.props;
+        const photoStyle = hidden? AmplifyTheme.hidden
+                                 : Object.assign({}, theme.photo, style);
 
-        return <img style={imgStyle} src={src} onLoad={this.handleOnLoad} />
+        return (
+            <div style={photoStyle}>
+                <img
+                    style={theme.photoImg}
+                    src={src}
+                    onLoad={this.handleOnLoad}
+                    onError={this.handleOnError}
+                />
+                { picker? <div>
+                              <PhotoPicker key="picker" onPick={this.handlePick} theme={theme} />
+                          </div>
+                        : null
+                }
+            </div>
+        )
     }
 }

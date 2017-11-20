@@ -22,5 +22,6 @@ export * from './Widget';
 
 export { default as AmplifyTheme } from './AmplifyTheme';
 export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
+export { transparent1X1, white1X1 } from './AmplifyUI';
 
 I18n.putVocabularies(dict);

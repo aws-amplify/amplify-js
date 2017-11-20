@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.Hidden = exports.Center = exports.Col6 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Label = exports.A = exports.PhotoPickerInput = exports.PhotoPickerButton = exports.PhotoPicker = exports.Photo = exports.AlbumPhoto = exports.Album = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionFooter = exports.SectionBody = exports.SectionHeader = exports.NavButton = exports.NavRight = exports.NavBar = exports.ErrorSection = exports.FormSection = exports.Section = exports.Container = undefined;
+exports.Hidden = exports.Center = exports.Col6 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Label = exports.A = exports.PhotoPickerInput = exports.PhotoPickerButton = exports.PhotoPickerPicker = exports.PhotoPicker = exports.PhotoImg = exports.Photo = exports.AlbumPhoto = exports.Album = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionFooter = exports.SectionBody = exports.SectionHeader = exports.NavButton = exports.NavRight = exports.NavBar = exports.ErrorSection = exports.FormSection = exports.Section = exports.Container = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /*
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -135,12 +135,25 @@ var Photo = exports.Photo = {
     verticalAlign: 'top'
 };
 
-var PhotoPicker = exports.PhotoPicker = {};
+var PhotoImg = exports.PhotoImg = {
+    maxWidth: '100%'
+};
+
+var PhotoPicker = exports.PhotoPicker = {
+    width: '100%',
+    textAlign: 'center'
+};
+
+var PhotoPickerPicker = exports.PhotoPickerPicker = {
+    width: '100%',
+    textAlign: 'center'
+};
 
 var PhotoPickerButton = exports.PhotoPickerButton = {
     background: '#fff',
     border: '1px solid #ccc',
-    fontWeight: '200'
+    fontWeight: '200',
+    width: '100%'
 };
 
 var PhotoPickerInput = exports.PhotoPickerInput = {};
@@ -204,9 +217,11 @@ var AmplifyTheme = {
     errorSection: ErrorSection,
 
     photo: Photo,
+    photoImg: PhotoImg,
     album: Album,
     albumPhoto: AlbumPhoto,
     photoPicker: PhotoPicker,
+    photoPickerPicker: PhotoPickerPicker,
     photoPickerButton: PhotoPickerButton,
     photoPickerInput: PhotoPickerInput,
 

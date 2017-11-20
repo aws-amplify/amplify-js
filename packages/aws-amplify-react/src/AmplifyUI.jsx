@@ -117,3 +117,7 @@ export const Link = (props) => {
         <a {...props}  style={theme.a}>{props.children}</a>
     )
 }
+
+export const transparent1X1 = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+
+export const white1X1 = 'data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';

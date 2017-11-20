@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.Link = exports.ButtonRow = exports.MessageRow = exports.CheckboxRow = exports.RadioRow = exports.InputRow = exports.Footer = exports.Header = undefined;
+exports.white1X1 = exports.transparent1X1 = exports.Link = exports.ButtonRow = exports.MessageRow = exports.CheckboxRow = exports.RadioRow = exports.InputRow = exports.Footer = exports.Header = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /*
                                                                                                                                                                                                                                                                    * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -144,3 +144,7 @@ var Link = exports.Link = function Link(props) {
         props.children
     );
 };
+
+var transparent1X1 = exports.transparent1X1 = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+
+var white1X1 = exports.white1X1 = 'data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';

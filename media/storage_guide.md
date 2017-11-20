@@ -8,9 +8,11 @@ AWS Amplify Storage module gives a simple mechanism for managing user content in
   * [Amazon S3 Bucket CORS Policy](#amazon-s3-bucket-cors-policy)
   * [Automated Setup](#automated-setup)
 * [Access Level](#access-level)
-* [Integration](#integration)
-  - [Call APIs](#call-apis)
-  - [React Components](#react-components)
+* [Call APIs](#call-apis)
+* [React Development](#react-development)
+  - [S3Image](#s3image)
+  - [S3Album](#s3album)
+  - [Photo Picker](#photo-picker)
 
 
 ## Installation
@@ -127,7 +129,7 @@ Configuration when calling the API
 Storage.get('welcome.png', { level: 'public' }); // Gets welcome.png in public space
 ```
 
-Default, the access level of `public`:
+The default access level is `public`:
 ```js
 Storage.get('welcome.png'); // Get welcome.png in public space
 ```
@@ -138,34 +140,21 @@ There is also a shortcut `vault`, which is merely a Storage instance with `priva
 Storage.vault.get('welcome.png'); // Get the welcome.png belonging to current user
 ```
 
-## Integration
+## Call APIs
 
-1. Import Storage from the aws-amplify library into your App:
+Import Storage from the aws-amplify library into your App:
 ```js
 import { Storage } from 'aws-amplify';
 ```
 
-2. Configure Storage with your AWS resources: 
-
-    a. Use `aws-exports` object (here named awsmobile) to configure Storage:
-    ```js
-        Storage.configure(awsmobile);
-    ``` 
-
-    b. Use your resource values to configure Storage as: 
-
-    ```js
+If use `aws-exports.js` file, Storage is already configured. To configure Storage separately,
+```js
     Storage.configure({
         bucket: //Your bucket ARN;
         region: //Specify the region your bucket was created in;
         identityPoolId: //Specify your identityPoolId for Auth and Unauth access to your bucket;
     });
-    ```
-
-### Call APIs
-
-* 'public': Objects can be read or written by everyone who uses the App.
-* 'private': Objects can only be read or written by the current user.
+```
 
 #### 1. Put
 Put data into Amazon S3.
@@ -248,11 +237,11 @@ Private
         .catch(err => console.log(err));
 ```
 
-### React Components
+## React Development
 
 `aws-amplify-react` package provides the following components:
 
-#### S3Image
+### S3Image
 
 `S3Image` component renders Amazon S3 key as an image:
 
@@ -260,15 +249,14 @@ Private
 import { S3Image } from 'aws-amplify-react';
 
     render() {
-        const path = // path of the image;
-        return <S3Image path={path} />
+        return <S3Image s3Key={key} />
     }
 ```
 
 For private image, supply the `level` property:
 
 ```jsx
-        return <S3Image level="private" path={path} />
+        return <S3Image level="private" s3Key={key} />
 ```
 
 To upload, set the body property to S3Image:
@@ -277,20 +265,47 @@ To upload, set the body property to S3Image:
 import { S3Image } from 'aws-amplify-react';
 
     render() {
-        const path = // path of the image;
-        return <S3Image path={path} body={this.state.image_body} />
+        return <S3Image s3Key={key} body={this.state.image_body} />
     }
 ```
 
 **Image URL**
 
-`S3Image` converts path to actual URL. To get the URL, listen to the `onReady` event:
+`S3Image` converts path to actual URL. To get the URL, listen to the `onLoad` event:
 
 ```jsx
-    <S3Imag path={path} onReady={url => console.log(url)}
+    <S3Imag s3Key={s3Key} onLoad={url => console.log(url)}
 ```
 
-#### S3Album
+**Photo Picker**
+
+Set `picker` property to true on `S3Image`. A `PhotoPicker` let user pick photos on his/her device.
+
+```jsx
+    <S3Image s3Key={key} picker />
+```
+
+After pick, the image will be uploaded to `s3Key`. You may just provide `path`, path plus image file name will be the upload key.
+
+```jsx
+    <S3Image path={path} picker />
+```
+
+To have custom key you can provide a callback:
+
+```jsx
+function fileToKey(data) {
+    const { name, size, type } = data;
+    return 'test_' + name;
+}
+
+...
+    <S3Image path={path} picker fileToKey={fileToKey}/>
+```
+
+`S3Image` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
+
+### S3Album
 
 `S3Album` holds a list of S3Image objects:
 
@@ -326,7 +341,7 @@ Set `picker` property to true on `S3Album`. A `PhotoPicker` let user pick photos
     <S3Album path={path} picker />
 ```
 
-By default the photo picker saves photo on S3 with filename as key. To have custom key you can provide a callback:
+By default photo picker saves photo on S3 with filename as key. To have custom key you can provide a callback:
 
 ```jsx
 function fileToKey(data) {
@@ -339,3 +354,30 @@ function fileToKey(data) {
 ```
 
 `S3Album` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
+
+<img src="S3Album_and_code.png" width="320px"/>
+
+### Photo Picker
+
+`S3Image` and `S3Album` both contain a component, `PhotoPicker`, which is used to pick photo from local device.
+
+```jsx
+import { PhotoPicker } from 'aws-amplify-react';
+
+    render() {
+        <PhotoPicker onPick={data => console.log(data)}/>
+    }
+```
+
+To have a preview
+
+```jsx
+    <PhotoPicker preview onLoad={dataURL => console.log(dataURL)} />
+```
+
+`onLoad` gives dataURL of the image. With that, you may not need the built-in preview. Then just hide it
+
+```jsx
+    <PhotoPicker preview="hidden" onLoad={dataURL => console.log(dataURL)} />
+```
+<img src="photo_picker_and_code.png" width="320px"/>

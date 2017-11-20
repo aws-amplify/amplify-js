@@ -24,6 +24,8 @@ var _S3Image = require('./S3Image');
 
 var _S3Image2 = _interopRequireDefault(_S3Image);
 
+var _Common = require('./Common');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -180,12 +182,11 @@ var S3Album = function (_Component) {
 
 
                 var theme = this.props.theme || _AmplifyTheme2['default'];
-                var pickerContainerStyle = Object.assign({}, theme.album, theme.center);
 
                 var list = this.state.images.map(function (image) {
                     return _react2['default'].createElement(_S3Image2['default'], {
                         key: image.key,
-                        path: image.key,
+                        imgKey: image.key,
                         theme: theme,
                         style: theme.albumPhoto
                     });
@@ -198,11 +199,7 @@ var S3Album = function (_Component) {
                         { style: theme.album },
                         list
                     ),
-                    picker ? _react2['default'].createElement(
-                        'div',
-                        { style: pickerContainerStyle },
-                        _react2['default'].createElement(_Widget.PhotoPicker, { key: 'picker', onPick: this.handlePick, theme: theme })
-                    ) : null
+                    picker ? _react2['default'].createElement(_Widget.PhotoPicker, { key: 'picker', onPick: this.handlePick, theme: theme }) : null
                 );
             }
 
