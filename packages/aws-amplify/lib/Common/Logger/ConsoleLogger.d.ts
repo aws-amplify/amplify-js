@@ -12,6 +12,8 @@ export declare class ConsoleLogger implements Logger {
     */
     constructor(name: any, level?: string);
     static LOG_LEVEL: any;
+    _padding(n: any): string;
+    _ts(): string;
     /**
     * Write log
     * @method

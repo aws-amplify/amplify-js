@@ -25,7 +25,6 @@ var HubClass = (function () {
     };
     HubClass.prototype.dispatch = function (channel, payload, source) {
         if (source === void 0) { source = ''; }
-        logger.debug(source + ' dispatched ' + channel);
         var capsule = {
             channel: channel,
             payload: Object.assign({}, payload),
@@ -59,8 +58,12 @@ var HubClass = (function () {
             return;
         }
         holder.forEach(function (listener) {
-            logger.debug(listener.name + ' notified of capsule on channel ' + channel);
-            listener.listener.onHubCapsule(capsule);
+            try {
+                listener.listener.onHubCapsule(capsule);
+            }
+            catch (e) {
+                logger.warn('error dispatching ' + channel + ' event to ' + listener.name);
+            }
         });
     };
     return HubClass;

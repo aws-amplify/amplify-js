@@ -33,6 +33,16 @@ var ConsoleLogger = (function () {
         this.name = name;
         this.level = level;
     }
+    ConsoleLogger.prototype._padding = function (n) {
+        return n < 10 ? '0' + n : '' + n;
+    };
+    ConsoleLogger.prototype._ts = function () {
+        var dt = new Date();
+        return [
+            this._padding(dt.getMinutes()),
+            this._padding(dt.getSeconds())
+        ].join(':') + '.' + dt.getMilliseconds();
+    };
     /**
     * Write log
     * @method
@@ -66,12 +76,19 @@ var ConsoleLogger = (function () {
             log = console.warn;
         }
         if (msg.length === 1 && typeof msg[0] === 'string') {
-            log('[' + type + '] ' + this.name + ' - ' + msg[0]);
+            var output = [
+                '[' + type + ']',
+                this._ts(),
+                this.name,
+                '-',
+                msg[0]
+            ].join(' ');
+            log(output);
         }
         else if (msg.length === 1) {
             var output = {};
-            output['[' + type + ']'] = this.name;
-            output['[object]'] = msg[0];
+            var key = '[' + type + '] ' + this._ts() + ' ' + this.name;
+            output[key] = msg[0];
             log(output);
         }
         else if (typeof msg[0] === 'string') {
@@ -80,14 +97,14 @@ var ConsoleLogger = (function () {
                 obj = obj[0];
             }
             var output = {};
-            output['[' + type + ']'] = this.name + ' - ' + msg[0];
-            output['[object]'] = obj;
+            var key = '[' + type + '] ' + this._ts() + ' ' + this.name + ' - ' + msg[0];
+            output[key] = obj;
             log(output);
         }
         else {
             var output = {};
-            output['[' + type + ']'] = this.name;
-            output['[object]'] = msg;
+            var key = '[' + type + '] ' + this._ts() + ' ' + this.name;
+            output[key] = msg;
             log(output);
         }
     };

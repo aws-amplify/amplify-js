@@ -29,8 +29,6 @@ export class HubClass {
     }
 
     dispatch(channel, payload, source='') {
-        logger.debug(source + ' dispatched ' + channel);
-
         const capsule = {
             channel: channel,
             payload: Object.assign({}, payload),
@@ -66,8 +64,11 @@ export class HubClass {
         if (!holder) { return; }
 
         holder.forEach(listener => {
-            logger.debug(listener.name + ' notified of capsule on channel ' + channel);
-            listener.listener.onHubCapsule(capsule);
+            try {
+                listener.listener.onHubCapsule(capsule);
+            } catch (e) {
+                logger.warn('error dispatching ' + channel + ' event to ' + listener.name);
+            }
         });
     }
 }

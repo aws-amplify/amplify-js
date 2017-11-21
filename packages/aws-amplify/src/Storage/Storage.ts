@@ -134,7 +134,7 @@ export default class StorageClass {
         return new Promise<Object>((res, rej) => {
             s3.upload(params, (err, data) => {
                 if(err) {
-                    logger.error("error uploading", err);
+                    logger.warn("error uploading", err);
                     rej (err);
                 } else {
                     logger.debug('upload result', data);
@@ -209,7 +209,6 @@ export default class StorageClass {
                     logger.warn('list error', err);
                     rej(err);
                 } else {
-                    logger.debug('list result', data);
                     const list = data.Contents.map(item => {
                         return {
                             key: item.Key.substr(prefix.length),
@@ -240,7 +239,7 @@ export default class StorageClass {
                 return true;
             })
             .catch(err => {
-                logger.error('ensure credentials error', err)
+                logger.warn('ensure credentials error', err)
                 return false;
             });
     }

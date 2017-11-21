@@ -40,6 +40,18 @@ export class ConsoleLogger implements Logger {
 
     static LOG_LEVEL = null;
 
+    _padding(n) {
+        return n < 10? '0' + n : '' + n;
+    }
+
+    _ts() {
+        const dt = new Date();
+        return [
+            this._padding(dt.getMinutes()),
+            this._padding(dt.getSeconds())
+        ].join(':') + '.' + dt.getMilliseconds();
+    }
+
     /**
     * Write log
     * @method
@@ -65,23 +77,30 @@ export class ConsoleLogger implements Logger {
         if (type === 'WARN' && console.warn) { log = console.warn; }
 
         if (msg.length === 1 && typeof msg[0] === 'string') {
-            log('[' + type + '] ' + this.name + ' - ' + msg[0]);
+            const output = [
+                '[' + type + ']',
+                this._ts(),
+                this.name,
+                '-',
+                msg[0]
+            ].join(' ');
+            log(output);
         } else if (msg.length === 1) {
             const output = {};
-            output['[' + type + ']'] = this.name;
-            output['[object]'] = msg[0];
+            const key = '[' + type + '] ' + this._ts() + ' ' + this.name;
+            output[key] = msg[0];
             log(output);
         } else if (typeof msg[0] === 'string') {
             let obj = msg.slice(1);
             if (obj.length === 1) { obj = obj[0]; }
             const output = {};
-            output['[' + type + ']'] = this.name + ' - ' + msg[0];
-            output['[object]'] = obj;
+            const key = '[' + type + '] ' + this._ts() + ' ' + this.name + ' - ' + msg[0];
+            output[key] = obj;
             log(output);
         } else {
             const output = {};
-            output['[' + type + ']'] = this.name;
-            output['[object]'] = msg;
+            const key = '[' + type + '] ' + this._ts() + ' ' + this.name;
+            output[key] = msg;
             log(output);
         }
     }

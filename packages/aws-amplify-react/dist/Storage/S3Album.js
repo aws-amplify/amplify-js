@@ -202,13 +202,18 @@ var S3Album = function (_Component) {
         key: 'marshal',
         value: function () {
             function marshal(list) {
-                var contentType = this.props.contentType || this.contentType;
+                var _this4 = this;
+
+                var contentType = this.props.contentType || '';
                 list.forEach(function (item) {
                     if (item.contentType) {
                         return;
                     }
                     var isString = typeof contentType === 'string';
                     item.contentType = isString ? contentType : contentType(item);
+                    if (!item.contentType) {
+                        item.contentType = _this4.contentType(item);
+                    }
                 });
 
                 list = this.filter(list);

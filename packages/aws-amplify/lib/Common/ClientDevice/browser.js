@@ -89,7 +89,17 @@ function browserType(userAgent) {
 }
 if (typeof window !== 'undefined') {
     window.addEventListener('resize', function () {
-        Hub_1.default.dispatch('window', { event: 'resize' }, 'DeviceInfo');
+        Hub_1.default.dispatch('window', { event: 'resize', data: dimension() }, 'DeviceInfo');
+    });
+    window.addEventListener('scroll', function () {
+        var pos = { x: window.scrollX, y: window.scrollY };
+        Hub_1.default.dispatch('window', { event: 'scroll', data: pos }, 'DeviceInfo');
+    });
+    window.addEventListener('offline', function () {
+        Hub_1.default.dispatch('window', { event: 'offline' }, 'DeviceInfor');
+    });
+    window.addEventListener('online', function () {
+        Hub_1.default.dispatch('window', { event: 'online' }, 'DeviceInfor');
     });
 }
 //# sourceMappingURL=browser.js.map

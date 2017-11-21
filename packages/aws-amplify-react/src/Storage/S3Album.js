@@ -123,11 +123,12 @@ export default class S3Album extends Component {
     }
 
     marshal(list) {
-        const contentType = this.props.contentType || this.contentType;
+        const contentType = this.props.contentType || '';
         list.forEach(item => {
             if (item.contentType) { return; }
             const isString = typeof contentType === 'string';
             item.contentType = isString? contentType : contentType(item);
+            if (!item.contentType) { item.contentType = this.contentType(item); }
         });
 
         list = this.filter(list);

@@ -90,6 +90,19 @@ function browserType(userAgent) {
 
 if (typeof window !== 'undefined') {
     window.addEventListener('resize', function() {
-        Hub.dispatch('window', { event: 'resize' }, 'DeviceInfo');
+        Hub.dispatch('window', { event: 'resize', data: dimension() }, 'DeviceInfo');
+    });
+
+    window.addEventListener('scroll', function() {
+        const pos = { x: window.scrollX, y: window.scrollY };
+        Hub.dispatch('window', { event: 'scroll', data: pos }, 'DeviceInfo');
+    });
+
+    window.addEventListener('offline', function() {
+        Hub.dispatch('window', { event: 'offline' }, 'DeviceInfor');
+    });
+
+    window.addEventListener('online', function() {
+        Hub.dispatch('window', { event: 'online' }, 'DeviceInfor');
     });
 }

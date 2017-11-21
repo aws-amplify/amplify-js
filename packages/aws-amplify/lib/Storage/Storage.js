@@ -170,7 +170,7 @@ var StorageClass = (function () {
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 s3.upload(params, function (err, data) {
                                     if (err) {
-                                        logger.error("error uploading", err);
+                                        logger.warn("error uploading", err);
                                         rej(err);
                                     }
                                     else {
@@ -260,7 +260,6 @@ var StorageClass = (function () {
                                         rej(err);
                                     }
                                     else {
-                                        logger.debug('list result', data);
                                         var list = data.Contents.map(function (item) {
                                             return {
                                                 key: item.Key.substr(prefix.length),
@@ -294,7 +293,7 @@ var StorageClass = (function () {
             return true;
         })
             .catch(function (err) {
-            logger.error('ensure credentials error', err);
+            logger.warn('ensure credentials error', err);
             return false;
         });
     };
