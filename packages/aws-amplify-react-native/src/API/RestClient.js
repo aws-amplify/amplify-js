@@ -196,7 +196,7 @@ export class RestClient {
         return axios(signed_params)
             .then(response => response.data)
             .catch((error) => {
-                console.log(error);
+                logger.debug(error);
                 throw error;
             });
     }

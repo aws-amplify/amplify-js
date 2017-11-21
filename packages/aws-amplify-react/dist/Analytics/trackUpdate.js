@@ -43,7 +43,6 @@ function trackUpdate(Comp, trackerName) {
             var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, props));
 
             _this.trackerName = trackerName;
-            console.log(_this.trackerName);
             return _this;
         }
 

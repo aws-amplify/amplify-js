@@ -210,7 +210,7 @@ var RestClient = (function () {
         return axios_1.default(signed_params)
             .then(function (response) { return response.data; })
             .catch(function (error) {
-            console.log(error);
+            logger.debug(error);
             throw error;
         });
     };

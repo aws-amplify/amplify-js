@@ -140,7 +140,6 @@ kSigning = HMAC(kService, "aws4_request")
 </pre>
 */
 var get_signing_key = function (secret_key, d_str, service_info) {
-    console.log(service_info);
     var k = ('AWS4' + secret_key), k_date = encrypt(k, d_str), k_region = encrypt(k_date, service_info.region), k_service = encrypt(k_region, service_info.service), k_signing = encrypt(k_service, 'aws4_request');
     return k_signing;
 };
@@ -208,7 +207,6 @@ var sign = function (request, access_info, service_info) {
     }
     // Task 1: Create a Canonical Request
     var request_str = canonical_request(request);
-    console.log(request_str);
     // Task 2: Create a String to Sign
     var service_info = service_info || parse_service_info(request), scope = credential_scope(d_str, service_info.region, service_info.service), str_to_sign = string_to_sign(algorithm, request_str, dt_str, scope);
     // Task 3: Calculate the Signature

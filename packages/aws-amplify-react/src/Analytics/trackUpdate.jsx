@@ -19,7 +19,6 @@ export function trackUpdate(Comp, trackerName) {
         constructor(props) {
             super(props);
             this.trackerName = trackerName;
-            console.log(this.trackerName);
         }
 
         componentDidUpdate(prevProps, prevState) {
