@@ -71,12 +71,12 @@ var S3Text = function (_Component) {
 
                 _awsAmplify.Storage.get(key, { download: true, level: level ? level : 'public' }).then(function (data) {
                     logger.debug(data);
-                    _this2.setState({
-                        textKey: key,
-                        text: data.Body.toString('utf8')
-                    });
+                    var text = data.Body.toString('utf8');
+                    _this2.setState({ text: text });
+                    _this2.handleOnLoad(text);
                 })['catch'](function (err) {
-                    return logger.debug(err);
+                    logger.debug(err);
+                    _this2.handleOnError(err);
                 });
             }
 
@@ -86,9 +86,9 @@ var S3Text = function (_Component) {
         key: 'load',
         value: function () {
             function load() {
-                var textKey = this.state.textKey;
                 var _props = this.props,
                     path = _props.path,
+                    textKey = _props.textKey,
                     body = _props.body,
                     contentType = _props.contentType,
                     level = _props.level;
@@ -103,7 +103,10 @@ var S3Text = function (_Component) {
                 logger.debug('loading ' + key + '...');
                 if (body) {
                     var type = contentType || 'text/*';
-                    var ret = _awsAmplify.Storage.put(key, body, type, { level: level ? level : 'public' });
+                    var ret = _awsAmplify.Storage.put(key, body, {
+                        contentType: type,
+                        level: level ? level : 'public'
+                    });
                     ret.then(function (data) {
                         logger.debug(data);
                         that.getText(key, level);
@@ -120,11 +123,11 @@ var S3Text = function (_Component) {
     }, {
         key: 'handleOnLoad',
         value: function () {
-            function handleOnLoad(evt) {
+            function handleOnLoad(text) {
                 var onLoad = this.props.onLoad;
 
                 if (onLoad) {
-                    onLoad(this.state.text);
+                    onLoad(text);
                 }
             }
 
@@ -133,11 +136,11 @@ var S3Text = function (_Component) {
     }, {
         key: 'handleOnError',
         value: function () {
-            function handleOnError(evt) {
+            function handleOnError(err) {
                 var onError = this.props.onError;
 
                 if (onError) {
-                    onError(this.state.text);
+                    onError(err);
                 }
             }
 
@@ -149,10 +152,9 @@ var S3Text = function (_Component) {
             function handlePick(data) {
                 var that = this;
 
-                var textKey = this.state.textKey;
-
                 var path = this.props.path || '';
                 var _props2 = this.props,
+                    textKey = _props2.textKey,
                     level = _props2.level,
                     fileToKey = _props2.fileToKey;
                 var file = data.file,
@@ -184,7 +186,8 @@ var S3Text = function (_Component) {
         key: 'componentDidUpdate',
         value: function () {
             function componentDidUpdate(prevProps) {
-                if (prevProps.path !== this.props.path || prevProps.body !== this.props.body) {
+                var update = prevProps.path !== this.props.path || prevProps.textKey !== this.props.textKey || prevProps.body !== this.props.body;
+                if (update) {
                     this.load();
                 }
             }
@@ -213,11 +216,7 @@ var S3Text = function (_Component) {
                     { style: textStyle },
                     text ? _react2['default'].createElement(
                         'pre',
-                        {
-                            style: theme.pre,
-                            onLoad: this.handleOnLoad,
-                            onError: this.handleOnError
-                        },
+                        { style: theme.pre },
                         text
                     ) : null,
                     picker ? _react2['default'].createElement(

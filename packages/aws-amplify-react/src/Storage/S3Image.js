@@ -57,7 +57,10 @@ export default class S3Image extends Component {
         logger.debug('loading ' + key + '...');
         if (body) {
             const type = contentType || 'binary/octet-stream';
-            const ret = Storage.put(key, body, type, { level: level? level : 'public' });
+            const ret = Storage.put(key, body, {
+                contentType: type,
+                level: level? level : 'public'
+            });
             ret.then(data => {
                 logger.debug(data);
                 that.getImageSource(key, level);
@@ -98,7 +101,10 @@ export default class S3Image extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.path !== this.props.path || prevProps.body !== this.props.body) {
+        const update = prevProps.path !== this.props.path ||
+                        prevProps.imgKey !== this.props.imgKey ||
+                        prevProps.body !== this.props.body;
+        if (update) {
             this.load();
         }
     }
@@ -114,20 +120,20 @@ export default class S3Image extends Component {
 
         return (
             <div style={photoStyle}>
-                <img
-                    style={theme.photoImg}
-                    src={src}
-                    onLoad={this.handleOnLoad}
-                    onError={this.handleOnError}
-                />
+                { src? <img
+                           style={theme.photoImg}
+                           src={src}
+                           onLoad={this.handleOnLoad}
+                           onError={this.handleOnError}
+                       /> : null
+                }
                 { picker? <div>
                               <PhotoPicker
                                   key="picker"
                                   onPick={this.handlePick}
                                   theme={theme}
                               />
-                          </div>
-                        : null
+                          </div> : null
                 }
             </div>
         )

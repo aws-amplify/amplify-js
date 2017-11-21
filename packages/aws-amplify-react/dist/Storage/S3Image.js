@@ -99,7 +99,10 @@ var S3Image = function (_Component) {
                 logger.debug('loading ' + key + '...');
                 if (body) {
                     var type = contentType || 'binary/octet-stream';
-                    var ret = _awsAmplify.Storage.put(key, body, type, { level: level ? level : 'public' });
+                    var ret = _awsAmplify.Storage.put(key, body, {
+                        contentType: type,
+                        level: level ? level : 'public'
+                    });
                     ret.then(function (data) {
                         logger.debug(data);
                         that.getImageSource(key, level);
@@ -179,7 +182,8 @@ var S3Image = function (_Component) {
         key: 'componentDidUpdate',
         value: function () {
             function componentDidUpdate(prevProps) {
-                if (prevProps.path !== this.props.path || prevProps.body !== this.props.body) {
+                var update = prevProps.path !== this.props.path || prevProps.imgKey !== this.props.imgKey || prevProps.body !== this.props.body;
+                if (update) {
                     this.load();
                 }
             }
@@ -206,12 +210,12 @@ var S3Image = function (_Component) {
                 return _react2['default'].createElement(
                     'div',
                     { style: photoStyle },
-                    _react2['default'].createElement('img', {
+                    src ? _react2['default'].createElement('img', {
                         style: theme.photoImg,
                         src: src,
                         onLoad: this.handleOnLoad,
                         onError: this.handleOnError
-                    }),
+                    }) : null,
                     picker ? _react2['default'].createElement(
                         'div',
                         null,

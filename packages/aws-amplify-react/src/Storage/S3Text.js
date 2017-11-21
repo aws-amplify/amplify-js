@@ -40,17 +40,18 @@ export default class S3Text extends Component {
         Storage.get(key, { download: true, level: level? level : 'public' })
             .then(data => {
                 logger.debug(data);
-                this.setState({
-                    textKey: key,
-                    text: data.Body.toString('utf8')
-                });
+                const text = data.Body.toString('utf8');
+                this.setState({ text: text });
+                this.handleOnLoad(text);
             })
-            .catch(err => logger.debug(err));
+            .catch(err => {
+                logger.debug(err);
+                this.handleOnError(err);
+            });
     }
 
     load() {
-        const { textKey } = this.state;
-        const { path, body, contentType, level } = this.props;
+        const { path, textKey, body, contentType, level } = this.props;
         if (!textKey && !path) {
             logger.debug('empty textKey and path');
             return ;
@@ -61,7 +62,10 @@ export default class S3Text extends Component {
         logger.debug('loading ' + key + '...');
         if (body) {
             const type = contentType || 'text/*';
-            const ret = Storage.put(key, body, type, { level: level? level : 'public' });
+            const ret = Storage.put(key, body, {
+                contentType: type,
+                level: level? level : 'public'
+            });
             ret.then(data => {
                 logger.debug(data);
                 that.getText(key, level);
@@ -72,22 +76,21 @@ export default class S3Text extends Component {
         }
     }
 
-    handleOnLoad(evt) {
+    handleOnLoad(text) {
         const { onLoad } = this.props;
-        if (onLoad) { onLoad(this.state.text); }
+        if (onLoad) { onLoad(text); }
     }
 
-    handleOnError(evt) {
+    handleOnError(err) {
         const { onError } = this.props;
-        if (onError) { onError(this.state.text); }
+        if (onError) { onError(err); }
     }
 
     handlePick(data) {
         const that = this;
 
-        const { textKey } = this.state;
         const path = this.props.path || '';
-        const { level, fileToKey } = this.props;
+        const { textKey, level, fileToKey } = this.props;
         const { file, name, size, type } = data;
         const key = textKey || (path + calcKey(data, fileToKey));
         Storage.put(key, file, { contentType: type })
@@ -103,7 +106,10 @@ export default class S3Text extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.path !== this.props.path || prevProps.body !== this.props.body) {
+        const update = prevProps.path !== this.props.path ||
+                        prevProps.textKey !== this.props.textKey ||
+                        prevProps.body !== this.props.body
+        if (update) {
             this.load();
         }
     }
@@ -119,13 +125,7 @@ export default class S3Text extends Component {
 
         return (
             <div style={textStyle}>
-                { text? <pre
-                            style={theme.pre}
-                            onLoad={this.handleOnLoad}
-                            onError={this.handleOnError}
-                        >{text}</pre>
-                      : null
-                }
+                { text? <pre style={theme.pre}>{text}</pre> : null }
                 { picker? <div>
                               <TextPicker
                                   key="picker"

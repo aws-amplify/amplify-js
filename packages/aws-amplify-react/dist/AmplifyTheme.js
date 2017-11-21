@@ -145,7 +145,7 @@ var AlbumText = exports.AlbumText = {
     margin: '0.2%',
     verticalAlign: 'top',
     maxHeight: 320,
-    overflow: 'scroll'
+    overflow: 'auto'
 };
 
 var Text = exports.Text = {
@@ -154,7 +154,7 @@ var Text = exports.Text = {
     margin: '0.2%',
     verticalAlign: 'top',
     maxHeight: 320,
-    overflow: 'scroll'
+    overflow: 'auto'
 };
 
 var Picker = exports.Picker = {
@@ -189,7 +189,7 @@ var Pre = exports.Pre = {
     margin: '0',
     padding: '1em',
     background: '#eee',
-    overflow: 'scroll'
+    overflow: 'auto'
 };
 
 var Col2 = exports.Col2 = {
@@ -241,7 +241,7 @@ var Col12 = exports.Col12 = {
 
 var HalfHeight = exports.HalfHeight = {
     height: 320,
-    overflow: 'scroll'
+    overflow: 'auto'
 };
 
 var Center = exports.Center = {
@@ -315,19 +315,19 @@ var MediaQuery = function () {
 
                 if (width < 576) {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col6);
-                    AmplifyTheme.Photo = Object.assign({}, Photo, Col6);
+                    AmplifyTheme.Photo = Object.assign({}, Photo, Col12);
                     AmplifyTheme.albumText = Object.assign({}, AlbumText, Col12);
                 } else if (width < 768) {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col4);
-                    AmplifyTheme.Photo = Object.assign({}, Photo, Col4);
+                    AmplifyTheme.Photo = Object.assign({}, Photo, Col6);
                     AmplifyTheme.albumText = Object.assign({}, AlbumText, Col8);
                 } else if (width < 992) {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col3);
-                    AmplifyTheme.Photo = Object.assign({}, Photo, Col3);
+                    AmplifyTheme.Photo = Object.assign({}, Photo, Col6);
                     AmplifyTheme.albumText = Object.assign({}, AlbumText, Col6);
                 } else {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col2);
-                    AmplifyTheme.Photo = Object.assign({}, Photo, Col2);
+                    AmplifyTheme.Photo = Object.assign({}, Photo, Col4);
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumText, Col4);
                 }
 

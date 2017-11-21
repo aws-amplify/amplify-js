@@ -114,9 +114,9 @@ export const ButtonRow = (props) => {
 
 export const Link = (props) => {
     const theme = props.theme || AmplifyTheme;
-    props = Object.assign({}, props, {theme: null});
+    const p = JS.objectLessAttributes(props, 'theme');
     return (
-        <a {...props}  style={theme.a}>{props.children}</a>
+        <a {...p}  style={theme.a}>{props.children}</a>
     )
 }
 

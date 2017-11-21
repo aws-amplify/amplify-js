@@ -151,21 +151,28 @@ var S3Album = function (_Component) {
         key: 'componentDidMount',
         value: function () {
             function componentDidMount() {
-                var _this3 = this;
-
-                this.list().then(function (data) {
-                    _this3.marshal(data);
-                })['catch'](function (err) {
-                    return logger.warn(err);
-                });
+                this.list();
             }
 
             return componentDidMount;
         }()
     }, {
+        key: 'componentDidUpdate',
+        value: function () {
+            function componentDidUpdate(prevProps, prevState) {
+                if (this.props.path != prevProps.path || this.props.ts != prevProps.ts) {
+                    this.list();
+                }
+            }
+
+            return componentDidUpdate;
+        }()
+    }, {
         key: 'list',
         value: function () {
             function list() {
+                var _this3 = this;
+
                 var _props = this.props,
                     path = _props.path,
                     level = _props.level;
@@ -173,7 +180,7 @@ var S3Album = function (_Component) {
                 logger.debug('Album path: ' + path);
                 return _awsAmplify.Storage.list(path, { level: level ? level : 'public' }).then(function (data) {
                     logger.debug('album list', data);
-                    return data;
+                    _this3.marshal(data);
                 })['catch'](function (err) {
                     logger.warn(err);
                     return [];

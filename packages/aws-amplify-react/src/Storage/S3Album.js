@@ -95,11 +95,13 @@ export default class S3Album extends Component {
     }
 
     componentDidMount() {
-        this.list()
-            .then(data => {
-                this.marshal(data);
-            })
-            .catch(err => logger.warn(err));
+        this.list();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.path != prevProps.path || this.props.ts != prevProps.ts) {
+            this.list();
+        }
     }
 
     list() {
@@ -108,7 +110,7 @@ export default class S3Album extends Component {
         return Storage.list(path, { level: level? level : 'public' })
             .then(data => {
                 logger.debug('album list', data);
-                return data;
+                this.marshal(data);
             })
             .catch(err => {
                 logger.warn(err);

@@ -139,10 +139,10 @@ var ButtonRow = exports.ButtonRow = function ButtonRow(props) {
 
 var Link = exports.Link = function Link(props) {
     var theme = props.theme || _AmplifyTheme2['default'];
-    props = Object.assign({}, props, { theme: null });
+    var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
     return _react2['default'].createElement(
         'a',
-        _extends({}, props, { style: theme.a }),
+        _extends({}, p, { style: theme.a }),
         props.children
     );
 };
