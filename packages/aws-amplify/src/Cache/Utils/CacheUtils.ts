@@ -17,44 +17,44 @@ import { CacheConfig, CacheItem, CacheItemOptions } from '../types';
 /**
 * Default cache config
 */
-export const defaultConfig : CacheConfig = {
-    keyPrefix : 'aws-amplify-cache',
-    capacityInBytes : 1048576, // 1MB
-    itemMaxSize : 210000, // about 200kb
-    defaultTTL : 259200000, // about 3 days
-    defaultPriority : 5,
-    warningThreshold : 0.8,
-    storage: (typeof window == 'undefined')? null: window.localStorage 
+export const defaultConfig: CacheConfig = {
+    keyPrefix: 'aws-amplify-cache',
+    capacityInBytes: 1048576, // 1MB
+    itemMaxSize: 210000, // about 200kb
+    defaultTTL: 259200000, // about 3 days
+    defaultPriority: 5,
+    warningThreshold: 0.8,
+    storage: (typeof window == 'undefined') ? null : window.localStorage
 };
 
-  /**
-   * return the byte size of the string
-   * @param str 
-   */
- export function getByteLength(str: string): number {
+/**
+ * return the byte size of the string
+ * @param str 
+ */
+export function getByteLength(str: string): number {
     let ret: number = 0;
     ret = str.length;
 
     for (let i = str.length; i >= 0; i -= 1) {
-      const charCode: number = str.charCodeAt(i);
-      if (charCode > 0x7f && charCode <= 0x7ff) {
-        ret += 1;
-      } else if (charCode > 0x7ff && charCode <= 0xffff) {
-        ret += 2;
-      }
-      // trail surrogate
-      if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
-        i -= 1;
-      }
+        const charCode: number = str.charCodeAt(i);
+        if (charCode > 0x7f && charCode <= 0x7ff) {
+            ret += 1;
+        } else if (charCode > 0x7ff && charCode <= 0xffff) {
+            ret += 2;
+        }
+        // trail surrogate
+        if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
+            i -= 1;
+        }
     }
 
     return ret;
-  }
+}
 
-  /**
-   * get current time
-   */
-  export function getCurrTime() : number {
+/**
+ * get current time
+ */
+export function getCurrTime(): number {
     const currTime = new Date();
     return currTime.getTime();
-  }
+}
