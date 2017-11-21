@@ -186,20 +186,7 @@ var S3Album = function (_Component) {
         key: 'contentType',
         value: function () {
             function contentType(item) {
-                // get contentType by filename
-
-                var key = item.key.toLowerCase();;
-                if (key.endsWith('.txt')) {
-                    return 'text/plain';
-                } else if (key.endsWith('.html')) {
-                    return 'text/html';
-                } else if (key.endsWith('.js')) {
-                    return 'text/javascript';
-                } else if (key.endsWith('.css')) {
-                    return 'text/css';
-                } else {
-                    return 'image/*';
-                }
+                return _awsAmplify.JS.filenameToContentType(item.key, 'image/*');
             }
 
             return contentType;
@@ -280,7 +267,7 @@ var S3Album = function (_Component) {
                 var theme = this.props.theme || _AmplifyTheme2['default'];
 
                 var list = items.map(function (item) {
-                    var isText = item.contentType && item.contentType.startsWith('text');
+                    var isText = item.contentType && _awsAmplify.JS.isTextFile(item.contentType);
                     return isText ? _react2['default'].createElement(_S3Text2['default'], {
                         key: item.key,
                         textKey: item.key,

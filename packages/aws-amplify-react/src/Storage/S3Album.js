@@ -117,20 +117,7 @@ export default class S3Album extends Component {
     }
 
     contentType(item) {
-        // get contentType by filename
-
-        const key = item.key.toLowerCase();;
-        if (key.endsWith('.txt')) {
-            return 'text/plain';
-        } else if (key.endsWith('.html')) {
-            return 'text/html'
-        } else if (key.endsWith('.js')) {
-            return 'text/javascript'
-        } else if (key.endsWith('.css')) {
-            return 'text/css'
-        } else {
-            return 'image/*'
-        }
+        return JS.filenameToContentType(item.key, 'image/*');
     }
 
     marshal(list) {
@@ -184,7 +171,7 @@ export default class S3Album extends Component {
         const theme = this.props.theme || AmplifyTheme;
 
         const list = items.map(item => {
-            const isText = item.contentType && item.contentType.startsWith('text');
+            const isText = item.contentType && JS.isTextFile(item.contentType);
             return isText? <S3Text
                              key={item.key}
                              textKey={item.key}
