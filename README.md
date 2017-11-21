@@ -6,7 +6,7 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
   - [Web Development](#web-development)
   - [React Native Development](#react-native-development)
 * [Documentation](#documentation)
-* [Example](#example)
+* [Examples](#example)
   - [1. Collect user session metrics.](#1-collect-user-session-metrics)
   - [2. Bind app with Authentications](#2-bind-app-with-authentications)
 
@@ -38,10 +38,21 @@ You will need to [link](https://facebook.github.io/react-native/docs/linking-lib
 ## Documentation
 
 * [Quick Start](media/quick_start.md)
-* [Developer Guide](media/developer_guide.md)
 * [API Reference](media/api_reference.md)
+* [Developer Guide](media/developer_guide.md)
+  * [Authentication](media/authentication_guide.md)
+  * [Analytics](media/analytics_guide.md)
+  * [API](media/api_guide.md)
+  * [Storage](media/storage_guide.md)
+  * [Cache](media/cache_guide.md)
+  * Utilities
+    - [I18n](media/i18n_guide.md)
+    - [Logger](media/logger_guide.md)
+    - [Hub](media/hub_guide.md)
 
-## Example
+## Examples
+
+AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](media/developer_guide.md). A couple of samples are below.
 
 ### 1. Collect user session metrics
 
@@ -54,7 +65,7 @@ import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
 ```
 
-### 2. Bind app with Authentications
+### 2. Add Authentication to your App
 Take a fresh React app created by `create-react-app` as an example and edit the `App.js` file:
 
 ```jsx
@@ -85,4 +96,37 @@ class App extends Component {
 }
 
 export default withAuthenticator(App);
+```
+
+### 3. Sign HTTP requests
+
+Sign REST requests with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html) using the API module to one or multiple endpoints:
+
+```js
+let apiName = 'MyApiName';
+let path = '/path'; 
+let options = {
+    headers: {...} // OPTIONAL
+}
+API.get(apiName, path, options).then(response => {
+    // Add your code here
+});
+```
+
+### 4. Upload/Download public or private content
+
+With configurable settings, store content in an S3 bucket in public folders for all of your application's users or in private folders for each user identity:
+
+```js
+  Storage.put(key, fileObj, {level: 'private'})
+        .then (result => console.log(result))
+        .catch(err => console.log(err));
+        
+    // Stores data with specifying its MIME type
+    Storage.put(key, fileObj, {
+        level: 'private',
+        contentType: 'text/plain'
+    })
+    .then (result => console.log(result))
+    .catch(err => console.log(err));
 ```
