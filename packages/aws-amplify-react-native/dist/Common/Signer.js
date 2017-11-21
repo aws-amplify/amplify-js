@@ -11,6 +11,10 @@
  * and limitations under the License.
  */
 
+import { ConsoleLogger as Logger } from '../Common';
+
+const logger = new Logger('Signer');
+
 var url = require('url'),
     crypto = require('aws-sdk').util.crypto;
 
