@@ -27,108 +27,108 @@ const logger = new Logger('StorageCache');
  * 
  */
 export default class StorageCache {
-  protected cacheCurSizeKey: string;
-  protected config: CacheConfig;
+    protected cacheCurSizeKey: string;
+    protected config: CacheConfig;
 
-  /**
-   * Initialize the cache
-   * @param config - the configuration of the cache
-   */
-  constructor(config : CacheConfig) {
-    this.config = Object.assign({}, config);
-    this.cacheCurSizeKey = this.config.keyPrefix + 'CurSize';
-    this.checkConfig();
-  }
-
-  private checkConfig() : void {
-    // check configuration
-    if (!Number.isInteger(this.config.capacityInBytes)) {
-      logger.error('Invalid parameter: capacityInBytes. It should be an Integer. Setting back to default.');
-      this.config.capacityInBytes = defaultConfig.capacityInBytes;
+    /**
+     * Initialize the cache
+     * @param config - the configuration of the cache
+     */
+    constructor(config: CacheConfig) {
+        this.config = Object.assign({}, config);
+        this.cacheCurSizeKey = this.config.keyPrefix + 'CurSize';
+        this.checkConfig();
     }
 
-    if (!Number.isInteger(this.config.itemMaxSize)) {
-      logger.error('Invalid parameter: itemMaxSize. It should be an Integer. Setting back to default.');
-      this.config.itemMaxSize = defaultConfig.itemMaxSize;
+    private checkConfig(): void {
+        // check configuration
+        if (!Number.isInteger(this.config.capacityInBytes)) {
+            logger.error('Invalid parameter: capacityInBytes. It should be an Integer. Setting back to default.');
+            this.config.capacityInBytes = defaultConfig.capacityInBytes;
+        }
+
+        if (!Number.isInteger(this.config.itemMaxSize)) {
+            logger.error('Invalid parameter: itemMaxSize. It should be an Integer. Setting back to default.');
+            this.config.itemMaxSize = defaultConfig.itemMaxSize;
+        }
+
+        if (!Number.isInteger(this.config.defaultTTL)) {
+            logger.error('Invalid parameter: defaultTTL. It should be an Integer. Setting back to default.');
+            this.config.defaultTTL = defaultConfig.defaultTTL;
+        }
+
+        if (!Number.isInteger(this.config.defaultPriority)) {
+            logger.error('Invalid parameter: defaultPriority. It should be an Integer. Setting back to default.');
+            this.config.defaultPriority = defaultConfig.defaultPriority;
+        }
+
+        if (this.config.itemMaxSize > this.config.capacityInBytes) {
+            logger.error('Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.');
+            this.config.itemMaxSize = defaultConfig.itemMaxSize;
+        }
+
+        if (this.config.defaultPriority > 5 || this.config.defaultPriority < 1) {
+            logger.error('Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.');
+            this.config.defaultPriority = defaultConfig.defaultPriority;
+        }
+
+        if (Number(this.config.warningThreshold) > 1 || Number(this.config.warningThreshold) < 0) {
+            logger.error('Invalid parameter: warningThreshold. It should be between 0 and 1. Setting back to default.');
+            this.config.warningThreshold = defaultConfig.warningThreshold;
+        }
+        // set 5MB limit
+        const cacheLimit: number = 5 * 1024 * 1024;
+        if (this.config.capacityInBytes > cacheLimit) {
+            logger.error('Cache Capacity should be less than 5MB. Setting back to default. Setting back to default.');
+            this.config.capacityInBytes = defaultConfig.capacityInBytes;
+        }
     }
 
-    if (!Number.isInteger(this.config.defaultTTL)) {
-      logger.error('Invalid parameter: defaultTTL. It should be an Integer. Setting back to default.');
-      this.config.defaultTTL = defaultConfig.defaultTTL;
+    /**
+    * produce a JSON object with meta-data and data value
+    * @param value - the value of the item
+    * @param options - optional, the specified meta-data
+    * 
+    * @return - the item which has the meta-data and the value
+    */
+    protected fillCacheItem(
+        key: string, value: object | number | string | boolean,
+        options: CacheItemOptions): CacheItem {
+        const ret: CacheItem = {
+            key,
+            data: JSON.stringify(value),
+            timestamp: getCurrTime(),
+            visitedTime: getCurrTime(),
+            priority: options.priority,
+            expires: options.expires,
+            type: typeof value,
+            byteSize: 0
+        };
+
+        ret.byteSize = getByteLength(JSON.stringify(ret));
+
+        // for accurate size
+        ret.byteSize = getByteLength(JSON.stringify(ret));
+        return ret;
     }
 
-    if (!Number.isInteger(this.config.defaultPriority)) {
-      logger.error('Invalid parameter: defaultPriority. It should be an Integer. Setting back to default.');
-      this.config.defaultPriority = defaultConfig.defaultPriority;
+    /**
+     * set cache with customized configuration
+     * @param config - customized configuration
+     * 
+     * @return - the current configuration
+     */
+    public configure(config?: CacheConfig): CacheConfig {
+        if (!config) {
+            return this.config;
+        }
+        if (config.keyPrefix) {
+            logger.error(`Don't try to configure keyPrefix!`);
+        }
+        config.keyPrefix = this.config.keyPrefix;
+
+        this.config = Object.assign({}, this.config, config);
+        this.checkConfig();
+        return this.config;
     }
-
-    if (this.config.itemMaxSize > this.config.capacityInBytes) {
-      logger.error('Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.');
-      this.config.itemMaxSize = defaultConfig.itemMaxSize;
-    }
-
-    if (this.config.defaultPriority > 5 || this.config.defaultPriority < 1) {
-      logger.error('Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.');
-      this.config.defaultPriority = defaultConfig.defaultPriority;
-    }
-
-    if (Number(this.config.warningThreshold) > 1 || Number(this.config.warningThreshold) < 0) {
-      logger.error('Invalid parameter: warningThreshold. It should be between 0 and 1. Setting back to default.');
-      this.config.warningThreshold = defaultConfig.warningThreshold;
-    }
-    // set 5MB limit
-    const cacheLimit: number = 5 * 1024 * 1024;
-    if (this.config.capacityInBytes > cacheLimit) {
-      logger.error('Cache Capacity should be less than 5MB. Setting back to default. Setting back to default.');
-      this.config.capacityInBytes = defaultConfig.capacityInBytes;
-    }
-  }
-
-   /**
-   * produce a JSON object with meta-data and data value
-   * @param value - the value of the item
-   * @param options - optional, the specified meta-data
-   * 
-   * @return - the item which has the meta-data and the value
-   */
-  protected fillCacheItem(
-    key: string, value: object | number | string | boolean, 
-    options: CacheItemOptions): CacheItem {
-    const ret: CacheItem = {
-      key,
-      data: JSON.stringify(value),
-      timestamp: getCurrTime(),
-      visitedTime: getCurrTime(),
-      priority: options.priority,
-      expires: options.expires,
-      type: typeof value,
-      byteSize: 0
-    };
-
-    ret.byteSize = getByteLength(JSON.stringify(ret));
-
-    // for accurate size
-    ret.byteSize = getByteLength(JSON.stringify(ret));
-    return ret;
-  }
-
-  /**
-   * set cache with customized configuration
-   * @param config - customized configuration
-   * 
-   * @return - the current configuration
-   */
-  public configure(config?: CacheConfig): CacheConfig {
-    if (!config) {
-      return this.config;
-    }
-    if (config.keyPrefix) {
-      logger.error(`Don't try to configure keyPrefix!`);
-    }
-    config.keyPrefix = this.config.keyPrefix;
-
-    this.config = Object.assign({}, this.config, config);
-    this.checkConfig();
-    return this.config;
-  }
 }
