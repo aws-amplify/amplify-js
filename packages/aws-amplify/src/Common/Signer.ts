@@ -11,6 +11,10 @@
  * and limitations under the License.
  */
 
+import { ConsoleLogger as Logger } from '../Common';
+
+const logger = new Logger('Signer');
+
 var url = require('url'),
     crypto = require('aws-sdk').util.crypto;
 
@@ -154,6 +158,7 @@ kSigning = HMAC(kService, "aws4_request")
 </pre>
 */
 var get_signing_key = function(secret_key, d_str, service_info) {
+    logger.debug(service_info);
     var k = ('AWS4' + secret_key),
         k_date = encrypt(k, d_str),
         k_region = encrypt(k_date, service_info.region),
@@ -234,6 +239,7 @@ var sign = function(request, access_info, service_info = null) {
 
     // Task 1: Create a Canonical Request
     var request_str = canonical_request(request);
+    logger.debug(request_str);
 
     // Task 2: Create a String to Sign
     var service_info = service_info || parse_service_info(request),

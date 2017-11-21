@@ -1154,82 +1154,6 @@ module.exports = util;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var baseAssign = __webpack_require__(153),
-    baseCreate = __webpack_require__(154);
-
-/**
- * Creates an object that inherits from the `prototype` object. If a
- * `properties` object is given, its own enumerable string keyed properties
- * are assigned to the created object.
- *
- * @static
- * @memberOf _
- * @since 2.3.0
- * @category Object
- * @param {Object} prototype The object to inherit from.
- * @param {Object} [properties] The properties to assign to the object.
- * @returns {Object} Returns the new object.
- * @example
- *
- * function Shape() {
- *   this.x = 0;
- *   this.y = 0;
- * }
- *
- * function Circle() {
- *   Shape.call(this);
- * }
- *
- * Circle.prototype = _.create(Shape.prototype, {
- *   'constructor': Circle
- * });
- *
- * var circle = new Circle;
- * circle instanceof Circle;
- * // => true
- *
- * circle instanceof Shape;
- * // => true
- */
-function create(prototype, properties) {
-  var result = baseCreate(prototype);
-  return properties == null ? result : baseAssign(result, properties);
-}
-
-module.exports = create;
-
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1276,6 +1200,82 @@ else if (Facet_1.AWS.config) {
 else {
     logger.warn('No AWS.config');
 }
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseAssign = __webpack_require__(153),
+    baseCreate = __webpack_require__(154);
+
+/**
+ * Creates an object that inherits from the `prototype` object. If a
+ * `properties` object is given, its own enumerable string keyed properties
+ * are assigned to the created object.
+ *
+ * @static
+ * @memberOf _
+ * @since 2.3.0
+ * @category Object
+ * @param {Object} prototype The object to inherit from.
+ * @param {Object} [properties] The properties to assign to the object.
+ * @returns {Object} Returns the new object.
+ * @example
+ *
+ * function Shape() {
+ *   this.x = 0;
+ *   this.y = 0;
+ * }
+ *
+ * function Circle() {
+ *   Shape.call(this);
+ * }
+ *
+ * Circle.prototype = _.create(Shape.prototype, {
+ *   'constructor': Circle
+ * });
+ *
+ * var circle = new Circle;
+ * circle instanceof Circle;
+ * // => true
+ *
+ * circle instanceof Shape;
+ * // => true
+ */
+function create(prototype, properties) {
+  var result = baseCreate(prototype);
+  return properties == null ? result : baseAssign(result, properties);
+}
+
+module.exports = create;
 
 
 /***/ }),
@@ -2801,7 +2801,7 @@ module.exports = AWS.STS;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Auth_1 = __webpack_require__(121);
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var logger = new Common_1.ConsoleLogger('Auth');
 var _instance = null;
 if (!_instance) {
@@ -3331,7 +3331,7 @@ AMA.Storage = (function () {
 
 module.exports = AMA.Storage;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 32 */
@@ -3406,7 +3406,7 @@ AMA.Util = (function () {
 
 module.exports = AMA.Util;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 33 */
@@ -3434,7 +3434,7 @@ AMA.StorageKeys = {
 
 module.exports = AMA.StorageKeys;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 34 */
@@ -7523,7 +7523,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 53 */
@@ -8133,7 +8133,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 module.exports = freeGlobal;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 65 */
@@ -8295,7 +8295,7 @@ module.exports = baseKeys;
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   isObject = __webpack_require__(7);
 
@@ -8430,7 +8430,7 @@ module.exports = getTag;
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   isObject = __webpack_require__(7);
 
@@ -8906,7 +8906,7 @@ module.exports = castPath;
 (function() {
   var XMLProcessingInstruction, create;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   module.exports = XMLProcessingInstruction = (function() {
     function XMLProcessingInstruction(parent, target, value) {
@@ -8965,7 +8965,7 @@ module.exports = castPath;
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   XMLNode = __webpack_require__(12);
 
@@ -9020,7 +9020,7 @@ module.exports = castPath;
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   XMLNode = __webpack_require__(12);
 
@@ -9073,7 +9073,7 @@ module.exports = castPath;
 (function() {
   var XMLCData, XMLComment, XMLDTDAttList, XMLDTDElement, XMLDTDEntity, XMLDTDNotation, XMLDocType, XMLProcessingInstruction, create, isObject;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   isObject = __webpack_require__(7);
 
@@ -10550,7 +10550,7 @@ if (!rng) {
 
 module.exports = rng;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 94 */
@@ -15150,7 +15150,7 @@ AMA.Client = (function () {
 }());
 module.exports = AMA.Client;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 112 */
@@ -15308,7 +15308,7 @@ AMA.Session = (function () {
 
 module.exports = AMA.Session;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 113 */
@@ -15677,7 +15677,7 @@ module.exports = Cancel;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = __webpack_require__(55);
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var logger = new Common_1.ConsoleLogger('StorageCache');
 /**
  * Initialization of the cache
@@ -15807,7 +15807,7 @@ var I18n_1 = __webpack_require__(556);
 exports.I18n = I18n_1.default;
 var Cache_1 = __webpack_require__(558);
 exports.Cache = Cache_1.default;
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 exports.Logger = Common_1.ConsoleLogger;
 exports.Hub = Common_1.Hub;
 exports.JS = Common_1.JS;
@@ -15901,7 +15901,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var logger = new Common_1.ConsoleLogger('AuthClass');
 var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
 var CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
@@ -16762,7 +16762,7 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(10)))
 
 /***/ }),
 /* 124 */
@@ -20372,7 +20372,7 @@ module.exports = basePropertyDeep;
 (function() {
   var XMLAttribute, create;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   module.exports = XMLAttribute = (function() {
     function XMLAttribute(parent, name, value) {
@@ -20410,7 +20410,7 @@ module.exports = basePropertyDeep;
 (function() {
   var XMLDTDAttList, create;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   module.exports = XMLDTDAttList = (function() {
     function XMLDTDAttList(parent, elementName, attributeName, attributeType, defaultValueType, defaultValue) {
@@ -20484,7 +20484,7 @@ module.exports = basePropertyDeep;
 (function() {
   var XMLDTDEntity, create, isObject;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   isObject = __webpack_require__(7);
 
@@ -20574,7 +20574,7 @@ module.exports = basePropertyDeep;
 (function() {
   var XMLDTDElement, create;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   module.exports = XMLDTDElement = (function() {
     function XMLDTDElement(parent, name, value) {
@@ -20626,7 +20626,7 @@ module.exports = basePropertyDeep;
 (function() {
   var XMLDTDNotation, create;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   module.exports = XMLDTDNotation = (function() {
     function XMLDTDNotation(parent, name, value) {
@@ -20690,7 +20690,7 @@ module.exports = basePropertyDeep;
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   XMLNode = __webpack_require__(12);
 
@@ -20745,7 +20745,7 @@ module.exports = basePropertyDeep;
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  create = __webpack_require__(4);
+  create = __webpack_require__(5);
 
   XMLNode = __webpack_require__(12);
 
@@ -23176,7 +23176,7 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(10)))
 
 /***/ }),
 /* 239 */
@@ -26817,7 +26817,7 @@ module.exports = function md5(buf) {
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(44)(module), __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(44)(module), __webpack_require__(4)))
 
 /***/ }),
 /* 265 */
@@ -35270,7 +35270,7 @@ __webpack_require__(112);
 __webpack_require__(524);
 module.exports = global.AMA;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 524 */
@@ -35464,7 +35464,7 @@ AMA.Manager = (function () {
 
 module.exports = AMA.Manager;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 525 */
@@ -35992,7 +35992,7 @@ exports.default = JS;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Analytics_1 = __webpack_require__(531);
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var logger = new Common_1.ConsoleLogger('Analytics');
 var _instance = null;
 if (!_instance) {
@@ -36088,7 +36088,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var Auth_1 = __webpack_require__(20);
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 var ama_logger = new Common_1.ConsoleLogger('AMA');
@@ -36350,7 +36350,7 @@ exports.default = AnalyticsClass;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Storage_1 = __webpack_require__(533);
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var logger = new Common_1.ConsoleLogger('Storage');
 var _instance = null;
 if (!_instance) {
@@ -36423,7 +36423,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var Auth_1 = __webpack_require__(20);
 var logger = new Common_1.ConsoleLogger('StorageClass');
 var S3 = Common_1.AWS.S3;
@@ -37075,7 +37075,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Signer_1 = __webpack_require__(536);
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var Auth_1 = __webpack_require__(20);
 var axios_1 = __webpack_require__(537);
 var logger = new Common_1.ConsoleLogger('RestClient');
@@ -37277,6 +37277,8 @@ exports.RestClient = RestClient;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+var Common_1 = __webpack_require__(3);
+var logger = new Common_1.ConsoleLogger('Signer');
 var url = __webpack_require__(95), crypto = __webpack_require__(34).util.crypto;
 var encrypt = function (key, src, encoding) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
@@ -37405,6 +37407,7 @@ kSigning = HMAC(kService, "aws4_request")
 </pre>
 */
 var get_signing_key = function (secret_key, d_str, service_info) {
+    logger.debug(service_info);
     var k = ('AWS4' + secret_key), k_date = encrypt(k, d_str), k_region = encrypt(k_date, service_info.region), k_service = encrypt(k_region, service_info.service), k_signing = encrypt(k_service, 'aws4_request');
     return k_signing;
 };
@@ -37472,6 +37475,7 @@ var sign = function (request, access_info, service_info) {
     }
     // Task 1: Create a Canonical Request
     var request_str = canonical_request(request);
+    logger.debug(request_str);
     // Task 2: Create a String to Sign
     var service_info = service_info || parse_service_info(request), scope = credential_scope(d_str, service_info.region, service_info.service), str_to_sign = string_to_sign(algorithm, request_str, dt_str, scope);
     // Task 3: Calculate the Signature
@@ -38517,7 +38521,7 @@ exports.default = I18n;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var logger = new Common_1.ConsoleLogger('I18n');
 /**
  * Language transition class
@@ -38685,7 +38689,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = __webpack_require__(55);
 var StorageCache_1 = __webpack_require__(119);
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var logger = new Common_1.ConsoleLogger('Cache');
 /**
  * Customized storage based on the SessionStorage or LocalStorage with LRU implemented
@@ -39364,7 +39368,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = __webpack_require__(55);
 var StorageCache_1 = __webpack_require__(119);
-var Common_1 = __webpack_require__(5);
+var Common_1 = __webpack_require__(3);
 var logger = new Common_1.ConsoleLogger('InMemoryCache');
 /**
  * provide an object as the in-memory cache
