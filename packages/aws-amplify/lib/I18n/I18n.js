@@ -17,7 +17,7 @@ var logger = new Common_1.ConsoleLogger('I18n');
 /**
  * Language transition class
  */
-var I18n = (function () {
+var I18n = /** @class */ (function () {
     /**
      * @constructor
      * Initialize with configurations

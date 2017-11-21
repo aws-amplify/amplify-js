@@ -73,7 +73,7 @@ restClient.get('...')
     .catch(err => console.log(err));
 </pre>
 */
-var RestClient = (function () {
+var RestClient = /** @class */ (function () {
     /**
     * @param {RestClientOptions} [options] - Instance options
     */
@@ -210,7 +210,7 @@ var RestClient = (function () {
         return axios_1.default(signed_params)
             .then(function (response) { return response.data; })
             .catch(function (error) {
-            console.log(error);
+            logger.error(error);
             throw error;
         });
     };

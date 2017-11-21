@@ -54,7 +54,7 @@ var S3 = Common_1.AWS.S3;
 /**
  * Provide storage methods to use AWS S3
  */
-var StorageClass = (function () {
+var StorageClass = /** @class */ (function () {
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
