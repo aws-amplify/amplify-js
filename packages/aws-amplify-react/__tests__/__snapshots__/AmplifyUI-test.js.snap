@@ -21,7 +21,6 @@ exports[`AmplifyUi test render ButtonRow correctly 1`] = `
         "padding": "0.3em 0.5em",
       }
     }
-    theme={null}
   />
 </div>
 `;
@@ -39,7 +38,6 @@ exports[`AmplifyUi test render CheckboxRow correctly 1`] = `
   <input
     className="amplify-checkbox"
     id="_undefined"
-    theme={null}
     type="checkbox"
   />
   <label
@@ -107,7 +105,6 @@ exports[`AmplifyUi test render InputRow correctly 1`] = `
         "width": "15em",
       }
     }
-    theme={null}
   />
 </div>
 `;
@@ -119,7 +116,6 @@ exports[`AmplifyUi test render Link correctly 1`] = `
       "textDecoration": "underline",
     }
   }
-  theme={null}
 />
 `;
 
@@ -148,7 +144,6 @@ exports[`AmplifyUi test render RadioRow correctly 1`] = `
   <input
     className="amplify-radio"
     id="_undefined"
-    theme={null}
     type="radio"
   />
   <label

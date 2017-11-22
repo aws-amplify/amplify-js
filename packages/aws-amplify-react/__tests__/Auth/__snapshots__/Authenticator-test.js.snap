@@ -37,7 +37,7 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
         },
         "a": Object {
           "textDecoration": "underline",
@@ -54,8 +54,18 @@ exports[`Authenticator normal case render if no error 1`] = `
         "albumPhoto": Object {
           "display": "inline-block",
           "margin": "0.2%",
+          "maxHeight": 320,
+          "overflow": "auto",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
+        },
+        "albumText": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 256,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
         "button": Object {
           "background": "#fff",
@@ -67,6 +77,16 @@ exports[`Authenticator normal case render if no error 1`] = `
         },
         "center": Object {
           "textAlign": "center",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "83.6%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "99.2%",
         },
         "col3": Object {
           "display": "inline-block",
@@ -82,6 +102,16 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "width": "49.5%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "66%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "74.5%",
         },
         "container": Object {
           "fontFamily": "-apple-system,
@@ -109,6 +139,10 @@ exports[`Authenticator normal case render if no error 1`] = `
         "formSection": Object {
           "display": "inline-block",
           "fontWeight": "200",
+        },
+        "halfHeight": Object {
+          "height": 384,
+          "overflow": "auto",
         },
         "hidden": Object {
           "display": "none",
@@ -149,20 +183,27 @@ exports[`Authenticator normal case render if no error 1`] = `
         "photoImg": Object {
           "maxWidth": "100%",
         },
-        "photoPicker": Object {
+        "picker": Object {
           "textAlign": "center",
           "width": "100%",
         },
-        "photoPickerButton": Object {
+        "pickerButton": Object {
           "background": "#fff",
           "border": "1px solid #ccc",
           "fontWeight": "200",
           "width": "100%",
         },
-        "photoPickerInput": Object {},
-        "photoPickerPicker": Object {
+        "pickerInput": Object {},
+        "pickerPicker": Object {
           "textAlign": "center",
           "width": "100%",
+        },
+        "pre": Object {
+          "background": "#eee",
+          "margin": "0",
+          "overflow": "auto",
+          "padding": "1em",
+          "textAlign": "left",
         },
         "section": Object {
           "fontWeight": "200",
@@ -188,6 +229,14 @@ exports[`Authenticator normal case render if no error 1`] = `
           "fontWeight": "normal",
           "padding": "0.6em",
           "textAlign": "center",
+        },
+        "text": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 384,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
       }
     }
@@ -210,7 +259,7 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
         },
         "a": Object {
           "textDecoration": "underline",
@@ -227,8 +276,18 @@ exports[`Authenticator normal case render if no error 1`] = `
         "albumPhoto": Object {
           "display": "inline-block",
           "margin": "0.2%",
+          "maxHeight": 320,
+          "overflow": "auto",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
+        },
+        "albumText": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 256,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
         "button": Object {
           "background": "#fff",
@@ -240,6 +299,16 @@ exports[`Authenticator normal case render if no error 1`] = `
         },
         "center": Object {
           "textAlign": "center",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "83.6%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "99.2%",
         },
         "col3": Object {
           "display": "inline-block",
@@ -255,6 +324,16 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "width": "49.5%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "66%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "74.5%",
         },
         "container": Object {
           "fontFamily": "-apple-system,
@@ -282,6 +361,10 @@ exports[`Authenticator normal case render if no error 1`] = `
         "formSection": Object {
           "display": "inline-block",
           "fontWeight": "200",
+        },
+        "halfHeight": Object {
+          "height": 384,
+          "overflow": "auto",
         },
         "hidden": Object {
           "display": "none",
@@ -322,20 +405,27 @@ exports[`Authenticator normal case render if no error 1`] = `
         "photoImg": Object {
           "maxWidth": "100%",
         },
-        "photoPicker": Object {
+        "picker": Object {
           "textAlign": "center",
           "width": "100%",
         },
-        "photoPickerButton": Object {
+        "pickerButton": Object {
           "background": "#fff",
           "border": "1px solid #ccc",
           "fontWeight": "200",
           "width": "100%",
         },
-        "photoPickerInput": Object {},
-        "photoPickerPicker": Object {
+        "pickerInput": Object {},
+        "pickerPicker": Object {
           "textAlign": "center",
           "width": "100%",
+        },
+        "pre": Object {
+          "background": "#eee",
+          "margin": "0",
+          "overflow": "auto",
+          "padding": "1em",
+          "textAlign": "left",
         },
         "section": Object {
           "fontWeight": "200",
@@ -361,6 +451,14 @@ exports[`Authenticator normal case render if no error 1`] = `
           "fontWeight": "normal",
           "padding": "0.6em",
           "textAlign": "center",
+        },
+        "text": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 384,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
       }
     }
@@ -383,7 +481,7 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
         },
         "a": Object {
           "textDecoration": "underline",
@@ -400,8 +498,18 @@ exports[`Authenticator normal case render if no error 1`] = `
         "albumPhoto": Object {
           "display": "inline-block",
           "margin": "0.2%",
+          "maxHeight": 320,
+          "overflow": "auto",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
+        },
+        "albumText": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 256,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
         "button": Object {
           "background": "#fff",
@@ -413,6 +521,16 @@ exports[`Authenticator normal case render if no error 1`] = `
         },
         "center": Object {
           "textAlign": "center",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "83.6%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "99.2%",
         },
         "col3": Object {
           "display": "inline-block",
@@ -428,6 +546,16 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "width": "49.5%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "66%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "74.5%",
         },
         "container": Object {
           "fontFamily": "-apple-system,
@@ -455,6 +583,10 @@ exports[`Authenticator normal case render if no error 1`] = `
         "formSection": Object {
           "display": "inline-block",
           "fontWeight": "200",
+        },
+        "halfHeight": Object {
+          "height": 384,
+          "overflow": "auto",
         },
         "hidden": Object {
           "display": "none",
@@ -495,20 +627,27 @@ exports[`Authenticator normal case render if no error 1`] = `
         "photoImg": Object {
           "maxWidth": "100%",
         },
-        "photoPicker": Object {
+        "picker": Object {
           "textAlign": "center",
           "width": "100%",
         },
-        "photoPickerButton": Object {
+        "pickerButton": Object {
           "background": "#fff",
           "border": "1px solid #ccc",
           "fontWeight": "200",
           "width": "100%",
         },
-        "photoPickerInput": Object {},
-        "photoPickerPicker": Object {
+        "pickerInput": Object {},
+        "pickerPicker": Object {
           "textAlign": "center",
           "width": "100%",
+        },
+        "pre": Object {
+          "background": "#eee",
+          "margin": "0",
+          "overflow": "auto",
+          "padding": "1em",
+          "textAlign": "left",
         },
         "section": Object {
           "fontWeight": "200",
@@ -534,6 +673,14 @@ exports[`Authenticator normal case render if no error 1`] = `
           "fontWeight": "normal",
           "padding": "0.6em",
           "textAlign": "center",
+        },
+        "text": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 384,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
       }
     }
@@ -556,7 +703,7 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
         },
         "a": Object {
           "textDecoration": "underline",
@@ -573,8 +720,18 @@ exports[`Authenticator normal case render if no error 1`] = `
         "albumPhoto": Object {
           "display": "inline-block",
           "margin": "0.2%",
+          "maxHeight": 320,
+          "overflow": "auto",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
+        },
+        "albumText": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 256,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
         "button": Object {
           "background": "#fff",
@@ -586,6 +743,16 @@ exports[`Authenticator normal case render if no error 1`] = `
         },
         "center": Object {
           "textAlign": "center",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "83.6%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "99.2%",
         },
         "col3": Object {
           "display": "inline-block",
@@ -601,6 +768,16 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "width": "49.5%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "66%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "74.5%",
         },
         "container": Object {
           "fontFamily": "-apple-system,
@@ -628,6 +805,10 @@ exports[`Authenticator normal case render if no error 1`] = `
         "formSection": Object {
           "display": "inline-block",
           "fontWeight": "200",
+        },
+        "halfHeight": Object {
+          "height": 384,
+          "overflow": "auto",
         },
         "hidden": Object {
           "display": "none",
@@ -668,20 +849,27 @@ exports[`Authenticator normal case render if no error 1`] = `
         "photoImg": Object {
           "maxWidth": "100%",
         },
-        "photoPicker": Object {
+        "picker": Object {
           "textAlign": "center",
           "width": "100%",
         },
-        "photoPickerButton": Object {
+        "pickerButton": Object {
           "background": "#fff",
           "border": "1px solid #ccc",
           "fontWeight": "200",
           "width": "100%",
         },
-        "photoPickerInput": Object {},
-        "photoPickerPicker": Object {
+        "pickerInput": Object {},
+        "pickerPicker": Object {
           "textAlign": "center",
           "width": "100%",
+        },
+        "pre": Object {
+          "background": "#eee",
+          "margin": "0",
+          "overflow": "auto",
+          "padding": "1em",
+          "textAlign": "left",
         },
         "section": Object {
           "fontWeight": "200",
@@ -707,6 +895,14 @@ exports[`Authenticator normal case render if no error 1`] = `
           "fontWeight": "normal",
           "padding": "0.6em",
           "textAlign": "center",
+        },
+        "text": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 384,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
       }
     }
@@ -729,7 +925,7 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
         },
         "a": Object {
           "textDecoration": "underline",
@@ -746,8 +942,18 @@ exports[`Authenticator normal case render if no error 1`] = `
         "albumPhoto": Object {
           "display": "inline-block",
           "margin": "0.2%",
+          "maxHeight": 320,
+          "overflow": "auto",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
+        },
+        "albumText": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 256,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
         "button": Object {
           "background": "#fff",
@@ -759,6 +965,16 @@ exports[`Authenticator normal case render if no error 1`] = `
         },
         "center": Object {
           "textAlign": "center",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "83.6%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "99.2%",
         },
         "col3": Object {
           "display": "inline-block",
@@ -774,6 +990,16 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "width": "49.5%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "66%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "74.5%",
         },
         "container": Object {
           "fontFamily": "-apple-system,
@@ -801,6 +1027,10 @@ exports[`Authenticator normal case render if no error 1`] = `
         "formSection": Object {
           "display": "inline-block",
           "fontWeight": "200",
+        },
+        "halfHeight": Object {
+          "height": 384,
+          "overflow": "auto",
         },
         "hidden": Object {
           "display": "none",
@@ -841,20 +1071,27 @@ exports[`Authenticator normal case render if no error 1`] = `
         "photoImg": Object {
           "maxWidth": "100%",
         },
-        "photoPicker": Object {
+        "picker": Object {
           "textAlign": "center",
           "width": "100%",
         },
-        "photoPickerButton": Object {
+        "pickerButton": Object {
           "background": "#fff",
           "border": "1px solid #ccc",
           "fontWeight": "200",
           "width": "100%",
         },
-        "photoPickerInput": Object {},
-        "photoPickerPicker": Object {
+        "pickerInput": Object {},
+        "pickerPicker": Object {
           "textAlign": "center",
           "width": "100%",
+        },
+        "pre": Object {
+          "background": "#eee",
+          "margin": "0",
+          "overflow": "auto",
+          "padding": "1em",
+          "textAlign": "left",
         },
         "section": Object {
           "fontWeight": "200",
@@ -880,6 +1117,14 @@ exports[`Authenticator normal case render if no error 1`] = `
           "fontWeight": "normal",
           "padding": "0.6em",
           "textAlign": "center",
+        },
+        "text": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 384,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
       }
     }
@@ -902,7 +1147,7 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
         },
         "a": Object {
           "textDecoration": "underline",
@@ -919,8 +1164,18 @@ exports[`Authenticator normal case render if no error 1`] = `
         "albumPhoto": Object {
           "display": "inline-block",
           "margin": "0.2%",
+          "maxHeight": 320,
+          "overflow": "auto",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
+        },
+        "albumText": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 256,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
         "button": Object {
           "background": "#fff",
@@ -932,6 +1187,16 @@ exports[`Authenticator normal case render if no error 1`] = `
         },
         "center": Object {
           "textAlign": "center",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "83.6%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "99.2%",
         },
         "col3": Object {
           "display": "inline-block",
@@ -947,6 +1212,16 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "width": "49.5%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "66%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "74.5%",
         },
         "container": Object {
           "fontFamily": "-apple-system,
@@ -974,6 +1249,10 @@ exports[`Authenticator normal case render if no error 1`] = `
         "formSection": Object {
           "display": "inline-block",
           "fontWeight": "200",
+        },
+        "halfHeight": Object {
+          "height": 384,
+          "overflow": "auto",
         },
         "hidden": Object {
           "display": "none",
@@ -1014,20 +1293,27 @@ exports[`Authenticator normal case render if no error 1`] = `
         "photoImg": Object {
           "maxWidth": "100%",
         },
-        "photoPicker": Object {
+        "picker": Object {
           "textAlign": "center",
           "width": "100%",
         },
-        "photoPickerButton": Object {
+        "pickerButton": Object {
           "background": "#fff",
           "border": "1px solid #ccc",
           "fontWeight": "200",
           "width": "100%",
         },
-        "photoPickerInput": Object {},
-        "photoPickerPicker": Object {
+        "pickerInput": Object {},
+        "pickerPicker": Object {
           "textAlign": "center",
           "width": "100%",
+        },
+        "pre": Object {
+          "background": "#eee",
+          "margin": "0",
+          "overflow": "auto",
+          "padding": "1em",
+          "textAlign": "left",
         },
         "section": Object {
           "fontWeight": "200",
@@ -1053,6 +1339,14 @@ exports[`Authenticator normal case render if no error 1`] = `
           "fontWeight": "normal",
           "padding": "0.6em",
           "textAlign": "center",
+        },
+        "text": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 384,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
       }
     }
@@ -1075,7 +1369,7 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
         },
         "a": Object {
           "textDecoration": "underline",
@@ -1092,8 +1386,18 @@ exports[`Authenticator normal case render if no error 1`] = `
         "albumPhoto": Object {
           "display": "inline-block",
           "margin": "0.2%",
+          "maxHeight": 320,
+          "overflow": "auto",
           "verticalAlign": "top",
-          "width": "16.66%",
+          "width": "32%",
+        },
+        "albumText": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 256,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
         "button": Object {
           "background": "#fff",
@@ -1105,6 +1409,16 @@ exports[`Authenticator normal case render if no error 1`] = `
         },
         "center": Object {
           "textAlign": "center",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "83.6%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "99.2%",
         },
         "col3": Object {
           "display": "inline-block",
@@ -1120,6 +1434,16 @@ exports[`Authenticator normal case render if no error 1`] = `
           "display": "inline-block",
           "margin": "0.2%",
           "width": "49.5%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "66%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "74.5%",
         },
         "container": Object {
           "fontFamily": "-apple-system,
@@ -1147,6 +1471,10 @@ exports[`Authenticator normal case render if no error 1`] = `
         "formSection": Object {
           "display": "inline-block",
           "fontWeight": "200",
+        },
+        "halfHeight": Object {
+          "height": 384,
+          "overflow": "auto",
         },
         "hidden": Object {
           "display": "none",
@@ -1187,20 +1515,27 @@ exports[`Authenticator normal case render if no error 1`] = `
         "photoImg": Object {
           "maxWidth": "100%",
         },
-        "photoPicker": Object {
+        "picker": Object {
           "textAlign": "center",
           "width": "100%",
         },
-        "photoPickerButton": Object {
+        "pickerButton": Object {
           "background": "#fff",
           "border": "1px solid #ccc",
           "fontWeight": "200",
           "width": "100%",
         },
-        "photoPickerInput": Object {},
-        "photoPickerPicker": Object {
+        "pickerInput": Object {},
+        "pickerPicker": Object {
           "textAlign": "center",
           "width": "100%",
+        },
+        "pre": Object {
+          "background": "#eee",
+          "margin": "0",
+          "overflow": "auto",
+          "padding": "1em",
+          "textAlign": "left",
         },
         "section": Object {
           "fontWeight": "200",
@@ -1226,6 +1561,14 @@ exports[`Authenticator normal case render if no error 1`] = `
           "fontWeight": "normal",
           "padding": "0.6em",
           "textAlign": "center",
+        },
+        "text": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 384,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
         },
       }
     }
