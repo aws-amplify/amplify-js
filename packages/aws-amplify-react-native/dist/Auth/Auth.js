@@ -62,7 +62,7 @@ class AuthClass {
      */
     configure(config) {
         logger.debug('configure Auth');
-        let conf = config ? config.Analytics || config : {};
+        let conf = config ? config.Auth || config : {};
 
         if (conf['aws_cognito_identity_pool_id']) {
             conf = {
