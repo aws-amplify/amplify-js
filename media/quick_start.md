@@ -64,7 +64,7 @@ Alternatively you can automate this process with a single button click outlined 
 AWS Mobile Hub streamlines the steps above for you. Simply click the button:
 
 <p align="center">
-  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home?#/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/quick_start.zip">
+  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https%3A%2F%2Fgithub.com%2Fawslabs%2Faws-mobile-react-sample%2Fblob%2Fmaster%2Fbackend%2Fimport_mobilehub%2Freact-sample.zip&app=web">
     <span>
         <img height="100%" src="https://s3.amazonaws.com/deploytomh/button-deploy-aws-mh.png"/>
     </span>
