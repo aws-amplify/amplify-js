@@ -16,13 +16,13 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
 AWS Amplify is available as the `aws-amplify` package on [npm](https://www.npmjs.com/)
 
 ```
-npm install aws-amplify
+npm install aws-amplify --save
 ```
 
 If you are developing a [React](https://github.com/facebook/react/) app, you can install an additional package `aws-amplify-react` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
 
 ```
-npm install aws-amplify-react
+npm install aws-amplify-react --save
 ```
 
 ### React Native Development
@@ -30,7 +30,7 @@ npm install aws-amplify-react
 For React Native development, install `aws-amplify-react-native` instead of `aws-amplify`
 
 ```
-npm install aws-amplify-react-native
+npm install aws-amplify-react-native --save
 ```
 
 You will need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) libraries in your project for the Auth module on React Native. Follow the instructions [here](https://github.com/aws/aws-amplify/blob/master/media/quick_start.md#react-native-development).
