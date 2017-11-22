@@ -315,20 +315,20 @@ var MediaQuery = function () {
 
                 if (width < 576) {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col6);
-                    AmplifyTheme.Photo = Object.assign({}, Photo, Col12);
+                    AmplifyTheme.photo = Object.assign({}, Photo, Col12);
                     AmplifyTheme.albumText = Object.assign({}, AlbumText, Col12);
                 } else if (width < 768) {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col4);
-                    AmplifyTheme.Photo = Object.assign({}, Photo, Col6);
+                    AmplifyTheme.photo = Object.assign({}, Photo, Col6);
                     AmplifyTheme.albumText = Object.assign({}, AlbumText, Col8);
                 } else if (width < 992) {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col3);
-                    AmplifyTheme.Photo = Object.assign({}, Photo, Col6);
+                    AmplifyTheme.photo = Object.assign({}, Photo, Col6);
                     AmplifyTheme.albumText = Object.assign({}, AlbumText, Col6);
                 } else {
                     AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col2);
-                    AmplifyTheme.Photo = Object.assign({}, Photo, Col4);
-                    AmplifyTheme.albumPhoto = Object.assign({}, AlbumText, Col4);
+                    AmplifyTheme.photo = Object.assign({}, Photo, Col4);
+                    AmplifyTheme.albumText = Object.assign({}, AlbumText, Col4);
                 }
 
                 AmplifyTheme.halfHeight = Object.assign({}, HalfHeight, { height: height / 2 });
