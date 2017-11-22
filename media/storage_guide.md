@@ -10,9 +10,10 @@ AWS Amplify Storage module gives a simple mechanism for managing user content in
 * [Access Level](#access-level)
 * [Call APIs](#call-apis)
 * [React Development](#react-development)
+  - [Picker](#picker)
   - [S3Image](#s3image)
+  - [S3Text](#s3text)
   - [S3Album](#s3album)
-  - [Photo Picker](#photo-picker)
 
 
 ## Installation
@@ -107,7 +108,7 @@ Amplify.configure(aws_exports);
 
 ## Access Level
 
-If you used Automated Setup or use AWS Mobile Hub to create your resources, Storage has two access levels: `public` and `private`. 
+Storage has two access levels: `public` and `private`. 
 
 Files with public access level can be accessed by all users who are using the app. In S3, they are stored under the `public/` path in your S3 bucket.
 
@@ -142,7 +143,7 @@ Storage.vault.get('welcome.png'); // Get the welcome.png belonging to current us
 
 ## Call APIs
 
-Import Storage from the aws-amplify library into your App:
+Import Storage from the aws-amplify library:
 ```js
 import { Storage } from 'aws-amplify';
 ```
@@ -161,21 +162,14 @@ Put data into Amazon S3.
 
 Public
 ```js
-    const key = 'xyz.ext';
-    const fileObj = 'abc'
-    Storage.put(key, fileObj)
+    Storage.put('test.txt', 'Hello')
         .then (result => console.log(result))
         .catch(err => console.log(err));
 ```
 
 Private
 ```js
-    Storage.put(key, fileObj, {level: 'private'})
-        .then (result => console.log(result))
-        .catch(err => console.log(err));
-        
-    // Stores data with specifying its MIME type
-    Storage.put(key, fileObj, {
+    Storage.put('test.txt', 'Private Content', {
         level: 'private',
         contentType: 'text/plain'
     })
@@ -188,15 +182,14 @@ Get a public accessible URL for data stored.
 
 Public
 ```js
-    const key = “abc”
-    Storage.get(key)
+    Storage.get('test.txt')
         .then(result => console.log(result))
         .catch(err => console.log(err));
 ```
 
 Private
 ```js
-    Storage.get(key, {level: 'private'})
+    Storage.get('test.txt', {level: 'private'})
         .then(result => console.log(result))
         .catch(err => console.log(err));
 ```
@@ -206,15 +199,14 @@ Delete data stored with key specified.
 
 Public
 ```js
-    const key = “abc”
-    Storage.remove(key)
+    Storage.remove('test.txt')
         .then(result => console.log(result))
         .catch(err => console.log(err));
 ```
 
 Private
 ```js
-    Storage.remove(key, {level: 'private'})
+    Storage.remove('test.txt', {level: 'private'})
         .then(result => console.log(result))
         .catch(err => console.log(err));
 ```
@@ -224,15 +216,14 @@ List keys under path specified.
 
 Public
 ```js
-    const path = ‘my path’;
-    Storage.list(path)
+    Storage.list('photos/')
         .then(result => console.log(result))
         .catch(err => console.log(err));
 ```
 
 Private
 ```js
-    Storage.list(path, {level: 'private'})
+    Storage.list('photos/, {level: 'private'})
         .then(result => console.log(result))
         .catch(err => console.log(err));
 ```
@@ -240,6 +231,33 @@ Private
 ## React Development
 
 `aws-amplify-react` package provides the following components:
+
+### Picker
+
+`Picker` is used to pick file from local device. `PhotoPicker` and `TextPicker` are specific to photo and text file picking.
+
+<img src="photo_picker_and_code.png" width="320px"/>
+
+Listen to `PhotoPicker` onPick event:
+```jsx
+import { PhotoPicker } from 'aws-amplify-react';
+
+    render() {
+        <PhotoPicker onPick={data => console.log(data)}/>
+    }
+```
+
+To have a preview
+
+```jsx
+    <PhotoPicker preview onLoad={dataURL => console.log(dataURL)} />
+```
+
+`onLoad` gives dataURL of the image. With that, you may not need the built-in preview. Then just hide it
+
+```jsx
+    <PhotoPicker preview="hidden" onLoad={dataURL => console.log(dataURL)} />
+```
 
 ### S3Image
 
@@ -305,15 +323,20 @@ function fileToKey(data) {
 
 `S3Image` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
 
+### S3Text
+
+`S3Text` has similar behaviors as `S3Image`, only this is for text contents.
+
 ### S3Album
 
-`S3Album` holds a list of S3Image objects:
+`S3Album` holds a list of `S3Image` and `S3Text` objects:
+
+<img src="S3Album_and_code.png" width="320px"/>
 
 ```jsx
 import { S3Album } from 'aws-amplify-react';
 
     render() {
-        const path = // path of the list;
         return <S3Album path={path} />
 ```
 
@@ -323,7 +346,7 @@ For private album, supply the `level` property:
         return <S3Album level="private" path={path} />
 ```
 
-You might have non-image files in an album from your bucket. In this case you can use a `filter` prop:
+You might have files under the path not in album. In this case you can provide a `filter` prop:
 
 ```jsx
         return <S3Album
@@ -333,9 +356,9 @@ You might have non-image files in an album from your bucket. In this case you ca
                 />
 ```
 
-**Photo Picker**
+**Picker**
 
-Set `picker` property to true on `S3Album`. A `PhotoPicker` let user pick photos on his/her device.
+Set `picker` property to true on `S3Album`. A `Picker` let user pick photos or text files on his/her device.
 
 ```jsx
     <S3Album path={path} picker />
@@ -354,30 +377,3 @@ function fileToKey(data) {
 ```
 
 `S3Album` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
-
-<img src="S3Album_and_code.png" width="320px"/>
-
-### Photo Picker
-
-`S3Image` and `S3Album` both contain a component, `PhotoPicker`, which is used to pick photo from local device.
-
-```jsx
-import { PhotoPicker } from 'aws-amplify-react';
-
-    render() {
-        <PhotoPicker onPick={data => console.log(data)}/>
-    }
-```
-
-To have a preview
-
-```jsx
-    <PhotoPicker preview onLoad={dataURL => console.log(dataURL)} />
-```
-
-`onLoad` gives dataURL of the image. With that, you may not need the built-in preview. Then just hide it
-
-```jsx
-    <PhotoPicker preview="hidden" onLoad={dataURL => console.log(dataURL)} />
-```
-<img src="photo_picker_and_code.png" width="320px"/>
