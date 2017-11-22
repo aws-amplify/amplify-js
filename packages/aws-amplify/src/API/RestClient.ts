@@ -16,7 +16,6 @@ import { ConsoleLogger as Logger } from '../Common';
 
 import Auth from '../Auth';
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
-import * as AWS from 'aws-sdk';
 import axios from 'axios';
 const logger = new Logger('RestClient');
 

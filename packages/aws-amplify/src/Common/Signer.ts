@@ -11,12 +11,13 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger } from '../Common';
+import { AWS, ConsoleLogger as Logger } from '../Common';
+
 
 const logger = new Logger('Signer');
 
 var url = require('url'),
-    crypto = require('aws-sdk').util.crypto;
+    crypto = AWS['util'].crypto;
 
 var encrypt = function(key, src, encoding?) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);

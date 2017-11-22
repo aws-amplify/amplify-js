@@ -50,7 +50,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
 var Auth_1 = require("../Auth");
 var logger = new Common_1.ConsoleLogger('StorageClass');
-var S3 = Common_1.AWS.S3;
 /**
  * Provide storage methods to use AWS S3
  */
@@ -313,7 +312,7 @@ var StorageClass = /** @class */ (function () {
             region: region,
             credentials: credentials
         });
-        return new S3({
+        return new Common_1.S3({
             apiVersion: '2006-03-01',
             params: { Bucket: bucket },
             region: region

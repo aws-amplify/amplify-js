@@ -12,7 +12,6 @@
  */
 
 import {
-    AWS,
     Pinpoint,
     AMA,
     ClientDevice,

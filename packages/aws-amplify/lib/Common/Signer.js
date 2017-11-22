@@ -14,7 +14,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
 var logger = new Common_1.ConsoleLogger('Signer');
-var url = require('url'), crypto = require('aws-sdk').util.crypto;
+var url = require('url'), crypto = Common_1.AWS['util'].crypto;
 var encrypt = function (key, src, encoding) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
 };

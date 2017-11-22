@@ -13,6 +13,7 @@
 
 import {
     AWS,
+    S3,
     ConsoleLogger as Logger
 } from '../Common';
 
@@ -20,8 +21,6 @@ import Auth from '../Auth';
 import { StorageOptions } from './types';
 
 const logger = new Logger('StorageClass');
-
-const { S3 } = AWS;
 
 /**
  * Provide storage methods to use AWS S3
@@ -169,7 +168,7 @@ export default class StorageClass {
             Key: final_key
         }
 
-        return new Promise<AWS.S3.DeleteObjectOutput>((res, rej) => {
+        return new Promise<any>((res, rej) => {
             s3.deleteObject(params, (err,data) => {
                 if(err){
                     rej(err);

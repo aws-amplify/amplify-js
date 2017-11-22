@@ -13,7 +13,9 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 //import * as AWS from 'aws-sdk/global';
-var AWS = require("aws-sdk");
+var S3 = require("aws-sdk/clients/s3");
+exports.S3 = S3;
+var AWS = require("aws-sdk/global");
 exports.AWS = AWS;
 var Cognito = require("amazon-cognito-identity-js");
 exports.Cognito = Cognito;
