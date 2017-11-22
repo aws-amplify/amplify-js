@@ -110,6 +110,15 @@ var S3Album = function (_Component) {
                 var _this2 = this;
 
                 var that = this;
+                var _props = this.props,
+                    onPick = _props.onPick,
+                    onLoad = _props.onLoad,
+                    onError = _props.onError;
+
+
+                if (onPick) {
+                    onPick(data);
+                }
 
                 var path = this.props.path || '';
                 var file = data.file,
@@ -130,8 +139,14 @@ var S3Album = function (_Component) {
                     } else {
                         logger.debug('update an item');
                     }
+                    if (onLoad) {
+                        onLoad(data);
+                    }
                 })['catch'](function (err) {
-                    return logger.debug('handle pick error', err);
+                    logger.debug('handle pick error', err);
+                    if (onError) {
+                        onError(err);
+                    }
                 });
             }
 
@@ -173,9 +188,9 @@ var S3Album = function (_Component) {
             function list() {
                 var _this3 = this;
 
-                var _props = this.props,
-                    path = _props.path,
-                    level = _props.level;
+                var _props2 = this.props,
+                    path = _props2.path,
+                    level = _props2.level;
 
                 logger.debug('Album path: ' + path);
                 return _awsAmplify.Storage.list(path, { level: level ? level : 'public' }).then(function (data) {

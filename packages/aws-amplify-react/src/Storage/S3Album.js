@@ -71,6 +71,9 @@ export default class S3Album extends Component {
 
     handlePick(data) {
         const that = this;
+        const { onPick, onLoad, onError } = this.props;
+
+        if (onPick) { onPick(data); }
 
         const path = this.props.path || '';
         const { file, name, size, type } = data;
@@ -85,8 +88,12 @@ export default class S3Album extends Component {
                 } else {
                     logger.debug('update an item');
                 }
+                if (onLoad) { onLoad(data); }
             })
-            .catch(err => logger.debug('handle pick error', err));
+            .catch(err => {
+                logger.debug('handle pick error', err);
+                if (onError) { onError(err); }
+            });
     }
 
     onHubCapsule(capsule) {
