@@ -49,3 +49,11 @@ During web development, you can set global log level in browser console log
 ```js
 window.LOG_LEVEL = 'DEBUG';
 ```
+
+Supported log levels:
+
+* ERROR
+* WARN
+* INFO
+* DEBUG
+* VERBOSE
