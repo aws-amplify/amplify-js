@@ -8,7 +8,9 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
 * [Documentation](#documentation)
 * [Examples](#example)
   - [1. Collect user session metrics.](#1-collect-user-session-metrics)
-  - [2. Bind app with Authentications](#2-bind-app-with-authentications)
+  - [2. Add Authentication](#2-bind-app-with-authentications)
+  - [3. Sign HTTP requests](#3-sign-http-requests)
+  - [4. Upload and Download public or private content](#4-upload-and-download-public-or-private-content)
 
 ## Installation
 
@@ -113,7 +115,7 @@ API.get(apiName, path, options).then(response => {
 });
 ```
 
-### 4. Upload/Download public or private content
+### 4. Upload and Download public or private content
 
 With configurable settings, store content in an S3 bucket in public folders for all of your application's users or in private folders for each user identity:
 
