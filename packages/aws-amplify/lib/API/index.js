@@ -55,7 +55,7 @@ var _api = null;
 /**
  * Export Cloud Logic APIs
  */
-var API = /** @class */ (function () {
+var API = (function () {
     function API() {
     }
     /**

@@ -12,7 +12,7 @@
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var JS = /** @class */ (function () {
+var JS = (function () {
     function JS() {
     }
     JS.isEmpty = function (obj) {

@@ -55,7 +55,7 @@ ama_logger.log = ama_logger.verbose;
 /**
 * Provide mobile analytics client functions
 */
-var AnalyticsClass = /** @class */ (function () {
+var AnalyticsClass = (function () {
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
@@ -84,6 +84,7 @@ var AnalyticsClass = /** @class */ (function () {
                 platform: 'other'
             };
         }
+        conf.region = 'us-east-1';
         this._config = Object.assign({}, this._config, conf);
         if (!this._config.appId) {
             logger.debug('Do not have appId yet.');

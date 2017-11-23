@@ -30,7 +30,7 @@ exports.Hub = Common_1.Hub;
 exports.JS = Common_1.JS;
 exports.ClientDevice = Common_1.ClientDevice;
 var logger = new Common_1.ConsoleLogger('Amplify');
-var Amplify = /** @class */ (function () {
+var Amplify = (function () {
     function Amplify() {
     }
     Amplify.configure = function (config) {

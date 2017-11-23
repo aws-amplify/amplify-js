@@ -69,6 +69,7 @@ export default class AnalyticsClass {
                 platform: 'other'
             };
         }
+        conf.region = 'us-east-1';
         this._config = Object.assign({}, this._config, conf);
         if (!this._config.appId) { logger.debug('Do not have appId yet.'); }
 

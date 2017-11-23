@@ -226,7 +226,7 @@ var sign = function (request, access_info, service_info) {
 *
 * @class Signer
 */
-var Signer = /** @class */ (function () {
+var Signer = (function () {
     function Signer() {
     }
     Signer.sign = sign;

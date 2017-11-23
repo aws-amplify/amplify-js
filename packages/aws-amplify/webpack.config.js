@@ -1,5 +1,4 @@
 var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
     entry: {
@@ -24,10 +23,6 @@ module.exports = {
             minimize: true,
             sourceMap: true,
             include: /\.min\.js$/,
-        }),
-        new BundleAnalyzerPlugin({
-            analyzerMode: 'static',
-            reportFilename: 'report.html'
         })
     ],
     module: {
