@@ -223,7 +223,7 @@ Public
 
 Private
 ```js
-    Storage.list('photos/, {level: 'private'})
+    Storage.list('photos/', {level: 'private'})
         .then(result => console.log(result))
         .catch(err => console.log(err));
 ```
@@ -267,14 +267,14 @@ To have a preview
 import { S3Image } from 'aws-amplify-react';
 
     render() {
-        return <S3Image s3Key={key} />
+        return <S3Image imgKey={key} />
     }
 ```
 
 For private image, supply the `level` property:
 
 ```jsx
-        return <S3Image level="private" s3Key={key} />
+        return <S3Image level="private" imgKey={key} />
 ```
 
 To upload, set the body property to S3Image:
@@ -283,7 +283,7 @@ To upload, set the body property to S3Image:
 import { S3Image } from 'aws-amplify-react';
 
     render() {
-        return <S3Image s3Key={key} body={this.state.image_body} />
+        return <S3Image imgKey={key} body={this.state.image_body} />
     }
 ```
 
@@ -292,7 +292,7 @@ import { S3Image } from 'aws-amplify-react';
 `S3Image` converts path to actual URL. To get the URL, listen to the `onLoad` event:
 
 ```jsx
-    <S3Imag s3Key={s3Key} onLoad={url => console.log(url)}
+    <S3Imag imgKey={key} onLoad={url => console.log(url)}
 ```
 
 **Photo Picker**
@@ -300,10 +300,10 @@ import { S3Image } from 'aws-amplify-react';
 Set `picker` property to true on `S3Image`. A `PhotoPicker` let user pick photos on his/her device.
 
 ```jsx
-    <S3Image s3Key={key} picker />
+    <S3Image imgKey={key} picker />
 ```
 
-After pick, the image will be uploaded to `s3Key`. You may just provide `path`, path plus image file name will be the upload key.
+After pick, the image will be uploaded to `imgKey`. You may just provide `path`, path plus image file name will be the upload key.
 
 ```jsx
     <S3Image path={path} picker />
