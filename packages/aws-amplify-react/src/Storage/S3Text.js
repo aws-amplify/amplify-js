@@ -139,7 +139,7 @@ export default class S3Text extends Component {
         if (translate) {
             text = (typeof translate === 'string')? translate : translate({
                 type: 'text',
-                textKey: textKey,
+                key: textKey,
                 content: text
             });
         }

@@ -248,7 +248,7 @@ var S3Text = function (_Component) {
                 if (translate) {
                     text = typeof translate === 'string' ? translate : translate({
                         type: 'text',
-                        textKey: textKey,
+                        key: textKey,
                         content: text
                     });
                 }

@@ -139,7 +139,7 @@ export default class S3Image extends Component {
         if (translate) {
             src = (typeof translate === 'string')? translate : translate({
                 type: 'image',
-                imgKey: imgKey,
+                key: imgKey,
                 content: src
             });
         }

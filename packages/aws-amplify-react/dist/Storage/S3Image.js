@@ -245,7 +245,7 @@ var S3Image = function (_Component) {
                 if (translate) {
                     src = typeof translate === 'string' ? translate : translate({
                         type: 'image',
-                        imgKey: imgKey,
+                        key: imgKey,
                         content: src
                     });
                 }
