@@ -177,6 +177,25 @@ export const PickerButton = {
 export const PickerInput = {
 }
 
+export const Overlay = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%'
+};
+
+export const OverlaySelected = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    background: '#888',
+    opacity: '0.5',
+    border: '2px solid blue'
+};
+
 export const A = {
     textDecoration: 'underline'
 }
@@ -283,10 +302,14 @@ const AmplifyTheme = {
     pickerButton: PickerButton,
     pickerInput: PickerInput,
 
+    overlay: Overlay,
+    overlaySelected: OverlaySelected,
+
     a: A,
     label: Label,
     pre: Pre,
 
+    col2: Col2,
     col3: Col3,
     col4: Col4,
     col6: Col6,

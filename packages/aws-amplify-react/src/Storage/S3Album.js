@@ -34,6 +34,7 @@ export default class S3Album extends Component {
         super(props);
 
         this.handlePick = this.handlePick.bind(this);
+        this.handleClick = this.handleClick.bind(this);
         this.list = this.list.bind(this);
         this.marshal = this.marshal.bind(this);
 
@@ -96,6 +97,21 @@ export default class S3Album extends Component {
             });
     }
 
+    handleClick(item) {
+        const { onClickItem, select, onSelect } = this.props;
+        if (onClickItem) { onClickItem(item); }
+
+        if (!select) { return; }
+
+        item.selected = !item.selected;
+        this.setState({ items: this.state.items.slice() });
+
+        if (!onSelect) { return; }
+
+        const selected_items = this.state.items.filter(item => item.selected);
+        onSelect(item, selected_items);
+    }
+
     onHubCapsule(capsule) {
         const theme = this.props.theme || AmplifyTheme;
         this.setState({ theme: Object.assign({}, theme) });
@@ -106,9 +122,21 @@ export default class S3Album extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.path != prevProps.path || this.props.ts != prevProps.ts) {
-            this.list();
+        if (this.props.path == prevProps.path &&
+            this.props.ts == prevProps.ts &&
+            this.props.select == prevProps.select
+        ) {
+            return;
         }
+
+        if (!this.props.select) {
+            this.state.items.forEach(item => item.selected = false);
+        }
+        if (this.props.onSelect) {
+            this.props.onSelect(null, []);
+        }
+
+        this.list();
     }
 
     list() {
@@ -173,7 +201,7 @@ export default class S3Album extends Component {
     }
 
     render() {
-        const { picker } = this.props;
+        const { picker, translateItem } = this.props;
         const { items } = this.state;
 
         const pickerTitle = this.props.pickerTitle || 'Pick';
@@ -187,12 +215,18 @@ export default class S3Album extends Component {
                              textKey={item.key}
                              theme={theme}
                              style={theme.albumText}
+                             selected={item.selected}
+                             translate={translateItem}
+                             onClick={() => this.handleClick(item)}
                            />
                          : <S3Image
                              key={item.key}
                              imgKey={item.key}
                              theme={theme}
                              style={theme.albumPhoto}
+                             selected={item.selected}
+                             translate={translateItem}
+                             onClick={() => this.handleClick(item)}
                            />
         });
         return (

@@ -29,6 +29,7 @@ export default class S3Image extends Component {
         this.handleOnLoad = this.handleOnLoad.bind(this);
         this.handleOnError = this.handleOnError.bind(this);
         this.handlePick = this.handlePick.bind(this);
+        this.handleClick = this.handleClick.bind(this);
 
         const initSrc = this.props.src || transparent1X1;
 
@@ -96,6 +97,11 @@ export default class S3Image extends Component {
             .catch(err => logger.debug('handle pick error', err));
     }
 
+    handleClick(evt) {
+        const { onClick } = this.props;
+        if (onClick) { onClick(evt); }
+    }
+
     componentDidMount() {
         this.load();
     }
@@ -109,9 +115,34 @@ export default class S3Image extends Component {
         }
     }
 
+    imageEl(src, theme) {
+        if (!src) { return null; }
+
+        const { selected } = this.props;
+        const containerStyle = { position: 'relative' };
+        return (
+            <div style={containerStyle} onClick={this.handleClick}>
+                <img
+                    style={theme.photoImg}
+                    src={src}
+                    onLoad={this.handleOnLoad}
+                    onError={this.handleOnError}
+                />
+                <div style={selected? theme.overlaySelected : theme.overlay}></div>
+            </div>
+        )
+    }
+
     render() {
-        const { src } = this.state;
-        const { hidden, style, picker } = this.props;
+        const { hidden, style, picker, translate, imgKey } = this.props;
+        let src = this.state.src;
+        if (translate) {
+            src = (typeof translate === 'string')? translate : translate({
+                type: 'image',
+                imgKey: imgKey,
+                content: src
+            });
+        }
         if (!src && !picker) { return null; }
 
         const theme = this.props.theme || AmplifyTheme;
@@ -120,13 +151,7 @@ export default class S3Image extends Component {
 
         return (
             <div style={photoStyle}>
-                { src? <img
-                           style={theme.photoImg}
-                           src={src}
-                           onLoad={this.handleOnLoad}
-                           onError={this.handleOnError}
-                       /> : null
-                }
+                { this.imageEl(src, theme) }
                 { picker? <div>
                               <PhotoPicker
                                   key="picker"

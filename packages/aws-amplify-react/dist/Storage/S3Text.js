@@ -52,6 +52,7 @@ var S3Text = function (_Component) {
         _this.handleOnLoad = _this.handleOnLoad.bind(_this);
         _this.handleOnError = _this.handleOnError.bind(_this);
         _this.handlePick = _this.handlePick.bind(_this);
+        _this.handleClick = _this.handleClick.bind(_this);
 
         var text = props.text,
             textKey = props.textKey;
@@ -174,6 +175,19 @@ var S3Text = function (_Component) {
             return handlePick;
         }()
     }, {
+        key: 'handleClick',
+        value: function () {
+            function handleClick(evt) {
+                var onClick = this.props.onClick;
+
+                if (onClick) {
+                    onClick(evt);
+                }
+            }
+
+            return handleClick;
+        }()
+    }, {
         key: 'componentDidMount',
         value: function () {
             function componentDidMount() {
@@ -195,15 +209,49 @@ var S3Text = function (_Component) {
             return componentDidUpdate;
         }()
     }, {
+        key: 'textEl',
+        value: function () {
+            function textEl(text, theme) {
+                if (!text) {
+                    return null;
+                }
+
+                var selected = this.props.selected;
+
+                var containerStyle = { position: 'relative' };
+                return _react2['default'].createElement(
+                    'div',
+                    { style: containerStyle, onClick: this.handleClick },
+                    _react2['default'].createElement(
+                        'pre',
+                        { style: theme.pre },
+                        text
+                    ),
+                    _react2['default'].createElement('div', { style: selected ? theme.overlaySelected : theme.overlay })
+                );
+            }
+
+            return textEl;
+        }()
+    }, {
         key: 'render',
         value: function () {
             function render() {
-                var text = this.state.text;
                 var _props3 = this.props,
                     hidden = _props3.hidden,
                     style = _props3.style,
-                    picker = _props3.picker;
+                    picker = _props3.picker,
+                    translate = _props3.translate,
+                    textKey = _props3.textKey;
 
+                var text = this.state.text;
+                if (translate) {
+                    text = typeof translate === 'string' ? translate : translate({
+                        type: 'text',
+                        textKey: textKey,
+                        content: text
+                    });
+                }
                 if (!text && !picker) {
                     return null;
                 }
@@ -214,11 +262,7 @@ var S3Text = function (_Component) {
                 return _react2['default'].createElement(
                     'div',
                     { style: textStyle },
-                    text ? _react2['default'].createElement(
-                        'pre',
-                        { style: theme.pre },
-                        text
-                    ) : null,
+                    this.textEl(text, theme),
                     picker ? _react2['default'].createElement(
                         'div',
                         null,

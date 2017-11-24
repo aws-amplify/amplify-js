@@ -54,6 +54,7 @@ var S3Image = function (_Component) {
         _this.handleOnLoad = _this.handleOnLoad.bind(_this);
         _this.handleOnError = _this.handleOnError.bind(_this);
         _this.handlePick = _this.handlePick.bind(_this);
+        _this.handleClick = _this.handleClick.bind(_this);
 
         var initSrc = _this.props.src || _AmplifyUI.transparent1X1;
 
@@ -170,6 +171,19 @@ var S3Image = function (_Component) {
             return handlePick;
         }()
     }, {
+        key: 'handleClick',
+        value: function () {
+            function handleClick(evt) {
+                var onClick = this.props.onClick;
+
+                if (onClick) {
+                    onClick(evt);
+                }
+            }
+
+            return handleClick;
+        }()
+    }, {
         key: 'componentDidMount',
         value: function () {
             function componentDidMount() {
@@ -191,15 +205,50 @@ var S3Image = function (_Component) {
             return componentDidUpdate;
         }()
     }, {
+        key: 'imageEl',
+        value: function () {
+            function imageEl(src, theme) {
+                if (!src) {
+                    return null;
+                }
+
+                var selected = this.props.selected;
+
+                var containerStyle = { position: 'relative' };
+                return _react2['default'].createElement(
+                    'div',
+                    { style: containerStyle, onClick: this.handleClick },
+                    _react2['default'].createElement('img', {
+                        style: theme.photoImg,
+                        src: src,
+                        onLoad: this.handleOnLoad,
+                        onError: this.handleOnError
+                    }),
+                    _react2['default'].createElement('div', { style: selected ? theme.overlaySelected : theme.overlay })
+                );
+            }
+
+            return imageEl;
+        }()
+    }, {
         key: 'render',
         value: function () {
             function render() {
-                var src = this.state.src;
                 var _props3 = this.props,
                     hidden = _props3.hidden,
                     style = _props3.style,
-                    picker = _props3.picker;
+                    picker = _props3.picker,
+                    translate = _props3.translate,
+                    imgKey = _props3.imgKey;
 
+                var src = this.state.src;
+                if (translate) {
+                    src = typeof translate === 'string' ? translate : translate({
+                        type: 'image',
+                        imgKey: imgKey,
+                        content: src
+                    });
+                }
                 if (!src && !picker) {
                     return null;
                 }
@@ -210,12 +259,7 @@ var S3Image = function (_Component) {
                 return _react2['default'].createElement(
                     'div',
                     { style: photoStyle },
-                    src ? _react2['default'].createElement('img', {
-                        style: theme.photoImg,
-                        src: src,
-                        onLoad: this.handleOnLoad,
-                        onError: this.handleOnError
-                    }) : null,
+                    this.imageEl(src, theme),
                     picker ? _react2['default'].createElement(
                         'div',
                         null,

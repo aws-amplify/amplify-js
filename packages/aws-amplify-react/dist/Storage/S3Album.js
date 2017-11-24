@@ -60,6 +60,7 @@ var S3Album = function (_Component) {
         var _this = _possibleConstructorReturn(this, (S3Album.__proto__ || Object.getPrototypeOf(S3Album)).call(this, props));
 
         _this.handlePick = _this.handlePick.bind(_this);
+        _this.handleClick = _this.handleClick.bind(_this);
         _this.list = _this.list.bind(_this);
         _this.marshal = _this.marshal.bind(_this);
 
@@ -153,6 +154,38 @@ var S3Album = function (_Component) {
             return handlePick;
         }()
     }, {
+        key: 'handleClick',
+        value: function () {
+            function handleClick(item) {
+                var _props2 = this.props,
+                    onClickItem = _props2.onClickItem,
+                    select = _props2.select,
+                    onSelect = _props2.onSelect;
+
+                if (onClickItem) {
+                    onClickItem(item);
+                }
+
+                if (!select) {
+                    return;
+                }
+
+                item.selected = !item.selected;
+                this.setState({ items: this.state.items.slice() });
+
+                if (!onSelect) {
+                    return;
+                }
+
+                var selected_items = this.state.items.filter(function (item) {
+                    return item.selected;
+                });
+                onSelect(item, selected_items);
+            }
+
+            return handleClick;
+        }()
+    }, {
         key: 'onHubCapsule',
         value: function () {
             function onHubCapsule(capsule) {
@@ -175,9 +208,20 @@ var S3Album = function (_Component) {
         key: 'componentDidUpdate',
         value: function () {
             function componentDidUpdate(prevProps, prevState) {
-                if (this.props.path != prevProps.path || this.props.ts != prevProps.ts) {
-                    this.list();
+                if (this.props.path == prevProps.path && this.props.ts == prevProps.ts && this.props.select == prevProps.select) {
+                    return;
                 }
+
+                if (!this.props.select) {
+                    this.state.items.forEach(function (item) {
+                        return item.selected = false;
+                    });
+                }
+                if (this.props.onSelect) {
+                    this.props.onSelect(null, []);
+                }
+
+                this.list();
             }
 
             return componentDidUpdate;
@@ -188,9 +232,9 @@ var S3Album = function (_Component) {
             function list() {
                 var _this3 = this;
 
-                var _props2 = this.props,
-                    path = _props2.path,
-                    level = _props2.level;
+                var _props3 = this.props,
+                    path = _props3.path,
+                    level = _props3.level;
 
                 logger.debug('Album path: ' + path);
                 return _awsAmplify.Storage.list(path, { level: level ? level : 'public' }).then(function (data) {
@@ -285,7 +329,11 @@ var S3Album = function (_Component) {
         key: 'render',
         value: function () {
             function render() {
-                var picker = this.props.picker;
+                var _this5 = this;
+
+                var _props4 = this.props,
+                    picker = _props4.picker,
+                    translateItem = _props4.translateItem;
                 var items = this.state.items;
 
 
@@ -299,12 +347,30 @@ var S3Album = function (_Component) {
                         key: item.key,
                         textKey: item.key,
                         theme: theme,
-                        style: theme.albumText
+                        style: theme.albumText,
+                        selected: item.selected,
+                        translate: translateItem,
+                        onClick: function () {
+                            function onClick() {
+                                return _this5.handleClick(item);
+                            }
+
+                            return onClick;
+                        }()
                     }) : _react2['default'].createElement(_S3Image2['default'], {
                         key: item.key,
                         imgKey: item.key,
                         theme: theme,
-                        style: theme.albumPhoto
+                        style: theme.albumPhoto,
+                        selected: item.selected,
+                        translate: translateItem,
+                        onClick: function () {
+                            function onClick() {
+                                return _this5.handleClick(item);
+                            }
+
+                            return onClick;
+                        }()
                     });
                 });
                 return _react2['default'].createElement(

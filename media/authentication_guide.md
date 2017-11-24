@@ -216,13 +216,13 @@ For example, this Authenticator only shows Greetings component which has a Sign 
 
 #### Greeting message
 
-The Greetings component has messages for two different auth states: signedIn, and signedOut. To customize the messages, set properties `signedInMessage` and `signedOutMessage` using a string or function.
+The Greetings component has messages for two different auth states: signedIn, and signedOut. To customize the messages, set properties `inGreeting` and `outGreeting` using a string or function.
 
 ```jsx
     <Authenticator hideDefault={true}>
         <Greetings
-            signedInMessage={(username) => 'Hello ' + username}
-            signedOutMessage="Come back"
+            inGreeting={(username) => 'Hello ' + username}
+            outGreeting="Come back"
         />
     </Authenticator>
 ```

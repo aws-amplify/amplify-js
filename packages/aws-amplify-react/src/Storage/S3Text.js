@@ -28,6 +28,7 @@ export default class S3Text extends Component {
         this.handleOnLoad = this.handleOnLoad.bind(this);
         this.handleOnError = this.handleOnError.bind(this);
         this.handlePick = this.handlePick.bind(this);
+        this.handleClick = this.handleClick.bind(this);
 
         const { text, textKey } = props;
         this.state = {
@@ -101,6 +102,11 @@ export default class S3Text extends Component {
             .catch(err => logger.debug('handle pick error', err));
     }
 
+    handleClick(evt) {
+        const { onClick } = this.props;
+        if (onClick) { onClick(evt); }
+    }
+
     componentDidMount() {
         this.load();
     }
@@ -114,9 +120,29 @@ export default class S3Text extends Component {
         }
     }
 
+    textEl(text, theme) {
+        if (!text) { return null; }
+
+        const { selected } = this.props;
+        const containerStyle = { position: 'relative' };
+        return (
+            <div style={containerStyle} onClick={this.handleClick}>
+                <pre style={theme.pre}>{text}</pre>
+                <div style={selected? theme.overlaySelected : theme.overlay}></div>
+            </div>
+        )
+    }
+
     render() {
-        const { text } = this.state;
-        const { hidden, style, picker } = this.props;
+        const { hidden, style, picker, translate, textKey } = this.props;
+        let text = this.state.text;
+        if (translate) {
+            text = (typeof translate === 'string')? translate : translate({
+                type: 'text',
+                textKey: textKey,
+                content: text
+            });
+        }
         if (!text && !picker) { return null; }
 
         const theme = this.props.theme || AmplifyTheme;
@@ -125,7 +151,7 @@ export default class S3Text extends Component {
 
         return (
             <div style={textStyle}>
-                { text? <pre style={theme.pre}>{text}</pre> : null }
+                { this.textEl(text, theme) }
                 { picker? <div>
                               <TextPicker
                                   key="picker"
