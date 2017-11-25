@@ -7,7 +7,7 @@
 
 ## Installation
 
-For Web development, regardless of framework, `aws-amplify` provides core Auth APIs
+For Web development, regardless of framework, `aws-amplify` provides core APIs
 
 ```bash
 npm install aws-amplify
