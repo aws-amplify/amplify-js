@@ -36,7 +36,7 @@ Amplify.configure({
 
 ### Automated Setup
 
-To creae a project fully functioning with the Auth category.
+To create a project fully functioning with the Auth category.
 
 <p align="center">
   <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/user-signin.zip">

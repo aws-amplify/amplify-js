@@ -41,6 +41,8 @@ Amplify.configure(
 ```
 ### Automated Setup
 
+To create a project fully functioning with the Storage category.
+
 <p align="center">
   <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/user-files.zip">
     <span>
@@ -48,8 +50,6 @@ Amplify.configure(
     </span>
   </a>
 </p>
-
-This will create a project that works with Analytics category fully functioning. After the project is created in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
 
 ## Amazon S3 Bucket CORS Policy
 

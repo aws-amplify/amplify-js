@@ -55,7 +55,7 @@ Amplify.configure(
 
 ### Automated Setup
 
-To creae a project fully functioning with the API category.
+To create a project fully functioning with the API category.
 
 <p align="center">
   <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/api.zip">

@@ -38,7 +38,7 @@ In the above configuration you are required to pass in an Amazon Cognito Identit
 
 ### Automated Setup
 
-To creae a project fully functioning with the Analytics category.
+To create a project fully functioning with the Analytics category.
 
 <p align="center">
   <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/analytics.zip">
