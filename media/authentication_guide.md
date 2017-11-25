@@ -2,10 +2,9 @@
 
 The AWS Amplify Auth module provides Authentication APIs and building blocks to developers wishing to use pre-build components or scaffold out custom UX. Depending on needs, Auth can be integrated at different levels.
 
-* [Installation](#installation)
-* [Configuration](#configuration)
-  * [Manual Setup](#manual-setup)
-  * [Automated Setup](#automated-setup)
+* [Installation and Configuration](#installation-and-configuratoin)
+  - [Manual Setup](#manual-setup)
+  - [Automated Setup](#automated-setup)
 * [Integration](#integration)
   - [1. Call APIs](#1-call-apis)
   - [2. withAuthenticator HOC](#2-withauthenticator-hoc)
@@ -16,38 +15,11 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
   - [Component Styling](#component-styling)
   - [Error Message](#error-message)
 
-## Installation
+## Installation and Configuration
 
-For Web development, regardless of framework, `aws-amplify` provides core Auth APIs
-
-```bash
-npm install aws-amplify
-```
-
-On React app, there are helper components in `aws-amplify-react`
-
-```bash
-npm install aws-amplify-react
-```
-
-In React Native development, core APIs and components are packaged into `aws-amplify-react-native`
-
-```bash
-npm install aws-amplify-react-native
-```
-
-You will need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) libraries in your project for the Auth module on React Native. Follow the instructions [here](https://github.com/aws/aws-amplify/blob/master/media/quick_start.md#react-native-development).
-
-## Configuration
-
-You are required to pass in an Amazon Cognito Identity Pool ID, allowing the library to retrieve base credentials for a user even in an UnAuthenticated state. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup).
-
-Note: If using Mobile Hub, ensure that user sign-in is set to optional in your app. To do so, go your project on [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home.html#/) and click on your project, and then click on the **User Sign-in** tile. Verify that **Optional**
-button is selected in the options for Sign-In required.
+Please refer to this [Guide](install_n_config.md) for general setup. Here are Authentication specific setup.
 
 ### Manual Setup
-
-At the top of your application entry point, add in the following code to configure the library:
 
 ```js
 import Amplify from 'aws-amplify';
@@ -62,15 +34,9 @@ Amplify.configure({
 });
 ```
 
-The above configuration requires an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. You will also need to include Amazon Cognito User Pool ID and Web Client ID.
-
-[Amazon Cognito Identity](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-identity-pools.html)
-
-[Amazon Cognito User Pools](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-cognito-user-pools.html)
-
 ### Automated Setup
 
-AWS Mobile Hub streamlines the steps above for you. Simply click this button:
+To creae a project fully functioning with the Auth category.
 
 <p align="center">
   <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/user-signin.zip">
@@ -79,23 +45,6 @@ AWS Mobile Hub streamlines the steps above for you. Simply click this button:
     </span>
   </a>
 </p>
-
-This creates a project is fully functioning with the Auth category. After the project is created in the Mobile Hub console download the `aws-exports.js` configuration file by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
-
-![Mobile Hub](mobile_hub_1.png)
-
-Download `aws-exports.js` into your project source directory.
-
-![Download](mobile_hub_2.png)
-
-Now import the file and pass it as configuration to the Amplify library:
-
-```js
-import Amplify from 'aws-amplify';
-import awsmobile from './YOUR_PATH_TO_EXPORTS/aws-exports'
-
-Amplify.configure(awsmobile});
-```
 
 ## Integration
 
@@ -108,6 +57,11 @@ APIs can be used in any Javascript framework. [API Reference](api_reference.md) 
 import { Auth } from 'aws-amplify';
 
 Auth.signIn(username, password)
+    .then(user => console.log(user))
+    .catch(err => console.log(err));
+
+// If MFA enabled, keep the user object from sign in, and collect confirmation code, then
+Auth.confirmSignIn(user, code)
     .then(data => console.log(data))
     .catch(err => console.log(err));
 ```
@@ -119,6 +73,11 @@ import { Auth } from 'aws-amplify';
 Auth.signUp(username, password, email, phone)
     .then(data => console.log(data))
     .catch(err => console.log(err));
+
+// Collect confirmation code, then
+Auth.confirmSignUp(username, code)
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
 ```
 
 #### Sign Out
@@ -126,6 +85,20 @@ Auth.signUp(username, password, email, phone)
 import { Auth } from 'aws-amplify';
 
 Auth.signOut()
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+```
+
+#### Forgot Password
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.forgotPassword(username)
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+
+// Collect confirmation code and new password, then
+Auth.forgotPasswordSubmit(username, code, new_password)
     .then(data => console.log(data))
     .catch(err => console.log(err));
 ```

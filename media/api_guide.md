@@ -2,10 +2,9 @@
 
 AWS Amplify API module provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
 
-* [Installation](#installation)
-* [Configuration](#configuration)
-  * [Manual Setup](#manual-setup)
-  * [Automated Setup](#automated-setup)
+* [Installation and Configuration](#installation-and-configuration)
+  - [Manual Setup](#manual-setup)
+  - [Automated Setup](#automated-setup)
 * [Integration](#integration)
   * [GET](#get)
   * [POST](#post)
@@ -13,15 +12,9 @@ AWS Amplify API module provides a simple solution when making HTTP requests. It 
   * [DELETE](#delete)
   * [HEAD](#head)
 
-## Installation
+## Installation and Configuration
 
-For Web development, regardless of framework, `aws-amplify` provides core functionality:
-
-```bash
-npm install aws-amplify
-```
-
-## Configuration
+Please refer to this [Guide](install_n_config.md) for general setup. Here are Analytics specific setup.
 
 The API module can be used out of the box for signed requests against Amazon API Gateway when the API Authorization is set to **AWS_IAM**. 
 
@@ -29,13 +22,9 @@ You are required to pass in an Amazon Cognito Identity Pool ID, allowing the lib
 
 Amazon Cognito Identity Pool requires to have access to the API using Amazon IAM. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup)!
 
-### Manual Setup
-
-[Amazon Cognito Identity](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-identity-pools.html)
-
-[Amazon IAM](http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started.html)
-
 [Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started.html)
+
+### Manual Setup
 
 After configuring this resources you can add these lines to your source code.
 ```js
@@ -66,7 +55,7 @@ Amplify.configure(
 
 ### Automated Setup
 
-AWS Mobile Hub streamlines the steps above for you. Simply click the button:
+To creae a project fully functioning with the API category.
 
 <p align="center">
   <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/api.zip">
@@ -79,18 +68,6 @@ AWS Mobile Hub streamlines the steps above for you. Simply click the button:
 This will create a project that works with API category fully functioning. Before proceeding further, in the Mobile Hub console click the Cloud Logic tile and ensure that the API deployment status at the bottom shows CREATE_COMPLETE (this can take a few moments). After the project is created in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
 
 ![Mobile Hub](console.gif)
-
-
-Import the file and pass it as configuration to the Amplify library:
-
-
-```js
-import Amplify, { API } from 'aws-amplify';
-import aws_exports from './PATH_TO_EXPORTS/aws-exports.js';
-
-Amplify.configure(aws_exports);
-```
-
 
 ## Integration
 

@@ -2,11 +2,10 @@
 
 AWS Amplify Storage module gives a simple mechanism for managing user content in public or private storage.
 
-* [Installation](#installation)
-* [Configuration](#configuration)
-  * [Manual Setup](#manual-setup)
-  * [Amazon S3 Bucket CORS Policy](#amazon-s3-bucket-cors-policy)
-  * [Automated Setup](#automated-setup)
+* [Installation and Configuration](#installation-and-configuration)
+  - [Manual Setup](#manual-setup)
+  - [Automated Setup](#automated-setup)
+* [Amazon S3 Bucket CORS Policy](#amazon-s3-bucket-cors-policy)
 * [Access Level](#access-level)
 * [Call APIs](#call-apis)
 * [React Development](#react-development)
@@ -16,40 +15,43 @@ AWS Amplify Storage module gives a simple mechanism for managing user content in
   - [S3Album](#s3album)
 
 
-## Installation
+## Installation and Configuration
 
-For Web development, regardless of framework, `aws-amplify` provides core Storage APIs:
-
-```bash
-npm install aws-amplify
-```
-
-On React app, helpful components are provided in `aws-amplify-react`:
-
-```bash
-npm install aws-amplify-react
-```
-
-In React Native development, core APIs and components are packaged into `aws-amplify-react-native`
-
-```bash
-npm install aws-amplify-react-native
-```
-
-## Configuration
+Please refer to this [Guide](install_n_config.md) for general setup. Here are Analytics specific setup.
 
 The default implementation of the Storage module leverages Amazon S3.
 
-You are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. AWS Amplify also requires an Amazon S3 bucket. Amazon Cognito Identity Pool requires to have access to Amazon S3 using Amazon IAM. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup).
-
 ### Manual Setup
-[Amazon Cognito Identity](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-identity-pools.html)
 
-[Amazon S3](http://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html)
+```js
+import Amplify from 'aws-amplify';
 
-[Amazon IAM](http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started.html)
+Amplify.configure(
+    Auth: {
+        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
+        region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
+        userPoolId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito User Pool ID
+        userPoolWebClientId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito Web Client ID
+    },
+    Storage: {
+        bucket: '', //REQUIRED -  Amazon S3 bucket
+        region: 'XX-XXXX-X', //OPTIONAL -  Amazon service region
+    });
 
-### Amazon S3 Bucket CORS Policy
+```
+### Automated Setup
+
+<p align="center">
+  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/user-files.zip">
+    <span>
+        <img height="100%" src="https://s3.amazonaws.com/deploytomh/button-deploy-aws-mh.png"/>
+    </span>
+  </a>
+</p>
+
+This will create a project that works with Analytics category fully functioning. After the project is created in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
+
+## Amazon S3 Bucket CORS Policy
 
 To make calls to your S3 bucket from your App, make sure CORS is turned on:
 
@@ -76,35 +78,6 @@ To make calls to your S3 bucket from your App, make sure CORS is turned on:
 ```
 
 Note: You can restrict the access to your bucket by updating AllowedOrigin to be more domain specific. 
-
-### Automated Setup
-
-AWS Mobile Hub streamlines the steps above for you. Simply click the button:
-
-<p align="center">
-  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/user-files.zip">
-    <span>
-        <img height="100%" src="https://s3.amazonaws.com/deploytomh/button-deploy-aws-mh.png"/>
-    </span>
-  </a>
-</p>
-
-This will create a project that works with Analytics category fully functioning. After the project is created in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
-
-![Mobile Hub](mobile_hub_1.png)
-
-Download `aws-exports.js` into your project directory.
-
-![Download](mobile_hub_2.png)
-
-Next, import the file and pass it as the configuration to the Amplify library:
-
-```js
-import Amplify from 'aws-amplify';
-import aws_exports from './aws-exports.js';
-
-Amplify.configure(aws_exports);
-```
 
 ## Access Level
 

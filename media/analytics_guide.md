@@ -2,35 +2,20 @@
 
 AWS Amplify Analytics module helps you quickly collect analytics for user sessions, custom attributes or metrics.
 
-* [Installation](#installation)
-* [Configuration](#configuration)
+* [Installation and Configuration](#installation-and-configuration)
+  - [Manual Setup](#manual-setup)
+  - [Automated Setup](#automated-setup)
 * [Integration](#integration)
   - [1. Collect Session Data](#1-collect-session-data)
   - [2. Record Event](#2-record-event)
   - [3. Record Event with Attributes](#3-record-event-with-attributes)
   - [4. Record Event with Metrics](#4-record-event-with-metrics)
 
-## Installation
+## Installation and Configuration
 
-For Web development, regardless of framework, `aws-amplify` provides core Analytics APIs:
+Please refer to this [Guide](install_n_config.md) for general setup. Here are Analytics specific setup.
 
-```bash
-npm install aws-amplify
-```
-
-On React app, we have provided some helpful components in `aws-amplify-react`:
-
-```bash
-npm install aws-amplify-react
-```
-
-In React Native development, we package the core APIs and components into one `aws-amplify-react-native`:
-
-```bash
-npm install aws-amplify-react-native
-```
-
-## Configuration
+### Manual Setup
 
 ```js
 import Amplify from 'aws-amplify';
@@ -51,14 +36,9 @@ Amplify.configure(
 
 In the above configuration you are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. If you pass in properties in the Analytics section for Amazon Pinpoint the library will automatically track some base metrics for you without any effort on your part. 
 
-### Manual Setup
-[Amazon Cognito Identity](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-identity-pools.html)
-
-[Amazon Pinpoint](http://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started.html)
-
 ### Automated Setup
 
-AWS Mobile Hub streamlines the steps above for you. Simply click the button:
+To creae a project fully functioning with the Analytics category.
 
 <p align="center">
   <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/analytics.zip">
@@ -68,24 +48,6 @@ AWS Mobile Hub streamlines the steps above for you. Simply click the button:
   </a>
 </p>
 
-This will create a project that works with Analytics category fully functioning. After the project is created in the Mobile Hub console download the `aws-exports.js` configuration file by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
-
-![Mobile Hub](mobile_hub_1.png)
-
-Download `aws-exports.js` to your project source directory.
-
-![Download](mobile_hub_2.png)
-
-
-Next, import the file and pass it as the configuration to the Amplify library:
-
-```js
-import Amplify from 'aws-amplify';
-import aws_exports from './aws-exports.js';
-
-Amplify.configure(aws_exports);
-```
-
 After configuration, user session metrics are automatically collected and send to Amazon Pinpoint. To see these metrics click [here](https://console.aws.amazon.com/pinpoint/home/) or in your Mobile Hub project click the **Engage** tab on the left of the screen.
 
 ![Session](mobile_hub_3.png)
@@ -94,7 +56,7 @@ After configuration, user session metrics are automatically collected and send t
 
 ### 1. Collect Session Data
 
-Without any additional code, the Analytics module starts collect session data. All you need to do is to configure Analytics module. See [configuration](#configuration)
+Without any additional code, the Analytics module starts collect session data. All you need to do is to configure Analytics module.
 
 ### 2. Record Event
 

@@ -42,6 +42,7 @@ You will need to [link](https://facebook.github.io/react-native/docs/linking-lib
 * [Quick Start](media/quick_start.md)
 * [API Reference](media/api_reference.md)
 * [Developer Guide](media/developer_guide.md)
+  * [Installation and Configuration](media/install_n_config.md)
   * [Authentication](media/authentication_guide.md)
   * [Analytics](media/analytics_guide.md)
   * [API](media/api_guide.md)
