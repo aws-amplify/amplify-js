@@ -17,6 +17,8 @@ export default AmplifyTheme = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
+        justifyContent: 'space-around',
+        paddingTop: 20,
         width: '100%'
     },
     section: {
@@ -26,7 +28,7 @@ export default AmplifyTheme = StyleSheet.create({
     sectionHeader: {},
     sectionHeaderText: {
         width: '100%',
-        padding: 8,
+        padding: 10,
         textAlign: 'center',
         backgroundColor: '#007bff',
         color: '#ffffff',
@@ -34,9 +36,9 @@ export default AmplifyTheme = StyleSheet.create({
         fontWeight: '500'
     },
     sectionFooter: {
-        flex: 1,
         width: '100%',
         marginTop: 15,
+        padding: 10,
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
@@ -46,6 +48,7 @@ export default AmplifyTheme = StyleSheet.create({
         alignItems: 'baseline',
         textAlign: 'center'
     },
+    sectionBody: {},
     cell: {
         flex: 1,
         width: '50%'
