@@ -186,7 +186,7 @@ class AuthClass {
 
     /**
      * Sign in
-     * @param {String} username - The username to be signed in 
+     * @param {String} username - The username to be signed in
      * @param {String} password - The password of the username
      * @return {Promise} - A promise resolves the CognitoUser object if success or mfa required
      */
@@ -356,7 +356,7 @@ class AuthClass {
 
     /**
      * Get current user's session
-     * @return {Promise} - A promise resolves to session object if success 
+     * @return {Promise} - A promise resolves to session object if success
      */
     currentUserSession() {
         if (!this.userPool) {
@@ -514,7 +514,7 @@ class AuthClass {
     /**
      * Initiate a forgot password request
      * @param {String} username - the username to change password
-     * @return {Promise} - A promise resolves if success 
+     * @return {Promise} - A promise resolves if success
      */
     forgotPassword(username) {
         if (!this.userPool) {
@@ -546,7 +546,7 @@ class AuthClass {
 
     /**
      * Confirm a new password using a confirmation Code
-     * @param {String} username - The username 
+     * @param {String} username - The username
      * @param {String} code - The confirmation code
      * @param {String} password - The new password
      * @return {Promise} - A promise that resolves if success
@@ -667,7 +667,7 @@ class AuthClass {
 
     /**
      * Compact version of credentials
-     * @param {Object} credentials 
+     * @param {Object} credentials
      * @return {Object} - Credentials
      */
     essentialCredentials(credentials) {

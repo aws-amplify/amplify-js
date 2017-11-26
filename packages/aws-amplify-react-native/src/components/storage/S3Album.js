@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, Dimensions, StyleSheet } from 'react-native';
 
 import Storage from '../../Storage';
 import { ConsoleLogger as Logger } from '../../Common';
@@ -44,13 +44,24 @@ export default class S3Album extends Component {
         const { images } = this.state;
         if (!images) { return null; }
 
-        const imageStyle = this.props.imageStyle || { width: 100, height: 100 };
+        const { width, height } = Dimensions.get('window');
         const theme = this.props.theme || AmplifyTheme;
+        const albumStyle = Object.assign(
+            {},
+            StyleSheet.flatten(theme.album),
+            { width: '100%', height: height }
+        );
         const list = this.state.images.map(image => {
-            return <S3Image key={image.key} path={image.key} theme={theme} />
+            return <S3Image
+                        key={image.key}
+                        imgKey={image.key}
+                        resizeMode="cover"
+                        style={{ width: '100%', height: width }}
+                        theme={theme}
+                   />
         });
         return (
-            <ScrollView {...this.props} style={theme.album}>
+            <ScrollView {...this.props} style={albumStyle}>
                 {list}
             </ScrollView>
         )

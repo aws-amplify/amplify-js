@@ -21,7 +21,7 @@ import I18n from './I18n';
 import { ConsoleLogger as Logger } from './Common';
 
 import * as Components from './components';
-import { withAuthenticator } from './components';
+import { withAuthenticator, S3Album, S3Image } from './components';
 
 const logger = new Logger('Amplify');
 
@@ -52,4 +52,4 @@ Amplify.Logger = Logger;
 Amplify.Components = Components;
 Amplify.withAuthenticator = withAuthenticator;
 
-export { Auth, Analytics, API, Cache, Storage, I18n, Logger, Components, withAuthenticator };
+export { Auth, Analytics, API, Cache, Storage, I18n, Logger, Components, withAuthenticator, S3Album, S3Image };

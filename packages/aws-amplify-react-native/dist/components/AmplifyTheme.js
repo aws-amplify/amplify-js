@@ -54,14 +54,13 @@ export default AmplifyTheme = StyleSheet.create({
         flex: 1
     },
 
+    photo: {
+        width: '100%'
+    },
     album: {
-        flex: 1,
         width: '100%'
     },
-    image: {
-        flex: 1,
-        width: '100%'
-    },
+
     a: {},
     button: {
         backgroundColor: '#007bff'

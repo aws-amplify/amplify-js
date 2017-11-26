@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import { Image } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 
 import Storage from '../../Storage';
 import { ConsoleLogger as Logger } from '../../Common';
@@ -28,8 +28,8 @@ export default class S3Image extends Component {
     }
 
     getImageSource() {
-        const { path, level } = this.props;
-        Storage.get(path, { level : level? level : 'public'})
+        const { imgKey, level } = this.props;
+        Storage.get(imgKey, { level : level? level : 'public'})
             .then(url => {
                 logger.debug(url);
                 this.setState({
@@ -40,21 +40,21 @@ export default class S3Image extends Component {
     }
 
     load() {
-        const { path, body, contentType, level } = this.props;
-        if (!path) {
-            logger.debug('empty path');
+        const { imgKey, body, contentType, level } = this.props;
+        if (!imgKey) {
+            logger.debug('empty imgKey');
             return ;
         }
 
         const that = this;
-        logger.debug('loading ' + path + '...');
-        const type = contentType? contentType : 'binary/octet-stream';
-        const opt = {
-            contentType: type,
-            level: level? level : 'public'
-        }
+        logger.debug('loading ' + imgKey + '...');
         if (body) {
-            const ret = Storage.put(path, body, opt);
+            const type = contentType? contentType : 'binary/octet-stream';
+            const opt = {
+                contentType: type,
+                level: level? level : 'public'
+            }
+            const ret = Storage.put(imgKey, body, opt);
             ret.then(data => {
                 logger.debug(data);
                 that.getImageSource();
@@ -70,7 +70,7 @@ export default class S3Image extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.path !== this.props.path || prevProps.body !== this.props.body) {
+        if (prevProps.imgKey !== this.props.imgKey || prevProps.body !== this.props.body) {
             this.load();
         }
     }
@@ -79,8 +79,10 @@ export default class S3Image extends Component {
         const { src } = this.state;
         if (!src) { return null; }
 
+        const { style, resizeMode} = this.props;
         const theme = this.props.theme || AmplifyTheme;
+        const photoStyle = Object.assign({}, StyleSheet.flatten(theme.photo), style);
 
-        return <Image {...this.props} source={src} style={theme.image} />
+        return <Image source={src} resizeMode={resizeMode} style={photoStyle} />
     }
 }
