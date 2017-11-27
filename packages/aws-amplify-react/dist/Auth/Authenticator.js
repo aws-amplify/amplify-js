@@ -37,6 +37,10 @@ var _ConfirmSignIn = require('./ConfirmSignIn');
 
 var _ConfirmSignIn2 = _interopRequireDefault(_ConfirmSignIn);
 
+var _RequireNewPassword = require('./RequireNewPassword');
+
+var _RequireNewPassword2 = _interopRequireDefault(_RequireNewPassword);
+
 var _SignUp = require('./SignUp');
 
 var _SignUp2 = _interopRequireDefault(_SignUp);
@@ -207,10 +211,10 @@ var Authenticator = function (_Component) {
                     hide = [];
                 }
                 if (hideDefault) {
-                    hide = hide.concat([_Greetings2['default'], _SignIn2['default'], _ConfirmSignIn2['default'], _SignUp2['default'], _ConfirmSignUp2['default'], _VerifyContact2['default'], _ForgotPassword2['default']]);
+                    hide = hide.concat([_Greetings2['default'], _SignIn2['default'], _ConfirmSignIn2['default'], _RequireNewPassword2['default'], _SignUp2['default'], _ConfirmSignUp2['default'], _VerifyContact2['default'], _ForgotPassword2['default']]);
                 }
                 var props_children = this.props.children || [];
-                var default_children = [_react2['default'].createElement(_Greetings2['default'], null), _react2['default'].createElement(_SignIn2['default'], null), _react2['default'].createElement(_ConfirmSignIn2['default'], null), _react2['default'].createElement(_SignUp2['default'], null), _react2['default'].createElement(_ConfirmSignUp2['default'], null), _react2['default'].createElement(_VerifyContact2['default'], null), _react2['default'].createElement(_ForgotPassword2['default'], null)];
+                var default_children = [_react2['default'].createElement(_Greetings2['default'], null), _react2['default'].createElement(_SignIn2['default'], null), _react2['default'].createElement(_ConfirmSignIn2['default'], null), _react2['default'].createElement(_RequireNewPassword2['default'], null), _react2['default'].createElement(_SignUp2['default'], null), _react2['default'].createElement(_ConfirmSignUp2['default'], null), _react2['default'].createElement(_VerifyContact2['default'], null), _react2['default'].createElement(_ForgotPassword2['default'], null)];
 
                 var children = default_children.concat(props_children);
                 var render_children = _react2['default'].Children.map(children, function (child) {

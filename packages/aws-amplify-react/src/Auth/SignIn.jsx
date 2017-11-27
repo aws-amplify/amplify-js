@@ -47,9 +47,11 @@ export default class SignIn extends AuthPiece {
         Auth.signIn(username, password)
             .then(user => {
                 logger.debug(user);
-                const requireMFA = (user.Session !== null);
-                if (requireMFA) {
+                if (user.challengeName === 'SMS_MFA') {
                     this.changeState('confirmSignIn', user);
+                } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
+                    logger.debug('require new password', user.challengeParam);
+                    this.changeState('requireNewPassword', user);
                 } else {
                     this.checkContact(user);
                 }

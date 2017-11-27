@@ -17,6 +17,7 @@ import Amplify, { Auth, Logger } from 'aws-amplify';
 import Greetings from './Greetings';
 import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
+import RequireNewPassword from './RequireNewPassword';
 import SignUp from './SignUp';
 import ConfirmSignUp from './ConfirmSignUp';
 import VerifyContact from './VerifyContact';
@@ -107,6 +108,7 @@ export default class Authenticator extends Component {
                 Greetings,
                 SignIn,
                 ConfirmSignIn,
+                RequireNewPassword,
                 SignUp,
                 ConfirmSignUp,
                 VerifyContact,
@@ -118,6 +120,7 @@ export default class Authenticator extends Component {
             <Greetings/>,
             <SignIn/>,
             <ConfirmSignIn/>,
+            <RequireNewPassword/>,
             <SignUp/>,
             <ConfirmSignUp/>,
             <VerifyContact/>,

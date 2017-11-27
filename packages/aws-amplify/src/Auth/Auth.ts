@@ -185,14 +185,18 @@ export default class AuthClass {
                 },
                 mfaRequired: (challengeName, challengeParam) => {
                     logger.debug('signIn MFA required');
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
                     resolve(user);
                 },
                 newPasswordRequired: (userAttributes, requiredAttributes) => {
                     logger.debug('signIn new password');
-                    resolve({
+                    user['challengeName'] = 'NEW_PASSWORD_REQUIRED';
+                    user['challengeParam'] = {
                         userAttributes: userAttributes,
                         requiredAttributes: requiredAttributes
-                    });
+                    };
+                    resolve(user);
                 }
             });
         });
@@ -216,6 +220,34 @@ export default class AuthClass {
                 onFailure: (err) => {
                     logger.debug('confirm signIn failure', err);
                     reject(err);
+                }
+            });
+        });
+    }
+
+    public completeNewPassword(
+        user: any,
+        password: string,
+        requiredAttributes: any
+    ): Promise<any> {
+        if (!password) { return Promise.reject('Password cannot be empty'); }
+
+        return new Promise((resolve, reject) => {
+            user.completeNewPasswordChallenge(password, requiredAttributes, {
+                onSuccess: (session) => {
+                    logger.debug(session);
+                    dispatchAuthEvent('signIn', user);
+                    resolve(user);
+                },
+                onFailure: (err) => {
+                    logger.debug('completeNewPassword failure', err);
+                    reject(err);
+                },
+                mfaRequired: (challengeName, challengeParam) => {
+                    logger.debug('signIn MFA required');
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
                 }
             });
         });

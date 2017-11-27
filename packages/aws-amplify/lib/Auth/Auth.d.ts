@@ -45,6 +45,7 @@ export default class AuthClass {
      * @param {String} code - The confirmation code
      */
     confirmSignIn(user: any, code: string): Promise<any>;
+    completeNewPassword(user: any, password: string, requiredAttributes: any): Promise<any>;
     /**
      * Return user attributes
      * @param {Object} user - The CognitoUser object
