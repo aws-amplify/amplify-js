@@ -26,8 +26,8 @@ class MyClass {
     }
 
     onHubCapsule(capsule) {
-        const { name, payload, source } = capsule;
-        logger.debug(name, payload, source);
+        const { channel, payload, source } = capsule;
+        logger.debug(channel, payload, source);
     }
 }
 ```
@@ -47,8 +47,8 @@ class MyClass {
     }
 
     onHubCapsule(capsule) {
-        const { name, payload } = capsule;
-        if (name === 'auth') { onAuthEvent(payload); }
+        const { channel, payload } = capsule;
+        if (channel === 'auth') { onAuthEvent(payload); }
     }
 
     onAuthEvent(payload) {
