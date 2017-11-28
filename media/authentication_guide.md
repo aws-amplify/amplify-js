@@ -216,8 +216,8 @@ import { Authenticator, SignIn, SignOut, ConfirmSignUp, Greetings } from 'aws-am
 const AlwaysOn = (props) => {
     return (
         <div>
-            <div>I am always here to show current auth state: {this.props.authState}</div>
-            <button onClick={() => this.props.onStateChange('signUp')}>Show Sign Up</button>
+            <div>I am always here to show current auth state: {props.authState}</div>
+            <button onClick={() => props.onStateChange('signUp')}>Show Sign Up</button>
         </div>
     )
 }
