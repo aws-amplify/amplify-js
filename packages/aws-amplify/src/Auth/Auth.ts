@@ -316,6 +316,8 @@ export default class AuthClass {
         if (!this.userPool) { return Promise.reject('No userPool'); }
 
         const user = this.userPool.getCurrentUser();
+        if (!user) { return Promise.reject('No current user in userPool'); }
+
         logger.debug(user);
         return new Promise((resolve, reject) => {
             user.getSession(function(err, session) {

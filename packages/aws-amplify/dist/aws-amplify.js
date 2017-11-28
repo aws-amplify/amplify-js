@@ -16037,6 +16037,9 @@ var AuthClass = (function () {
             return Promise.reject('No userPool');
         }
         var user = this.userPool.getCurrentUser();
+        if (!user) {
+            return Promise.reject('No current user in userPool');
+        }
         logger.debug(user);
         return new Promise(function (resolve, reject) {
             user.getSession(function (err, session) {
