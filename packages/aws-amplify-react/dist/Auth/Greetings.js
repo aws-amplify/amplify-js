@@ -147,8 +147,8 @@ var Greetings = function (_AuthPiece) {
     }, {
         key: 'inGreeting',
         value: function () {
-            function inGreeting(username) {
-                return 'Hello ' + username;
+            function inGreeting(name) {
+                return 'Hello ' + name;
             }
 
             return inGreeting;
@@ -168,7 +168,8 @@ var Greetings = function (_AuthPiece) {
             function userGreetings(theme) {
                 var user = this.state.authData;
                 var greeting = this.props.inGreeting || this.inGreeting;
-                var message = typeof greeting === 'function' ? greeting(user.username) : greeting;
+                var name = user.name || user.username;
+                var message = typeof greeting === 'function' ? greeting(name) : greeting;
                 return _react2['default'].createElement(
                     'div',
                     { className: 'amplify-nav-right', style: theme.navRight },

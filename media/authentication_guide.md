@@ -8,9 +8,10 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
 * [Integration](#integration)
   - [1. Call APIs](#1-call-apis)
   - [2. withAuthenticator HOC](#2-withauthenticator-hoc)
-  - [3. Authenticate Component](#3-authenticate-component)
+  - [3. Authenticator Component](#3-authenticator-component)
   - [4. Compose Authenticator](#4-compose-authenticator)
   - [5. Write Your Own Auth UI](#5-write-your-own-auth-ui)
+  - [6. Federated Identity](#6-federated-identity)
 * [Extension](#extension)
   - [Component Styling](#component-styling)
   - [Error Message](#error-message)
@@ -129,7 +130,7 @@ To expose this, set the second parameter to true, which means `includeGreetings 
 export default withAuthenticator(App, true);
 ```
 
-### 3. Authenticate Component
+### 3. Authenticator Component
 
 The `withAuthenticator` HOC essentially just wraps `Authenticator` component. You can use the `Authenticator` directly to give yourself more customization options.
 
@@ -237,6 +238,70 @@ render() {
         </Authenticator>
     )
 }
+```
+
+### 6. Federated Identity
+
+Note: Our federated identity components so far only support Google and Facebook, only available for React. Building is in progress.
+
+Setup guide is [here](federated_identity_setup.md).
+
+After setup. Just add `Google client_id` and/or `Facebook app_id` to `Authenticator`
+```jsx
+    const federated = {
+        google_client_id: '',
+        facebook_app_id: ''
+    };
+
+    return (
+        <Authenticator federated={federated}>
+    )
+```
+
+#### Federated SignIn
+```jsx
+import { FederatedSignIn } from 'aws-amplify-react';
+
+...
+
+    const federated = {
+        google_client_id: '',
+        facebook_app_id: ''
+    };
+
+    <FederatedSignIn federated={federated} onStateChange={this.handleAuthStateChange} />
+```
+
+#### Custom federated identity UI
+
+Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle` and `withFacebook` if just need a single provider.
+
+```jsx
+import { withFederated } from 'aws-amplify-react';
+
+const Buttons = (props) => (
+    <div>
+        <img
+            onClick={props.googleSignIn}
+            src={google_icon}
+        />
+        <img
+            onClick={props.facebookSignIn}
+            src={facebook_icon}
+        />
+    </div>
+)
+
+const Federated = withFederated(Buttons);
+
+...
+
+    const federated = {
+        google_client_id: '',
+        facebook_app_id: ''
+    };
+
+    <Federated federated={federated} onStateChange={this.handleAuthStateChange} />
 ```
 
 ## Extensions

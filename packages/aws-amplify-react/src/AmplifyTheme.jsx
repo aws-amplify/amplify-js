@@ -115,6 +115,16 @@ export const Button = {
     color: '#007bff'
 }
 
+export const ProviderButton = {
+    fontSize: '1em',
+    padding: '0.3em 0.5em',
+    margin: '0.3em',
+    border: '1px solid #007bff',
+    background: '#fff',
+    color: '#007bff',
+    width: '100%'
+}
+
 export const Album = {
     display: 'block',
     width: '100%',
@@ -288,6 +298,7 @@ const AmplifyTheme = {
     actionRow: ActionRow,
     input: Input,
     button: Button,
+    providerButton: ProviderButton,
 
     errorSection: ErrorSection,
 

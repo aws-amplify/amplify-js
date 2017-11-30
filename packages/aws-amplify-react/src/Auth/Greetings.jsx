@@ -78,13 +78,14 @@ export default class Greetings extends AuthPiece {
         if (channel === 'auth') { this.checkUser(); }
     }
 
-    inGreeting(username) { return 'Hello ' + username; }
+    inGreeting(name) { return 'Hello ' + name; }
     outGreeting() { return 'Please Sign In / Sign Up'; }
 
     userGreetings(theme) {
         const user = this.state.authData;
         const greeting = this.props.inGreeting || this.inGreeting;
-        const message = (typeof greeting === 'function')? greeting(user.username) : greeting;
+        const name = user.name || user.username;
+        const message = (typeof greeting === 'function')? greeting(name) : greeting;
         return (
             <div className="amplify-nav-right" style={theme.navRight}>
                 <span>{message}</span>

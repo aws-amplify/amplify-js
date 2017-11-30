@@ -101,7 +101,7 @@ export default class Authenticator extends Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        let { hideDefault, hide } = this.props;
+        let { hideDefault, hide, federated } = this.props;
         if (!hide) { hide = []; }
         if (hideDefault) {
             hide = hide.concat([
@@ -118,7 +118,7 @@ export default class Authenticator extends Component {
         const props_children = this.props.children || [];
         const default_children = [
             <Greetings/>,
-            <SignIn/>,
+            <SignIn federated={federated}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
             <SignUp/>,

@@ -85,19 +85,8 @@ export class RestClient {
         }
 
         params.headers = { ...libraryHeaders, ...init.headers }
-
-        const credPromise = new Promise((resolve, reject) => {
-            Auth.currentCredentials()
-                .then(resolve)
-                .catch(err => {
-                    // usar guest
-                    Auth.guestCredentials().then(resolve).catch(reject);
-                })
-        });
-
-        return credPromise.then(credentials => {
-            return this._signed(params, credentials);
-        });
+        return Auth.currentCredentials()
+            .then(credentials => this._signed(params, credentials));
     }
 
     /**

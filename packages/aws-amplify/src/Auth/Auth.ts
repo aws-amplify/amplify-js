@@ -47,6 +47,10 @@ export default class AuthClass {
     private _config: AuthOptions;
     private userPool = null;
 
+    private credentials = null;
+    private credentials_source = ''; // aws, guest, userPool, federated
+    private user:any = null;
+
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -77,6 +81,8 @@ export default class AuthClass {
                 ClientId: userPoolWebClientId
             });
         }
+
+        this.setCredentialsFromAWS();
 
         return this._config;
     }
@@ -171,10 +177,13 @@ export default class AuthClass {
             Username: username,
             Password: password
         });
+        const that = this;
         return new Promise((resolve, reject) => {
             user.authenticateUser(authDetails, {
                 onSuccess: (session) => {
                     logger.debug(session);
+                    that.setCredentialsFromSession(session);
+                    that.user = user;
                     dispatchAuthEvent('signIn', user);
                     resolve(user);
                 },
@@ -210,10 +219,13 @@ export default class AuthClass {
     public confirmSignIn(user: any, code: string): Promise<any> {
         if (!code) { return Promise.reject('Code cannot be empty'); }
 
+        const that = this;
         return new Promise((resolve, reject) => {
             user.sendMFACode(code, {
                 onSuccess: (session) => {
                     logger.debug(session);
+                    that.setCredentialsFromSession(session);
+                    that.user = user;
                     dispatchAuthEvent('signIn', user);
                     resolve(user);
                 },
@@ -232,10 +244,13 @@ export default class AuthClass {
     ): Promise<any> {
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
+        const that = this;
         return new Promise((resolve, reject) => {
             user.completeNewPasswordChallenge(password, requiredAttributes, {
                 onSuccess: (session) => {
                     logger.debug(session);
+                    that.setCredentialsFromSession(session);
+                    that.user = user;
                     dispatchAuthEvent('signIn', user);
                     resolve(user);
                 },
@@ -298,21 +313,10 @@ export default class AuthClass {
     }
 
     /**
-     * Get current CognitoUser
-     * @return - A promise resolves to curret CognitoUser if success
-     */
-    public currentUser(): Promise<any> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-
-        const user = this.userPool.getCurrentUser();
-        return user ? Promise.resolve(user) : Promise.reject('UserPool doesnot have current user');
-    }
-
-    /**
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    public currentAuthenticatedUser(): Promise<any> {
+    public currentUserPoolUser(): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
 
         const user = this.userPool.getCurrentUser();
@@ -324,6 +328,23 @@ export default class AuthClass {
                 if (err) { reject(err); } else { resolve(user); }
             });
         });
+    }
+
+    /**
+     * Get current authenticated user
+     * @return - A promise resolves to curret authenticated CognitoUser if success
+     */
+    public currentAuthenticatedUser(): Promise<any> {
+        const source = this.credentials_source;
+        if (source === 'aws' || source === 'userPool') {
+            return this.currentUserPoolUser();
+        }
+
+        if (source === 'federated') {
+            return Promise.resolve(this.user);
+        }
+
+        return Promise.reject('not authenticated');
     }
 
     /**
@@ -358,46 +379,11 @@ export default class AuthClass {
      */
     public currentUserCredentials() : Promise<any> {
         return this.currentSession()
-            .then(session => {
-                return new Promise((resolve, reject) => {
-                    const credentials = this.sessionToCredentials(session);
-                    credentials.get(err => {
-                        if (err) { reject(err); } else { resolve(credentials); }
-                    });
-                });
-            });
-    }
-
-    /**
-     * Get unauthenticated credentials
-     * @return - A promise resolves to be a guest credentials
-     */
-    public guestCredentials() : Promise<any> {
-        const credentials = this.noSessionCredentials();
-        return new Promise((resolve, reject) => {
-            credentials.get(err => {
-                if (err) { reject(err); } else { resolve(credentials); }
-            });
-        });
+            .then(session => this.setCredentialsFromSession(session));
     }
 
     public currentCredentials(): Promise<any> {
-        const that = this;
-        return this.currentUserCredentials()
-            .then(credentials => {
-                credentials.authenticated = true;
-                if (AWS.config) { AWS.config.update({ credentials: credentials }); }
-                return credentials;
-            })
-            .catch(err => {
-                logger.debug('No current user credentials, load guest credentials');
-                return that.guestCredentials()
-                    .then(credentials => {
-                        credentials.authenticated = false;
-                        if (AWS.config) { AWS.config.update({ credentials: credentials }); }
-                        return credentials;
-                    });
-            });
+        return this.keepAlive();
     }
 
     /**
@@ -435,7 +421,7 @@ export default class AuthClass {
 
     verifyCurrentUserAttribute(attr) {
         const that = this;
-        return that.currentAuthenticatedUser()
+        return that.currentUserPoolUser()
             .then(user => that.verifyUserAttribute(user, attr));
     };
 
@@ -447,7 +433,7 @@ export default class AuthClass {
      */
     verifyCurrentUserAttributeSubmit(attr, code) {
         const that = this;
-        return that.currentAuthenticatedUser()
+        return that.currentUserPoolUser()
             .then(user => that.verifyUserAttributeSubmit(user, attr, code));
     };
     /**
@@ -455,13 +441,21 @@ export default class AuthClass {
      * @return - A promise resolved if success
      */
     public signOut(): Promise<any> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        const source = this.credentials_source;
 
-        const user = this.userPool.getCurrentUser();
-        if (!user) { return Promise.resolve(); }
-        return new Promise((resolve, reject) => {
+        if (source === 'aws' || source === 'userPool') {
+            if (!this.userPool) { return Promise.reject('No userPool'); }
+
+            const user = this.userPool.getCurrentUser();
+            if (!user) { return Promise.resolve(); }
+
             user.signOut();
-            dispatchAuthEvent('signOut', user);
+        }
+
+        return new Promise((resolve, reject) => {
+            this.setCredentialsForGuest();
+            dispatchAuthEvent('signOut', this.user);
+            this.user = null;
             resolve();
         });
     }
@@ -528,26 +522,34 @@ export default class AuthClass {
      * @return {Object }- current User's information
      */
     public async currentUserInfo() {
-        const user = await this.currentAuthenticatedUser()
-            .catch(err => logger.debug(err));
-        if (!user) { return null; }
+        const credentials = this.credentials;
+        const source = this.credentials_source;
+        if (!source) { return null; }
 
-        const [attributes, credentials] = await Promise.all([
-            this.userAttributes(user),
-            this.currentUserCredentials()
-        ]).catch(err => {
-            logger.debug('currentUserInfo error', err);
-            return [{}, {}];
-        });
+        if (source === 'aws' || source === 'userPool') {
+            const user = await this.currentUserPoolUser()
+                .catch(err => logger.debug(err));
+            if (!user) { return null; }
 
-        const info = {
-            username: user.username,
-            id: credentials.identityId,
-            email: attributes.email,
-            phone_number: attributes.phone_number
+            const attributes = await this.userAttributes(user)
+                .catch(err => {
+                    logger.debug('currentUserInfo error', err);
+                    return {};
+                });
+
+            const info = {
+                username: user.username,
+                id: credentials.identityId,
+                email: attributes.email,
+                phone_number: attributes.phone_number
+            }
+            return info;
         }
-        logger.debug('user info', info);
-        return info;
+
+        if (source === 'federated') {
+            const user = this.user;
+            return user? user : {};
+        }
     }
 
     /**
@@ -606,5 +608,99 @@ export default class AuthClass {
             obj[attribute.Name] = (attribute.Value === 'false')? false : attribute.Value;
         });
         return obj;
+    }
+
+    public federatedSignIn(provider, token, user) {
+        const domains = {
+            'google': 'accounts.google.com',
+            'facebook': 'graph.facebook.com'
+        };
+
+        const domain = domains[provider];
+        if (!domain) {
+            return Promise.reject(provider + ' is not supported: [google, facebook]');
+        }
+
+        const logins = {};
+        logins[domain] = token;
+
+        const { identityPoolId, region } = this._config;
+        this.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId,
+            Logins: logins
+        }, {
+            region: region
+        });
+        this.credentials.authenticated = true;
+        this.credentials_source = 'federated';
+
+        this.user = Object.assign(
+            { id: this.credentials.identityId },
+            user
+        );
+        dispatchAuthEvent('signIn', this.user);
+
+        if (AWS && AWS.config) { AWS.config.credentials = this.credentials; }
+        logger.debug('federated sign in credentials', this.credentials);
+        return this.keepAlive();
+    }
+
+    private setCredentialsFromAWS() {
+        if (AWS.config && AWS.config.credentials) {
+            this.credentials = AWS.config.credentials;
+        }
+        this.credentials_source = 'aws';
+    }
+
+    private setCredentialsForGuest() {
+        const { identityPoolId, region } = this._config;
+        const credentials = new CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId
+        }, {
+            region: region
+        });
+        credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
+        this.credentials = credentials;
+        this.credentials.authenticated = false;
+        this.credentials_source = 'guest';
+    }
+    
+    private setCredentialsFromSession(session) {
+        const idToken = session.getIdToken().getJwtToken();
+        const { region, userPoolId, identityPoolId } = this._config;
+        const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
+        let logins = {};
+        logins[key] = idToken;
+        this.credentials = new CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId,
+            Logins: logins
+        }, {
+            region: region
+        });
+        this.credentials.authenticated = true;
+        this.credentials_source = 'userPool';
+    }
+
+    private keepAlive() {
+        if (!this.credentials) { this.setCredentialsForGuest() }
+
+        const ts = new Date().getTime();
+        const delta = 10 * 60 * 1000; // 10 minutes
+        const credentials = this.credentials;
+        const { expired, expireTime } = credentials;
+        if (!expired && expireTime > ts + delta) {
+            return Promise.resolve(credentials);
+        }
+
+        return new Promise((resolve, reject) => {
+            credentials.refresh(err => {
+                if (err) {
+                    logger.debug('refresh credentials error', err);
+                    resolve(null);
+                } else {
+                    resolve(credentials);
+                }
+            });
+        });
     }
 }

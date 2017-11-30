@@ -15,6 +15,7 @@ import React, { Component } from 'react';
 import { Auth, I18n, Logger, JS } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
+import { FederatedButtons } from './FederatedSignIn';
 import AmplifyTheme from '../AmplifyTheme';
 import { Header, Footer, InputRow, ButtonRow, Link } from '../AmplifyUI';
 
@@ -62,13 +63,11 @@ export default class SignIn extends AuthPiece {
     }
 
     render() {
-        const { authState, hide } = this.props;
+        const { authState, hide, federated, onStateChange } = this.props;
         if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
-
-        const theme = this.props.theme || AmplifyTheme;
-
         if (hide && hide.includes(SignIn)) { return null; }
 
+        const theme = this.props.theme || AmplifyTheme;
         return (
             <div style={theme.formSection}>
                 <Header theme={theme}>{I18n.get('Sign In Account')}</Header>
@@ -92,6 +91,11 @@ export default class SignIn extends AuthPiece {
                     <ButtonRow theme={theme} onClick={this.signIn}>
                         {I18n.get('Sign In')}
                     </ButtonRow>
+                    <FederatedButtons
+                        federated={federated}
+                        authState={authState}
+                        onStateChange={onStateChange}
+                    />
                 </div>
                 <Footer theme={theme}>
                     <div style={theme.col6}>

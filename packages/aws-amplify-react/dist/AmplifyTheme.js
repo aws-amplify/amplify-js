@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.Hidden = exports.Center = exports.HalfHeight = exports.Col12 = exports.Col10 = exports.Col9 = exports.Col8 = exports.Col6 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Pre = exports.Label = exports.A = exports.OverlaySelected = exports.Overlay = exports.PickerInput = exports.PickerButton = exports.PickerPicker = exports.Picker = exports.Text = exports.AlbumText = exports.PhotoImg = exports.Photo = exports.AlbumPhoto = exports.Album = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionFooter = exports.SectionBody = exports.SectionHeader = exports.NavButton = exports.NavRight = exports.NavBar = exports.ErrorSection = exports.FormSection = exports.Section = exports.Container = undefined;
+exports.Hidden = exports.Center = exports.HalfHeight = exports.Col12 = exports.Col10 = exports.Col9 = exports.Col8 = exports.Col6 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Pre = exports.Label = exports.A = exports.OverlaySelected = exports.Overlay = exports.PickerInput = exports.PickerButton = exports.PickerPicker = exports.Picker = exports.Text = exports.AlbumText = exports.PhotoImg = exports.Photo = exports.AlbumPhoto = exports.Album = exports.ProviderButton = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionFooter = exports.SectionBody = exports.SectionHeader = exports.NavButton = exports.NavRight = exports.NavBar = exports.ErrorSection = exports.FormSection = exports.Section = exports.Container = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /*
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -113,6 +113,16 @@ var Button = exports.Button = {
     border: '1px solid #007bff',
     background: '#fff',
     color: '#007bff'
+};
+
+var ProviderButton = exports.ProviderButton = {
+    fontSize: '1em',
+    padding: '0.3em 0.5em',
+    margin: '0.3em',
+    border: '1px solid #007bff',
+    background: '#fff',
+    color: '#007bff',
+    width: '100%'
 };
 
 var Album = exports.Album = {
@@ -287,6 +297,7 @@ var AmplifyTheme = {
     actionRow: ActionRow,
     input: Input,
     button: Button,
+    providerButton: ProviderButton,
 
     errorSection: ErrorSection,
 

@@ -100,7 +100,7 @@ var RestClient = (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders, credPromise;
+            var parsed_url, params, libraryHeaders;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -121,17 +121,8 @@ var RestClient = (function () {
                     params.data = JSON.stringify(init.body);
                 }
                 params.headers = __assign({}, libraryHeaders, init.headers);
-                credPromise = new Promise(function (resolve, reject) {
-                    Auth_1.default.currentCredentials()
-                        .then(resolve)
-                        .catch(function (err) {
-                        // usar guest
-                        Auth_1.default.guestCredentials().then(resolve).catch(reject);
-                    });
-                });
-                return [2 /*return*/, credPromise.then(function (credentials) {
-                        return _this._signed(params, credentials);
-                    })];
+                return [2 /*return*/, Auth_1.default.currentCredentials()
+                        .then(function (credentials) { return _this._signed(params, credentials); })];
             });
         });
     };

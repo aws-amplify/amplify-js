@@ -205,7 +205,8 @@ var Authenticator = function (_Component) {
 
                 var _props = this.props,
                     hideDefault = _props.hideDefault,
-                    hide = _props.hide;
+                    hide = _props.hide,
+                    federated = _props.federated;
 
                 if (!hide) {
                     hide = [];
@@ -214,7 +215,7 @@ var Authenticator = function (_Component) {
                     hide = hide.concat([_Greetings2['default'], _SignIn2['default'], _ConfirmSignIn2['default'], _RequireNewPassword2['default'], _SignUp2['default'], _ConfirmSignUp2['default'], _VerifyContact2['default'], _ForgotPassword2['default']]);
                 }
                 var props_children = this.props.children || [];
-                var default_children = [_react2['default'].createElement(_Greetings2['default'], null), _react2['default'].createElement(_SignIn2['default'], null), _react2['default'].createElement(_ConfirmSignIn2['default'], null), _react2['default'].createElement(_RequireNewPassword2['default'], null), _react2['default'].createElement(_SignUp2['default'], null), _react2['default'].createElement(_ConfirmSignUp2['default'], null), _react2['default'].createElement(_VerifyContact2['default'], null), _react2['default'].createElement(_ForgotPassword2['default'], null)];
+                var default_children = [_react2['default'].createElement(_Greetings2['default'], null), _react2['default'].createElement(_SignIn2['default'], { federated: federated }), _react2['default'].createElement(_ConfirmSignIn2['default'], null), _react2['default'].createElement(_RequireNewPassword2['default'], null), _react2['default'].createElement(_SignUp2['default'], null), _react2['default'].createElement(_ConfirmSignUp2['default'], null), _react2['default'].createElement(_VerifyContact2['default'], null), _react2['default'].createElement(_ForgotPassword2['default'], null)];
 
                 var children = default_children.concat(props_children);
                 var render_children = _react2['default'].Children.map(children, function (child) {
