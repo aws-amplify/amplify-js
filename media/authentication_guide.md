@@ -259,6 +259,8 @@ After setup. Just add `Google client_id` and/or `Facebook app_id` to `Authentica
 ```
 
 #### Federated SignIn
+
+Third party sign in only, without login forms
 ```jsx
 import { FederatedSignIn } from 'aws-amplify-react';
 

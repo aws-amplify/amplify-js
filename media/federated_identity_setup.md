@@ -2,13 +2,13 @@
 
 ## Google
 
-[AWS Developer Guide](http://docs.aws.amazon.com/cognito/latest/developerguide/google.html)
-[Google Developer Guide](https://developers.google.com/+/web/signin/)
+* [AWS Developer Guide](http://docs.aws.amazon.com/cognito/latest/developerguide/google.html)
+* [Google Developer Guide](https://developers.google.com/+/web/signin/)
 
 ## Facebook
 
-[AWS Developer Guide](http://docs.aws.amazon.com/cognito/latest/developerguide/facebook.html)
-[Facebook Developer Guide](https://developers.facebook.com/docs/facebook-login/web)
+* [AWS Developer Guide](http://docs.aws.amazon.com/cognito/latest/developerguide/facebook.html)
+* [Facebook Developer Guide](https://developers.facebook.com/docs/facebook-login/web)
 
 ### localhost domain
 
