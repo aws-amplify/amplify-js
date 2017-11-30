@@ -11,12 +11,12 @@
  * and limitations under the License.
  */
 
-//import * as AWS from 'aws-sdk/global';
-import * as S3 from 'aws-sdk/clients/s3';
-import * as AWS from 'aws-sdk/global'
-import * as Cognito from 'amazon-cognito-identity-js';
-import * as Pinpoint from 'aws-sdk/clients/pinpoint';
-import * as AMA from 'aws-sdk-mobile-analytics';
-import * as Lambda from 'aws-sdk/clients/lambda';
-
-export {AWS, S3, Cognito, Pinpoint, AMA, Lambda }
+/**
+ * Func instance options
+ */
+export interface FuncOptions {
+    bucket?: string;
+    region?: string;
+    credentials?: object;
+    level?: string;
+}

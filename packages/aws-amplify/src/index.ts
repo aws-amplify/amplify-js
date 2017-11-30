@@ -14,6 +14,7 @@
 import Auth from './Auth';
 import Analytics from './Analytics';
 import Storage from './Storage';
+import Func from './Func';
 import API from './API';
 import I18n from './I18n';
 import Cache from './Cache';
@@ -31,6 +32,7 @@ export default class Amplify {
     static Analytics = null;
     static API = null;
     static Storage = null;
+    static Func = null;
     static I18n = null;
     static Cache = null;
 
@@ -44,6 +46,7 @@ export default class Amplify {
         Analytics.configure(config);
         API.configure(config);
         Storage.configure(config);
+        Func.configure(config);
         Cache.configure(config);
     }
 }
@@ -52,9 +55,10 @@ Amplify.Auth = Auth;
 Amplify.Analytics = Analytics;
 Amplify.API = API;;
 Amplify.Storage = Storage;
+Amplify.Func = Func;
 Amplify.I18n = I18n;
 Amplify.Cache = Cache;
 
 Amplify.Logger = Logger;
 
-export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice };
+export { Auth, Analytics, Storage, Func, API, I18n, Logger, Hub, Cache, JS, ClientDevice };
