@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.white1X1 = exports.transparent1X1 = exports.beforeAfter = exports.NavRight = exports.NavBar = exports.Label = exports.Link = exports.NavButton = exports.ButtonContent = exports.Button = exports.ButtonRow = exports.MessageContent = exports.MessageRow = exports.Checkbox = exports.CheckboxRow = exports.Radio = exports.RadioRow = exports.InputRow = exports.FormRow = exports.ActionRow = exports.SectionBody = exports.SectionFooter = exports.SectionHeader = exports.FormSection = undefined;
+exports.white1X1 = exports.transparent1X1 = exports.beforeAfter = exports.NavRight = exports.NavBar = exports.Label = exports.Link = exports.NavButton = exports.ButtonContent = exports.Button = exports.ButtonRow = exports.MessageContent = exports.MessageRow = exports.Checkbox = exports.CheckboxRow = exports.Radio = exports.RadioRow = exports.InputRow = exports.FormRow = exports.ActionRow = exports.SectionBody = exports.SectionFooter = exports.SectionHeader = exports.FormSection = exports.Container = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /*
                                                                                                                                                                                                                                                                    * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -29,6 +29,15 @@ var _AmplifyTheme = require('./AmplifyTheme');
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var Container = exports.Container = function Container(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    return beforeAfter(_react2['default'].createElement(
+        'div',
+        { className: 'amplify-container', style: theme.container },
+        props.children
+    ));
+};
 
 var FormSection = exports.FormSection = function FormSection(props) {
     var theme = props.theme || _AmplifyTheme2['default'];

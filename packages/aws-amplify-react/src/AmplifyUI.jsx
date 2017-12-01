@@ -17,6 +17,15 @@ import { JS } from 'aws-amplify';
 
 import AmplifyTheme from './AmplifyTheme';
 
+export const Container = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    return beforeAfter(
+        <div className="amplify-container" style={theme.container}>
+            {props.children}
+        </div>
+    )
+}
+
 export const FormSection = (props) => {
     const theme = props.theme || AmplifyTheme;
     return beforeAfter(

@@ -61,6 +61,8 @@ var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
+var _AmplifyUI = require('../AmplifyUI');
+
 var _AmplifyMessageMap = require('../AmplifyMessageMap');
 
 var _AmplifyMessageMap2 = _interopRequireDefault(_AmplifyMessageMap);
@@ -234,8 +236,8 @@ var Authenticator = function (_Component) {
                 var errorRenderer = this.props.errorRenderer || this.errorRenderer;
                 var error = this.state.error;
                 return _react2['default'].createElement(
-                    'div',
-                    { className: 'amplify-container', style: theme.container },
+                    _AmplifyUI.Container,
+                    { theme: theme },
                     render_children,
                     error ? errorRenderer(error) : null
                 );

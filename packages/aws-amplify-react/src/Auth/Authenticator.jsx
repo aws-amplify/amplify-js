@@ -24,6 +24,7 @@ import VerifyContact from './VerifyContact';
 import ForgotPassword from './ForgotPassword';
 
 import AmplifyTheme from '../AmplifyTheme';
+import { Container } from '../AmplifyUI';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
 const logger = new Logger('Authenticator');
@@ -144,10 +145,10 @@ export default class Authenticator extends Component {
         const errorRenderer = this.props.errorRenderer || this.errorRenderer;
         const error = this.state.error;
         return (
-            <div className="amplify-container" style={theme.container}>
+            <Container theme={theme}>
                 {render_children}
                 {error? errorRenderer(error) : null}
-            </div>
+            </Container>
         )
     }
 }
