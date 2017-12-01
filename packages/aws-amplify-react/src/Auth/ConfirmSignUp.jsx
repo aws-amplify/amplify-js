@@ -16,7 +16,17 @@ import { Auth, I18n, Logger } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
-import { Header, Footer, InputRow, MessageRow, ButtonRow, Link } from '../AmplifyUI';
+import {
+    FormSection,
+    SectionHeader,
+    SectionBody,
+    SectionFooter,
+    InputRow,
+    ActionRow,
+    MessageRow,
+    Button,
+    Link
+} from '../AmplifyUI';
 
 const logger = new Logger('ConfirmSignUp');
 
@@ -54,9 +64,11 @@ export default class ConfirmSignUp extends AuthPiece {
         if (hide && hide.includes(ConfirmSignUp)) { return null; }
 
         return (
-            <div className="amplify-form-section" style={theme.formSection}>
-                <Header theme={theme}>{I18n.get('Confirm')} {I18n.get('Sign Up')}</Header>
-                <div className="amplify-section-body" style={theme.sectionBody}>
+            <FormSection theme={theme}>
+                <SectionHeader theme={theme}>
+                    {I18n.get('Confirm')} {I18n.get('Sign Up')}
+                </SectionHeader>
+                <SectionBody theme={theme}>
                     { username? <MessageRow>{username}</MessageRow>
                             : <InputRow
                                 placeholder={I18n.get('Username')}
@@ -74,21 +86,21 @@ export default class ConfirmSignUp extends AuthPiece {
                         name="code"
                         onChange={this.handleInputChange}
                     />
-                    <div className="amplify-action-row" style={theme.actionRow}>
-                        <button style={theme.button} onClick={this.confirm}>
+                    <ActionRow theme={theme}>
+                        <Button theme={theme} onClick={this.confirm}>
                             {I18n.get('Confirm')}
-                        </button>
-                        <button style={theme.button} onClick={this.resend}>
+                        </Button>
+                        <Button theme={theme} onClick={this.resend}>
                             {I18n.get('Resend Code')}
-                        </button>
-                    </div>
-                </div>
-                <Footer theme={theme}>
+                        </Button>
+                    </ActionRow>
+                </SectionBody>
+                <SectionFooter theme={theme}>
                     <Link theme={theme} onClick={() => this.changeState('signIn')}>
                         {I18n.get('Back to Sign In')}
                     </Link>
-                </Footer>
-            </div>
+                </SectionFooter>
+            </FormSection>
         )
     }
 }

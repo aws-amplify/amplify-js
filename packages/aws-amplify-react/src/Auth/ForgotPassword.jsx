@@ -16,7 +16,15 @@ import { Auth, I18n, Logger } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../AmplifyUI';
+import {
+    FormSection,
+    SectionHeader,
+    SectionBody,
+    SectionFooter,
+    InputRow,
+    ButtonRow,
+    Link
+} from '../AmplifyUI';
 
 const logger = new Logger('ForgotPassword');
 
@@ -105,17 +113,17 @@ export default class ForgotPassword extends AuthPiece {
         if (hide && hide.includes(ForgotPassword)) { return null; }
 
         return (
-            <div className="amplify-form-section" style={theme.formSection}>
-                <Header theme={theme}>{I18n.get('Forgot Password')}</Header>
-                <div className="amplify-form-body" style={theme.sectionBody}>
+            <FormSection theme={theme}>
+                <SectionHeader theme={theme}>{I18n.get('Forgot Password')}</SectionHeader>
+                <SectionBody>
                     { this.state.delivery? this.submitView() : this.sendView() }
-                </div>
-                <Footer theme={theme}>
+                </SectionBody>
+                <SectionFooter theme={theme}>
                     <Link theme={theme} onClick={() => this.changeState('signIn')}>
                         {I18n.get('Back to Sign In')}
                     </Link>
-                </Footer>
-            </div>
+                </SectionFooter>
+            </FormSection>
         )
     }
 }

@@ -15,6 +15,7 @@ import React, { Component } from 'react';
 import { Auth, I18n, Logger, Hub } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
+import { NavBar, NavRight, NavButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('Greetings');
@@ -87,35 +88,34 @@ export default class Greetings extends AuthPiece {
         const name = user.name || user.username;
         const message = (typeof greeting === 'function')? greeting(name) : greeting;
         return (
-            <div className="amplify-nav-right" style={theme.navRight}>
+            <NavRight theme={theme}>
                 <span>{message}</span>
-                <button
-                    className="amplify-nav-button"
-                    style={theme.navButton}
+                <NavButton
+                    theme={theme}
                     onClick={this.signOut}
-                >{I18n.get('Sign Out')}</button>
-            </div>
+                >{I18n.get('Sign Out')}</NavButton>
+            </NavRight>
         )
     }
 
     noUserGreetings(theme) {
         const greeting = this.props.outGreeting || this.outGreeting;
         const message = (typeof greeting === 'function')? greeting() : greeting;
-        return <div className="amplify-nav-right" style={theme.navRight}>{message}</div>
+        return <NavRight theme={theme}>{message}</NavRight>
     }
 
     render() {
         const { hide } = this.props;
-        const { authState } = this.state;
-        const signedIn = (authState === 'signedIn');
-        const theme = this.props.theme || AmplifyTheme;
-
         if (hide && hide.includes(Greetings)) { return null; }
 
+        const { authState } = this.state;
+        const signedIn = (authState === 'signedIn');
+
+        const theme = this.props.theme || AmplifyTheme;
         return (
-            <div className="amplify-nav-bar" style={theme.navBar}>
+            <NavBar theme={theme}>
                 {signedIn? this.userGreetings(theme) : this.noUserGreetings(theme)}
-            </div>
+            </NavBar>
         )
     }
 }

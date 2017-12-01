@@ -178,20 +178,20 @@ var ForgotPassword = function (_AuthPiece) {
                 }
 
                 return _react2['default'].createElement(
-                    'div',
-                    { className: 'amplify-form-section', style: theme.formSection },
+                    _AmplifyUI.FormSection,
+                    { theme: theme },
                     _react2['default'].createElement(
-                        _AmplifyUI.Header,
+                        _AmplifyUI.SectionHeader,
                         { theme: theme },
                         _awsAmplify.I18n.get('Forgot Password')
                     ),
                     _react2['default'].createElement(
-                        'div',
-                        { className: 'amplify-form-body', style: theme.sectionBody },
+                        _AmplifyUI.SectionBody,
+                        null,
                         this.state.delivery ? this.submitView() : this.sendView()
                     ),
                     _react2['default'].createElement(
-                        _AmplifyUI.Footer,
+                        _AmplifyUI.SectionFooter,
                         { theme: theme },
                         _react2['default'].createElement(
                             _AmplifyUI.Link,

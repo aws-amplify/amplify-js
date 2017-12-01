@@ -16,7 +16,17 @@ import { Auth, I18n, Logger } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
-import { Header, Footer, InputRow, RadioRow, MessageRow, ButtonRow, Link } from '../AmplifyUI';
+import {
+    FormSection,
+    SectionHeader,
+    SectionBody,
+    SectionFooter,
+    InputRow,
+    RadioRow,
+    MessageRow,
+    ButtonRow,
+    Link
+} from '../AmplifyUI';
 
 const logger = new Logger('VerifyContact');
 
@@ -31,17 +41,16 @@ export default class VerifyContact extends AuthPiece {
     }
 
     verify() {
-        const { email, phone_number } = this.inputs;
-        if (!email && !phone_number) {
+        const { contact } = this.inputs;
+        if (!contact) {
             this.error('Neither Email nor Phone Number selected');
             return;
         }
 
-        const attr = email? 'email' : 'phone_number';
-        Auth.verifyCurrentUserAttribute(attr)
+        Auth.verifyCurrentUserAttribute(contact)
             .then(data => {
                 logger.debug(data);
-                this.setState({ verifyAttr: attr });
+                this.setState({ verifyAttr: contact });
             })
             .catch(err => this.error(err));
     }
@@ -77,7 +86,8 @@ export default class VerifyContact extends AuthPiece {
                             placeholder={I18n.get('Email')}
                             theme={theme}
                             key="email"
-                            name="email"
+                            name="contact"
+                            value="email"
                             onChange={this.handleInputChange}
                          /> : null
                 }
@@ -85,7 +95,8 @@ export default class VerifyContact extends AuthPiece {
                                     placeholder={I18n.get('Phone Number')}
                                     theme={theme}
                                     key="phone_number"
-                                    name="phone_number"
+                                    name="contact"
+                                    value="phone_number"
                                     onChange={this.handleInputChange}
                                 /> : null
                 }
@@ -119,20 +130,20 @@ export default class VerifyContact extends AuthPiece {
         if (hide && hide.includes(VerifyContact)) { return null; }
 
         return (
-            <div className="amplify-form-section" style={theme.formSection}>
-                <Header theme={theme}>{I18n.get('Verify Contact')}</Header>
-                <div className="amplify-section-body" style={theme.sectionBody}>
+            <FormSection theme={theme}>
+                <SectionHeader theme={theme}>{I18n.get('Verify Contact')}</SectionHeader>
+                <SectionBody theme={theme}>
                     <MessageRow theme={theme}>
                         {I18n.get('Account recovery requires verified contact information')}
                     </MessageRow>
                     { this.state.verifyAttr? this.submitView() : this.verifyView() }
-                </div>
-                <Footer theme={theme}>
+                </SectionBody>
+                <SectionFooter theme={theme}>
                     <Link theme={theme} onClick={() => this.changeState('signedIn')}>
                         {I18n.get('Skip')}
                     </Link>
-                </Footer>
-            </div>
+                </SectionFooter>
+            </FormSection>
         )
     }
 }

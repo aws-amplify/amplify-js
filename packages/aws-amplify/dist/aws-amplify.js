@@ -15771,8 +15771,8 @@ var AuthClass = (function () {
                 UserPoolId: userPoolId,
                 ClientId: userPoolWebClientId
             });
+            this.pickupCredentials();
         }
-        this.setCredentialsFromAWS();
         return this._config;
     };
     /**
@@ -16060,7 +16060,8 @@ var AuthClass = (function () {
      */
     AuthClass.prototype.currentAuthenticatedUser = function () {
         var source = this.credentials_source;
-        if (source === 'aws' || source === 'userPool') {
+        logger.debug('get current authenticated user. source ' + source);
+        if (!source || source === 'aws' || source === 'userPool') {
             return this.currentUserPoolUser();
         }
         if (source === 'federated') {
@@ -16110,7 +16111,7 @@ var AuthClass = (function () {
             .then(function (session) { return _this.setCredentialsFromSession(session); });
     };
     AuthClass.prototype.currentCredentials = function () {
-        return this.keepAlive();
+        return this.pickupCredentials();
     };
     /**
      * Initiate an attribute confirmation request
@@ -16374,11 +16375,31 @@ var AuthClass = (function () {
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();
     };
+    AuthClass.prototype.pickupCredentials = function () {
+        var _this = this;
+        if (this.credentials) {
+            return this.keepAlive();
+        }
+        else if (this.setCredentialsFromAWS()) {
+            return this.keepAlive();
+        }
+        else {
+            logger.debug('pickup from userPool');
+            return this.currentUserCredentials()
+                .then(function () { return _this.keepAlive(); })
+                .catch(function (err) {
+                logger.debug('error when pickup', err);
+                return null;
+            });
+        }
+    };
     AuthClass.prototype.setCredentialsFromAWS = function () {
         if (Common_1.AWS.config && Common_1.AWS.config.credentials) {
             this.credentials = Common_1.AWS.config.credentials;
+            this.credentials_source = 'aws';
+            return true;
         }
-        this.credentials_source = 'aws';
+        return false;
     };
     AuthClass.prototype.setCredentialsForGuest = function () {
         var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
@@ -16393,6 +16414,7 @@ var AuthClass = (function () {
         this.credentials_source = 'guest';
     };
     AuthClass.prototype.setCredentialsFromSession = function (session) {
+        logger.debug('set credentials from session');
         var idToken = session.getIdToken().getJwtToken();
         var _a = this._config, region = _a.region, userPoolId = _a.userPoolId, identityPoolId = _a.identityPoolId;
         var key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;

@@ -3,6 +3,10 @@ import React, { Component } from 'react';
 import { Logger, JS } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import {
+    FormSection,
+    SectionBody
+} from '../AmplifyUI';
+import {
     GoogleButton,
     FacebookButton
 } from './Provider';
@@ -60,16 +64,16 @@ export default class FederatedSignIn extends Component {
 
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <div style={theme.formSection}>
-                <div style={theme.sectionBody}>
+            <FormSection theme={theme}>
+                <SectionBody theme={theme}>
                     <FederatedButtons
                         federated={federated}
                         theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
                     />
-                </div>
-            </div>
+                </SectionBody>
+            </FormSection>
         )
     }
 }

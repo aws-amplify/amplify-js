@@ -113,18 +113,18 @@ var ConfirmSignUp = function (_AuthPiece) {
                 }
 
                 return _react2['default'].createElement(
-                    'div',
-                    { className: 'amplify-form-section', style: theme.formSection },
+                    _AmplifyUI.FormSection,
+                    { theme: theme },
                     _react2['default'].createElement(
-                        _AmplifyUI.Header,
+                        _AmplifyUI.SectionHeader,
                         { theme: theme },
                         _awsAmplify.I18n.get('Confirm'),
                         ' ',
                         _awsAmplify.I18n.get('Sign Up')
                     ),
                     _react2['default'].createElement(
-                        'div',
-                        { className: 'amplify-section-body', style: theme.sectionBody },
+                        _AmplifyUI.SectionBody,
+                        { theme: theme },
                         username ? _react2['default'].createElement(
                             _AmplifyUI.MessageRow,
                             null,
@@ -145,22 +145,22 @@ var ConfirmSignUp = function (_AuthPiece) {
                             onChange: this.handleInputChange
                         }),
                         _react2['default'].createElement(
-                            'div',
-                            { className: 'amplify-action-row', style: theme.actionRow },
+                            _AmplifyUI.ActionRow,
+                            { theme: theme },
                             _react2['default'].createElement(
-                                'button',
-                                { style: theme.button, onClick: this.confirm },
+                                _AmplifyUI.Button,
+                                { theme: theme, onClick: this.confirm },
                                 _awsAmplify.I18n.get('Confirm')
                             ),
                             _react2['default'].createElement(
-                                'button',
-                                { style: theme.button, onClick: this.resend },
+                                _AmplifyUI.Button,
+                                { theme: theme, onClick: this.resend },
                                 _awsAmplify.I18n.get('Resend Code')
                             )
                         )
                     ),
                     _react2['default'].createElement(
-                        _AmplifyUI.Footer,
+                        _AmplifyUI.SectionFooter,
                         { theme: theme },
                         _react2['default'].createElement(
                             _AmplifyUI.Link,

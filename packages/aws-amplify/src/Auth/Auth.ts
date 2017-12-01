@@ -80,9 +80,8 @@ export default class AuthClass {
                 UserPoolId: userPoolId,
                 ClientId: userPoolWebClientId
             });
+            this.pickupCredentials();
         }
-
-        this.setCredentialsFromAWS();
 
         return this._config;
     }
@@ -336,7 +335,8 @@ export default class AuthClass {
      */
     public currentAuthenticatedUser(): Promise<any> {
         const source = this.credentials_source;
-        if (source === 'aws' || source === 'userPool') {
+        logger.debug('get current authenticated user. source ' + source);
+        if (!source || source === 'aws' || source === 'userPool') {
             return this.currentUserPoolUser();
         }
 
@@ -383,7 +383,7 @@ export default class AuthClass {
     }
 
     public currentCredentials(): Promise<any> {
-        return this.keepAlive();
+        return this.pickupCredentials();
     }
 
     /**
@@ -645,11 +645,30 @@ export default class AuthClass {
         return this.keepAlive();
     }
 
+    private pickupCredentials() {
+        if (this.credentials) {
+            return this.keepAlive();
+        } else if (this.setCredentialsFromAWS()) {
+            return this.keepAlive();
+        } else {
+            logger.debug('pickup from userPool');
+            return this.currentUserCredentials()
+                .then(() => this.keepAlive())
+                .catch(err => {
+                    logger.debug('error when pickup', err)
+                    return null;
+                });
+        }
+    }
+
     private setCredentialsFromAWS() {
         if (AWS.config && AWS.config.credentials) {
             this.credentials = AWS.config.credentials;
+            this.credentials_source = 'aws';
+            return true;
         }
-        this.credentials_source = 'aws';
+
+        return false;
     }
 
     private setCredentialsForGuest() {
@@ -666,6 +685,7 @@ export default class AuthClass {
     }
     
     private setCredentialsFromSession(session) {
+        logger.debug('set credentials from session');
         const idToken = session.getIdToken().getJwtToken();
         const { region, userPoolId, identityPoolId } = this._config;
         const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;

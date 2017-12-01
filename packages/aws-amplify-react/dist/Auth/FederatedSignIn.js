@@ -17,6 +17,8 @@ var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
+var _AmplifyUI = require('../AmplifyUI');
+
 var _Provider = require('./Provider');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -135,11 +137,11 @@ var FederatedSignIn = function (_Component2) {
 
                 var theme = this.props.theme || _AmplifyTheme2['default'];
                 return _react2['default'].createElement(
-                    'div',
-                    { style: theme.formSection },
+                    _AmplifyUI.FormSection,
+                    { theme: theme },
                     _react2['default'].createElement(
-                        'div',
-                        { style: theme.sectionBody },
+                        _AmplifyUI.SectionBody,
+                        { theme: theme },
                         _react2['default'].createElement(FederatedButtons, {
                             federated: federated,
                             theme: theme,

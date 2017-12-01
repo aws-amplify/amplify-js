@@ -112,7 +112,11 @@ export const Button = {
     margin: 'auto 0.3em',
     border: '1px solid #007bff',
     background: '#fff',
-    color: '#007bff'
+    color: '#007bff',
+    before: {
+        content: 'Hi',
+        background: '#f00'
+    }
 }
 
 export const ProviderButton = {

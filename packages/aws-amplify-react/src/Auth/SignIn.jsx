@@ -17,7 +17,15 @@ import { Auth, I18n, Logger, JS } from 'aws-amplify';
 import AuthPiece from './AuthPiece';
 import { FederatedButtons } from './FederatedSignIn';
 import AmplifyTheme from '../AmplifyTheme';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../AmplifyUI';
+import {
+    FormSection,
+    SectionHeader,
+    SectionBody,
+    SectionFooter,
+    InputRow,
+    ButtonRow,
+    Link
+} from '../AmplifyUI';
 
 const logger = new Logger('SignIn');
 
@@ -69,9 +77,9 @@ export default class SignIn extends AuthPiece {
 
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <div style={theme.formSection}>
-                <Header theme={theme}>{I18n.get('Sign In Account')}</Header>
-                <div style={theme.sectionBody}>
+            <FormSection theme={theme}>
+                <SectionHeader theme={theme}>{I18n.get('Sign In Account')}</SectionHeader>
+                <SectionBody theme={theme}>
                     <InputRow
                         autoFocus
                         placeholder={I18n.get('Username')}
@@ -96,8 +104,8 @@ export default class SignIn extends AuthPiece {
                         authState={authState}
                         onStateChange={onStateChange}
                     />
-                </div>
-                <Footer theme={theme}>
+                </SectionBody>
+                <SectionFooter theme={theme}>
                     <div style={theme.col6}>
                         <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
                             {I18n.get('Forgot Password')}
@@ -108,8 +116,8 @@ export default class SignIn extends AuthPiece {
                             {I18n.get('Sign Up')}
                         </Link>
                     </div>
-                </Footer>
-            </div>
+                </SectionFooter>
+            </FormSection>
         )
     }
 }
