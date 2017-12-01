@@ -112,11 +112,7 @@ var Button = exports.Button = {
     margin: 'auto 0.3em',
     border: '1px solid #007bff',
     background: '#fff',
-    color: '#007bff',
-    before: {
-        content: 'Hi',
-        background: '#f00'
-    }
+    color: '#007bff'
 };
 
 var ProviderButton = exports.ProviderButton = {
