@@ -159,6 +159,7 @@ var SignIn = function (_AuthPiece) {
                         ),
                         _react2['default'].createElement(_FederatedSignIn.FederatedButtons, {
                             federated: federated,
+                            theme: theme,
                             authState: authState,
                             onStateChange: onStateChange
                         })

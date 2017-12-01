@@ -21,6 +21,8 @@ var _AmplifyTheme = require('../../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
+var _AmplifyUI = require('../../AmplifyUI');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -173,13 +175,13 @@ function withFacebook(Comp) {
 
 var Button = function Button(props) {
     return _react2['default'].createElement(
-        'button',
+        _AmplifyUI.SignInButtonFacebook,
         {
             onClick: props.facebookSignIn,
-            style: props.style || _AmplifyTheme2['default'].providerButton,
+            theme: props.theme || _AmplifyTheme2['default'],
             disabled: !props.fb
         },
-        'Facebook'
+        'Sign In with Facebook'
     );
 };
 

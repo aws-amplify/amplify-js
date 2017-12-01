@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import { Auth, Logger } from 'aws-amplify';
 import AmplifyTheme from '../../AmplifyTheme';
+import { SignInButtonGoogle } from '../../AmplifyUI';
 
 const logger = new Logger('withGoogle');
 
@@ -80,9 +81,9 @@ export default function withGoogle(Comp) {
 }
 
 const Button = (props) => (
-    <button onClick={props.googleSignIn} style={props.style || AmplifyTheme.providerButton}>
-        Google
-    </button>
+    <SignInButtonGoogle onClick={props.googleSignIn} theme={props.theme || AmplifyTheme}>
+        Sign In with Google
+    </SignInButtonGoogle>
 )
 
 export const GoogleButton = withGoogle(Button);

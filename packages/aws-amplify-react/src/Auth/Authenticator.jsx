@@ -24,7 +24,7 @@ import VerifyContact from './VerifyContact';
 import ForgotPassword from './ForgotPassword';
 
 import AmplifyTheme from '../AmplifyTheme';
-import { Container } from '../AmplifyUI';
+import { Container, ErrorSection, SectionBody } from '../AmplifyUI';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
 const logger = new Logger('Authenticator');
@@ -90,10 +90,9 @@ export default class Authenticator extends Component {
     errorRenderer(err) {
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <div
-                className="amplify-error-section"
-                style={theme.errorSection}
-            >{err}</div>
+            <ErrorSection theme={theme}>
+                <SectionBody theme={theme}>{err}</SectionBody>
+            </ErrorSection>
         )
     }
 

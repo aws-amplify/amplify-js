@@ -152,6 +152,7 @@ var ConfirmSignUp = function (_AuthPiece) {
                                 { theme: theme, onClick: this.confirm },
                                 _awsAmplify.I18n.get('Confirm')
                             ),
+                            _react2['default'].createElement(_AmplifyUI.Space, { theme: theme }),
                             _react2['default'].createElement(
                                 _AmplifyUI.Button,
                                 { theme: theme, onClick: this.resend },

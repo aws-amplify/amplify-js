@@ -25,6 +25,7 @@ import {
     ActionRow,
     MessageRow,
     Button,
+    Space,
     Link
 } from '../AmplifyUI';
 
@@ -90,6 +91,7 @@ export default class ConfirmSignUp extends AuthPiece {
                         <Button theme={theme} onClick={this.confirm}>
                             {I18n.get('Confirm')}
                         </Button>
+                        <Space theme={theme} />
                         <Button theme={theme} onClick={this.resend}>
                             {I18n.get('Resend Code')}
                         </Button>

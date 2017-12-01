@@ -21,6 +21,8 @@ var _AmplifyTheme = require('../../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
+var _AmplifyUI = require('../../AmplifyUI');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -152,9 +154,9 @@ function withGoogle(Comp) {
 
 var Button = function Button(props) {
     return _react2['default'].createElement(
-        'button',
-        { onClick: props.googleSignIn, style: props.style || _AmplifyTheme2['default'].providerButton },
-        'Google'
+        _AmplifyUI.SignInButtonGoogle,
+        { onClick: props.googleSignIn, theme: props.theme || _AmplifyTheme2['default'] },
+        'Sign In with Google'
     );
 };
 

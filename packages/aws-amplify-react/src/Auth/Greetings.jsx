@@ -15,7 +15,7 @@ import React, { Component } from 'react';
 import { Auth, I18n, Logger, Hub } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
-import { NavBar, NavRight, NavButton } from '../AmplifyUI';
+import { NavBar, Nav, NavRight, NavItem, NavButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('Greetings');
@@ -88,20 +88,20 @@ export default class Greetings extends AuthPiece {
         const name = user.name || user.username;
         const message = (typeof greeting === 'function')? greeting(name) : greeting;
         return (
-            <NavRight theme={theme}>
-                <span>{message}</span>
+            <span>
+                <NavItem theme={theme}>{message}</NavItem>
                 <NavButton
                     theme={theme}
                     onClick={this.signOut}
                 >{I18n.get('Sign Out')}</NavButton>
-            </NavRight>
+            </span>
         )
     }
 
     noUserGreetings(theme) {
         const greeting = this.props.outGreeting || this.outGreeting;
         const message = (typeof greeting === 'function')? greeting() : greeting;
-        return <NavRight theme={theme}>{message}</NavRight>
+        return <NavItem theme={theme}>{message}</NavItem>
     }
 
     render() {
@@ -114,7 +114,11 @@ export default class Greetings extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <NavBar theme={theme}>
-                {signedIn? this.userGreetings(theme) : this.noUserGreetings(theme)}
+                <Nav theme={theme}>
+                    <NavRight theme={theme}>
+                        {signedIn? this.userGreetings(theme) : this.noUserGreetings(theme)}
+                    </NavRight>
+                </Nav>
             </NavBar>
         )
     }

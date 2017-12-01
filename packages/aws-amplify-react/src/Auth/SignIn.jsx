@@ -101,6 +101,7 @@ export default class SignIn extends AuthPiece {
                     </ButtonRow>
                     <FederatedButtons
                         federated={federated}
+                        theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
                     />

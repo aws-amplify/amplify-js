@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.white1X1 = exports.transparent1X1 = exports.beforeAfter = exports.NavRight = exports.NavBar = exports.Label = exports.Link = exports.NavButton = exports.ButtonContent = exports.Button = exports.ButtonRow = exports.MessageContent = exports.MessageRow = exports.Checkbox = exports.CheckboxRow = exports.Radio = exports.RadioRow = exports.InputRow = exports.FormRow = exports.ActionRow = exports.SectionBody = exports.SectionFooter = exports.SectionHeader = exports.FormSection = exports.Container = undefined;
+exports.white1X1 = exports.transparent1X1 = exports.beforeAfter = exports.NavItem = exports.NavRight = exports.Nav = exports.NavBar = exports.Space = exports.Label = exports.Link = exports.NavButton = exports.SignInButtonFacebook = exports.SignInButtonGoogle = exports.SignInButton = exports.ButtonContent = exports.Button = exports.ButtonRow = exports.MessageContent = exports.MessageRow = exports.Checkbox = exports.CheckboxRow = exports.Radio = exports.RadioRow = exports.InputRow = exports.FormRow = exports.ActionRow = exports.SectionBody = exports.SectionFooter = exports.SectionHeader = exports.ErrorSection = exports.FormSection = exports.FormContainer = exports.Container = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /*
                                                                                                                                                                                                                                                                    * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -39,11 +39,33 @@ var Container = exports.Container = function Container(props) {
     ));
 };
 
-var FormSection = exports.FormSection = function FormSection(props) {
+var FormContainer = exports.FormContainer = function FormContainer(props) {
     var theme = props.theme || _AmplifyTheme2['default'];
     return beforeAfter(_react2['default'].createElement(
         'div',
-        { className: 'amplify-form-section', style: theme.formSection },
+        { className: 'amplify-form-container', style: theme.formContainer },
+        props.children
+    ));
+};
+
+var FormSection = exports.FormSection = function FormSection(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    return _react2['default'].createElement(
+        FormContainer,
+        { theme: theme },
+        beforeAfter(_react2['default'].createElement(
+            'div',
+            { className: 'amplify-form-section', style: theme.formSection },
+            props.children
+        ))
+    );
+};
+
+var ErrorSection = exports.ErrorSection = function ErrorSection(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    return beforeAfter(_react2['default'].createElement(
+        'div',
+        { className: 'amplify-error-section', style: theme.errorSection },
         props.children
     ));
 };
@@ -221,6 +243,47 @@ var ButtonContent = exports.ButtonContent = function ButtonContent(props) {
     ));
 };
 
+var SignInButton = exports.SignInButton = function SignInButton(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
+
+    return beforeAfter(_react2['default'].createElement(
+        'button',
+        _extends({}, p, { className: 'amplify-signin-button', style: theme.signInButton }),
+        props.children
+    ));
+};
+
+var SignInButtonGoogle = exports.SignInButtonGoogle = function SignInButtonGoogle(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    var style = theme.signInButtonGoogle || theme.signInButton;
+    var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
+
+    return beforeAfter(_react2['default'].createElement(
+        'button',
+        _extends({}, p, {
+            className: 'amplify-signin-button amplify-signin-button-google',
+            style: style
+        }),
+        props.children
+    ));
+};
+
+var SignInButtonFacebook = exports.SignInButtonFacebook = function SignInButtonFacebook(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    var style = theme.signInButtonFacebook || theme.signInButton;
+    var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
+
+    return beforeAfter(_react2['default'].createElement(
+        'button',
+        _extends({}, p, {
+            className: 'amplify-signin-button amplify-signin-button-facebook',
+            style: style
+        }),
+        props.children
+    ));
+};
+
 var NavButton = exports.NavButton = function NavButton(props) {
     var theme = props.theme || _AmplifyTheme2['default'];
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
@@ -256,6 +319,16 @@ var Label = exports.Label = function Label(props) {
     ));
 };
 
+var Space = exports.Space = function Space(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
+    return beforeAfter(_react2['default'].createElement(
+        'span',
+        _extends({}, p, { className: 'amplify-space', style: theme.space }),
+        props.children
+    ));
+};
+
 var NavBar = exports.NavBar = function NavBar(props) {
     var theme = props.theme || _AmplifyTheme2['default'];
     return beforeAfter(_react2['default'].createElement(
@@ -265,11 +338,29 @@ var NavBar = exports.NavBar = function NavBar(props) {
     ));
 };
 
+var Nav = exports.Nav = function Nav(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    return beforeAfter(_react2['default'].createElement(
+        'div',
+        { className: 'amplify-nav', style: theme.nav },
+        props.children
+    ));
+};
+
 var NavRight = exports.NavRight = function NavRight(props) {
     var theme = props.theme || _AmplifyTheme2['default'];
     return beforeAfter(_react2['default'].createElement(
         'div',
         { className: 'amplify-nav-right', style: theme.navRight },
+        props.children
+    ));
+};
+
+var NavItem = exports.NavItem = function NavItem(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    return beforeAfter(_react2['default'].createElement(
+        'div',
+        { className: 'amplify-nav-item', style: theme.navItem },
         props.children
     ));
 };
@@ -285,7 +376,7 @@ var beforeAfter = exports.beforeAfter = function beforeAfter(el) {
 
     return _react2['default'].createElement(
         'span',
-        null,
+        { style: { position: 'relative' } },
         before ? _react2['default'].createElement(
             'span',
             { style: before },

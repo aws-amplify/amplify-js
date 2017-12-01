@@ -173,11 +173,11 @@ var Greetings = function (_AuthPiece) {
                 var name = user.name || user.username;
                 var message = typeof greeting === 'function' ? greeting(name) : greeting;
                 return _react2['default'].createElement(
-                    _AmplifyUI.NavRight,
-                    { theme: theme },
+                    'span',
+                    null,
                     _react2['default'].createElement(
-                        'span',
-                        null,
+                        _AmplifyUI.NavItem,
+                        { theme: theme },
                         message
                     ),
                     _react2['default'].createElement(
@@ -200,7 +200,7 @@ var Greetings = function (_AuthPiece) {
                 var greeting = this.props.outGreeting || this.outGreeting;
                 var message = typeof greeting === 'function' ? greeting() : greeting;
                 return _react2['default'].createElement(
-                    _AmplifyUI.NavRight,
+                    _AmplifyUI.NavItem,
                     { theme: theme },
                     message
                 );
@@ -226,7 +226,15 @@ var Greetings = function (_AuthPiece) {
                 return _react2['default'].createElement(
                     _AmplifyUI.NavBar,
                     { theme: theme },
-                    signedIn ? this.userGreetings(theme) : this.noUserGreetings(theme)
+                    _react2['default'].createElement(
+                        _AmplifyUI.Nav,
+                        { theme: theme },
+                        _react2['default'].createElement(
+                            _AmplifyUI.NavRight,
+                            { theme: theme },
+                            signedIn ? this.userGreetings(theme) : this.noUserGreetings(theme)
+                        )
+                    )
                 );
             }
 

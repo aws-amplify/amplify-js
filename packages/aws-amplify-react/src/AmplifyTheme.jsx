@@ -31,9 +31,13 @@ export const Section = {
     fontWeight: '200'
 };
 
+export const FormContainer = {
+}
+
 export const FormSection = {
     display: 'inline-block',
-    fontWeight: '200'
+    fontWeight: '200',
+    maxWidth: '500px'
 };
 
 export const ErrorSection = {
@@ -49,10 +53,19 @@ export const NavBar = {
     borderBottom: '1px solid #00fff6'
 };
 
+export const Nav = {
+    padding: '0.5em 0.5em 0.2em',
+    marginBottom: '0.5em',
+    borderBottom: '1px solid #00fff6'
+};
+
 export const NavRight = {
     textAlign: 'right',
     fontSize: '0.8em'
 };
+
+export const NavItem = {
+}
 
 export const NavButton = {
     padding: '0',
@@ -115,7 +128,7 @@ export const Button = {
     color: '#007bff',
 }
 
-export const ProviderButton = {
+export const SignInButton = {
     fontSize: '1em',
     padding: '0.3em 0.5em',
     margin: '0.3em',
@@ -214,6 +227,11 @@ export const Label = {
     margin: 'auto 0.5em'
 }
 
+export const Space = {
+    display: 'inline-block',
+    width: '1em'
+}
+
 export const Pre = {
     textAlign: 'left',
     margin: '0',
@@ -284,8 +302,11 @@ export const Hidden = {
 
 const AmplifyTheme = {
     container: Container,
+
     navBar: NavBar,
+    nav: Nav,
     navRight: NavRight,
+    navItem: NavItem,
     navButton: NavButton,
 
     section: Section,
@@ -293,12 +314,13 @@ const AmplifyTheme = {
     sectionBody: SectionBody,
     sectionFooter: SectionFooter,
 
+    formContainer: FormContainer,
     formSection: FormSection,
     formRow: FormRow,
     actionRow: ActionRow,
     input: Input,
     button: Button,
-    providerButton: ProviderButton,
+    signInButton: SignInButton,
 
     errorSection: ErrorSection,
 
@@ -318,6 +340,7 @@ const AmplifyTheme = {
 
     a: A,
     label: Label,
+    space: Space,
     pre: Pre,
 
     col2: Col2,

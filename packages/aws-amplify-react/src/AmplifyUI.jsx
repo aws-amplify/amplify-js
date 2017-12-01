@@ -26,10 +26,32 @@ export const Container = (props) => {
     )
 }
 
-export const FormSection = (props) => {
+export const FormContainer = (props) => {
     const theme = props.theme || AmplifyTheme;
     return beforeAfter(
-        <div className="amplify-form-section" style={theme.formSection}>
+        <div className="amplify-form-container" style={theme.formContainer}>
+            {props.children}
+        </div>
+    )
+}
+
+export const FormSection = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    return (
+        <FormContainer theme={theme}>
+            {beforeAfter(
+                <div className="amplify-form-section" style={theme.formSection}>
+                    {props.children}
+                </div>
+            )}
+        </FormContainer>
+    )
+}
+
+export const ErrorSection = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    return beforeAfter(
+        <div className="amplify-error-section" style={theme.errorSection}>
             {props.children}
         </div>
     )
@@ -203,6 +225,49 @@ export const ButtonContent = (props) => {
     )
 }
 
+export const SignInButton = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    const p = JS.objectLessAttributes(props, 'theme');
+
+    return beforeAfter(
+        <button {...p} className="amplify-signin-button" style={theme.signInButton}>
+            {props.children}
+        </button>
+    )
+}
+
+export const SignInButtonGoogle = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    const style = theme.signInButtonGoogle || theme.signInButton;
+    const p = JS.objectLessAttributes(props, 'theme');
+
+    return beforeAfter(
+        <button
+            {...p}
+            className="amplify-signin-button amplify-signin-button-google"
+            style={style}
+        >
+            {props.children}
+        </button>
+    )
+}
+
+export const SignInButtonFacebook = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    const style = theme.signInButtonFacebook || theme.signInButton;
+    const p = JS.objectLessAttributes(props, 'theme');
+
+    return beforeAfter(
+        <button
+            {...p}
+            className="amplify-signin-button amplify-signin-button-facebook"
+            style={style}
+        >
+            {props.children}
+        </button>
+    )
+}
+
 export const NavButton = (props) => {
     const theme = props.theme || AmplifyTheme;
     const p = JS.objectLessAttributes(props, 'theme');
@@ -232,10 +297,27 @@ export const Label = (props) => {
     )
 }
 
+export const Space = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    const p = JS.objectLessAttributes(props, 'theme');
+    return beforeAfter(
+        <span {...p} className="amplify-space" style={theme.space}>{props.children}</span>
+    )
+}
+
 export const NavBar = (props) => {
     const theme = props.theme || AmplifyTheme;
     return beforeAfter(
         <div className="amplify-nav-bar" style={theme.navBar}>
+            {props.children}
+        </div>
+    )
+}
+
+export const Nav = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    return beforeAfter(
+        <div className="amplify-nav" style={theme.nav}>
             {props.children}
         </div>
     )
@@ -250,13 +332,22 @@ export const NavRight = (props) => {
     )
 }
 
+export const NavItem = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    return beforeAfter(
+        <div className="amplify-nav-item" style={theme.navItem}>
+            {props.children}
+        </div>
+    )
+}
+
 export const beforeAfter = (el) => {
     const style = el.props.style || {};
     const { before, after } = style;
     if (!before && !after) { return el; }
 
     return (
-        <span>
+        <span style={{position: 'relative'}}>
             {before? <span style={before}>{before.content}</span> : null}
             {el}
             {after? <span style={after}>{after.content}</span> : null}

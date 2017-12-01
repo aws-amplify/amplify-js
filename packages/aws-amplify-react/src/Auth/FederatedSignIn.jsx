@@ -4,7 +4,8 @@ import { Logger, JS } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
-    SectionBody
+    SectionBody,
+    ActionRow
 } from '../AmplifyUI';
 import {
     GoogleButton,
@@ -17,9 +18,10 @@ export class FederatedButtons extends Component {
     google(google_client_id) {
         if (!google_client_id) { return null; }
 
-        const { onStateChange } = this.props;
+        const { theme, onStateChange } = this.props;
         return <GoogleButton
                 google_client_id={google_client_id}
+                theme={theme}
                 onStateChange={onStateChange}
               />
     }
@@ -27,9 +29,10 @@ export class FederatedButtons extends Component {
     facebook(facebook_app_id) {
         if (!facebook_app_id) { return null; }
 
-        const { onStateChange } = this.props;
+        const { theme, onStateChange } = this.props;
         return <FacebookButton
                 facebook_app_id={facebook_app_id}
+                theme={theme}
                 onStateChange={onStateChange}
                 />
     }
@@ -45,10 +48,10 @@ export class FederatedButtons extends Component {
 
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <div className="amplify-action-row" style={theme.actionRow}>
+            <ActionRow theme={theme}>
                 {this.google(google_client_id)}
                 {this.facebook(facebook_app_id)}
-            </div>
+            </ActionRow>
         )
     }
 }
@@ -61,6 +64,7 @@ export default class FederatedSignIn extends Component {
             logger.debug('federated={google_client_id: , facebook_app_id: }');
             return null;
         }
+        if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
 
         const theme = this.props.theme || AmplifyTheme;
         return (

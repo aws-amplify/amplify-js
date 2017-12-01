@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.Hidden = exports.Center = exports.HalfHeight = exports.Col12 = exports.Col10 = exports.Col9 = exports.Col8 = exports.Col6 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Pre = exports.Label = exports.A = exports.OverlaySelected = exports.Overlay = exports.PickerInput = exports.PickerButton = exports.PickerPicker = exports.Picker = exports.Text = exports.AlbumText = exports.PhotoImg = exports.Photo = exports.AlbumPhoto = exports.Album = exports.ProviderButton = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionFooter = exports.SectionBody = exports.SectionHeader = exports.NavButton = exports.NavRight = exports.NavBar = exports.ErrorSection = exports.FormSection = exports.Section = exports.Container = undefined;
+exports.Hidden = exports.Center = exports.HalfHeight = exports.Col12 = exports.Col10 = exports.Col9 = exports.Col8 = exports.Col6 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Pre = exports.Space = exports.Label = exports.A = exports.OverlaySelected = exports.Overlay = exports.PickerInput = exports.PickerButton = exports.PickerPicker = exports.Picker = exports.Text = exports.AlbumText = exports.PhotoImg = exports.Photo = exports.AlbumPhoto = exports.Album = exports.SignInButton = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionFooter = exports.SectionBody = exports.SectionHeader = exports.NavButton = exports.NavItem = exports.NavRight = exports.Nav = exports.NavBar = exports.ErrorSection = exports.FormSection = exports.FormContainer = exports.Section = exports.Container = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /*
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -31,9 +31,12 @@ var Section = exports.Section = {
     fontWeight: '200'
 };
 
+var FormContainer = exports.FormContainer = {};
+
 var FormSection = exports.FormSection = {
     display: 'inline-block',
-    fontWeight: '200'
+    fontWeight: '200',
+    maxWidth: '500px'
 };
 
 var ErrorSection = exports.ErrorSection = {
@@ -49,10 +52,18 @@ var NavBar = exports.NavBar = {
     borderBottom: '1px solid #00fff6'
 };
 
+var Nav = exports.Nav = {
+    padding: '0.5em 0.5em 0.2em',
+    marginBottom: '0.5em',
+    borderBottom: '1px solid #00fff6'
+};
+
 var NavRight = exports.NavRight = {
     textAlign: 'right',
     fontSize: '0.8em'
 };
+
+var NavItem = exports.NavItem = {};
 
 var NavButton = exports.NavButton = {
     padding: '0',
@@ -115,7 +126,7 @@ var Button = exports.Button = {
     color: '#007bff'
 };
 
-var ProviderButton = exports.ProviderButton = {
+var SignInButton = exports.SignInButton = {
     fontSize: '1em',
     padding: '0.3em 0.5em',
     margin: '0.3em',
@@ -213,6 +224,11 @@ var Label = exports.Label = {
     margin: 'auto 0.5em'
 };
 
+var Space = exports.Space = {
+    display: 'inline-block',
+    width: '1em'
+};
+
 var Pre = exports.Pre = {
     textAlign: 'left',
     margin: '0',
@@ -283,8 +299,11 @@ var Hidden = exports.Hidden = {
 
 var AmplifyTheme = {
     container: Container,
+
     navBar: NavBar,
+    nav: Nav,
     navRight: NavRight,
+    navItem: NavItem,
     navButton: NavButton,
 
     section: Section,
@@ -292,12 +311,13 @@ var AmplifyTheme = {
     sectionBody: SectionBody,
     sectionFooter: SectionFooter,
 
+    formContainer: FormContainer,
     formSection: FormSection,
     formRow: FormRow,
     actionRow: ActionRow,
     input: Input,
     button: Button,
-    providerButton: ProviderButton,
+    signInButton: SignInButton,
 
     errorSection: ErrorSection,
 
@@ -317,6 +337,7 @@ var AmplifyTheme = {
 
     a: A,
     label: Label,
+    space: Space,
     pre: Pre,
 
     col2: Col2,

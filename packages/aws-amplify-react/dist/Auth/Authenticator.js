@@ -181,12 +181,13 @@ var Authenticator = function (_Component) {
             function errorRenderer(err) {
                 var theme = this.props.theme || _AmplifyTheme2['default'];
                 return _react2['default'].createElement(
-                    'div',
-                    {
-                        className: 'amplify-error-section',
-                        style: theme.errorSection
-                    },
-                    err
+                    _AmplifyUI.ErrorSection,
+                    { theme: theme },
+                    _react2['default'].createElement(
+                        _AmplifyUI.SectionBody,
+                        { theme: theme },
+                        err
+                    )
                 );
             }
 
