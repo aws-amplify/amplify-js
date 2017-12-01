@@ -13,7 +13,7 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
   - [5. Write Your Own Auth UI](#5-write-your-own-auth-ui)
   - [6. Federated Identity](#6-federated-identity)
 * [Extension](#extension)
-  - [Component Styling](#component-styling)
+  - [UI Theme](#ui-theme)
   - [Error Message](#error-message)
 
 ## Installation and Configuration
@@ -308,7 +308,7 @@ const Federated = withFederated(Buttons);
 
 ## Extensions
 
-### Component Styling
+### UI Theme
 
 Amplify UI components are theme based. Check the `AmplifyTheme.js` file for default styling.
 
@@ -330,6 +330,8 @@ const MyTheme = Object.assign({}, AmplifyTheme, { sectionHeader: MySectionHeader
 
 <Authenticator theme={MyTheme} />
 ```
+
+Theme example can be found [here](https://github.com/richardzcode/a-theme-react)
 
 ### Error Message
 
