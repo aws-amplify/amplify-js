@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.white1X1 = exports.transparent1X1 = exports.beforeAfter = exports.NavItem = exports.NavRight = exports.Nav = exports.NavBar = exports.Space = exports.Label = exports.Link = exports.NavButton = exports.SignInButtonFacebook = exports.SignInButtonGoogle = exports.SignInButton = exports.ButtonContent = exports.Button = exports.ButtonRow = exports.MessageContent = exports.MessageRow = exports.Checkbox = exports.CheckboxRow = exports.Radio = exports.RadioRow = exports.InputRow = exports.FormRow = exports.ActionRow = exports.SectionBody = exports.SectionFooter = exports.SectionHeader = exports.ErrorSection = exports.FormSection = exports.FormContainer = exports.Container = undefined;
+exports.white1X1 = exports.transparent1X1 = exports.beforeAfter = exports.NavItem = exports.NavRight = exports.Nav = exports.NavBar = exports.Space = exports.Label = exports.Link = exports.NavButton = exports.SignInButtonFacebook = exports.SignInButtonGoogle = exports.SignInButton = exports.ButtonContent = exports.Button = exports.ButtonRow = exports.MessageContent = exports.MessageRow = exports.Checkbox = exports.CheckboxRow = exports.Radio = exports.RadioRow = exports.InputRow = exports.FormRow = exports.ActionRow = exports.SectionBody = exports.SectionFooterContent = exports.SectionFooter = exports.SectionHeaderContent = exports.SectionHeader = exports.ErrorSectionContent = exports.ErrorSection = exports.FormSection = exports.FormContainer = exports.Container = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /*
                                                                                                                                                                                                                                                                    * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -66,6 +66,19 @@ var ErrorSection = exports.ErrorSection = function ErrorSection(props) {
     return beforeAfter(_react2['default'].createElement(
         'div',
         { className: 'amplify-error-section', style: theme.errorSection },
+        _react2['default'].createElement(
+            ErrorSectionContent,
+            null,
+            props.children
+        )
+    ));
+};
+
+var ErrorSectionContent = exports.ErrorSectionContent = function ErrorSectionContent(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    return beforeAfter(_react2['default'].createElement(
+        'span',
+        { className: 'amplify-error-section-content', style: theme.errorSectionContent },
         props.children
     ));
 };
@@ -75,6 +88,19 @@ var SectionHeader = exports.SectionHeader = function SectionHeader(props) {
     return beforeAfter(_react2['default'].createElement(
         'div',
         { className: 'amplify-section-header', style: theme.sectionHeader },
+        _react2['default'].createElement(
+            SectionHeaderContent,
+            { theme: theme },
+            props.children
+        )
+    ));
+};
+
+var SectionHeaderContent = exports.SectionHeaderContent = function SectionHeaderContent(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    return beforeAfter(_react2['default'].createElement(
+        'span',
+        { className: 'amplify-section-header-content', style: theme.sectionHeaderContent },
         props.children
     ));
 };
@@ -84,6 +110,19 @@ var SectionFooter = exports.SectionFooter = function SectionFooter(props) {
     return beforeAfter(_react2['default'].createElement(
         'div',
         { className: 'amplify-section-footer', style: theme.sectionFooter },
+        _react2['default'].createElement(
+            SectionFooterContent,
+            null,
+            props.children
+        )
+    ));
+};
+
+var SectionFooterContent = exports.SectionFooterContent = function SectionFooterContent(props) {
+    var theme = props.theme || _AmplifyTheme2['default'];
+    return beforeAfter(_react2['default'].createElement(
+        'span',
+        { className: 'amplify-section-footer-content', style: theme.sectionFooterContent },
         props.children
     ));
 };

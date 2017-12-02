@@ -93,7 +93,7 @@ export default class SignUp extends AuthPiece {
                         </Link>
                     </div>
                     <div style={Object.assign({textAlign: 'right'}, theme.col6)}>
-                        <Link style={theme.a} onClick={() => this.changeState('signIn')}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
                             {I18n.get('Sign In')}
                         </Link>
                     </div>

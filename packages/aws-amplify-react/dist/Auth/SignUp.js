@@ -163,7 +163,7 @@ var SignUp = function (_AuthPiece) {
                             { style: Object.assign({ textAlign: 'right' }, theme.col6) },
                             _react2['default'].createElement(
                                 _AmplifyUI.Link,
-                                { style: theme.a, onClick: function () {
+                                { theme: theme, onClick: function () {
                                         function onClick() {
                                             return _this3.changeState('signIn');
                                         }

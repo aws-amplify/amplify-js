@@ -52,8 +52,19 @@ export const ErrorSection = (props) => {
     const theme = props.theme || AmplifyTheme;
     return beforeAfter(
         <div className="amplify-error-section" style={theme.errorSection}>
-            {props.children}
+            <ErrorSectionContent>
+                {props.children}
+            </ErrorSectionContent>
         </div>
+    )
+}
+
+export const ErrorSectionContent = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    return beforeAfter(
+        <span className="amplify-error-section-content" style={theme.errorSectionContent}>
+            {props.children}
+        </span>
     )
 }
 
@@ -61,8 +72,19 @@ export const SectionHeader = (props) => {
     const theme = props.theme || AmplifyTheme;
     return beforeAfter(
         <div className="amplify-section-header" style={theme.sectionHeader}>
-            {props.children}
+            <SectionHeaderContent theme={theme}>
+                {props.children}
+            </SectionHeaderContent>
         </div>
+    )
+}
+
+export const SectionHeaderContent = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    return beforeAfter(
+        <span className="amplify-section-header-content" style={theme.sectionHeaderContent}>
+            {props.children}
+        </span>
     )
 }
 
@@ -70,8 +92,19 @@ export const SectionFooter = (props) => {
     const theme = props.theme || AmplifyTheme;
     return beforeAfter(
         <div className="amplify-section-footer" style={theme.sectionFooter}>
-            {props.children}
+            <SectionFooterContent>
+                {props.children}
+            </SectionFooterContent>
         </div>
+    )
+}
+
+export const SectionFooterContent = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    return beforeAfter(
+        <span className="amplify-section-footer-content" style={theme.sectionFooterContent}>
+            {props.children}
+        </span>
     )
 }
 
