@@ -121,6 +121,11 @@ var RestClient = (function () {
                     params.data = JSON.stringify(init.body);
                 }
                 params.headers = __assign({}, libraryHeaders, init.headers);
+                // Do not sign the request if client has added 'Authorization' header,
+                // which means custom authorizer.
+                if (params.headers['Authorization']) {
+                    return [2 /*return*/, this._request(params)];
+                }
                 return [2 /*return*/, Auth_1.default.currentCredentials()
                         .then(function (credentials) { return _this._signed(params, credentials); })];
             });
@@ -205,16 +210,12 @@ var RestClient = (function () {
             throw error;
         });
     };
-    RestClient.prototype._unsigned = function (params) {
-        return fetch(params.url, params).then(function (response) {
-            return Promise.all([response, response.json()]);
-        })
-            .then(function (values) {
-            return {
-                status: values[0].status,
-                headers: values[0].headers,
-                data: values[1]
-            };
+    RestClient.prototype._request = function (params) {
+        return axios_1.default(params)
+            .then(function (response) { return response.data; })
+            .catch(function (error) {
+            logger.debug(error);
+            throw error;
         });
     };
     RestClient.prototype._parseUrl = function (url) {

@@ -85,6 +85,11 @@ export class RestClient {
         }
 
         params.headers = { ...libraryHeaders, ...init.headers }
+
+        // Do not sign the request if client has added 'Authorization' header,
+        // which means custom authorizer.
+        if (params.headers['Authorization']) { return this._request(params); }
+
         return Auth.currentCredentials()
             .then(credentials => this._signed(params, credentials));
     }
@@ -180,16 +185,12 @@ export class RestClient {
             });
     }
 
-    private _unsigned(params) {
-        return fetch(params.url, params).then(function (response) {
-            return Promise.all([response, response.json()]);
-        })
-            .then(function (values) {
-                return {
-                    status: values[0].status,
-                    headers: values[0].headers,
-                    data: values[1]
-                }
+    private _request(params) {
+        return axios(params)
+            .then(response => response.data)
+            .catch((error) => {
+                logger.debug(error);
+                throw error;
             });
     }
 
