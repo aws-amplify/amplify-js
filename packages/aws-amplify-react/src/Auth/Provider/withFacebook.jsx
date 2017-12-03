@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { Auth, Logger } from 'aws-amplify';
 import AmplifyTheme from '../../AmplifyTheme';
-import { SignInButtonFacebook } from '../../AmplifyUI';
+import { SignInButton } from '../../AmplifyUI';
 
 const logger = new Logger('withFacebook');
 
@@ -99,13 +99,14 @@ export default function withFacebook(Comp) {
 }
 
 const Button = (props) => (
-    <SignInButtonFacebook
+    <SignInButton
+        id="facebook_signin_btn"
         onClick={props.facebookSignIn}
         theme={props.theme || AmplifyTheme}
         disabled={!props.fb}
     >
         Sign In with Facebook
-    </SignInButtonFacebook>
+    </SignInButton>
 )
 
 export const FacebookButton = withFacebook(Button);

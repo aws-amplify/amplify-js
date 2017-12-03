@@ -154,8 +154,12 @@ function withGoogle(Comp) {
 
 var Button = function Button(props) {
     return _react2['default'].createElement(
-        _AmplifyUI.SignInButtonGoogle,
-        { onClick: props.googleSignIn, theme: props.theme || _AmplifyTheme2['default'] },
+        _AmplifyUI.SignInButton,
+        {
+            id: 'google_signin_btn',
+            onClick: props.googleSignIn,
+            theme: props.theme || _AmplifyTheme2['default']
+        },
         'Sign In with Google'
     );
 };

@@ -175,8 +175,9 @@ function withFacebook(Comp) {
 
 var Button = function Button(props) {
     return _react2['default'].createElement(
-        _AmplifyUI.SignInButtonFacebook,
+        _AmplifyUI.SignInButton,
         {
+            id: 'facebook_signin_btn',
             onClick: props.facebookSignIn,
             theme: props.theme || _AmplifyTheme2['default'],
             disabled: !props.fb
