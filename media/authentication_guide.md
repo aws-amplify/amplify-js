@@ -120,6 +120,19 @@ export default withAuthenticator(App);
 
 Now your app is guarded by complete Auth flow. Only signed in user can access the app.
 
+#### Federated Identity
+
+You can enable federated Identity login by specifying federated option.
+
+```js
+const federated = {
+    google_client_id: '',
+    facebook_app_id: ''
+};
+
+export default withAuthenticator(App, { federated });
+```
+
 #### Sign Out Button
 
 The default `withAuthenticator` renders just the App component after a user is signed in, preventing interference with your app. Then question comes, how does the user sign out?
@@ -127,7 +140,7 @@ The default `withAuthenticator` renders just the App component after a user is s
 To expose this, set the second parameter to true, which means `includeGreetings = true`. It will put a greeting row on top of your app.
 
 ```js
-export default withAuthenticator(App, true);
+export default withAuthenticator(App, { includeGreetings: true });
 ```
 
 ### 3. Authenticator Component
