@@ -1,0 +1,21 @@
+
+language: node_js
+node_js:
+  - "4.4"
+  - "5"
+  - "6"
+  - "7"
+  - "8"
+env:
+  - TEST_SCRIPT=test
+  - BUILD_SCRIPT=build
+
+sudo: false
+
+matrix:
+  include:
+  - node_js: "node"
+
+script:
+  - npm run $TEST_SCRIPT
+  - npm run $BUILD_SCRIPT
