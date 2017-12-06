@@ -40,7 +40,7 @@ export default class JS {
     }
 
     static objectLessAttributes(obj, less) {
-        let ret = Object.assign({}, obj);
+        const ret = Object.assign({}, obj);
         if (less) {
             if (typeof less === 'string') {
                 delete ret[less];
@@ -55,13 +55,13 @@ export default class JS {
     }
 
     static filenameToContentType(filename, defVal='application/octet-stream') {
-        const name = filename.toLowerCase();;
+        const name = filename.toLowerCase();
         if (name.endsWith('.txt')) {
             return 'text/plain';
         } else if (name.endsWith('.html')) {
             return 'text/html';
         } else if (name.endsWith('.js')) {
-            return 'text/javascript'
+            return 'text/javascript';
         } else if (name.endsWith('.css')) {
             return 'text/css';
         } else if (name.endsWith('.csv')) {

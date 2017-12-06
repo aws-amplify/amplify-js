@@ -14,17 +14,16 @@
 import { AWS, ConsoleLogger as Logger } from '../Common';
 
 
-const logger = new Logger('Signer');
-
-var url = require('url'),
+const logger = new Logger('Signer'),
+    url = require('url'),
     crypto = AWS['util'].crypto;
 
-var encrypt = function(key, src, encoding?) {
+const encrypt = function(key, src, encoding?) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
 };
 
-var hash = function(src) {
-    src = src || '';
+const hash = function(src) {
+    const src = src || '';
     return crypto.createHash('sha256').update(src, 'utf8').digest('hex');
 };
 
@@ -39,7 +38,7 @@ CanonicalHeadersEntry =
     Lowercase(HeaderName) + ':' + Trimall(HeaderValue) + '\n'
 </pre>
 */
-var canonical_headers = function(headers) {
+const canonical_headers = function(headers) {
     if (!headers || Object.keys(headers).length === 0) { return ''; }
 
     return Object.keys(headers)
@@ -62,7 +61,7 @@ var canonical_headers = function(headers) {
 * List of header keys included in the canonical headers.
 * @access private
 */
-var signed_headers = function(headers) {
+const signed_headers = function(headers) {
     return Object.keys(headers)
         .map(function(key) { return key.toLowerCase(); })
         .sort()
@@ -72,7 +71,8 @@ var signed_headers = function(headers) {
 /**
 * @private
 * Create canonical request
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html|Create a Canonical Request}
+* Refer to 
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html|Create a Canonical Request}
 *
 <pre>
 CanonicalRequest =
@@ -84,8 +84,8 @@ CanonicalRequest =
     HexEncode(Hash(RequestPayload))
 </pre>
 */
-var canonical_request = function(request) {
-    var url_info = url.parse(request.url);
+const canonical_request = function(request) {
+    const url_info = url.parse(request.url);
 
     return [
         request.method || '/',
@@ -97,11 +97,11 @@ var canonical_request = function(request) {
     ].join('\n');
 };
 
-var parse_service_info = function(request) {
-    var url_info = url.parse(request.url),
+const parse_service_info = function(request) {
+    const url_info = url.parse(request.url),
         host = url_info.host;
 
-    var matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/),
+    const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/),
         parsed = (matched || []).slice(1, 3);
 
     if (parsed[1] === 'es') { // Elastic Search
@@ -114,7 +114,7 @@ var parse_service_info = function(request) {
     };
 };
 
-var credential_scope = function(d_str, region, service) {
+const credential_scope = function(d_str, region, service) {
     return [
         d_str,
         region,
@@ -126,7 +126,8 @@ var credential_scope = function(d_str, region, service) {
 /**
 * @private
 * Create a string to sign
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html|Create String to Sign}
+* Refer to 
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html|Create String to Sign}
 *
 <pre>
 StringToSign =
@@ -136,7 +137,7 @@ StringToSign =
     HashedCanonicalRequest
 </pre>
 */
-var string_to_sign = function(algorithm, canonical_request, dt_str, scope) {
+const string_to_sign = function(algorithm, canonical_request, dt_str, scope) {
     return [
         algorithm,
         dt_str,
@@ -148,7 +149,8 @@ var string_to_sign = function(algorithm, canonical_request, dt_str, scope) {
 /**
 * @private
 * Create signing key
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html|Calculate Signature}
+* Refer to 
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html|Calculate Signature}
 *
 <pre>
 kSecret = your secret access key
@@ -158,9 +160,9 @@ kService = HMAC(kRegion, Service)
 kSigning = HMAC(kService, "aws4_request")
 </pre>
 */
-var get_signing_key = function(secret_key, d_str, service_info) {
+const get_signing_key = function(secret_key, d_str, service_info) {
     logger.debug(service_info);
-    var k = ('AWS4' + secret_key),
+    const k = ('AWS4' + secret_key),
         k_date = encrypt(k, d_str),
         k_region = encrypt(k_date, service_info.region),
         k_service = encrypt(k_region, service_info.service),
@@ -169,16 +171,17 @@ var get_signing_key = function(secret_key, d_str, service_info) {
     return k_signing;
 };
 
-var get_signature = function(signing_key, str_to_sign) {
+const get_signature = function(signing_key, str_to_sign) {
     return encrypt(signing_key, str_to_sign, 'hex');
 };
 
 /**
 * @private
 * Create authorization header
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
+* Refer to 
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
 */
-var get_authorization_header = function(algorithm, access_key, scope, signed_headers, signature) {
+const get_authorization_header = function(algorithm, access_key, scope, signed_headers, signature) {
     return [
         algorithm + ' ' + 'Credential=' + access_key + '/' + scope,
         'SignedHeaders=' + signed_headers,
@@ -222,16 +225,16 @@ service_info: {
 *
 * @returns {object} Signed HTTP request
 */
-var sign = function(request, access_info, service_info = null) {
+const sign = function(request, access_info, service_info = null) {
     request.headers = request.headers || {};
     
     // datetime string and date string
-    var dt = new Date(),
+    const dt = new Date(),
         dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''),
         d_str = dt_str.substr(0, 8),
         algorithm = 'AWS4-HMAC-SHA256';
     
-    var url_info = url.parse(request.url)
+    const url_info = url.parse(request.url);
     request.headers['host'] = url_info.host;
     request.headers['x-amz-date'] = dt_str;
     if (access_info.session_token) {
@@ -239,11 +242,11 @@ var sign = function(request, access_info, service_info = null) {
     }
 
     // Task 1: Create a Canonical Request
-    var request_str = canonical_request(request);
+    const request_str = canonical_request(request);
     logger.debug(request_str);
 
     // Task 2: Create a String to Sign
-    var service_info = service_info || parse_service_info(request),
+    const service_info = service_info || parse_service_info(request),
         scope = credential_scope(
             d_str,
             service_info.region,
@@ -257,7 +260,7 @@ var sign = function(request, access_info, service_info = null) {
         );
 
     // Task 3: Calculate the Signature
-    var signing_key = get_signing_key(
+    const signing_key = get_signing_key(
             access_info.secret_key,
             d_str,
             service_info
@@ -265,7 +268,7 @@ var sign = function(request, access_info, service_info = null) {
         signature = get_signature(signing_key, str_to_sign);
 
     // Task 4: Adding the Signing information to the Request
-    var authorization_header = get_authorization_header(
+    const authorization_header = get_authorization_header(
             algorithm,
             access_info.access_key,
             scope,
@@ -285,4 +288,4 @@ var sign = function(request, access_info, service_info = null) {
 */
 export default class Signer {
     static sign = sign;
-};
+}

@@ -17,7 +17,7 @@ import { ConsoleLogger as Logger } from '../Logger';
 const logger = new Logger('ClientDevice_Browser');
 
 export function clientInfo() {
-    if (typeof window == 'undefined') { return {} }
+    if (typeof window === 'undefined') { return; {} }
 
     return browserClientInfo();
 }
@@ -39,13 +39,13 @@ function browserClientInfo() {
     const timezone = browserTimezone();
 
     return {
-        platform: platform,
-        make: product || vendor,
-        model: type.type,
-        version: type.version,
-        appVersion: [type.type, type.version].join('/'),
-        language: language,
-        timezone: timezone
+        'platform': platform,
+        'make': product || vendor,
+        'model': type.type,
+        'version': type.version,
+        'appVersion': [type.type, type.version].join('/'),
+        'language': language,
+        'timezone': timezone
     };
 }
 
@@ -56,34 +56,34 @@ export function dimension() {
     }
 
     return {
-        width: window.innerWidth,
-        height: window.innerHeight
-    }
+        'width': window.innerWidth,
+        'height': window.innerHeight
+    };
 }
 
 function browserTimezone() {
-    const tz_match = /.+\(([A-Z]+)\)/.exec(new Date().toString());
-    return tz_match? tz_match[1] : '';
+    const tzMatch = /.+\(([A-Z]+)\)/.exec(new Date().toString());
+    return tzMatch ? tzMatch[1]; : '';
 }
 
 function browserType(userAgent) {
-    const opera_match = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(userAgent);
-    if (opera_match) { return { type: opera_match[1], version: opera_match[2]}; }
+    const operaMatch = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(userAgent);
+    if (operaMatch) { return { type: operaMatch[1], version: operaMatch[2]}; }
 
-    const cf_match = /.+(Chrome|Firefox|FxiOS)\/([0-9\.]+).*/i.exec(userAgent);
-    if (cf_match) { return { type: cf_match[1], version: cf_match[2]}; }
+    const cfMatch = /.+(Chrome|Firefox|FxiOS)\/([0-9\.]+).*/i.exec(userAgent);
+    if (cfMatch) { return { type: cfMatch[1], version: cfMatch[2]}; }
 
-    const ie_match = /.+(Trident|Edge)\/([0-9\.]+).*/i.exec(userAgent);
-    if (ie_match) { return { type: ie_match[1], version: ie_match[2]}; }
+    const ieMatch = /.+(Trident|Edge)\/([0-9\.]+).*/i.exec(userAgent);
+    if (ieMatch) { return { type: ieMatch[1], version: ieMatch[2]}; }
 
-    const s_match = /.+(Safari)\/([0-9\.]+).*/i.exec(userAgent);
-    if (s_match) { return { type: s_match[1], version: s_match[2]}; }
+    const sMatch = /.+(Safari)\/([0-9\.]+).*/i.exec(userAgent);
+    if (sMatch) { return { type: sMatch[1], version: sMatch[2]}; }
 
-    const awk_match = /.+(AppleWebKit)\/([0-9\.]+).*/i.exec(userAgent);
-    if (awk_match) { return { type: awk_match[1], version: awk_match[2]}; }
+    const awkMatch = /.+(AppleWebKit)\/([0-9\.]+).*/i.exec(userAgent);
+    if (awkMatch) { return { type: awkMatch[1], version: awkMatch[2]}; }
 
-    const any_match = /.*([A-Z]+)\/([0-9\.]+).*/i.exec(userAgent);
-    if (any_match) { return { type: any_match[1], version: any_match[2]}; }
+    const anyMatch = /.*([A-Z]+)\/([0-9\.]+).*/i.exec(userAgent);
+    if (anyMatch) { return { type: anyMatch[1], version: anyMatch[2]}; }
 
     return { type: '', version: '' };
 }
