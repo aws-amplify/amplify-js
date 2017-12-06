@@ -82,6 +82,11 @@ function withFacebook(Comp) {
                     logger.debug(response);
                     var onStateChange = this.props.onStateChange;
                     var accessToken = response.accessToken;
+
+                    if (!accessToken) {
+                        return;
+                    }
+
                     var fb = this.state.fb;
 
                     fb.api('/me', function (response) {
