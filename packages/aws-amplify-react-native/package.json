@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest --coverage",
-    "build": "npm run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
-    "generate-docs": "rimraf docs && jsdoc -c ./jsDoc.config.json --readme ../../media/api_reference_home.md ./src -r  -d ./docs",
-    "clean": "rimraf dist"
+    "build": "npm run clean && node_modules/.bin/babel src --presets babel-preset-react --out-dir dist --copy-files",
+    "generate-docs": "node_modules/.bin/rimraf docs && node_modules/.bin/jsdoc -c ./jsDoc.config.json --readme ../../media/api_reference_home.md ./src -r  -d ./docs",
+    "clean": "node_modules/.bin/rimraf dist"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

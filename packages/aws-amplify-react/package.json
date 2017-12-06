@@ -4,8 +4,8 @@
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest --coverage",
-    "build": "babel src --presets babel-preset-react --out-dir dist --copy-files",
+    "test": "node_modules/.bin/jest --coverage",
+    "build": "node_modules/.bin/babel src --presets babel-preset-react --out-dir dist --copy-files",
     "build-with-test": "npm test && npm run build"
   },
   "devDependencies": {
