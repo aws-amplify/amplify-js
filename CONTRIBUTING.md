@@ -21,7 +21,7 @@ Please ensure that your change still passes unit tests, and ideally integration/
 
 ## Code Style
 
-Generally, match the style of the surrounding code. We ship an EditorConfig file for indentation and TSLint configuration for TypeScript code. Please ensure your changes don't wildly deviate from those rules. You can run `npm run lint` to identify and automatically fix most style issues.
+Generally, match the style of the surrounding code. We ship a TSLint configuration for TypeScript code. Please ensure your changes don't wildly deviate from those rules. You can run `npm run lint` to identify and automatically fix most style issues.
 
 ## Licensing
 
