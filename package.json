@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "bootstrap": "lerna bootstrap",
     "test": "lerna run -- test",
     "build": "lerna run -- build",
     "clean": "lerna run -- clean",
