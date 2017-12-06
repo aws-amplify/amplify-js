@@ -40,6 +40,10 @@ export default function withFacebook(Comp) {
             const { onStateChange } = this.props;
 
             const { accessToken } = response;
+            if (!accessToken) {
+                return;
+            }
+            
             const { fb } = this.state;
             fb.api('/me', response => {
                 const user = {

@@ -125,12 +125,14 @@ Now your app is guarded by complete Auth flow. Only signed in user can access th
 You can enable federated Identity login by specifying federated option.
 
 ```js
+const AppWithAuth = withAuthenticator(App);
+
 const federated = {
     google_client_id: '',
     facebook_app_id: ''
 };
 
-export default withAuthenticator(App, { federated });
+ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
 
 #### Sign Out Button

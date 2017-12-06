@@ -197,7 +197,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * and limitations under the License.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-function withAuthenticator(Comp, options) {
+function withAuthenticator(Comp) {
+    var includeGreetings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
     return function (_Component) {
         _inherits(_class, _Component);
 
@@ -237,7 +239,7 @@ function withAuthenticator(Comp, options) {
                         return _react2['default'].createElement(
                             'div',
                             null,
-                            options && options.includeGreetings ? _react2['default'].createElement(_Greetings2['default'], {
+                            includeGreetings ? _react2['default'].createElement(_Greetings2['default'], {
                                 authState: authState,
                                 authData: authData,
                                 onStateChange: this.handleAuthStateChange
@@ -251,7 +253,6 @@ function withAuthenticator(Comp, options) {
                     }
 
                     return _react2['default'].createElement(_Authenticator2['default'], _extends({}, this.props, {
-                        federated: options && options.federated,
                         onStateChange: this.handleAuthStateChange
                     }));
                 }
