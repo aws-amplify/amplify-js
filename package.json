@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "node_modules/.bin/lerna run -- test",
-    "build": "node_modules/.bin/lerna run -- build",
-    "clean": "node_modules/.bin/lerna run -- clean",
-    "format": "node_modules/.bin/lerna run -- format",
-    "lint": "node_modules/.bin/lerna run -- lint"
+    "test": "lerna run -- test",
+    "build": "lerna run -- build",
+    "clean": "lerna run -- clean",
+    "format": "lerna run -- format",
+    "lint": "lerna run -- lint"
   },
   "repository": {
     "type": "git",
