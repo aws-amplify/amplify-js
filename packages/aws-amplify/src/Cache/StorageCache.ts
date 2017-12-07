@@ -96,7 +96,7 @@ export default class StorageCache {
         options: CacheItemOptions): CacheItem {
         const ret: CacheItem = {
             key,
-            data: JSON.stringify(value),
+            data: value,
             timestamp: getCurrTime(),
             visitedTime: getCurrTime(),
             priority: options.priority,

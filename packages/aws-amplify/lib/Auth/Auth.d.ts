@@ -158,6 +158,7 @@ export default class AuthClass {
     private sessionToCredentials(session);
     private attributesToObject(attributes);
     federatedSignIn(provider: any, token: any, user: any): Promise<any>;
+    private setCredentialsFromFederation(provider, token, user);
     private pickupCredentials();
     private setCredentialsFromAWS();
     private setCredentialsForGuest();
