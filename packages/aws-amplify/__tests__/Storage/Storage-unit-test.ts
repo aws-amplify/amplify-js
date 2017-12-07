@@ -28,7 +28,7 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
-jest.mock('aws-sdk', () => {
+jest.mock('aws-sdk/clients/s3', () => {
     const S3 = () => {};
 
     S3.prototype.getSignedUrl = (key, params) => {
@@ -66,20 +66,12 @@ jest.mock('aws-sdk', () => {
             }
     };
     
-    const ret = {
-        S3: S3,
-        config: config
-    }
-
-
-    return ret;
+    return S3;
 });
 
 import Storage from '../../src/Storage/Storage';
 import Auth from '../../src/Auth/Auth';
-import * as AWS from 'aws-sdk';
-
-const { S3 } = AWS;
+import * as S3 from 'aws-sdk/clients/s3';
 
 const options = {
         bucket: 'bucket',
@@ -125,7 +117,7 @@ describe('Storage', () => {
             const spyon = jest.spyOn(S3.prototype, 'getSignedUrl');
 
             expect.assertions(2);
-            expect(await storage.get('key', {})).toBe('url');
+            expect(await storage.get('key', { downloaded: false })).toBe('url');
             expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "public/key"});
 
             spyon.mockClear();
