@@ -1,3 +1,4 @@
+/*
 jest.mock('aws-sdk-mobile-analytics', () => {
     const Manager = () => {}
 
@@ -14,6 +15,7 @@ jest.mock('aws-sdk-mobile-analytics', () => {
     }
     return ret;
 });
+*/
 
 jest.mock('aws-sdk/clients/pinpoint', () => {
     const Pinpoint = () => {
