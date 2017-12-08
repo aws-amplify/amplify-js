@@ -34,7 +34,8 @@
     "typescript": "^2.4.2",
     "typescript-formatter": "^6.0.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.5.5"
+    "webpack": "^3.5.5",
+    "codecov": "^1.0.1"
   },
   "jest": {
     "transform": {
