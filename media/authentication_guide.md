@@ -61,7 +61,7 @@ Auth.signIn(username, password)
     .then(user => console.log(user))
     .catch(err => console.log(err));
 
-// If MFA enabled, keep the user object from sign in, and collect confirmation code, then
+// If MFA enabled, keep the user object from sign in, collect confirmation code, and then
 Auth.confirmSignIn(user, code)
     .then(data => console.log(data))
     .catch(err => console.log(err));

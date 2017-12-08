@@ -2,7 +2,7 @@ import ConfirmSignUp from '../../src/Auth/ConfirmSignUp';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
+import { Header, Footer, InputRow, ButtonRow, Button } from '../../src/AmplifyUI';
 import { Auth } from 'aws-amplify';
 
 const acceptedStates = [
@@ -33,7 +33,7 @@ describe('ConfirmSignIn', () => {
             }
         });
 
-        test('simulate clicking confirm button', async () => {
+        test('simulate clicking confirm button with username already defined in auth data', async () => {
             const spyon = jest.spyOn(Auth, 'confirmSignUp')
                 .mockImplementation((user, code) => {
                     return new Promise((res, rej) => {
@@ -41,12 +41,17 @@ describe('ConfirmSignIn', () => {
                     })
                 });
 
+            const spyon3 = jest.spyOn(ConfirmSignUp.prototype, "usernameFromAuthData")
+                .mockImplementation(() => {
+                    return 'user';
+                });
+
             const wrapper = shallow(<ConfirmSignUp/>);
             const spyon2 = jest.spyOn(wrapper.instance(), 'changeState');
             wrapper.setProps({
                 authState: acceptedStates[0],
                 theme: AmplifyTheme,
-                authData: 'user'
+                hide: false
             });
 
             const event_code = {
@@ -57,16 +62,18 @@ describe('ConfirmSignIn', () => {
             }
 
             wrapper.find(InputRow).at(0).simulate('change', event_code);
-            await wrapper.find('button').at(0).simulate('click');
+            await wrapper.find(Button).at(0).simulate('click');
 
             expect.assertions(2);
             expect(spyon).toBeCalledWith('user', '123456');
             expect(spyon2).toBeCalledWith('signedUp');
+
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
 
-        test('simulate clicking resend button', async () => {
+        test('simulate clicking resend button with username already defined in auth data', async () => {
             const spyon = jest.spyOn(Auth, 'resendSignUp')
                 .mockImplementation((user) => {
                     return new Promise((res, rej) => {
@@ -74,12 +81,17 @@ describe('ConfirmSignIn', () => {
                     })
                 });
 
+            const spyon3 = jest.spyOn(ConfirmSignUp.prototype, "usernameFromAuthData")
+            .mockImplementation(() => {
+                return 'user';
+            });
+
             const wrapper = shallow(<ConfirmSignUp/>);
 
             wrapper.setProps({
                 authState: acceptedStates[0],
                 theme: AmplifyTheme,
-                authData: 'user'
+                hide: false
             });
 
             const event_code = {
@@ -96,7 +108,7 @@ describe('ConfirmSignIn', () => {
                 }
             }
 
-            await wrapper.find('button').at(1).simulate('click');
+            await wrapper.find(Button).at(1).simulate('click');
             
             expect.assertions(1);
             expect(spyon).toBeCalledWith('user');
