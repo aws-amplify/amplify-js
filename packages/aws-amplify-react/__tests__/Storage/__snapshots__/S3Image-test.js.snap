@@ -7,20 +7,40 @@ exports[`S3Image render correctly if has srcs 1`] = `
       "display": "inline-block",
       "margin": "0.2%",
       "verticalAlign": "top",
-      "width": "32.5%",
+      "width": "32%",
     }
   }
 >
-  <img
-    onError={[Function]}
-    onLoad={[Function]}
-    src="src"
+  <div
+    onClick={[Function]}
     style={
       Object {
-        "maxWidth": "100%",
+        "position": "relative",
       }
     }
-  />
+  >
+    <img
+      onError={[Function]}
+      onLoad={[Function]}
+      src="src"
+      style={
+        Object {
+          "maxWidth": "100%",
+        }
+      }
+    />
+    <div
+      style={
+        Object {
+          "height": "100%",
+          "left": 0,
+          "position": "absolute",
+          "top": 0,
+          "width": "100%",
+        }
+      }
+    />
+  </div>
 </div>
 `;
 
@@ -31,19 +51,39 @@ exports[`S3Image render nothing if no src 1`] = `
       "display": "inline-block",
       "margin": "0.2%",
       "verticalAlign": "top",
-      "width": "32.5%",
+      "width": "32%",
     }
   }
 >
-  <img
-    onError={[Function]}
-    onLoad={[Function]}
-    src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+  <div
+    onClick={[Function]}
     style={
       Object {
-        "maxWidth": "100%",
+        "position": "relative",
       }
     }
-  />
+  >
+    <img
+      onError={[Function]}
+      onLoad={[Function]}
+      src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+      style={
+        Object {
+          "maxWidth": "100%",
+        }
+      }
+    />
+    <div
+      style={
+        Object {
+          "height": "100%",
+          "left": 0,
+          "position": "absolute",
+          "top": 0,
+          "width": "100%",
+        }
+      }
+    />
+  </div>
 </div>
 `;
