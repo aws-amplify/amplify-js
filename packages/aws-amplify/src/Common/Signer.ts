@@ -23,8 +23,8 @@ const encrypt = function(key, src, encoding?) {
 };
 
 const hash = function(src) {
-    const src = src || '';
-    return crypto.createHash('sha256').update(src, 'utf8').digest('hex');
+    const arg = src || '';
+    return crypto.createHash('sha256').update(arg, 'utf8').digest('hex');
 };
 
 /**
@@ -101,8 +101,8 @@ const parse_service_info = function(request) {
     const url_info = url.parse(request.url),
         host = url_info.host;
 
-    const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/),
-        parsed = (matched || []).slice(1, 3);
+    const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/);
+    let parsed = (matched || []).slice(1, 3);
 
     if (parsed[1] === 'es') { // Elastic Search
         parsed = parsed.reverse();
@@ -246,11 +246,11 @@ const sign = function(request, access_info, service_info = null) {
     logger.debug(request_str);
 
     // Task 2: Create a String to Sign
-    const service_info = service_info || parse_service_info(request),
+    const serviceInfo = service_info || parse_service_info(request),
         scope = credential_scope(
             d_str,
-            service_info.region,
-            service_info.service
+            serviceInfo.region,
+            serviceInfo.service
         ),
         str_to_sign = string_to_sign(
             algorithm,
@@ -263,7 +263,7 @@ const sign = function(request, access_info, service_info = null) {
     const signing_key = get_signing_key(
             access_info.secret_key,
             d_str,
-            service_info
+            serviceInfo
         ),
         signature = get_signature(signing_key, str_to_sign);
 

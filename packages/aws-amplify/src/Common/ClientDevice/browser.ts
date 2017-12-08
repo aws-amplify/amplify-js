@@ -63,7 +63,7 @@ export function dimension() {
 
 function browserTimezone() {
     const tzMatch = /.+\(([A-Z]+)\)/.exec(new Date().toString());
-    return tzMatch ? tzMatch[1]; : '';
+    return tzMatch[1] || "";
 }
 
 function browserType(userAgent) {
