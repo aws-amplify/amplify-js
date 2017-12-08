@@ -2,16 +2,6 @@ import React from 'react';
 import { Header, Footer, InputRow, RadioRow, CheckboxRow, MessageRow, ButtonRow, Link } from '../src/AmplifyUI';
 
 describe('AmplifyUi test', () => {
-    test('render Header correctly', () => {
-        const wrapper = shallow(<Header/>);
-        expect(wrapper).toMatchSnapshot();
-    });
-
-    test('render Footer correctly', () => {
-        const wrapper = shallow(<Footer/>);
-        expect(wrapper).toMatchSnapshot();
-    });
-
     test('render InputRow correctly', () => {
         const wrapper = shallow(<InputRow/>);
         expect(wrapper).toMatchSnapshot();
