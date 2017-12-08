@@ -36,7 +36,7 @@ describe('SignIn', () => {
             }
         });
 
-        test('when clicking signIn and user session not null', async () => {
+        test('when clicking signIn and new password required', async () => {
             const wrapper = shallow(<SignIn/>);
             wrapper.setProps({
                 authState: 'signIn',
@@ -47,7 +47,7 @@ describe('SignIn', () => {
                 .mockImplementationOnce((user, password) => {
                     return new Promise((res, rej) => {
                         res({
-                            Session: 'not null'
+                            challengeName: 'NEW_PASSWORD_REQUIRED'
                         });
                     });
                 });
@@ -77,7 +77,7 @@ describe('SignIn', () => {
             expect(spyon.mock.calls[0][1]).toBe(event_password.target.value);
 
             expect(spyon_changeState).toBeCalled();
-            expect(spyon_changeState.mock.calls[0][0]).toBe('confirmSignIn');
+            expect(spyon_changeState.mock.calls[0][0]).toBe('requireNewPassword');
 
             spyon.mockClear();
             spyon_changeState.mockClear();
