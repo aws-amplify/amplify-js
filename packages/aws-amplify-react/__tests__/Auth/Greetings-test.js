@@ -15,7 +15,6 @@ jest.mock('aws-sdk-mobile-analytics', () => {
     }
     return ret;
 });
-*/
 
 jest.mock('aws-sdk/clients/pinpoint', () => {
     const Pinpoint = () => {
@@ -29,6 +28,7 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
 
     return Pinpoint;
 });
+*/
 
 import Greetings from '../../src/Auth/Greetings';
 import React from 'react';
