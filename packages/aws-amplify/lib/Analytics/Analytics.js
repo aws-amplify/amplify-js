@@ -174,9 +174,9 @@ var AnalyticsClass = /** @class */ (function () {
     };
     AnalyticsClass.prototype._ensureCredentials = function () {
         var conf = this._config;
-        if (conf.credentials) {
-            return Promise.resolve(true);
-        }
+        // commented
+        // will cause bug if another user logged in without refreshing page
+        // if (conf.credentials) { return Promise.resolve(true); }
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
             var cred = Auth_1.default.essentialCredentials(credentials);

@@ -16907,6 +16907,10 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.signOut = function () {
         var _this = this;
         var source = this.credentials_source;
+        // clean out the cached stuff
+        this.credentials.clearCachedId();
+        // clear federatedInfo
+        Cache_1.default.removeItem('federatedInfo');
         if (source === 'aws' || source === 'userPool') {
             if (!this.userPool) {
                 return Promise.reject('No userPool');
@@ -16917,8 +16921,6 @@ var AuthClass = /** @class */ (function () {
             }
             user.signOut();
         }
-        // clear federatedInfo
-        Cache_1.default.removeItem('federatedInfo');
         return new Promise(function (resolve, reject) {
             _this.setCredentialsForGuest();
             dispatchAuthEvent('signOut', _this.user);
@@ -38390,9 +38392,9 @@ var AnalyticsClass = /** @class */ (function () {
     };
     AnalyticsClass.prototype._ensureCredentials = function () {
         var conf = this._config;
-        if (conf.credentials) {
-            return Promise.resolve(true);
-        }
+        // commented
+        // will cause bug if another user logged in without refreshing page
+        // if (conf.credentials) { return Promise.resolve(true); }
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
             var cred = Auth_1.default.essentialCredentials(credentials);
@@ -38832,10 +38834,10 @@ var StorageClass = /** @class */ (function () {
      * @private
      */
     StorageClass.prototype._ensureCredentials = function () {
+        // commented
+        // will cause bug if another user logged in without refreshing page
+        // if (this._options.credentials) { return Promise.resolve(true); }
         var _this = this;
-        if (this._options.credentials) {
-            return Promise.resolve(true);
-        }
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
             var cred = Auth_1.default.essentialCredentials(credentials);

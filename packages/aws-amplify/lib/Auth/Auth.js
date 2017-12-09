@@ -504,6 +504,10 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.signOut = function () {
         var _this = this;
         var source = this.credentials_source;
+        // clean out the cached stuff
+        this.credentials.clearCachedId();
+        // clear federatedInfo
+        Cache_1.default.removeItem('federatedInfo');
         if (source === 'aws' || source === 'userPool') {
             if (!this.userPool) {
                 return Promise.reject('No userPool');
@@ -514,8 +518,6 @@ var AuthClass = /** @class */ (function () {
             }
             user.signOut();
         }
-        // clear federatedInfo
-        Cache_1.default.removeItem('federatedInfo');
         return new Promise(function (resolve, reject) {
             _this.setCredentialsForGuest();
             dispatchAuthEvent('signOut', _this.user);
