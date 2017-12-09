@@ -62,7 +62,7 @@ export class ConsoleLogger implements Logger {
     _log(type: string, ...msg) {
         let logger_level_name = this.level;
         if (ConsoleLogger.LOG_LEVEL) { logger_level_name = ConsoleLogger.LOG_LEVEL; }
-        if ((typeof <any>window != 'undefined') && (<any>window).LOG_LEVEL) {
+        if ((typeof <any>window !== 'undefined') && (<any>window).LOG_LEVEL) {
             logger_level_name = (<any>window).LOG_LEVEL;
         }
         const logger_level = LOG_LEVELS[logger_level_name];
@@ -152,4 +152,4 @@ export class ConsoleLogger implements Logger {
     * @param {string|object} msg - Logging message or object
     */
     verbose(...msg) { this._log('VERBOSE', ...msg); }
-};
+}

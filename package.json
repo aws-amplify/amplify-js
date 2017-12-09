@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "bootstrap": "lerna bootstrap",
     "test": "lerna run -- test",
     "build": "lerna run -- build",
     "clean": "lerna run -- clean",
@@ -22,7 +23,7 @@
   "devDependencies": {
     "@types/jest": "^20.0.7",
     "@types/node": "^8.0.24",
-    "jest": "^20.0.4",
+    "jest": "^21.x",
     "json-loader": "^0.5.7",
     "lerna": "^2.4.0",
     "rimraf": "^2.6.2",
@@ -33,7 +34,8 @@
     "typescript": "^2.4.2",
     "typescript-formatter": "^6.0.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.5.5"
+    "webpack": "^3.5.5",
+    "codecov": "^1.0.1"
   },
   "jest": {
     "transform": {
