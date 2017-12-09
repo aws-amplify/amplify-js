@@ -454,6 +454,11 @@ export default class AuthClass {
     public signOut(): Promise<any> {
         const source = this.credentials_source;
 
+        // clean out the cached stuff
+        this.credentials.clearCachedId();
+        // clear federatedInfo
+        Cache.removeItem('federatedInfo');
+
         if (source === 'aws' || source === 'userPool') {
             if (!this.userPool) { return Promise.reject('No userPool'); }
 
@@ -462,9 +467,6 @@ export default class AuthClass {
 
             user.signOut();
         }
-
-        // clear federatedInfo
-        Cache.removeItem('federatedInfo');
 
         return new Promise((resolve, reject) => {
             this.setCredentialsForGuest();
