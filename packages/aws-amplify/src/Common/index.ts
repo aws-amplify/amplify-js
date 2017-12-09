@@ -30,7 +30,7 @@ const logger = new Logger('Common');
 if (AWS['util']) {
     AWS['util'].userAgent = () => {
         return Constants.userAgent;
-    }
+    };
 } else if (AWS.config) {
     AWS.config.update({customUserAgent: Constants.userAgent});
 } else {

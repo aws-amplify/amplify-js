@@ -30,9 +30,9 @@ export class HubClass {
 
     dispatch(channel, payload, source='') {
         const capsule = {
-            channel: channel,
-            payload: Object.assign({}, payload),
-            source: source
+            'channel': channel,
+            'payload': Object.assign({}, payload),
+            'source': source
         };
 
         try {
@@ -43,8 +43,8 @@ export class HubClass {
         }
     }
 
-    listen(channel, listener, listener_name='noname') {
-        logger.debug(listener_name + ' listening ' + channel);
+    listen(channel, listener, listenerName='noname') {
+        logger.debug(listenerName + ' listening ' + channel);
 
         let holder = this.listeners[channel];
         if (!holder) {
@@ -53,8 +53,8 @@ export class HubClass {
         }
 
         holder.push({
-            name: listener_name,
-            listener: listener
+            'name': listenerName,
+            'listener': listener
         });
     }
 
