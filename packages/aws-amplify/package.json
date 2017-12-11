@@ -9,7 +9,7 @@
     "build": "npm run clean && tsc && webpack",
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
-    "lint": "tslint 'src/Common/**/*.ts",
+    "lint": "tslint 'src/Common/**/*.ts'",
     "generate-docs-local": "typedoc --out docs src",
     "generate-docs-root": "typedoc --out ../../docs src"
   },
@@ -32,7 +32,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "find": "^0.2.7",
-    "jest": "^20.0.4",
+    "jest": "^21.x",
     "json-loader": "^0.5.7",
     "prepend-file": "^1.3.1",
     "prettier": "^1.7.4",

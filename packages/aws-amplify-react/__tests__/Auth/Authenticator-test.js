@@ -28,7 +28,7 @@ describe('Authenticator', () => {
                     .mockImplementationOnce((user, password) => {
                         return new Promise((res, rej) => {
                             res({
-                                Session: 'not null'
+                                challengeName: 'SMS_MFA'
                             });
                         });
                     });
@@ -53,8 +53,9 @@ describe('Authenticator', () => {
 
             expect(wrapper.state()).toEqual({
                 "auth": "confirmSignIn", 
-                "authData": {"Session": "not null"}, 
-                "error": null});
+                "authData": {"challengeName": "SMS_MFA"}, 
+                "error": null
+            });
 
             spyon.mockClear();
         });

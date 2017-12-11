@@ -7693,7 +7693,7 @@ exports.CacheList = CacheList_1.default;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-//import * as AWS from 'aws-sdk/global';
+// import * as AWS from 'aws-sdk/global';
 var S3 = __webpack_require__(56);
 exports.S3 = S3;
 var AWS = __webpack_require__(20);
@@ -15352,9 +15352,9 @@ var HubClass = (function () {
     HubClass.prototype.dispatch = function (channel, payload, source) {
         if (source === void 0) { source = ''; }
         var capsule = {
-            channel: channel,
-            payload: Object.assign({}, payload),
-            source: source
+            'channel': channel,
+            'payload': Object.assign({}, payload),
+            'source': source
         };
         try {
             this.bus.push(capsule);
@@ -15364,17 +15364,17 @@ var HubClass = (function () {
             logger.warn('Hub dispatch error', e);
         }
     };
-    HubClass.prototype.listen = function (channel, listener, listener_name) {
-        if (listener_name === void 0) { listener_name = 'noname'; }
-        logger.debug(listener_name + ' listening ' + channel);
+    HubClass.prototype.listen = function (channel, listener, listenerName) {
+        if (listenerName === void 0) { listenerName = 'noname'; }
+        logger.debug(listenerName + ' listening ' + channel);
         var holder = this.listeners[channel];
         if (!holder) {
             holder = [];
             this.listeners[channel] = holder;
         }
         holder.push({
-            name: listener_name,
-            listener: listener
+            'name': listenerName,
+            'listener': listener
         });
     };
     HubClass.prototype.toListeners = function (capsule) {
@@ -35664,7 +35664,7 @@ var ConsoleLogger = (function () {
         if (ConsoleLogger.LOG_LEVEL) {
             logger_level_name = ConsoleLogger.LOG_LEVEL;
         }
-        if ((typeof window != 'undefined') && window.LOG_LEVEL) {
+        if ((typeof window !== 'undefined') && window.LOG_LEVEL) {
             logger_level_name = window.LOG_LEVEL;
         }
         var logger_level = LOG_LEVELS[logger_level_name];
@@ -35795,7 +35795,6 @@ var ConsoleLogger = (function () {
     return ConsoleLogger;
 }());
 exports.ConsoleLogger = ConsoleLogger;
-;
 
 
 /***/ }),
@@ -35855,8 +35854,9 @@ var Hub_1 = __webpack_require__(113);
 var Logger_1 = __webpack_require__(13);
 var logger = new Logger_1.ConsoleLogger('ClientDevice_Browser');
 function clientInfo() {
-    if (typeof window == 'undefined') {
-        return {};
+    if (typeof window === 'undefined') {
+        return;
+        { }
     }
     return browserClientInfo();
 }
@@ -35875,13 +35875,13 @@ function browserClientInfo() {
     var type = browserType(userAgent);
     var timezone = browserTimezone();
     return {
-        platform: platform,
-        make: product || vendor,
-        model: type.type,
-        version: type.version,
-        appVersion: [type.type, type.version].join('/'),
-        language: language,
-        timezone: timezone
+        'platform': platform,
+        'make': product || vendor,
+        'model': type.type,
+        'version': type.version,
+        'appVersion': [type.type, type.version].join('/'),
+        'language': language,
+        'timezone': timezone
     };
 }
 function dimension() {
@@ -35890,39 +35890,39 @@ function dimension() {
         return { width: 320, height: 320 };
     }
     return {
-        width: window.innerWidth,
-        height: window.innerHeight
+        'width': window.innerWidth,
+        'height': window.innerHeight
     };
 }
 exports.dimension = dimension;
 function browserTimezone() {
-    var tz_match = /.+\(([A-Z]+)\)/.exec(new Date().toString());
-    return tz_match ? tz_match[1] : '';
+    var tzMatch = /.+\(([A-Z]+)\)/.exec(new Date().toString());
+    return tzMatch[1] || "";
 }
 function browserType(userAgent) {
-    var opera_match = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(userAgent);
-    if (opera_match) {
-        return { type: opera_match[1], version: opera_match[2] };
+    var operaMatch = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(userAgent);
+    if (operaMatch) {
+        return { type: operaMatch[1], version: operaMatch[2] };
     }
-    var cf_match = /.+(Chrome|Firefox|FxiOS)\/([0-9\.]+).*/i.exec(userAgent);
-    if (cf_match) {
-        return { type: cf_match[1], version: cf_match[2] };
+    var cfMatch = /.+(Chrome|Firefox|FxiOS)\/([0-9\.]+).*/i.exec(userAgent);
+    if (cfMatch) {
+        return { type: cfMatch[1], version: cfMatch[2] };
     }
-    var ie_match = /.+(Trident|Edge)\/([0-9\.]+).*/i.exec(userAgent);
-    if (ie_match) {
-        return { type: ie_match[1], version: ie_match[2] };
+    var ieMatch = /.+(Trident|Edge)\/([0-9\.]+).*/i.exec(userAgent);
+    if (ieMatch) {
+        return { type: ieMatch[1], version: ieMatch[2] };
     }
-    var s_match = /.+(Safari)\/([0-9\.]+).*/i.exec(userAgent);
-    if (s_match) {
-        return { type: s_match[1], version: s_match[2] };
+    var sMatch = /.+(Safari)\/([0-9\.]+).*/i.exec(userAgent);
+    if (sMatch) {
+        return { type: sMatch[1], version: sMatch[2] };
     }
-    var awk_match = /.+(AppleWebKit)\/([0-9\.]+).*/i.exec(userAgent);
-    if (awk_match) {
-        return { type: awk_match[1], version: awk_match[2] };
+    var awkMatch = /.+(AppleWebKit)\/([0-9\.]+).*/i.exec(userAgent);
+    if (awkMatch) {
+        return { type: awkMatch[1], version: awkMatch[2] };
     }
-    var any_match = /.*([A-Z]+)\/([0-9\.]+).*/i.exec(userAgent);
-    if (any_match) {
-        return { type: any_match[1], version: any_match[2] };
+    var anyMatch = /.*([A-Z]+)\/([0-9\.]+).*/i.exec(userAgent);
+    if (anyMatch) {
+        return { type: anyMatch[1], version: anyMatch[2] };
     }
     return { type: '', version: '' };
 }
@@ -36033,7 +36033,6 @@ var JS = (function () {
     JS.filenameToContentType = function (filename, defVal) {
         if (defVal === void 0) { defVal = 'application/octet-stream'; }
         var name = filename.toLowerCase();
-        ;
         if (name.endsWith('.txt')) {
             return 'text/plain';
         }
@@ -37428,14 +37427,13 @@ exports.RestClient = RestClient;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(3);
-var logger = new Common_1.ConsoleLogger('Signer');
-var url = __webpack_require__(95), crypto = Common_1.AWS['util'].crypto;
+var logger = new Common_1.ConsoleLogger('Signer'), url = __webpack_require__(95), crypto = Common_1.AWS['util'].crypto;
 var encrypt = function (key, src, encoding) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
 };
 var hash = function (src) {
-    src = src || '';
-    return crypto.createHash('sha256').update(src, 'utf8').digest('hex');
+    var arg = src || '';
+    return crypto.createHash('sha256').update(arg, 'utf8').digest('hex');
 };
 /**
 * @private
@@ -37480,7 +37478,8 @@ var signed_headers = function (headers) {
 /**
 * @private
 * Create canonical request
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html|Create a Canonical Request}
+* Refer to
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html|Create a Canonical Request}
 *
 <pre>
 CanonicalRequest =
@@ -37505,7 +37504,8 @@ var canonical_request = function (request) {
 };
 var parse_service_info = function (request) {
     var url_info = url.parse(request.url), host = url_info.host;
-    var matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/), parsed = (matched || []).slice(1, 3);
+    var matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/);
+    var parsed = (matched || []).slice(1, 3);
     if (parsed[1] === 'es') {
         parsed = parsed.reverse();
     }
@@ -37525,7 +37525,8 @@ var credential_scope = function (d_str, region, service) {
 /**
 * @private
 * Create a string to sign
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html|Create String to Sign}
+* Refer to
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html|Create String to Sign}
 *
 <pre>
 StringToSign =
@@ -37546,7 +37547,8 @@ var string_to_sign = function (algorithm, canonical_request, dt_str, scope) {
 /**
 * @private
 * Create signing key
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html|Calculate Signature}
+* Refer to
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html|Calculate Signature}
 *
 <pre>
 kSecret = your secret access key
@@ -37567,7 +37569,8 @@ var get_signature = function (signing_key, str_to_sign) {
 /**
 * @private
 * Create authorization header
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
+* Refer to
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
 */
 var get_authorization_header = function (algorithm, access_key, scope, signed_headers, signature) {
     return [
@@ -37627,9 +37630,9 @@ var sign = function (request, access_info, service_info) {
     var request_str = canonical_request(request);
     logger.debug(request_str);
     // Task 2: Create a String to Sign
-    var service_info = service_info || parse_service_info(request), scope = credential_scope(d_str, service_info.region, service_info.service), str_to_sign = string_to_sign(algorithm, request_str, dt_str, scope);
+    var serviceInfo = service_info || parse_service_info(request), scope = credential_scope(d_str, serviceInfo.region, serviceInfo.service), str_to_sign = string_to_sign(algorithm, request_str, dt_str, scope);
     // Task 3: Calculate the Signature
-    var signing_key = get_signing_key(access_info.secret_key, d_str, service_info), signature = get_signature(signing_key, str_to_sign);
+    var signing_key = get_signing_key(access_info.secret_key, d_str, serviceInfo), signature = get_signature(signing_key, str_to_sign);
     // Task 4: Adding the Signing information to the Request
     var authorization_header = get_authorization_header(algorithm, access_info.access_key, scope, signed_headers(request.headers), signature);
     request.headers['Authorization'] = authorization_header;
@@ -37648,7 +37651,6 @@ var Signer = (function () {
     return Signer;
 }());
 exports.default = Signer;
-;
 
 
 /***/ }),
