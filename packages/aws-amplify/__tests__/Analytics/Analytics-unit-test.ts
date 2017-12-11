@@ -142,6 +142,34 @@ describe("Analytics test", () => {
             const config = analytics.configure({});
 
         });
+
+        test('get current credentials from auth', async () => {
+            const options: AnalyticsOptions = {
+                appId: 'appId',
+                platform: 'platform',
+                clientId: 'clientId',
+                region: 'region',
+                credentials: new AWS.CognitoIdentityCredentials({
+                    IdentityId: 'identityId',
+                    Logins: {},
+                    LoginId: 'loginId'
+                })
+            };
+
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('cred1');
+                    });
+                });
+
+            const analytics = new Analytics(options);
+            const config = await analytics.configure({});
+            
+            expect(spyon).toBeCalled();
+
+            spyon.mockClear();
+        });
     });
 
     describe("constructor test", () => {
