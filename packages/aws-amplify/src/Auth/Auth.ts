@@ -17,6 +17,7 @@ import {
     AWS,
     Cognito,
     ConsoleLogger as Logger,
+    Constants,
     Hub
 } from '../Common';
 
@@ -57,6 +58,11 @@ export default class AuthClass {
      */
     constructor(config: AuthOptions) {
         this.configure(config);
+        if (AWS.config) {
+            AWS.config.update({customUserAgent: Constants.userAgent});
+        } else {
+            logger.warn('No AWS.config');
+        }
     }
 
     configure(config) {
