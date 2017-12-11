@@ -48,6 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
+var Cache_1 = require("../Cache");
 var logger = new Common_1.ConsoleLogger('AuthClass');
 var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
 var CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
@@ -60,7 +61,7 @@ var dispatchAuthEvent = function (event, data) {
 /**
 * Provide authentication steps
 */
-var AuthClass = (function () {
+var AuthClass = /** @class */ (function () {
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -435,8 +436,19 @@ var AuthClass = (function () {
      */
     AuthClass.prototype.currentUserCredentials = function () {
         var _this = this;
-        return this.currentSession()
-            .then(function (session) { return _this.setCredentialsFromSession(session); });
+        // first to check whether there is federation info in the local storage
+        var federatedInfo = Cache_1.default.getItem('federatedInfo');
+        if (federatedInfo) {
+            var provider_1 = federatedInfo.provider, token_1 = federatedInfo.token, user_1 = federatedInfo.user;
+            return new Promise(function (resolve, reject) {
+                _this.setCredentialsFromFederation(provider_1, token_1, user_1);
+                resolve();
+            });
+        }
+        else {
+            return this.currentSession()
+                .then(function (session) { return _this.setCredentialsFromSession(session); });
+        }
     };
     AuthClass.prototype.currentCredentials = function () {
         return this.pickupCredentials();
@@ -498,6 +510,10 @@ var AuthClass = (function () {
     AuthClass.prototype.signOut = function () {
         var _this = this;
         var source = this.credentials_source;
+        // clean out the cached stuff
+        this.credentials.clearCachedId();
+        // clear federatedInfo
+        Cache_1.default.removeItem('federatedInfo');
         if (source === 'aws' || source === 'userPool') {
             if (!this.userPool) {
                 return Promise.reject('No userPool');
@@ -676,6 +692,14 @@ var AuthClass = (function () {
         return obj;
     };
     AuthClass.prototype.federatedSignIn = function (provider, token, user) {
+        this.setCredentialsFromFederation(provider, token, user);
+        // store it into localstorage
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user });
+        dispatchAuthEvent('signIn', this.user);
+        logger.debug('federated sign in credentials', this.credentials);
+        return this.keepAlive();
+    };
+    AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
         var domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com'
@@ -696,12 +720,9 @@ var AuthClass = (function () {
         this.credentials.authenticated = true;
         this.credentials_source = 'federated';
         this.user = Object.assign({ id: this.credentials.identityId }, user);
-        dispatchAuthEvent('signIn', this.user);
         if (Common_1.AWS && Common_1.AWS.config) {
             Common_1.AWS.config.credentials = this.credentials;
         }
-        logger.debug('federated sign in credentials', this.credentials);
-        return this.keepAlive();
     };
     AuthClass.prototype.pickupCredentials = function () {
         var _this = this;

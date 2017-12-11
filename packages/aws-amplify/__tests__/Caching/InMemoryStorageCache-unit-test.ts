@@ -37,7 +37,7 @@ function getItemSize(value: string): number {
     const currTime: Date = new Date();
     const ret: CacheItem = {
         key: defaultConfig.keyPrefix + 'a',
-        data: JSON.stringify(value),
+        data: value,
         timestamp: currTime.getTime(),
         visitedTime: currTime.getTime(),
         priority: 5,

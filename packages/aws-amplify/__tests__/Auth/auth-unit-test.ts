@@ -140,6 +140,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 
 import { AuthOptions, SignUpParams } from '../../src/Auth/types';
 import Auth from '../../src/Auth/Auth';
+import Cache from '../../src/Cache';
 import { CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
@@ -778,9 +779,31 @@ describe('auth unit test', () => {
     });
 
     describe('signOut', () => {
-        test('happy case with source userpool', async () => {
+        test('happy case for all', async () => {
+            const auth = new Auth(authOptions);
+            auth['credentials'] = new CognitoIdentityCredentials({
+                IdentityPoolId: 'identityPoolId'
+            });
+
+            const spyon = jest.spyOn(CognitoIdentityCredentials.prototype, "clearCachedId");
+            const spyon2 = jest.spyOn(Cache, 'removeItem');
+
+            await auth.signOut();
+
+            expect.assertions(2);
+            expect(spyon).toBeCalled();
+            expect(spyon2).toBeCalledWith('federatedInfo');
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('happy case for source userpool', async () => {
             const auth = new Auth(authOptions);
             auth['credentials_source'] = 'aws';
+            auth['credentials'] = new CognitoIdentityCredentials({
+                IdentityPoolId: 'identityPoolId'
+            });
 
             const spyon = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
             .mockImplementationOnce(() => {
@@ -793,13 +816,16 @@ describe('auth unit test', () => {
             expect.assertions(1);
             expect(spyon2).toBeCalled();
 
-            spyon2.mockClear();
             spyon.mockClear();
+            spyon2.mockClear();
         });
         
         test('no UserPool', async () => {
             const auth = new Auth(authOptionsWithNoUserPoolId);
             auth['credentials_source'] = 'aws';
+            auth['credentials'] = new CognitoIdentityCredentials({
+                IdentityPoolId: 'identityPoolId'
+            });
 
             expect.assertions(1);
             try {
@@ -809,8 +835,12 @@ describe('auth unit test', () => {
             }
         });
 
-        test('no User', async () => {
+        test('no User in userpool', async () => {
             const auth = new Auth(authOptions);
+            auth['credentials_source'] = 'aws';
+            auth['credentials'] = new CognitoIdentityCredentials({
+                IdentityPoolId: 'identityPoolId'
+            });
 
             const spyon = jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
                 .mockImplementationOnce(() => {
@@ -819,8 +849,8 @@ describe('auth unit test', () => {
             
 
             expect.assertions(1);
-            
             expect(await auth.signOut()).toBeUndefined();
+
             spyon.mockClear();
         });
     });

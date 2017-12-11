@@ -53,7 +53,7 @@ var logger = new Common_1.ConsoleLogger('StorageClass');
 /**
  * Provide storage methods to use AWS S3
  */
-var StorageClass = (function () {
+var StorageClass = /** @class */ (function () {
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
@@ -280,10 +280,10 @@ var StorageClass = (function () {
      * @private
      */
     StorageClass.prototype._ensureCredentials = function () {
+        // commented
+        // will cause bug if another user logged in without refreshing page
+        // if (this._options.credentials) { return Promise.resolve(true); }
         var _this = this;
-        if (this._options.credentials) {
-            return Promise.resolve(true);
-        }
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
             var cred = Auth_1.default.essentialCredentials(credentials);

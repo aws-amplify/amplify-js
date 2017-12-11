@@ -296,7 +296,7 @@ export class InMemoryCache extends StorageCache implements ICache {
                 ret = this.cacheObj.getItem(prefixedKey);
                 const item: CacheItem = JSON.parse(ret);
                 this.cacheList[item.priority - 1].refresh(prefixedKey);
-                return JSON.parse(item.data);
+                return item.data;
             }
         }
 

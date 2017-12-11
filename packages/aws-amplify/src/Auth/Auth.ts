@@ -20,6 +20,7 @@ import {
     Constants,
     Hub
 } from '../Common';
+import Cache from '../Cache';
 
 const logger = new Logger('AuthClass');
 
@@ -384,8 +385,18 @@ export default class AuthClass {
      * @return - A promise resolves to be current user's credentials
      */
     public currentUserCredentials() : Promise<any> {
-        return this.currentSession()
-            .then(session => this.setCredentialsFromSession(session));
+        // first to check whether there is federation info in the local storage
+        const federatedInfo = Cache.getItem('federatedInfo');
+        if (federatedInfo) {
+            const { provider, token, user} = federatedInfo;
+            return new Promise((resolve, reject) => {
+                this.setCredentialsFromFederation(provider, token, user);
+                resolve();
+            });
+        } else {
+            return this.currentSession()
+                .then(session => this.setCredentialsFromSession(session));
+        }
     }
 
     public currentCredentials(): Promise<any> {
@@ -448,6 +459,11 @@ export default class AuthClass {
      */
     public signOut(): Promise<any> {
         const source = this.credentials_source;
+
+        // clean out the cached stuff
+        this.credentials.clearCachedId();
+        // clear federatedInfo
+        Cache.removeItem('federatedInfo');
 
         if (source === 'aws' || source === 'userPool') {
             if (!this.userPool) { return Promise.reject('No userPool'); }
@@ -617,6 +633,16 @@ export default class AuthClass {
     }
 
     public federatedSignIn(provider, token, user) {
+        this.setCredentialsFromFederation(provider, token, user);
+
+        // store it into localstorage
+        Cache.setItem('federatedInfo', { provider, token, user });
+        dispatchAuthEvent('signIn', this.user);
+        logger.debug('federated sign in credentials', this.credentials);
+        return this.keepAlive();
+    }
+
+    private setCredentialsFromFederation(provider, token, user) {
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com'
@@ -644,11 +670,8 @@ export default class AuthClass {
             { id: this.credentials.identityId },
             user
         );
-        dispatchAuthEvent('signIn', this.user);
-
+        
         if (AWS && AWS.config) { AWS.config.credentials = this.credentials; }
-        logger.debug('federated sign in credentials', this.credentials);
-        return this.keepAlive();
     }
 
     private pickupCredentials() {

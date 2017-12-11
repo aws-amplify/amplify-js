@@ -227,7 +227,9 @@ export default class StorageClass {
      * @private
      */
     _ensureCredentials() {
-        if (this._options.credentials) { return Promise.resolve(true); }
+        // commented
+        // will cause bug if another user logged in without refreshing page
+        // if (this._options.credentials) { return Promise.resolve(true); }
 
         return Auth.currentCredentials()
             .then(credentials => {

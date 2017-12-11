@@ -19,7 +19,7 @@ var logger = new Common_1.ConsoleLogger('StorageCache');
  * Initialization of the cache
  *
  */
-var StorageCache = (function () {
+var StorageCache = /** @class */ (function () {
     /**
      * Initialize the cache
      * @param config - the configuration of the cache
@@ -76,7 +76,7 @@ var StorageCache = (function () {
     StorageCache.prototype.fillCacheItem = function (key, value, options) {
         var ret = {
             key: key,
-            data: JSON.stringify(value),
+            data: value,
             timestamp: Utils_1.getCurrTime(),
             visitedTime: Utils_1.getCurrTime(),
             priority: options.priority,

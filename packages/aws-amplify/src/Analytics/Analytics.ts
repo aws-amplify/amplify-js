@@ -146,7 +146,9 @@ export default class AnalyticsClass {
 
     _ensureCredentials() {
         const conf = this._config;
-        if (conf.credentials) { return Promise.resolve(true); }
+        // commented
+        // will cause bug if another user logged in without refreshing page
+        // if (conf.credentials) { return Promise.resolve(true); }
 
         return Auth.currentCredentials()
             .then(credentials => {
