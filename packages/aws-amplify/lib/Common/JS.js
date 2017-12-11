@@ -58,7 +58,6 @@ var JS = /** @class */ (function () {
     JS.filenameToContentType = function (filename, defVal) {
         if (defVal === void 0) { defVal = 'application/octet-stream'; }
         var name = filename.toLowerCase();
-        ;
         if (name.endsWith('.txt')) {
             return 'text/plain';
         }

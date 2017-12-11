@@ -13,14 +13,13 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
-var logger = new Common_1.ConsoleLogger('Signer');
-var url = require('url'), crypto = Common_1.AWS['util'].crypto;
+var logger = new Common_1.ConsoleLogger('Signer'), url = require('url'), crypto = Common_1.AWS['util'].crypto;
 var encrypt = function (key, src, encoding) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
 };
 var hash = function (src) {
-    src = src || '';
-    return crypto.createHash('sha256').update(src, 'utf8').digest('hex');
+    var arg = src || '';
+    return crypto.createHash('sha256').update(arg, 'utf8').digest('hex');
 };
 /**
 * @private
@@ -65,7 +64,8 @@ var signed_headers = function (headers) {
 /**
 * @private
 * Create canonical request
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html|Create a Canonical Request}
+* Refer to
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html|Create a Canonical Request}
 *
 <pre>
 CanonicalRequest =
@@ -90,7 +90,8 @@ var canonical_request = function (request) {
 };
 var parse_service_info = function (request) {
     var url_info = url.parse(request.url), host = url_info.host;
-    var matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/), parsed = (matched || []).slice(1, 3);
+    var matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/);
+    var parsed = (matched || []).slice(1, 3);
     if (parsed[1] === 'es') {
         parsed = parsed.reverse();
     }
@@ -110,7 +111,8 @@ var credential_scope = function (d_str, region, service) {
 /**
 * @private
 * Create a string to sign
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html|Create String to Sign}
+* Refer to
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html|Create String to Sign}
 *
 <pre>
 StringToSign =
@@ -131,7 +133,8 @@ var string_to_sign = function (algorithm, canonical_request, dt_str, scope) {
 /**
 * @private
 * Create signing key
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html|Calculate Signature}
+* Refer to
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html|Calculate Signature}
 *
 <pre>
 kSecret = your secret access key
@@ -152,7 +155,8 @@ var get_signature = function (signing_key, str_to_sign) {
 /**
 * @private
 * Create authorization header
-* Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
+* Refer to
+* {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
 */
 var get_authorization_header = function (algorithm, access_key, scope, signed_headers, signature) {
     return [
@@ -212,9 +216,9 @@ var sign = function (request, access_info, service_info) {
     var request_str = canonical_request(request);
     logger.debug(request_str);
     // Task 2: Create a String to Sign
-    var service_info = service_info || parse_service_info(request), scope = credential_scope(d_str, service_info.region, service_info.service), str_to_sign = string_to_sign(algorithm, request_str, dt_str, scope);
+    var serviceInfo = service_info || parse_service_info(request), scope = credential_scope(d_str, serviceInfo.region, serviceInfo.service), str_to_sign = string_to_sign(algorithm, request_str, dt_str, scope);
     // Task 3: Calculate the Signature
-    var signing_key = get_signing_key(access_info.secret_key, d_str, service_info), signature = get_signature(signing_key, str_to_sign);
+    var signing_key = get_signing_key(access_info.secret_key, d_str, serviceInfo), signature = get_signature(signing_key, str_to_sign);
     // Task 4: Adding the Signing information to the Request
     var authorization_header = get_authorization_header(algorithm, access_info.access_key, scope, signed_headers(request.headers), signature);
     request.headers['Authorization'] = authorization_header;
@@ -233,5 +237,4 @@ var Signer = /** @class */ (function () {
     return Signer;
 }());
 exports.default = Signer;
-;
 //# sourceMappingURL=Signer.js.map

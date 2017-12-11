@@ -59,7 +59,7 @@ var ConsoleLogger = /** @class */ (function () {
         if (ConsoleLogger.LOG_LEVEL) {
             logger_level_name = ConsoleLogger.LOG_LEVEL;
         }
-        if ((typeof window != 'undefined') && window.LOG_LEVEL) {
+        if ((typeof window !== 'undefined') && window.LOG_LEVEL) {
             logger_level_name = window.LOG_LEVEL;
         }
         var logger_level = LOG_LEVELS[logger_level_name];
@@ -190,5 +190,4 @@ var ConsoleLogger = /** @class */ (function () {
     return ConsoleLogger;
 }());
 exports.ConsoleLogger = ConsoleLogger;
-;
 //# sourceMappingURL=ConsoleLogger.js.map

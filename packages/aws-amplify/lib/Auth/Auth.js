@@ -72,6 +72,12 @@ var AuthClass = /** @class */ (function () {
         this.credentials_source = ''; // aws, guest, userPool, federated
         this.user = null;
         this.configure(config);
+        if (Common_1.AWS.config) {
+            Common_1.AWS.config.update({ customUserAgent: Common_1.Constants.userAgent });
+        }
+        else {
+            logger.warn('No AWS.config');
+        }
     }
     AuthClass.prototype.configure = function (config) {
         logger.debug('configure Auth');

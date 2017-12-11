@@ -12,7 +12,7 @@
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-//import * as AWS from 'aws-sdk/global';
+// import * as AWS from 'aws-sdk/global';
 var S3 = require("aws-sdk/clients/s3");
 exports.S3 = S3;
 var AWS = require("aws-sdk/global");
