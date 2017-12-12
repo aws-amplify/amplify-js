@@ -53,7 +53,7 @@ var logger = new Common_1.ConsoleLogger('StorageClass');
 /**
  * Provide storage methods to use AWS S3
  */
-var StorageClass = /** @class */ (function () {
+var StorageClass = (function () {
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
