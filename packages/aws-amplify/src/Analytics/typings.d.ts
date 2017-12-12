@@ -12,7 +12,7 @@
  */
 
 declare module 'aws-sdk-mobile-analytics' {
-  var module: any;
+  const module: any;
 
   export = module;
 }

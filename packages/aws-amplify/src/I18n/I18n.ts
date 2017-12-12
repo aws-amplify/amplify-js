@@ -107,7 +107,7 @@ export class I18n {
      */
     putVocabulariesForLanguage(language, vocabularies) {
         let lang_dict = this._dict[language];
-        if (!lang_dict) { lang_dict = this._dict[language] = {} }
+        if (!lang_dict) { lang_dict = this._dict[language] = {}; }
         Object.assign(lang_dict, vocabularies);
     }
 

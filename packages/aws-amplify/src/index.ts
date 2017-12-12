@@ -50,7 +50,7 @@ export default class Amplify {
 
 Amplify.Auth = Auth;
 Amplify.Analytics = Analytics;
-Amplify.API = API;;
+Amplify.API = API;
 Amplify.Storage = Storage;
 Amplify.I18n = I18n;
 Amplify.Cache = Cache;

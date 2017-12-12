@@ -44,7 +44,8 @@ export default class API {
                 region: conf['aws_project_region'],
                 header: {},
             });
-        };
+        }
+        
         _config = Object.assign({}, _config, conf);
 
         API.createInstance();

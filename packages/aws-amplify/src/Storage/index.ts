@@ -31,7 +31,7 @@ if (!_instance) {
 
         const vault_options = Object.assign({}, options, { level: 'private' });
         _instance.vault.configure(vault_options);
-    }
+    };
 }
 
 const Storage = _instance;

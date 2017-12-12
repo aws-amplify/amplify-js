@@ -33,7 +33,7 @@ restClient.get('...')
 </pre>
 */
 export class RestClient {
-    public _options;
+    private _options;
 
     /**
     * @param {RestClientOptions} [options] - Instance options
@@ -62,29 +62,27 @@ export class RestClient {
     async ajax(url: string, method: string, init) {
         logger.debug(method + ' ' + url);
 
-        var parsed_url = this._parseUrl(url);
+        const parsed_url = this._parseUrl(url);
 
-        var params = {
-            method: method,
-            url: url,
+        const params = {
+            method,
+            url,
             host: parsed_url.host,
             path: parsed_url.path,
             headers: {},
             data: null
         };
 
-        let libraryHeaders = {}
+        const libraryHeaders = {};
 
-        if (!init) {
-            init = {}
-        }
+        const extraParams = Object.assign({}, init);
 
-        if (init.body) {
+        if (extraParams.body) {
             libraryHeaders['content-type'] = 'application/json';
-            params.data = JSON.stringify(init.body);
+            params.data = JSON.stringify(extraParams.body);
         }
 
-        params.headers = { ...libraryHeaders, ...init.headers }
+        params.headers = { ...libraryHeaders, ...extraParams.headers };
 
         // Do not sign the request if client has added 'Authorization' header,
         // which means custom authorizer.
@@ -151,7 +149,7 @@ export class RestClient {
     */
     endpoint(apiName: string) {
         const cloud_logic_array = this._options.endpoints;
-        var response = '';
+        let response = '';
         cloud_logic_array.forEach((v) => {
             if (v.name === apiName) {
                 response = v.endpoint;
@@ -164,7 +162,7 @@ export class RestClient {
 
     private _signed(params, credentials) {
 
-        let signed_params = Signer.sign(params, {
+        const signed_params = Signer.sign(params, {
             secret_key: credentials.secretAccessKey,
             access_key: credentials.accessKeyId,
             session_token: credentials.sessionToken
@@ -195,11 +193,11 @@ export class RestClient {
     }
 
     private _parseUrl(url) {
-        var parts = url.split('/');
+        const parts = url.split('/');
 
         return {
             host: parts[2],
             path: '/' + parts.slice(3).join('/')
         };
     }
-};
+}

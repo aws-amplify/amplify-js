@@ -59,11 +59,13 @@
             true,
             "check-format", // 22.2
             "allow-pascal-case",
-            "allow-snake-case"
+            "allow-snake-case",
+            "allow-leading-underscore"
         ],
         "semicolon": [
             true,
-            "always"
+            "always",
+            "ignore-interfaces"
         ]
     },
     "rulesDirectory": []
