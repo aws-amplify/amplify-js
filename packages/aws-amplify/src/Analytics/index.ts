@@ -39,7 +39,7 @@ Analytics.onHubCapsule = (capsule) => {
             authEvent(payload);
             break;
     }
-}
+};
 
 const authEvent = (payload) => {
     const { event } = payload;
@@ -60,6 +60,6 @@ const authEvent = (payload) => {
             Analytics.record('_userauth.auth_fail');
             break;
     }
-}
+};
 
 Hub.listen('auth', Analytics);

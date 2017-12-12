@@ -36,11 +36,8 @@ const {
 } = Cognito;
 
 const dispatchAuthEvent = (event, data) => {
-    Hub.dispatch('auth', {
-        event: event,
-        data: data
-    }, 'Auth');
-}
+    Hub.dispatch('auth', { event, data }, 'Auth');
+};
 
 /**
 * Provide authentication steps
@@ -208,8 +205,8 @@ export default class AuthClass {
                     logger.debug('signIn new password');
                     user['challengeName'] = 'NEW_PASSWORD_REQUIRED';
                     user['challengeParam'] = {
-                        userAttributes: userAttributes,
-                        requiredAttributes: requiredAttributes
+                        userAttributes,
+                        requiredAttributes
                     };
                     resolve(user);
                 }
@@ -312,9 +309,9 @@ export default class AuthClass {
                     }
                 }
                 return {
-                    verified: verified,
-                    unverified: unverified
-                }
+                    verified,
+                    unverified
+                };
             });
     }
 
@@ -412,8 +409,8 @@ export default class AuthClass {
     public verifyUserAttribute(user, attr): Promise<any> {
         return new Promise((resolve, reject) => {
             user.getAttributeVerificationCode(attr, {
-                onSuccess: function(data) { resolve(data); },
-                onFailure: function(err) { reject(err); }
+                onSuccess(data) { resolve(data); },
+                onFailure(err) { reject(err); }
             });
         });
     }
@@ -430,8 +427,8 @@ export default class AuthClass {
 
         return new Promise((resolve, reject) => {
             user.verifyAttribute(attr, code, {
-                onSuccess: function(data) { resolve(data); },
-                onFailure: function(err) { reject(err); }
+                onSuccess(data) { resolve(data); },
+                onFailure(err) { reject(err); }
             });
         });
     }
@@ -440,7 +437,7 @@ export default class AuthClass {
         const that = this;
         return that.currentUserPoolUser()
             .then(user => that.verifyUserAttribute(user, attr));
-    };
+    }
 
     /**
      * Confirm current user's attribute using a confirmation code
@@ -452,7 +449,7 @@ export default class AuthClass {
         const that = this;
         return that.currentUserPoolUser()
             .then(user => that.verifyUserAttributeSubmit(user, attr, code));
-    };
+    }
     /**
      * Sign out method
      * @return - A promise resolved if success
@@ -564,7 +561,7 @@ export default class AuthClass {
                 id: credentials.identityId,
                 email: attributes.email,
                 phone_number: attributes.phone_number
-            }
+            };
             return info;
         }
 
@@ -572,64 +569,6 @@ export default class AuthClass {
             const user = this.user;
             return user? user : {};
         }
-    }
-
-    /**
-     * Compact version of credentials
-     * @param {Object} credentials
-     * @return {Object} - Credentials
-     */
-    essentialCredentials(credentials) {
-        return {
-            accessKeyId: credentials.accessKeyId,
-            sessionToken: credentials.sessionToken,
-            secretAccessKey: credentials.secretAccessKey,
-            identityId: credentials.identityId,
-            authenticated: credentials.authenticated
-        }
-    }
-
-    /**
-     * @return - A new guest CognitoIdentityCredentials
-     */
-    private noSessionCredentials() {
-        const { identityPoolId, region } = this._config;
-        const credentials = new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId
-        }, {
-            region: region
-        });
-
-        credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
-
-        return credentials;
-    }
-
-    /**
-     * Produce a credentials based on the session
-     * @param {Object} session - The session used to generate the credentials
-     * @return - A new CognitoIdentityCredentials
-     */
-    private sessionToCredentials(session) {
-        const idToken = session.getIdToken().getJwtToken();
-        const { region, userPoolId, identityPoolId } = this._config;
-        const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
-        let logins = {};
-        logins[key] = idToken;
-        return new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
-            Logins: logins
-        }, {
-            region: region
-        });
-    }
-
-    private attributesToObject(attributes) {
-        const obj = {};
-        attributes.map(attribute => {
-            obj[attribute.Name] = (attribute.Value === 'false')? false : attribute.Value;
-        });
-        return obj;
     }
 
     public federatedSignIn(provider, token, user) {
@@ -640,6 +579,29 @@ export default class AuthClass {
         dispatchAuthEvent('signIn', this.user);
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();
+    }
+
+    /**
+     * Compact version of credentials
+     * @param {Object} credentials
+     * @return {Object} - Credentials
+     */
+    public essentialCredentials(credentials) {
+        return {
+            accessKeyId: credentials.accessKeyId,
+            sessionToken: credentials.sessionToken,
+            secretAccessKey: credentials.secretAccessKey,
+            identityId: credentials.identityId,
+            authenticated: credentials.authenticated
+        };
+    }
+
+    private attributesToObject(attributes) {
+        const obj = {};
+        attributes.map(attribute => {
+            obj[attribute.Name] = (attribute.Value === 'false')? false : attribute.Value;
+        });
+        return obj;
     }
 
     private setCredentialsFromFederation(provider, token, user) {
@@ -657,11 +619,12 @@ export default class AuthClass {
         logins[domain] = token;
 
         const { identityPoolId, region } = this._config;
-        this.credentials = new AWS.CognitoIdentityCredentials({
+        this.credentials = new AWS.CognitoIdentityCredentials(
+            {
             IdentityPoolId: identityPoolId,
             Logins: logins
-        }, {
-            region: region
+        },  {
+            region
         });
         this.credentials.authenticated = true;
         this.credentials_source = 'federated';
@@ -684,7 +647,7 @@ export default class AuthClass {
             return this.currentUserCredentials()
                 .then(() => this.keepAlive())
                 .catch(err => {
-                    logger.debug('error when pickup', err)
+                    logger.debug('error when pickup', err);
                     return null;
                 });
         }
@@ -702,10 +665,11 @@ export default class AuthClass {
 
     private setCredentialsForGuest() {
         const { identityPoolId, region } = this._config;
-        const credentials = new CognitoIdentityCredentials({
+        const credentials = new CognitoIdentityCredentials(
+            {
             IdentityPoolId: identityPoolId
-        }, {
-            region: region
+        },  {
+            region
         });
         credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
         this.credentials = credentials;
@@ -718,20 +682,21 @@ export default class AuthClass {
         const idToken = session.getIdToken().getJwtToken();
         const { region, userPoolId, identityPoolId } = this._config;
         const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
-        let logins = {};
+        const logins = {};
         logins[key] = idToken;
-        this.credentials = new CognitoIdentityCredentials({
+        this.credentials = new CognitoIdentityCredentials(
+            {
             IdentityPoolId: identityPoolId,
             Logins: logins
-        }, {
-            region: region
+        },  {
+            region
         });
         this.credentials.authenticated = true;
         this.credentials_source = 'userPool';
     }
 
     private keepAlive() {
-        if (!this.credentials) { this.setCredentialsForGuest() }
+        if (!this.credentials) { this.setCredentialsForGuest(); }
 
         const ts = new Date().getTime();
         const delta = 10 * 60 * 1000; // 10 minutes
