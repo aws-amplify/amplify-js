@@ -55,7 +55,7 @@ ama_logger.log = ama_logger.verbose;
 /**
 * Provide mobile analytics client functions
 */
-var AnalyticsClass = /** @class */ (function () {
+var AnalyticsClass = (function () {
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
