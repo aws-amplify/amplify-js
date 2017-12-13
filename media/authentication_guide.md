@@ -227,7 +227,7 @@ You may write your own Auth UI. JTo do this your component will leverage the fol
 This example creates an `AlwaysOn` Auth UI, which shows the current auth state.
 
 ```jsx
-import { Authenticator, SignIn, SignUp, ConfirmSignUp, Greetings } from 'aws-amplify-react’;
+import { Authenticator, SignIn, SignUp, ConfirmSignUp, Greetings } from 'aws-amplify-react';
 
 const AlwaysOn = (props) => {
     return (
