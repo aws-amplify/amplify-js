@@ -54,7 +54,7 @@ var JS = (function () {
     };
     JS.sortByField = function (list, field, dir) {
         if (!list || !list.sort) {
-            return;
+            return false;
         }
         var dirX = (dir && dir === 'desc') ? -1 : 1;
         list.sort(function (a, b) {
@@ -74,6 +74,7 @@ var JS = (function () {
             }
             return 0;
         });
+        return true;
     };
     JS.objectLessAttributes = function (obj, less) {
         var ret = Object.assign({}, obj);

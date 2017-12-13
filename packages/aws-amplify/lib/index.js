@@ -57,7 +57,6 @@ exports.default = Amplify;
 Amplify.Auth = Auth_1.default;
 Amplify.Analytics = Analytics_1.default;
 Amplify.API = API_1.default;
-;
 Amplify.Storage = Storage_1.default;
 Amplify.I18n = I18n_1.default;
 Amplify.Cache = Cache_1.default;

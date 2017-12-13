@@ -13,7 +13,7 @@ restClient.get('...')
 </pre>
 */
 export declare class RestClient {
-    _options: any;
+    private _options;
     /**
     * @param {RestClientOptions} [options] - Instance options
     */
