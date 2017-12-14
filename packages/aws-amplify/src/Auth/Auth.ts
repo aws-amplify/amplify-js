@@ -571,11 +571,12 @@ export default class AuthClass {
         }
     }
 
-    public federatedSignIn(provider, token, user) {
+    public federatedSignIn(provider, response, user) {
+        const { token, expires_at } = response;
         this.setCredentialsFromFederation(provider, token, user);
 
         // store it into localstorage
-        Cache.setItem('federatedInfo', { provider, token, user });
+        Cache.setItem('federatedInfo', { provider, token, user }, { priority: 1 });
         dispatchAuthEvent('signIn', this.user);
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();
