@@ -27,7 +27,7 @@ export default function withGoogle(Comp) {
         }
 
         federatedSignIn(googleUser) {
-            const { id_token } = googleUser.getAuthResponse();
+            const { id_token, expires_at } = googleUser.getAuthResponse();
             const profile = googleUser.getBasicProfile();
             const user = {
                 email: profile.getEmail(),
@@ -35,7 +35,7 @@ export default function withGoogle(Comp) {
             };
 
             const { onStateChange } = this.props;
-            return Auth.federatedSignIn('google', id_token, user)
+            return Auth.federatedSignIn('google', { id_token, expires_at }, user)
                 .then(crednetials => {
                     if (onStateChange) {
                         onStateChange('signedIn');

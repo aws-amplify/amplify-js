@@ -6,63 +6,63 @@ jest.mock('../../src/Storage/Common', () => {
     return { calcKey };
 });
 
-import S3Image from '../../src/Storage/S3Image';
+import S3Text from '../../src/Storage/S3Text';
 import { calcKey } from '../../src/Storage/Common';
-import { PhotoPicker } from '../../src/Widget'
+import { TextPicker } from '../../src/Widget'
 import { Storage, Logger } from 'aws-amplify';
-import React from 'react';
+import React, { Component }from 'react';
 
-describe('S3Image', () => {
+describe('S3Text test', () => {
     describe('render test', () => {
         test('render null if no test and no picker', () => {
-            const wrapper = shallow(<S3Image/>);
+            const wrapper = shallow(<S3Text/>);
 
             expect(wrapper).toMatchSnapshot();
         });
 
         test('render with picker true', () => {
-            const wrapper = shallow(<S3Image picker/>);
+            const wrapper = shallow(<S3Text picker/>);
             
             expect(wrapper).toMatchSnapshot();
         });
 
-        test('render with src exist', () => {
-            const wrapper = shallow(<S3Image/>);
-            wrapper.setState({src: 'imageSrc'});
+        test('render with text exist', () => {
+            const wrapper = shallow(<S3Text/>);
+            wrapper.setState({text: 'text'});
 
             expect(wrapper).toMatchSnapshot();
         });
 
         test('render with translate text', () => {
-            const wrapper = shallow(<S3Image translate='translate'/>);
+            const wrapper = shallow(<S3Text translate='translate'/>);
 
             expect(wrapper).toMatchSnapshot();
         });
     });
 
     describe('interaction test', () => {
-        test('PhotoPicker onPick test', () => {
-            const spyon = jest.spyOn(S3Image.prototype, 'handlePick')
+        test('TextPicker onPick test', () => {
+            const spyon = jest.spyOn(S3Text.prototype, 'handlePick')
                 .mockImplementationOnce(() => {
                     return;
                 });
 
-            const wrapper = shallow(<S3Image picker/>);
+            const wrapper = shallow(<S3Text picker/>);
                 
-            wrapper.find(PhotoPicker).simulate('pick');
+            wrapper.find(TextPicker).simulate('pick');
 
             expect(spyon).toBeCalled();
 
             spyon.mockClear();
         });
         
-        test('imageEl click test', () => {
-            const spyon = jest.spyOn(S3Image.prototype, 'handleClick')
+        test('textEl click test', () => {
+            const spyon = jest.spyOn(S3Text.prototype, 'handleClick')
                 .mockImplementationOnce(() => {
                     return;
                 });
-            const wrapper = shallow(<S3Image/>);
-            wrapper.setState({src: 'imageSrc'});
+            const wrapper = shallow(<S3Text/>);
+            wrapper.setState({text: 'text'});
 
             wrapper.find('div').at(1).simulate('click');
 
@@ -76,67 +76,61 @@ describe('S3Image', () => {
         test('happy case with body set', async () => {
             const spyon = jest.spyOn(Storage, 'put').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    res('data');
+                    res('text');
                 });
             });
-
-            const spyon2 = jest.spyOn(S3Image.prototype, 'getImageSource').mockImplementationOnce(() => {
+            const spyon2 = jest.spyOn(S3Text.prototype, 'getText').mockImplementationOnce(() => {
                 return;
             });
 
-            const props = {
-                imgKey: 'imgKey',
-                body: 'imgBody'
-            };
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
+            wrapper.setProps({
+                textKey: 'textKey',
+                body: 'textBody'
+            });
 
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
-            wrapper.setProps(props);
-
-            await s3Image.load();
+            await s3Text.load();
 
             expect.assertions(2);
-            expect(spyon).toBeCalledWith('imgKey', 'imgBody', { contentType: 'binary/octet-stream', level: 'public' });
+            expect(spyon).toBeCalledWith('textKey', 'textBody', { contentType: 'text/*', level: 'public' });
             expect(spyon2).toBeCalled();
 
             spyon.mockClear();
             spyon2.mockClear();
         });
 
-        test('nothing to do if no imgKey and path set', async () => {
+        test('nothing to do if no textKey and path set', async () => {
             const spyon = jest.spyOn(Logger.prototype, 'debug');
 
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
 
-            await s3Image.load();
+            await s3Text.load();
 
             expect.assertions(1);
-            expect(spyon).toBeCalledWith('empty imgKey and path');
+            expect(spyon).toBeCalledWith('empty textKey and path');
 
             spyon.mockClear();
         });
 
-        test('only get image source when body no specified', async () => {
+        test('only get text when body no specified', async () => {
             const spyon = jest.spyOn(Storage, 'put').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('text');
                 });
             });
-
-            const spyon2 = jest.spyOn(S3Image.prototype, 'getImageSource').mockImplementationOnce(() => {
+            const spyon2 = jest.spyOn(S3Text.prototype, 'getText').mockImplementationOnce(() => {
                 return;
             });
 
-            const props = {
-                imgKey: 'imgKey'
-            };
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
+            wrapper.setProps({
+                textKey: 'textKey'
+            });
 
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
-            wrapper.setProps(props);
-
-            await s3Image.load();
+            await s3Text.load();
 
             expect.assertions(2);
             expect(spyon).not.toBeCalled();
@@ -155,14 +149,15 @@ describe('S3Image', () => {
                 });
             });
 
-            const spyon2 = jest.spyOn(S3Image.prototype, 'getImageSource').mockImplementationOnce(() => {
+            const spyon2 = jest.spyOn(S3Text.prototype, 'getText').mockImplementationOnce(() => {
                 return;
             });
 
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
             wrapper.setProps({
-                imgKey: 'imgKey',
+                text: 'text',
+                textKey: 'textKey',
                 level: 'level',
                 fileToKey: 'fileToKey'
             });
@@ -174,10 +169,10 @@ describe('S3Image', () => {
                 type: 'type'
             };
 
-            await s3Image.handlePick(data);
+            await s3Text.handlePick(data);
 
             expect.assertions(2);
-            expect(spyon).toBeCalledWith('imgKey', 'file', {contentType: 'type'});
+            expect(spyon).toBeCalledWith('textKey', 'file', { contentType: 'type' });
             expect(spyon2).toBeCalled();
 
             spyon.mockClear();
@@ -193,10 +188,11 @@ describe('S3Image', () => {
 
             const spyon2 = jest.spyOn(Logger.prototype, 'debug');
 
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
             wrapper.setProps({
-                imgKey: 'imgKey',
+                text: 'text',
+                textKey: 'textKey',
                 level: 'level',
                 fileToKey: 'fileToKey'
             });
@@ -208,7 +204,7 @@ describe('S3Image', () => {
                 type: 'type'
             };
 
-            await s3Image.handlePick(data);
+            await s3Text.handlePick(data);
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -219,25 +215,31 @@ describe('S3Image', () => {
         test('happy case', () => {
             const mockFn = jest.fn();
             const props = {
+                text: 'text',
+                textKey: 'textKey',
                 onClick: mockFn
             }
 
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
             wrapper.setProps(props);
 
-            s3Image.handleClick('evt');
+            s3Text.handleClick('evt');
 
             expect(mockFn).toBeCalledWith('evt');
         });
 
         test('if no onclick', () => {
             const mockFn = jest.fn();
+            const props = {
+                text: 'text',
+                textKey: 'textKey'
+            }
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
+            wrapper.setProps(props);
 
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
-
-            s3Image.handleClick('evt');
+            s3Text.handleClick('evt');
         });
     });
 
@@ -245,29 +247,30 @@ describe('S3Image', () => {
         test('happy case', () => {
             const mockFn = jest.fn();
             const props = {
+                text: 'text',
+                textKey: 'textKey',
                 onLoad: mockFn
             }
-            const state = {
-                src: 'src'
-            }
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
             wrapper.setProps(props);
-            wrapper.setState(state);
 
-            s3Image.handleOnLoad('img');
+            s3Text.handleOnLoad('text');
 
-            expect(mockFn).toBeCalledWith('src');
+            expect(mockFn).toBeCalledWith('text');
         });
 
         test('if no onLoad', () => {
             const mockFn = jest.fn();
+            const props = {
+                text: 'text',
+                textKey: 'textKey'
+            }
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
+            wrapper.setProps(props);
 
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
-
-
-            s3Image.handleOnLoad('evt');
+            s3Text.handleOnLoad('evt');
         });
     });
 
@@ -275,36 +278,34 @@ describe('S3Image', () => {
         test('happy case', () => {
             const mockFn = jest.fn();
             const props = {
+                text: 'text',
+                textKey: 'textKey',
                 onError: mockFn
             }
-            const state = {
-                src: 'src'
-            }
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
             wrapper.setProps(props);
-            wrapper.setState(state);
 
-            s3Image.handleOnError('err');
+            s3Text.handleOnError('err');
 
-            expect(mockFn).toBeCalledWith('src');
+            expect(mockFn).toBeCalledWith('err');
         });
     });
 
-    describe('ImageEl test', () => {
+    describe('textEl test', () => {
         test('null text', () => {
-            const wrapper = shallow(<S3Image/>);
-            const s3Image = wrapper.instance();
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
 
-            expect(s3Image.imageEl(null, 'theme')).toBeNull();
+            expect(s3Text.textEl(null, 'theme')).toBeNull();
         });
     });
 
     describe('componentDidmount test', () => {
         test('happy case', () => {
-            const spyon = jest.spyOn(S3Image.prototype, 'load');
+            const spyon = jest.spyOn(S3Text.prototype, 'load');
 
-            const wrapper = mount(<S3Image/>);
+            const wrapper = mount(<S3Text/>);
 
             expect(spyon).toBeCalled();
             spyon.mockClear();

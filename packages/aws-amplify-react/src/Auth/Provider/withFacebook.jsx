@@ -39,7 +39,9 @@ export default function withFacebook(Comp) {
             logger.debug(response);
             const { onStateChange } = this.props;
 
-            const { accessToken } = response;
+            const { accessToken, expiresIn } = response;
+            const date = new Date();
+            const expires_at = expiresIn * 1000 + date.getTime();
             if (!accessToken) {
                 return;
             }
@@ -50,7 +52,7 @@ export default function withFacebook(Comp) {
                     name: response.name
                 }
 
-                Auth.federatedSignIn('facebook', accessToken, user)
+                Auth.federatedSignIn('facebook', { accessToken, expires_at }, user)
                     .then(crednetials => {
                         if (onStateChange) {
                             onStateChange('signedIn');

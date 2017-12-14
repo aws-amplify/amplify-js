@@ -1,92 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`S3Image render test render null if no test and no picker 1`] = `
-<div
-  style={
-    Object {
-      "display": "inline-block",
-      "margin": "0.2%",
-      "verticalAlign": "top",
-      "width": "32%",
-    }
-  }
->
-  <div
-    onClick={[Function]}
-    style={
-      Object {
-        "position": "relative",
-      }
-    }
-  >
-    <img
-      onError={[Function]}
-      onLoad={[Function]}
-      src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-      style={
-        Object {
-          "maxWidth": "100%",
-        }
-      }
-    />
-    <div
-      style={
-        Object {
-          "height": "100%",
-          "left": 0,
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        }
-      }
-    />
-  </div>
-</div>
-`;
+exports[`S3Text test render test render null if no test and no picker 1`] = `""`;
 
-exports[`S3Image render test render with picker true 1`] = `
+exports[`S3Text test render test render with picker true 1`] = `
 <div
   style={
     Object {
       "display": "inline-block",
       "margin": "0.2%",
+      "maxHeight": 384,
+      "overflow": "auto",
       "verticalAlign": "top",
-      "width": "32%",
+      "width": "32.5%",
     }
   }
 >
-  <div
-    onClick={[Function]}
-    style={
-      Object {
-        "position": "relative",
-      }
-    }
-  >
-    <img
-      onError={[Function]}
-      onLoad={[Function]}
-      src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-      style={
-        Object {
-          "maxWidth": "100%",
-        }
-      }
-    />
-    <div
-      style={
-        Object {
-          "height": "100%",
-          "left": 0,
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        }
-      }
-    />
-  </div>
   <div>
-    <PhotoPicker
+    <TextPicker
       key="picker"
       onPick={[Function]}
       theme={
@@ -337,14 +267,16 @@ exports[`S3Image render test render with picker true 1`] = `
 </div>
 `;
 
-exports[`S3Image render test render with src exist 1`] = `
+exports[`S3Text test render test render with text exist 1`] = `
 <div
   style={
     Object {
       "display": "inline-block",
       "margin": "0.2%",
+      "maxHeight": 384,
+      "overflow": "auto",
       "verticalAlign": "top",
-      "width": "32%",
+      "width": "32.5%",
     }
   }
 >
@@ -356,16 +288,19 @@ exports[`S3Image render test render with src exist 1`] = `
       }
     }
   >
-    <img
-      onError={[Function]}
-      onLoad={[Function]}
-      src="imageSrc"
+    <pre
       style={
         Object {
-          "maxWidth": "100%",
+          "background": "#eee",
+          "margin": "0",
+          "overflow": "auto",
+          "padding": "1em",
+          "textAlign": "left",
         }
       }
-    />
+    >
+      text
+    </pre>
     <div
       style={
         Object {
@@ -381,14 +316,16 @@ exports[`S3Image render test render with src exist 1`] = `
 </div>
 `;
 
-exports[`S3Image render test render with translate text 1`] = `
+exports[`S3Text test render test render with translate text 1`] = `
 <div
   style={
     Object {
       "display": "inline-block",
       "margin": "0.2%",
+      "maxHeight": 384,
+      "overflow": "auto",
       "verticalAlign": "top",
-      "width": "32%",
+      "width": "32.5%",
     }
   }
 >
@@ -400,16 +337,19 @@ exports[`S3Image render test render with translate text 1`] = `
       }
     }
   >
-    <img
-      onError={[Function]}
-      onLoad={[Function]}
-      src="translate"
+    <pre
       style={
         Object {
-          "maxWidth": "100%",
+          "background": "#eee",
+          "margin": "0",
+          "overflow": "auto",
+          "padding": "1em",
+          "textAlign": "left",
         }
       }
-    />
+    >
+      translate
+    </pre>
     <div
       style={
         Object {
