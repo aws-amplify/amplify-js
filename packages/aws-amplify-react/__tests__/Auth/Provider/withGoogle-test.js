@@ -51,7 +51,7 @@ describe('withGoogle test', () => {
         });
     });
 
-    describe.only('federatedSignIn', () => {
+    describe('federatedSignIn', () => {
         test('happy case', async () => {
             const MockComp = class extends Component {
                 render() {
@@ -137,58 +137,41 @@ describe('withGoogle test', () => {
         });
     });
 
-    describe('fbAsyncInit test', () => {
-        test('happy case', () => {
+    describe('initGapi test', () => {
+        test('happy case', async () => {
             const MockComp = class extends Component {
                 render() {
                     return <div />;
                 }
             }
-            
-            const mockFn = jest.fn().mockImplementationOnce((callback) => {
-                callback('response')
-            });
-            const mockFn2 = jest.fn();
-            window.FB = {
-                getLoginStatus: mockFn,
-                init: mockFn2
+
+            window.gapi = {
+                load(path, callback) {
+                    callback();
+                },
+                auth2: {
+                    init(params) {
+                        return new Promise((res, rej) => {
+                            res('ga');
+                        });
+                    }
+                }
             };
             
-            const Comp = withFacebook(MockComp);
+            const Comp = withGoogle(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
-            comp.fbAsyncInit();
-
-            expect(mockFn).toBeCalled();
-            expect(mockFn2).toBeCalled();
-        });
-    });
-
-    describe('initFB test', () => {
-        test('happy case', () => {
-            const MockComp = class extends Component {
-                render() {
-                    return <div />;
-                }
-            }
-
-            window.FB = 'fb';
-            
-            const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
-            const comp = wrapper.instance();
-
-            comp.initFB();
-            expect(wrapper.state('fb')).toBe('fb');
+            await comp.initGapi();
+            expect(wrapper.state('ga')).toBe('ga');
         });
     });
 });
 
-describe('FacebookButton test', () => {
+describe('GoogleButton test', () => {
     describe('render test', () => {
         test('render correctly', () => {
-            const wrapper = shallow(<FacebookButton/>);
+            const wrapper = shallow(<GoogleButton/>);
 
             expect(wrapper).toMatchSnapshot();
         });
