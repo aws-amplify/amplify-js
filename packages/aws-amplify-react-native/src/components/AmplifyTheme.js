@@ -69,11 +69,23 @@ export default AmplifyTheme = StyleSheet.create({
     a: {
     },
     button: {
-        backgroundColor: '#007bff'
+
+    },
+    buttonDisabled: {
+
+    },
+    buttonText: {
+      textAlign: 'center',
+      fontSize: 18,
+      color: '#007bff'
+    },
+    buttonTextDisabled: {
+      textAlign: 'center',
+      fontSize: 18,
+      color: '#c7c7c7'
     },
 
     input: {
         margin: 6
     }
 });
-

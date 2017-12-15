@@ -12,14 +12,14 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, Button, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, TouchableHighlight } from 'react-native';
 
 import Auth from '../../Auth';
 import I18n from '../../I18n';
 import { ConsoleLogger as Logger, JS } from '../../Common';
 
 import AuthPiece from './AuthPiece';
-import { Username, Password, LinkCell, Header, ErrorRow } from '../AmplifyUI';
+import { Username, Password, LinkCell, Header, ErrorRow, Button } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('SignIn');
@@ -103,8 +103,8 @@ export default class SignIn extends AuthPiece {
                         onChangeText={(text) => this.setState({ password: text })}
                     />
                     <Button
+                        theme={theme}
                         title={I18n.get('Sign In')}
-                        style={theme.button}
                         onPress={this.signIn}
                         disabled={!this.state.username || !this.state.password}
                     />

@@ -12,14 +12,14 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 
 import Auth from '../../Auth';
 import I18n from '../../I18n';
 import { ConsoleLogger as Logger } from '../../Common';
 
 import AmplifyTheme from '../AmplifyTheme';
-import { Password, LinkCell, Header, ErrorRow } from '../AmplifyUI';
+import { Password, LinkCell, Header, ErrorRow, Button } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('SignIn');
@@ -71,6 +71,7 @@ export default class RequireNewPassword extends AuthPiece {
                         onChangeText={(text) => this.setState({ password: text })}
                     />
                     <Button
+                        theme={theme}
                         title={I18n.get('Change Password')}
                         onPress={this.change}
                         disabled={!this.state.code}

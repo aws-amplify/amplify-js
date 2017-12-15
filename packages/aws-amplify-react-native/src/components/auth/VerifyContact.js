@@ -12,14 +12,14 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, Picker, Button, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, Picker, TouchableHighlight } from 'react-native';
 
 import Auth from '../../Auth';
 import I18n from '../../I18n';
 import { ConsoleLogger as Logger } from '../../Common';
 
 import AmplifyTheme from '../AmplifyTheme';
-import { ConfirmationCode, LinkCell, Header, ErrorRow } from '../AmplifyUI';
+import { ConfirmationCode, LinkCell, Header, ErrorRow, Button } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('SignIn');
@@ -98,6 +98,7 @@ export default class VerifyContact extends AuthPiece {
                     { phone_number? <Picker.Item label="Phone Number" value="phone_number"/> : null }
                 </Picker>
                 <Button
+                    theme={theme}
                     title={I18n.get('Verify')}
                     onPress={this.verify}
                     disabled={!this.state.pickAttr}
@@ -114,6 +115,7 @@ export default class VerifyContact extends AuthPiece {
                     onChangeText={(text) => this.setState({ code: text })}
                 />
                 <Button
+                    theme={theme}
                     title={I18n.get('Submit')}
                     onPress={this.submit}
                     disabled={!this.state.code}
