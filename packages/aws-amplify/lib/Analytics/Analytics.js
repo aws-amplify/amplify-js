@@ -145,7 +145,7 @@ var AnalyticsClass = (function () {
                     logger.debug('amaClient not ready, put in buffer');
                     this._buffer.push({
                         name: name,
-                        attribtues: attributes,
+                        attributes: attributes,
                         metrics: metrics
                     });
                     return [2 /*return*/];
@@ -247,7 +247,7 @@ var AnalyticsClass = (function () {
         var _a = this._config, region = _a.region, appId = _a.appId, clientId = _a.clientId, credentials = _a.credentials;
         this.pinpointClient = new Common_1.Pinpoint({
             region: region,
-            credentials: credentials
+            credentials: credentials,
         });
         var request = this._endpointRequest();
         var update_params = {

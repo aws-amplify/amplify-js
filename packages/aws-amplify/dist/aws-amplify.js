@@ -15878,7 +15878,6 @@ exports.default = Amplify;
 Amplify.Auth = Auth_1.default;
 Amplify.Analytics = Analytics_1.default;
 Amplify.API = API_1.default;
-;
 Amplify.Storage = Storage_1.default;
 Amplify.I18n = I18n_1.default;
 Amplify.Cache = Cache_1.default;
@@ -15945,10 +15944,7 @@ var logger = new Common_1.ConsoleLogger('AuthClass');
 var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
 var CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
 var dispatchAuthEvent = function (event, data) {
-    Common_1.Hub.dispatch('auth', {
-        event: event,
-        data: data
-    }, 'Auth');
+    Common_1.Hub.dispatch('auth', { event: event, data: data }, 'Auth');
 };
 /**
 * Provide authentication steps
@@ -16382,7 +16378,6 @@ var AuthClass = (function () {
         return that.currentUserPoolUser()
             .then(function (user) { return that.verifyUserAttribute(user, attr); });
     };
-    ;
     /**
      * Confirm current user's attribute using a confirmation code
      * @param {Object} attr - The attribute to be verified
@@ -16394,7 +16389,6 @@ var AuthClass = (function () {
         return that.currentUserPoolUser()
             .then(function (user) { return that.verifyUserAttributeSubmit(user, attr, code); });
     };
-    ;
     /**
      * Sign out method
      * @return - A promise resolved if success
@@ -16531,6 +16525,14 @@ var AuthClass = (function () {
             });
         });
     };
+    AuthClass.prototype.federatedSignIn = function (provider, token, user) {
+        this.setCredentialsFromFederation(provider, token, user);
+        // store it into localstorage
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user });
+        dispatchAuthEvent('signIn', this.user);
+        logger.debug('federated sign in credentials', this.credentials);
+        return this.keepAlive();
+    };
     /**
      * Compact version of credentials
      * @param {Object} credentials
@@ -16545,51 +16547,12 @@ var AuthClass = (function () {
             authenticated: credentials.authenticated
         };
     };
-    /**
-     * @return - A new guest CognitoIdentityCredentials
-     */
-    AuthClass.prototype.noSessionCredentials = function () {
-        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
-        var credentials = new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId
-        }, {
-            region: region
-        });
-        credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
-        return credentials;
-    };
-    /**
-     * Produce a credentials based on the session
-     * @param {Object} session - The session used to generate the credentials
-     * @return - A new CognitoIdentityCredentials
-     */
-    AuthClass.prototype.sessionToCredentials = function (session) {
-        var idToken = session.getIdToken().getJwtToken();
-        var _a = this._config, region = _a.region, userPoolId = _a.userPoolId, identityPoolId = _a.identityPoolId;
-        var key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
-        var logins = {};
-        logins[key] = idToken;
-        return new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
-            Logins: logins
-        }, {
-            region: region
-        });
-    };
     AuthClass.prototype.attributesToObject = function (attributes) {
         var obj = {};
         attributes.map(function (attribute) {
             obj[attribute.Name] = (attribute.Value === 'false') ? false : attribute.Value;
         });
         return obj;
-    };
-    AuthClass.prototype.federatedSignIn = function (provider, token, user) {
-        this.setCredentialsFromFederation(provider, token, user);
-        // store it into localstorage
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user });
-        dispatchAuthEvent('signIn', this.user);
-        logger.debug('federated sign in credentials', this.credentials);
-        return this.keepAlive();
     };
     AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
         var domains = {
@@ -16630,7 +16593,8 @@ var AuthClass = (function () {
                 .then(function () { return _this.keepAlive(); })
                 .catch(function (err) {
                 logger.debug('error when pickup', err);
-                return null;
+                _this.setCredentialsForGuest();
+                return _this.keepAlive();
             });
         }
     };
@@ -36076,7 +36040,7 @@ var JS = (function () {
     };
     JS.sortByField = function (list, field, dir) {
         if (!list || !list.sort) {
-            return;
+            return false;
         }
         var dirX = (dir && dir === 'desc') ? -1 : 1;
         list.sort(function (a, b) {
@@ -36096,6 +36060,7 @@ var JS = (function () {
             }
             return 0;
         });
+        return true;
     };
     JS.objectLessAttributes = function (obj, less) {
         var ret = Object.assign({}, obj);
@@ -36601,7 +36566,7 @@ exports.defaultConfig = {
     defaultTTL: 259200000,
     defaultPriority: 5,
     warningThreshold: 0.8,
-    storage: (typeof window == 'undefined') ? null : window.localStorage
+    storage: (typeof window === 'undefined') ? null : window.localStorage
 };
 /**
  * return the byte size of the string
@@ -37369,7 +37334,7 @@ var AnalyticsClass = (function () {
                     logger.debug('amaClient not ready, put in buffer');
                     this._buffer.push({
                         name: name,
-                        attribtues: attributes,
+                        attributes: attributes,
                         metrics: metrics
                     });
                     return [2 /*return*/];
@@ -37471,7 +37436,7 @@ var AnalyticsClass = (function () {
         var _a = this._config, region = _a.region, appId = _a.appId, clientId = _a.clientId, credentials = _a.credentials;
         this.pinpointClient = new Common_1.Pinpoint({
             region: region,
-            credentials: credentials
+            credentials: credentials,
         });
         var request = this._endpointRequest();
         var update_params = {
@@ -37967,7 +37932,6 @@ var API = (function () {
                 header: {},
             });
         }
-        ;
         _config = Object.assign({}, _config, conf);
         API.createInstance();
         return _config;
@@ -38301,7 +38265,7 @@ var RestClient = (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders;
+            var parsed_url, params, libraryHeaders, extraParams;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -38314,14 +38278,12 @@ var RestClient = (function () {
                     data: null
                 };
                 libraryHeaders = {};
-                if (!init) {
-                    init = {};
-                }
-                if (init.body) {
+                extraParams = Object.assign({}, init);
+                if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json';
-                    params.data = JSON.stringify(init.body);
+                    params.data = JSON.stringify(extraParams.body);
                 }
-                params.headers = __assign({}, libraryHeaders, init.headers);
+                params.headers = __assign({}, libraryHeaders, extraParams.headers);
                 // Do not sign the request if client has added 'Authorization' header,
                 // which means custom authorizer.
                 if (params.headers['Authorization']) {
@@ -38429,7 +38391,6 @@ var RestClient = (function () {
     return RestClient;
 }());
 exports.RestClient = RestClient;
-;
 
 
 /***/ }),
