@@ -634,11 +634,18 @@ var AuthClass = /** @class */ (function () {
             });
         });
     };
+<<<<<<< HEAD
     AuthClass.prototype.federatedSignIn = function (provider, response, user) {
         var token = response.token, expires_at = response.expires_at;
         this.setCredentialsFromFederation(provider, token, user);
         // store it into localstorage
         Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1, expires: expires_at });
+=======
+    AuthClass.prototype.federatedSignIn = function (provider, token, user) {
+        this.setCredentialsFromFederation(provider, token, user);
+        // store it into localstorage
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user });
+>>>>>>> upstream/master
         dispatchAuthEvent('signIn', this.user);
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();
@@ -703,7 +710,8 @@ var AuthClass = /** @class */ (function () {
                 .then(function () { return _this.keepAlive(); })
                 .catch(function (err) {
                 logger.debug('error when pickup', err);
-                return null;
+                _this.setCredentialsForGuest();
+                return _this.keepAlive();
             });
         }
     };

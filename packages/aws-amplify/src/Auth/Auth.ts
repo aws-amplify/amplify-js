@@ -649,7 +649,8 @@ export default class AuthClass {
                 .then(() => this.keepAlive())
                 .catch(err => {
                     logger.debug('error when pickup', err);
-                    return null;
+                    this.setCredentialsForGuest();
+                    return this.keepAlive();
                 });
         }
     }
