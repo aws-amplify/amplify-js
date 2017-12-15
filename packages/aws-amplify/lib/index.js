@@ -30,7 +30,7 @@ exports.Hub = Common_1.Hub;
 exports.JS = Common_1.JS;
 exports.ClientDevice = Common_1.ClientDevice;
 var logger = new Common_1.ConsoleLogger('Amplify');
-var Amplify = (function () {
+var Amplify = /** @class */ (function () {
     function Amplify() {
     }
     Amplify.configure = function (config) {
@@ -57,7 +57,6 @@ exports.default = Amplify;
 Amplify.Auth = Auth_1.default;
 Amplify.Analytics = Analytics_1.default;
 Amplify.API = API_1.default;
-;
 Amplify.Storage = Storage_1.default;
 Amplify.I18n = I18n_1.default;
 Amplify.Cache = Cache_1.default;

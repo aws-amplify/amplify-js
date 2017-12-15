@@ -55,7 +55,7 @@ var _api = null;
 /**
  * Export Cloud Logic APIs
  */
-var API = (function () {
+var API = /** @class */ (function () {
     function API() {
     }
     /**
@@ -77,7 +77,6 @@ var API = (function () {
                 header: {},
             });
         }
-        ;
         _config = Object.assign({}, _config, conf);
         API.createInstance();
         return _config;

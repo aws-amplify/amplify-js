@@ -81,8 +81,11 @@ function withFacebook(Comp) {
                 function federatedSignIn(response) {
                     logger.debug(response);
                     var onStateChange = this.props.onStateChange;
-                    var accessToken = response.accessToken;
+                    var accessToken = response.accessToken,
+                        expiresIn = response.expiresIn;
 
+                    var date = new Date();
+                    var expires_at = expiresIn * 1000 + date.getTime();
                     if (!accessToken) {
                         return;
                     }
@@ -94,7 +97,7 @@ function withFacebook(Comp) {
                             name: response.name
                         };
 
-                        _awsAmplify.Auth.federatedSignIn('facebook', accessToken, user).then(function (crednetials) {
+                        _awsAmplify.Auth.federatedSignIn('facebook', { accessToken: accessToken, expires_at: expires_at }, user).then(function (crednetials) {
                             if (onStateChange) {
                                 onStateChange('signedIn');
                             }

@@ -72,7 +72,8 @@ function withGoogle(Comp) {
             value: function () {
                 function federatedSignIn(googleUser) {
                     var _googleUser$getAuthRe = googleUser.getAuthResponse(),
-                        id_token = _googleUser$getAuthRe.id_token;
+                        id_token = _googleUser$getAuthRe.id_token,
+                        expires_at = _googleUser$getAuthRe.expires_at;
 
                     var profile = googleUser.getBasicProfile();
                     var user = {
@@ -82,7 +83,7 @@ function withGoogle(Comp) {
 
                     var onStateChange = this.props.onStateChange;
 
-                    return _awsAmplify.Auth.federatedSignIn('google', id_token, user).then(function (crednetials) {
+                    return _awsAmplify.Auth.federatedSignIn('google', { id_token: id_token, expires_at: expires_at }, user).then(function (crednetials) {
                         if (onStateChange) {
                             onStateChange('signedIn');
                         }

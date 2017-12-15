@@ -73,7 +73,7 @@ restClient.get('...')
     .catch(err => console.log(err));
 </pre>
 */
-var RestClient = (function () {
+var RestClient = /** @class */ (function () {
     /**
     * @param {RestClientOptions} [options] - Instance options
     */
@@ -100,7 +100,7 @@ var RestClient = (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders;
+            var parsed_url, params, libraryHeaders, extraParams;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -113,14 +113,12 @@ var RestClient = (function () {
                     data: null
                 };
                 libraryHeaders = {};
-                if (!init) {
-                    init = {};
-                }
-                if (init.body) {
+                extraParams = Object.assign({}, init);
+                if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json';
-                    params.data = JSON.stringify(init.body);
+                    params.data = JSON.stringify(extraParams.body);
                 }
-                params.headers = __assign({}, libraryHeaders, init.headers);
+                params.headers = __assign({}, libraryHeaders, extraParams.headers);
                 // Do not sign the request if client has added 'Authorization' header,
                 // which means custom authorizer.
                 if (params.headers['Authorization']) {
@@ -228,5 +226,4 @@ var RestClient = (function () {
     return RestClient;
 }());
 exports.RestClient = RestClient;
-;
 //# sourceMappingURL=RestClient.js.map
