@@ -1,64 +1,63 @@
-/*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
- */
+Object.defineProperty(exports,"__esModule",{value:true});exports.default=undefined;var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();
 
-import { util } from 'aws-sdk/dist/aws-sdk-react-native';
 
-/** @class */
-export default class CognitoJwtToken {
-  /**
-   * Constructs a new CognitoJwtToken object
-   * @param {string=} token The JWT token.
-   */
-  constructor(token) {
-    // Assign object
-    this.jwtToken = token || '';
-    this.payload = this.decodePayload();
-  }
 
-  /**
-   * @returns {string} the record's token.
-   */
-  getJwtToken() {
-    return this.jwtToken;
-  }
 
-  /**
-   * @returns {int} the token's expiration (exp member).
-   */
-  getExpiration() {
-    return this.payload.exp;
-  }
 
-  /**
-   * @returns {int} the token's "issued at" (iat member).
-   */
-  getIssuedAt() {
-    return this.payload.iat;
-  }
 
-  /**
-   * @returns {object} the token's payload.
-   */
-  decodePayload() {
-    const payload = this.jwtToken.split('.')[1];
-    try {
-      return JSON.parse(util.base64.decode(payload).toString('utf8'));
-    } catch (err) {
-      return {};
-    }
-  }
+
+
+
+
+
+
+
+
+
+
+var _awsSdkReactNative=require('aws-sdk/dist/aws-sdk-react-native');function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}var
+
+
+CognitoJwtToken=function(){
+
+
+
+
+function CognitoJwtToken(token){_classCallCheck(this,CognitoJwtToken);
+
+this.jwtToken=token||'';
+this.payload=this.decodePayload();
+}_createClass(CognitoJwtToken,[{key:'getJwtToken',value:function getJwtToken()
+
+
+
+
+{
+return this.jwtToken;
+}},{key:'getExpiration',value:function getExpiration()
+
+
+
+
+{
+return this.payload.exp;
+}},{key:'getIssuedAt',value:function getIssuedAt()
+
+
+
+
+{
+return this.payload.iat;
+}},{key:'decodePayload',value:function decodePayload()
+
+
+
+
+{
+var payload=this.jwtToken.split('.')[1];
+try{
+return JSON.parse(_awsSdkReactNative.util.base64.decode(payload).toString('utf8'));
+}catch(err){
+return{};
 }
+}}]);return CognitoJwtToken;}();exports.default=CognitoJwtToken;

@@ -1,149 +1,142 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+Object.defineProperty(exports,"__esModule",{value:true});exports.default=undefined;var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _jsxFileName='src/components/auth/VerifyContact.js';
 
-import React from 'react';
-import { View, Text, TextInput, Picker, Button, TouchableHighlight } from 'react-native';
 
-import Auth from '../../Auth';
-import I18n from '../../I18n';
-import { ConsoleLogger as Logger } from '../../Common';
 
-import AmplifyTheme from '../AmplifyTheme';
-import { ConfirmationCode, LinkCell, Header, ErrorRow } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
 
-const logger = new Logger('SignIn');
 
-const Footer = props => {
-    const { theme, onStateChange } = props;
-    return React.createElement(
-        View,
-        { style: theme.sectionFooter },
-        React.createElement(
-            LinkCell,
-            { theme: theme, onPress: () => onStateChange('signedIn') },
-            I18n.get('Skip')
-        )
-    );
-};
 
-export default class VerifyContact extends AuthPiece {
-    constructor(props) {
-        super(props);
 
-        this.state = {
-            verifyAttr: null,
-            error: null
-        };
 
-        this.verify = this.verify.bind(this);
-        this.submit = this.submit.bind(this);
-    }
 
-    verify() {
-        const user = this.props.authData;
-        const attr = this.state.pickAttr;
-        if (!attr) {
-            this.error('Neither Email nor Phone Number selected');
-            return;
-        }
 
-        const that = this;
-        Auth.verifyCurrentUserAttribute(attr).then(data => {
-            logger.debug(data);
-            that.setState({ verifyAttr: attr });
-        }).catch(err => this.error(err));
-    }
 
-    submit() {
-        const attr = this.state.verifyAttr;
-        const { code } = this.state;
-        Auth.verifyCurrentUserAttributeSubmit(attr, code).then(data => {
-            logger.debug(data);
-            this.changeState('signedIn', this.props.authData);
-        }).catch(err => this.error(err));
-    }
 
-    skip() {
-        this.changeState('signedIn');
-    }
+var _react=require('react');var _react2=_interopRequireDefault(_react);
+var _reactNative=require('react-native');
 
-    verifyBody(theme) {
-        const { unverified } = this.props.authData;
-        if (!unverified) {
-            logger.debug('no unverified contact');
-            return null;
-        }
+var _Auth=require('../../Auth');var _Auth2=_interopRequireDefault(_Auth);
+var _I18n=require('../../I18n');var _I18n2=_interopRequireDefault(_I18n);
+var _Common=require('../../Common');
 
-        const { email, phone_number } = unverified;
-        return React.createElement(
-            View,
-            { style: theme.sectionBody },
-            React.createElement(
-                Picker,
-                {
-                    selectedValue: this.state.pickAttr,
-                    onValueChange: (value, index) => this.setState({ pickAttr: value })
-                },
-                email ? React.createElement(Picker.Item, { label: 'Email', value: 'email' }) : null,
-                phone_number ? React.createElement(Picker.Item, { label: 'Phone Number', value: 'phone_number' }) : null
-            ),
-            React.createElement(Button, {
-                title: I18n.get('Verify'),
-                onPress: this.verify,
-                disabled: !this.state.pickAttr
-            })
-        );
-    }
+var _AmplifyTheme=require('../AmplifyTheme');var _AmplifyTheme2=_interopRequireDefault(_AmplifyTheme);
+var _AmplifyUI=require('../AmplifyUI');
+var _AuthPiece2=require('./AuthPiece');var _AuthPiece3=_interopRequireDefault(_AuthPiece2);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}
 
-    submitBody(theme) {
-        return React.createElement(
-            View,
-            { style: theme.sectionBody },
-            React.createElement(ConfirmationCode, {
-                theme: theme,
-                onChangeText: text => this.setState({ code: text })
-            }),
-            React.createElement(Button, {
-                title: I18n.get('Submit'),
-                onPress: this.submit,
-                disabled: !this.state.code
-            })
-        );
-    }
+var logger=new _Common.ConsoleLogger('SignIn');
 
-    render() {
-        if (!['verifyContact'].includes(this.props.authState)) {
-            return null;
-        }
+var Footer=function Footer(props){var
+theme=props.theme,onStateChange=props.onStateChange;
+return(
+_react2.default.createElement(_reactNative.View,{style:theme.sectionFooter,__source:{fileName:_jsxFileName,lineNumber:30}},
+_react2.default.createElement(_AmplifyUI.LinkCell,{theme:theme,onPress:function onPress(){return onStateChange('signedIn');},__source:{fileName:_jsxFileName,lineNumber:31}},
+_I18n2.default.get('Skip'))));
 
-        const theme = this.props.theme || AmplifyTheme;
-        return React.createElement(
-            View,
-            { style: theme.section },
-            React.createElement(
-                Header,
-                { theme: theme },
-                I18n.get('Verify Contact')
-            ),
-            !this.state.verifyAttr && this.verifyBody(theme),
-            this.state.verifyAttr && this.submitBody(theme),
-            React.createElement(Footer, { theme: theme, onStateChange: this.changeState }),
-            React.createElement(
-                ErrorRow,
-                { theme: theme },
-                this.state.error
-            )
-        );
-    }
+
+
+};var
+
+VerifyContact=function(_AuthPiece){_inherits(VerifyContact,_AuthPiece);
+function VerifyContact(props){_classCallCheck(this,VerifyContact);var _this=_possibleConstructorReturn(this,(VerifyContact.__proto__||Object.getPrototypeOf(VerifyContact)).call(this,
+props));
+
+_this.state={
+verifyAttr:null,
+error:null};
+
+
+_this.verify=_this.verify.bind(_this);
+_this.submit=_this.submit.bind(_this);return _this;
+}_createClass(VerifyContact,[{key:'verify',value:function verify()
+
+{var _this2=this;
+var user=this.props.authData;
+var attr=this.state.pickAttr;
+if(!attr){
+this.error('Neither Email nor Phone Number selected');
+return;
 }
+
+var that=this;
+_Auth2.default.verifyCurrentUserAttribute(attr).
+then(function(data){
+logger.debug(data);
+that.setState({verifyAttr:attr});
+}).
+catch(function(err){return _this2.error(err);});
+}},{key:'submit',value:function submit()
+
+{var _this3=this;
+var attr=this.state.verifyAttr;var
+code=this.state.code;
+_Auth2.default.verifyCurrentUserAttributeSubmit(attr,code).
+then(function(data){
+logger.debug(data);
+_this3.changeState('signedIn',_this3.props.authData);
+}).
+catch(function(err){return _this3.error(err);});
+}},{key:'skip',value:function skip()
+
+{
+this.changeState('signedIn');
+}},{key:'verifyBody',value:function verifyBody(
+
+theme){var _this4=this;var
+unverified=this.props.authData.unverified;
+if(!unverified){
+logger.debug('no unverified contact');
+return null;
+}var
+
+email=unverified.email,phone_number=unverified.phone_number;
+return(
+_react2.default.createElement(_reactNative.View,{style:theme.sectionBody,__source:{fileName:_jsxFileName,lineNumber:92}},
+_react2.default.createElement(_reactNative.Picker,{
+selectedValue:this.state.pickAttr,
+onValueChange:function onValueChange(value,index){return _this4.setState({pickAttr:value});},__source:{fileName:_jsxFileName,lineNumber:93}},
+
+email?_react2.default.createElement(_reactNative.Picker.Item,{label:'Email',value:'email',__source:{fileName:_jsxFileName,lineNumber:97}}):null,
+phone_number?_react2.default.createElement(_reactNative.Picker.Item,{label:'Phone Number',value:'phone_number',__source:{fileName:_jsxFileName,lineNumber:98}}):null),
+
+_react2.default.createElement(_AmplifyUI.Button,{
+theme:theme,
+title:_I18n2.default.get('Verify'),
+onPress:this.verify,
+disabled:!this.state.pickAttr,__source:{fileName:_jsxFileName,lineNumber:100}})));
+
+
+
+}},{key:'submitBody',value:function submitBody(
+
+theme){var _this5=this;
+return(
+_react2.default.createElement(_reactNative.View,{style:theme.sectionBody,__source:{fileName:_jsxFileName,lineNumber:112}},
+_react2.default.createElement(_AmplifyUI.ConfirmationCode,{
+theme:theme,
+onChangeText:function onChangeText(text){return _this5.setState({code:text});},__source:{fileName:_jsxFileName,lineNumber:113}}),
+
+_react2.default.createElement(_AmplifyUI.Button,{
+theme:theme,
+title:_I18n2.default.get('Submit'),
+onPress:this.submit,
+disabled:!this.state.code,__source:{fileName:_jsxFileName,lineNumber:117}})));
+
+
+
+}},{key:'render',value:function render()
+
+{
+if(!['verifyContact'].includes(this.props.authState)){
+return null;
+}
+
+var theme=this.props.theme||_AmplifyTheme2.default;
+return(
+_react2.default.createElement(_reactNative.View,{style:theme.section,__source:{fileName:_jsxFileName,lineNumber:134}},
+_react2.default.createElement(_AmplifyUI.Header,{theme:theme,__source:{fileName:_jsxFileName,lineNumber:135}},_I18n2.default.get('Verify Contact')),
+!this.state.verifyAttr&&this.verifyBody(theme),
+this.state.verifyAttr&&this.submitBody(theme),
+_react2.default.createElement(Footer,{theme:theme,onStateChange:this.changeState,__source:{fileName:_jsxFileName,lineNumber:138}}),
+_react2.default.createElement(_AmplifyUI.ErrorRow,{theme:theme,__source:{fileName:_jsxFileName,lineNumber:139}},this.state.error)));
+
+
+}}]);return VerifyContact;}(_AuthPiece3.default);exports.default=VerifyContact;

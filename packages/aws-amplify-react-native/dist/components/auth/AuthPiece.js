@@ -1,54 +1,53 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+Object.defineProperty(exports,"__esModule",{value:true});exports.default=undefined;var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();
 
-import React from 'react';
 
-import Auth from '../../Auth';
-import { ConsoleLogger as Logger } from '../../Common/Logger';
 
-import AmplifyTheme from '../AmplifyTheme';
-import AmplifyMessageMap from '../AmplifyMessageMap';
 
-const logger = new Logger('AuthPiece');
 
-export default class AuthPiece extends React.Component {
-    constructor(props) {
-        super(props);
 
-        this.changeState = this.changeState.bind(this);
-        this.error = this.error.bind(this);
-    }
 
-    changeState(state, data) {
-        if (this.props.onStateChange) {
-            this.props.onStateChange(state, data);
-        }
-    }
 
-    error(err) {
-        logger.debug(err);
 
-        let msg = '';
-        if (typeof err === 'string') {
-            msg = err;
-        } else if (err.message) {
-            msg = err.message;
-        } else {
-            msg = JSON.stringify(err);
-        }
 
-        const map = this.props.errorMessage || AmplifyMessageMap;
-        msg = typeof map === 'string' ? msp : map(msg);
-        this.setState({ error: msg });
-    }
+
+
+var _react=require('react');var _react2=_interopRequireDefault(_react);
+
+var _Auth=require('../../Auth');var _Auth2=_interopRequireDefault(_Auth);
+var _Logger=require('../../Common/Logger');
+
+var _AmplifyTheme=require('../AmplifyTheme');var _AmplifyTheme2=_interopRequireDefault(_AmplifyTheme);
+var _AmplifyMessageMap=require('../AmplifyMessageMap');var _AmplifyMessageMap2=_interopRequireDefault(_AmplifyMessageMap);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}
+
+var logger=new _Logger.ConsoleLogger('AuthPiece');var
+
+AuthPiece=function(_React$Component){_inherits(AuthPiece,_React$Component);
+function AuthPiece(props){_classCallCheck(this,AuthPiece);var _this=_possibleConstructorReturn(this,(AuthPiece.__proto__||Object.getPrototypeOf(AuthPiece)).call(this,
+props));
+
+_this.changeState=_this.changeState.bind(_this);
+_this.error=_this.error.bind(_this);return _this;
+}_createClass(AuthPiece,[{key:'changeState',value:function changeState(
+
+state,data){
+if(this.props.onStateChange){
+this.props.onStateChange(state,data);
 }
+}},{key:'error',value:function error(
+
+err){
+logger.debug(err);
+
+var msg='';
+if(typeof err==='string'){
+msg=err;
+}else if(err.message){
+msg=err.message;
+}else{
+msg=JSON.stringify(err);
+}
+
+var map=this.props.errorMessage||_AmplifyMessageMap2.default;
+msg=typeof map==='string'?msp:map(msg);
+this.setState({error:msg});
+}}]);return AuthPiece;}(_react2.default.Component);exports.default=AuthPiece;

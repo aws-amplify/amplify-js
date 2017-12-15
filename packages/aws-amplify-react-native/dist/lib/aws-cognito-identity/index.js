@@ -1,27 +1,27 @@
-/*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
- */
+Object.defineProperty(exports,"__esModule",{value:true});var _AuthenticationDetails=require('./AuthenticationDetails');Object.defineProperty(exports,'AuthenticationDetails',{enumerable:true,get:function get(){return _interopRequireDefault(_AuthenticationDetails).
 
-export { default as AuthenticationDetails } from './AuthenticationDetails';
-export { default as AuthenticationHelper } from './AuthenticationHelper';
-export { default as CognitoAccessToken } from './CognitoAccessToken';
-export { default as CognitoIdToken } from './CognitoIdToken';
-export { default as CognitoRefreshToken } from './CognitoRefreshToken';
-export { default as CognitoUser } from './CognitoUser';
-export { default as CognitoUserAttribute } from './CognitoUserAttribute';
-export { default as CognitoUserPool } from './CognitoUserPool';
-export { default as CognitoUserSession } from './CognitoUserSession';
-export { default as DateHelper } from './DateHelper';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+default;}});var _AuthenticationHelper=require('./AuthenticationHelper');Object.defineProperty(exports,'AuthenticationHelper',{enumerable:true,get:function get(){return _interopRequireDefault(_AuthenticationHelper).
+default;}});var _CognitoAccessToken=require('./CognitoAccessToken');Object.defineProperty(exports,'CognitoAccessToken',{enumerable:true,get:function get(){return _interopRequireDefault(_CognitoAccessToken).
+default;}});var _CognitoIdToken=require('./CognitoIdToken');Object.defineProperty(exports,'CognitoIdToken',{enumerable:true,get:function get(){return _interopRequireDefault(_CognitoIdToken).
+default;}});var _CognitoRefreshToken=require('./CognitoRefreshToken');Object.defineProperty(exports,'CognitoRefreshToken',{enumerable:true,get:function get(){return _interopRequireDefault(_CognitoRefreshToken).
+default;}});var _CognitoUser=require('./CognitoUser');Object.defineProperty(exports,'CognitoUser',{enumerable:true,get:function get(){return _interopRequireDefault(_CognitoUser).
+default;}});var _CognitoUserAttribute=require('./CognitoUserAttribute');Object.defineProperty(exports,'CognitoUserAttribute',{enumerable:true,get:function get(){return _interopRequireDefault(_CognitoUserAttribute).
+default;}});var _CognitoUserPool=require('./CognitoUserPool');Object.defineProperty(exports,'CognitoUserPool',{enumerable:true,get:function get(){return _interopRequireDefault(_CognitoUserPool).
+default;}});var _CognitoUserSession=require('./CognitoUserSession');Object.defineProperty(exports,'CognitoUserSession',{enumerable:true,get:function get(){return _interopRequireDefault(_CognitoUserSession).
+default;}});var _DateHelper=require('./DateHelper');Object.defineProperty(exports,'DateHelper',{enumerable:true,get:function get(){return _interopRequireDefault(_DateHelper).
+default;}});function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
