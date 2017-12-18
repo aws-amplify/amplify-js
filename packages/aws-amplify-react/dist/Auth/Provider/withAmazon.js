@@ -63,7 +63,7 @@ function withAmazon(Comp) {
                     var options = { scope: 'profile' };
                     amz.Login.authorize(options, function (response) {
                         if (response.error) {
-                            logger.debug('Failed to login with amazon: ' + error);
+                            logger.debug('Failed to login with amazon: ' + response.error);
                             return;
                         }
 
@@ -99,7 +99,7 @@ function withAmazon(Comp) {
                             name: userInfo.profile.Name
                         };
 
-                        _awsAmplify.Auth.federatedSignIn('amazon', { access_token: access_token, expires_at: expires_at }, user).then(function (credentials) {
+                        _awsAmplify.Auth.federatedSignIn('amazon', { token: access_token, expires_at: expires_at }, user).then(function (credentials) {
                             logger.debug('getting credentials');
                             logger.debug(credentials);
                             if (onStateChange) {

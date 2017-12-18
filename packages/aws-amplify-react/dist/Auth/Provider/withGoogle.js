@@ -83,7 +83,7 @@ function withGoogle(Comp) {
 
                     var onStateChange = this.props.onStateChange;
 
-                    return _awsAmplify.Auth.federatedSignIn('google', { id_token: id_token, expires_at: expires_at }, user).then(function (crednetials) {
+                    return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user).then(function (crednetials) {
                         if (onStateChange) {
                             onStateChange('signedIn');
                         }
