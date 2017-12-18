@@ -107,10 +107,14 @@ class AuthClass {
 
         const attributes = [];
         if (email) {
-            attributes.push({ Name: 'email', Value: email });
-        }
-        if (phone_number) {
-            attributes.push({ Name: 'phone_number', Value: phone_number });
+            if (typeof email === 'string') {
+                attributes.push({ Name: 'email', Value: email });
+                if (phone_number) {
+                    attributes.push({ Name: 'phone_number', Value: phone_number });
+                }
+            } else {
+                attributes = email;
+            }
         }
 
         return new Promise((resolve, reject) => {
