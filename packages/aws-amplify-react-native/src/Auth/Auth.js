@@ -110,9 +110,15 @@ class AuthClass {
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
         const attributes = [];
-        if (email) { attributes.push({Name: 'email', Value: email}); }
-        if (phone_number) { attributes.push({Name: 'phone_number', Value: phone_number}); }
-
+        if(email) {
+            if(typeof(email) === 'string'){
+                attributes.push({Name: 'email', Value: email}); 
+                if (phone_number) { attributes.push({Name: 'phone_number', Value: phone_number}); }
+            } else {
+                attributes = email;
+            }
+        }
+        
         return new Promise((resolve, reject) => {
             this.userPool.signUp(username, password, attributes, null, function(err, data) {
                 if (err) { reject(err); } else { resolve(data); }

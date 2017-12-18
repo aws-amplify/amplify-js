@@ -99,15 +99,22 @@ export default class AuthClass {
      * @param {Object} attributeList - Other attributes
      * @return - A promise resolves callback data if success
      */
-    public signUp(username: string, password: string, email: string, phone_number: string): Promise<any> {
+    public signUp(username: string,
+                  password: string, 
+                  email?: string|Array<Object>, 
+                  phone_number?: string): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
-        const attributes = [];
-        if (email) { attributes.push({Name: 'email', Value: email}); }
-        if (phone_number) { attributes.push({Name: 'phone_number', Value: phone_number}); }
-
+        let attributes = [];
+        if(typeof(email) === 'string'){
+            if (email) { attributes.push({Name: 'email', Value: email}); }
+            if (phone_number) { attributes.push({Name: 'phone_number', Value: phone_number}); }
+        }
+        else {
+            attributes = email;
+        }
         return new Promise((resolve, reject) => {
             this.userPool.signUp(username, password, attributes, null, function(err, data) {
                 if (err) {
