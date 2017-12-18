@@ -15988,15 +15988,26 @@ var AuthClass = (function () {
             return Promise.reject('Password cannot be empty');
         }
         var attributes = [];
-        if (email) {
-            attributes.push({ Name: 'email', Value: email });
+        console.log('the type of email is :', typeof (email));
+        if (typeof (email) === 'string') {
+            console.log('email is :', email);
+            console.log('for some reason the type of email is string');
+            if (email) {
+                attributes.push({ Name: 'email', Value: email });
+            }
+            if (phone_number) {
+                attributes.push({ Name: 'phone_number', Value: phone_number });
+            }
         }
-        if (phone_number) {
-            attributes.push({ Name: 'phone_number', Value: phone_number });
+        else {
+            console.log('so we didnt have type string for email huh');
+            attributes = email;
         }
+        console.log('attributes at sign up hmm : ', attributes);
         return new Promise(function (resolve, reject) {
             _this.userPool.signUp(username, password, attributes, null, function (err, data) {
                 if (err) {
+                    console.log('sign up error is from :', err);
                     dispatchAuthEvent('signUp_failure', err);
                     reject(err);
                 }
