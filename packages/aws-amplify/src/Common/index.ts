@@ -22,7 +22,7 @@ export { default as Hub } from './Hub';
 export { default as JS } from './JS';
 
 export const Constants = {
-    userAgent: 'aws-amplify/0.1.21 reactjs'
+    userAgent: 'aws-amplify/0.1.22 js'
 };
 
 const logger = new Logger('Common');
