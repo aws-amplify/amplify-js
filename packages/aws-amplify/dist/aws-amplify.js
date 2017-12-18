@@ -1186,7 +1186,7 @@ exports.Hub = Hub_1.default;
 var JS_1 = __webpack_require__(536);
 exports.JS = JS_1.default;
 exports.Constants = {
-    userAgent: 'aws-amplify/1.0.0 reactjs'
+    userAgent: 'aws-amplify/0.1.22 js'
 };
 var logger = new Logger_1.ConsoleLogger('Common');
 if (Facet_1.AWS['util']) {
