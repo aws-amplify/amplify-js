@@ -86,7 +86,7 @@ describe('withGoogle test', () => {
            
             await comp.federatedSignIn(googleUser);
 
-            expect(spyon).toBeCalledWith('google', { expires_at: 0, id_token: 'id_token' }, { email: 'email', name: 'name' });
+            expect(spyon).toBeCalledWith('google', { expires_at: 0, token: 'id_token' }, { email: 'email', name: 'name' });
 
             spyon.mockClear();
         });
@@ -130,7 +130,7 @@ describe('withGoogle test', () => {
            
             await comp.federatedSignIn(googleUser);
 
-            expect(spyon).toBeCalledWith('google', { expires_at: 0, id_token: 'id_token' }, { email: 'email', name: 'name' });
+            expect(spyon).toBeCalledWith('google', { expires_at: 0, token: 'id_token' }, { email: 'email', name: 'name' });
             expect(mockFn).toBeCalledWith('signedIn');
 
             spyon.mockClear();

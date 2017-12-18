@@ -52,7 +52,7 @@ export default function withFacebook(Comp) {
                     name: response.name
                 }
 
-                Auth.federatedSignIn('facebook', { accessToken, expires_at }, user)
+                Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
                     .then(crednetials => {
                         if (onStateChange) {
                             onStateChange('signedIn');

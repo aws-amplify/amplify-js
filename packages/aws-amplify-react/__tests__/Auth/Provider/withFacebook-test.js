@@ -131,7 +131,7 @@ describe('withFacebook test', () => {
                 expiresIn: 0
             });
 
-            expect(spyon).toBeCalledWith('facebook', { accessToken: 'accessToken', expires_at: 0 }, { name: 'username' });
+            expect(spyon).toBeCalledWith('facebook', { token: 'accessToken', expires_at: 0 }, { name: 'username' });
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -177,7 +177,7 @@ describe('withFacebook test', () => {
                 expiresIn: 0
             });
 
-            expect(spyon).toBeCalledWith('facebook', { accessToken: 'accessToken', expires_at: 0 }, { name: 'username' });
+            expect(spyon).toBeCalledWith('facebook', { token: 'accessToken', expires_at: 0 }, { name: 'username' });
             expect(mockFn).toBeCalledWith('signedIn');
 
             spyon.mockClear();

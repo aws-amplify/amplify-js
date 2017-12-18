@@ -25,7 +25,7 @@ export default function withAmazon(Comp) {
             const options = { scope: 'profile' };
             amz.Login.authorize(options, (response) => {
                 if (response.error) {
-                    logger.debug('Failed to login with amazon: ' + error);
+                    logger.debug('Failed to login with amazon: ' + response.error);
                     return;
                 }
                 
@@ -53,7 +53,7 @@ export default function withAmazon(Comp) {
                     name: userInfo.profile.Name
                 }
 
-                Auth.federatedSignIn('amazon', { access_token, expires_at }, user)
+                Auth.federatedSignIn('amazon', { token: access_token, expires_at }, user)
                     .then(credentials => {
                         logger.debug('getting credentials');
                         logger.debug(credentials);
