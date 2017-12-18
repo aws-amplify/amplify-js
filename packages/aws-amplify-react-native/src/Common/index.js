@@ -21,7 +21,7 @@ export { default as Hub } from './Hub';
 export { default as JS } from './JS';
 
 export const Constants = {
-    userAgent: 'aws-amplify/0.1.10 react-native'
+    userAgent: 'aws-amplify/0.1.11 react-native'
 };
 
 const logger = new Logger('Common');
