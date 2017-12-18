@@ -55,6 +55,7 @@ class AnalyticsClass {
             };
         }
 
+        conf.region = 'us-east-1';
         this._config = Object.assign({}, this._config, conf);
 
         this._initClients();
