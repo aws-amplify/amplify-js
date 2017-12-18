@@ -634,18 +634,11 @@ var AuthClass = /** @class */ (function () {
             });
         });
     };
-<<<<<<< HEAD
     AuthClass.prototype.federatedSignIn = function (provider, response, user) {
         var token = response.token, expires_at = response.expires_at;
         this.setCredentialsFromFederation(provider, token, user);
         // store it into localstorage
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1, expires: expires_at });
-=======
-    AuthClass.prototype.federatedSignIn = function (provider, token, user) {
-        this.setCredentialsFromFederation(provider, token, user);
-        // store it into localstorage
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user });
->>>>>>> upstream/master
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1 });
         dispatchAuthEvent('signIn', this.user);
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();
@@ -674,11 +667,12 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
         var domains = {
             'google': 'accounts.google.com',
-            'facebook': 'graph.facebook.com'
+            'facebook': 'graph.facebook.com',
+            'amazon': 'www.amazon.com'
         };
         var domain = domains[provider];
         if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook]');
+            return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
         }
         var logins = {};
         logins[domain] = token;

@@ -608,12 +608,13 @@ export default class AuthClass {
     private setCredentialsFromFederation(provider, token, user) {
         const domains = {
             'google': 'accounts.google.com',
-            'facebook': 'graph.facebook.com'
+            'facebook': 'graph.facebook.com',
+            'amazon': 'www.amazon.com'
         };
 
         const domain = domains[provider];
         if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook]');
+            return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
         }
 
         const logins = {};

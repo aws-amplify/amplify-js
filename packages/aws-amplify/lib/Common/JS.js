@@ -12,9 +12,6 @@
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-<<<<<<< HEAD
-var JS = /** @class */ (function () {
-=======
 var MIME_MAP = [
     { type: 'text/plain', ext: 'txt' },
     { type: 'text/html', ext: 'html' },
@@ -49,8 +46,7 @@ var MIME_MAP = [
     { type: 'application/vnd.ms-excel', ext: 'xlsx' },
     { type: 'message/rfc822', ext: 'eml' }
 ];
-var JS = (function () {
->>>>>>> upstream/master
+var JS = /** @class */ (function () {
     function JS() {
     }
     JS.isEmpty = function (obj) {
