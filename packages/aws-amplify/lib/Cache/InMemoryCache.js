@@ -267,7 +267,7 @@ var InMemoryCache = (function (_super) {
                 ret = this.cacheObj.getItem(prefixedKey);
                 var item = JSON.parse(ret);
                 this.cacheList[item.priority - 1].refresh(prefixedKey);
-                return JSON.parse(item.data);
+                return item.data;
             }
         }
         if (options && options.callback !== undefined) {

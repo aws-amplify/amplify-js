@@ -324,7 +324,7 @@ var BrowserStorageCache = (function (_super) {
                     // if not expired, great, return the value and refresh it
                     var item = JSON.parse(ret);
                     item = this._refreshItem(item, prefixedKey);
-                    return JSON.parse(item.data);
+                    return item.data;
                 }
             }
             if (options && options.callback !== undefined) {

@@ -76,7 +76,7 @@ var StorageCache = (function () {
     StorageCache.prototype.fillCacheItem = function (key, value, options) {
         var ret = {
             key: key,
-            data: JSON.stringify(value),
+            data: value,
             timestamp: Utils_1.getCurrTime(),
             visitedTime: Utils_1.getCurrTime(),
             priority: options.priority,

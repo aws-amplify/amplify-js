@@ -39,7 +39,7 @@ export interface CacheConfig {
 }
 export interface CacheItem {
     key: string;
-    data: string;
+    data: any;
     timestamp: number;
     visitedTime: number;
     priority: number;
