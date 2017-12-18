@@ -1,55 +1,55 @@
-/*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
- */
+Object.defineProperty(exports,"__esModule",{value:true});var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}
 
-const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const weekNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-/** @class */
-export default class DateHelper {
-  /**
-   * @returns {string} The current time in "ddd MMM D HH:mm:ss UTC YYYY" format.
-   */
-  getNowString() {
-    const now = new Date();
 
-    const weekDay = weekNames[now.getUTCDay()];
-    const month = monthNames[now.getUTCMonth()];
-    const day = now.getUTCDate();
 
-    let hours = now.getUTCHours();
-    if (hours < 10) {
-      hours = `0${hours}`;
-    }
 
-    let minutes = now.getUTCMinutes();
-    if (minutes < 10) {
-      minutes = `0${minutes}`;
-    }
 
-    let seconds = now.getUTCSeconds();
-    if (seconds < 10) {
-      seconds = `0${seconds}`;
-    }
 
-    const year = now.getUTCFullYear();
 
-    // ddd MMM D HH:mm:ss UTC YYYY
-    const dateNow = `${weekDay} ${month} ${day} ${hours}:${minutes}:${seconds} UTC ${year}`;
 
-    return dateNow;
-  }
+
+
+
+
+
+
+
+var monthNames=
+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var weekNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];var
+
+
+DateHelper=function(){function DateHelper(){_classCallCheck(this,DateHelper);}_createClass(DateHelper,[{key:'getNowString',value:function getNowString()
+
+
+
+{
+var now=new Date();
+
+var weekDay=weekNames[now.getUTCDay()];
+var month=monthNames[now.getUTCMonth()];
+var day=now.getUTCDate();
+
+var hours=now.getUTCHours();
+if(hours<10){
+hours='0'+hours;
 }
+
+var minutes=now.getUTCMinutes();
+if(minutes<10){
+minutes='0'+minutes;
+}
+
+var seconds=now.getUTCSeconds();
+if(seconds<10){
+seconds='0'+seconds;
+}
+
+var year=now.getUTCFullYear();
+
+
+var dateNow=weekDay+' '+month+' '+day+' '+hours+':'+minutes+':'+seconds+' UTC '+year;
+
+return dateNow;
+}}]);return DateHelper;}();exports.default=DateHelper;

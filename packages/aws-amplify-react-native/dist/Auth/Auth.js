@@ -1,725 +1,647 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+Object.defineProperty(exports,"__esModule",{value:true});var _slicedToArray=function(){function sliceIterator(arr,i){var _arr=[];var _n=true;var _d=false;var _e=undefined;try{for(var _i=arr[typeof Symbol==='function'?Symbol.iterator:'@@iterator'](),_s;!(_n=(_s=_i.next()).done);_n=true){_arr.push(_s.value);if(i&&_arr.length===i)break;}}catch(err){_d=true;_e=err;}finally{try{if(!_n&&_i["return"])_i["return"]();}finally{if(_d)throw _e;}}return _arr;}return function(arr,i){if(Array.isArray(arr)){return arr;}else if((typeof Symbol==='function'?Symbol.iterator:'@@iterator')in Object(arr)){return sliceIterator(arr,i);}else{throw new TypeError("Invalid attempt to destructure non-iterable instance");}};}();var _extends=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();
 
-import { AWS, Cognito, ConsoleLogger as Logger, Constants, Hub } from '../Common';
 
-const logger = new Logger('AuthClass');
 
-const {
-    CognitoIdentityCredentials
-} = AWS;
 
-const {
-    CognitoUserPool,
-    CognitoUserAttribute,
-    CognitoUser,
-    AuthenticationDetails
-} = Cognito;
 
-const dispatchCredentialsChange = credentials => {
-    Hub.dispatch('credentials', credentials, 'Auth');
+
+
+
+
+
+
+
+var _Common=require('../Common');function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}
+
+
+
+
+
+
+
+var logger=new _Common.ConsoleLogger('AuthClass');var
+
+
+CognitoIdentityCredentials=_Common.AWS.CognitoIdentityCredentials;var
+
+
+
+CognitoUserPool=_Common.Cognito.CognitoUserPool,
+CognitoUserAttribute=_Common.Cognito.CognitoUserAttribute,
+CognitoUser=_Common.Cognito.CognitoUser,
+AuthenticationDetails=_Common.Cognito.AuthenticationDetails;
+
+
+var dispatchCredentialsChange=function dispatchCredentialsChange(credentials){
+_Common.Hub.dispatch('credentials',credentials,'Auth');
 };
 
-const dispatchAuthEvent = (event, data) => {
-    Hub.dispatch('auth', {
-        event: event,
-        data: data
-    }, 'Auth');
-};
+var dispatchAuthEvent=function dispatchAuthEvent(event,data){
+_Common.Hub.dispatch('auth',{
+event:event,
+data:data},
+'Auth');
+};var
 
-/**
-* Provide authentication functions.
-*/
-class AuthClass {
-    /**
-     * @param {Object} config - Configuration of the Auth
-     */
-    constructor(config) {
-        logger.debug('Auth Config', config);
-        this.configure(config);
 
-        if (AWS.config) {
-            AWS.config.update({ customUserAgent: Constants.userAgent });
-        } else {
-            logger.warn('No AWS.config');
-        }
-    }
 
-    /**
-     * Configure Auth part with aws configurations
-     * @param {Object} config - Configuration of the Auth
-     * @return {Object} - Current configuration
-     */
-    configure(config) {
-        logger.debug('configure Auth');
-        let conf = config ? config.Auth || config : {};
 
-        if (conf['aws_cognito_identity_pool_id']) {
-            conf = {
-                userPoolId: config['aws_user_pools_id'],
-                userPoolWebClientId: config['aws_user_pools_web_client_id'],
-                region: config['aws_cognito_region'],
-                identityPoolId: config['aws_cognito_identity_pool_id']
-            };
-        }
+AuthClass=function(){
 
-        this._config = Object.assign({}, this._config, conf);
 
-        const { userPoolId, userPoolWebClientId } = this._config;
-        if (userPoolId) {
-            this.userPool = new CognitoUserPool({
-                UserPoolId: userPoolId,
-                ClientId: userPoolWebClientId
-            });
-        }
 
-        return this._config;
-    }
+function AuthClass(config){_classCallCheck(this,AuthClass);
+logger.debug('Auth Config',config);
+this.configure(config);
 
-    /**
-     * Sign up with username, password and other attrbutes like phone, email
-     * @param {String} username - The username to be signed up
-     * @param {String} password - The password of the user
-     * @param {String} email - The email of the user
-     * @param {String} phone_number - the phone number of the user
-     * @return {Promise} - A promise resolves callback data if success
-     */
-    signUp(username, password, email, phone_number) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-        if (!password) {
-            return Promise.reject('Password cannot be empty');
-        }
+if(_Common.AWS.config){
+_Common.AWS.config.update({customUserAgent:_Common.Constants.userAgent});
+}else{
+logger.warn('No AWS.config');
+}
+}_createClass(AuthClass,[{key:'configure',value:function configure(
 
-        const attributes = [];
-        if (email) {
-            attributes.push({ Name: 'email', Value: email });
-        }
-        if (phone_number) {
-            attributes.push({ Name: 'phone_number', Value: phone_number });
-        }
 
-        return new Promise((resolve, reject) => {
-            this.userPool.signUp(username, password, attributes, null, function (err, data) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
-    }
 
-    /**
-     * Send the verfication code to confirm sign up
-     * @param {String} username - The username to be confirmed
-     * @param {String} code - The verification code
-     * @return {Promise} - A promise resolves callback data if success
-     */
-    confirmSignUp(username, code) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-        if (!code) {
-            return Promise.reject('Code cannot be empty');
-        }
 
-        const user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
-        return new Promise((resolve, reject) => {
-            user.confirmRegistration(code, true, function (err, data) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
-    }
 
-    /**
-     * Resend the verification code
-     * @param {String} username - The username to be confirmed
-     * @return {Promise} - A promise resolves data if success
-     */
-    resendSignUp(username) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
 
-        const user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
-        return new Promise((resolve, reject) => {
-            user.resendConfirmationCode(function (err, data) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
-    }
+config){
+logger.debug('configure Auth');
+var conf=config?config.Auth||config:{};
 
-    /**
-     * Sign in
-     * @param {String} username - The username to be signed in
-     * @param {String} password - The password of the username
-     * @return {Promise} - A promise resolves the CognitoUser object if success or mfa required
-     */
-    signIn(username, password) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-        if (!password) {
-            return Promise.reject('Password cannot be empty');
-        }
+if(conf['aws_cognito_identity_pool_id']){
+conf={
+userPoolId:config['aws_user_pools_id'],
+userPoolWebClientId:config['aws_user_pools_web_client_id'],
+region:config['aws_cognito_region'],
+identityPoolId:config['aws_cognito_identity_pool_id']};
 
-        const { userPoolId, userPoolWebClientId } = this._config;
-        const pool = new CognitoUserPool({
-            UserPoolId: userPoolId,
-            ClientId: userPoolWebClientId
-        });
-        const user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
-        const authDetails = new AuthenticationDetails({
-            Username: username,
-            Password: password
-        });
-        logger.debug(authDetails);
-        const _auth = this;
-        return new Promise((resolve, reject) => {
-            user.authenticateUser(authDetails, {
-                onSuccess: session => {
-                    _auth.currentCredentials().then(credentials => {
-                        const creds = _auth.essentialCredentials(credentials);
-                        dispatchCredentialsChange(creds);
-                    }).catch(err => logger.error('get credentials failed', err));
-                    resolve(user);
-                },
-                onFailure: err => {
-                    logger.error('signIn failure', err);
-                    reject(err);
-                },
-                mfaRequired: (challengeName, challengeParam) => {
-                    logger.debug('signIn MFA required');
-                    user['challengeName'] = challengeName;
-                    user['challengeParam'] = challengeParam;
-                    resolve(user);
-                },
-                newPasswordRequired: (userAttributes, requiredAttributes) => {
-                    logger.debug('signIn new password');
-                    user['challengeName'] = 'NEW_PASSWORD_REQUIRED';
-                    user['challengeParam'] = {
-                        userAttributes: userAttributes,
-                        requiredAttributes: requiredAttributes
-                    };
-                    resolve(user);
-                }
-            });
-        });
-    }
-
-    /**
-     * Send MFA code to confirm sign in
-     * @param {Object} user - The CognitoUser object
-     * @param {String} code - The confirmation code
-     * @return {Promise} - A promise resolves to CognitoUser if success
-     */
-    confirmSignIn(user, code) {
-        if (!code) {
-            return Promise.reject('Code cannot be empty');
-        }
-
-        const _auth = this;
-        return new Promise((resolve, reject) => {
-            user.sendMFACode(code, {
-                onSuccess: session => {
-                    _auth.currentCredentials().then(credentials => {
-                        const creds = _auth.essentialCredentials(credentials);
-                        dispatchCredentialsChange(creds);
-                    }).catch(err => logger.error('get credentials failed', err));
-                    resolve(user);
-                },
-                onFailure: err => {
-                    logger.error('confirm signIn failure', err);
-                    reject(err);
-                }
-            });
-        });
-    }
-
-    completeNewPassword(user, password, requiredAttributes) {
-        if (!password) {
-            return Promise.reject('Password cannot be empty');
-        }
-
-        return new Promise((resolve, reject) => {
-            user.completeNewPasswordChallenge(password, requiredAttributes, {
-                onSuccess: session => {
-                    logger.debug(session);
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
-                },
-                onFailure: err => {
-                    logger.debug('completeNewPassword failure', err);
-                    reject(err);
-                },
-                mfaRequired: (challengeName, challengeParam) => {
-                    logger.debug('signIn MFA required');
-                    user['challengeName'] = challengeName;
-                    user['challengeParam'] = challengeParam;
-                    resolve(user);
-                }
-            });
-        });
-    }
-
-    /**
-     * Return user attributes
-     * @param {Object} user - The CognitoUser object
-     * @return {Promise} - A promise resolves to user attributes if success
-     */
-    userAttributes(user) {
-        const _auth = this;
-        return this.userSession(user).then(session => {
-            return new Promise((resolve, reject) => {
-                user.getUserAttributes((err, attributes) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(_auth._attributesToObject(attributes));
-                    }
-                });
-            });
-        });
-    }
-
-    verifiedContact(user) {
-        const that = this;
-        return this.userAttributes(user).then(attrs => {
-            const verified = {};
-            const unverified = {};
-            if (attrs.email) {
-                if (attrs.email_verified) {
-                    verified.email = attrs.email;
-                } else {
-                    unverified.email = attrs.email;
-                }
-            }
-            if (attrs.phone_number) {
-                if (attrs.phone_number_verified) {
-                    verified.phone_number = attrs.phone_number;
-                } else {
-                    unverified.phone_number = attrs.phone_number;
-                }
-            }
-            return { verified: verified, unverified: unverified };
-        });
-    }
-
-    /**
-     * Get current CognitoUser
-     * @return {Promise} - A promise resolves to curret CognitoUser if success
-     */
-    currentUser() {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-
-        const user = this.userPool.getCurrentUser();
-        return user ? Promise.resolve(user) : Promise.reject('UserPool doesnot have current user');
-    }
-
-    /**
-     * Get current authenticated user
-     * @return {Promise} - A promise resolves to curret authenticated CognitoUser if success
-     */
-    currentAuthenticatedUser() {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-
-        const user = this.userPool.getCurrentUser();
-        if (!user) {
-            return Promise.reject('No current user');
-        }
-
-        return new Promise((resolve, reject) => {
-            user.getSession(function (err, session) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(user);
-                }
-            });
-        });
-    }
-
-    /**
-     * Get current user's session
-     * @return {Promise} - A promise resolves to session object if success
-     */
-    currentUserSession() {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-
-        const user = this.userPool.getCurrentUser();
-        if (!user) {
-            return Promise.reject('No current user');
-        }
-        return this.userSession(user);
-    }
-
-    /**
-     * Get current user's session
-     * @return - A promise resolves to session object if success
-     */
-    currentSession() {
-        return this.currentUserSession();
-    }
-
-    /**
-     * Get the corresponding user session
-     * @param {Object} user - The CognitoUser object
-     * @return {Promise} - A promise resolves to the session
-     */
-    userSession(user) {
-        return new Promise((resolve, reject) => {
-            user.getSession(function (err, session) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(session);
-                }
-            });
-        });
-    }
-
-    /**
-     * Get authenticated credentials of current user.
-     * @return {Promise} - A promise resolves to be current user's credentials
-     */
-    currentUserCredentials() {
-        return this.currentUserSession().then(session => {
-            logger.debug('current session', session);
-            return new Promise((resolve, reject) => {
-                const credentials = this.sessionToCredentials(session);
-                credentials.get(err => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(credentials);
-                    }
-                });
-            });
-        });
-    }
-
-    /**
-     * Get unauthenticated credentials
-     * @return {Promise} - A promise resolves to be a guest credentials
-     */
-    guestCredentials() {
-        const credentials = this.noSessionCredentials();
-        return new Promise((resolve, reject) => {
-            credentials.get(err => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(credentials);
-                }
-            });
-        });
-    }
-
-    /**
-     * Get current user credentials or guest credentials depend on sign in status.
-     * @return {Promise} - A promise resolves to be the current credentials
-     */
-    currentCredentials() {
-        const that = this;
-        return this.currentUserCredentials().then(credentials => {
-            credentials.authenticated = true;
-            return credentials;
-        }).catch(err => {
-            logger.debug('No current user credentials, load guest credentials');
-            return that.guestCredentials().then(credentials => {
-                credentials.authenticated = false;
-                return credentials;
-            });
-        });
-    }
-
-    /**
-     * Initiate an attribute confirmation request
-     * @param {Object} user - The CognitoUser
-     * @param {Object} attr - The attributes to be verified
-     * @return {Promise} - A promise resolves to callback data if success
-     */
-    verifyUserAttribute(user, attr) {
-        return new Promise((resolve, reject) => {
-            user.getAttributeVerificationCode(attr, {
-                onSuccess: function (data) {
-                    resolve(data);
-                },
-                onFailure: function (err) {
-                    reject(err);
-                }
-            });
-        });
-    }
-
-    /**
-     * Confirm an attribute using a confirmation code
-     * @param {Object} user - The CognitoUser
-     * @param {Object} attr - The attribute to be verified
-     * @param {String} code - The confirmation code
-     * @return {Promise} - A promise resolves to callback data if success
-     */
-    verifyUserAttributeSubmit(user, attr, code) {
-        return new Promise((resolve, reject) => {
-            user.verifyAttribute(attr, code, {
-                onSuccess: function (data) {
-                    resolve(data);
-                },
-                onFailure: function (err) {
-                    reject(err);
-                }
-            });
-        });
-    }
-
-    /**
-     * Sign out method
-     * @return {Promise} - A promise resolved if success
-     */
-    signOut() {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-
-        const user = this.userPool.getCurrentUser();
-        if (!user) {
-            return Promise.resolve();
-        }
-
-        const _auth = this;
-        return new Promise((resolve, reject) => {
-            user.signOut();
-            _auth.currentCredentials().then(credentials => dispatchCredentialsChange(credentials)).catch(err => logger.error('get credentials failed', err));
-            resolve();
-        });
-    }
-
-    /**
-     * Initiate a forgot password request
-     * @param {String} username - the username to change password
-     * @return {Promise} - A promise resolves if success
-     */
-    forgotPassword(username) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-
-        const user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
-        return new Promise((resolve, reject) => {
-            user.forgotPassword({
-                onSuccess: () => {
-                    resolve();
-                },
-                onFailure: err => {
-                    logger.error(err);
-                    reject(err);
-                },
-                inputVerificationCode: data => {
-                    resolve(data);
-                }
-            });
-        });
-    }
-
-    /**
-     * Confirm a new password using a confirmation Code
-     * @param {String} username - The username
-     * @param {String} code - The confirmation code
-     * @param {String} password - The new password
-     * @return {Promise} - A promise that resolves if success
-     */
-    forgotPasswordSubmit(username, code, password) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-        if (!code) {
-            return Promise.reject('Code cannot be empty');
-        }
-        if (!password) {
-            return Promise.reject('Password cannot be empty');
-        }
-
-        const user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
-        return new Promise((resolve, reject) => {
-            user.confirmPassword(code, password, {
-                onSuccess: () => {
-                    resolve();
-                },
-                onFailure: err => {
-                    reject(err);
-                }
-            });
-        });
-    }
-
-    /**
-     * Initiate an attribute confirmation request for the current user
-     * @param {String} attr - The attributes to be verified
-     * @return {Promise} - A promise resolves to callback data if success
-     */
-    verifyCurrentUserAttribute(attr) {
-        const _auth = this;
-        return _auth.currentAuthenticatedUser().then(user => _auth.verifyUserAttribute(user, attr));
-    }
-
-    /**
-     * Confirm current user's attribute using a confirmation code
-     * @param {String} attr - The attribute to be verified
-     * @param {String} code - The confirmation code
-     * @return {Promise} - A promise resolves to callback data if success
-     */
-    verifyCurrentUserAttributeSubmit(attr, code) {
-        if (!code) {
-            return Promise.reject('Code cannot be empty');
-        }
-
-        const _auth = this;
-        return _auth.currentAuthenticatedUser().then(user => _auth.verifyUserAttributeSubmit(user, attr, code));
-    }
-
-    /**
-     * Get user information
-     * @async
-     * @return {Object }- current User's information
-     */
-    async currentUserInfo() {
-        const user = await this.currentAuthenticatedUser().catch(err => logger.debug(err));
-        if (!user) {
-            return null;
-        }
-
-        const [attributes, credentials] = await Promise.all([this.userAttributes(user), this.currentUserCredentials()]).catch(err => {
-            logger.debug('currentUserInfo error', err);
-            return [{}, {}];
-        });
-
-        const info = {
-            username: user.username,
-            id: credentials.identityId,
-            email: attributes.email,
-            phone_number: attributes.phone_number
-        };
-        logger.debug('user info', info);
-        return info;
-    }
-
-    /**
-     * @return {Object} - A new guest CognitoIdentityCredentials
-     */
-    noSessionCredentials() {
-        const credentials = new CognitoIdentityCredentials({
-            IdentityPoolId: this._config.identityPoolId
-        }, {
-            region: this._config.region
-        });
-
-        credentials.params.IdentityId = null; // Cognito load IdentityId from local cache
-        return credentials;
-    }
-
-    /**
-     * Produce a credentials based on the session
-     * @param {Object} session - The session used to generate the credentials
-     * @return {Object} - A new CognitoIdentityCredentials
-     */
-    sessionToCredentials(session) {
-        const idToken = session.getIdToken().getJwtToken();
-        const { region, userPoolId, identityPoolId } = this._config;
-        const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
-        let logins = {};
-        logins[key] = idToken;
-        return new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
-            Logins: logins
-        }, {
-            region: this._config.region
-        });
-    }
-
-    /**
-     * Compact version of credentials
-     * @param {Object} credentials
-     * @return {Object} - Credentials
-     */
-    essentialCredentials(credentials) {
-        return {
-            accessKeyId: credentials.accessKeyId,
-            sessionToken: credentials.sessionToken,
-            secretAccessKey: credentials.secretAccessKey,
-            identityId: credentials.identityId,
-            authenticated: credentials.authenticated
-        };
-    }
-
-    /**
-     * @private
-     */
-    _attributesToObject(attributes) {
-        const obj = {};
-        attributes.map(attr => {
-            obj[attr.Name] = attr.Value === 'false' ? false : attr.Value;
-        });
-        return obj;
-    }
 }
 
-export default AuthClass;
+this._config=_extends(
+{},
+this._config,
+conf);var _config=
+
+
+this._config,userPoolId=_config.userPoolId,userPoolWebClientId=_config.userPoolWebClientId;
+if(userPoolId){
+this.userPool=new CognitoUserPool({
+UserPoolId:userPoolId,
+ClientId:userPoolWebClientId});
+
+}
+
+return this._config;
+}},{key:'signUp',value:function signUp(
+
+
+
+
+
+
+
+
+
+username,password,email,phone_number){var _this=this;
+if(!this.userPool){return Promise.reject('No userPool');}
+if(!username){return Promise.reject('Username cannot be empty');}
+if(!password){return Promise.reject('Password cannot be empty');}
+
+var attributes=[];
+if(email){attributes.push({Name:'email',Value:email});}
+if(phone_number){attributes.push({Name:'phone_number',Value:phone_number});}
+
+return new Promise(function(resolve,reject){
+_this.userPool.signUp(username,password,attributes,null,function(err,data){
+if(err){reject(err);}else{resolve(data);}
+});
+});
+}},{key:'confirmSignUp',value:function confirmSignUp(
+
+
+
+
+
+
+
+username,code){
+if(!this.userPool){return Promise.reject('No userPool');}
+if(!username){return Promise.reject('Username cannot be empty');}
+if(!code){return Promise.reject('Code cannot be empty');}
+
+var user=new CognitoUser({
+Username:username,
+Pool:this.userPool});
+
+return new Promise(function(resolve,reject){
+user.confirmRegistration(code,true,function(err,data){
+if(err){reject(err);}else{resolve(data);}
+});
+});
+}},{key:'resendSignUp',value:function resendSignUp(
+
+
+
+
+
+
+username){
+if(!this.userPool){return Promise.reject('No userPool');}
+if(!username){return Promise.reject('Username cannot be empty');}
+
+var user=new CognitoUser({
+Username:username,
+Pool:this.userPool});
+
+return new Promise(function(resolve,reject){
+user.resendConfirmationCode(function(err,data){
+if(err){reject(err);}else{resolve(data);}
+});
+});
+}},{key:'signIn',value:function signIn(
+
+
+
+
+
+
+
+username,password){
+if(!this.userPool){return Promise.reject('No userPool');}
+if(!username){return Promise.reject('Username cannot be empty');}
+if(!password){return Promise.reject('Password cannot be empty');}var _config2=
+
+this._config,userPoolId=_config2.userPoolId,userPoolWebClientId=_config2.userPoolWebClientId;
+var pool=new CognitoUserPool({
+UserPoolId:userPoolId,
+ClientId:userPoolWebClientId});
+
+var user=new CognitoUser({
+Username:username,
+Pool:this.userPool});
+
+var authDetails=new AuthenticationDetails({
+Username:username,
+Password:password});
+
+logger.debug(authDetails);
+var _auth=this;
+return new Promise(function(resolve,reject){
+user.authenticateUser(authDetails,{
+onSuccess:function onSuccess(session){
+_auth.currentCredentials().
+then(function(credentials){
+var creds=_auth.essentialCredentials(credentials);
+dispatchCredentialsChange(creds);
+}).
+catch(function(err){return logger.error('get credentials failed',err);});
+resolve(user);
+},
+onFailure:function onFailure(err){
+logger.error('signIn failure',err);
+reject(err);
+},
+mfaRequired:function mfaRequired(challengeName,challengeParam){
+logger.debug('signIn MFA required');
+user['challengeName']=challengeName;
+user['challengeParam']=challengeParam;
+resolve(user);
+},
+newPasswordRequired:function newPasswordRequired(userAttributes,requiredAttributes){
+logger.debug('signIn new password');
+user['challengeName']='NEW_PASSWORD_REQUIRED';
+user['challengeParam']={
+userAttributes:userAttributes,
+requiredAttributes:requiredAttributes};
+
+resolve(user);
+}});
+
+});
+}},{key:'confirmSignIn',value:function confirmSignIn(
+
+
+
+
+
+
+
+user,code){
+if(!code){return Promise.reject('Code cannot be empty');}
+
+var _auth=this;
+return new Promise(function(resolve,reject){
+user.sendMFACode(code,{
+onSuccess:function onSuccess(session){
+_auth.currentCredentials().
+then(function(credentials){
+var creds=_auth.essentialCredentials(credentials);
+dispatchCredentialsChange(creds);
+}).
+catch(function(err){return logger.error('get credentials failed',err);});
+resolve(user);
+},
+onFailure:function onFailure(err){
+logger.error('confirm signIn failure',err);
+reject(err);
+}});
+
+});
+}},{key:'completeNewPassword',value:function completeNewPassword(
+
+user,password,requiredAttributes){
+if(!password){return Promise.reject('Password cannot be empty');}
+
+return new Promise(function(resolve,reject){
+user.completeNewPasswordChallenge(password,requiredAttributes,{
+onSuccess:function onSuccess(session){
+logger.debug(session);
+dispatchAuthEvent('signIn',user);
+resolve(user);
+},
+onFailure:function onFailure(err){
+logger.debug('completeNewPassword failure',err);
+reject(err);
+},
+mfaRequired:function mfaRequired(challengeName,challengeParam){
+logger.debug('signIn MFA required');
+user['challengeName']=challengeName;
+user['challengeParam']=challengeParam;
+resolve(user);
+}});
+
+});
+}},{key:'userAttributes',value:function userAttributes(
+
+
+
+
+
+
+user){
+var _auth=this;
+return this.userSession(user).
+then(function(session){
+return new Promise(function(resolve,reject){
+user.getUserAttributes(function(err,attributes){
+if(err){reject(err);}else{resolve(_auth._attributesToObject(attributes));}
+});
+});
+});
+}},{key:'verifiedContact',value:function verifiedContact(
+
+user){
+var that=this;
+return this.userAttributes(user).
+then(function(attrs){
+var verified={};
+var unverified={};
+if(attrs.email){
+if(attrs.email_verified){
+verified.email=attrs.email;
+}else{
+unverified.email=attrs.email;
+}
+}
+if(attrs.phone_number){
+if(attrs.phone_number_verified){
+verified.phone_number=attrs.phone_number;
+}else{
+unverified.phone_number=attrs.phone_number;
+}
+}
+return{verified:verified,unverified:unverified};
+});
+}},{key:'currentUser',value:function currentUser()
+
+
+
+
+
+{
+if(!this.userPool){return Promise.reject('No userPool');}
+
+var user=this.userPool.getCurrentUser();
+return user?Promise.resolve(user):Promise.reject('UserPool doesnot have current user');
+}},{key:'currentAuthenticatedUser',value:function currentAuthenticatedUser()
+
+
+
+
+
+{
+if(!this.userPool){return Promise.reject('No userPool');}
+
+var user=this.userPool.getCurrentUser();
+if(!user){return Promise.reject('No current user');}
+
+return new Promise(function(resolve,reject){
+user.getSession(function(err,session){
+if(err){reject(err);}else{resolve(user);}
+});
+});
+}},{key:'currentUserSession',value:function currentUserSession()
+
+
+
+
+
+{
+if(!this.userPool){return Promise.reject('No userPool');}
+
+var user=this.userPool.getCurrentUser();
+if(!user){return Promise.reject('No current user');}
+return this.userSession(user);
+}},{key:'currentSession',value:function currentSession()
+
+
+
+
+
+{
+return this.currentUserSession();
+}},{key:'userSession',value:function userSession(
+
+
+
+
+
+
+user){
+return new Promise(function(resolve,reject){
+user.getSession(function(err,session){
+if(err){reject(err);}else{resolve(session);}
+});
+});
+}},{key:'currentUserCredentials',value:function currentUserCredentials()
+
+
+
+
+
+{var _this2=this;
+return this.currentUserSession().
+then(function(session){
+logger.debug('current session',session);
+return new Promise(function(resolve,reject){
+var credentials=_this2.sessionToCredentials(session);
+credentials.get(function(err){
+if(err){reject(err);}else{resolve(credentials);}
+});
+});
+});
+}},{key:'guestCredentials',value:function guestCredentials()
+
+
+
+
+
+{
+var credentials=this.noSessionCredentials();
+return new Promise(function(resolve,reject){
+credentials.get(function(err){
+if(err){reject(err);}else{resolve(credentials);}
+});
+});
+}},{key:'currentCredentials',value:function currentCredentials()
+
+
+
+
+
+{
+var that=this;
+return this.currentUserCredentials().
+then(function(credentials){
+credentials.authenticated=true;
+return credentials;
+}).
+catch(function(err){
+logger.debug('No current user credentials, load guest credentials');
+return that.guestCredentials().
+then(function(credentials){
+credentials.authenticated=false;
+return credentials;
+});
+});
+}},{key:'verifyUserAttribute',value:function verifyUserAttribute(
+
+
+
+
+
+
+
+user,attr){
+return new Promise(function(resolve,reject){
+user.getAttributeVerificationCode(attr,{
+onSuccess:function onSuccess(data){resolve(data);},
+onFailure:function onFailure(err){reject(err);}});
+
+});
+}},{key:'verifyUserAttributeSubmit',value:function verifyUserAttributeSubmit(
+
+
+
+
+
+
+
+
+user,attr,code){
+return new Promise(function(resolve,reject){
+user.verifyAttribute(attr,code,{
+onSuccess:function onSuccess(data){resolve(data);},
+onFailure:function onFailure(err){reject(err);}});
+
+});
+}},{key:'signOut',value:function signOut()
+
+
+
+
+
+{
+if(!this.userPool){return Promise.reject('No userPool');}
+
+var user=this.userPool.getCurrentUser();
+if(!user){return Promise.resolve();}
+
+var _auth=this;
+return new Promise(function(resolve,reject){
+user.signOut();
+_auth.currentCredentials().
+then(function(credentials){return dispatchCredentialsChange(credentials);}).
+catch(function(err){return logger.error('get credentials failed',err);});
+resolve();
+});
+}},{key:'forgotPassword',value:function forgotPassword(
+
+
+
+
+
+
+username){
+if(!this.userPool){return Promise.reject('No userPool');}
+if(!username){return Promise.reject('Username cannot be empty');}
+
+var user=new CognitoUser({
+Username:username,
+Pool:this.userPool});
+
+return new Promise(function(resolve,reject){
+user.forgotPassword({
+onSuccess:function onSuccess(){resolve();},
+onFailure:function onFailure(err){
+logger.error(err);
+reject(err);
+},
+inputVerificationCode:function inputVerificationCode(data){
+resolve(data);
+}});
+
+});
+}},{key:'forgotPasswordSubmit',value:function forgotPasswordSubmit(
+
+
+
+
+
+
+
+
+username,code,password){
+if(!this.userPool){return Promise.reject('No userPool');}
+if(!username){return Promise.reject('Username cannot be empty');}
+if(!code){return Promise.reject('Code cannot be empty');}
+if(!password){return Promise.reject('Password cannot be empty');}
+
+var user=new CognitoUser({
+Username:username,
+Pool:this.userPool});
+
+return new Promise(function(resolve,reject){
+user.confirmPassword(code,password,{
+onSuccess:function onSuccess(){resolve();},
+onFailure:function onFailure(err){reject(err);}});
+
+});
+}},{key:'verifyCurrentUserAttribute',value:function verifyCurrentUserAttribute(
+
+
+
+
+
+
+attr){
+var _auth=this;
+return _auth.currentAuthenticatedUser().
+then(function(user){return _auth.verifyUserAttribute(user,attr);});
+}},{key:'verifyCurrentUserAttributeSubmit',value:function verifyCurrentUserAttributeSubmit(
+
+
+
+
+
+
+
+attr,code){
+if(!code){return Promise.reject('Code cannot be empty');}
+
+var _auth=this;
+return _auth.currentAuthenticatedUser().
+then(function(user){return _auth.verifyUserAttributeSubmit(user,attr,code);});
+}},{key:'currentUserInfo',value:function currentUserInfo(){var user,_ref,_ref2,attributes,credentials,info;return regeneratorRuntime.async(function currentUserInfo$(_context){while(1){switch(_context.prev=_context.next){case 0:_context.next=2;return regeneratorRuntime.awrap(
+
+
+
+
+
+
+
+this.currentAuthenticatedUser().
+catch(function(err){return logger.debug(err);}));case 2:user=_context.sent;if(
+user){_context.next=5;break;}return _context.abrupt('return',null);case 5:_context.next=7;return regeneratorRuntime.awrap(
+
+Promise.all([
+this.userAttributes(user),
+this.currentUserCredentials()]).
+catch(function(err){
+logger.debug('currentUserInfo error',err);
+return[{},{}];
+}));case 7:_ref=_context.sent;_ref2=_slicedToArray(_ref,2);attributes=_ref2[0];credentials=_ref2[1];
+
+info={
+username:user.username,
+id:credentials.identityId,
+email:attributes.email,
+phone_number:attributes.phone_number};
+
+logger.debug('user info',info);return _context.abrupt('return',
+info);case 14:case'end':return _context.stop();}}},null,this);}},{key:'noSessionCredentials',value:function noSessionCredentials()
+
+
+
+
+
+{
+var credentials=new CognitoIdentityCredentials({
+IdentityPoolId:this._config.identityPoolId},
+{
+region:this._config.region});
+
+
+credentials.params.IdentityId=null;
+return credentials;
+}},{key:'sessionToCredentials',value:function sessionToCredentials(
+
+
+
+
+
+
+session){
+var idToken=session.getIdToken().getJwtToken();var _config3=
+this._config,region=_config3.region,userPoolId=_config3.userPoolId,identityPoolId=_config3.identityPoolId;
+var key='cognito-idp.'+region+'.amazonaws.com/'+userPoolId;
+var logins={};
+logins[key]=idToken;
+return new CognitoIdentityCredentials({
+IdentityPoolId:identityPoolId,
+Logins:logins},
+{
+region:this._config.region});
+
+}},{key:'essentialCredentials',value:function essentialCredentials(
+
+
+
+
+
+
+credentials){
+return{
+accessKeyId:credentials.accessKeyId,
+sessionToken:credentials.sessionToken,
+secretAccessKey:credentials.secretAccessKey,
+identityId:credentials.identityId,
+authenticated:credentials.authenticated};
+
+}},{key:'_attributesToObject',value:function _attributesToObject(
+
+
+
+
+attributes){
+var obj={};
+attributes.map(function(attr){
+obj[attr.Name]=attr.Value==='false'?false:attr.Value;
+});
+return obj;
+}}]);return AuthClass;}();exports.default=
+
+
+AuthClass;

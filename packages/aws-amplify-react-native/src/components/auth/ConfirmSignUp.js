@@ -12,14 +12,14 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, Button, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, TouchableHighlight } from 'react-native';
 
 import Auth from '../../Auth';
 import I18n from '../../I18n';
 import { ConsoleLogger as Logger } from '../../Common';
 
 import AmplifyTheme from '../AmplifyTheme';
-import { Username, ConfirmationCode, LinkCell, Header, ErrorRow } from '../AmplifyUI';
+import { Username, ConfirmationCode, LinkCell, Header, ErrorRow, Button } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('SignIn');
@@ -90,11 +90,13 @@ export default class ConfirmSignUp extends AuthPiece {
                         onChangeText={(text) => this.setState({ code: text })}
                     />
                     <Button
+                        theme={theme}
                         title={I18n.get('Confirm')}
                         onPress={this.confirm}
                         disabled={!this.state.username || !this.state.code}
                     />
                     <Button
+                        theme={theme}
                         title={I18n.get('Resend a Code')}
                         onPress={this.resend}
                         disabled={!this.state.username}

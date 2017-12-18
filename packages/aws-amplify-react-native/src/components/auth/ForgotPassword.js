@@ -12,14 +12,14 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, Button, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, TouchableHighlight } from 'react-native';
 
 import Auth from '../../Auth';
 import I18n from '../../I18n';
 import { ConsoleLogger as Logger } from '../../Common';
 
 import AmplifyTheme from '../AmplifyTheme';
-import { Username, Password, ConfirmationCode, LinkCell, Header, ErrorRow } from '../AmplifyUI';
+import { Username, Password, ConfirmationCode, LinkCell, Header, ErrorRow, Button } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('ForgotPassword');
@@ -78,6 +78,7 @@ export default class ForgotPassword extends AuthPiece {
                     onChangeText={(text) => this.setState({ username: text })}
                 />
                 <Button
+                    theme={theme}
                     title="Send Code"
                     style={theme.button}
                     onPress={this.send}
@@ -100,6 +101,7 @@ export default class ForgotPassword extends AuthPiece {
                     onChangeText={(text) => this.setState({ password: text })}
                 />
                 <Button
+                    theme={theme}
                     title={I18n.get('Submit')}
                     style={theme.button}
                     onPress={this.submit}

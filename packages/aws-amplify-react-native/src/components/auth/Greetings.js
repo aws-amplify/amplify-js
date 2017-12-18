@@ -12,13 +12,14 @@
  */
 
 import React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text } from 'react-native';
 
 import Auth from '../../Auth';
 import I18n from '../../I18n';
 import { ConsoleLogger as Logger } from '../../Common';
 
 import AmplifyTheme from '../AmplifyTheme';
+import { Button } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('Greetings');
@@ -47,6 +48,7 @@ export default class Greetings extends AuthPiece {
             <View style={theme.navRight}>
                 <Text>{greeting}</Text>
                 <Button
+                    theme={theme}
                     title={I18n.get('Sign Out')}
                     style={theme.navButton}
                     onPress={this.signOut}

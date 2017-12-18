@@ -12,7 +12,8 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, TouchableHighlight, TouchableNativeFeedback, TouchableOpacity } from 'react-native';
+import Platform from 'Platform'
 
 import I18n from '../I18n';
 
@@ -106,5 +107,21 @@ export const ErrorRow = (props) => {
         <View style={theme.errorRow}>
             <Text>{props.children}</Text>
         </View>
+    )
+}
+
+export const Button = (props) => {
+    const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
+    const theme = props.theme || AmplifyTheme;
+    return (
+        <Touchable
+           accessibilityComponentType='button'
+           disabled={props.disabled}
+           onPress={props.onPress}
+        >
+           <View style={props.disabled ? theme.buttonDisaled : theme.button}>
+              <Text style={props.disabled ? theme.buttonTextDisabled : theme.buttonText} disabled={props.disabled}>{props.title}</Text>
+           </View>
+         </Touchable>
     )
 }

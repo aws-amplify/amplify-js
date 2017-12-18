@@ -1,37 +1,37 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+Object.defineProperty(exports,"__esModule",{value:true});exports.Constants=exports.JS=exports.Hub=exports.ClientDevice=undefined;
 
-import { AWS } from './Facet';
-import { ConsoleLogger as Logger } from './Logger';
 
-export * from './Facet';
-export { default as ClientDevice } from './ClientDevice';
-export * from './Logger';
-export { default as Hub } from './Hub';
-export { default as JS } from './JS';
 
-export const Constants = {
-    userAgent: 'aws-amplify/1.0.0'
+
+
+
+
+
+
+
+
+
+var _Facet=require('./Facet');
+
+
+Object.keys(_Facet).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _Facet[key];}});});var _ClientDevice=require('./ClientDevice');Object.defineProperty(exports,'ClientDevice',{enumerable:true,get:function get(){return _interopRequireDefault(_ClientDevice).
+default;}});var _Logger=require('./Logger');
+Object.keys(_Logger).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _Logger[key];}});});var _Hub=require('./Hub');Object.defineProperty(exports,'Hub',{enumerable:true,get:function get(){return _interopRequireDefault(_Hub).
+default;}});var _JS=require('./JS');Object.defineProperty(exports,'JS',{enumerable:true,get:function get(){return _interopRequireDefault(_JS).
+default;}});function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
+
+var Constants=exports.Constants={
+userAgent:'aws-amplify/1.0.0 react-native'};
+
+
+var logger=new _Logger.ConsoleLogger('Common');
+
+if(_Facet.AWS['util']){
+_Facet.AWS['util'].userAgent=function(){
+return Constants.userAgent;
 };
-
-const logger = new Logger('Common');
-
-if (AWS['util']) {
-    AWS['util'].userAgent = () => {
-        return Constants.userAgent;
-    };
-} else if (AWS.config) {
-    AWS.config.update({ customUserAgent: Constants.userAgent });
-} else {
-    logger.warn('No AWS.config');
+}else if(_Facet.AWS.config){
+_Facet.AWS.config.update({customUserAgent:Constants.userAgent});
+}else{
+logger.warn('No AWS.config');
 }

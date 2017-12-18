@@ -1,22 +1,22 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+Object.defineProperty(exports,"__esModule",{value:true});exports.AmplifyMessageMapEntries=exports.AmplifyTheme=undefined;var _AmplifyTheme=require('./AmplifyTheme');Object.defineProperty(exports,'AmplifyTheme',{enumerable:true,get:function get(){return _interopRequireDefault(_AmplifyTheme).
 
-import I18n from '../I18n';
-import dict from './AmplifyI18n';
 
-export { default as AmplifyTheme } from './AmplifyTheme';
-export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
-export * from './auth';
-export * from './storage';
 
-I18n.putVocabularies(dict);
+
+
+
+
+
+
+
+
+
+
+
+
+default;}});var _AmplifyMessageMap=require('./AmplifyMessageMap');Object.defineProperty(exports,'AmplifyMessageMapEntries',{enumerable:true,get:function get(){return _AmplifyMessageMap.
+MapEntries;}});var _auth=require('./auth');
+Object.keys(_auth).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _auth[key];}});});var _storage=require('./storage');
+Object.keys(_storage).forEach(function(key){if(key==="default"||key==="__esModule")return;Object.defineProperty(exports,key,{enumerable:true,get:function get(){return _storage[key];}});});var _I18n=require('../I18n');var _I18n2=_interopRequireDefault(_I18n);var _AmplifyI18n=require('./AmplifyI18n');var _AmplifyI18n2=_interopRequireDefault(_AmplifyI18n);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
+
+_I18n2.default.putVocabularies(_AmplifyI18n2.default);
