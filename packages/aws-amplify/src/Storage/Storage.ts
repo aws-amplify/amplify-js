@@ -14,13 +14,18 @@
 import {
     AWS,
     S3,
-    ConsoleLogger as Logger
+    ConsoleLogger as Logger,
+    Hub
 } from '../Common';
 
 import Auth from '../Auth';
 import { StorageOptions } from './types';
 
 const logger = new Logger('StorageClass');
+
+const dispatchStorageEvent = (event, data) => {
+    Hub.dispatch('storage', { event, data }, 'Storage');
+};
 
 /**
  * Provide storage methods to use AWS S3
@@ -87,7 +92,13 @@ export default class StorageClass {
         if(download === true) {
             return new Promise<any>((res, rej) => {
                 s3.getObject(params, (err, data) => {
-                    if(err) { rej(err); } else { res(data); }
+                    if(err) {
+                        dispatchStorageEvent('download object failure', err);
+                        rej(err);
+                    } else { 
+                        dispatchStorageEvent('download object', data);
+                        res(data);
+                    }
                 });
             });
         }
@@ -95,9 +106,11 @@ export default class StorageClass {
         return new Promise<string>((res, rej) => {
             try {
                 const url = s3.getSignedUrl('getObject', params);
+                dispatchStorageEvent('get object url', url);
                 res(url);
             } catch (e) {
                 logger.warn('get signed url error', e);
+                dispatchStorageEvent('get object url failure', e);
                 rej(e);
             }
         });
@@ -134,9 +147,11 @@ export default class StorageClass {
             s3.upload(params, (err, data) => {
                 if(err) {
                     logger.warn("error uploading", err);
+                    dispatchStorageEvent('put object failure', err);
                     rej (err);
                 } else {
                     logger.debug('upload result', data);
+                    dispatchStorageEvent('put object', data);
                     res({
                         key: data.Key.substr(prefix.length)
                     });
@@ -171,8 +186,10 @@ export default class StorageClass {
         return new Promise<any>((res, rej) => {
             s3.deleteObject(params, (err,data) => {
                 if(err){
+                    dispatchStorageEvent('delete object failure', err);
                     rej(err);
                 } else {
+                    dispatchStorageEvent('delete object', data);
                     res(data);
                 }
             });
@@ -206,6 +223,7 @@ export default class StorageClass {
             s3.listObjects(params, (err, data) => {
                 if(err) {
                     logger.warn('list error', err);
+                    dispatchStorageEvent('list objects failure', err);
                     rej(err);
                 } else {
                     const list = data.Contents.map(item => {
@@ -216,6 +234,7 @@ export default class StorageClass {
                             size: item.Size
                         };
                     });
+                    dispatchStorageEvent('list objects', data);
                     logger.debug('list', list);
                     res(list);
                 }

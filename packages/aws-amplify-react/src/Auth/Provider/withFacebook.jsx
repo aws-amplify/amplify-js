@@ -26,10 +26,10 @@ export default function withFacebook(Comp) {
 
             fb.getLoginStatus(response => {
                 if (response.status === 'connected') {
-                    this.federatedSignIn(response);
+                    this.federatedSignIn(response.authResponse);
                 } else {
                     fb.login(response => {
-                        this.federatedSignIn(response);
+                        this.federatedSignIn(response.authResponse);
                     }, {scope: 'public_profile,email'});
                 }
             });

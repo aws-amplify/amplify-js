@@ -26,8 +26,10 @@ describe('withFacebook test', () => {
                 }
             }
             const fbResponse = {
-                token: 'token',
-                status: 'connected'
+                status: 'connected',
+                authResponse: {
+                    token: 'token'
+                }
             }
 
             const state = {
@@ -47,7 +49,7 @@ describe('withFacebook test', () => {
 
             comp.signIn();
 
-            expect(spyon).toBeCalledWith(fbResponse);
+            expect(spyon).toBeCalledWith(fbResponse.authResponse);
 
             spyon.mockClear();
         });
@@ -59,13 +61,15 @@ describe('withFacebook test', () => {
                 }
             }
             const fbResponse = {
-                token: null,
+                authResponse: { token: null },
                 status: 'not connected'
             }
 
             const fbResponse2 = {
-                token: 'token',
-                status: 'connected'
+                authResponse: {
+                    authResponse: { token: 'token' },
+                    status: 'connected'
+                }
             }
 
             const state = {
@@ -88,7 +92,7 @@ describe('withFacebook test', () => {
 
             comp.signIn();
 
-            expect(spyon).toBeCalledWith(fbResponse2);
+            expect(spyon).toBeCalledWith(fbResponse2.authResponse);
 
             spyon.mockClear();
         });

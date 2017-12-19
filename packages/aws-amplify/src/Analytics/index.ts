@@ -34,7 +34,7 @@ Analytics.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;
     logger.debug('on hub capsule ' + channel, payload);
 
-    switch(name) {
+    switch(channel) {
         case 'auth':
             authEvent(payload);
             break;
