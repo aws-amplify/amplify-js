@@ -46,9 +46,7 @@ function withAmazon(Comp) {
             _this.signIn = _this.signIn.bind(_this);
             _this.federatedSignIn = _this.federatedSignIn.bind(_this);
 
-            _this.state = {
-                amz: null
-            };
+            _this.state = {};
             return _this;
         }
 
@@ -58,8 +56,7 @@ function withAmazon(Comp) {
                 function signIn() {
                     var _this2 = this;
 
-                    var amz = this.state.amz;
-
+                    var amz = window.amazon;
                     var options = { scope: 'profile' };
                     amz.Login.authorize(options, function (response) {
                         if (response.error) {
@@ -87,8 +84,7 @@ function withAmazon(Comp) {
                         return;
                     }
 
-                    var amz = this.state.amz;
-
+                    var amz = window.amazon;
                     amz.Login.retrieveProfile(function (userInfo) {
                         if (!userInfo.success) {
                             logger.debug('Get user Info failed');
@@ -141,7 +137,6 @@ function withAmazon(Comp) {
                     var amazon_client_id = this.props.amazon_client_id;
 
                     var amz = window.amazon;
-                    this.setState({ amz: amz });
                     amz.Login.setClientId(amazon_client_id);
                 }
 
@@ -151,8 +146,7 @@ function withAmazon(Comp) {
             key: 'render',
             value: function () {
                 function render() {
-                    var amz = this.state.amz;
-
+                    var amz = window.amazon;
                     return _react2['default'].createElement(Comp, _extends({}, this.props, { amz: amz, amazonSignIn: this.signIn }));
                 }
 

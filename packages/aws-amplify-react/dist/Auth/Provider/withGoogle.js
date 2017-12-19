@@ -46,9 +46,7 @@ function withGoogle(Comp) {
             _this.signIn = _this.signIn.bind(_this);
             _this.federatedSignIn = _this.federatedSignIn.bind(_this);
 
-            _this.state = {
-                ga: null
-            };
+            _this.state = {};
             return _this;
         }
 
@@ -58,8 +56,7 @@ function withGoogle(Comp) {
                 function signIn() {
                     var _this2 = this;
 
-                    var ga = this.state.ga;
-
+                    var ga = window.gapi.auth2.getAuthInstance();
                     ga.signIn().then(function (googleUser) {
                         return _this2.federatedSignIn(googleUser);
                     });
@@ -128,8 +125,6 @@ function withGoogle(Comp) {
                         g.auth2.init({
                             client_id: google_client_id,
                             scope: 'profile email openid'
-                        }).then(function (ga) {
-                            that.setState({ ga: ga });
                         });
                     });
                 }
@@ -140,8 +135,7 @@ function withGoogle(Comp) {
             key: 'render',
             value: function () {
                 function render() {
-                    var ga = this.state.ga;
-
+                    var ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
                     return _react2['default'].createElement(Comp, _extends({}, this.props, { ga: ga, googleSignIn: this.signIn }));
                 }
 

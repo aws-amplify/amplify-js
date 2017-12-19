@@ -114,7 +114,8 @@ var S3Album = function (_Component) {
                 var _props = this.props,
                     onPick = _props.onPick,
                     onLoad = _props.onLoad,
-                    onError = _props.onError;
+                    onError = _props.onError,
+                    track = _props.track;
 
 
                 if (onPick) {
@@ -128,7 +129,7 @@ var S3Album = function (_Component) {
                     type = data.type;
 
                 var key = path + this.getKey(data);
-                _awsAmplify.Storage.put(key, file, { contentType: type }).then(function (data) {
+                _awsAmplify.Storage.put(key, file, { contentType: type, track: track }).then(function (data) {
                     logger.debug('handle pick data', data);
                     var items = _this2.state.items;
 

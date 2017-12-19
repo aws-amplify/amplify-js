@@ -50,8 +50,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
 var Auth_1 = require("../Auth");
 var logger = new Common_1.ConsoleLogger('StorageClass');
-var dispatchStorageEvent = function (event, data) {
-    Common_1.Hub.dispatch('storage', { event: event, data: data }, 'Storage');
+var dispatchStorageEvent = function (track, event, data) {
+    if (track) {
+        Common_1.Hub.dispatch('storage', { event: event, data: data }, 'Storage');
+    }
 };
 /**
  * Provide storage methods to use AWS S3
@@ -93,7 +95,7 @@ var StorageClass = /** @class */ (function () {
     */
     StorageClass.prototype.get = function (key, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, opt, bucket, region, credentials, level, download, prefix, final_key, s3, params;
+            var credentialsOK, opt, bucket, region, credentials, level, download, track, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._ensureCredentials()];
@@ -103,7 +105,7 @@ var StorageClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.reject('No credentials')];
                         }
                         opt = Object.assign({}, this._options, options);
-                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, download = opt.download;
+                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, download = opt.download, track = opt.track;
                         prefix = this._prefix(opt);
                         final_key = prefix + key;
                         s3 = this._createS3(opt);
@@ -116,11 +118,11 @@ var StorageClass = /** @class */ (function () {
                             return [2 /*return*/, new Promise(function (res, rej) {
                                     s3.getObject(params, function (err, data) {
                                         if (err) {
-                                            dispatchStorageEvent('download object failure', err);
+                                            dispatchStorageEvent(track, 'download object failure', err);
                                             rej(err);
                                         }
                                         else {
-                                            dispatchStorageEvent('download object', data);
+                                            dispatchStorageEvent(track, 'download object', data);
                                             res(data);
                                         }
                                     });
@@ -129,12 +131,12 @@ var StorageClass = /** @class */ (function () {
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 try {
                                     var url = s3.getSignedUrl('getObject', params);
-                                    dispatchStorageEvent('get object url', url);
+                                    dispatchStorageEvent(track, 'get object url', url);
                                     res(url);
                                 }
                                 catch (e) {
                                     logger.warn('get signed url error', e);
-                                    dispatchStorageEvent('get object url failure', e);
+                                    dispatchStorageEvent(track, 'get object url failure', e);
                                     rej(e);
                                 }
                             })];
@@ -151,7 +153,7 @@ var StorageClass = /** @class */ (function () {
      */
     StorageClass.prototype.put = function (key, object, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, opt, bucket, region, credentials, contentType, level, type, prefix, final_key, s3, params;
+            var credentialsOK, opt, bucket, region, credentials, contentType, level, track, type, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._ensureCredentials()];
@@ -161,7 +163,7 @@ var StorageClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.reject('No credentials')];
                         }
                         opt = Object.assign({}, this._options, options);
-                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, contentType = opt.contentType, level = opt.level;
+                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, contentType = opt.contentType, level = opt.level, track = opt.track;
                         type = contentType ? contentType : 'binary/octet-stream';
                         prefix = this._prefix(opt);
                         final_key = prefix + key;
@@ -177,12 +179,12 @@ var StorageClass = /** @class */ (function () {
                                 s3.upload(params, function (err, data) {
                                     if (err) {
                                         logger.warn("error uploading", err);
-                                        dispatchStorageEvent('put object failure', err);
+                                        dispatchStorageEvent(track, 'put object failure', err);
                                         rej(err);
                                     }
                                     else {
                                         logger.debug('upload result', data);
-                                        dispatchStorageEvent('put object', data);
+                                        dispatchStorageEvent(track, 'put object', data);
                                         res({
                                             key: data.Key.substr(prefix.length)
                                         });
@@ -201,7 +203,7 @@ var StorageClass = /** @class */ (function () {
      */
     StorageClass.prototype.remove = function (key, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, opt, bucket, region, credentials, level, prefix, final_key, s3, params;
+            var credentialsOK, opt, bucket, region, credentials, level, track, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._ensureCredentials()];
@@ -211,7 +213,7 @@ var StorageClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.reject('No credentials')];
                         }
                         opt = Object.assign({}, this._options, options);
-                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level;
+                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, track = opt.track;
                         prefix = this._prefix(opt);
                         final_key = prefix + key;
                         s3 = this._createS3(opt);
@@ -223,11 +225,11 @@ var StorageClass = /** @class */ (function () {
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 s3.deleteObject(params, function (err, data) {
                                     if (err) {
-                                        dispatchStorageEvent('delete object failure', err);
+                                        dispatchStorageEvent(track, 'delete object failure', err);
                                         rej(err);
                                     }
                                     else {
-                                        dispatchStorageEvent('delete object', data);
+                                        dispatchStorageEvent(track, 'delete object', data);
                                         res(data);
                                     }
                                 });
@@ -244,7 +246,7 @@ var StorageClass = /** @class */ (function () {
      */
     StorageClass.prototype.list = function (path, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, opt, bucket, region, credentials, level, download, prefix, final_path, s3, params;
+            var credentialsOK, opt, bucket, region, credentials, level, download, track, prefix, final_path, s3, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._ensureCredentials()];
@@ -254,7 +256,7 @@ var StorageClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.reject('No credentials')];
                         }
                         opt = Object.assign({}, this._options, options);
-                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, download = opt.download;
+                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, download = opt.download, track = opt.track;
                         prefix = this._prefix(opt);
                         final_path = prefix + path;
                         s3 = this._createS3(opt);
@@ -267,7 +269,7 @@ var StorageClass = /** @class */ (function () {
                                 s3.listObjects(params, function (err, data) {
                                     if (err) {
                                         logger.warn('list error', err);
-                                        dispatchStorageEvent('list objects failure', err);
+                                        dispatchStorageEvent(track, 'list objects failure', err);
                                         rej(err);
                                     }
                                     else {
@@ -279,7 +281,7 @@ var StorageClass = /** @class */ (function () {
                                                 size: item.Size
                                             };
                                         });
-                                        dispatchStorageEvent('list objects', data);
+                                        dispatchStorageEvent(track, 'list objects', data);
                                         logger.debug('list', list);
                                         res(list);
                                     }

@@ -29,7 +29,18 @@ Analytics.onHubCapsule = function (capsule) {
         case 'auth':
             authEvent(payload);
             break;
+        case 'storage':
+            storageEvent(payload);
+            break;
     }
+};
+var storageEvent = function (payload) {
+    var event = payload.event, data = payload.data;
+    if (!event)
+        return;
+    logger.debug('record storage events');
+    logger.debug(event);
+    Analytics.record(event);
 };
 var authEvent = function (payload) {
     var event = payload.event;
@@ -53,4 +64,5 @@ var authEvent = function (payload) {
     }
 };
 Common_1.Hub.listen('auth', Analytics);
+Common_1.Hub.listen('storage', Analytics);
 //# sourceMappingURL=index.js.map

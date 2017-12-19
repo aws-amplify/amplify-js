@@ -47,9 +47,7 @@ function withFacebook(Comp) {
             _this.signIn = _this.signIn.bind(_this);
             _this.federatedSignIn = _this.federatedSignIn.bind(_this);
 
-            _this.state = {
-                fb: null
-            };
+            _this.state = {};
             return _this;
         }
 
@@ -59,8 +57,7 @@ function withFacebook(Comp) {
                 function signIn() {
                     var _this2 = this;
 
-                    var fb = this.state.fb;
-
+                    var fb = window.FB;
 
                     fb.getLoginStatus(function (response) {
                         if (response.status === 'connected') {
@@ -90,8 +87,7 @@ function withFacebook(Comp) {
                         return;
                     }
 
-                    var fb = this.state.fb;
-
+                    var fb = window.FB;
                     fb.api('/me', function (response) {
                         var user = {
                             name: response.name
@@ -144,7 +140,7 @@ function withFacebook(Comp) {
             value: function () {
                 function initFB() {
                     var fb = window.FB;
-                    this.setState({ fb: fb });
+                    logger.debug('FB inited');
                 }
 
                 return initFB;
@@ -168,8 +164,7 @@ function withFacebook(Comp) {
             key: 'render',
             value: function () {
                 function render() {
-                    var fb = this.state.fb;
-
+                    var fb = window.FB;
                     return _react2['default'].createElement(Comp, _extends({}, this.props, { fb: fb, facebookSignIn: this.signIn }));
                 }
 
