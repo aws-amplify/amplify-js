@@ -58,7 +58,7 @@ function dimension() {
 }
 exports.dimension = dimension;
 function browserTimezone() {
-    var tzMatch = /.+\(([A-Z]+)\)/.exec(new Date().toString());
+    var tzMatch = /\(([\w\s]+)\)/.exec(new Date().toString());
     return tzMatch[1] || "";
 }
 function browserType(userAgent) {
