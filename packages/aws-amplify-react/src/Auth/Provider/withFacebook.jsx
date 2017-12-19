@@ -16,13 +16,11 @@ export default function withFacebook(Comp) {
             this.signIn = this.signIn.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
-            this.state = {
-                fb: null
-            }
+            this.state = {};
         }
 
         signIn() {
-            const { fb } = this.state;
+            const fb = window.FB;
 
             fb.getLoginStatus(response => {
                 if (response.status === 'connected') {
@@ -46,7 +44,7 @@ export default function withFacebook(Comp) {
                 return;
             }
             
-            const { fb } = this.state;
+            const fb = window.FB;
             fb.api('/me', response => {
                 const user = {
                     name: response.name
@@ -82,7 +80,7 @@ export default function withFacebook(Comp) {
 
         initFB() {
             const fb = window.FB;
-            this.setState({ fb: fb });
+            logger.debug('FB inited');
         }
 
         createScript() {
@@ -96,7 +94,7 @@ export default function withFacebook(Comp) {
         }
 
         render() {
-            const { fb } = this.state;
+            const fb = window.FB;
             return (
                 <Comp {...this.props} fb={fb} facebookSignIn={this.signIn} />
             )

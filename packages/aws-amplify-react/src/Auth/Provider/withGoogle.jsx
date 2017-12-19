@@ -15,13 +15,11 @@ export default function withGoogle(Comp) {
             this.signIn = this.signIn.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
-            this.state = {
-                ga: null
-            }
+            this.state = {};
         }
 
         signIn() {
-            const { ga } = this.state;
+            const ga = window.gapi.auth2.getAuthInstance();
             ga.signIn()
                 .then(googleUser => this.federatedSignIn(googleUser));
         }
@@ -65,14 +63,12 @@ export default function withGoogle(Comp) {
                 g.auth2.init({
                     client_id: google_client_id,
                     scope: 'profile email openid'
-                }).then(ga => {
-                    that.setState({ ga: ga });
                 });
             });
         }
 
         render() {
-            const { ga } = this.state;
+            const ga = (window.gapi && window.gapi.auth2) ? window.gapi.auth2.getAuthInstance() : null;
             return (
                 <Comp {...this.props} ga={ga} googleSignIn={this.signIn} />
             )

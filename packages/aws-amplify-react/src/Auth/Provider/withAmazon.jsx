@@ -15,13 +15,11 @@ export default function withAmazon(Comp) {
             this.signIn = this.signIn.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
-            this.state = {
-                amz: null
-            }
+            this.state = {};
         }
 
         signIn() {
-            const { amz } = this.state;
+            const amz = window.amazon;
             const options = { scope: 'profile' };
             amz.Login.authorize(options, (response) => {
                 if (response.error) {
@@ -42,7 +40,7 @@ export default function withAmazon(Comp) {
                 return;
             }
 
-            const { amz } = this.state;
+            const amz = window.amazon;
             amz.Login.retrieveProfile((userInfo) => {
                 if (!userInfo.success) {
                     logger.debug('Get user Info failed');
@@ -80,12 +78,11 @@ export default function withAmazon(Comp) {
             logger.debug('init amazon');
             const { amazon_client_id } = this.props;
             const amz = window.amazon;
-            this.setState({ amz });
             amz.Login.setClientId(amazon_client_id);
         }
 
         render() {
-            const { amz } = this.state;
+            const amz = window.amazon;
             return (
                 <Comp {...this.props} amz={amz} amazonSignIn={this.signIn} />
             )
