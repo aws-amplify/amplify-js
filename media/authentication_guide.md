@@ -275,6 +275,7 @@ After setup. Just add `Google client_id`, `Facebook app_id` and/or `Amazon clien
     )
 ```
 
+<<<<<<< HEAD
 #### Federated SignIn
 
 Third party sign in only, without login forms
@@ -292,6 +293,8 @@ import { FederatedSignIn } from 'aws-amplify-react';
     <FederatedSignIn federated={federated} onStateChange={this.handleAuthStateChange} />
 ```
 
+=======
+>>>>>>> upstream/master
 #### Custom federated identity UI
 
 Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle`, `withFacebook`, `withAmazon` if just need a single provider.
