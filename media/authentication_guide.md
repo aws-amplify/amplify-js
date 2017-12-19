@@ -273,22 +273,6 @@ After setup. Just add `Google client_id` and/or `Facebook app_id` to `Authentica
     )
 ```
 
-#### Federated SignIn
-
-Third party sign in only, without login forms
-```jsx
-import { FederatedSignIn } from 'aws-amplify-react';
-
-...
-
-    const federated = {
-        google_client_id: '',
-        facebook_app_id: ''
-    };
-
-    <FederatedSignIn federated={federated} onStateChange={this.handleAuthStateChange} />
-```
-
 #### Custom federated identity UI
 
 Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle` and `withFacebook` if just need a single provider.
