@@ -23,8 +23,10 @@ import { StorageOptions } from './types';
 
 const logger = new Logger('StorageClass');
 
-const dispatchStorageEvent = (event, data) => {
-    Hub.dispatch('storage', { event, data }, 'Storage');
+const dispatchStorageEvent = (track, event, data) => {
+    if (track) {
+        Hub.dispatch('storage', { event, data }, 'Storage');
+    }
 };
 
 /**
@@ -77,7 +79,7 @@ export default class StorageClass {
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, level, download } = opt;
+        const { bucket, region, credentials, level, download, track } = opt;
 
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
@@ -93,10 +95,10 @@ export default class StorageClass {
             return new Promise<any>((res, rej) => {
                 s3.getObject(params, (err, data) => {
                     if(err) {
-                        dispatchStorageEvent('download object failure', err);
+                        dispatchStorageEvent(track, 'S3 download object failure', err);
                         rej(err);
                     } else { 
-                        dispatchStorageEvent('download object', data);
+                        dispatchStorageEvent(track, 'S3 download object', data);
                         res(data);
                     }
                 });
@@ -106,11 +108,11 @@ export default class StorageClass {
         return new Promise<string>((res, rej) => {
             try {
                 const url = s3.getSignedUrl('getObject', params);
-                dispatchStorageEvent('get object url', url);
+                dispatchStorageEvent(track, 'S3 get object url', url);
                 res(url);
             } catch (e) {
                 logger.warn('get signed url error', e);
-                dispatchStorageEvent('get object url failure', e);
+                dispatchStorageEvent(track, 'S3 get object url failure', e);
                 rej(e);
             }
         });
@@ -128,7 +130,7 @@ export default class StorageClass {
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, contentType, level } = opt;
+        const { bucket, region, credentials, contentType, level, track } = opt;
         const type = contentType? contentType: 'binary/octet-stream';
 
         const prefix = this._prefix(opt);
@@ -147,11 +149,11 @@ export default class StorageClass {
             s3.upload(params, (err, data) => {
                 if(err) {
                     logger.warn("error uploading", err);
-                    dispatchStorageEvent('put object failure', err);
+                    dispatchStorageEvent(track, 'S3 upload object failure', err);
                     rej (err);
                 } else {
                     logger.debug('upload result', data);
-                    dispatchStorageEvent('put object', data);
+                    dispatchStorageEvent(track, 'S3 upload object', data);
                     res({
                         key: data.Key.substr(prefix.length)
                     });
@@ -170,8 +172,8 @@ export default class StorageClass {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
-        const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, level } = opt;
+        const opt = Object.assign({}, this._options, options, );
+        const { bucket, region, credentials, level, track } = opt;
 
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
@@ -186,10 +188,10 @@ export default class StorageClass {
         return new Promise<any>((res, rej) => {
             s3.deleteObject(params, (err,data) => {
                 if(err){
-                    dispatchStorageEvent('delete object failure', err);
+                    dispatchStorageEvent(track, 'S3 delete object failure', err);
                     rej(err);
                 } else {
-                    dispatchStorageEvent('delete object', data);
+                    dispatchStorageEvent(track, 'S3 delete object', data);
                     res(data);
                 }
             });
@@ -207,7 +209,7 @@ export default class StorageClass {
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, level, download } = opt;
+        const { bucket, region, credentials, level, download, track } = opt;
 
         const prefix = this._prefix(opt);
         const final_path = prefix + path;
@@ -223,7 +225,7 @@ export default class StorageClass {
             s3.listObjects(params, (err, data) => {
                 if(err) {
                     logger.warn('list error', err);
-                    dispatchStorageEvent('list objects failure', err);
+                    dispatchStorageEvent(track, 'S3 list objects failure', err);
                     rej(err);
                 } else {
                     const list = data.Contents.map(item => {
@@ -234,7 +236,7 @@ export default class StorageClass {
                             size: item.Size
                         };
                     });
-                    dispatchStorageEvent('list objects', data);
+                    dispatchStorageEvent(track, 'S3 list objects', data);
                     logger.debug('list', list);
                     res(list);
                 }

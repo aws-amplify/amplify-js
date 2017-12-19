@@ -38,8 +38,20 @@ Analytics.onHubCapsule = (capsule) => {
         case 'auth':
             authEvent(payload);
             break;
+        case 'storage':
+            storageEvent(payload);
+            break;
     }
 };
+
+const storageEvent = (payload) => {
+    const { event, data } = payload;
+    if (!event) return;
+
+    logger.debug('record storage events');
+    logger.debug(event);
+    Analytics.record(event);
+}
 
 const authEvent = (payload) => {
     const { event } = payload;
@@ -63,3 +75,4 @@ const authEvent = (payload) => {
 };
 
 Hub.listen('auth', Analytics);
+Hub.listen('storage', Analytics);
