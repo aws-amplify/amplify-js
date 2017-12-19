@@ -25,7 +25,7 @@ exports.default = Analytics;
 Analytics.onHubCapsule = function (capsule) {
     var channel = capsule.channel, payload = capsule.payload, source = capsule.source;
     logger.debug('on hub capsule ' + channel, payload);
-    switch (name) {
+    switch (channel) {
         case 'auth':
             authEvent(payload);
             break;

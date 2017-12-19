@@ -50,6 +50,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
 var Auth_1 = require("../Auth");
 var logger = new Common_1.ConsoleLogger('StorageClass');
+var dispatchStorageEvent = function (event, data) {
+    Common_1.Hub.dispatch('storage', { event: event, data: data }, 'Storage');
+};
 /**
  * Provide storage methods to use AWS S3
  */
@@ -113,9 +116,11 @@ var StorageClass = /** @class */ (function () {
                             return [2 /*return*/, new Promise(function (res, rej) {
                                     s3.getObject(params, function (err, data) {
                                         if (err) {
+                                            dispatchStorageEvent('download object failure', err);
                                             rej(err);
                                         }
                                         else {
+                                            dispatchStorageEvent('download object', data);
                                             res(data);
                                         }
                                     });
@@ -124,10 +129,12 @@ var StorageClass = /** @class */ (function () {
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 try {
                                     var url = s3.getSignedUrl('getObject', params);
+                                    dispatchStorageEvent('get object url', url);
                                     res(url);
                                 }
                                 catch (e) {
                                     logger.warn('get signed url error', e);
+                                    dispatchStorageEvent('get object url failure', e);
                                     rej(e);
                                 }
                             })];
@@ -170,10 +177,12 @@ var StorageClass = /** @class */ (function () {
                                 s3.upload(params, function (err, data) {
                                     if (err) {
                                         logger.warn("error uploading", err);
+                                        dispatchStorageEvent('put object failure', err);
                                         rej(err);
                                     }
                                     else {
                                         logger.debug('upload result', data);
+                                        dispatchStorageEvent('put object', data);
                                         res({
                                             key: data.Key.substr(prefix.length)
                                         });
@@ -214,9 +223,11 @@ var StorageClass = /** @class */ (function () {
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 s3.deleteObject(params, function (err, data) {
                                     if (err) {
+                                        dispatchStorageEvent('delete object failure', err);
                                         rej(err);
                                     }
                                     else {
+                                        dispatchStorageEvent('delete object', data);
                                         res(data);
                                     }
                                 });
@@ -256,6 +267,7 @@ var StorageClass = /** @class */ (function () {
                                 s3.listObjects(params, function (err, data) {
                                     if (err) {
                                         logger.warn('list error', err);
+                                        dispatchStorageEvent('list objects failure', err);
                                         rej(err);
                                     }
                                     else {
@@ -267,6 +279,7 @@ var StorageClass = /** @class */ (function () {
                                                 size: item.Size
                                             };
                                         });
+                                        dispatchStorageEvent('list objects', data);
                                         logger.debug('list', list);
                                         res(list);
                                     }

@@ -64,10 +64,10 @@ function withFacebook(Comp) {
 
                     fb.getLoginStatus(function (response) {
                         if (response.status === 'connected') {
-                            _this2.federatedSignIn(response);
+                            _this2.federatedSignIn(response.authResponse);
                         } else {
                             fb.login(function (response) {
-                                _this2.federatedSignIn(response);
+                                _this2.federatedSignIn(response.authResponse);
                             }, { scope: 'public_profile,email' });
                         }
                     });
