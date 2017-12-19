@@ -36,8 +36,8 @@ export default class S3Image extends Component {
         this.state = { src: initSrc };
     }
 
-    getImageSource(key, level) {
-        Storage.get(key, { level: level? level : 'public' })
+    getImageSource(key, level, track) {
+        Storage.get(key, { level: level? level : 'public', track })
             .then(url => {
                 this.setState({
                     src: url
@@ -47,7 +47,7 @@ export default class S3Image extends Component {
     }
 
     load() {
-        const { imgKey, path, body, contentType, level } = this.props;
+        const { imgKey, path, body, contentType, level, track } = this.props;
         if (!imgKey && !path) {
             logger.debug('empty imgKey and path');
             return ;
@@ -60,15 +60,16 @@ export default class S3Image extends Component {
             const type = contentType || 'binary/octet-stream';
             const ret = Storage.put(key, body, {
                 contentType: type,
-                level: level? level : 'public'
+                level: level? level : 'public',
+                track
             });
             ret.then(data => {
                 logger.debug(data);
-                that.getImageSource(key, level);
+                that.getImageSource(key, level, track);
             })
             .catch(err => logger.debug(err));
         } else {
-            that.getImageSource(key, level);
+            that.getImageSource(key, level, track);
         }
     }
 
@@ -86,10 +87,10 @@ export default class S3Image extends Component {
         const that = this;
 
         const path = this.props.path || '';
-        const { imgKey, level, fileToKey } = this.props;
+        const { imgKey, level, fileToKey, track } = this.props;
         const { file, name, size, type } = data;
         const key = imgKey || (path + calcKey(data, fileToKey));
-        Storage.put(key, file, { contentType: type })
+        Storage.put(key, file, { contentType: type, track })
             .then(data => {
                 logger.debug('handle pick data', data);
                 that.getImageSource(key, level);
