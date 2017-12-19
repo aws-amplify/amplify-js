@@ -7,6 +7,7 @@ import { Auth } from 'aws-amplify';
 describe('withGoogle test', () => {
     describe('render test', () => {
         test('render correctly', () => {
+            window.gapi = null;
             const MockComp = class extends Component {
                 render() {
                     return <div />;
@@ -26,22 +27,27 @@ describe('withGoogle test', () => {
                 }
             }
 
-            const state = {
-                ga: {
-                    signIn() {
-                        return new Promise((res, rej) => {
-                            res('googleUser');
-                        });
+            
+            window.gapi = {
+                auth2: {
+                    getAuthInstance() {
+                        return {
+                            signIn() {
+                                return new Promise((res, rej) => {
+                                    res('googleUser');
+                                });
+                            }
+                        }
                     }
                 }
             }
+            
 
             const Comp = withGoogle(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
             const spyon = jest.spyOn(comp, 'federatedSignIn').mockImplementationOnce(() => { return; });
-            comp.setState(state);
 
             await comp.signIn();
 
@@ -154,6 +160,15 @@ describe('withGoogle test', () => {
                         return new Promise((res, rej) => {
                             res('ga');
                         });
+                    },
+                    getAuthInstance() {
+                        return {
+                            signIn() {
+                                return new Promise((res, rej) => {
+                                    res('googleUser');
+                                });
+                            }
+                        }
                     }
                 }
             };
@@ -163,7 +178,6 @@ describe('withGoogle test', () => {
             const comp = wrapper.instance();
 
             await comp.initGapi();
-            expect(wrapper.state('ga')).toBe('ga');
         });
     });
 });
@@ -171,6 +185,7 @@ describe('withGoogle test', () => {
 describe('GoogleButton test', () => {
     describe('render test', () => {
         test('render correctly', () => {
+            window.gapi = null;
             const wrapper = shallow(<GoogleButton/>);
 
             expect(wrapper).toMatchSnapshot();

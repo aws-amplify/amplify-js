@@ -3,13 +3,13 @@
 exports[`FacebookButton test render test render correctly 1`] = `
 <Button
   facebookSignIn={[Function]}
-  fb={null}
+  fb="fb"
 />
 `;
 
 exports[`withFacebook test render test render correctly 1`] = `
 <MockComp
   facebookSignIn={[Function]}
-  fb={null}
+  fb="fb"
 />
 `;

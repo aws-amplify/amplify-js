@@ -3,13 +3,13 @@
 exports[`AmazonButton test render test render correctly 1`] = `
 <Button
   amazonSignIn={[Function]}
-  amz={null}
+  amz="amz"
 />
 `;
 
 exports[`withAmazon test render test render correctly 1`] = `
 <MockComp
   amazonSignIn={[Function]}
-  amz={null}
+  amz="amz"
 />
 `;

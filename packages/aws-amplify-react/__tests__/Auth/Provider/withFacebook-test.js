@@ -12,6 +12,7 @@ describe('withFacebook test', () => {
                     return <div />;
                 }
             }
+            window.FB = 'fb';
             const Comp = withFacebook(MockComp);
             const wrapper = shallow(<Comp/>);
             expect(wrapper).toMatchSnapshot();
@@ -32,20 +33,19 @@ describe('withFacebook test', () => {
                 }
             }
 
-            const state = {
-                fb: {
-                    getLoginStatus(callback) {
-                        callback(fbResponse);
-                    }
+   
+            window.FB =  {
+                getLoginStatus(callback) {
+                    callback(fbResponse);
                 }
             }
+            
 
             const Comp = withFacebook(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
             const spyon = jest.spyOn(comp, 'federatedSignIn').mockImplementationOnce(() => { return; });
-            comp.setState(state);
 
             comp.signIn();
 
@@ -72,23 +72,22 @@ describe('withFacebook test', () => {
                 }
             }
 
-            const state = {
-                fb: {
-                    getLoginStatus(callback) {
-                        callback(fbResponse);
-                    },
-                    login(callback, option) {
-                        callback(fbResponse2);
-                    }
+            
+            window.FB = {
+                getLoginStatus(callback) {
+                    callback(fbResponse);
+                },
+                login(callback, option) {
+                    callback(fbResponse2);
                 }
             }
+            
 
             const Comp = withFacebook(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
             const spyon = jest.spyOn(comp, 'federatedSignIn').mockImplementationOnce(() => { return; });
-            comp.setState(state);
 
             comp.signIn();
 
@@ -109,13 +108,12 @@ describe('withFacebook test', () => {
                 name: 'username'
             }
 
-            const state = {
-                fb: {
+            window.FB = {
                     api(path, callback) {
                         callback(fbResponse);
                     }
                 }
-            }
+            
 
             const Comp = withFacebook(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -127,8 +125,6 @@ describe('withFacebook test', () => {
                 });
             });
             const spyon2 = jest.spyOn(Date.prototype, 'getTime').mockReturnValue(0);
-
-            wrapper.setState(state);
 
             await comp.federatedSignIn({
                 accessToken: 'accessToken',
@@ -151,13 +147,12 @@ describe('withFacebook test', () => {
                 name: 'username'
             }
 
-            const state = {
-                fb: {
-                    api(path, callback) {
-                        callback(fbResponse);
-                    }
+            window.FB = {
+                api(path, callback) {
+                    callback(fbResponse);
                 }
             }
+            
             const mockFn = jest.fn();
 
             const Comp = withFacebook(MockComp);
@@ -171,7 +166,6 @@ describe('withFacebook test', () => {
             });
             const spyon2 = jest.spyOn(Date.prototype, 'getTime').mockReturnValue(0);
 
-            wrapper.setState(state);
             wrapper.setProps({
                 onStateChange: mockFn
             });
@@ -197,13 +191,13 @@ describe('withFacebook test', () => {
             const fbResponse = {
                 name: 'username'
             }
-            const state = {
-                fb: {
-                    api(path, callback) {
-                        callback(fbResponse);
-                    }
+
+            window.FB = {
+                api(path, callback) {
+                    callback(fbResponse);
                 }
             }
+            
 
             const Comp = withFacebook(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -214,8 +208,6 @@ describe('withFacebook test', () => {
                     res('credentials');
                 });
             });
-            
-            wrapper.setState(state);
 
             await comp.federatedSignIn({
                 accessToken: null,
@@ -254,32 +246,14 @@ describe('withFacebook test', () => {
             expect(mockFn2).toBeCalled();
         });
     });
-
-    describe('initFB test', () => {
-        test('happy case', () => {
-            const MockComp = class extends Component {
-                render() {
-                    return <div />;
-                }
-            }
-
-            window.FB = 'fb';
-            
-            const Comp = withFacebook(MockComp);
-            const wrapper = shallow(<Comp/>);
-            const comp = wrapper.instance();
-
-            comp.initFB();
-            expect(wrapper.state('fb')).toBe('fb');
-        });
-    });
 });
 
 describe('FacebookButton test', () => {
     describe('render test', () => {
         test('render correctly', () => {
+            window.FB = 'fb';
             const wrapper = shallow(<FacebookButton/>);
-
+            
             expect(wrapper).toMatchSnapshot();
         });
     });

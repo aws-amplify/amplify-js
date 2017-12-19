@@ -7,6 +7,7 @@ import { Auth, Logger } from 'aws-amplify';
 describe('withAmazon test', () => {
     describe('render test', () => {
         test('render correctly', () => {
+            window.amazon = 'amz';
             const MockComp = class extends Component {
                 render() {
                     return <div />;
@@ -25,23 +26,20 @@ describe('withAmazon test', () => {
                     return <div />;
                 }
             }
-
-            const state = {
-                amz: {
-                    Login: {
-                        authorize(options, callback) {
-                            callback('response');
-                        }
+            
+            window.amazon = {
+                Login: {
+                    authorize(options, callback) {
+                        callback('response');
                     }
                 }
             }
-
+            
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
             const spyon = jest.spyOn(comp, 'federatedSignIn').mockImplementationOnce(() => { return; });
-            comp.setState(state);
 
             await comp.signIn();
 
@@ -57,21 +55,19 @@ describe('withAmazon test', () => {
                 }
             }
 
-            const state = {
-                amz: {
-                    Login: {
-                        authorize(options, callback) {
-                            callback({ error: 'error' });
-                        }
+            window.amazon = {
+                Login: {
+                    authorize(options, callback) {
+                        callback({ error: 'error' });
                     }
                 }
             }
+        
             const spyon = jest.spyOn(Logger.prototype, 'debug');
 
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
-            comp.setState(state);
 
             await comp.signIn();
             expect(spyon).toBeCalledWith('Failed to login with amazon: error');
@@ -91,23 +87,22 @@ describe('withAmazon test', () => {
                 expires_in: 0
             };
 
-            const state = {
-                amz: {
-                    Login: {
-                        retrieveProfile(callback) {
-                            callback({
-                                success: true,
-                                profile: {Name: 'name'}
-                            });
-                        }
+            
+            window.amazon = {
+                Login: {
+                    retrieveProfile(callback) {
+                        callback({
+                            success: true,
+                            profile: {Name: 'name'}
+                        });
                     }
                 }
-            };
+            }
+            
 
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
-            comp.setState(state);
 
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
                 return new Promise((res, rej) => {
@@ -138,18 +133,17 @@ describe('withAmazon test', () => {
                 expires_in: 0
             };
 
-            const state = {
-                amz: {
-                    Login: {
-                        retrieveProfile(callback) {
-                            callback({
-                                success: true,
-                                profile: {Name: 'name'}
-                            });
-                        }
+            window.amazon = {
+                Login: {
+                    retrieveProfile(callback) {
+                        callback({
+                            success: true,
+                            profile: {Name: 'name'}
+                        });
                     }
                 }
-            };
+            }
+            
 
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
@@ -157,7 +151,6 @@ describe('withAmazon test', () => {
             wrapper.setProps({
                 onStateChange: mockFn
             });
-            comp.setState(state);
 
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
                 return new Promise((res, rej) => {
@@ -215,23 +208,21 @@ describe('withAmazon test', () => {
                 expires_in: 0
             };
 
-            const state = {
-                amz: {
-                    Login: {
-                        retrieveProfile(callback) {
-                            callback({
-                                success: false,
-                                profile: {Name: 'name'}
-                            });
-                        }
+            
+            window.amazon = {
+                Login: {
+                    retrieveProfile(callback) {
+                        callback({
+                            success: false,
+                            profile: {Name: 'name'}
+                        });
                     }
                 }
-            };
+            }
 
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
-            comp.setState(state);
 
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
                 return new Promise((res, rej) => {
@@ -271,7 +262,6 @@ describe('withAmazon test', () => {
             wrapper.setProps(props);
 
             await comp.initAmazon();
-            expect(wrapper.state('amz')).toEqual(window.amazon);
             expect(mockFn).toBeCalledWith('amazon_client_id');
         });
     });
@@ -280,6 +270,7 @@ describe('withAmazon test', () => {
 describe('AmazonButton test', () => {
     describe('render test', () => {
         test('render correctly', () => {
+            window.amazon = 'amz';
             const wrapper = shallow(<AmazonButton/>);
 
             expect(wrapper).toMatchSnapshot();
