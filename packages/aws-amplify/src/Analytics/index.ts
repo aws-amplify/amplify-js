@@ -51,7 +51,7 @@ const storageEvent = (payload) => {
     logger.debug('record storage events');
     logger.debug(event);
     Analytics.record(event);
-}
+};
 
 const authEvent = (payload) => {
     const { event } = payload;
