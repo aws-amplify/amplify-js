@@ -23,9 +23,9 @@ import { StorageOptions } from './types';
 
 const logger = new Logger('StorageClass');
 
-const dispatchStorageEvent = (track, event, data) => {
+const dispatchStorageEvent = (track, attrs, metrics) => {
     if (track) {
-        Hub.dispatch('storage', { event, data }, 'Storage');
+        Hub.dispatch('storage', { attrs, metrics }, 'Storage');
     }
 };
 
@@ -95,10 +95,16 @@ export default class StorageClass {
             return new Promise<any>((res, rej) => {
                 s3.getObject(params, (err, data) => {
                     if(err) {
-                        dispatchStorageEvent(track, 'S3 download object failure', err);
+                        dispatchStorageEvent(
+                            track, 
+                            { method: 'get', result: 'failed' }, 
+                            null);
                         rej(err);
-                    } else { 
-                        dispatchStorageEvent(track, 'S3 download object', data);
+                    } else {
+                        dispatchStorageEvent(
+                            track, 
+                            { method: 'get', result: 'success' }, 
+                            { fileSize: Number(data.Body['length'])});
                         res(data);
                     }
                 });
@@ -108,11 +114,17 @@ export default class StorageClass {
         return new Promise<string>((res, rej) => {
             try {
                 const url = s3.getSignedUrl('getObject', params);
-                dispatchStorageEvent(track, 'S3 get object url', url);
+                dispatchStorageEvent(
+                    track, 
+                    { method: 'get', result: 'success' }, 
+                    null);
                 res(url);
             } catch (e) {
                 logger.warn('get signed url error', e);
-                dispatchStorageEvent(track, 'S3 get object url failure', e);
+                dispatchStorageEvent(
+                    track, 
+                    { method: 'get', result: 'failed' }, 
+                    null);
                 rej(e);
             }
         });
@@ -149,11 +161,17 @@ export default class StorageClass {
             s3.upload(params, (err, data) => {
                 if(err) {
                     logger.warn("error uploading", err);
-                    dispatchStorageEvent(track, 'S3 upload object failure', err);
+                    dispatchStorageEvent(
+                        track, 
+                        { method: 'put', result: 'failed' },
+                        null);
                     rej (err);
                 } else {
                     logger.debug('upload result', data);
-                    dispatchStorageEvent(track, 'S3 upload object', data);
+                    dispatchStorageEvent(
+                        track, 
+                        { method: 'put', result: 'success' },
+                        null);
                     res({
                         key: data.Key.substr(prefix.length)
                     });
@@ -188,10 +206,16 @@ export default class StorageClass {
         return new Promise<any>((res, rej) => {
             s3.deleteObject(params, (err,data) => {
                 if(err){
-                    dispatchStorageEvent(track, 'S3 delete object failure', err);
+                    dispatchStorageEvent(
+                        track, 
+                        { method: 'remove', result: 'failed' },
+                        null);
                     rej(err);
                 } else {
-                    dispatchStorageEvent(track, 'S3 delete object', data);
+                    dispatchStorageEvent(
+                        track,
+                        { method: 'remove', result: 'success' },
+                        null);
                     res(data);
                 }
             });
@@ -225,7 +249,10 @@ export default class StorageClass {
             s3.listObjects(params, (err, data) => {
                 if(err) {
                     logger.warn('list error', err);
-                    dispatchStorageEvent(track, 'S3 list objects failure', err);
+                    dispatchStorageEvent(
+                        track, 
+                        { method: 'list', result: 'failed' }, 
+                        null);
                     rej(err);
                 } else {
                     const list = data.Contents.map(item => {
@@ -236,7 +263,10 @@ export default class StorageClass {
                             size: item.Size
                         };
                     });
-                    dispatchStorageEvent(track, 'S3 list objects', data);
+                    dispatchStorageEvent(
+                        track, 
+                        { method: 'list', result: 'success' }, 
+                        null);
                     logger.debug('list', list);
                     res(list);
                 }

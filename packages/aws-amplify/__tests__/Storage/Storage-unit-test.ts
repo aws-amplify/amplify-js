@@ -147,14 +147,14 @@ describe('Storage', () => {
             expect.assertions(3);
             expect(await storage.get('key', { downloaded: false, track: true })).toBe('url');
             expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "public/key"});
-            expect(spyon2).toBeCalledWith('storage', {data: 'url', event: 'S3 get object url'}, 'Storage');
+            expect(spyon2).toBeCalledWith('storage', {attrs: {"method": "get", "result": "success"}, metrics: null}, 'Storage');
 
             spyon.mockClear();
             curCredSpyOn.mockClear();
             spyon2.mockClear();
         });
 
-        test('get object with download with success', async() => {
+        test('get object with download successfully', async() => {
             const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
@@ -164,10 +164,12 @@ describe('Storage', () => {
 
             const options_with_download = Object.assign({}, options, {download: true});
             const storage = new Storage(options_with_download);
-            const spyon = jest.spyOn(S3.prototype, 'getObject');
+            const spyon = jest.spyOn(S3.prototype, 'getObject').mockImplementationOnce((params, callback) => {
+                callback(null, { Body: [1,2] });
+            });
 
             expect.assertions(2);
-            expect(await storage.get('key', {})).toBe('data');
+            expect(await storage.get('key', {})).toEqual({Body: [1,2]});
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": "bucket", "Key": "public/key"});
 
             spyon.mockClear();
@@ -317,7 +319,7 @@ describe('Storage', () => {
                 "ContentType": "binary/octet-stream", 
                 "Key": "public/key"
             });
-            expect(spyon2).toBeCalledWith('storage', {data: {Key: 'public/path/itemsKey'}, event: 'S3 upload object'}, 'Storage');
+            expect(spyon2).toBeCalledWith('storage', {attrs: {"method": "put", "result": "success"}, metrics: null}, 'Storage');
 
             spyon.mockClear();
             curCredSpyOn.mockClear();
@@ -430,7 +432,7 @@ describe('Storage', () => {
             expect.assertions(3);
             expect(await storage.remove('key', {track: true})).toBe('data');
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": "bucket", "Key": "public/key"});
-            expect(spyon2).toBeCalledWith('storage', {data: 'data', event: 'S3 delete object'}, 'Storage');
+            expect(spyon2).toBeCalledWith('storage', {attrs: {"method": "remove", "result": "success"}, metrics: null}, 'Storage');
 
             spyon.mockClear();
             curCredSpyOn.mockClear();
@@ -549,9 +551,9 @@ describe('Storage', () => {
                 "size": "size"
                 }]);
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": 'bucket', "Prefix": "public/path"});
-            expect(spyon2).toBeCalledWith('storage', 
-                {data: {Contents: [{"ETag": "etag", "Key": "public/path/itemsKey", "LastModified": "lastmodified", "Size": "size"}]}, 
-                event: 'S3 list objects'}, 'Storage');
+            expect(spyon2).toBeCalledWith(
+                'storage', 
+                {attrs: {"method": "list", "result": "success"}, metrics: null}, 'Storage');
 
             spyon.mockClear();
             curCredSpyOn.mockClear();

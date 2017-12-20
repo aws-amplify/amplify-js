@@ -45,12 +45,12 @@ Analytics.onHubCapsule = (capsule) => {
 };
 
 const storageEvent = (payload) => {
-    const { event, data } = payload;
-    if (!event) return;
+    const { attrs, metrics } = payload;
+    if (!attrs) return;
 
     logger.debug('record storage events');
-    logger.debug(event);
-    Analytics.record(event);
+    logger.debug(payload);
+    Analytics.record('Storage', attrs, metrics);
 };
 
 const authEvent = (payload) => {
