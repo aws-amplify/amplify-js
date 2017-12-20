@@ -16,7 +16,8 @@ import {
     AMA,
     ClientDevice,
     ConsoleLogger as Logger,
-    missingConfig
+    missingConfig,
+    MobileAnalytics
 } from '../Common';
 
 import Auth from '../Auth';
