@@ -95,6 +95,45 @@ describe('withFacebook test', () => {
 
             spyon.mockClear();
         });
+
+        test('return if pop up window closed', () => {
+            const MockComp = class extends Component {
+                render() {
+                    return <div />;
+                }
+            }
+            const fbResponse = {
+                authResponse: { token: null },
+                status: 'not connected'
+            }
+
+            const fbResponse2 = {
+                authResponse: null
+            }
+
+            
+            window.FB = {
+                getLoginStatus(callback) {
+                    callback(fbResponse);
+                },
+                login(callback, option) {
+                    callback(fbResponse2);
+                }
+            }
+            
+
+            const Comp = withFacebook(MockComp);
+            const wrapper = shallow(<Comp/>);
+            const comp = wrapper.instance();
+
+            const spyon = jest.spyOn(comp, 'federatedSignIn').mockImplementationOnce(() => { return; });
+
+            comp.signIn();
+
+            expect(spyon).not.toBeCalled();
+
+            spyon.mockClear();
+        });
     });
 
     describe('federatedSignIn', () => {
