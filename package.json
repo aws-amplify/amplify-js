@@ -10,6 +10,10 @@
     "format": "lerna run -- format",
     "lint": "lerna run -- lint"
   },
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-amplify.git"
@@ -23,9 +27,11 @@
   "devDependencies": {
     "@types/jest": "^20.0.7",
     "@types/node": "^8.0.24",
+    "codecov": "^1.0.1",
     "jest": "^21.x",
     "json-loader": "^0.5.7",
     "lerna": "^2.4.0",
+    "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2",
     "source-map-loader": "^0.2.1",
     "ts-jest": "^20.0.10",
@@ -34,8 +40,7 @@
     "typescript": "^2.4.2",
     "typescript-formatter": "^6.0.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.5.5",
-    "codecov": "^1.0.1"
+    "webpack": "^3.5.5"
   },
   "jest": {
     "transform": {

@@ -140,9 +140,9 @@ export default class S3Album extends Component {
     }
 
     list() {
-        const { path, level } = this.props;
+        const { path, level, track } = this.props;
         logger.debug('Album path: ' + path);
-        return Storage.list(path, { level: level? level : 'public' })
+        return Storage.list(path, { level: level? level : 'public', track })
             .then(data => {
                 logger.debug('album list', data);
                 this.marshal(data);
