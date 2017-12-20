@@ -35,12 +35,12 @@ Analytics.onHubCapsule = function (capsule) {
     }
 };
 var storageEvent = function (payload) {
-    var event = payload.event, data = payload.data;
-    if (!event)
+    var attrs = payload.attrs, metrics = payload.metrics;
+    if (!attrs)
         return;
     logger.debug('record storage events');
-    logger.debug(event);
-    Analytics.record(event);
+    logger.debug(payload);
+    Analytics.record('Storage', attrs, metrics);
 };
 var authEvent = function (payload) {
     var event = payload.event;
