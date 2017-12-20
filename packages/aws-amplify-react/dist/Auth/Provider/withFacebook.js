@@ -64,6 +64,9 @@ function withFacebook(Comp) {
                             _this2.federatedSignIn(response.authResponse);
                         } else {
                             fb.login(function (response) {
+                                if (!response || !response.authResponse) {
+                                    return;
+                                }
                                 _this2.federatedSignIn(response.authResponse);
                             }, { scope: 'public_profile,email' });
                         }
@@ -182,8 +185,7 @@ var Button = function Button(props) {
         {
             id: 'facebook_signin_btn',
             onClick: props.facebookSignIn,
-            theme: props.theme || _AmplifyTheme2['default'],
-            disabled: !props.fb
+            theme: props.theme || _AmplifyTheme2['default']
         },
         'Sign In with Facebook'
     );

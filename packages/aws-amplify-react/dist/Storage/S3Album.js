@@ -235,10 +235,11 @@ var S3Album = function (_Component) {
 
                 var _props3 = this.props,
                     path = _props3.path,
-                    level = _props3.level;
+                    level = _props3.level,
+                    track = _props3.track;
 
                 logger.debug('Album path: ' + path);
-                return _awsAmplify.Storage.list(path, { level: level ? level : 'public' }).then(function (data) {
+                return _awsAmplify.Storage.list(path, { level: level ? level : 'public', track: track }).then(function (data) {
                     logger.debug('album list', data);
                     _this3.marshal(data);
                 })['catch'](function (err) {
