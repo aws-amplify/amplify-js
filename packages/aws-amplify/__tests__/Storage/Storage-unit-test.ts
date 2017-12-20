@@ -548,7 +548,7 @@ describe('Storage', () => {
                 "lastModified": "lastmodified",
                 "size": "size"
                 }]);
-            expect(spyon.mock.calls[0][0]).toEqual({"Bucket": 'bucket', "Prefix": "public/path"});
+            expect(spyon.mock.calls[0][0]).toEqual({"Bucket2": 'bucket', "Prefix": "public/path"});
             expect(spyon2).toBeCalledWith('storage', 
                 {data: {Contents: [{"ETag": "etag", "Key": "public/path/itemsKey", "LastModified": "lastmodified", "Size": "size"}]}, 
                 event: 'S3 list objects'}, 'Storage');
