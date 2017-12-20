@@ -47,9 +47,7 @@ function withFacebook(Comp) {
             _this.signIn = _this.signIn.bind(_this);
             _this.federatedSignIn = _this.federatedSignIn.bind(_this);
 
-            _this.state = {
-                fb: null
-            };
+            _this.state = {};
             return _this;
         }
 
@@ -59,15 +57,17 @@ function withFacebook(Comp) {
                 function signIn() {
                     var _this2 = this;
 
-                    var fb = this.state.fb;
-
+                    var fb = window.FB;
 
                     fb.getLoginStatus(function (response) {
                         if (response.status === 'connected') {
-                            _this2.federatedSignIn(response);
+                            _this2.federatedSignIn(response.authResponse);
                         } else {
                             fb.login(function (response) {
-                                _this2.federatedSignIn(response);
+                                if (!response || !response.authResponse) {
+                                    return;
+                                }
+                                _this2.federatedSignIn(response.authResponse);
                             }, { scope: 'public_profile,email' });
                         }
                     });
@@ -81,20 +81,22 @@ function withFacebook(Comp) {
                 function federatedSignIn(response) {
                     logger.debug(response);
                     var onStateChange = this.props.onStateChange;
-                    var accessToken = response.accessToken;
+                    var accessToken = response.accessToken,
+                        expiresIn = response.expiresIn;
 
+                    var date = new Date();
+                    var expires_at = expiresIn * 1000 + date.getTime();
                     if (!accessToken) {
                         return;
                     }
 
-                    var fb = this.state.fb;
-
+                    var fb = window.FB;
                     fb.api('/me', function (response) {
                         var user = {
                             name: response.name
                         };
 
-                        _awsAmplify.Auth.federatedSignIn('facebook', accessToken, user).then(function (crednetials) {
+                        _awsAmplify.Auth.federatedSignIn('facebook', { token: accessToken, expires_at: expires_at }, user).then(function (crednetials) {
                             if (onStateChange) {
                                 onStateChange('signedIn');
                             }
@@ -141,7 +143,7 @@ function withFacebook(Comp) {
             value: function () {
                 function initFB() {
                     var fb = window.FB;
-                    this.setState({ fb: fb });
+                    logger.debug('FB inited');
                 }
 
                 return initFB;
@@ -165,8 +167,7 @@ function withFacebook(Comp) {
             key: 'render',
             value: function () {
                 function render() {
-                    var fb = this.state.fb;
-
+                    var fb = window.FB;
                     return _react2['default'].createElement(Comp, _extends({}, this.props, { fb: fb, facebookSignIn: this.signIn }));
                 }
 
@@ -184,8 +185,7 @@ var Button = function Button(props) {
         {
             id: 'facebook_signin_btn',
             onClick: props.facebookSignIn,
-            theme: props.theme || _AmplifyTheme2['default'],
-            disabled: !props.fb
+            theme: props.theme || _AmplifyTheme2['default']
         },
         'Sign In with Facebook'
     );

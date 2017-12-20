@@ -83,6 +83,27 @@ var FederatedButtons = exports.FederatedButtons = function (_Component) {
             return facebook;
         }()
     }, {
+        key: 'amazon',
+        value: function () {
+            function amazon(amazon_client_id) {
+                if (!amazon_client_id) {
+                    return null;
+                }
+
+                var _props3 = this.props,
+                    theme = _props3.theme,
+                    onStateChange = _props3.onStateChange;
+
+                return _react2['default'].createElement(_Provider.AmazonButton, {
+                    amazon_client_id: amazon_client_id,
+                    theme: theme,
+                    onStateChange: onStateChange
+                });
+            }
+
+            return amazon;
+        }()
+    }, {
         key: 'render',
         value: function () {
             function render() {
@@ -98,7 +119,8 @@ var FederatedButtons = exports.FederatedButtons = function (_Component) {
                 }
 
                 var google_client_id = federated.google_client_id,
-                    facebook_app_id = federated.facebook_app_id;
+                    facebook_app_id = federated.facebook_app_id,
+                    amazon_client_id = federated.amazon_client_id;
 
 
                 var theme = this.props.theme || _AmplifyTheme2['default'];
@@ -106,7 +128,8 @@ var FederatedButtons = exports.FederatedButtons = function (_Component) {
                     _AmplifyUI.ActionRow,
                     { theme: theme },
                     this.google(google_client_id),
-                    this.facebook(facebook_app_id)
+                    this.facebook(facebook_app_id),
+                    this.amazon(amazon_client_id)
                 );
             }
 
@@ -130,14 +153,14 @@ var FederatedSignIn = function (_Component2) {
         key: 'render',
         value: function () {
             function render() {
-                var _props3 = this.props,
-                    federated = _props3.federated,
-                    authState = _props3.authState,
-                    onStateChange = _props3.onStateChange;
+                var _props4 = this.props,
+                    federated = _props4.federated,
+                    authState = _props4.authState,
+                    onStateChange = _props4.onStateChange;
 
                 if (!federated) {
                     logger.debug('federated prop is empty. show nothing');
-                    logger.debug('federated={google_client_id: , facebook_app_id: }');
+                    logger.debug('federated={google_client_id: , facebook_app_id: , amazon_client_id}');
                     return null;
                 }
                 if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) {

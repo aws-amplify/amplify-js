@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Picker test render test render correcly 1`] = `
+<div
+  style={
+    Object {
+      "position": "relative",
+      "textAlign": "center",
+      "width": "100%",
+    }
+  }
+>
+  <button
+    style={
+      Object {
+        "background": "#fff",
+        "border": "1px solid #ccc",
+        "fontSize": "1.2em",
+        "fontWeight": "200",
+        "height": "3em",
+        "textAlign": "center",
+        "width": "100%",
+      }
+    }
+  >
+    Pick a File
+  </button>
+  <input
+    accept="*/*"
+    onChange={[Function]}
+    style={
+      Object {
+        "cursor": "pointer",
+        "display": "inline-block",
+        "height": "100%",
+        "left": 0,
+        "opacity": 0,
+        "position": "absolute",
+        "top": 0,
+        "width": "100%",
+      }
+    }
+    title="Pick a File"
+    type="file"
+  />
+</div>
+`;

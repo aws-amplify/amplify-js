@@ -16,20 +16,21 @@ export default function withFacebook(Comp) {
             this.signIn = this.signIn.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
-            this.state = {
-                fb: null
-            }
+            this.state = {};
         }
 
         signIn() {
-            const { fb } = this.state;
+            const fb = window.FB;
 
             fb.getLoginStatus(response => {
                 if (response.status === 'connected') {
-                    this.federatedSignIn(response);
+                    this.federatedSignIn(response.authResponse);
                 } else {
                     fb.login(response => {
-                        this.federatedSignIn(response);
+                        if (!response || !response.authResponse) {
+                            return;
+                        }
+                        this.federatedSignIn(response.authResponse);
                     }, {scope: 'public_profile,email'});
                 }
             });
@@ -39,18 +40,20 @@ export default function withFacebook(Comp) {
             logger.debug(response);
             const { onStateChange } = this.props;
 
-            const { accessToken } = response;
+            const { accessToken, expiresIn } = response;
+            const date = new Date();
+            const expires_at = expiresIn * 1000 + date.getTime();
             if (!accessToken) {
                 return;
             }
             
-            const { fb } = this.state;
+            const fb = window.FB;
             fb.api('/me', response => {
                 const user = {
                     name: response.name
                 }
 
-                Auth.federatedSignIn('facebook', accessToken, user)
+                Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
                     .then(crednetials => {
                         if (onStateChange) {
                             onStateChange('signedIn');
@@ -80,7 +83,7 @@ export default function withFacebook(Comp) {
 
         initFB() {
             const fb = window.FB;
-            this.setState({ fb: fb });
+            logger.debug('FB inited');
         }
 
         createScript() {
@@ -94,7 +97,7 @@ export default function withFacebook(Comp) {
         }
 
         render() {
-            const { fb } = this.state;
+            const fb = window.FB;
             return (
                 <Comp {...this.props} fb={fb} facebookSignIn={this.signIn} />
             )
@@ -107,7 +110,6 @@ const Button = (props) => (
         id="facebook_signin_btn"
         onClick={props.facebookSignIn}
         theme={props.theme || AmplifyTheme}
-        disabled={!props.fb}
     >
         Sign In with Facebook
     </SignInButton>

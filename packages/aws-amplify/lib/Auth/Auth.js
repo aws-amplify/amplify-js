@@ -58,7 +58,7 @@ var dispatchAuthEvent = function (event, data) {
 /**
 * Provide authentication steps
 */
-var AuthClass = (function () {
+var AuthClass = /** @class */ (function () {
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -634,10 +634,11 @@ var AuthClass = (function () {
             });
         });
     };
-    AuthClass.prototype.federatedSignIn = function (provider, token, user) {
+    AuthClass.prototype.federatedSignIn = function (provider, response, user) {
+        var token = response.token, expires_at = response.expires_at;
         this.setCredentialsFromFederation(provider, token, user);
         // store it into localstorage
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user });
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1 });
         dispatchAuthEvent('signIn', this.user);
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();
@@ -666,11 +667,12 @@ var AuthClass = (function () {
     AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
         var domains = {
             'google': 'accounts.google.com',
-            'facebook': 'graph.facebook.com'
+            'facebook': 'graph.facebook.com',
+            'amazon': 'www.amazon.com'
         };
         var domain = domains[provider];
         if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook]');
+            return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
         }
         var logins = {};
         logins[domain] = token;
