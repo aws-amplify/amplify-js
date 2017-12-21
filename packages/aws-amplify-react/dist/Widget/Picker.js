@@ -110,7 +110,7 @@ var Picker = function (_Component) {
 
                 var theme = this.props.theme || _AmplifyTheme2['default'];
                 var pickerStyle = Object.assign({}, PickerPicker, theme.pickerPicker);
-                var buttonStyle = Object.assign({}, PickerButton, theme.pickerButton);
+                var buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
                 var inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
 
                 return _react2['default'].createElement(

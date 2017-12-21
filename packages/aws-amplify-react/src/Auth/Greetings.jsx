@@ -80,7 +80,7 @@ export default class Greetings extends AuthPiece {
     }
 
     inGreeting(name) { return 'Hello ' + name; }
-    outGreeting() { return 'Please Sign In / Sign Up'; }
+    outGreeting() { return ''; }
 
     userGreetings(theme) {
         const user = this.state.authData;
@@ -101,7 +101,7 @@ export default class Greetings extends AuthPiece {
     noUserGreetings(theme) {
         const greeting = this.props.outGreeting || this.outGreeting;
         const message = (typeof greeting === 'function')? greeting() : greeting;
-        return <NavItem theme={theme}>{message}</NavItem>
+        return message? <NavItem theme={theme}>{message}</NavItem> : null;
     }
 
     render() {
@@ -112,11 +112,14 @@ export default class Greetings extends AuthPiece {
         const signedIn = (authState === 'signedIn');
 
         const theme = this.props.theme || AmplifyTheme;
+        const greeting = signedIn? this.userGreetings(theme) : this.noUserGreetings(theme);
+        if (!greeting) { return null; }
+
         return (
             <NavBar theme={theme}>
                 <Nav theme={theme}>
                     <NavRight theme={theme}>
-                        {signedIn? this.userGreetings(theme) : this.noUserGreetings(theme)}
+                        {greeting}
                     </NavRight>
                 </Nav>
             </NavBar>
