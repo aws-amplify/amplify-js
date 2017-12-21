@@ -125,7 +125,7 @@ This will gate the entire application inside an Authentication UI. Only signed i
 
 <img src="sign_in.png" width="320px"/>
 
-For more about Authenticator, click [here](../packages/aws-amplify-react/media/authenticator.md)
+For more about Authenticator, click [here](authentication_guide.md)
 
 ## React Native Development
 

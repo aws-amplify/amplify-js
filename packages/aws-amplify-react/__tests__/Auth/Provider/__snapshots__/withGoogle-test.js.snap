@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GoogleButton test render test render correctly 1`] = `
+<Button
+  ga={null}
+  googleSignIn={[Function]}
+/>
+`;
+
+exports[`withGoogle test render test render correctly 1`] = `
+<MockComp
+  ga={null}
+  googleSignIn={[Function]}
+/>
+`;
