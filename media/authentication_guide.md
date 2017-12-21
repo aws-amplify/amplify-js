@@ -106,7 +106,7 @@ Auth.forgotPasswordSubmit(username, code, new_password)
 
 ### 2. withAuthenticator HOC
 
-For React app, then simpliest way to add Auth flows into your app is to use `withAuthenticator`.
+For React app, then simplest way to add Auth flows into your app is to use `withAuthenticator`.
 
 Just add these two lines to your `App.js`:
 
@@ -356,4 +356,4 @@ const map = (message) => {
 <Authenticator errorMessage={map} />
 ```
 
-You may notice in `AmplifyMessageMap.js` it also handles intenationalization. The topic is covered in [I18n Guide](i18n_guide.md)
+You may notice in `AmplifyMessageMap.js` it also handles internationalization. The topic is covered in [I18n Guide](i18n_guide.md)
