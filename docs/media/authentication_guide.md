@@ -128,7 +128,7 @@ Auth.signOut()
 
 ### 2. withAuthenticator HOC
 
-For React app, then simplest way to add Auth flows into your app is to use `withAuthenticator`.
+For React apps, the simplest way to add Auth flows into your app is to use `withAuthenticator`.
 
 Just add these two lines to your `App.js`
 
