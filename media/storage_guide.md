@@ -116,7 +116,7 @@ Storage.vault.get('welcome.png'); // Get the welcome.png belonging to current us
 
 ## Tracking
 
-You can track users' behavior by setting ```track``` to ```true``` when calling the API. (Note: this option is now only supported in aws-amplify).
+You can enable automatic tracking of events by setting ```track``` to ```true``` when calling the API. (Note: this option is currently only supported in aws-amplify). Enabling this will automatically send 'Storage' events to Amazon Pinpoint and you will be able to see them within the AWS Pinpoint console under Custom Events. The event name will be 'Storage' and within the attributes will be details about the operations that occurred. For example Storage -> method -> put etc.
 
 For example:
 
@@ -131,6 +131,8 @@ Track specified storage api:
 ```js
 Storage.get('welcome.png', { track: true });
 ```
+
+You can also use the track property directly on [React components](#analytics-for-s3-components).
 
 
 ## Call APIs
@@ -372,9 +374,10 @@ function fileToKey(data) {
 
 ### Analytics for S3 components
 
-You can track ```Storage``` operations in those components: ```S3Album```, ```S3Text```, ```S3Image``` by providing a ```track``` prop:
+You can automatically track ```Storage``` operations on the following React components: ```S3Album```, ```S3Text```, ```S3Image``` by providing a ```track``` prop:
 
 ```jsx
 return <S3Album track/>
 ```
 
+Enabling this will automatically send 'Storage' events to Amazon Pinpoint and you will be able to see them within the AWS Pinpoint console under Custom Events. The event name will be 'Storage' and within the attributes will be details about the operations that occurred. For example Storage -> method -> put etc.
