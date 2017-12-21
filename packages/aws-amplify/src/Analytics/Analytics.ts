@@ -40,6 +40,7 @@ export default class AnalyticsClass {
     private _buffer;
 
     private mobileAnalytics;
+    private _sessionId;
 
     /**
      * Initialize Analtyics
@@ -55,13 +56,13 @@ export default class AnalyticsClass {
             if (window.localStorage) {
                 let endpointId = window.localStorage.getItem('amplify_endpoint_id');
                 if (!endpointId) {
-                    endpointId = this._generateEndpointId();
+                    endpointId = this._generateRandomString()
                     window.localStorage.setItem('amplify_endpoint_id', endpointId);
                 }
                 this._config.endpointId = endpointId;
             }
             else {
-                this._config.endpointId = this._generateEndpointId();
+                this._config.endpointId = this._generateRandomString();
             }
         }
 
@@ -92,18 +93,64 @@ export default class AnalyticsClass {
      * Record Session start
      */
     async startSession() {
-        if (this.amaClient) {
-            this.amaClient.startSession();
-        }
+        logger.debug('record session start');
+        const sessionId = this._generateRandomString();
+        this._sessionId = sessionId;
+
+        const clientContext = this._generateClientContext();
+        const params = {
+            clientContext,
+            events: [
+                {
+                    eventType: '_session.start',
+                    timestamp: new Date().toISOString(),
+                    'session': {
+                        'id': sessionId,
+                        'startTimestamp': new Date().toISOString()
+                    }
+                }
+            ]
+        };
+        this.mobileAnalytics.putEvents(params, (err, data) => {
+            if (err) {
+                logger.debug('record event failed. ' + err);
+            }
+            else {
+                logger.debug('record event success. ');
+                logger.debug(data);
+            }
+        });
     }
 
     /**
      * Record Session stop
      */
     async stopSession() {
-        if (this.amaClient) {
-            this.amaClient.stopSession();
-        }
+        logger.debug('record session stop');
+        const sessionId = this._sessionId ? this._sessionId : this._generateRandomString();
+        const clientContext = this._generateClientContext();
+        const params = {
+            clientContext,
+            events: [
+                {
+                    eventType: '_session.stop',
+                    timestamp: new Date().toISOString(),
+                    'session': {
+                        'id': sessionId,
+                        'startTimestamp': new Date().toISOString()
+                    }
+                }
+            ]
+        };
+        this.mobileAnalytics.putEvents(params, (err, data) => {
+            if (err) {
+                logger.debug('record event failed. ' + err);
+            }
+            else {
+                logger.debug('record event success. ');
+                logger.debug(data);
+            }
+        });
     }
 
     /**
@@ -127,22 +174,10 @@ export default class AnalyticsClass {
     */
     async record(name: string, attributes?: EventAttributes, metrics?: EventMetrics) {
         logger.debug('record event ' + name);
-
-        // this.amaClient.recordEvent(name, attributes, metrics);
-        const { endpointId, appId } = this._config;
-        const clientContext = {
-            client: {
-                client_id: endpointId
-            },
-            services: {
-                mobile_analytics: {
-                    app_id: appId
-                }
-            }
-        };
-        const contextStr = JSON.stringify(clientContext);
+        
+        const clientContext = this._generateClientContext();
         const params = {
-            clientContext: contextStr,
+            clientContext,
             events: [
                 {
                     eventType: name,
@@ -157,7 +192,8 @@ export default class AnalyticsClass {
                 logger.debug('record event failed. ' + err);
             }
             else {
-                logger.debug('record event success. ' + data);
+                logger.debug('record event success. ');
+                logger.debug(data);
             }
         });
     }
@@ -168,11 +204,26 @@ export default class AnalyticsClass {
     * @param {Object} [attributes] - Attributes of the event
     * @param {Object} [metrics] - Event metrics
     */
-    async recordMonetization(name, attributes?: EventAttributes, metrics?: EventMetrics) {
-        this.amaClient.recordMonetizationEvent(name, attributes, metrics);
+    // async recordMonetization(name, attributes?: EventAttributes, metrics?: EventMetrics) {
+    //     this.amaClient.recordMonetizationEvent(name, attributes, metrics);
+    // }
+
+    _generateClientContext() {
+        const { endpointId, appId } = this._config;
+        const clientContext = {
+            client: {
+                client_id: endpointId
+            },
+            services: {
+                mobile_analytics: {
+                    app_id: appId
+                }
+            }
+        };
+        return JSON.stringify(clientContext);
     }
 
-    _generateEndpointId() {
+    _generateRandomString() {
         let result = '';
         const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     	for (let i = 32; i > 0; i -= 1) {
@@ -217,8 +268,8 @@ export default class AnalyticsClass {
     }
 
     _initMobileAnalytics() {
-        const { credentials, region } = this._config;
-        this.mobileAnalytics = new MobileAnalytics({ credentials, region });
+        const { credentials, region, endpointId } = this._config;
+        this.mobileAnalytics = new MobileAnalytics({ credentials, region, logger, endpoint: endpointId });
     }
 
 
