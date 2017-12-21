@@ -8,6 +8,7 @@ export default class AnalyticsClass {
     private pinpointClient;
     private _buffer;
     private mobileAnalytics;
+    private _sessionId;
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
@@ -40,8 +41,8 @@ export default class AnalyticsClass {
     * @param {Object} [attributes] - Attributes of the event
     * @param {Object} [metrics] - Event metrics
     */
-    recordMonetization(name: any, attributes?: EventAttributes, metrics?: EventMetrics): Promise<void>;
-    _generateEndpointId(): string;
+    _generateClientContext(): string;
+    _generateRandomString(): string;
     _checkConfig(): boolean;
     _ensureCredentials(): any;
     _initClients(): Promise<boolean>;
