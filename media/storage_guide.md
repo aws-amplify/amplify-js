@@ -13,7 +13,7 @@ AWS Amplify Storage module gives a simple mechanism for managing user content in
   - [S3Image](#s3image)
   - [S3Text](#s3text)
   - [S3Album](#s3album)
-
+  - [Analytics for S3 components](#analytics-for-s3-components)
 
 ## Installation and Configuration
 
@@ -113,6 +113,25 @@ There is also a shortcut `vault`, which is merely a Storage instance with `priva
 ```js
 Storage.vault.get('welcome.png'); // Get the welcome.png belonging to current user
 ```
+
+## Tracking
+
+You can track users' behavior by setting ```track``` to ```true``` when calling the API. (Note: this option is now only supported in aws-amplify).
+
+For example:
+
+Track all the storage apis:
+
+```js
+Storage.configure({ track: true })
+``` 
+
+Track specified storage api:
+
+```js
+Storage.get('welcome.png', { track: true });
+```
+
 
 ## Call APIs
 
@@ -350,3 +369,12 @@ function fileToKey(data) {
 ```
 
 `S3Album` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
+
+### Analytics for S3 components
+
+You can track ```Storage``` operations in those components: ```S3Album```, ```S3Text```, ```S3Image``` by providing a ```track``` prop:
+
+```jsx
+return <S3Album track/>
+```
+
