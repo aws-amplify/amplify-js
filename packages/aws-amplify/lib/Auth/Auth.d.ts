@@ -18,8 +18,8 @@ export default class AuthClass {
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String} username - The username to be signed up
      * @param {String} password - The password of the user
-     * @param {Object} attr - Other signup attributes or email(for backward compatibility)
-     * @param {String} phone_number -
+     * @param {Object} attr - Other signup attributes or email
+     * @param {String} phone_number - the phone number of the user(to be used when email is string)
      * @return - A promise resolves callback data if success
      */
     signUp(username: string, password: string, attrs?: string | Object, phone_number?: string): Promise<any>;
