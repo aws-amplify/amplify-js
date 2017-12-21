@@ -106,7 +106,7 @@ import { Analytics } from 'aws-amplify';
 ...
 ```
 
-This will record an **appRender** event everytime user opens app.
+This will record an **appRender** event every time user opens app.
 
 For more about Analytics, click [here](analytics_guide.md)
 
@@ -146,7 +146,7 @@ $ cd myProject
 $ npm start
 ```
 
-Note: project name is in camalCase to avoid problems when testing on a physical iOS phone.
+Note: project name is in camelCase to avoid problems when testing on a physical iOS phone.
 
 **Install AWS Amplify**
 
