@@ -47,7 +47,7 @@ function getItemSize(value: string): number {
     const currTime: Date = new Date();
     const ret: CacheItem = {
         key: defaultConfig.keyPrefix + 'a',
-        data: JSON.stringify(value),
+        data: value,
         timestamp: currTime.getTime(),
         visitedTime: currTime.getTime(),
         priority: 5,
@@ -286,53 +286,6 @@ describe('BrowserStorageCache', () => {
                     expect(cache.getItem(i.toString())).not.toBeNull();
                 }
             }
-            cache.clear();
-            dateSpy.mockRestore();
-        });
-
-        test('wipe out expired items when cache is full and after that cache still has no enough room for the item',() => {
-            let key : string = 'a';
-            const dateSpy = jest.spyOn(Date.prototype, 'getTime');
-            let keysPoped : string[] = [];
-            let bigItem : string = '';
-            for (let i = 0; i < item_max_size - 200; i++) {
-                bigItem += 'a';
-            }
-            let itemToBeExpired : number = maxItemNum - 1;
-
-            for (let i = 0; i < maxItemNum; i++) {
-                key = i.toString();
-                dateSpy.mockImplementation(() => {
-                    return 1434319925275 + i;
-                });
-                if (i < itemsNeedToPop) {
-                    keysPoped.push(key);
-                }
-
-                if (i == itemToBeExpired) {
-                    cache.setItem(key, regularItem, {expires: 1434319925276, priority: 5});
-                }
-                else {
-                    cache.setItem(key, regularItem);
-                }
-            }
-
-            dateSpy.mockImplementation(() => {
-                return 1434319925275 + maxItemNum;
-            });
-
-            key = maxItemNum.toString();
-            cache.setItem(key, bigItem);
-
-            for (let i = 0; i <= maxItemNum; i++) {
-                if (i < keysPoped.length  || i === itemToBeExpired) {
-                    expect(cache.getItem(i.toString())).toBeNull();
-                }
-                else {
-                    expect(cache.getItem(i.toString())).not.toBeNull();
-                }
-            }
-           
             cache.clear();
             dateSpy.mockRestore();
         });

@@ -13,7 +13,7 @@ restClient.get('...')
 </pre>
 */
 export declare class RestClient {
-    _options: any;
+    private _options;
     /**
     * @param {RestClientOptions} [options] - Instance options
     */
@@ -77,6 +77,6 @@ export declare class RestClient {
     endpoint(apiName: string): string;
     /** private methods **/
     private _signed(params, credentials);
-    private _unsigned(params);
+    private _request(params);
     private _parseUrl(url);
 }

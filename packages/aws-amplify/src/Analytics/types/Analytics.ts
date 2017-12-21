@@ -23,11 +23,11 @@ export interface AnalyticsOptions {
 }
 
 export interface EventAttributes {
-    [key: string]: any
+    [key: string]: any;
 }
 
 export interface EventMetrics {
-    [key: string]: number
+    [key: string]: number;
 }
 
 export enum SessionState {

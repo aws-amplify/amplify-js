@@ -7,10 +7,6 @@ export interface SignUpParams {
     SignupAttributes?: Object;
 }
 /**
-* Third Party Auth providers
-*/
-export declare const ThirdPartyProvider: object;
-/**
 * Auth instance options
 */
 export interface AuthOptions {

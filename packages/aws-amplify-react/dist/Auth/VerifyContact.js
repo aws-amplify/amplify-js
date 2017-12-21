@@ -64,19 +64,16 @@ var VerifyContact = function (_AuthPiece) {
             function verify() {
                 var _this2 = this;
 
-                var _inputs = this.inputs,
-                    email = _inputs.email,
-                    phone_number = _inputs.phone_number;
+                var contact = this.inputs.contact;
 
-                if (!email && !phone_number) {
+                if (!contact) {
                     this.error('Neither Email nor Phone Number selected');
                     return;
                 }
 
-                var attr = email ? 'email' : 'phone_number';
-                _awsAmplify.Auth.verifyCurrentUserAttribute(attr).then(function (data) {
+                _awsAmplify.Auth.verifyCurrentUserAttribute(contact).then(function (data) {
                     logger.debug(data);
-                    _this2.setState({ verifyAttr: attr });
+                    _this2.setState({ verifyAttr: contact });
                 })['catch'](function (err) {
                     return _this2.error(err);
                 });
@@ -130,14 +127,16 @@ var VerifyContact = function (_AuthPiece) {
                         placeholder: _awsAmplify.I18n.get('Email'),
                         theme: theme,
                         key: 'email',
-                        name: 'email',
+                        name: 'contact',
+                        value: 'email',
                         onChange: this.handleInputChange
                     }) : null,
                     phone_number ? _react2['default'].createElement(_AmplifyUI.RadioRow, {
                         placeholder: _awsAmplify.I18n.get('Phone Number'),
                         theme: theme,
                         key: 'phone_number',
-                        name: 'phone_number',
+                        name: 'contact',
+                        value: 'phone_number',
                         onChange: this.handleInputChange
                     }) : null,
                     _react2['default'].createElement(
@@ -197,16 +196,16 @@ var VerifyContact = function (_AuthPiece) {
                 }
 
                 return _react2['default'].createElement(
-                    'div',
-                    { className: 'amplify-form-section', style: theme.formSection },
+                    _AmplifyUI.FormSection,
+                    { theme: theme },
                     _react2['default'].createElement(
-                        _AmplifyUI.Header,
+                        _AmplifyUI.SectionHeader,
                         { theme: theme },
                         _awsAmplify.I18n.get('Verify Contact')
                     ),
                     _react2['default'].createElement(
-                        'div',
-                        { className: 'amplify-section-body', style: theme.sectionBody },
+                        _AmplifyUI.SectionBody,
+                        { theme: theme },
                         _react2['default'].createElement(
                             _AmplifyUI.MessageRow,
                             { theme: theme },
@@ -215,7 +214,7 @@ var VerifyContact = function (_AuthPiece) {
                         this.state.verifyAttr ? this.submitView() : this.verifyView()
                     ),
                     _react2['default'].createElement(
-                        _AmplifyUI.Footer,
+                        _AmplifyUI.SectionFooter,
                         { theme: theme },
                         _react2['default'].createElement(
                             _AmplifyUI.Link,

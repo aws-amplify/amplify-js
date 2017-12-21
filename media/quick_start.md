@@ -106,7 +106,7 @@ import { Analytics } from 'aws-amplify';
 ...
 ```
 
-This will record an **appRender** event everytime user opens app.
+This will record an **appRender** event every time user opens app.
 
 For more about Analytics, click [here](analytics_guide.md)
 
@@ -125,7 +125,7 @@ This will gate the entire application inside an Authentication UI. Only signed i
 
 <img src="sign_in.png" width="320px"/>
 
-For more about Authenticator, click [here](../packages/aws-amplify-react/media/authenticator.md)
+For more about Authenticator, click [here](authentication_guide.md)
 
 ## React Native Development
 
@@ -146,7 +146,7 @@ $ cd myProject
 $ npm start
 ```
 
-Note: project name is in camalCase to avoid problems when testing on a physical iOS phone.
+Note: project name is in camelCase to avoid problems when testing on a physical iOS phone.
 
 **Install AWS Amplify**
 

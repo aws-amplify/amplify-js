@@ -25,6 +25,8 @@ export { default as SignUp } from './SignUp';
 export { default as ConfirmSignUp } from './ConfirmSignUp';
 export { default as ForgotPassword } from './ForgotPassword';
 export { default as Greetings } from './Greetings';
+export { default as FederatedSignIn, FederatedButtons } from './FederatedSignIn';
+export * from './Provider';
 
 import Greetings from './Greetings';
 

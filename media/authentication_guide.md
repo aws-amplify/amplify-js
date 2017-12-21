@@ -8,11 +8,12 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
 * [Integration](#integration)
   - [1. Call APIs](#1-call-apis)
   - [2. withAuthenticator HOC](#2-withauthenticator-hoc)
-  - [3. Authenticate Component](#3-authenticate-component)
+  - [3. Authenticator Component](#3-authenticator-component)
   - [4. Compose Authenticator](#4-compose-authenticator)
   - [5. Write Your Own Auth UI](#5-write-your-own-auth-ui)
+  - [6. Federated Identity](#6-federated-identity)
 * [Extension](#extension)
-  - [Component Styling](#component-styling)
+  - [UI Theme](#ui-theme)
   - [Error Message](#error-message)
 
 ## Installation and Configuration
@@ -60,7 +61,7 @@ Auth.signIn(username, password)
     .then(user => console.log(user))
     .catch(err => console.log(err));
 
-// If MFA enabled, keep the user object from sign in, and collect confirmation code, then
+// If MFA enabled, keep the user object from sign in, collect confirmation code, and then
 Auth.confirmSignIn(user, code)
     .then(data => console.log(data))
     .catch(err => console.log(err));
@@ -105,7 +106,7 @@ Auth.forgotPasswordSubmit(username, code, new_password)
 
 ### 2. withAuthenticator HOC
 
-For React app, then simpliest way to add Auth flows into your app is to use `withAuthenticator`.
+For React apps, the simplest way to add Auth flows into your app is to use `withAuthenticator`.
 
 Just add these two lines to your `App.js`:
 
@@ -119,6 +120,22 @@ export default withAuthenticator(App);
 
 Now your app is guarded by complete Auth flow. Only signed in user can access the app.
 
+#### Federated Identity
+
+You can enable federated Identity login by specifying federated option.
+
+```js
+const AppWithAuth = withAuthenticator(App);
+
+const federated = {
+    google_client_id: '',
+    facebook_app_id: '',
+    amazon_client_id: ''
+};
+
+ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
+```
+
 #### Sign Out Button
 
 The default `withAuthenticator` renders just the App component after a user is signed in, preventing interference with your app. Then question comes, how does the user sign out?
@@ -126,10 +143,10 @@ The default `withAuthenticator` renders just the App component after a user is s
 To expose this, set the second parameter to true, which means `includeGreetings = true`. It will put a greeting row on top of your app.
 
 ```js
-export default withAuthenticator(App, true);
+export default withAuthenticator(App, { includeGreetings: true });
 ```
 
-### 3. Authenticate Component
+### 3. Authenticator Component
 
 The `withAuthenticator` HOC essentially just wraps `Authenticator` component. You can use the `Authenticator` directly to give yourself more customization options.
 
@@ -239,9 +256,64 @@ render() {
 }
 ```
 
+### 6. Federated Identity
+
+Note: Our federated identity components so far only support Google, Facebook and Amazon, only available for React. Building is in progress.
+
+Setup guide is [here](federated_identity_setup.md).
+
+After setup. Just add `Google client_id`, `Facebook app_id` and/or `Amazon client_id` to `Authenticator`
+```jsx
+    const federated = {
+        google_client_id: '',
+        facebook_app_id: '',
+        amazon_client_id: ''
+    };
+
+    return (
+        <Authenticator federated={federated}>
+    )
+```
+#### Custom federated identity UI
+
+Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle`, `withFacebook`, `withAmazon` if just need a single provider.
+
+```jsx
+import { withFederated } from 'aws-amplify-react';
+
+const Buttons = (props) => (
+    <div>
+        <img
+            onClick={props.googleSignIn}
+            src={google_icon}
+        />
+        <img
+            onClick={props.facebookSignIn}
+            src={facebook_icon}
+        />
+        <img
+            onClick={props.amazonSignIn}
+            src={amazon_icon}
+        />
+    </div>
+)
+
+const Federated = withFederated(Buttons);
+
+...
+
+    const federated = {
+        google_client_id: '',
+        facebook_app_id: '',
+        amazon_client_id: ''
+    };
+
+    <Federated federated={federated} onStateChange={this.handleAuthStateChange} />
+```
+
 ## Extensions
 
-### Component Styling
+### UI Theme
 
 Amplify UI components are theme based. Check the `AmplifyTheme.js` file for default styling.
 
@@ -264,6 +336,8 @@ const MyTheme = Object.assign({}, AmplifyTheme, { sectionHeader: MySectionHeader
 <Authenticator theme={MyTheme} />
 ```
 
+Theme example can be found [here](https://github.com/richardzcode/a-theme-react)
+
 ### Error Message
 
 During authentication flows, there are some error messages returned from server. Amplify provides a simple way of customizing error messages with a `messageMap` callback.
@@ -282,4 +356,4 @@ const map = (message) => {
 <Authenticator errorMessage={map} />
 ```
 
-You may notice in `AmplifyMessageMap.js` it also handles intenationalization. The topic is covered in [I18n Guide](i18n_guide.md)
+You may notice in `AmplifyMessageMap.js` it also handles internationalization. The topic is covered in [I18n Guide](i18n_guide.md)

@@ -55,7 +55,7 @@ ama_logger.log = ama_logger.verbose;
 /**
 * Provide mobile analytics client functions
 */
-var AnalyticsClass = (function () {
+var AnalyticsClass = /** @class */ (function () {
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
@@ -145,7 +145,7 @@ var AnalyticsClass = (function () {
                     logger.debug('amaClient not ready, put in buffer');
                     this._buffer.push({
                         name: name,
-                        attribtues: attributes,
+                        attributes: attributes,
                         metrics: metrics
                     });
                     return [2 /*return*/];
@@ -174,9 +174,9 @@ var AnalyticsClass = (function () {
     };
     AnalyticsClass.prototype._ensureCredentials = function () {
         var conf = this._config;
-        if (conf.credentials) {
-            return Promise.resolve(true);
-        }
+        // commented
+        // will cause bug if another user logged in without refreshing page
+        // if (conf.credentials) { return Promise.resolve(true); }
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
             var cred = Auth_1.default.essentialCredentials(credentials);
@@ -247,7 +247,7 @@ var AnalyticsClass = (function () {
         var _a = this._config, region = _a.region, appId = _a.appId, clientId = _a.clientId, credentials = _a.credentials;
         this.pinpointClient = new Common_1.Pinpoint({
             region: region,
-            credentials: credentials
+            credentials: credentials,
         });
         var request = this._endpointRequest();
         var update_params = {

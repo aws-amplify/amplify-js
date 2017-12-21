@@ -73,7 +73,7 @@ export default class Picker extends Component {
             PickerPicker,
             theme.pickerPicker
         );
-        const buttonStyle = Object.assign({}, PickerButton, theme.pickerButton);
+        const buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
         const inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
 
         return (

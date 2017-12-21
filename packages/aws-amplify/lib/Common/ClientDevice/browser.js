@@ -16,8 +16,9 @@ var Hub_1 = require("../Hub");
 var Logger_1 = require("../Logger");
 var logger = new Logger_1.ConsoleLogger('ClientDevice_Browser');
 function clientInfo() {
-    if (typeof window == 'undefined') {
-        return {};
+    if (typeof window === 'undefined') {
+        return;
+        { }
     }
     return browserClientInfo();
 }
@@ -36,13 +37,13 @@ function browserClientInfo() {
     var type = browserType(userAgent);
     var timezone = browserTimezone();
     return {
-        platform: platform,
-        make: product || vendor,
-        model: type.type,
-        version: type.version,
-        appVersion: [type.type, type.version].join('/'),
-        language: language,
-        timezone: timezone
+        'platform': platform,
+        'make': product || vendor,
+        'model': type.type,
+        'version': type.version,
+        'appVersion': [type.type, type.version].join('/'),
+        'language': language,
+        'timezone': timezone
     };
 }
 function dimension() {
@@ -51,39 +52,39 @@ function dimension() {
         return { width: 320, height: 320 };
     }
     return {
-        width: window.innerWidth,
-        height: window.innerHeight
+        'width': window.innerWidth,
+        'height': window.innerHeight
     };
 }
 exports.dimension = dimension;
 function browserTimezone() {
-    var tz_match = /.+\(([A-Z]+)\)/.exec(new Date().toString());
-    return tz_match ? tz_match[1] : '';
+    var tzMatch = /.+\(([A-Z]+)\)/.exec(new Date().toString());
+    return tzMatch[1] || "";
 }
 function browserType(userAgent) {
-    var opera_match = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(userAgent);
-    if (opera_match) {
-        return { type: opera_match[1], version: opera_match[2] };
+    var operaMatch = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(userAgent);
+    if (operaMatch) {
+        return { type: operaMatch[1], version: operaMatch[2] };
     }
-    var cf_match = /.+(Chrome|Firefox|FxiOS)\/([0-9\.]+).*/i.exec(userAgent);
-    if (cf_match) {
-        return { type: cf_match[1], version: cf_match[2] };
+    var cfMatch = /.+(Chrome|Firefox|FxiOS)\/([0-9\.]+).*/i.exec(userAgent);
+    if (cfMatch) {
+        return { type: cfMatch[1], version: cfMatch[2] };
     }
-    var ie_match = /.+(Trident|Edge)\/([0-9\.]+).*/i.exec(userAgent);
-    if (ie_match) {
-        return { type: ie_match[1], version: ie_match[2] };
+    var ieMatch = /.+(Trident|Edge)\/([0-9\.]+).*/i.exec(userAgent);
+    if (ieMatch) {
+        return { type: ieMatch[1], version: ieMatch[2] };
     }
-    var s_match = /.+(Safari)\/([0-9\.]+).*/i.exec(userAgent);
-    if (s_match) {
-        return { type: s_match[1], version: s_match[2] };
+    var sMatch = /.+(Safari)\/([0-9\.]+).*/i.exec(userAgent);
+    if (sMatch) {
+        return { type: sMatch[1], version: sMatch[2] };
     }
-    var awk_match = /.+(AppleWebKit)\/([0-9\.]+).*/i.exec(userAgent);
-    if (awk_match) {
-        return { type: awk_match[1], version: awk_match[2] };
+    var awkMatch = /.+(AppleWebKit)\/([0-9\.]+).*/i.exec(userAgent);
+    if (awkMatch) {
+        return { type: awkMatch[1], version: awkMatch[2] };
     }
-    var any_match = /.*([A-Z]+)\/([0-9\.]+).*/i.exec(userAgent);
-    if (any_match) {
-        return { type: any_match[1], version: any_match[2] };
+    var anyMatch = /.*([A-Z]+)\/([0-9\.]+).*/i.exec(userAgent);
+    if (anyMatch) {
+        return { type: anyMatch[1], version: anyMatch[2] };
     }
     return { type: '', version: '' };
 }

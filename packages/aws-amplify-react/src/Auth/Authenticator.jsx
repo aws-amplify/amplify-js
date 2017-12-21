@@ -12,6 +12,7 @@
  */
 
 import React, { Component } from 'react';
+import { Row, Col } from 'fluid-react';
 import Amplify, { Auth, Logger } from 'aws-amplify';
 
 import Greetings from './Greetings';
@@ -24,6 +25,7 @@ import VerifyContact from './VerifyContact';
 import ForgotPassword from './ForgotPassword';
 
 import AmplifyTheme from '../AmplifyTheme';
+import { Container, ErrorSection, SectionBody } from '../AmplifyUI';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
 const logger = new Logger('Authenticator');
@@ -89,10 +91,9 @@ export default class Authenticator extends Component {
     errorRenderer(err) {
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <div
-                className="amplify-error-section"
-                style={theme.errorSection}
-            >{err}</div>
+            <ErrorSection theme={theme}>
+                <SectionBody theme={theme}>{err}</SectionBody>
+            </ErrorSection>
         )
     }
 
@@ -101,7 +102,7 @@ export default class Authenticator extends Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        let { hideDefault, hide } = this.props;
+        let { hideDefault, hide, federated } = this.props;
         if (!hide) { hide = []; }
         if (hideDefault) {
             hide = hide.concat([
@@ -118,7 +119,7 @@ export default class Authenticator extends Component {
         const props_children = this.props.children || [];
         const default_children = [
             <Greetings/>,
-            <SignIn/>,
+            <SignIn federated={federated}/>,
             <ConfirmSignIn/>,
             <RequireNewPassword/>,
             <SignUp/>,
@@ -144,10 +145,14 @@ export default class Authenticator extends Component {
         const errorRenderer = this.props.errorRenderer || this.errorRenderer;
         const error = this.state.error;
         return (
-            <div className="amplify-container" style={theme.container}>
-                {render_children}
-                {error? errorRenderer(error) : null}
-            </div>
+            <Row style={{ justifyContent: 'center' }}>
+                <Col xs="9" sm="8" md="6" lg="4">
+                    <Container theme={theme}>
+                        {render_children}
+                        {error? errorRenderer(error) : null}
+                    </Container>
+                </Col>
+            </Row>
         )
     }
 }

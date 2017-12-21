@@ -21,7 +21,8 @@ import {
     ConsoleLogger as Logger,
     Hub,
     JS,
-    ClientDevice
+    ClientDevice,
+    Signer
 } from './Common';
 
 const logger = new Logger('Amplify');
@@ -50,11 +51,11 @@ export default class Amplify {
 
 Amplify.Auth = Auth;
 Amplify.Analytics = Analytics;
-Amplify.API = API;;
+Amplify.API = API;
 Amplify.Storage = Storage;
 Amplify.I18n = I18n;
 Amplify.Cache = Cache;
 
 Amplify.Logger = Logger;
 
-export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice };
+export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };

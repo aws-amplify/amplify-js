@@ -341,7 +341,7 @@ export class BrowserStorageCache extends StorageCache implements ICache {
                     // if not expired, great, return the value and refresh it
                     let item: CacheItem = JSON.parse(ret);
                     item = this._refreshItem(item, prefixedKey);
-                    return JSON.parse(item.data);
+                    return item.data;
                 }
             }
 

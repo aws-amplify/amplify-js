@@ -37,8 +37,8 @@ export default class S3Text extends Component {
         };
     }
 
-    getText(key, level) {
-        Storage.get(key, { download: true, level: level? level : 'public' })
+    getText(key, level, track) {
+        Storage.get(key, { download: true, level: level? level : 'public', track })
             .then(data => {
                 logger.debug(data);
                 const text = data.Body.toString('utf8');
@@ -52,7 +52,7 @@ export default class S3Text extends Component {
     }
 
     load() {
-        const { path, textKey, body, contentType, level } = this.props;
+        const { path, textKey, body, contentType, level, track } = this.props;
         if (!textKey && !path) {
             logger.debug('empty textKey and path');
             return ;
@@ -65,15 +65,16 @@ export default class S3Text extends Component {
             const type = contentType || 'text/*';
             const ret = Storage.put(key, body, {
                 contentType: type,
-                level: level? level : 'public'
+                level: level? level : 'public',
+                track
             });
             ret.then(data => {
                 logger.debug(data);
-                that.getText(key, level);
+                that.getText(key, level, track);
             })
             .catch(err => logger.debug(err));
         } else {
-            that.getText(key, level);
+            that.getText(key, level, track);
         }
     }
 
@@ -91,13 +92,13 @@ export default class S3Text extends Component {
         const that = this;
 
         const path = this.props.path || '';
-        const { textKey, level, fileToKey } = this.props;
+        const { textKey, level, fileToKey, track } = this.props;
         const { file, name, size, type } = data;
         const key = textKey || (path + calcKey(data, fileToKey));
-        Storage.put(key, file, { contentType: type })
+        Storage.put(key, file, { contentType: type, track })
             .then(data => {
                 logger.debug('handle pick data', data);
-                that.getText(key, level);
+                that.getText(key, level, track);
             })
             .catch(err => logger.debug('handle pick error', err));
     }

@@ -16,6 +16,8 @@ var _AuthPiece2 = require('./AuthPiece');
 
 var _AuthPiece3 = _interopRequireDefault(_AuthPiece2);
 
+var _FederatedSignIn = require('./FederatedSignIn');
+
 var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
@@ -111,29 +113,29 @@ var SignIn = function (_AuthPiece) {
 
                 var _props = this.props,
                     authState = _props.authState,
-                    hide = _props.hide;
+                    hide = _props.hide,
+                    federated = _props.federated,
+                    onStateChange = _props.onStateChange;
 
                 if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) {
                     return null;
                 }
-
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-
                 if (hide && hide.includes(SignIn)) {
                     return null;
                 }
 
+                var theme = this.props.theme || _AmplifyTheme2['default'];
                 return _react2['default'].createElement(
-                    'div',
-                    { style: theme.formSection },
+                    _AmplifyUI.FormSection,
+                    { theme: theme },
                     _react2['default'].createElement(
-                        _AmplifyUI.Header,
+                        _AmplifyUI.SectionHeader,
                         { theme: theme },
                         _awsAmplify.I18n.get('Sign In Account')
                     ),
                     _react2['default'].createElement(
-                        'div',
-                        { style: theme.sectionBody },
+                        _AmplifyUI.SectionBody,
+                        { theme: theme },
                         _react2['default'].createElement(_AmplifyUI.InputRow, {
                             autoFocus: true,
                             placeholder: _awsAmplify.I18n.get('Username'),
@@ -154,10 +156,16 @@ var SignIn = function (_AuthPiece) {
                             _AmplifyUI.ButtonRow,
                             { theme: theme, onClick: this.signIn },
                             _awsAmplify.I18n.get('Sign In')
-                        )
+                        ),
+                        _react2['default'].createElement(_FederatedSignIn.FederatedButtons, {
+                            federated: federated,
+                            theme: theme,
+                            authState: authState,
+                            onStateChange: onStateChange
+                        })
                     ),
                     _react2['default'].createElement(
-                        _AmplifyUI.Footer,
+                        _AmplifyUI.SectionFooter,
                         { theme: theme },
                         _react2['default'].createElement(
                             'div',

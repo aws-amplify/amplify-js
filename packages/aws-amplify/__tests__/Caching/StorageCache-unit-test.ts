@@ -48,7 +48,7 @@ describe('StorageCache', () => {
     describe('constructor', () => {
         test('set to default if config capacityInBytes is not integer', () => {
             const tmp = config.capacityInBytes;
-            config.capacityInBytes = 3000.23;
+            config.capacityInBytes = 1048576;
             const storage: StorageCache = new StorageCache(config);
             expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
             config.capacityInBytes = tmp;
@@ -56,7 +56,7 @@ describe('StorageCache', () => {
 
         test('set to default if config itemMaxSize is not integer', () => {
             const tmp = config.itemMaxSize;
-            config.itemMaxSize = 600.3;
+            config.itemMaxSize = 210000;
             const storage: StorageCache = new StorageCache(config);
             expect(storage.configure().itemMaxSize).toBe(defaultConfig.itemMaxSize);
             config.itemMaxSize = tmp;
@@ -64,7 +64,7 @@ describe('StorageCache', () => {
 
         test('set to default if config defaultTTL is not integer', () => {
             const tmp = config.defaultTTL;
-            config.defaultTTL = 2.3;
+            config.defaultTTL = 259200000;
             const storage: StorageCache = new StorageCache(config);
             expect(storage.configure().defaultTTL).toBe(defaultConfig.defaultTTL);
             config.defaultTTL = tmp;
@@ -72,7 +72,7 @@ describe('StorageCache', () => {
 
         test('set to default if config defaultPriority is not integer', () => {
             const tmp = config.defaultPriority;
-            config.defaultPriority = 2.3;
+            config.defaultPriority = 5;
             const storage: StorageCache = new StorageCache(config);
             expect(storage.configure().defaultPriority).toBe(defaultConfig.defaultPriority);
             config.defaultPriority = tmp;

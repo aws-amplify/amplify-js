@@ -1,24 +1,254 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`] = `
-<div
-  className="amplify-form-section"
-  style={
+<FormSection
+  theme={
     Object {
-      "display": "inline-block",
-      "fontWeight": "200",
+      "a": Object {
+        "textDecoration": "underline",
+      },
+      "actionRow": Object {
+        "marginTop": "1.5em",
+        "textAlign": "right",
+      },
+      "album": Object {
+        "display": "block",
+        "textAlign": "left",
+        "width": "100%",
+      },
+      "albumPhoto": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "verticalAlign": "top",
+        "width": "16.6%",
+      },
+      "albumText": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "maxHeight": 256,
+        "overflow": "auto",
+        "verticalAlign": "top",
+        "width": "32%",
+      },
+      "button": Object {
+        "background": "#fff",
+        "border": "1px solid #007bff",
+        "color": "#007bff",
+        "fontSize": "1em",
+        "margin": "auto 0.3em",
+        "padding": "0.3em 0.5em",
+      },
+      "center": Object {
+        "textAlign": "center",
+      },
+      "col10": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "width": "83.6%",
+      },
+      "col12": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "width": "99.2%",
+      },
+      "col2": Object {
+        "display": "inline-block",
+        "width": "16.6%",
+      },
+      "col3": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "width": "24.5%",
+      },
+      "col4": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "width": "32%",
+      },
+      "col6": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "width": "49.5%",
+      },
+      "col8": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "width": "66%",
+      },
+      "col9": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "width": "74.5%",
+      },
+      "container": Object {
+        "fontFamily": "-apple-system,
+                BlinkMacSystemFont,
+                \\"Segoe UI\\",
+                Roboto,
+                \\"Helvetica Neue\\",
+                Arial,
+                sans-serif,
+                \\"Apple Color Emoji\\",
+                \\"Segoe UI Emoji\\",
+                \\"Segoe UI Symbol\\"",
+        "textAlign": "center",
+      },
+      "errorSection": Object {
+        "background": "orange",
+        "fontWeight": "300",
+        "margin": "0.2em auto",
+        "padding": "0.5em",
+      },
+      "formContainer": Object {},
+      "formRow": Object {
+        "marginBottom": "0.5em",
+        "textAlign": "left",
+      },
+      "formSection": Object {
+        "display": "inline-block",
+        "fontWeight": "200",
+        "maxWidth": "500px",
+      },
+      "halfHeight": Object {
+        "height": 384,
+        "overflow": "auto",
+      },
+      "hidden": Object {
+        "display": "none",
+      },
+      "input": Object {
+        "border": "1px solid #aaa",
+        "fontSize": "1em",
+        "fontWeight": "200",
+        "padding": "4px 2px",
+        "width": "15em",
+      },
+      "label": Object {
+        "margin": "auto 0.5em",
+      },
+      "nav": Object {
+        "borderBottom": "1px solid #00fff6",
+        "marginBottom": "0.5em",
+        "padding": "0.5em 0.5em 0.2em",
+      },
+      "navBar": Object {
+        "borderBottom": "1px solid #00fff6",
+        "marginBottom": "0.5em",
+        "padding": "0.5em 0.5em 0.2em",
+      },
+      "navButton": Object {
+        "background": "#fff",
+        "border": "none",
+        "borderBottom": "1px solid #007bff",
+        "color": "#007bff",
+        "margin": "auto 0.3em",
+        "padding": "0",
+      },
+      "navItem": Object {},
+      "navRight": Object {
+        "fontSize": "0.8em",
+        "textAlign": "right",
+      },
+      "overlay": Object {
+        "height": "100%",
+        "left": 0,
+        "position": "absolute",
+        "top": 0,
+        "width": "100%",
+      },
+      "overlaySelected": Object {
+        "background": "#888",
+        "border": "2px solid blue",
+        "height": "100%",
+        "left": 0,
+        "opacity": "0.5",
+        "position": "absolute",
+        "top": 0,
+        "width": "100%",
+      },
+      "photo": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "verticalAlign": "top",
+        "width": "32%",
+      },
+      "photoImg": Object {
+        "maxWidth": "100%",
+      },
+      "picker": Object {
+        "textAlign": "center",
+        "width": "100%",
+      },
+      "pickerButton": Object {
+        "background": "#fff",
+        "border": "1px solid #ccc",
+        "fontWeight": "200",
+        "width": "100%",
+      },
+      "pickerInput": Object {},
+      "pickerPicker": Object {
+        "textAlign": "center",
+        "width": "100%",
+      },
+      "pre": Object {
+        "background": "#eee",
+        "margin": "0",
+        "overflow": "auto",
+        "padding": "1em",
+        "textAlign": "left",
+      },
+      "section": Object {
+        "fontWeight": "200",
+      },
+      "sectionBody": Object {
+        "background": "#fff",
+        "color": "#000",
+        "fontSize": "1em",
+        "padding": "1em",
+      },
+      "sectionFooter": Object {
+        "background": "#fff",
+        "borderBottom": "1px solid #00fff6",
+        "color": "#000",
+        "fontSize": "0.8em",
+        "padding": "1em",
+        "textAlign": "left",
+      },
+      "sectionHeader": Object {
+        "background": "#007bff",
+        "color": "#fff",
+        "fontSize": "1.2em",
+        "fontWeight": "normal",
+        "padding": "0.6em",
+        "textAlign": "center",
+      },
+      "signInButton": Object {
+        "background": "#fff",
+        "border": "1px solid #007bff",
+        "color": "#007bff",
+        "fontSize": "1em",
+        "margin": "0.3em",
+        "padding": "0.3em 0.5em",
+        "width": "100%",
+      },
+      "space": Object {
+        "display": "inline-block",
+        "width": "1em",
+      },
+      "text": Object {
+        "display": "inline-block",
+        "margin": "0.2%",
+        "maxHeight": 384,
+        "overflow": "auto",
+        "verticalAlign": "top",
+        "width": "32.5%",
+      },
     }
   }
 >
-  <Header
+  <SectionHeader
     theme={
       Object {
-        "Photo": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
         "a": Object {
           "textDecoration": "underline",
         },
@@ -34,10 +264,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         "albumPhoto": Object {
           "display": "inline-block",
           "margin": "0.2%",
-          "maxHeight": 320,
-          "overflow": "auto",
           "verticalAlign": "top",
-          "width": "32%",
+          "width": "16.6%",
         },
         "albumText": Object {
           "display": "inline-block",
@@ -45,7 +273,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "maxHeight": 256,
           "overflow": "auto",
           "verticalAlign": "top",
-          "width": "32.5%",
+          "width": "32%",
         },
         "button": Object {
           "background": "#fff",
@@ -67,6 +295,10 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "display": "inline-block",
           "margin": "0.2%",
           "width": "99.2%",
+        },
+        "col2": Object {
+          "display": "inline-block",
+          "width": "16.6%",
         },
         "col3": Object {
           "display": "inline-block",
@@ -112,6 +344,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "margin": "0.2em auto",
           "padding": "0.5em",
         },
+        "formContainer": Object {},
         "formRow": Object {
           "marginBottom": "0.5em",
           "textAlign": "left",
@@ -119,6 +352,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         "formSection": Object {
           "display": "inline-block",
           "fontWeight": "200",
+          "maxWidth": "500px",
         },
         "halfHeight": Object {
           "height": 384,
@@ -137,6 +371,11 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         "label": Object {
           "margin": "auto 0.5em",
         },
+        "nav": Object {
+          "borderBottom": "1px solid #00fff6",
+          "marginBottom": "0.5em",
+          "padding": "0.5em 0.5em 0.2em",
+        },
         "navBar": Object {
           "borderBottom": "1px solid #00fff6",
           "marginBottom": "0.5em",
@@ -150,15 +389,33 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "margin": "auto 0.3em",
           "padding": "0",
         },
+        "navItem": Object {},
         "navRight": Object {
           "fontSize": "0.8em",
           "textAlign": "right",
+        },
+        "overlay": Object {
+          "height": "100%",
+          "left": 0,
+          "position": "absolute",
+          "top": 0,
+          "width": "100%",
+        },
+        "overlaySelected": Object {
+          "background": "#888",
+          "border": "2px solid blue",
+          "height": "100%",
+          "left": 0,
+          "opacity": "0.5",
+          "position": "absolute",
+          "top": 0,
+          "width": "100%",
         },
         "photo": Object {
           "display": "inline-block",
           "margin": "0.2%",
           "verticalAlign": "top",
-          "width": "32.5%",
+          "width": "32%",
         },
         "photoImg": Object {
           "maxWidth": "100%",
@@ -210,6 +467,19 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "padding": "0.6em",
           "textAlign": "center",
         },
+        "signInButton": Object {
+          "background": "#fff",
+          "border": "1px solid #007bff",
+          "color": "#007bff",
+          "fontSize": "1em",
+          "margin": "0.3em",
+          "padding": "0.3em 0.5em",
+          "width": "100%",
+        },
+        "space": Object {
+          "display": "inline-block",
+          "width": "1em",
+        },
         "text": Object {
           "display": "inline-block",
           "margin": "0.2%",
@@ -224,15 +494,249 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
     Confirm
      
     Sign Up
-  </Header>
-  <div
-    className="amplify-section-body"
-    style={
+  </SectionHeader>
+  <SectionBody
+    theme={
       Object {
-        "background": "#fff",
-        "color": "#000",
-        "fontSize": "1em",
-        "padding": "1em",
+        "a": Object {
+          "textDecoration": "underline",
+        },
+        "actionRow": Object {
+          "marginTop": "1.5em",
+          "textAlign": "right",
+        },
+        "album": Object {
+          "display": "block",
+          "textAlign": "left",
+          "width": "100%",
+        },
+        "albumPhoto": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "verticalAlign": "top",
+          "width": "16.6%",
+        },
+        "albumText": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 256,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32%",
+        },
+        "button": Object {
+          "background": "#fff",
+          "border": "1px solid #007bff",
+          "color": "#007bff",
+          "fontSize": "1em",
+          "margin": "auto 0.3em",
+          "padding": "0.3em 0.5em",
+        },
+        "center": Object {
+          "textAlign": "center",
+        },
+        "col10": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "83.6%",
+        },
+        "col12": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "99.2%",
+        },
+        "col2": Object {
+          "display": "inline-block",
+          "width": "16.6%",
+        },
+        "col3": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "24.5%",
+        },
+        "col4": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "32%",
+        },
+        "col6": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "49.5%",
+        },
+        "col8": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "66%",
+        },
+        "col9": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "width": "74.5%",
+        },
+        "container": Object {
+          "fontFamily": "-apple-system,
+                BlinkMacSystemFont,
+                \\"Segoe UI\\",
+                Roboto,
+                \\"Helvetica Neue\\",
+                Arial,
+                sans-serif,
+                \\"Apple Color Emoji\\",
+                \\"Segoe UI Emoji\\",
+                \\"Segoe UI Symbol\\"",
+          "textAlign": "center",
+        },
+        "errorSection": Object {
+          "background": "orange",
+          "fontWeight": "300",
+          "margin": "0.2em auto",
+          "padding": "0.5em",
+        },
+        "formContainer": Object {},
+        "formRow": Object {
+          "marginBottom": "0.5em",
+          "textAlign": "left",
+        },
+        "formSection": Object {
+          "display": "inline-block",
+          "fontWeight": "200",
+          "maxWidth": "500px",
+        },
+        "halfHeight": Object {
+          "height": 384,
+          "overflow": "auto",
+        },
+        "hidden": Object {
+          "display": "none",
+        },
+        "input": Object {
+          "border": "1px solid #aaa",
+          "fontSize": "1em",
+          "fontWeight": "200",
+          "padding": "4px 2px",
+          "width": "15em",
+        },
+        "label": Object {
+          "margin": "auto 0.5em",
+        },
+        "nav": Object {
+          "borderBottom": "1px solid #00fff6",
+          "marginBottom": "0.5em",
+          "padding": "0.5em 0.5em 0.2em",
+        },
+        "navBar": Object {
+          "borderBottom": "1px solid #00fff6",
+          "marginBottom": "0.5em",
+          "padding": "0.5em 0.5em 0.2em",
+        },
+        "navButton": Object {
+          "background": "#fff",
+          "border": "none",
+          "borderBottom": "1px solid #007bff",
+          "color": "#007bff",
+          "margin": "auto 0.3em",
+          "padding": "0",
+        },
+        "navItem": Object {},
+        "navRight": Object {
+          "fontSize": "0.8em",
+          "textAlign": "right",
+        },
+        "overlay": Object {
+          "height": "100%",
+          "left": 0,
+          "position": "absolute",
+          "top": 0,
+          "width": "100%",
+        },
+        "overlaySelected": Object {
+          "background": "#888",
+          "border": "2px solid blue",
+          "height": "100%",
+          "left": 0,
+          "opacity": "0.5",
+          "position": "absolute",
+          "top": 0,
+          "width": "100%",
+        },
+        "photo": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "verticalAlign": "top",
+          "width": "32%",
+        },
+        "photoImg": Object {
+          "maxWidth": "100%",
+        },
+        "picker": Object {
+          "textAlign": "center",
+          "width": "100%",
+        },
+        "pickerButton": Object {
+          "background": "#fff",
+          "border": "1px solid #ccc",
+          "fontWeight": "200",
+          "width": "100%",
+        },
+        "pickerInput": Object {},
+        "pickerPicker": Object {
+          "textAlign": "center",
+          "width": "100%",
+        },
+        "pre": Object {
+          "background": "#eee",
+          "margin": "0",
+          "overflow": "auto",
+          "padding": "1em",
+          "textAlign": "left",
+        },
+        "section": Object {
+          "fontWeight": "200",
+        },
+        "sectionBody": Object {
+          "background": "#fff",
+          "color": "#000",
+          "fontSize": "1em",
+          "padding": "1em",
+        },
+        "sectionFooter": Object {
+          "background": "#fff",
+          "borderBottom": "1px solid #00fff6",
+          "color": "#000",
+          "fontSize": "0.8em",
+          "padding": "1em",
+          "textAlign": "left",
+        },
+        "sectionHeader": Object {
+          "background": "#007bff",
+          "color": "#fff",
+          "fontSize": "1.2em",
+          "fontWeight": "normal",
+          "padding": "0.6em",
+          "textAlign": "center",
+        },
+        "signInButton": Object {
+          "background": "#fff",
+          "border": "1px solid #007bff",
+          "color": "#007bff",
+          "fontSize": "1em",
+          "margin": "0.3em",
+          "padding": "0.3em 0.5em",
+          "width": "100%",
+        },
+        "space": Object {
+          "display": "inline-block",
+          "width": "1em",
+        },
+        "text": Object {
+          "display": "inline-block",
+          "margin": "0.2%",
+          "maxHeight": 384,
+          "overflow": "auto",
+          "verticalAlign": "top",
+          "width": "32.5%",
+        },
       }
     }
   >
@@ -243,12 +747,6 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
       placeholder="Username"
       theme={
         Object {
-          "Photo": Object {
-            "display": "inline-block",
-            "margin": "0.2%",
-            "verticalAlign": "top",
-            "width": "32%",
-          },
           "a": Object {
             "textDecoration": "underline",
           },
@@ -264,10 +762,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "albumPhoto": Object {
             "display": "inline-block",
             "margin": "0.2%",
-            "maxHeight": 320,
-            "overflow": "auto",
             "verticalAlign": "top",
-            "width": "32%",
+            "width": "16.6%",
           },
           "albumText": Object {
             "display": "inline-block",
@@ -275,7 +771,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "maxHeight": 256,
             "overflow": "auto",
             "verticalAlign": "top",
-            "width": "32.5%",
+            "width": "32%",
           },
           "button": Object {
             "background": "#fff",
@@ -297,6 +793,10 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "display": "inline-block",
             "margin": "0.2%",
             "width": "99.2%",
+          },
+          "col2": Object {
+            "display": "inline-block",
+            "width": "16.6%",
           },
           "col3": Object {
             "display": "inline-block",
@@ -342,6 +842,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "margin": "0.2em auto",
             "padding": "0.5em",
           },
+          "formContainer": Object {},
           "formRow": Object {
             "marginBottom": "0.5em",
             "textAlign": "left",
@@ -349,6 +850,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "formSection": Object {
             "display": "inline-block",
             "fontWeight": "200",
+            "maxWidth": "500px",
           },
           "halfHeight": Object {
             "height": 384,
@@ -367,6 +869,11 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "label": Object {
             "margin": "auto 0.5em",
           },
+          "nav": Object {
+            "borderBottom": "1px solid #00fff6",
+            "marginBottom": "0.5em",
+            "padding": "0.5em 0.5em 0.2em",
+          },
           "navBar": Object {
             "borderBottom": "1px solid #00fff6",
             "marginBottom": "0.5em",
@@ -380,15 +887,33 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "margin": "auto 0.3em",
             "padding": "0",
           },
+          "navItem": Object {},
           "navRight": Object {
             "fontSize": "0.8em",
             "textAlign": "right",
+          },
+          "overlay": Object {
+            "height": "100%",
+            "left": 0,
+            "position": "absolute",
+            "top": 0,
+            "width": "100%",
+          },
+          "overlaySelected": Object {
+            "background": "#888",
+            "border": "2px solid blue",
+            "height": "100%",
+            "left": 0,
+            "opacity": "0.5",
+            "position": "absolute",
+            "top": 0,
+            "width": "100%",
           },
           "photo": Object {
             "display": "inline-block",
             "margin": "0.2%",
             "verticalAlign": "top",
-            "width": "32.5%",
+            "width": "32%",
           },
           "photoImg": Object {
             "maxWidth": "100%",
@@ -439,6 +964,19 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "fontWeight": "normal",
             "padding": "0.6em",
             "textAlign": "center",
+          },
+          "signInButton": Object {
+            "background": "#fff",
+            "border": "1px solid #007bff",
+            "color": "#007bff",
+            "fontSize": "1em",
+            "margin": "0.3em",
+            "padding": "0.3em 0.5em",
+            "width": "100%",
+          },
+          "space": Object {
+            "display": "inline-block",
+            "width": "1em",
           },
           "text": Object {
             "display": "inline-block",
@@ -459,12 +997,6 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
       placeholder="Code"
       theme={
         Object {
-          "Photo": Object {
-            "display": "inline-block",
-            "margin": "0.2%",
-            "verticalAlign": "top",
-            "width": "32%",
-          },
           "a": Object {
             "textDecoration": "underline",
           },
@@ -480,10 +1012,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "albumPhoto": Object {
             "display": "inline-block",
             "margin": "0.2%",
-            "maxHeight": 320,
-            "overflow": "auto",
             "verticalAlign": "top",
-            "width": "32%",
+            "width": "16.6%",
           },
           "albumText": Object {
             "display": "inline-block",
@@ -491,7 +1021,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "maxHeight": 256,
             "overflow": "auto",
             "verticalAlign": "top",
-            "width": "32.5%",
+            "width": "32%",
           },
           "button": Object {
             "background": "#fff",
@@ -513,6 +1043,10 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "display": "inline-block",
             "margin": "0.2%",
             "width": "99.2%",
+          },
+          "col2": Object {
+            "display": "inline-block",
+            "width": "16.6%",
           },
           "col3": Object {
             "display": "inline-block",
@@ -558,6 +1092,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "margin": "0.2em auto",
             "padding": "0.5em",
           },
+          "formContainer": Object {},
           "formRow": Object {
             "marginBottom": "0.5em",
             "textAlign": "left",
@@ -565,6 +1100,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "formSection": Object {
             "display": "inline-block",
             "fontWeight": "200",
+            "maxWidth": "500px",
           },
           "halfHeight": Object {
             "height": 384,
@@ -583,6 +1119,11 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "label": Object {
             "margin": "auto 0.5em",
           },
+          "nav": Object {
+            "borderBottom": "1px solid #00fff6",
+            "marginBottom": "0.5em",
+            "padding": "0.5em 0.5em 0.2em",
+          },
           "navBar": Object {
             "borderBottom": "1px solid #00fff6",
             "marginBottom": "0.5em",
@@ -596,15 +1137,33 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "margin": "auto 0.3em",
             "padding": "0",
           },
+          "navItem": Object {},
           "navRight": Object {
             "fontSize": "0.8em",
             "textAlign": "right",
+          },
+          "overlay": Object {
+            "height": "100%",
+            "left": 0,
+            "position": "absolute",
+            "top": 0,
+            "width": "100%",
+          },
+          "overlaySelected": Object {
+            "background": "#888",
+            "border": "2px solid blue",
+            "height": "100%",
+            "left": 0,
+            "opacity": "0.5",
+            "position": "absolute",
+            "top": 0,
+            "width": "100%",
           },
           "photo": Object {
             "display": "inline-block",
             "margin": "0.2%",
             "verticalAlign": "top",
-            "width": "32.5%",
+            "width": "32%",
           },
           "photoImg": Object {
             "maxWidth": "100%",
@@ -656,6 +1215,19 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "padding": "0.6em",
             "textAlign": "center",
           },
+          "signInButton": Object {
+            "background": "#fff",
+            "border": "1px solid #007bff",
+            "color": "#007bff",
+            "fontSize": "1em",
+            "margin": "0.3em",
+            "padding": "0.3em 0.5em",
+            "width": "100%",
+          },
+          "space": Object {
+            "display": "inline-block",
+            "width": "1em",
+          },
           "text": Object {
             "display": "inline-block",
             "margin": "0.2%",
@@ -667,56 +1239,997 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         }
       }
     />
-    <div
-      className="amplify-action-row"
-      style={
+    <ActionRow
+      theme={
         Object {
-          "marginTop": "1.5em",
-          "textAlign": "right",
-        }
-      }
-    >
-      <button
-        onClick={[Function]}
-        style={
-          Object {
+          "a": Object {
+            "textDecoration": "underline",
+          },
+          "actionRow": Object {
+            "marginTop": "1.5em",
+            "textAlign": "right",
+          },
+          "album": Object {
+            "display": "block",
+            "textAlign": "left",
+            "width": "100%",
+          },
+          "albumPhoto": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "verticalAlign": "top",
+            "width": "16.6%",
+          },
+          "albumText": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "maxHeight": 256,
+            "overflow": "auto",
+            "verticalAlign": "top",
+            "width": "32%",
+          },
+          "button": Object {
             "background": "#fff",
             "border": "1px solid #007bff",
             "color": "#007bff",
             "fontSize": "1em",
             "margin": "auto 0.3em",
             "padding": "0.3em 0.5em",
+          },
+          "center": Object {
+            "textAlign": "center",
+          },
+          "col10": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "width": "83.6%",
+          },
+          "col12": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "width": "99.2%",
+          },
+          "col2": Object {
+            "display": "inline-block",
+            "width": "16.6%",
+          },
+          "col3": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "width": "24.5%",
+          },
+          "col4": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "width": "32%",
+          },
+          "col6": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "width": "49.5%",
+          },
+          "col8": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "width": "66%",
+          },
+          "col9": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "width": "74.5%",
+          },
+          "container": Object {
+            "fontFamily": "-apple-system,
+                BlinkMacSystemFont,
+                \\"Segoe UI\\",
+                Roboto,
+                \\"Helvetica Neue\\",
+                Arial,
+                sans-serif,
+                \\"Apple Color Emoji\\",
+                \\"Segoe UI Emoji\\",
+                \\"Segoe UI Symbol\\"",
+            "textAlign": "center",
+          },
+          "errorSection": Object {
+            "background": "orange",
+            "fontWeight": "300",
+            "margin": "0.2em auto",
+            "padding": "0.5em",
+          },
+          "formContainer": Object {},
+          "formRow": Object {
+            "marginBottom": "0.5em",
+            "textAlign": "left",
+          },
+          "formSection": Object {
+            "display": "inline-block",
+            "fontWeight": "200",
+            "maxWidth": "500px",
+          },
+          "halfHeight": Object {
+            "height": 384,
+            "overflow": "auto",
+          },
+          "hidden": Object {
+            "display": "none",
+          },
+          "input": Object {
+            "border": "1px solid #aaa",
+            "fontSize": "1em",
+            "fontWeight": "200",
+            "padding": "4px 2px",
+            "width": "15em",
+          },
+          "label": Object {
+            "margin": "auto 0.5em",
+          },
+          "nav": Object {
+            "borderBottom": "1px solid #00fff6",
+            "marginBottom": "0.5em",
+            "padding": "0.5em 0.5em 0.2em",
+          },
+          "navBar": Object {
+            "borderBottom": "1px solid #00fff6",
+            "marginBottom": "0.5em",
+            "padding": "0.5em 0.5em 0.2em",
+          },
+          "navButton": Object {
+            "background": "#fff",
+            "border": "none",
+            "borderBottom": "1px solid #007bff",
+            "color": "#007bff",
+            "margin": "auto 0.3em",
+            "padding": "0",
+          },
+          "navItem": Object {},
+          "navRight": Object {
+            "fontSize": "0.8em",
+            "textAlign": "right",
+          },
+          "overlay": Object {
+            "height": "100%",
+            "left": 0,
+            "position": "absolute",
+            "top": 0,
+            "width": "100%",
+          },
+          "overlaySelected": Object {
+            "background": "#888",
+            "border": "2px solid blue",
+            "height": "100%",
+            "left": 0,
+            "opacity": "0.5",
+            "position": "absolute",
+            "top": 0,
+            "width": "100%",
+          },
+          "photo": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "verticalAlign": "top",
+            "width": "32%",
+          },
+          "photoImg": Object {
+            "maxWidth": "100%",
+          },
+          "picker": Object {
+            "textAlign": "center",
+            "width": "100%",
+          },
+          "pickerButton": Object {
+            "background": "#fff",
+            "border": "1px solid #ccc",
+            "fontWeight": "200",
+            "width": "100%",
+          },
+          "pickerInput": Object {},
+          "pickerPicker": Object {
+            "textAlign": "center",
+            "width": "100%",
+          },
+          "pre": Object {
+            "background": "#eee",
+            "margin": "0",
+            "overflow": "auto",
+            "padding": "1em",
+            "textAlign": "left",
+          },
+          "section": Object {
+            "fontWeight": "200",
+          },
+          "sectionBody": Object {
+            "background": "#fff",
+            "color": "#000",
+            "fontSize": "1em",
+            "padding": "1em",
+          },
+          "sectionFooter": Object {
+            "background": "#fff",
+            "borderBottom": "1px solid #00fff6",
+            "color": "#000",
+            "fontSize": "0.8em",
+            "padding": "1em",
+            "textAlign": "left",
+          },
+          "sectionHeader": Object {
+            "background": "#007bff",
+            "color": "#fff",
+            "fontSize": "1.2em",
+            "fontWeight": "normal",
+            "padding": "0.6em",
+            "textAlign": "center",
+          },
+          "signInButton": Object {
+            "background": "#fff",
+            "border": "1px solid #007bff",
+            "color": "#007bff",
+            "fontSize": "1em",
+            "margin": "0.3em",
+            "padding": "0.3em 0.5em",
+            "width": "100%",
+          },
+          "space": Object {
+            "display": "inline-block",
+            "width": "1em",
+          },
+          "text": Object {
+            "display": "inline-block",
+            "margin": "0.2%",
+            "maxHeight": 384,
+            "overflow": "auto",
+            "verticalAlign": "top",
+            "width": "32.5%",
+          },
+        }
+      }
+    >
+      <Button
+        onClick={[Function]}
+        theme={
+          Object {
+            "a": Object {
+              "textDecoration": "underline",
+            },
+            "actionRow": Object {
+              "marginTop": "1.5em",
+              "textAlign": "right",
+            },
+            "album": Object {
+              "display": "block",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "albumPhoto": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "verticalAlign": "top",
+              "width": "16.6%",
+            },
+            "albumText": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "maxHeight": 256,
+              "overflow": "auto",
+              "verticalAlign": "top",
+              "width": "32%",
+            },
+            "button": Object {
+              "background": "#fff",
+              "border": "1px solid #007bff",
+              "color": "#007bff",
+              "fontSize": "1em",
+              "margin": "auto 0.3em",
+              "padding": "0.3em 0.5em",
+            },
+            "center": Object {
+              "textAlign": "center",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "83.6%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "99.2%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.6%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "24.5%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "32%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "49.5%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "66%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "74.5%",
+            },
+            "container": Object {
+              "fontFamily": "-apple-system,
+                BlinkMacSystemFont,
+                \\"Segoe UI\\",
+                Roboto,
+                \\"Helvetica Neue\\",
+                Arial,
+                sans-serif,
+                \\"Apple Color Emoji\\",
+                \\"Segoe UI Emoji\\",
+                \\"Segoe UI Symbol\\"",
+              "textAlign": "center",
+            },
+            "errorSection": Object {
+              "background": "orange",
+              "fontWeight": "300",
+              "margin": "0.2em auto",
+              "padding": "0.5em",
+            },
+            "formContainer": Object {},
+            "formRow": Object {
+              "marginBottom": "0.5em",
+              "textAlign": "left",
+            },
+            "formSection": Object {
+              "display": "inline-block",
+              "fontWeight": "200",
+              "maxWidth": "500px",
+            },
+            "halfHeight": Object {
+              "height": 384,
+              "overflow": "auto",
+            },
+            "hidden": Object {
+              "display": "none",
+            },
+            "input": Object {
+              "border": "1px solid #aaa",
+              "fontSize": "1em",
+              "fontWeight": "200",
+              "padding": "4px 2px",
+              "width": "15em",
+            },
+            "label": Object {
+              "margin": "auto 0.5em",
+            },
+            "nav": Object {
+              "borderBottom": "1px solid #00fff6",
+              "marginBottom": "0.5em",
+              "padding": "0.5em 0.5em 0.2em",
+            },
+            "navBar": Object {
+              "borderBottom": "1px solid #00fff6",
+              "marginBottom": "0.5em",
+              "padding": "0.5em 0.5em 0.2em",
+            },
+            "navButton": Object {
+              "background": "#fff",
+              "border": "none",
+              "borderBottom": "1px solid #007bff",
+              "color": "#007bff",
+              "margin": "auto 0.3em",
+              "padding": "0",
+            },
+            "navItem": Object {},
+            "navRight": Object {
+              "fontSize": "0.8em",
+              "textAlign": "right",
+            },
+            "overlay": Object {
+              "height": "100%",
+              "left": 0,
+              "position": "absolute",
+              "top": 0,
+              "width": "100%",
+            },
+            "overlaySelected": Object {
+              "background": "#888",
+              "border": "2px solid blue",
+              "height": "100%",
+              "left": 0,
+              "opacity": "0.5",
+              "position": "absolute",
+              "top": 0,
+              "width": "100%",
+            },
+            "photo": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "verticalAlign": "top",
+              "width": "32%",
+            },
+            "photoImg": Object {
+              "maxWidth": "100%",
+            },
+            "picker": Object {
+              "textAlign": "center",
+              "width": "100%",
+            },
+            "pickerButton": Object {
+              "background": "#fff",
+              "border": "1px solid #ccc",
+              "fontWeight": "200",
+              "width": "100%",
+            },
+            "pickerInput": Object {},
+            "pickerPicker": Object {
+              "textAlign": "center",
+              "width": "100%",
+            },
+            "pre": Object {
+              "background": "#eee",
+              "margin": "0",
+              "overflow": "auto",
+              "padding": "1em",
+              "textAlign": "left",
+            },
+            "section": Object {
+              "fontWeight": "200",
+            },
+            "sectionBody": Object {
+              "background": "#fff",
+              "color": "#000",
+              "fontSize": "1em",
+              "padding": "1em",
+            },
+            "sectionFooter": Object {
+              "background": "#fff",
+              "borderBottom": "1px solid #00fff6",
+              "color": "#000",
+              "fontSize": "0.8em",
+              "padding": "1em",
+              "textAlign": "left",
+            },
+            "sectionHeader": Object {
+              "background": "#007bff",
+              "color": "#fff",
+              "fontSize": "1.2em",
+              "fontWeight": "normal",
+              "padding": "0.6em",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "background": "#fff",
+              "border": "1px solid #007bff",
+              "color": "#007bff",
+              "fontSize": "1em",
+              "margin": "0.3em",
+              "padding": "0.3em 0.5em",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "1em",
+            },
+            "text": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "maxHeight": 384,
+              "overflow": "auto",
+              "verticalAlign": "top",
+              "width": "32.5%",
+            },
           }
         }
       >
         Confirm
-      </button>
-      <button
-        onClick={[Function]}
-        style={
+      </Button>
+      <Space
+        theme={
           Object {
-            "background": "#fff",
-            "border": "1px solid #007bff",
-            "color": "#007bff",
-            "fontSize": "1em",
-            "margin": "auto 0.3em",
-            "padding": "0.3em 0.5em",
+            "a": Object {
+              "textDecoration": "underline",
+            },
+            "actionRow": Object {
+              "marginTop": "1.5em",
+              "textAlign": "right",
+            },
+            "album": Object {
+              "display": "block",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "albumPhoto": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "verticalAlign": "top",
+              "width": "16.6%",
+            },
+            "albumText": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "maxHeight": 256,
+              "overflow": "auto",
+              "verticalAlign": "top",
+              "width": "32%",
+            },
+            "button": Object {
+              "background": "#fff",
+              "border": "1px solid #007bff",
+              "color": "#007bff",
+              "fontSize": "1em",
+              "margin": "auto 0.3em",
+              "padding": "0.3em 0.5em",
+            },
+            "center": Object {
+              "textAlign": "center",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "83.6%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "99.2%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.6%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "24.5%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "32%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "49.5%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "66%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "74.5%",
+            },
+            "container": Object {
+              "fontFamily": "-apple-system,
+                BlinkMacSystemFont,
+                \\"Segoe UI\\",
+                Roboto,
+                \\"Helvetica Neue\\",
+                Arial,
+                sans-serif,
+                \\"Apple Color Emoji\\",
+                \\"Segoe UI Emoji\\",
+                \\"Segoe UI Symbol\\"",
+              "textAlign": "center",
+            },
+            "errorSection": Object {
+              "background": "orange",
+              "fontWeight": "300",
+              "margin": "0.2em auto",
+              "padding": "0.5em",
+            },
+            "formContainer": Object {},
+            "formRow": Object {
+              "marginBottom": "0.5em",
+              "textAlign": "left",
+            },
+            "formSection": Object {
+              "display": "inline-block",
+              "fontWeight": "200",
+              "maxWidth": "500px",
+            },
+            "halfHeight": Object {
+              "height": 384,
+              "overflow": "auto",
+            },
+            "hidden": Object {
+              "display": "none",
+            },
+            "input": Object {
+              "border": "1px solid #aaa",
+              "fontSize": "1em",
+              "fontWeight": "200",
+              "padding": "4px 2px",
+              "width": "15em",
+            },
+            "label": Object {
+              "margin": "auto 0.5em",
+            },
+            "nav": Object {
+              "borderBottom": "1px solid #00fff6",
+              "marginBottom": "0.5em",
+              "padding": "0.5em 0.5em 0.2em",
+            },
+            "navBar": Object {
+              "borderBottom": "1px solid #00fff6",
+              "marginBottom": "0.5em",
+              "padding": "0.5em 0.5em 0.2em",
+            },
+            "navButton": Object {
+              "background": "#fff",
+              "border": "none",
+              "borderBottom": "1px solid #007bff",
+              "color": "#007bff",
+              "margin": "auto 0.3em",
+              "padding": "0",
+            },
+            "navItem": Object {},
+            "navRight": Object {
+              "fontSize": "0.8em",
+              "textAlign": "right",
+            },
+            "overlay": Object {
+              "height": "100%",
+              "left": 0,
+              "position": "absolute",
+              "top": 0,
+              "width": "100%",
+            },
+            "overlaySelected": Object {
+              "background": "#888",
+              "border": "2px solid blue",
+              "height": "100%",
+              "left": 0,
+              "opacity": "0.5",
+              "position": "absolute",
+              "top": 0,
+              "width": "100%",
+            },
+            "photo": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "verticalAlign": "top",
+              "width": "32%",
+            },
+            "photoImg": Object {
+              "maxWidth": "100%",
+            },
+            "picker": Object {
+              "textAlign": "center",
+              "width": "100%",
+            },
+            "pickerButton": Object {
+              "background": "#fff",
+              "border": "1px solid #ccc",
+              "fontWeight": "200",
+              "width": "100%",
+            },
+            "pickerInput": Object {},
+            "pickerPicker": Object {
+              "textAlign": "center",
+              "width": "100%",
+            },
+            "pre": Object {
+              "background": "#eee",
+              "margin": "0",
+              "overflow": "auto",
+              "padding": "1em",
+              "textAlign": "left",
+            },
+            "section": Object {
+              "fontWeight": "200",
+            },
+            "sectionBody": Object {
+              "background": "#fff",
+              "color": "#000",
+              "fontSize": "1em",
+              "padding": "1em",
+            },
+            "sectionFooter": Object {
+              "background": "#fff",
+              "borderBottom": "1px solid #00fff6",
+              "color": "#000",
+              "fontSize": "0.8em",
+              "padding": "1em",
+              "textAlign": "left",
+            },
+            "sectionHeader": Object {
+              "background": "#007bff",
+              "color": "#fff",
+              "fontSize": "1.2em",
+              "fontWeight": "normal",
+              "padding": "0.6em",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "background": "#fff",
+              "border": "1px solid #007bff",
+              "color": "#007bff",
+              "fontSize": "1em",
+              "margin": "0.3em",
+              "padding": "0.3em 0.5em",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "1em",
+            },
+            "text": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "maxHeight": 384,
+              "overflow": "auto",
+              "verticalAlign": "top",
+              "width": "32.5%",
+            },
+          }
+        }
+      />
+      <Button
+        onClick={[Function]}
+        theme={
+          Object {
+            "a": Object {
+              "textDecoration": "underline",
+            },
+            "actionRow": Object {
+              "marginTop": "1.5em",
+              "textAlign": "right",
+            },
+            "album": Object {
+              "display": "block",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "albumPhoto": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "verticalAlign": "top",
+              "width": "16.6%",
+            },
+            "albumText": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "maxHeight": 256,
+              "overflow": "auto",
+              "verticalAlign": "top",
+              "width": "32%",
+            },
+            "button": Object {
+              "background": "#fff",
+              "border": "1px solid #007bff",
+              "color": "#007bff",
+              "fontSize": "1em",
+              "margin": "auto 0.3em",
+              "padding": "0.3em 0.5em",
+            },
+            "center": Object {
+              "textAlign": "center",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "83.6%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "99.2%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.6%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "24.5%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "32%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "49.5%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "66%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "width": "74.5%",
+            },
+            "container": Object {
+              "fontFamily": "-apple-system,
+                BlinkMacSystemFont,
+                \\"Segoe UI\\",
+                Roboto,
+                \\"Helvetica Neue\\",
+                Arial,
+                sans-serif,
+                \\"Apple Color Emoji\\",
+                \\"Segoe UI Emoji\\",
+                \\"Segoe UI Symbol\\"",
+              "textAlign": "center",
+            },
+            "errorSection": Object {
+              "background": "orange",
+              "fontWeight": "300",
+              "margin": "0.2em auto",
+              "padding": "0.5em",
+            },
+            "formContainer": Object {},
+            "formRow": Object {
+              "marginBottom": "0.5em",
+              "textAlign": "left",
+            },
+            "formSection": Object {
+              "display": "inline-block",
+              "fontWeight": "200",
+              "maxWidth": "500px",
+            },
+            "halfHeight": Object {
+              "height": 384,
+              "overflow": "auto",
+            },
+            "hidden": Object {
+              "display": "none",
+            },
+            "input": Object {
+              "border": "1px solid #aaa",
+              "fontSize": "1em",
+              "fontWeight": "200",
+              "padding": "4px 2px",
+              "width": "15em",
+            },
+            "label": Object {
+              "margin": "auto 0.5em",
+            },
+            "nav": Object {
+              "borderBottom": "1px solid #00fff6",
+              "marginBottom": "0.5em",
+              "padding": "0.5em 0.5em 0.2em",
+            },
+            "navBar": Object {
+              "borderBottom": "1px solid #00fff6",
+              "marginBottom": "0.5em",
+              "padding": "0.5em 0.5em 0.2em",
+            },
+            "navButton": Object {
+              "background": "#fff",
+              "border": "none",
+              "borderBottom": "1px solid #007bff",
+              "color": "#007bff",
+              "margin": "auto 0.3em",
+              "padding": "0",
+            },
+            "navItem": Object {},
+            "navRight": Object {
+              "fontSize": "0.8em",
+              "textAlign": "right",
+            },
+            "overlay": Object {
+              "height": "100%",
+              "left": 0,
+              "position": "absolute",
+              "top": 0,
+              "width": "100%",
+            },
+            "overlaySelected": Object {
+              "background": "#888",
+              "border": "2px solid blue",
+              "height": "100%",
+              "left": 0,
+              "opacity": "0.5",
+              "position": "absolute",
+              "top": 0,
+              "width": "100%",
+            },
+            "photo": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "verticalAlign": "top",
+              "width": "32%",
+            },
+            "photoImg": Object {
+              "maxWidth": "100%",
+            },
+            "picker": Object {
+              "textAlign": "center",
+              "width": "100%",
+            },
+            "pickerButton": Object {
+              "background": "#fff",
+              "border": "1px solid #ccc",
+              "fontWeight": "200",
+              "width": "100%",
+            },
+            "pickerInput": Object {},
+            "pickerPicker": Object {
+              "textAlign": "center",
+              "width": "100%",
+            },
+            "pre": Object {
+              "background": "#eee",
+              "margin": "0",
+              "overflow": "auto",
+              "padding": "1em",
+              "textAlign": "left",
+            },
+            "section": Object {
+              "fontWeight": "200",
+            },
+            "sectionBody": Object {
+              "background": "#fff",
+              "color": "#000",
+              "fontSize": "1em",
+              "padding": "1em",
+            },
+            "sectionFooter": Object {
+              "background": "#fff",
+              "borderBottom": "1px solid #00fff6",
+              "color": "#000",
+              "fontSize": "0.8em",
+              "padding": "1em",
+              "textAlign": "left",
+            },
+            "sectionHeader": Object {
+              "background": "#007bff",
+              "color": "#fff",
+              "fontSize": "1.2em",
+              "fontWeight": "normal",
+              "padding": "0.6em",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "background": "#fff",
+              "border": "1px solid #007bff",
+              "color": "#007bff",
+              "fontSize": "1em",
+              "margin": "0.3em",
+              "padding": "0.3em 0.5em",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "1em",
+            },
+            "text": Object {
+              "display": "inline-block",
+              "margin": "0.2%",
+              "maxHeight": 384,
+              "overflow": "auto",
+              "verticalAlign": "top",
+              "width": "32.5%",
+            },
           }
         }
       >
         Resend Code
-      </button>
-    </div>
-  </div>
-  <Footer
+      </Button>
+    </ActionRow>
+  </SectionBody>
+  <SectionFooter
     theme={
       Object {
-        "Photo": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
         "a": Object {
           "textDecoration": "underline",
         },
@@ -732,10 +2245,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         "albumPhoto": Object {
           "display": "inline-block",
           "margin": "0.2%",
-          "maxHeight": 320,
-          "overflow": "auto",
           "verticalAlign": "top",
-          "width": "32%",
+          "width": "16.6%",
         },
         "albumText": Object {
           "display": "inline-block",
@@ -743,7 +2254,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "maxHeight": 256,
           "overflow": "auto",
           "verticalAlign": "top",
-          "width": "32.5%",
+          "width": "32%",
         },
         "button": Object {
           "background": "#fff",
@@ -765,6 +2276,10 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "display": "inline-block",
           "margin": "0.2%",
           "width": "99.2%",
+        },
+        "col2": Object {
+          "display": "inline-block",
+          "width": "16.6%",
         },
         "col3": Object {
           "display": "inline-block",
@@ -810,6 +2325,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "margin": "0.2em auto",
           "padding": "0.5em",
         },
+        "formContainer": Object {},
         "formRow": Object {
           "marginBottom": "0.5em",
           "textAlign": "left",
@@ -817,6 +2333,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         "formSection": Object {
           "display": "inline-block",
           "fontWeight": "200",
+          "maxWidth": "500px",
         },
         "halfHeight": Object {
           "height": 384,
@@ -835,6 +2352,11 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         "label": Object {
           "margin": "auto 0.5em",
         },
+        "nav": Object {
+          "borderBottom": "1px solid #00fff6",
+          "marginBottom": "0.5em",
+          "padding": "0.5em 0.5em 0.2em",
+        },
         "navBar": Object {
           "borderBottom": "1px solid #00fff6",
           "marginBottom": "0.5em",
@@ -848,15 +2370,33 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "margin": "auto 0.3em",
           "padding": "0",
         },
+        "navItem": Object {},
         "navRight": Object {
           "fontSize": "0.8em",
           "textAlign": "right",
+        },
+        "overlay": Object {
+          "height": "100%",
+          "left": 0,
+          "position": "absolute",
+          "top": 0,
+          "width": "100%",
+        },
+        "overlaySelected": Object {
+          "background": "#888",
+          "border": "2px solid blue",
+          "height": "100%",
+          "left": 0,
+          "opacity": "0.5",
+          "position": "absolute",
+          "top": 0,
+          "width": "100%",
         },
         "photo": Object {
           "display": "inline-block",
           "margin": "0.2%",
           "verticalAlign": "top",
-          "width": "32.5%",
+          "width": "32%",
         },
         "photoImg": Object {
           "maxWidth": "100%",
@@ -908,6 +2448,19 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "padding": "0.6em",
           "textAlign": "center",
         },
+        "signInButton": Object {
+          "background": "#fff",
+          "border": "1px solid #007bff",
+          "color": "#007bff",
+          "fontSize": "1em",
+          "margin": "0.3em",
+          "padding": "0.3em 0.5em",
+          "width": "100%",
+        },
+        "space": Object {
+          "display": "inline-block",
+          "width": "1em",
+        },
         "text": Object {
           "display": "inline-block",
           "margin": "0.2%",
@@ -923,12 +2476,6 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
       onClick={[Function]}
       theme={
         Object {
-          "Photo": Object {
-            "display": "inline-block",
-            "margin": "0.2%",
-            "verticalAlign": "top",
-            "width": "32%",
-          },
           "a": Object {
             "textDecoration": "underline",
           },
@@ -944,10 +2491,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "albumPhoto": Object {
             "display": "inline-block",
             "margin": "0.2%",
-            "maxHeight": 320,
-            "overflow": "auto",
             "verticalAlign": "top",
-            "width": "32%",
+            "width": "16.6%",
           },
           "albumText": Object {
             "display": "inline-block",
@@ -955,7 +2500,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "maxHeight": 256,
             "overflow": "auto",
             "verticalAlign": "top",
-            "width": "32.5%",
+            "width": "32%",
           },
           "button": Object {
             "background": "#fff",
@@ -977,6 +2522,10 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "display": "inline-block",
             "margin": "0.2%",
             "width": "99.2%",
+          },
+          "col2": Object {
+            "display": "inline-block",
+            "width": "16.6%",
           },
           "col3": Object {
             "display": "inline-block",
@@ -1022,6 +2571,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "margin": "0.2em auto",
             "padding": "0.5em",
           },
+          "formContainer": Object {},
           "formRow": Object {
             "marginBottom": "0.5em",
             "textAlign": "left",
@@ -1029,6 +2579,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "formSection": Object {
             "display": "inline-block",
             "fontWeight": "200",
+            "maxWidth": "500px",
           },
           "halfHeight": Object {
             "height": 384,
@@ -1047,6 +2598,11 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "label": Object {
             "margin": "auto 0.5em",
           },
+          "nav": Object {
+            "borderBottom": "1px solid #00fff6",
+            "marginBottom": "0.5em",
+            "padding": "0.5em 0.5em 0.2em",
+          },
           "navBar": Object {
             "borderBottom": "1px solid #00fff6",
             "marginBottom": "0.5em",
@@ -1060,15 +2616,33 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "margin": "auto 0.3em",
             "padding": "0",
           },
+          "navItem": Object {},
           "navRight": Object {
             "fontSize": "0.8em",
             "textAlign": "right",
+          },
+          "overlay": Object {
+            "height": "100%",
+            "left": 0,
+            "position": "absolute",
+            "top": 0,
+            "width": "100%",
+          },
+          "overlaySelected": Object {
+            "background": "#888",
+            "border": "2px solid blue",
+            "height": "100%",
+            "left": 0,
+            "opacity": "0.5",
+            "position": "absolute",
+            "top": 0,
+            "width": "100%",
           },
           "photo": Object {
             "display": "inline-block",
             "margin": "0.2%",
             "verticalAlign": "top",
-            "width": "32.5%",
+            "width": "32%",
           },
           "photoImg": Object {
             "maxWidth": "100%",
@@ -1120,6 +2694,19 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "padding": "0.6em",
             "textAlign": "center",
           },
+          "signInButton": Object {
+            "background": "#fff",
+            "border": "1px solid #007bff",
+            "color": "#007bff",
+            "fontSize": "1em",
+            "margin": "0.3em",
+            "padding": "0.3em 0.5em",
+            "width": "100%",
+          },
+          "space": Object {
+            "display": "inline-block",
+            "width": "1em",
+          },
           "text": Object {
             "display": "inline-block",
             "margin": "0.2%",
@@ -1133,8 +2720,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
     >
       Back to Sign In
     </Link>
-  </Footer>
-</div>
+  </SectionFooter>
+</FormSection>
 `;
 
 exports[`ConfirmSignIn null case with other authState render corrently 1`] = `""`;

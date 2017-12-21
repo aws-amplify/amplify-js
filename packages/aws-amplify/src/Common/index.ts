@@ -20,9 +20,10 @@ export * from './Logger';
 export * from './Errors';
 export { default as Hub } from './Hub';
 export { default as JS } from './JS';
+export { default as Signer } from './Signer';
 
 export const Constants = {
-    userAgent: 'aws-amplify/1.0.0'
+    userAgent: 'aws-amplify/0.1.22 js'
 };
 
 const logger = new Logger('Common');
@@ -30,7 +31,7 @@ const logger = new Logger('Common');
 if (AWS['util']) {
     AWS['util'].userAgent = () => {
         return Constants.userAgent;
-    }
+    };
 } else if (AWS.config) {
     AWS.config.update({customUserAgent: Constants.userAgent});
 } else {

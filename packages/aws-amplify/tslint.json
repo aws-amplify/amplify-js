@@ -18,7 +18,7 @@
         "space-before-function-paren": [
         true,
         {
-            "anonymous": "always",
+            "anonymous": "never",
             "named": "never"
         }
         ],
@@ -30,7 +30,7 @@
         ],
         "no-duplicate-imports": true,
         "one-variable-per-declaration": [
-            true,
+            false,
             "ignore-for-loop"
         ],
         "triple-equals": [
@@ -48,7 +48,7 @@
             2
         ],
         "whitespace": [
-            true,
+            false,
             "check-branch",
             "check-decl",
             "check-operator",
@@ -57,11 +57,15 @@
         "eofline": true,
         "variable-name": [
             true,
-            "check-format" // 22.2
+            "check-format", // 22.2
+            "allow-pascal-case",
+            "allow-snake-case",
+            "allow-leading-underscore"
         ],
         "semicolon": [
             true,
-            "always"
+            "always",
+            "ignore-interfaces"
         ]
     },
     "rulesDirectory": []

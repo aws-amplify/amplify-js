@@ -16,6 +16,8 @@ var _AuthPiece2 = require('./AuthPiece');
 
 var _AuthPiece3 = _interopRequireDefault(_AuthPiece2);
 
+var _AmplifyUI = require('../AmplifyUI');
+
 var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
@@ -147,8 +149,8 @@ var Greetings = function (_AuthPiece) {
     }, {
         key: 'inGreeting',
         value: function () {
-            function inGreeting(username) {
-                return 'Hello ' + username;
+            function inGreeting(name) {
+                return 'Hello ' + name;
             }
 
             return inGreeting;
@@ -157,7 +159,7 @@ var Greetings = function (_AuthPiece) {
         key: 'outGreeting',
         value: function () {
             function outGreeting() {
-                return 'Please Sign In / Sign Up';
+                return '';
             }
 
             return outGreeting;
@@ -168,20 +170,20 @@ var Greetings = function (_AuthPiece) {
             function userGreetings(theme) {
                 var user = this.state.authData;
                 var greeting = this.props.inGreeting || this.inGreeting;
-                var message = typeof greeting === 'function' ? greeting(user.username) : greeting;
+                var name = user.name || user.username;
+                var message = typeof greeting === 'function' ? greeting(name) : greeting;
                 return _react2['default'].createElement(
-                    'div',
-                    { className: 'amplify-nav-right', style: theme.navRight },
+                    'span',
+                    null,
                     _react2['default'].createElement(
-                        'span',
-                        null,
+                        _AmplifyUI.NavItem,
+                        { theme: theme },
                         message
                     ),
                     _react2['default'].createElement(
-                        'button',
+                        _AmplifyUI.NavButton,
                         {
-                            className: 'amplify-nav-button',
-                            style: theme.navButton,
+                            theme: theme,
                             onClick: this.signOut
                         },
                         _awsAmplify.I18n.get('Sign Out')
@@ -197,11 +199,11 @@ var Greetings = function (_AuthPiece) {
             function noUserGreetings(theme) {
                 var greeting = this.props.outGreeting || this.outGreeting;
                 var message = typeof greeting === 'function' ? greeting() : greeting;
-                return _react2['default'].createElement(
-                    'div',
-                    { className: 'amplify-nav-right', style: theme.navRight },
+                return message ? _react2['default'].createElement(
+                    _AmplifyUI.NavItem,
+                    { theme: theme },
                     message
-                );
+                ) : null;
             }
 
             return noUserGreetings;
@@ -211,19 +213,33 @@ var Greetings = function (_AuthPiece) {
         value: function () {
             function render() {
                 var hide = this.props.hide;
-                var authState = this.state.authState;
-
-                var signedIn = authState === 'signedIn';
-                var theme = this.props.theme || _AmplifyTheme2['default'];
 
                 if (hide && hide.includes(Greetings)) {
                     return null;
                 }
 
+                var authState = this.state.authState;
+
+                var signedIn = authState === 'signedIn';
+
+                var theme = this.props.theme || _AmplifyTheme2['default'];
+                var greeting = signedIn ? this.userGreetings(theme) : this.noUserGreetings(theme);
+                if (!greeting) {
+                    return null;
+                }
+
                 return _react2['default'].createElement(
-                    'div',
-                    { className: 'amplify-nav-bar', style: theme.navBar },
-                    signedIn ? this.userGreetings(theme) : this.noUserGreetings(theme)
+                    _AmplifyUI.NavBar,
+                    { theme: theme },
+                    _react2['default'].createElement(
+                        _AmplifyUI.Nav,
+                        { theme: theme },
+                        _react2['default'].createElement(
+                            _AmplifyUI.NavRight,
+                            { theme: theme },
+                            greeting
+                        )
+                    )
                 );
             }
 

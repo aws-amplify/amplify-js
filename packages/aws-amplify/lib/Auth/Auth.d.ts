@@ -5,6 +5,9 @@ import { AuthOptions } from './types';
 export default class AuthClass {
     private _config;
     private userPool;
+    private credentials;
+    private credentials_source;
+    private user;
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -57,10 +60,10 @@ export default class AuthClass {
         unverified: {};
     }>;
     /**
-     * Get current CognitoUser
-     * @return - A promise resolves to curret CognitoUser if success
+     * Get current authenticated user
+     * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    currentUser(): Promise<any>;
+    currentUserPoolUser(): Promise<any>;
     /**
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success
@@ -82,11 +85,6 @@ export default class AuthClass {
      * @return - A promise resolves to be current user's credentials
      */
     currentUserCredentials(): Promise<any>;
-    /**
-     * Get unauthenticated credentials
-     * @return - A promise resolves to be a guest credentials
-     */
-    guestCredentials(): Promise<any>;
     currentCredentials(): Promise<any>;
     /**
      * Initiate an attribute confirmation request
@@ -135,12 +133,8 @@ export default class AuthClass {
      * @async
      * @return {Object }- current User's information
      */
-    currentUserInfo(): Promise<{
-        username: any;
-        id: any;
-        email: any;
-        phone_number: any;
-    }>;
+    currentUserInfo(): Promise<any>;
+    federatedSignIn(provider: any, response: any, user: any): Promise<any>;
     /**
      * Compact version of credentials
      * @param {Object} credentials
@@ -153,15 +147,11 @@ export default class AuthClass {
         identityId: any;
         authenticated: any;
     };
-    /**
-     * @return - A new guest CognitoIdentityCredentials
-     */
-    private noSessionCredentials();
-    /**
-     * Produce a credentials based on the session
-     * @param {Object} session - The session used to generate the credentials
-     * @return - A new CognitoIdentityCredentials
-     */
-    private sessionToCredentials(session);
     private attributesToObject(attributes);
+    private setCredentialsFromFederation(provider, token, user);
+    private pickupCredentials();
+    private setCredentialsFromAWS();
+    private setCredentialsForGuest();
+    private setCredentialsFromSession(session);
+    private keepAlive();
 }

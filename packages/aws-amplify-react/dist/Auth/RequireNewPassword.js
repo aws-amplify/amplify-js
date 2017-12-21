@@ -96,16 +96,16 @@ var RequireNewPassword = function (_AuthPiece) {
                 }
 
                 return _react2['default'].createElement(
-                    'div',
-                    { className: 'amplify-form-section', style: theme.formSection },
+                    _AmplifyUI.FormSection,
+                    { theme: theme },
                     _react2['default'].createElement(
-                        _AmplifyUI.Header,
+                        _AmplifyUI.SectionHeader,
                         { theme: theme },
                         _awsAmplify.I18n.get('Change Password')
                     ),
                     _react2['default'].createElement(
-                        'div',
-                        { className: 'amplify-form-body', style: theme.sectionBody },
+                        _AmplifyUI.SectionBody,
+                        null,
                         _react2['default'].createElement(_AmplifyUI.InputRow, {
                             autoFocus: true,
                             placeholder: _awsAmplify.I18n.get('New Password'),
@@ -122,7 +122,7 @@ var RequireNewPassword = function (_AuthPiece) {
                         )
                     ),
                     _react2['default'].createElement(
-                        _AmplifyUI.Footer,
+                        _AmplifyUI.SectionFooter,
                         { theme: theme },
                         _react2['default'].createElement(
                             _AmplifyUI.Link,

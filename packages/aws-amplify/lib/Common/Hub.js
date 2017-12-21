@@ -14,7 +14,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Logger_1 = require("./Logger");
 var logger = new Logger_1.ConsoleLogger('Hub');
-var HubClass = (function () {
+var HubClass = /** @class */ (function () {
     function HubClass(name) {
         this.bus = [];
         this.listeners = {};
@@ -26,9 +26,9 @@ var HubClass = (function () {
     HubClass.prototype.dispatch = function (channel, payload, source) {
         if (source === void 0) { source = ''; }
         var capsule = {
-            channel: channel,
-            payload: Object.assign({}, payload),
-            source: source
+            'channel': channel,
+            'payload': Object.assign({}, payload),
+            'source': source
         };
         try {
             this.bus.push(capsule);
@@ -38,17 +38,17 @@ var HubClass = (function () {
             logger.warn('Hub dispatch error', e);
         }
     };
-    HubClass.prototype.listen = function (channel, listener, listener_name) {
-        if (listener_name === void 0) { listener_name = 'noname'; }
-        logger.debug(listener_name + ' listening ' + channel);
+    HubClass.prototype.listen = function (channel, listener, listenerName) {
+        if (listenerName === void 0) { listenerName = 'noname'; }
+        logger.debug(listenerName + ' listening ' + channel);
         var holder = this.listeners[channel];
         if (!holder) {
             holder = [];
             this.listeners[channel] = holder;
         }
         holder.push({
-            name: listener_name,
-            listener: listener
+            'name': listenerName,
+            'listener': listener
         });
     };
     HubClass.prototype.toListeners = function (capsule) {

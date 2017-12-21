@@ -95,6 +95,12 @@ export class RestClient {
             params.headers[key] = libraryHeaders[key];
         });
 
+        // Do not sign the request if client has added 'Authorization' header,
+        // which means custom authorizer.
+        if (params.headers['Authorization']) {
+            return this._request(params);
+        }
+
         const credPromise = new Promise((resolve, reject) => {
             Auth.currentCredentials().then(resolve).catch(err => {
                 // usar guest
@@ -196,15 +202,10 @@ export class RestClient {
         });
     }
 
-    _unsigned(params) {
-        return fetch(params.url, params).then(function (response) {
-            return Promise.all([response, response.json()]);
-        }).then(function (values) {
-            return {
-                status: values[0].status,
-                headers: values[0].headers,
-                data: values[1]
-            };
+    _request(params) {
+        return axios(params).then(response => response.data).catch(error => {
+            logger.debug(error);
+            throw error;
         });
     }
 

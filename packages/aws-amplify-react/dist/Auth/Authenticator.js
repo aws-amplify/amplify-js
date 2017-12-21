@@ -21,6 +21,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _fluidReact = require('fluid-react');
+
 var _awsAmplify = require('aws-amplify');
 
 var _awsAmplify2 = _interopRequireDefault(_awsAmplify);
@@ -60,6 +62,8 @@ var _ForgotPassword2 = _interopRequireDefault(_ForgotPassword);
 var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
+
+var _AmplifyUI = require('../AmplifyUI');
 
 var _AmplifyMessageMap = require('../AmplifyMessageMap');
 
@@ -179,12 +183,13 @@ var Authenticator = function (_Component) {
             function errorRenderer(err) {
                 var theme = this.props.theme || _AmplifyTheme2['default'];
                 return _react2['default'].createElement(
-                    'div',
-                    {
-                        className: 'amplify-error-section',
-                        style: theme.errorSection
-                    },
-                    err
+                    _AmplifyUI.ErrorSection,
+                    { theme: theme },
+                    _react2['default'].createElement(
+                        _AmplifyUI.SectionBody,
+                        { theme: theme },
+                        err
+                    )
                 );
             }
 
@@ -205,7 +210,8 @@ var Authenticator = function (_Component) {
 
                 var _props = this.props,
                     hideDefault = _props.hideDefault,
-                    hide = _props.hide;
+                    hide = _props.hide,
+                    federated = _props.federated;
 
                 if (!hide) {
                     hide = [];
@@ -214,7 +220,7 @@ var Authenticator = function (_Component) {
                     hide = hide.concat([_Greetings2['default'], _SignIn2['default'], _ConfirmSignIn2['default'], _RequireNewPassword2['default'], _SignUp2['default'], _ConfirmSignUp2['default'], _VerifyContact2['default'], _ForgotPassword2['default']]);
                 }
                 var props_children = this.props.children || [];
-                var default_children = [_react2['default'].createElement(_Greetings2['default'], null), _react2['default'].createElement(_SignIn2['default'], null), _react2['default'].createElement(_ConfirmSignIn2['default'], null), _react2['default'].createElement(_RequireNewPassword2['default'], null), _react2['default'].createElement(_SignUp2['default'], null), _react2['default'].createElement(_ConfirmSignUp2['default'], null), _react2['default'].createElement(_VerifyContact2['default'], null), _react2['default'].createElement(_ForgotPassword2['default'], null)];
+                var default_children = [_react2['default'].createElement(_Greetings2['default'], null), _react2['default'].createElement(_SignIn2['default'], { federated: federated }), _react2['default'].createElement(_ConfirmSignIn2['default'], null), _react2['default'].createElement(_RequireNewPassword2['default'], null), _react2['default'].createElement(_SignUp2['default'], null), _react2['default'].createElement(_ConfirmSignUp2['default'], null), _react2['default'].createElement(_VerifyContact2['default'], null), _react2['default'].createElement(_ForgotPassword2['default'], null)];
 
                 var children = default_children.concat(props_children);
                 var render_children = _react2['default'].Children.map(children, function (child) {
@@ -233,10 +239,18 @@ var Authenticator = function (_Component) {
                 var errorRenderer = this.props.errorRenderer || this.errorRenderer;
                 var error = this.state.error;
                 return _react2['default'].createElement(
-                    'div',
-                    { className: 'amplify-container', style: theme.container },
-                    render_children,
-                    error ? errorRenderer(error) : null
+                    _fluidReact.Row,
+                    { style: { justifyContent: 'center' } },
+                    _react2['default'].createElement(
+                        _fluidReact.Col,
+                        { xs: '9', sm: '8', md: '6', lg: '4' },
+                        _react2['default'].createElement(
+                            _AmplifyUI.Container,
+                            { theme: theme },
+                            render_children,
+                            error ? errorRenderer(error) : null
+                        )
+                    )
                 );
             }
 

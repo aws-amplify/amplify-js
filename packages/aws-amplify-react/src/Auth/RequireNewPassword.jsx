@@ -16,7 +16,15 @@ import { Auth, I18n, Logger } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../AmplifyUI';
+import {
+    FormSection,
+    SectionHeader,
+    SectionBody,
+    SectionFooter,
+    InputRow,
+    ButtonRow,
+    Link
+} from '../AmplifyUI';
 
 const logger = new Logger('RequireNewPassword');
 
@@ -48,9 +56,9 @@ export default class RequireNewPassword extends AuthPiece {
         if (hide && hide.includes(RequireNewPassword)) { return null; }
 
         return (
-            <div className="amplify-form-section" style={theme.formSection}>
-                <Header theme={theme}>{I18n.get('Change Password')}</Header>
-                <div className="amplify-form-body" style={theme.sectionBody}>
+            <FormSection theme={theme}>
+                <SectionHeader theme={theme}>{I18n.get('Change Password')}</SectionHeader>
+                <SectionBody>
                     <InputRow
                         autoFocus
                         placeholder={I18n.get('New Password')}
@@ -63,13 +71,13 @@ export default class RequireNewPassword extends AuthPiece {
                     <ButtonRow theme={theme} onClick={this.change}>
                         {I18n.get('Change')}
                     </ButtonRow>
-                </div>
-                <Footer theme={theme}>
+                </SectionBody>
+                <SectionFooter theme={theme}>
                     <Link theme={theme} onClick={() => this.changeState('signIn')}>
                         {I18n.get('Back to Sign In')}
                     </Link>
-                </Footer>
-            </div>
+                </SectionFooter>
+            </FormSection>
         )
     }
 }

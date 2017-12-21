@@ -94,16 +94,16 @@ var SignUp = function (_AuthPiece) {
                 }
 
                 return _react2['default'].createElement(
-                    'div',
-                    { style: theme.formSection },
+                    _AmplifyUI.FormSection,
+                    { theme: theme },
                     _react2['default'].createElement(
-                        _AmplifyUI.Header,
+                        _AmplifyUI.SectionHeader,
                         { theme: theme },
                         _awsAmplify.I18n.get('Sign Up Account')
                     ),
                     _react2['default'].createElement(
-                        'div',
-                        { style: theme.sectionBody },
+                        _AmplifyUI.SectionBody,
+                        { theme: theme },
                         _react2['default'].createElement(_AmplifyUI.InputRow, {
                             autoFocus: true,
                             placeholder: _awsAmplify.I18n.get('Username'),
@@ -141,7 +141,7 @@ var SignUp = function (_AuthPiece) {
                         )
                     ),
                     _react2['default'].createElement(
-                        _AmplifyUI.Footer,
+                        _AmplifyUI.SectionFooter,
                         { theme: theme },
                         _react2['default'].createElement(
                             'div',
@@ -163,7 +163,7 @@ var SignUp = function (_AuthPiece) {
                             { style: Object.assign({ textAlign: 'right' }, theme.col6) },
                             _react2['default'].createElement(
                                 _AmplifyUI.Link,
-                                { style: theme.a, onClick: function () {
+                                { theme: theme, onClick: function () {
                                         function onClick() {
                                             return _this3.changeState('signIn');
                                         }

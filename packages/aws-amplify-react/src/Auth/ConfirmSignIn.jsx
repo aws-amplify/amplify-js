@@ -16,7 +16,15 @@ import { Auth, I18n, Logger } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../AmplifyUI';
+import {
+    FormSection,
+    SectionHeader,
+    SectionBody,
+    SectionFooter,
+    InputRow,
+    ButtonRow,
+    Link
+} from '../AmplifyUI';
 
 const logger = new Logger('ConfirmSignIn');
 
@@ -44,9 +52,9 @@ export default class ConfirmSignIn extends AuthPiece {
         if (hide && hide.includes(ConfirmSignIn)) { return null; }
 
         return (
-            <div className="amplify-form-section" style={theme.formSection}>
-                <Header theme={theme}>{I18n.get('Confirm Code')}</Header>
-                <div className="amplify-form-body" style={theme.sectionBody}>
+            <FormSection theme={theme}>
+                <SectionHeader theme={theme}>{I18n.get('Confirm Code')}</SectionHeader>
+                <SectionBody theme={theme}>
                     <InputRow
                         autoFocus
                         placeholder={I18n.get('Code')}
@@ -58,13 +66,13 @@ export default class ConfirmSignIn extends AuthPiece {
                     <ButtonRow theme={theme} onClick={this.confirm}>
                         {I18n.get('Confirm')}
                     </ButtonRow>
-                </div>
-                <Footer theme={theme}>
+                </SectionBody>
+                <SectionFooter theme={theme}>
                     <Link theme={theme} onClick={() => this.changeState('signIn')}>
                         {I18n.get('Back to Sign In')}
                     </Link>
-                </Footer>
-            </div>
+                </SectionFooter>
+            </FormSection>
         )
     }
 }

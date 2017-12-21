@@ -23,7 +23,7 @@ var LOG_LEVELS = {
 * Write logs
 * @class Logger
 */
-var ConsoleLogger = (function () {
+var ConsoleLogger = /** @class */ (function () {
     /**
     * @constructor
     * @param {string} name - Name of the logger
@@ -59,7 +59,7 @@ var ConsoleLogger = (function () {
         if (ConsoleLogger.LOG_LEVEL) {
             logger_level_name = ConsoleLogger.LOG_LEVEL;
         }
-        if ((typeof window != 'undefined') && window.LOG_LEVEL) {
+        if ((typeof window !== 'undefined') && window.LOG_LEVEL) {
             logger_level_name = window.LOG_LEVEL;
         }
         var logger_level = LOG_LEVELS[logger_level_name];
@@ -190,5 +190,4 @@ var ConsoleLogger = (function () {
     return ConsoleLogger;
 }());
 exports.ConsoleLogger = ConsoleLogger;
-;
 //# sourceMappingURL=ConsoleLogger.js.map

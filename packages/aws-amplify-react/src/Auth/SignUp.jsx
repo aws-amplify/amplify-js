@@ -17,7 +17,15 @@ import { Auth, I18n } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../AmplifyUI';
+import {
+    FormSection,
+    SectionHeader,
+    SectionBody,
+    SectionFooter,
+    InputRow,
+    ButtonRow,
+    Link
+} from '../AmplifyUI';
 
 export default class SignUp extends AuthPiece {
     constructor(props) {
@@ -41,9 +49,9 @@ export default class SignUp extends AuthPiece {
         if (hide && hide.includes(SignUp)) { return null; }
 
         return (
-            <div style={theme.formSection}>
-                <Header theme={theme}>{I18n.get('Sign Up Account')}</Header>
-                <div style={theme.sectionBody}>
+            <FormSection theme={theme}>
+                <SectionHeader theme={theme}>{I18n.get('Sign Up Account')}</SectionHeader>
+                <SectionBody theme={theme}>
                     <InputRow
                         autoFocus
                         placeholder={I18n.get('Username')}
@@ -74,21 +82,23 @@ export default class SignUp extends AuthPiece {
                         name="phone_number"
                         onChange={this.handleInputChange}
                     />
-                    <ButtonRow onClick={this.signUp} theme={theme}>{I18n.get('Sign Up')}</ButtonRow>
-                </div>
-                <Footer theme={theme}>
+                    <ButtonRow onClick={this.signUp} theme={theme}>
+                        {I18n.get('Sign Up')}
+                    </ButtonRow>
+                </SectionBody>
+                <SectionFooter theme={theme}>
                     <div style={theme.col6}>
                         <Link theme={theme} onClick={() => this.changeState('confirmSignUp')}>
                             {I18n.get('Confirm a Code')}
                         </Link>
                     </div>
                     <div style={Object.assign({textAlign: 'right'}, theme.col6)}>
-                        <Link style={theme.a} onClick={() => this.changeState('signIn')}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
                             {I18n.get('Sign In')}
                         </Link>
                     </div>
-                </Footer>
-            </div>
+                </SectionFooter>
+            </FormSection>
         )
     }
 }

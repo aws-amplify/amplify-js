@@ -73,7 +73,7 @@ restClient.get('...')
     .catch(err => console.log(err));
 </pre>
 */
-var RestClient = (function () {
+var RestClient = /** @class */ (function () {
     /**
     * @param {RestClientOptions} [options] - Instance options
     */
@@ -100,7 +100,7 @@ var RestClient = (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders, credPromise;
+            var parsed_url, params, libraryHeaders, extraParams;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -113,25 +113,19 @@ var RestClient = (function () {
                     data: null
                 };
                 libraryHeaders = {};
-                if (!init) {
-                    init = {};
-                }
-                if (init.body) {
+                extraParams = Object.assign({}, init);
+                if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json';
-                    params.data = JSON.stringify(init.body);
+                    params.data = JSON.stringify(extraParams.body);
                 }
-                params.headers = __assign({}, libraryHeaders, init.headers);
-                credPromise = new Promise(function (resolve, reject) {
-                    Auth_1.default.currentCredentials()
-                        .then(resolve)
-                        .catch(function (err) {
-                        // usar guest
-                        Auth_1.default.guestCredentials().then(resolve).catch(reject);
-                    });
-                });
-                return [2 /*return*/, credPromise.then(function (credentials) {
-                        return _this._signed(params, credentials);
-                    })];
+                params.headers = __assign({}, libraryHeaders, extraParams.headers);
+                // Do not sign the request if client has added 'Authorization' header,
+                // which means custom authorizer.
+                if (params.headers['Authorization']) {
+                    return [2 /*return*/, this._request(params)];
+                }
+                return [2 /*return*/, Auth_1.default.currentCredentials()
+                        .then(function (credentials) { return _this._signed(params, credentials); })];
             });
         });
     };
@@ -214,16 +208,12 @@ var RestClient = (function () {
             throw error;
         });
     };
-    RestClient.prototype._unsigned = function (params) {
-        return fetch(params.url, params).then(function (response) {
-            return Promise.all([response, response.json()]);
-        })
-            .then(function (values) {
-            return {
-                status: values[0].status,
-                headers: values[0].headers,
-                data: values[1]
-            };
+    RestClient.prototype._request = function (params) {
+        return axios_1.default(params)
+            .then(function (response) { return response.data; })
+            .catch(function (error) {
+            logger.debug(error);
+            throw error;
         });
     };
     RestClient.prototype._parseUrl = function (url) {
@@ -236,5 +226,4 @@ var RestClient = (function () {
     return RestClient;
 }());
 exports.RestClient = RestClient;
-;
 //# sourceMappingURL=RestClient.js.map

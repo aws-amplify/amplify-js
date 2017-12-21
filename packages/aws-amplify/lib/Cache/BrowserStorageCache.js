@@ -29,7 +29,7 @@ var logger = new Common_1.ConsoleLogger('Cache');
 /**
  * Customized storage based on the SessionStorage or LocalStorage with LRU implemented
  */
-var BrowserStorageCache = (function (_super) {
+var BrowserStorageCache = /** @class */ (function (_super) {
     __extends(BrowserStorageCache, _super);
     /**
      * initialize the cache
@@ -324,7 +324,7 @@ var BrowserStorageCache = (function (_super) {
                     // if not expired, great, return the value and refresh it
                     var item = JSON.parse(ret);
                     item = this._refreshItem(item, prefixedKey);
-                    return JSON.parse(item.data);
+                    return item.data;
                 }
             }
             if (options && options.callback !== undefined) {

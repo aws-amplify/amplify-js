@@ -15,6 +15,7 @@ import React, { Component } from 'react';
 import { Auth, I18n, Logger, Hub } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
+import { NavBar, Nav, NavRight, NavItem, NavButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('Greetings');
@@ -78,43 +79,50 @@ export default class Greetings extends AuthPiece {
         if (channel === 'auth') { this.checkUser(); }
     }
 
-    inGreeting(username) { return 'Hello ' + username; }
-    outGreeting() { return 'Please Sign In / Sign Up'; }
+    inGreeting(name) { return 'Hello ' + name; }
+    outGreeting() { return ''; }
 
     userGreetings(theme) {
         const user = this.state.authData;
         const greeting = this.props.inGreeting || this.inGreeting;
-        const message = (typeof greeting === 'function')? greeting(user.username) : greeting;
+        const name = user.name || user.username;
+        const message = (typeof greeting === 'function')? greeting(name) : greeting;
         return (
-            <div className="amplify-nav-right" style={theme.navRight}>
-                <span>{message}</span>
-                <button
-                    className="amplify-nav-button"
-                    style={theme.navButton}
+            <span>
+                <NavItem theme={theme}>{message}</NavItem>
+                <NavButton
+                    theme={theme}
                     onClick={this.signOut}
-                >{I18n.get('Sign Out')}</button>
-            </div>
+                >{I18n.get('Sign Out')}</NavButton>
+            </span>
         )
     }
 
     noUserGreetings(theme) {
         const greeting = this.props.outGreeting || this.outGreeting;
         const message = (typeof greeting === 'function')? greeting() : greeting;
-        return <div className="amplify-nav-right" style={theme.navRight}>{message}</div>
+        return message? <NavItem theme={theme}>{message}</NavItem> : null;
     }
 
     render() {
         const { hide } = this.props;
-        const { authState } = this.state;
-        const signedIn = (authState === 'signedIn');
-        const theme = this.props.theme || AmplifyTheme;
-
         if (hide && hide.includes(Greetings)) { return null; }
 
+        const { authState } = this.state;
+        const signedIn = (authState === 'signedIn');
+
+        const theme = this.props.theme || AmplifyTheme;
+        const greeting = signedIn? this.userGreetings(theme) : this.noUserGreetings(theme);
+        if (!greeting) { return null; }
+
         return (
-            <div className="amplify-nav-bar" style={theme.navBar}>
-                {signedIn? this.userGreetings(theme) : this.noUserGreetings(theme)}
-            </div>
+            <NavBar theme={theme}>
+                <Nav theme={theme}>
+                    <NavRight theme={theme}>
+                        {greeting}
+                    </NavRight>
+                </Nav>
+            </NavBar>
         )
     }
 }

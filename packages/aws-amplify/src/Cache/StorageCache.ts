@@ -63,7 +63,9 @@ export default class StorageCache {
         }
 
         if (this.config.itemMaxSize > this.config.capacityInBytes) {
-            logger.error('Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.');
+            logger.error(
+                'Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.'
+            );
             this.config.itemMaxSize = defaultConfig.itemMaxSize;
         }
 
@@ -96,7 +98,7 @@ export default class StorageCache {
         options: CacheItemOptions): CacheItem {
         const ret: CacheItem = {
             key,
-            data: JSON.stringify(value),
+            data: value,
             timestamp: getCurrTime(),
             visitedTime: getCurrTime(),
             priority: options.priority,
