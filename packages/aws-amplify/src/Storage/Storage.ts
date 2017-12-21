@@ -14,13 +14,20 @@
 import {
     AWS,
     S3,
-    ConsoleLogger as Logger
+    ConsoleLogger as Logger,
+    Hub
 } from '../Common';
 
 import Auth from '../Auth';
 import { StorageOptions } from './types';
 
 const logger = new Logger('StorageClass');
+
+const dispatchStorageEvent = (track, attrs, metrics) => {
+    if (track) {
+        Hub.dispatch('storage', { attrs, metrics }, 'Storage');
+    }
+};
 
 /**
  * Provide storage methods to use AWS S3
@@ -72,7 +79,7 @@ export default class StorageClass {
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, level, download } = opt;
+        const { bucket, region, credentials, level, download, track } = opt;
 
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
@@ -87,7 +94,19 @@ export default class StorageClass {
         if(download === true) {
             return new Promise<any>((res, rej) => {
                 s3.getObject(params, (err, data) => {
-                    if(err) { rej(err); } else { res(data); }
+                    if(err) {
+                        dispatchStorageEvent(
+                            track, 
+                            { method: 'get', result: 'failed' }, 
+                            null);
+                        rej(err);
+                    } else {
+                        dispatchStorageEvent(
+                            track, 
+                            { method: 'get', result: 'success' }, 
+                            { fileSize: Number(data.Body['length'])});
+                        res(data);
+                    }
                 });
             });
         }
@@ -95,9 +114,17 @@ export default class StorageClass {
         return new Promise<string>((res, rej) => {
             try {
                 const url = s3.getSignedUrl('getObject', params);
+                dispatchStorageEvent(
+                    track, 
+                    { method: 'get', result: 'success' }, 
+                    null);
                 res(url);
             } catch (e) {
                 logger.warn('get signed url error', e);
+                dispatchStorageEvent(
+                    track, 
+                    { method: 'get', result: 'failed' }, 
+                    null);
                 rej(e);
             }
         });
@@ -115,7 +142,7 @@ export default class StorageClass {
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, contentType, level } = opt;
+        const { bucket, region, credentials, contentType, level, track } = opt;
         const type = contentType? contentType: 'binary/octet-stream';
 
         const prefix = this._prefix(opt);
@@ -134,9 +161,17 @@ export default class StorageClass {
             s3.upload(params, (err, data) => {
                 if(err) {
                     logger.warn("error uploading", err);
+                    dispatchStorageEvent(
+                        track, 
+                        { method: 'put', result: 'failed' },
+                        null);
                     rej (err);
                 } else {
                     logger.debug('upload result', data);
+                    dispatchStorageEvent(
+                        track, 
+                        { method: 'put', result: 'success' },
+                        null);
                     res({
                         key: data.Key.substr(prefix.length)
                     });
@@ -155,8 +190,8 @@ export default class StorageClass {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
-        const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, level } = opt;
+        const opt = Object.assign({}, this._options, options, );
+        const { bucket, region, credentials, level, track } = opt;
 
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
@@ -171,8 +206,16 @@ export default class StorageClass {
         return new Promise<any>((res, rej) => {
             s3.deleteObject(params, (err,data) => {
                 if(err){
+                    dispatchStorageEvent(
+                        track, 
+                        { method: 'remove', result: 'failed' },
+                        null);
                     rej(err);
                 } else {
+                    dispatchStorageEvent(
+                        track,
+                        { method: 'remove', result: 'success' },
+                        null);
                     res(data);
                 }
             });
@@ -190,7 +233,7 @@ export default class StorageClass {
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, level, download } = opt;
+        const { bucket, region, credentials, level, download, track } = opt;
 
         const prefix = this._prefix(opt);
         const final_path = prefix + path;
@@ -206,6 +249,10 @@ export default class StorageClass {
             s3.listObjects(params, (err, data) => {
                 if(err) {
                     logger.warn('list error', err);
+                    dispatchStorageEvent(
+                        track, 
+                        { method: 'list', result: 'failed' }, 
+                        null);
                     rej(err);
                 } else {
                     const list = data.Contents.map(item => {
@@ -216,6 +263,10 @@ export default class StorageClass {
                             size: item.Size
                         };
                     });
+                    dispatchStorageEvent(
+                        track, 
+                        { method: 'list', result: 'success' }, 
+                        null);
                     logger.debug('list', list);
                     res(list);
                 }

@@ -90,11 +90,11 @@ class AuthClass {
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String} username - The username to be signed up
      * @param {String} password - The password of the user
-     * @param {String} email - The email of the user
+     * @param {String|Object} attr - The email of the user| AttributeList object <K,V> 
      * @param {String} phone_number - the phone number of the user
      * @return {Promise} - A promise resolves callback data if success
      */
-    signUp(username, password, email, phone_number) {
+    signUp(username, password, attr, phone_number) {
         if (!this.userPool) {
             return Promise.reject('No userPool');
         }
@@ -113,7 +113,9 @@ class AuthClass {
                     attributes.push({ Name: 'phone_number', Value: phone_number });
                 }
             } else {
-                attributes = email;
+                for (const k in attr) {
+                    attributes.push({ 'Name': k, 'Value': attr[k] });
+                }
             }
         }
 

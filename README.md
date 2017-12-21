@@ -3,12 +3,16 @@
 <a href="https://nodei.co/npm/aws-amplify/">
   <img src="https://nodei.co/npm/aws-amplify.svg?downloads=true&downloadRank=true&stars=true">
 </a>
-
 <p>
+  <a href="https://badge.fury.io/js/aws-amplify">
+    <img src="https://badge.fury.io/js/aws-amplify.svg" alt="npm version" height="18">
+  </a>
+  <a href="https://npmjs.org/aws-amplify">
+    <img src="https://img.shields.io/npm/dt/localeval.svg" alt="npm downloads" height="18">
+  </a>
   <a href="https://travis-ci.org/aws/aws-amplify">
     <img src="https://travis-ci.org/aws/aws-amplify.svg?branch=master" alt="build:started">
   </a>
-
   <a href="https://codecov.io/gh/aws/aws-amplify">
     <img src="https://codecov.io/gh/aws/aws-amplify/branch/master/graph/badge.svg" />
   </a>
@@ -25,6 +29,7 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
   - [2. Add Authentication](#2-add-authentication-to-your-app)
   - [3. Sign HTTP requests](#3-sign-http-requests)
   - [4. Upload and Download public or private content](#4-upload-and-download-public-or-private-content)
+* [Contributing](#contributing)
 
 ## Installation
 
@@ -147,3 +152,7 @@ With configurable settings, store content in an S3 bucket in public folders for 
     .then (result => console.log(result))
     .catch(err => console.log(err));
 ```
+
+## Contributing
+
+See [Contributing Guidelines](https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md)

@@ -129,7 +129,8 @@ const AppWithAuth = withAuthenticator(App);
 
 const federated = {
     google_client_id: '',
-    facebook_app_id: ''
+    facebook_app_id: '',
+    amazon_client_id: ''
 };
 
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
@@ -257,41 +258,25 @@ render() {
 
 ### 6. Federated Identity
 
-Note: Our federated identity components so far only support Google and Facebook, only available for React. Building is in progress.
+Note: Our federated identity components so far only support Google, Facebook and Amazon, only available for React. Building is in progress.
 
 Setup guide is [here](federated_identity_setup.md).
 
-After setup. Just add `Google client_id` and/or `Facebook app_id` to `Authenticator`
+After setup. Just add `Google client_id`, `Facebook app_id` and/or `Amazon client_id` to `Authenticator`
 ```jsx
     const federated = {
         google_client_id: '',
-        facebook_app_id: ''
+        facebook_app_id: '',
+        amazon_client_id: ''
     };
 
     return (
         <Authenticator federated={federated}>
     )
 ```
-
-#### Federated SignIn
-
-Third party sign in only, without login forms
-```jsx
-import { FederatedSignIn } from 'aws-amplify-react';
-
-...
-
-    const federated = {
-        google_client_id: '',
-        facebook_app_id: ''
-    };
-
-    <FederatedSignIn federated={federated} onStateChange={this.handleAuthStateChange} />
-```
-
 #### Custom federated identity UI
 
-Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle` and `withFacebook` if just need a single provider.
+Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle`, `withFacebook`, `withAmazon` if just need a single provider.
 
 ```jsx
 import { withFederated } from 'aws-amplify-react';
@@ -306,6 +291,10 @@ const Buttons = (props) => (
             onClick={props.facebookSignIn}
             src={facebook_icon}
         />
+        <img
+            onClick={props.amazonSignIn}
+            src={amazon_icon}
+        />
     </div>
 )
 
@@ -315,7 +304,8 @@ const Federated = withFederated(Buttons);
 
     const federated = {
         google_client_id: '',
-        facebook_app_id: ''
+        facebook_app_id: '',
+        amazon_client_id: ''
     };
 
     <Federated federated={federated} onStateChange={this.handleAuthStateChange} />

@@ -72,14 +72,14 @@ export default class S3Album extends Component {
 
     handlePick(data) {
         const that = this;
-        const { onPick, onLoad, onError } = this.props;
+        const { onPick, onLoad, onError, track } = this.props;
 
         if (onPick) { onPick(data); }
 
         const path = this.props.path || '';
         const { file, name, size, type } = data;
         const key = path + this.getKey(data);
-        Storage.put(key, file, { contentType: type })
+        Storage.put(key, file, { contentType: type, track })
             .then(data => {
                 logger.debug('handle pick data', data);
                 const { items } = this.state;
@@ -140,9 +140,9 @@ export default class S3Album extends Component {
     }
 
     list() {
-        const { path, level } = this.props;
+        const { path, level, track } = this.props;
         logger.debug('Album path: ' + path);
-        return Storage.list(path, { level: level? level : 'public' })
+        return Storage.list(path, { level: level? level : 'public', track })
             .then(data => {
                 logger.debug('album list', data);
                 this.marshal(data);

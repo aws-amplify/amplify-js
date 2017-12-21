@@ -159,7 +159,7 @@ var Greetings = function (_AuthPiece) {
         key: 'outGreeting',
         value: function () {
             function outGreeting() {
-                return 'Please Sign In / Sign Up';
+                return '';
             }
 
             return outGreeting;
@@ -199,11 +199,11 @@ var Greetings = function (_AuthPiece) {
             function noUserGreetings(theme) {
                 var greeting = this.props.outGreeting || this.outGreeting;
                 var message = typeof greeting === 'function' ? greeting() : greeting;
-                return _react2['default'].createElement(
+                return message ? _react2['default'].createElement(
                     _AmplifyUI.NavItem,
                     { theme: theme },
                     message
-                );
+                ) : null;
             }
 
             return noUserGreetings;
@@ -223,6 +223,11 @@ var Greetings = function (_AuthPiece) {
                 var signedIn = authState === 'signedIn';
 
                 var theme = this.props.theme || _AmplifyTheme2['default'];
+                var greeting = signedIn ? this.userGreetings(theme) : this.noUserGreetings(theme);
+                if (!greeting) {
+                    return null;
+                }
+
                 return _react2['default'].createElement(
                     _AmplifyUI.NavBar,
                     { theme: theme },
@@ -232,7 +237,7 @@ var Greetings = function (_AuthPiece) {
                         _react2['default'].createElement(
                             _AmplifyUI.NavRight,
                             { theme: theme },
-                            signedIn ? this.userGreetings(theme) : this.noUserGreetings(theme)
+                            greeting
                         )
                     )
                 );
