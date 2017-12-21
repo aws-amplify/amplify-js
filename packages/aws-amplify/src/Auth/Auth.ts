@@ -94,24 +94,27 @@ export default class AuthClass {
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String} username - The username to be signed up
      * @param {String} password - The password of the user
-     * @param {Object} attributeList - Other attributes
+     * @param {Object} attr - Other signup attributes or email(for backward compatibility)
+     * @param {String} phone_number - 
      * @return - A promise resolves callback data if success
      */
     public signUp(username: string,
                   password: string, 
-                  email?: string|Array<Object>, 
+                  attrs?: string|Object, 
                   phone_number?: string): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
-        let attributes = [];
-        if(typeof(email) === 'string'){
-            if (email) { attributes.push({Name: 'email', Value: email}); }
+        const attributes = [];
+        if(typeof(attrs) === 'string'){
+            if (attrs) { attributes.push({Name: 'email', Value: attrs}); }
             if (phone_number) { attributes.push({Name: 'phone_number', Value: phone_number}); }
         }
         else {
-            attributes = email;
+            for (const k in attrs) {
+                attributes.push( { 'Name': k, 'Value': attrs[k] });
+            }
         }
         return new Promise((resolve, reject) => {
             this.userPool.signUp(username, password, attributes, null, function(err, data) {

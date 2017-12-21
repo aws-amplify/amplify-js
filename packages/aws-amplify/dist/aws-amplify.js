@@ -15996,10 +15996,11 @@ var AuthClass = (function () {
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String} username - The username to be signed up
      * @param {String} password - The password of the user
-     * @param {Object} attributeList - Other attributes
+     * @param {Object} attr - Other signup attributes or email(for backward compatibility)
+     * @param {String} phone_number -
      * @return - A promise resolves callback data if success
      */
-    AuthClass.prototype.signUp = function (username, password, email, phone_number) {
+    AuthClass.prototype.signUp = function (username, password, attrs, phone_number) {
         var _this = this;
         if (!this.userPool) {
             return Promise.reject('No userPool');
@@ -16011,26 +16012,22 @@ var AuthClass = (function () {
             return Promise.reject('Password cannot be empty');
         }
         var attributes = [];
-        console.log('the type of email is :', typeof (email));
-        if (typeof (email) === 'string') {
-            console.log('email is :', email);
-            console.log('for some reason the type of email is string');
-            if (email) {
-                attributes.push({ Name: 'email', Value: email });
+        if (typeof (attrs) === 'string') {
+            if (attrs) {
+                attributes.push({ Name: 'email', Value: attrs });
             }
             if (phone_number) {
                 attributes.push({ Name: 'phone_number', Value: phone_number });
             }
         }
         else {
-            console.log('so we didnt have type string for email huh');
-            attributes = email;
+            for (var k in attrs) {
+                attributes.push({ 'Name': k, 'Value': attrs[k] });
+            }
         }
-        console.log('attributes at sign up hmm : ', attributes);
         return new Promise(function (resolve, reject) {
             _this.userPool.signUp(username, password, attributes, null, function (err, data) {
                 if (err) {
-                    console.log('sign up error is from :', err);
                     dispatchAuthEvent('signUp_failure', err);
                     reject(err);
                 }
