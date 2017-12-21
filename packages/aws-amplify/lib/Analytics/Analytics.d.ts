@@ -7,6 +7,7 @@ export default class AnalyticsClass {
     private amaClient;
     private pinpointClient;
     private _buffer;
+    private mobileAnalytics;
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
@@ -40,13 +41,11 @@ export default class AnalyticsClass {
     * @param {Object} [metrics] - Event metrics
     */
     recordMonetization(name: any, attributes?: EventAttributes, metrics?: EventMetrics): Promise<void>;
+    _generateEndpointId(): string;
     _checkConfig(): boolean;
     _ensureCredentials(): any;
     _initClients(): Promise<boolean>;
-    /**
-     * Init AMA client with configuration
-     */
-    _initAMA(): void;
+    _initMobileAnalytics(): void;
     /**
      * Init Pinpoint with configuration and update pinpoint client endpoint
      */

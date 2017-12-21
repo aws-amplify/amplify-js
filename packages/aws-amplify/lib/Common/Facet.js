@@ -23,4 +23,6 @@ var Pinpoint = require("aws-sdk/clients/pinpoint");
 exports.Pinpoint = Pinpoint;
 var AMA = require("aws-sdk-mobile-analytics");
 exports.AMA = AMA;
+var MobileAnalytics = require("aws-sdk/clients/mobileanalytics");
+exports.MobileAnalytics = MobileAnalytics;
 //# sourceMappingURL=Facet.js.map

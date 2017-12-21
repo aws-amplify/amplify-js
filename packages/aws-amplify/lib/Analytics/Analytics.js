@@ -55,7 +55,7 @@ ama_logger.log = ama_logger.verbose;
 /**
 * Provide mobile analytics client functions
 */
-var AnalyticsClass = (function () {
+var AnalyticsClass = /** @class */ (function () {
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
@@ -66,10 +66,17 @@ var AnalyticsClass = (function () {
         if (client_info.platform) {
             this._config.platform = client_info.platform;
         }
-        if (!this._config.clientId) {
-            var credentials = this._config.credentials;
-            if (credentials && credentials.identityId) {
-                this._config.clientId = credentials.identityId;
+        if (!this._config.endpointId) {
+            if (window.localStorage) {
+                var endpointId = window.localStorage.getItem('amplify_endpoint_id');
+                if (!endpointId) {
+                    endpointId = this._generateEndpointId();
+                    window.localStorage.setItem('amplify_endpoint_id', endpointId);
+                }
+                this._config.endpointId = endpointId;
+            }
+            else {
+                this._config.endpointId = this._generateEndpointId();
             }
         }
         this._buffer = [];
@@ -139,18 +146,40 @@ var AnalyticsClass = (function () {
     */
     AnalyticsClass.prototype.record = function (name, attributes, metrics) {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
+            var _a, endpointId, appId, clientContext, contextStr, params;
+            return __generator(this, function (_b) {
                 logger.debug('record event ' + name);
-                if (!this.amaClient) {
-                    logger.debug('amaClient not ready, put in buffer');
-                    this._buffer.push({
-                        name: name,
-                        attributes: attributes,
-                        metrics: metrics
-                    });
-                    return [2 /*return*/];
-                }
-                this.amaClient.recordEvent(name, attributes, metrics);
+                _a = this._config, endpointId = _a.endpointId, appId = _a.appId;
+                clientContext = {
+                    client: {
+                        client_id: endpointId
+                    },
+                    services: {
+                        mobile_analytics: {
+                            app_id: appId
+                        }
+                    }
+                };
+                contextStr = JSON.stringify(clientContext);
+                params = {
+                    clientContext: contextStr,
+                    events: [
+                        {
+                            eventType: name,
+                            timestamp: new Date().toISOString(),
+                            attributes: attributes,
+                            metrics: metrics
+                        }
+                    ]
+                };
+                this.mobileAnalytics.putEvent(params, function (err, data) {
+                    if (err) {
+                        logger.debug('record event failed. ' + err);
+                    }
+                    else {
+                        logger.debug('record event success. ' + data);
+                    }
+                });
                 return [2 /*return*/];
             });
         });
@@ -169,6 +198,14 @@ var AnalyticsClass = (function () {
             });
         });
     };
+    AnalyticsClass.prototype._generateEndpointId = function () {
+        var result = '';
+        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (var i = 32; i > 0; i -= 1) {
+            result += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return result;
+    };
     AnalyticsClass.prototype._checkConfig = function () {
         return !!this._config.appId;
     };
@@ -182,9 +219,6 @@ var AnalyticsClass = (function () {
             var cred = Auth_1.default.essentialCredentials(credentials);
             logger.debug('set credentials for analytics', cred);
             conf.credentials = cred;
-            if (!conf.clientId && conf.credentials) {
-                conf.clientId = conf.credentials.identityId;
-            }
             return true;
         })
             .catch(function (err) {
@@ -207,7 +241,7 @@ var AnalyticsClass = (function () {
                         if (!credentialsOK) {
                             return [2 /*return*/, false];
                         }
-                        this._initAMA();
+                        this._initMobileAnalytics();
                         this._initPinpoint();
                         this.startSession();
                         return [2 /*return*/];
@@ -215,36 +249,15 @@ var AnalyticsClass = (function () {
             });
         });
     };
-    /**
-     * Init AMA client with configuration
-     */
-    AnalyticsClass.prototype._initAMA = function () {
-        var _this = this;
-        var _a = this._config, appId = _a.appId, clientId = _a.clientId, region = _a.region, credentials = _a.credentials, platform = _a.platform;
-        this.amaClient = new Common_1.AMA.Manager({
-            appId: appId,
-            platform: platform,
-            clientId: clientId,
-            logger: ama_logger,
-            clientOptions: {
-                region: region,
-                credentials: credentials
-            }
-        });
-        if (this._buffer.length > 0) {
-            logger.debug('something in buffer, flush it');
-            var buffer = this._buffer;
-            this._buffer = [];
-            buffer.forEach(function (event) {
-                _this.amaClient.recordEvent(event.name, event.attributes, event.metrics);
-            });
-        }
+    AnalyticsClass.prototype._initMobileAnalytics = function () {
+        var _a = this._config, credentials = _a.credentials, region = _a.region;
+        this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });
     };
     /**
      * Init Pinpoint with configuration and update pinpoint client endpoint
      */
     AnalyticsClass.prototype._initPinpoint = function () {
-        var _a = this._config, region = _a.region, appId = _a.appId, clientId = _a.clientId, credentials = _a.credentials;
+        var _a = this._config, region = _a.region, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials;
         this.pinpointClient = new Common_1.Pinpoint({
             region: region,
             credentials: credentials,
@@ -252,7 +265,7 @@ var AnalyticsClass = (function () {
         var request = this._endpointRequest();
         var update_params = {
             ApplicationId: appId,
-            EndpointId: clientId,
+            EndpointId: endpointId,
             EndpointRequest: request
         };
         logger.debug(update_params);
