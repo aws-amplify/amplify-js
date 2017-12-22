@@ -165,7 +165,7 @@ var S3Image = function (_Component) {
                 var key = imgKey || path + (0, _Common.calcKey)(data, fileToKey);
                 _awsAmplify.Storage.put(key, file, { contentType: type, track: track }).then(function (data) {
                     logger.debug('handle pick data', data);
-                    that.getImageSource(key, level);
+                    that.getImageSource(key, level, track);
                 })['catch'](function (err) {
                     return logger.debug('handle pick error', err);
                 });
