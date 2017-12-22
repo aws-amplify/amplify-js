@@ -6,7 +6,7 @@
   * [Installation and Configuration](media/install_n_config.md)
   * [Authentication](media/authentication_guide.md)
   * [Analytics](media/analytics_guide.md)
-  * [API](media/api_guide.md)
+  * [API](api/)
   * [Storage](media/storage_guide.md)
   * [Cache](media/cache_guide.md)
   * Utilities
