@@ -7,8 +7,6 @@ import { ButtonRow, InputRow } from '../../src/AmplifyUI';
 
 const waitForResolve = Promise.resolve();
 
-jest.mock('fluid-react', () => { return { Row: {}, Col: {} }; });
-
 describe('Authenticator', () => {
     describe('normal case', () => {
         test('render if no error', () => {

@@ -118,7 +118,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
         "display": "inline-block",
         "marginBottom": "20px",
         "textAlign": "left",
-        "width": "100%",
+        "width": "400px",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -363,7 +363,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
           "display": "inline-block",
           "marginBottom": "20px",
           "textAlign": "left",
-          "width": "100%",
+          "width": "400px",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -610,7 +610,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
           "display": "inline-block",
           "marginBottom": "20px",
           "textAlign": "left",
-          "width": "100%",
+          "width": "400px",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -860,7 +860,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
             "display": "inline-block",
             "marginBottom": "20px",
             "textAlign": "left",
-            "width": "100%",
+            "width": "400px",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -1106,7 +1106,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
             "display": "inline-block",
             "marginBottom": "20px",
             "textAlign": "left",
-            "width": "100%",
+            "width": "400px",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -1354,7 +1354,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
           "display": "inline-block",
           "marginBottom": "20px",
           "textAlign": "left",
-          "width": "100%",
+          "width": "400px",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1600,7 +1600,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
             "display": "inline-block",
             "marginBottom": "20px",
             "textAlign": "left",
-            "width": "100%",
+            "width": "400px",
           },
           "input": Object {
             "backgroundColor": "#fff",

@@ -122,7 +122,7 @@ exports[`FederatedButtons test render test render with correct authState 1`] = `
         "display": "inline-block",
         "marginBottom": "20px",
         "textAlign": "left",
-        "width": "100%",
+        "width": "400px",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -377,7 +377,7 @@ exports[`FederatedButtons test render test render with correct authState and onl
         "display": "inline-block",
         "marginBottom": "20px",
         "textAlign": "left",
-        "width": "100%",
+        "width": "400px",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -629,7 +629,7 @@ exports[`FederatedButtons test render test render with correct authState and onl
         "display": "inline-block",
         "marginBottom": "20px",
         "textAlign": "left",
-        "width": "100%",
+        "width": "400px",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -885,7 +885,7 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
         "display": "inline-block",
         "marginBottom": "20px",
         "textAlign": "left",
-        "width": "100%",
+        "width": "400px",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -1130,7 +1130,7 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
           "display": "inline-block",
           "marginBottom": "20px",
           "textAlign": "left",
-          "width": "100%",
+          "width": "400px",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1378,7 +1378,7 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
             "display": "inline-block",
             "marginBottom": "20px",
             "textAlign": "left",
-            "width": "100%",
+            "width": "400px",
           },
           "input": Object {
             "backgroundColor": "#fff",

@@ -1,8 +1,6 @@
 import { withAuthenticator, AuthenticatorWrapper } from '../../src/Auth/index'
 import React, {Component} from 'react';
 
-jest.mock('fluid-react', () => { return { Row: {}, Col: {} }; });
-
 describe('hoc tests', () => {
     describe('withAuthenticator test', () => {
         test('when signed in', () => {
