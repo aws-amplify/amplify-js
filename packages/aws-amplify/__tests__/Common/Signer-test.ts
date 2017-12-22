@@ -84,6 +84,5 @@ describe('Signer test', () => {
 
             spyon.mockClear();
         });
-        
     });
 });
