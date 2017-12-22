@@ -14,43 +14,78 @@ export default class AnalyticsClass {
      * @param config - Configuration of the Analytics
      */
     constructor(config: AnalyticsOptions);
+    /**
+     * configure Analytics
+     * @param {Object} config - Configuration of the Analytics
+     */
     configure(config: any): any;
     /**
      * Record Session start
+     * @return - A promise which resolves if event record successfully
      */
-    startSession(): Promise<void>;
+    startSession(): Promise<any>;
     /**
      * Record Session stop
+     * @return - A promise which resolves if event record successfully
      */
-    stopSession(): Promise<void>;
+    stopSession(): Promise<any>;
     /**
-     * Restart Analytics client with credentials provided
-     * @param {Object} credentials - Cognito Credentials
+     * @async
+     * Restart Analytics client and record session stop
+     * @return - A promise ehich resolves to be true if current credential exists
      */
-    restart(): void;
+    restart(): Promise<void>;
     /**
     * Record one analytic event and send it to Pinpoint
     * @param {String} name - The name of the event
     * @param {Object} [attributs] - Attributes of the event
     * @param {Object} [metrics] - Event metrics
+    * @return - A promise which resolves if event record successfully
     */
-    record(name: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<void>;
+    record(name: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<any>;
     /**
     * Record one analytic event
     * @param {String} name - Event name
     * @param {Object} [attributes] - Attributes of the event
     * @param {Object} [metrics] - Event metrics
     */
+    /**
+     * @private
+     * generate client context with endpoint Id and app Id provided
+     */
     _generateClientContext(): string;
-    _generateRandomString(): string;
+    /**
+     * generate random string
+     */
+    generateRandomString(): string;
+    /**
+     * @private
+     * check if app Id exists
+     */
     _checkConfig(): boolean;
+    /**
+     * @private
+     * check if current crednetials exists
+     */
     _ensureCredentials(): any;
+    /**
+     * @private
+     * @async
+     * init clients for Anlytics including mobile analytics and pinpoint
+     * @return - True if initilization succeeds
+     */
     _initClients(): Promise<boolean>;
+    /**
+     * @private
+     * Init mobile analytics and clear buffer
+     */
     _initMobileAnalytics(): void;
     /**
+     * @private
      * Init Pinpoint with configuration and update pinpoint client endpoint
+     * @return - A promise resolves if endpoint updated successfully
      */
-    _initPinpoint(): void;
+    _initPinpoint(): Promise<{}>;
     /**
      * EndPoint request
      * @return {Object} - The request of updating endpoint
