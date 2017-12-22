@@ -1,3 +1,4 @@
 theme: jekyll-theme-midnight
 show_downloads: "true"
+keep_files: api/
 include: api/**/*
