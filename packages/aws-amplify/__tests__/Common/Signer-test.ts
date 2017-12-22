@@ -79,7 +79,11 @@ describe('Signer test', () => {
         
             const spyon = jest.spyOn(Date.prototype, 'toISOString').mockReturnValueOnce('0');
 
-            const res = {"headers": {"Authorization": "AWS4-HMAC-SHA256 Credential=undefined/0///aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=encrypt", "X-Amz-Security-Token": "session_token", "host": "host", "x-amz-date": "0"}}
+            const res = {"headers": {
+                "Authorization": "AWS4-HMAC-SHA256 Credential=undefined/0///aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=encrypt", 
+                "X-Amz-Security-Token": "session_token", 
+                "host": "host", 
+                "x-amz-date": "0"}}
             expect(Signer.sign(request, access_info)).toEqual(res);
 
             spyon.mockClear();
