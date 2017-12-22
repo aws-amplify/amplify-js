@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify",
-  "version": "1.0.0",
+  "version": "0.1.30",
   "description": "",
   "scripts": {
     "bootstrap": "lerna bootstrap",
