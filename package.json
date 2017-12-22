@@ -6,7 +6,7 @@
     "bootstrap": "lerna bootstrap",
     "test": "lerna run -- test",
     "coverage": "codecov",
-    "docs": "typedoc --out docs/api/ packages/aws-amplify/src/ --ignoreCompilerErrors --hideGenerator && touch docs/api/.nojekyll",
+    "docs": "typedoc --out docs/api/ packages/aws-amplify/src/ --ignoreCompilerErrors --hideGenerator --readme docs/index.md",
     "build": "lerna run -- build",
     "clean": "lerna run -- clean",
     "format": "lerna run -- format",
