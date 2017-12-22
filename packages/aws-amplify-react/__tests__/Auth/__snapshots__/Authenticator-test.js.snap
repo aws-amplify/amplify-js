@@ -1,343 +1,100 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Authenticator normal case render if no error 1`] = `
-<Container
-  theme={
+<[object Object]
+  style={
     Object {
-      "a": Object {
-        "textDecoration": "underline",
-      },
-      "actionRow": Object {
-        "marginTop": "1.5em",
-        "textAlign": "right",
-      },
-      "album": Object {
-        "display": "block",
-        "textAlign": "left",
-        "width": "100%",
-      },
-      "albumPhoto": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "verticalAlign": "top",
-        "width": "16.6%",
-      },
-      "albumText": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "maxHeight": 256,
-        "overflow": "auto",
-        "verticalAlign": "top",
-        "width": "32%",
-      },
-      "button": Object {
-        "background": "#fff",
-        "border": "1px solid #007bff",
-        "color": "#007bff",
-        "fontSize": "1em",
-        "margin": "auto 0.3em",
-        "padding": "0.3em 0.5em",
-      },
-      "center": Object {
-        "textAlign": "center",
-      },
-      "col10": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "width": "83.6%",
-      },
-      "col12": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "width": "99.2%",
-      },
-      "col2": Object {
-        "display": "inline-block",
-        "width": "16.6%",
-      },
-      "col3": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "width": "24.5%",
-      },
-      "col4": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "width": "32%",
-      },
-      "col6": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "width": "49.5%",
-      },
-      "col8": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "width": "66%",
-      },
-      "col9": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "width": "74.5%",
-      },
-      "container": Object {
-        "fontFamily": "-apple-system,
-                BlinkMacSystemFont,
-                \\"Segoe UI\\",
-                Roboto,
-                \\"Helvetica Neue\\",
-                Arial,
-                sans-serif,
-                \\"Apple Color Emoji\\",
-                \\"Segoe UI Emoji\\",
-                \\"Segoe UI Symbol\\"",
-        "textAlign": "center",
-      },
-      "errorSection": Object {
-        "background": "orange",
-        "fontWeight": "300",
-        "margin": "0.2em auto",
-        "padding": "0.5em",
-      },
-      "formContainer": Object {},
-      "formRow": Object {
-        "marginBottom": "0.5em",
-        "textAlign": "left",
-      },
-      "formSection": Object {
-        "display": "inline-block",
-        "fontWeight": "200",
-        "maxWidth": "500px",
-      },
-      "halfHeight": Object {
-        "height": 384,
-        "overflow": "auto",
-      },
-      "hidden": Object {
-        "display": "none",
-      },
-      "input": Object {
-        "border": "1px solid #aaa",
-        "fontSize": "1em",
-        "fontWeight": "200",
-        "padding": "4px 2px",
-        "width": "15em",
-      },
-      "label": Object {
-        "margin": "auto 0.5em",
-      },
-      "nav": Object {
-        "borderBottom": "1px solid #00fff6",
-        "marginBottom": "0.5em",
-        "padding": "0.5em 0.5em 0.2em",
-      },
-      "navBar": Object {
-        "borderBottom": "1px solid #00fff6",
-        "marginBottom": "0.5em",
-        "padding": "0.5em 0.5em 0.2em",
-      },
-      "navButton": Object {
-        "background": "#fff",
-        "border": "none",
-        "borderBottom": "1px solid #007bff",
-        "color": "#007bff",
-        "margin": "auto 0.3em",
-        "padding": "0",
-      },
-      "navItem": Object {},
-      "navRight": Object {
-        "fontSize": "0.8em",
-        "textAlign": "right",
-      },
-      "overlay": Object {
-        "height": "100%",
-        "left": 0,
-        "position": "absolute",
-        "top": 0,
-        "width": "100%",
-      },
-      "overlaySelected": Object {
-        "background": "#888",
-        "border": "2px solid blue",
-        "height": "100%",
-        "left": 0,
-        "opacity": "0.5",
-        "position": "absolute",
-        "top": 0,
-        "width": "100%",
-      },
-      "photo": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "verticalAlign": "top",
-        "width": "32%",
-      },
-      "photoImg": Object {
-        "maxWidth": "100%",
-      },
-      "picker": Object {
-        "textAlign": "center",
-        "width": "100%",
-      },
-      "pickerButton": Object {
-        "background": "#fff",
-        "border": "1px solid #ccc",
-        "fontWeight": "200",
-        "width": "100%",
-      },
-      "pickerInput": Object {},
-      "pickerPicker": Object {
-        "textAlign": "center",
-        "width": "100%",
-      },
-      "pre": Object {
-        "background": "#eee",
-        "margin": "0",
-        "overflow": "auto",
-        "padding": "1em",
-        "textAlign": "left",
-      },
-      "section": Object {
-        "fontWeight": "200",
-      },
-      "sectionBody": Object {
-        "background": "#fff",
-        "color": "#000",
-        "fontSize": "1em",
-        "padding": "1em",
-      },
-      "sectionFooter": Object {
-        "background": "#fff",
-        "borderBottom": "1px solid #00fff6",
-        "color": "#000",
-        "fontSize": "0.8em",
-        "padding": "1em",
-        "textAlign": "left",
-      },
-      "sectionHeader": Object {
-        "background": "#007bff",
-        "color": "#fff",
-        "fontSize": "1.2em",
-        "fontWeight": "normal",
-        "padding": "0.6em",
-        "textAlign": "center",
-      },
-      "signInButton": Object {
-        "background": "#fff",
-        "border": "1px solid #007bff",
-        "color": "#007bff",
-        "fontSize": "1em",
-        "margin": "0.3em",
-        "padding": "0.3em 0.5em",
-        "width": "100%",
-      },
-      "space": Object {
-        "display": "inline-block",
-        "width": "1em",
-      },
-      "text": Object {
-        "display": "inline-block",
-        "margin": "0.2%",
-        "maxHeight": 384,
-        "overflow": "auto",
-        "verticalAlign": "top",
-        "width": "32.5%",
-      },
+      "justifyContent": "center",
     }
   }
 >
-  <Greetings
-    Auth={
-      AuthDecorator {
-        "onStateChange": [Function],
-      }
-    }
-    authState="signIn"
-    hide={Array []}
-    key=".0"
-    messageMap={[Function]}
-    onAuthEvent={[Function]}
-    onStateChange={[Function]}
-    theme={
-      Object {
-        "a": Object {
-          "textDecoration": "underline",
-        },
-        "actionRow": Object {
-          "marginTop": "1.5em",
-          "textAlign": "right",
-        },
-        "album": Object {
-          "display": "block",
-          "textAlign": "left",
-          "width": "100%",
-        },
-        "albumPhoto": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "16.6%",
-        },
-        "albumText": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 256,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "button": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "auto 0.3em",
-          "padding": "0.3em 0.5em",
-        },
-        "center": Object {
-          "textAlign": "center",
-        },
-        "col10": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "83.6%",
-        },
-        "col12": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "99.2%",
-        },
-        "col2": Object {
-          "display": "inline-block",
-          "width": "16.6%",
-        },
-        "col3": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "24.5%",
-        },
-        "col4": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "32%",
-        },
-        "col6": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "49.5%",
-        },
-        "col8": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "66%",
-        },
-        "col9": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "74.5%",
-        },
-        "container": Object {
-          "fontFamily": "-apple-system,
+  <[object Object]
+    lg="4"
+    md="6"
+    sm="8"
+    xs="9"
+  >
+    <Container
+      theme={
+        Object {
+          "a": Object {
+            "color": "#007bff",
+            "cursor": "pointer",
+          },
+          "actionRow": Object {
+            "marginBottom": "15px",
+          },
+          "button": Object {
+            "backgroundColor": "#fff",
+            "backgroundImage": "none",
+            "border": "1px solid transparent",
+            "borderColor": "#ccc",
+            "borderRadius": "4px",
+            "color": "#333",
+            "cursor": "pointer",
+            "display": "inline-block",
+            "fontSize": "14px",
+            "fontWeight": 400,
+            "lineHeight": "1.42857143",
+            "marginBottom": "0",
+            "padding": "6px 12px",
+            "textAlign": "center",
+            "touchAction": "manipulation",
+            "userSelect": "none",
+            "verticalAlign": "middle",
+            "whiteSpace": "nowrap",
+          },
+          "col1": Object {
+            "display": "inline-block",
+            "width": "8.33333333%",
+          },
+          "col10": Object {
+            "display": "inline-block",
+            "width": "83.33333333%",
+          },
+          "col11": Object {
+            "display": "inline-block",
+            "width": "91.66666667%",
+          },
+          "col12": Object {
+            "display": "inline-block",
+            "width": "100%",
+          },
+          "col2": Object {
+            "display": "inline-block",
+            "width": "16.66666667%",
+          },
+          "col3": Object {
+            "display": "inline-block",
+            "width": "25%",
+          },
+          "col4": Object {
+            "display": "inline-block",
+            "width": "33.33333333%",
+          },
+          "col5": Object {
+            "display": "inline-block",
+            "width": "41.66666667%",
+          },
+          "col6": Object {
+            "display": "inline-block",
+            "width": "50%",
+          },
+          "col7": Object {
+            "display": "inline-block",
+            "width": "58.33333333%",
+          },
+          "col8": Object {
+            "display": "inline-block",
+            "width": "66.66666667%",
+          },
+          "col9": Object {
+            "display": "inline-block",
+            "width": "75%",
+          },
+          "container": Object {
+            "color": "#212529",
+            "fontFamily": "-apple-system,
                 BlinkMacSystemFont,
                 \\"Segoe UI\\",
                 Roboto,
@@ -347,253 +104,248 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "textAlign": "center",
-        },
-        "errorSection": Object {
-          "background": "orange",
-          "fontWeight": "300",
-          "margin": "0.2em auto",
-          "padding": "0.5em",
-        },
-        "formContainer": Object {},
-        "formRow": Object {
-          "marginBottom": "0.5em",
-          "textAlign": "left",
-        },
-        "formSection": Object {
-          "display": "inline-block",
-          "fontWeight": "200",
-          "maxWidth": "500px",
-        },
-        "halfHeight": Object {
-          "height": 384,
-          "overflow": "auto",
-        },
-        "hidden": Object {
-          "display": "none",
-        },
-        "input": Object {
-          "border": "1px solid #aaa",
-          "fontSize": "1em",
-          "fontWeight": "200",
-          "padding": "4px 2px",
-          "width": "15em",
-        },
-        "label": Object {
-          "margin": "auto 0.5em",
-        },
-        "nav": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navBar": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navButton": Object {
-          "background": "#fff",
-          "border": "none",
-          "borderBottom": "1px solid #007bff",
-          "color": "#007bff",
-          "margin": "auto 0.3em",
-          "padding": "0",
-        },
-        "navItem": Object {},
-        "navRight": Object {
-          "fontSize": "0.8em",
-          "textAlign": "right",
-        },
-        "overlay": Object {
-          "height": "100%",
-          "left": 0,
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "overlaySelected": Object {
-          "background": "#888",
-          "border": "2px solid blue",
-          "height": "100%",
-          "left": 0,
-          "opacity": "0.5",
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "photo": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "photoImg": Object {
-          "maxWidth": "100%",
-        },
-        "picker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pickerButton": Object {
-          "background": "#fff",
-          "border": "1px solid #ccc",
-          "fontWeight": "200",
-          "width": "100%",
-        },
-        "pickerInput": Object {},
-        "pickerPicker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pre": Object {
-          "background": "#eee",
-          "margin": "0",
-          "overflow": "auto",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "section": Object {
-          "fontWeight": "200",
-        },
-        "sectionBody": Object {
-          "background": "#fff",
-          "color": "#000",
-          "fontSize": "1em",
-          "padding": "1em",
-        },
-        "sectionFooter": Object {
-          "background": "#fff",
-          "borderBottom": "1px solid #00fff6",
-          "color": "#000",
-          "fontSize": "0.8em",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "sectionHeader": Object {
-          "background": "#007bff",
-          "color": "#fff",
-          "fontSize": "1.2em",
-          "fontWeight": "normal",
-          "padding": "0.6em",
-          "textAlign": "center",
-        },
-        "signInButton": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "0.3em",
-          "padding": "0.3em 0.5em",
-          "width": "100%",
-        },
-        "space": Object {
-          "display": "inline-block",
-          "width": "1em",
-        },
-        "text": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 384,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32.5%",
-        },
+            "fontWeight": "400",
+            "lineHeight": "1.5",
+            "paddingLeft": "15px",
+            "paddingRight": "15px",
+            "textAlign": "left",
+          },
+          "errorSection": Object {
+            "backgroundColor": "#f0ad4e",
+            "border": "1px solid #eea236",
+            "borderRadius": "4px",
+            "color": "#fff",
+            "marginBottom": "20px",
+            "textAlign": "left",
+          },
+          "formContainer": Object {
+            "textAlign": "center",
+          },
+          "formRow": Object {
+            "marginBottom": "15px",
+          },
+          "formSection": Object {
+            "backgroundColor": "#fff",
+            "border": "1px solid #ddd",
+            "borderRadius": "4px",
+            "display": "inline-block",
+            "marginBottom": "20px",
+            "textAlign": "left",
+            "width": "100%",
+          },
+          "input": Object {
+            "backgroundColor": "#fff",
+            "backgroundImage": "none",
+            "border": "1px solid #ccc",
+            "borderRadius": "4px",
+            "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+            "boxSizing": "border-box",
+            "color": "#555",
+            "display": "block",
+            "fontSize": "14px",
+            "height": "34px",
+            "lineHeight": "1.42857143",
+            "padding": "6px 12px",
+            "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+            "width": "100%",
+          },
+          "nav": Object {
+            "margin": "7.5px",
+          },
+          "navBar": Object {
+            "backgroundColor": "#f8f8f8",
+            "border": "1px solid transparent",
+            "borderColor": "#e7e7e7",
+            "marginBottom": "20px",
+            "marginLeft": "-15px",
+            "marginRight": "-15px",
+            "position": "relative",
+          },
+          "navButton": Object {
+            "backgroundColor": "#fff",
+            "backgroundImage": "none",
+            "border": "1px solid transparent",
+            "borderColor": "#ccc",
+            "borderRadius": "4px",
+            "color": "#333",
+            "cursor": "pointer",
+            "display": "inline-block",
+            "fontSize": "14px",
+            "fontWeight": 400,
+            "lineHeight": "1.42857143",
+            "marginBottom": "8px",
+            "marginTop": "8px",
+            "padding": "6px 12px",
+            "textAlign": "center",
+            "touchAction": "manipulation",
+            "userSelect": "none",
+            "verticalAlign": "middle",
+            "whiteSpace": "nowrap",
+          },
+          "navItem": Object {
+            "display": "inline-block",
+            "lineHeight": "20px",
+            "padding": "10px 5px",
+          },
+          "navRight": Object {
+            "textAlign": "right",
+          },
+          "pre": Object {
+            "backgroundColor": "#f5f5f5",
+            "border": "1px solid #ccc",
+            "borderRadius": "4px",
+            "color": "#333",
+            "display": "block",
+            "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+            "fontSize": "13px",
+            "lineHeight": "1.42857143",
+            "margin": "0 0 10px",
+            "overflow": "auto",
+            "padding": "9.5px",
+            "wordBreak": "break-all",
+            "wordWrap": "break-word",
+          },
+          "sectionBody": Object {
+            "padding": "15px",
+          },
+          "sectionFooter": Object {
+            "backgroundColor": "#f5f5f5",
+            "borderTop": "1px solid #ddd",
+            "borderTopLeftRadius": "3px",
+            "borderTopRightRadius": "3px",
+            "color": "#333",
+            "padding": "10px 15px",
+          },
+          "sectionHeader": Object {
+            "backgroundColor": "#337ab7",
+            "borderBottom": "1px solid transparent",
+            "borderColor": "#337ab7",
+            "borderTopLeftRadius": "3px",
+            "borderTopRightRadius": "3px",
+            "color": "#fff",
+            "padding": "10px 15px",
+            "textAlign": "center",
+          },
+          "signInButton": Object {
+            "#facebook_signin_btn": Object {
+              "backgroundColor": "#3b5998",
+              "borderColor": "rgba(0,0,0,0.2)",
+              "color": "#fff",
+            },
+            "#google_signin_btn": Object {
+              "backgroundColor": "#dd4b39",
+              "borderColor": "rgba(0,0,0,0.2)",
+              "color": "#fff",
+            },
+            "display": "block",
+            "fontSize": "14px",
+            "marginTop": "2px",
+            "overflow": "hidden",
+            "padding": "6px 12px 6px 44px",
+            "position": "relative",
+            "textAlign": "left",
+            "textOverflow": "ellipsis",
+            "whiteSpace": "nowrap",
+            "width": "100%",
+          },
+          "space": Object {
+            "display": "inline-block",
+            "width": "20px",
+          },
+        }
       }
-    }
-  />
-  <SignIn
-    Auth={
-      AuthDecorator {
-        "onStateChange": [Function],
-      }
-    }
-    authState="signIn"
-    hide={Array []}
-    key=".1"
-    messageMap={[Function]}
-    onAuthEvent={[Function]}
-    onStateChange={[Function]}
-    theme={
-      Object {
-        "a": Object {
-          "textDecoration": "underline",
-        },
-        "actionRow": Object {
-          "marginTop": "1.5em",
-          "textAlign": "right",
-        },
-        "album": Object {
-          "display": "block",
-          "textAlign": "left",
-          "width": "100%",
-        },
-        "albumPhoto": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "16.6%",
-        },
-        "albumText": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 256,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "button": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "auto 0.3em",
-          "padding": "0.3em 0.5em",
-        },
-        "center": Object {
-          "textAlign": "center",
-        },
-        "col10": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "83.6%",
-        },
-        "col12": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "99.2%",
-        },
-        "col2": Object {
-          "display": "inline-block",
-          "width": "16.6%",
-        },
-        "col3": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "24.5%",
-        },
-        "col4": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "32%",
-        },
-        "col6": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "49.5%",
-        },
-        "col8": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "66%",
-        },
-        "col9": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "74.5%",
-        },
-        "container": Object {
-          "fontFamily": "-apple-system,
+    >
+      <Greetings
+        authState="signIn"
+        hide={Array []}
+        key=".0"
+        messageMap={[Function]}
+        onAuthEvent={[Function]}
+        onStateChange={[Function]}
+        theme={
+          Object {
+            "a": Object {
+              "color": "#007bff",
+              "cursor": "pointer",
+            },
+            "actionRow": Object {
+              "marginBottom": "15px",
+            },
+            "button": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "0",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "col1": Object {
+              "display": "inline-block",
+              "width": "8.33333333%",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "width": "83.33333333%",
+            },
+            "col11": Object {
+              "display": "inline-block",
+              "width": "91.66666667%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "width": "100%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.66666667%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "width": "25%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "width": "33.33333333%",
+            },
+            "col5": Object {
+              "display": "inline-block",
+              "width": "41.66666667%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "width": "50%",
+            },
+            "col7": Object {
+              "display": "inline-block",
+              "width": "58.33333333%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "width": "66.66666667%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "width": "75%",
+            },
+            "container": Object {
+              "color": "#212529",
+              "fontFamily": "-apple-system,
                 BlinkMacSystemFont,
                 \\"Segoe UI\\",
                 Roboto,
@@ -603,253 +355,248 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "textAlign": "center",
-        },
-        "errorSection": Object {
-          "background": "orange",
-          "fontWeight": "300",
-          "margin": "0.2em auto",
-          "padding": "0.5em",
-        },
-        "formContainer": Object {},
-        "formRow": Object {
-          "marginBottom": "0.5em",
-          "textAlign": "left",
-        },
-        "formSection": Object {
-          "display": "inline-block",
-          "fontWeight": "200",
-          "maxWidth": "500px",
-        },
-        "halfHeight": Object {
-          "height": 384,
-          "overflow": "auto",
-        },
-        "hidden": Object {
-          "display": "none",
-        },
-        "input": Object {
-          "border": "1px solid #aaa",
-          "fontSize": "1em",
-          "fontWeight": "200",
-          "padding": "4px 2px",
-          "width": "15em",
-        },
-        "label": Object {
-          "margin": "auto 0.5em",
-        },
-        "nav": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navBar": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navButton": Object {
-          "background": "#fff",
-          "border": "none",
-          "borderBottom": "1px solid #007bff",
-          "color": "#007bff",
-          "margin": "auto 0.3em",
-          "padding": "0",
-        },
-        "navItem": Object {},
-        "navRight": Object {
-          "fontSize": "0.8em",
-          "textAlign": "right",
-        },
-        "overlay": Object {
-          "height": "100%",
-          "left": 0,
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "overlaySelected": Object {
-          "background": "#888",
-          "border": "2px solid blue",
-          "height": "100%",
-          "left": 0,
-          "opacity": "0.5",
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "photo": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "photoImg": Object {
-          "maxWidth": "100%",
-        },
-        "picker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pickerButton": Object {
-          "background": "#fff",
-          "border": "1px solid #ccc",
-          "fontWeight": "200",
-          "width": "100%",
-        },
-        "pickerInput": Object {},
-        "pickerPicker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pre": Object {
-          "background": "#eee",
-          "margin": "0",
-          "overflow": "auto",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "section": Object {
-          "fontWeight": "200",
-        },
-        "sectionBody": Object {
-          "background": "#fff",
-          "color": "#000",
-          "fontSize": "1em",
-          "padding": "1em",
-        },
-        "sectionFooter": Object {
-          "background": "#fff",
-          "borderBottom": "1px solid #00fff6",
-          "color": "#000",
-          "fontSize": "0.8em",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "sectionHeader": Object {
-          "background": "#007bff",
-          "color": "#fff",
-          "fontSize": "1.2em",
-          "fontWeight": "normal",
-          "padding": "0.6em",
-          "textAlign": "center",
-        },
-        "signInButton": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "0.3em",
-          "padding": "0.3em 0.5em",
-          "width": "100%",
-        },
-        "space": Object {
-          "display": "inline-block",
-          "width": "1em",
-        },
-        "text": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 384,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32.5%",
-        },
-      }
-    }
-  />
-  <ConfirmSignIn
-    Auth={
-      AuthDecorator {
-        "onStateChange": [Function],
-      }
-    }
-    authState="signIn"
-    hide={Array []}
-    key=".2"
-    messageMap={[Function]}
-    onAuthEvent={[Function]}
-    onStateChange={[Function]}
-    theme={
-      Object {
-        "a": Object {
-          "textDecoration": "underline",
-        },
-        "actionRow": Object {
-          "marginTop": "1.5em",
-          "textAlign": "right",
-        },
-        "album": Object {
-          "display": "block",
-          "textAlign": "left",
-          "width": "100%",
-        },
-        "albumPhoto": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "16.6%",
-        },
-        "albumText": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 256,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "button": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "auto 0.3em",
-          "padding": "0.3em 0.5em",
-        },
-        "center": Object {
-          "textAlign": "center",
-        },
-        "col10": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "83.6%",
-        },
-        "col12": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "99.2%",
-        },
-        "col2": Object {
-          "display": "inline-block",
-          "width": "16.6%",
-        },
-        "col3": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "24.5%",
-        },
-        "col4": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "32%",
-        },
-        "col6": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "49.5%",
-        },
-        "col8": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "66%",
-        },
-        "col9": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "74.5%",
-        },
-        "container": Object {
-          "fontFamily": "-apple-system,
+              "fontWeight": "400",
+              "lineHeight": "1.5",
+              "paddingLeft": "15px",
+              "paddingRight": "15px",
+              "textAlign": "left",
+            },
+            "errorSection": Object {
+              "backgroundColor": "#f0ad4e",
+              "border": "1px solid #eea236",
+              "borderRadius": "4px",
+              "color": "#fff",
+              "marginBottom": "20px",
+              "textAlign": "left",
+            },
+            "formContainer": Object {
+              "textAlign": "center",
+            },
+            "formRow": Object {
+              "marginBottom": "15px",
+            },
+            "formSection": Object {
+              "backgroundColor": "#fff",
+              "border": "1px solid #ddd",
+              "borderRadius": "4px",
+              "display": "inline-block",
+              "marginBottom": "20px",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "input": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+              "boxSizing": "border-box",
+              "color": "#555",
+              "display": "block",
+              "fontSize": "14px",
+              "height": "34px",
+              "lineHeight": "1.42857143",
+              "padding": "6px 12px",
+              "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+              "width": "100%",
+            },
+            "nav": Object {
+              "margin": "7.5px",
+            },
+            "navBar": Object {
+              "backgroundColor": "#f8f8f8",
+              "border": "1px solid transparent",
+              "borderColor": "#e7e7e7",
+              "marginBottom": "20px",
+              "marginLeft": "-15px",
+              "marginRight": "-15px",
+              "position": "relative",
+            },
+            "navButton": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "8px",
+              "marginTop": "8px",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "navItem": Object {
+              "display": "inline-block",
+              "lineHeight": "20px",
+              "padding": "10px 5px",
+            },
+            "navRight": Object {
+              "textAlign": "right",
+            },
+            "pre": Object {
+              "backgroundColor": "#f5f5f5",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "display": "block",
+              "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+              "fontSize": "13px",
+              "lineHeight": "1.42857143",
+              "margin": "0 0 10px",
+              "overflow": "auto",
+              "padding": "9.5px",
+              "wordBreak": "break-all",
+              "wordWrap": "break-word",
+            },
+            "sectionBody": Object {
+              "padding": "15px",
+            },
+            "sectionFooter": Object {
+              "backgroundColor": "#f5f5f5",
+              "borderTop": "1px solid #ddd",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#333",
+              "padding": "10px 15px",
+            },
+            "sectionHeader": Object {
+              "backgroundColor": "#337ab7",
+              "borderBottom": "1px solid transparent",
+              "borderColor": "#337ab7",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#fff",
+              "padding": "10px 15px",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "#facebook_signin_btn": Object {
+                "backgroundColor": "#3b5998",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "#google_signin_btn": Object {
+                "backgroundColor": "#dd4b39",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "display": "block",
+              "fontSize": "14px",
+              "marginTop": "2px",
+              "overflow": "hidden",
+              "padding": "6px 12px 6px 44px",
+              "position": "relative",
+              "textAlign": "left",
+              "textOverflow": "ellipsis",
+              "whiteSpace": "nowrap",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "20px",
+            },
+          }
+        }
+      />
+      <SignIn
+        authState="signIn"
+        hide={Array []}
+        key=".1"
+        messageMap={[Function]}
+        onAuthEvent={[Function]}
+        onStateChange={[Function]}
+        theme={
+          Object {
+            "a": Object {
+              "color": "#007bff",
+              "cursor": "pointer",
+            },
+            "actionRow": Object {
+              "marginBottom": "15px",
+            },
+            "button": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "0",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "col1": Object {
+              "display": "inline-block",
+              "width": "8.33333333%",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "width": "83.33333333%",
+            },
+            "col11": Object {
+              "display": "inline-block",
+              "width": "91.66666667%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "width": "100%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.66666667%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "width": "25%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "width": "33.33333333%",
+            },
+            "col5": Object {
+              "display": "inline-block",
+              "width": "41.66666667%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "width": "50%",
+            },
+            "col7": Object {
+              "display": "inline-block",
+              "width": "58.33333333%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "width": "66.66666667%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "width": "75%",
+            },
+            "container": Object {
+              "color": "#212529",
+              "fontFamily": "-apple-system,
                 BlinkMacSystemFont,
                 \\"Segoe UI\\",
                 Roboto,
@@ -859,253 +606,248 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "textAlign": "center",
-        },
-        "errorSection": Object {
-          "background": "orange",
-          "fontWeight": "300",
-          "margin": "0.2em auto",
-          "padding": "0.5em",
-        },
-        "formContainer": Object {},
-        "formRow": Object {
-          "marginBottom": "0.5em",
-          "textAlign": "left",
-        },
-        "formSection": Object {
-          "display": "inline-block",
-          "fontWeight": "200",
-          "maxWidth": "500px",
-        },
-        "halfHeight": Object {
-          "height": 384,
-          "overflow": "auto",
-        },
-        "hidden": Object {
-          "display": "none",
-        },
-        "input": Object {
-          "border": "1px solid #aaa",
-          "fontSize": "1em",
-          "fontWeight": "200",
-          "padding": "4px 2px",
-          "width": "15em",
-        },
-        "label": Object {
-          "margin": "auto 0.5em",
-        },
-        "nav": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navBar": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navButton": Object {
-          "background": "#fff",
-          "border": "none",
-          "borderBottom": "1px solid #007bff",
-          "color": "#007bff",
-          "margin": "auto 0.3em",
-          "padding": "0",
-        },
-        "navItem": Object {},
-        "navRight": Object {
-          "fontSize": "0.8em",
-          "textAlign": "right",
-        },
-        "overlay": Object {
-          "height": "100%",
-          "left": 0,
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "overlaySelected": Object {
-          "background": "#888",
-          "border": "2px solid blue",
-          "height": "100%",
-          "left": 0,
-          "opacity": "0.5",
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "photo": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "photoImg": Object {
-          "maxWidth": "100%",
-        },
-        "picker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pickerButton": Object {
-          "background": "#fff",
-          "border": "1px solid #ccc",
-          "fontWeight": "200",
-          "width": "100%",
-        },
-        "pickerInput": Object {},
-        "pickerPicker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pre": Object {
-          "background": "#eee",
-          "margin": "0",
-          "overflow": "auto",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "section": Object {
-          "fontWeight": "200",
-        },
-        "sectionBody": Object {
-          "background": "#fff",
-          "color": "#000",
-          "fontSize": "1em",
-          "padding": "1em",
-        },
-        "sectionFooter": Object {
-          "background": "#fff",
-          "borderBottom": "1px solid #00fff6",
-          "color": "#000",
-          "fontSize": "0.8em",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "sectionHeader": Object {
-          "background": "#007bff",
-          "color": "#fff",
-          "fontSize": "1.2em",
-          "fontWeight": "normal",
-          "padding": "0.6em",
-          "textAlign": "center",
-        },
-        "signInButton": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "0.3em",
-          "padding": "0.3em 0.5em",
-          "width": "100%",
-        },
-        "space": Object {
-          "display": "inline-block",
-          "width": "1em",
-        },
-        "text": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 384,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32.5%",
-        },
-      }
-    }
-  />
-  <RequireNewPassword
-    Auth={
-      AuthDecorator {
-        "onStateChange": [Function],
-      }
-    }
-    authState="signIn"
-    hide={Array []}
-    key=".3"
-    messageMap={[Function]}
-    onAuthEvent={[Function]}
-    onStateChange={[Function]}
-    theme={
-      Object {
-        "a": Object {
-          "textDecoration": "underline",
-        },
-        "actionRow": Object {
-          "marginTop": "1.5em",
-          "textAlign": "right",
-        },
-        "album": Object {
-          "display": "block",
-          "textAlign": "left",
-          "width": "100%",
-        },
-        "albumPhoto": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "16.6%",
-        },
-        "albumText": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 256,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "button": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "auto 0.3em",
-          "padding": "0.3em 0.5em",
-        },
-        "center": Object {
-          "textAlign": "center",
-        },
-        "col10": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "83.6%",
-        },
-        "col12": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "99.2%",
-        },
-        "col2": Object {
-          "display": "inline-block",
-          "width": "16.6%",
-        },
-        "col3": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "24.5%",
-        },
-        "col4": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "32%",
-        },
-        "col6": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "49.5%",
-        },
-        "col8": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "66%",
-        },
-        "col9": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "74.5%",
-        },
-        "container": Object {
-          "fontFamily": "-apple-system,
+              "fontWeight": "400",
+              "lineHeight": "1.5",
+              "paddingLeft": "15px",
+              "paddingRight": "15px",
+              "textAlign": "left",
+            },
+            "errorSection": Object {
+              "backgroundColor": "#f0ad4e",
+              "border": "1px solid #eea236",
+              "borderRadius": "4px",
+              "color": "#fff",
+              "marginBottom": "20px",
+              "textAlign": "left",
+            },
+            "formContainer": Object {
+              "textAlign": "center",
+            },
+            "formRow": Object {
+              "marginBottom": "15px",
+            },
+            "formSection": Object {
+              "backgroundColor": "#fff",
+              "border": "1px solid #ddd",
+              "borderRadius": "4px",
+              "display": "inline-block",
+              "marginBottom": "20px",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "input": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+              "boxSizing": "border-box",
+              "color": "#555",
+              "display": "block",
+              "fontSize": "14px",
+              "height": "34px",
+              "lineHeight": "1.42857143",
+              "padding": "6px 12px",
+              "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+              "width": "100%",
+            },
+            "nav": Object {
+              "margin": "7.5px",
+            },
+            "navBar": Object {
+              "backgroundColor": "#f8f8f8",
+              "border": "1px solid transparent",
+              "borderColor": "#e7e7e7",
+              "marginBottom": "20px",
+              "marginLeft": "-15px",
+              "marginRight": "-15px",
+              "position": "relative",
+            },
+            "navButton": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "8px",
+              "marginTop": "8px",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "navItem": Object {
+              "display": "inline-block",
+              "lineHeight": "20px",
+              "padding": "10px 5px",
+            },
+            "navRight": Object {
+              "textAlign": "right",
+            },
+            "pre": Object {
+              "backgroundColor": "#f5f5f5",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "display": "block",
+              "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+              "fontSize": "13px",
+              "lineHeight": "1.42857143",
+              "margin": "0 0 10px",
+              "overflow": "auto",
+              "padding": "9.5px",
+              "wordBreak": "break-all",
+              "wordWrap": "break-word",
+            },
+            "sectionBody": Object {
+              "padding": "15px",
+            },
+            "sectionFooter": Object {
+              "backgroundColor": "#f5f5f5",
+              "borderTop": "1px solid #ddd",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#333",
+              "padding": "10px 15px",
+            },
+            "sectionHeader": Object {
+              "backgroundColor": "#337ab7",
+              "borderBottom": "1px solid transparent",
+              "borderColor": "#337ab7",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#fff",
+              "padding": "10px 15px",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "#facebook_signin_btn": Object {
+                "backgroundColor": "#3b5998",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "#google_signin_btn": Object {
+                "backgroundColor": "#dd4b39",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "display": "block",
+              "fontSize": "14px",
+              "marginTop": "2px",
+              "overflow": "hidden",
+              "padding": "6px 12px 6px 44px",
+              "position": "relative",
+              "textAlign": "left",
+              "textOverflow": "ellipsis",
+              "whiteSpace": "nowrap",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "20px",
+            },
+          }
+        }
+      />
+      <ConfirmSignIn
+        authState="signIn"
+        hide={Array []}
+        key=".2"
+        messageMap={[Function]}
+        onAuthEvent={[Function]}
+        onStateChange={[Function]}
+        theme={
+          Object {
+            "a": Object {
+              "color": "#007bff",
+              "cursor": "pointer",
+            },
+            "actionRow": Object {
+              "marginBottom": "15px",
+            },
+            "button": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "0",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "col1": Object {
+              "display": "inline-block",
+              "width": "8.33333333%",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "width": "83.33333333%",
+            },
+            "col11": Object {
+              "display": "inline-block",
+              "width": "91.66666667%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "width": "100%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.66666667%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "width": "25%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "width": "33.33333333%",
+            },
+            "col5": Object {
+              "display": "inline-block",
+              "width": "41.66666667%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "width": "50%",
+            },
+            "col7": Object {
+              "display": "inline-block",
+              "width": "58.33333333%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "width": "66.66666667%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "width": "75%",
+            },
+            "container": Object {
+              "color": "#212529",
+              "fontFamily": "-apple-system,
                 BlinkMacSystemFont,
                 \\"Segoe UI\\",
                 Roboto,
@@ -1115,253 +857,248 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "textAlign": "center",
-        },
-        "errorSection": Object {
-          "background": "orange",
-          "fontWeight": "300",
-          "margin": "0.2em auto",
-          "padding": "0.5em",
-        },
-        "formContainer": Object {},
-        "formRow": Object {
-          "marginBottom": "0.5em",
-          "textAlign": "left",
-        },
-        "formSection": Object {
-          "display": "inline-block",
-          "fontWeight": "200",
-          "maxWidth": "500px",
-        },
-        "halfHeight": Object {
-          "height": 384,
-          "overflow": "auto",
-        },
-        "hidden": Object {
-          "display": "none",
-        },
-        "input": Object {
-          "border": "1px solid #aaa",
-          "fontSize": "1em",
-          "fontWeight": "200",
-          "padding": "4px 2px",
-          "width": "15em",
-        },
-        "label": Object {
-          "margin": "auto 0.5em",
-        },
-        "nav": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navBar": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navButton": Object {
-          "background": "#fff",
-          "border": "none",
-          "borderBottom": "1px solid #007bff",
-          "color": "#007bff",
-          "margin": "auto 0.3em",
-          "padding": "0",
-        },
-        "navItem": Object {},
-        "navRight": Object {
-          "fontSize": "0.8em",
-          "textAlign": "right",
-        },
-        "overlay": Object {
-          "height": "100%",
-          "left": 0,
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "overlaySelected": Object {
-          "background": "#888",
-          "border": "2px solid blue",
-          "height": "100%",
-          "left": 0,
-          "opacity": "0.5",
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "photo": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "photoImg": Object {
-          "maxWidth": "100%",
-        },
-        "picker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pickerButton": Object {
-          "background": "#fff",
-          "border": "1px solid #ccc",
-          "fontWeight": "200",
-          "width": "100%",
-        },
-        "pickerInput": Object {},
-        "pickerPicker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pre": Object {
-          "background": "#eee",
-          "margin": "0",
-          "overflow": "auto",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "section": Object {
-          "fontWeight": "200",
-        },
-        "sectionBody": Object {
-          "background": "#fff",
-          "color": "#000",
-          "fontSize": "1em",
-          "padding": "1em",
-        },
-        "sectionFooter": Object {
-          "background": "#fff",
-          "borderBottom": "1px solid #00fff6",
-          "color": "#000",
-          "fontSize": "0.8em",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "sectionHeader": Object {
-          "background": "#007bff",
-          "color": "#fff",
-          "fontSize": "1.2em",
-          "fontWeight": "normal",
-          "padding": "0.6em",
-          "textAlign": "center",
-        },
-        "signInButton": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "0.3em",
-          "padding": "0.3em 0.5em",
-          "width": "100%",
-        },
-        "space": Object {
-          "display": "inline-block",
-          "width": "1em",
-        },
-        "text": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 384,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32.5%",
-        },
-      }
-    }
-  />
-  <SignUp
-    Auth={
-      AuthDecorator {
-        "onStateChange": [Function],
-      }
-    }
-    authState="signIn"
-    hide={Array []}
-    key=".4"
-    messageMap={[Function]}
-    onAuthEvent={[Function]}
-    onStateChange={[Function]}
-    theme={
-      Object {
-        "a": Object {
-          "textDecoration": "underline",
-        },
-        "actionRow": Object {
-          "marginTop": "1.5em",
-          "textAlign": "right",
-        },
-        "album": Object {
-          "display": "block",
-          "textAlign": "left",
-          "width": "100%",
-        },
-        "albumPhoto": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "16.6%",
-        },
-        "albumText": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 256,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "button": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "auto 0.3em",
-          "padding": "0.3em 0.5em",
-        },
-        "center": Object {
-          "textAlign": "center",
-        },
-        "col10": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "83.6%",
-        },
-        "col12": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "99.2%",
-        },
-        "col2": Object {
-          "display": "inline-block",
-          "width": "16.6%",
-        },
-        "col3": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "24.5%",
-        },
-        "col4": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "32%",
-        },
-        "col6": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "49.5%",
-        },
-        "col8": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "66%",
-        },
-        "col9": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "74.5%",
-        },
-        "container": Object {
-          "fontFamily": "-apple-system,
+              "fontWeight": "400",
+              "lineHeight": "1.5",
+              "paddingLeft": "15px",
+              "paddingRight": "15px",
+              "textAlign": "left",
+            },
+            "errorSection": Object {
+              "backgroundColor": "#f0ad4e",
+              "border": "1px solid #eea236",
+              "borderRadius": "4px",
+              "color": "#fff",
+              "marginBottom": "20px",
+              "textAlign": "left",
+            },
+            "formContainer": Object {
+              "textAlign": "center",
+            },
+            "formRow": Object {
+              "marginBottom": "15px",
+            },
+            "formSection": Object {
+              "backgroundColor": "#fff",
+              "border": "1px solid #ddd",
+              "borderRadius": "4px",
+              "display": "inline-block",
+              "marginBottom": "20px",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "input": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+              "boxSizing": "border-box",
+              "color": "#555",
+              "display": "block",
+              "fontSize": "14px",
+              "height": "34px",
+              "lineHeight": "1.42857143",
+              "padding": "6px 12px",
+              "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+              "width": "100%",
+            },
+            "nav": Object {
+              "margin": "7.5px",
+            },
+            "navBar": Object {
+              "backgroundColor": "#f8f8f8",
+              "border": "1px solid transparent",
+              "borderColor": "#e7e7e7",
+              "marginBottom": "20px",
+              "marginLeft": "-15px",
+              "marginRight": "-15px",
+              "position": "relative",
+            },
+            "navButton": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "8px",
+              "marginTop": "8px",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "navItem": Object {
+              "display": "inline-block",
+              "lineHeight": "20px",
+              "padding": "10px 5px",
+            },
+            "navRight": Object {
+              "textAlign": "right",
+            },
+            "pre": Object {
+              "backgroundColor": "#f5f5f5",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "display": "block",
+              "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+              "fontSize": "13px",
+              "lineHeight": "1.42857143",
+              "margin": "0 0 10px",
+              "overflow": "auto",
+              "padding": "9.5px",
+              "wordBreak": "break-all",
+              "wordWrap": "break-word",
+            },
+            "sectionBody": Object {
+              "padding": "15px",
+            },
+            "sectionFooter": Object {
+              "backgroundColor": "#f5f5f5",
+              "borderTop": "1px solid #ddd",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#333",
+              "padding": "10px 15px",
+            },
+            "sectionHeader": Object {
+              "backgroundColor": "#337ab7",
+              "borderBottom": "1px solid transparent",
+              "borderColor": "#337ab7",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#fff",
+              "padding": "10px 15px",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "#facebook_signin_btn": Object {
+                "backgroundColor": "#3b5998",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "#google_signin_btn": Object {
+                "backgroundColor": "#dd4b39",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "display": "block",
+              "fontSize": "14px",
+              "marginTop": "2px",
+              "overflow": "hidden",
+              "padding": "6px 12px 6px 44px",
+              "position": "relative",
+              "textAlign": "left",
+              "textOverflow": "ellipsis",
+              "whiteSpace": "nowrap",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "20px",
+            },
+          }
+        }
+      />
+      <RequireNewPassword
+        authState="signIn"
+        hide={Array []}
+        key=".3"
+        messageMap={[Function]}
+        onAuthEvent={[Function]}
+        onStateChange={[Function]}
+        theme={
+          Object {
+            "a": Object {
+              "color": "#007bff",
+              "cursor": "pointer",
+            },
+            "actionRow": Object {
+              "marginBottom": "15px",
+            },
+            "button": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "0",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "col1": Object {
+              "display": "inline-block",
+              "width": "8.33333333%",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "width": "83.33333333%",
+            },
+            "col11": Object {
+              "display": "inline-block",
+              "width": "91.66666667%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "width": "100%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.66666667%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "width": "25%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "width": "33.33333333%",
+            },
+            "col5": Object {
+              "display": "inline-block",
+              "width": "41.66666667%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "width": "50%",
+            },
+            "col7": Object {
+              "display": "inline-block",
+              "width": "58.33333333%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "width": "66.66666667%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "width": "75%",
+            },
+            "container": Object {
+              "color": "#212529",
+              "fontFamily": "-apple-system,
                 BlinkMacSystemFont,
                 \\"Segoe UI\\",
                 Roboto,
@@ -1371,253 +1108,248 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "textAlign": "center",
-        },
-        "errorSection": Object {
-          "background": "orange",
-          "fontWeight": "300",
-          "margin": "0.2em auto",
-          "padding": "0.5em",
-        },
-        "formContainer": Object {},
-        "formRow": Object {
-          "marginBottom": "0.5em",
-          "textAlign": "left",
-        },
-        "formSection": Object {
-          "display": "inline-block",
-          "fontWeight": "200",
-          "maxWidth": "500px",
-        },
-        "halfHeight": Object {
-          "height": 384,
-          "overflow": "auto",
-        },
-        "hidden": Object {
-          "display": "none",
-        },
-        "input": Object {
-          "border": "1px solid #aaa",
-          "fontSize": "1em",
-          "fontWeight": "200",
-          "padding": "4px 2px",
-          "width": "15em",
-        },
-        "label": Object {
-          "margin": "auto 0.5em",
-        },
-        "nav": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navBar": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navButton": Object {
-          "background": "#fff",
-          "border": "none",
-          "borderBottom": "1px solid #007bff",
-          "color": "#007bff",
-          "margin": "auto 0.3em",
-          "padding": "0",
-        },
-        "navItem": Object {},
-        "navRight": Object {
-          "fontSize": "0.8em",
-          "textAlign": "right",
-        },
-        "overlay": Object {
-          "height": "100%",
-          "left": 0,
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "overlaySelected": Object {
-          "background": "#888",
-          "border": "2px solid blue",
-          "height": "100%",
-          "left": 0,
-          "opacity": "0.5",
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "photo": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "photoImg": Object {
-          "maxWidth": "100%",
-        },
-        "picker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pickerButton": Object {
-          "background": "#fff",
-          "border": "1px solid #ccc",
-          "fontWeight": "200",
-          "width": "100%",
-        },
-        "pickerInput": Object {},
-        "pickerPicker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pre": Object {
-          "background": "#eee",
-          "margin": "0",
-          "overflow": "auto",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "section": Object {
-          "fontWeight": "200",
-        },
-        "sectionBody": Object {
-          "background": "#fff",
-          "color": "#000",
-          "fontSize": "1em",
-          "padding": "1em",
-        },
-        "sectionFooter": Object {
-          "background": "#fff",
-          "borderBottom": "1px solid #00fff6",
-          "color": "#000",
-          "fontSize": "0.8em",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "sectionHeader": Object {
-          "background": "#007bff",
-          "color": "#fff",
-          "fontSize": "1.2em",
-          "fontWeight": "normal",
-          "padding": "0.6em",
-          "textAlign": "center",
-        },
-        "signInButton": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "0.3em",
-          "padding": "0.3em 0.5em",
-          "width": "100%",
-        },
-        "space": Object {
-          "display": "inline-block",
-          "width": "1em",
-        },
-        "text": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 384,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32.5%",
-        },
-      }
-    }
-  />
-  <ConfirmSignUp
-    Auth={
-      AuthDecorator {
-        "onStateChange": [Function],
-      }
-    }
-    authState="signIn"
-    hide={Array []}
-    key=".5"
-    messageMap={[Function]}
-    onAuthEvent={[Function]}
-    onStateChange={[Function]}
-    theme={
-      Object {
-        "a": Object {
-          "textDecoration": "underline",
-        },
-        "actionRow": Object {
-          "marginTop": "1.5em",
-          "textAlign": "right",
-        },
-        "album": Object {
-          "display": "block",
-          "textAlign": "left",
-          "width": "100%",
-        },
-        "albumPhoto": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "16.6%",
-        },
-        "albumText": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 256,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "button": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "auto 0.3em",
-          "padding": "0.3em 0.5em",
-        },
-        "center": Object {
-          "textAlign": "center",
-        },
-        "col10": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "83.6%",
-        },
-        "col12": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "99.2%",
-        },
-        "col2": Object {
-          "display": "inline-block",
-          "width": "16.6%",
-        },
-        "col3": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "24.5%",
-        },
-        "col4": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "32%",
-        },
-        "col6": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "49.5%",
-        },
-        "col8": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "66%",
-        },
-        "col9": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "74.5%",
-        },
-        "container": Object {
-          "fontFamily": "-apple-system,
+              "fontWeight": "400",
+              "lineHeight": "1.5",
+              "paddingLeft": "15px",
+              "paddingRight": "15px",
+              "textAlign": "left",
+            },
+            "errorSection": Object {
+              "backgroundColor": "#f0ad4e",
+              "border": "1px solid #eea236",
+              "borderRadius": "4px",
+              "color": "#fff",
+              "marginBottom": "20px",
+              "textAlign": "left",
+            },
+            "formContainer": Object {
+              "textAlign": "center",
+            },
+            "formRow": Object {
+              "marginBottom": "15px",
+            },
+            "formSection": Object {
+              "backgroundColor": "#fff",
+              "border": "1px solid #ddd",
+              "borderRadius": "4px",
+              "display": "inline-block",
+              "marginBottom": "20px",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "input": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+              "boxSizing": "border-box",
+              "color": "#555",
+              "display": "block",
+              "fontSize": "14px",
+              "height": "34px",
+              "lineHeight": "1.42857143",
+              "padding": "6px 12px",
+              "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+              "width": "100%",
+            },
+            "nav": Object {
+              "margin": "7.5px",
+            },
+            "navBar": Object {
+              "backgroundColor": "#f8f8f8",
+              "border": "1px solid transparent",
+              "borderColor": "#e7e7e7",
+              "marginBottom": "20px",
+              "marginLeft": "-15px",
+              "marginRight": "-15px",
+              "position": "relative",
+            },
+            "navButton": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "8px",
+              "marginTop": "8px",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "navItem": Object {
+              "display": "inline-block",
+              "lineHeight": "20px",
+              "padding": "10px 5px",
+            },
+            "navRight": Object {
+              "textAlign": "right",
+            },
+            "pre": Object {
+              "backgroundColor": "#f5f5f5",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "display": "block",
+              "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+              "fontSize": "13px",
+              "lineHeight": "1.42857143",
+              "margin": "0 0 10px",
+              "overflow": "auto",
+              "padding": "9.5px",
+              "wordBreak": "break-all",
+              "wordWrap": "break-word",
+            },
+            "sectionBody": Object {
+              "padding": "15px",
+            },
+            "sectionFooter": Object {
+              "backgroundColor": "#f5f5f5",
+              "borderTop": "1px solid #ddd",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#333",
+              "padding": "10px 15px",
+            },
+            "sectionHeader": Object {
+              "backgroundColor": "#337ab7",
+              "borderBottom": "1px solid transparent",
+              "borderColor": "#337ab7",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#fff",
+              "padding": "10px 15px",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "#facebook_signin_btn": Object {
+                "backgroundColor": "#3b5998",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "#google_signin_btn": Object {
+                "backgroundColor": "#dd4b39",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "display": "block",
+              "fontSize": "14px",
+              "marginTop": "2px",
+              "overflow": "hidden",
+              "padding": "6px 12px 6px 44px",
+              "position": "relative",
+              "textAlign": "left",
+              "textOverflow": "ellipsis",
+              "whiteSpace": "nowrap",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "20px",
+            },
+          }
+        }
+      />
+      <SignUp
+        authState="signIn"
+        hide={Array []}
+        key=".4"
+        messageMap={[Function]}
+        onAuthEvent={[Function]}
+        onStateChange={[Function]}
+        theme={
+          Object {
+            "a": Object {
+              "color": "#007bff",
+              "cursor": "pointer",
+            },
+            "actionRow": Object {
+              "marginBottom": "15px",
+            },
+            "button": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "0",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "col1": Object {
+              "display": "inline-block",
+              "width": "8.33333333%",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "width": "83.33333333%",
+            },
+            "col11": Object {
+              "display": "inline-block",
+              "width": "91.66666667%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "width": "100%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.66666667%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "width": "25%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "width": "33.33333333%",
+            },
+            "col5": Object {
+              "display": "inline-block",
+              "width": "41.66666667%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "width": "50%",
+            },
+            "col7": Object {
+              "display": "inline-block",
+              "width": "58.33333333%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "width": "66.66666667%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "width": "75%",
+            },
+            "container": Object {
+              "color": "#212529",
+              "fontFamily": "-apple-system,
                 BlinkMacSystemFont,
                 \\"Segoe UI\\",
                 Roboto,
@@ -1627,253 +1359,248 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "textAlign": "center",
-        },
-        "errorSection": Object {
-          "background": "orange",
-          "fontWeight": "300",
-          "margin": "0.2em auto",
-          "padding": "0.5em",
-        },
-        "formContainer": Object {},
-        "formRow": Object {
-          "marginBottom": "0.5em",
-          "textAlign": "left",
-        },
-        "formSection": Object {
-          "display": "inline-block",
-          "fontWeight": "200",
-          "maxWidth": "500px",
-        },
-        "halfHeight": Object {
-          "height": 384,
-          "overflow": "auto",
-        },
-        "hidden": Object {
-          "display": "none",
-        },
-        "input": Object {
-          "border": "1px solid #aaa",
-          "fontSize": "1em",
-          "fontWeight": "200",
-          "padding": "4px 2px",
-          "width": "15em",
-        },
-        "label": Object {
-          "margin": "auto 0.5em",
-        },
-        "nav": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navBar": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navButton": Object {
-          "background": "#fff",
-          "border": "none",
-          "borderBottom": "1px solid #007bff",
-          "color": "#007bff",
-          "margin": "auto 0.3em",
-          "padding": "0",
-        },
-        "navItem": Object {},
-        "navRight": Object {
-          "fontSize": "0.8em",
-          "textAlign": "right",
-        },
-        "overlay": Object {
-          "height": "100%",
-          "left": 0,
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "overlaySelected": Object {
-          "background": "#888",
-          "border": "2px solid blue",
-          "height": "100%",
-          "left": 0,
-          "opacity": "0.5",
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "photo": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "photoImg": Object {
-          "maxWidth": "100%",
-        },
-        "picker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pickerButton": Object {
-          "background": "#fff",
-          "border": "1px solid #ccc",
-          "fontWeight": "200",
-          "width": "100%",
-        },
-        "pickerInput": Object {},
-        "pickerPicker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pre": Object {
-          "background": "#eee",
-          "margin": "0",
-          "overflow": "auto",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "section": Object {
-          "fontWeight": "200",
-        },
-        "sectionBody": Object {
-          "background": "#fff",
-          "color": "#000",
-          "fontSize": "1em",
-          "padding": "1em",
-        },
-        "sectionFooter": Object {
-          "background": "#fff",
-          "borderBottom": "1px solid #00fff6",
-          "color": "#000",
-          "fontSize": "0.8em",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "sectionHeader": Object {
-          "background": "#007bff",
-          "color": "#fff",
-          "fontSize": "1.2em",
-          "fontWeight": "normal",
-          "padding": "0.6em",
-          "textAlign": "center",
-        },
-        "signInButton": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "0.3em",
-          "padding": "0.3em 0.5em",
-          "width": "100%",
-        },
-        "space": Object {
-          "display": "inline-block",
-          "width": "1em",
-        },
-        "text": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 384,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32.5%",
-        },
-      }
-    }
-  />
-  <VerifyContact
-    Auth={
-      AuthDecorator {
-        "onStateChange": [Function],
-      }
-    }
-    authState="signIn"
-    hide={Array []}
-    key=".6"
-    messageMap={[Function]}
-    onAuthEvent={[Function]}
-    onStateChange={[Function]}
-    theme={
-      Object {
-        "a": Object {
-          "textDecoration": "underline",
-        },
-        "actionRow": Object {
-          "marginTop": "1.5em",
-          "textAlign": "right",
-        },
-        "album": Object {
-          "display": "block",
-          "textAlign": "left",
-          "width": "100%",
-        },
-        "albumPhoto": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "16.6%",
-        },
-        "albumText": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 256,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "button": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "auto 0.3em",
-          "padding": "0.3em 0.5em",
-        },
-        "center": Object {
-          "textAlign": "center",
-        },
-        "col10": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "83.6%",
-        },
-        "col12": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "99.2%",
-        },
-        "col2": Object {
-          "display": "inline-block",
-          "width": "16.6%",
-        },
-        "col3": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "24.5%",
-        },
-        "col4": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "32%",
-        },
-        "col6": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "49.5%",
-        },
-        "col8": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "66%",
-        },
-        "col9": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "74.5%",
-        },
-        "container": Object {
-          "fontFamily": "-apple-system,
+              "fontWeight": "400",
+              "lineHeight": "1.5",
+              "paddingLeft": "15px",
+              "paddingRight": "15px",
+              "textAlign": "left",
+            },
+            "errorSection": Object {
+              "backgroundColor": "#f0ad4e",
+              "border": "1px solid #eea236",
+              "borderRadius": "4px",
+              "color": "#fff",
+              "marginBottom": "20px",
+              "textAlign": "left",
+            },
+            "formContainer": Object {
+              "textAlign": "center",
+            },
+            "formRow": Object {
+              "marginBottom": "15px",
+            },
+            "formSection": Object {
+              "backgroundColor": "#fff",
+              "border": "1px solid #ddd",
+              "borderRadius": "4px",
+              "display": "inline-block",
+              "marginBottom": "20px",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "input": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+              "boxSizing": "border-box",
+              "color": "#555",
+              "display": "block",
+              "fontSize": "14px",
+              "height": "34px",
+              "lineHeight": "1.42857143",
+              "padding": "6px 12px",
+              "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+              "width": "100%",
+            },
+            "nav": Object {
+              "margin": "7.5px",
+            },
+            "navBar": Object {
+              "backgroundColor": "#f8f8f8",
+              "border": "1px solid transparent",
+              "borderColor": "#e7e7e7",
+              "marginBottom": "20px",
+              "marginLeft": "-15px",
+              "marginRight": "-15px",
+              "position": "relative",
+            },
+            "navButton": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "8px",
+              "marginTop": "8px",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "navItem": Object {
+              "display": "inline-block",
+              "lineHeight": "20px",
+              "padding": "10px 5px",
+            },
+            "navRight": Object {
+              "textAlign": "right",
+            },
+            "pre": Object {
+              "backgroundColor": "#f5f5f5",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "display": "block",
+              "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+              "fontSize": "13px",
+              "lineHeight": "1.42857143",
+              "margin": "0 0 10px",
+              "overflow": "auto",
+              "padding": "9.5px",
+              "wordBreak": "break-all",
+              "wordWrap": "break-word",
+            },
+            "sectionBody": Object {
+              "padding": "15px",
+            },
+            "sectionFooter": Object {
+              "backgroundColor": "#f5f5f5",
+              "borderTop": "1px solid #ddd",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#333",
+              "padding": "10px 15px",
+            },
+            "sectionHeader": Object {
+              "backgroundColor": "#337ab7",
+              "borderBottom": "1px solid transparent",
+              "borderColor": "#337ab7",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#fff",
+              "padding": "10px 15px",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "#facebook_signin_btn": Object {
+                "backgroundColor": "#3b5998",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "#google_signin_btn": Object {
+                "backgroundColor": "#dd4b39",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "display": "block",
+              "fontSize": "14px",
+              "marginTop": "2px",
+              "overflow": "hidden",
+              "padding": "6px 12px 6px 44px",
+              "position": "relative",
+              "textAlign": "left",
+              "textOverflow": "ellipsis",
+              "whiteSpace": "nowrap",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "20px",
+            },
+          }
+        }
+      />
+      <ConfirmSignUp
+        authState="signIn"
+        hide={Array []}
+        key=".5"
+        messageMap={[Function]}
+        onAuthEvent={[Function]}
+        onStateChange={[Function]}
+        theme={
+          Object {
+            "a": Object {
+              "color": "#007bff",
+              "cursor": "pointer",
+            },
+            "actionRow": Object {
+              "marginBottom": "15px",
+            },
+            "button": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "0",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "col1": Object {
+              "display": "inline-block",
+              "width": "8.33333333%",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "width": "83.33333333%",
+            },
+            "col11": Object {
+              "display": "inline-block",
+              "width": "91.66666667%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "width": "100%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.66666667%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "width": "25%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "width": "33.33333333%",
+            },
+            "col5": Object {
+              "display": "inline-block",
+              "width": "41.66666667%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "width": "50%",
+            },
+            "col7": Object {
+              "display": "inline-block",
+              "width": "58.33333333%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "width": "66.66666667%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "width": "75%",
+            },
+            "container": Object {
+              "color": "#212529",
+              "fontFamily": "-apple-system,
                 BlinkMacSystemFont,
                 \\"Segoe UI\\",
                 Roboto,
@@ -1883,253 +1610,248 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "textAlign": "center",
-        },
-        "errorSection": Object {
-          "background": "orange",
-          "fontWeight": "300",
-          "margin": "0.2em auto",
-          "padding": "0.5em",
-        },
-        "formContainer": Object {},
-        "formRow": Object {
-          "marginBottom": "0.5em",
-          "textAlign": "left",
-        },
-        "formSection": Object {
-          "display": "inline-block",
-          "fontWeight": "200",
-          "maxWidth": "500px",
-        },
-        "halfHeight": Object {
-          "height": 384,
-          "overflow": "auto",
-        },
-        "hidden": Object {
-          "display": "none",
-        },
-        "input": Object {
-          "border": "1px solid #aaa",
-          "fontSize": "1em",
-          "fontWeight": "200",
-          "padding": "4px 2px",
-          "width": "15em",
-        },
-        "label": Object {
-          "margin": "auto 0.5em",
-        },
-        "nav": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navBar": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navButton": Object {
-          "background": "#fff",
-          "border": "none",
-          "borderBottom": "1px solid #007bff",
-          "color": "#007bff",
-          "margin": "auto 0.3em",
-          "padding": "0",
-        },
-        "navItem": Object {},
-        "navRight": Object {
-          "fontSize": "0.8em",
-          "textAlign": "right",
-        },
-        "overlay": Object {
-          "height": "100%",
-          "left": 0,
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "overlaySelected": Object {
-          "background": "#888",
-          "border": "2px solid blue",
-          "height": "100%",
-          "left": 0,
-          "opacity": "0.5",
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "photo": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "photoImg": Object {
-          "maxWidth": "100%",
-        },
-        "picker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pickerButton": Object {
-          "background": "#fff",
-          "border": "1px solid #ccc",
-          "fontWeight": "200",
-          "width": "100%",
-        },
-        "pickerInput": Object {},
-        "pickerPicker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pre": Object {
-          "background": "#eee",
-          "margin": "0",
-          "overflow": "auto",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "section": Object {
-          "fontWeight": "200",
-        },
-        "sectionBody": Object {
-          "background": "#fff",
-          "color": "#000",
-          "fontSize": "1em",
-          "padding": "1em",
-        },
-        "sectionFooter": Object {
-          "background": "#fff",
-          "borderBottom": "1px solid #00fff6",
-          "color": "#000",
-          "fontSize": "0.8em",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "sectionHeader": Object {
-          "background": "#007bff",
-          "color": "#fff",
-          "fontSize": "1.2em",
-          "fontWeight": "normal",
-          "padding": "0.6em",
-          "textAlign": "center",
-        },
-        "signInButton": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "0.3em",
-          "padding": "0.3em 0.5em",
-          "width": "100%",
-        },
-        "space": Object {
-          "display": "inline-block",
-          "width": "1em",
-        },
-        "text": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 384,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32.5%",
-        },
-      }
-    }
-  />
-  <ForgotPassword
-    Auth={
-      AuthDecorator {
-        "onStateChange": [Function],
-      }
-    }
-    authState="signIn"
-    hide={Array []}
-    key=".7"
-    messageMap={[Function]}
-    onAuthEvent={[Function]}
-    onStateChange={[Function]}
-    theme={
-      Object {
-        "a": Object {
-          "textDecoration": "underline",
-        },
-        "actionRow": Object {
-          "marginTop": "1.5em",
-          "textAlign": "right",
-        },
-        "album": Object {
-          "display": "block",
-          "textAlign": "left",
-          "width": "100%",
-        },
-        "albumPhoto": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "16.6%",
-        },
-        "albumText": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 256,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "button": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "auto 0.3em",
-          "padding": "0.3em 0.5em",
-        },
-        "center": Object {
-          "textAlign": "center",
-        },
-        "col10": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "83.6%",
-        },
-        "col12": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "99.2%",
-        },
-        "col2": Object {
-          "display": "inline-block",
-          "width": "16.6%",
-        },
-        "col3": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "24.5%",
-        },
-        "col4": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "32%",
-        },
-        "col6": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "49.5%",
-        },
-        "col8": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "66%",
-        },
-        "col9": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "width": "74.5%",
-        },
-        "container": Object {
-          "fontFamily": "-apple-system,
+              "fontWeight": "400",
+              "lineHeight": "1.5",
+              "paddingLeft": "15px",
+              "paddingRight": "15px",
+              "textAlign": "left",
+            },
+            "errorSection": Object {
+              "backgroundColor": "#f0ad4e",
+              "border": "1px solid #eea236",
+              "borderRadius": "4px",
+              "color": "#fff",
+              "marginBottom": "20px",
+              "textAlign": "left",
+            },
+            "formContainer": Object {
+              "textAlign": "center",
+            },
+            "formRow": Object {
+              "marginBottom": "15px",
+            },
+            "formSection": Object {
+              "backgroundColor": "#fff",
+              "border": "1px solid #ddd",
+              "borderRadius": "4px",
+              "display": "inline-block",
+              "marginBottom": "20px",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "input": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+              "boxSizing": "border-box",
+              "color": "#555",
+              "display": "block",
+              "fontSize": "14px",
+              "height": "34px",
+              "lineHeight": "1.42857143",
+              "padding": "6px 12px",
+              "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+              "width": "100%",
+            },
+            "nav": Object {
+              "margin": "7.5px",
+            },
+            "navBar": Object {
+              "backgroundColor": "#f8f8f8",
+              "border": "1px solid transparent",
+              "borderColor": "#e7e7e7",
+              "marginBottom": "20px",
+              "marginLeft": "-15px",
+              "marginRight": "-15px",
+              "position": "relative",
+            },
+            "navButton": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "8px",
+              "marginTop": "8px",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "navItem": Object {
+              "display": "inline-block",
+              "lineHeight": "20px",
+              "padding": "10px 5px",
+            },
+            "navRight": Object {
+              "textAlign": "right",
+            },
+            "pre": Object {
+              "backgroundColor": "#f5f5f5",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "display": "block",
+              "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+              "fontSize": "13px",
+              "lineHeight": "1.42857143",
+              "margin": "0 0 10px",
+              "overflow": "auto",
+              "padding": "9.5px",
+              "wordBreak": "break-all",
+              "wordWrap": "break-word",
+            },
+            "sectionBody": Object {
+              "padding": "15px",
+            },
+            "sectionFooter": Object {
+              "backgroundColor": "#f5f5f5",
+              "borderTop": "1px solid #ddd",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#333",
+              "padding": "10px 15px",
+            },
+            "sectionHeader": Object {
+              "backgroundColor": "#337ab7",
+              "borderBottom": "1px solid transparent",
+              "borderColor": "#337ab7",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#fff",
+              "padding": "10px 15px",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "#facebook_signin_btn": Object {
+                "backgroundColor": "#3b5998",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "#google_signin_btn": Object {
+                "backgroundColor": "#dd4b39",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "display": "block",
+              "fontSize": "14px",
+              "marginTop": "2px",
+              "overflow": "hidden",
+              "padding": "6px 12px 6px 44px",
+              "position": "relative",
+              "textAlign": "left",
+              "textOverflow": "ellipsis",
+              "whiteSpace": "nowrap",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "20px",
+            },
+          }
+        }
+      />
+      <VerifyContact
+        authState="signIn"
+        hide={Array []}
+        key=".6"
+        messageMap={[Function]}
+        onAuthEvent={[Function]}
+        onStateChange={[Function]}
+        theme={
+          Object {
+            "a": Object {
+              "color": "#007bff",
+              "cursor": "pointer",
+            },
+            "actionRow": Object {
+              "marginBottom": "15px",
+            },
+            "button": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "0",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "col1": Object {
+              "display": "inline-block",
+              "width": "8.33333333%",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "width": "83.33333333%",
+            },
+            "col11": Object {
+              "display": "inline-block",
+              "width": "91.66666667%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "width": "100%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.66666667%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "width": "25%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "width": "33.33333333%",
+            },
+            "col5": Object {
+              "display": "inline-block",
+              "width": "41.66666667%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "width": "50%",
+            },
+            "col7": Object {
+              "display": "inline-block",
+              "width": "58.33333333%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "width": "66.66666667%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "width": "75%",
+            },
+            "container": Object {
+              "color": "#212529",
+              "fontFamily": "-apple-system,
                 BlinkMacSystemFont,
                 \\"Segoe UI\\",
                 Roboto,
@@ -2139,160 +1861,413 @@ exports[`Authenticator normal case render if no error 1`] = `
                 \\"Apple Color Emoji\\",
                 \\"Segoe UI Emoji\\",
                 \\"Segoe UI Symbol\\"",
-          "textAlign": "center",
-        },
-        "errorSection": Object {
-          "background": "orange",
-          "fontWeight": "300",
-          "margin": "0.2em auto",
-          "padding": "0.5em",
-        },
-        "formContainer": Object {},
-        "formRow": Object {
-          "marginBottom": "0.5em",
-          "textAlign": "left",
-        },
-        "formSection": Object {
-          "display": "inline-block",
-          "fontWeight": "200",
-          "maxWidth": "500px",
-        },
-        "halfHeight": Object {
-          "height": 384,
-          "overflow": "auto",
-        },
-        "hidden": Object {
-          "display": "none",
-        },
-        "input": Object {
-          "border": "1px solid #aaa",
-          "fontSize": "1em",
-          "fontWeight": "200",
-          "padding": "4px 2px",
-          "width": "15em",
-        },
-        "label": Object {
-          "margin": "auto 0.5em",
-        },
-        "nav": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navBar": Object {
-          "borderBottom": "1px solid #00fff6",
-          "marginBottom": "0.5em",
-          "padding": "0.5em 0.5em 0.2em",
-        },
-        "navButton": Object {
-          "background": "#fff",
-          "border": "none",
-          "borderBottom": "1px solid #007bff",
-          "color": "#007bff",
-          "margin": "auto 0.3em",
-          "padding": "0",
-        },
-        "navItem": Object {},
-        "navRight": Object {
-          "fontSize": "0.8em",
-          "textAlign": "right",
-        },
-        "overlay": Object {
-          "height": "100%",
-          "left": 0,
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "overlaySelected": Object {
-          "background": "#888",
-          "border": "2px solid blue",
-          "height": "100%",
-          "left": 0,
-          "opacity": "0.5",
-          "position": "absolute",
-          "top": 0,
-          "width": "100%",
-        },
-        "photo": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "verticalAlign": "top",
-          "width": "32%",
-        },
-        "photoImg": Object {
-          "maxWidth": "100%",
-        },
-        "picker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pickerButton": Object {
-          "background": "#fff",
-          "border": "1px solid #ccc",
-          "fontWeight": "200",
-          "width": "100%",
-        },
-        "pickerInput": Object {},
-        "pickerPicker": Object {
-          "textAlign": "center",
-          "width": "100%",
-        },
-        "pre": Object {
-          "background": "#eee",
-          "margin": "0",
-          "overflow": "auto",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "section": Object {
-          "fontWeight": "200",
-        },
-        "sectionBody": Object {
-          "background": "#fff",
-          "color": "#000",
-          "fontSize": "1em",
-          "padding": "1em",
-        },
-        "sectionFooter": Object {
-          "background": "#fff",
-          "borderBottom": "1px solid #00fff6",
-          "color": "#000",
-          "fontSize": "0.8em",
-          "padding": "1em",
-          "textAlign": "left",
-        },
-        "sectionHeader": Object {
-          "background": "#007bff",
-          "color": "#fff",
-          "fontSize": "1.2em",
-          "fontWeight": "normal",
-          "padding": "0.6em",
-          "textAlign": "center",
-        },
-        "signInButton": Object {
-          "background": "#fff",
-          "border": "1px solid #007bff",
-          "color": "#007bff",
-          "fontSize": "1em",
-          "margin": "0.3em",
-          "padding": "0.3em 0.5em",
-          "width": "100%",
-        },
-        "space": Object {
-          "display": "inline-block",
-          "width": "1em",
-        },
-        "text": Object {
-          "display": "inline-block",
-          "margin": "0.2%",
-          "maxHeight": 384,
-          "overflow": "auto",
-          "verticalAlign": "top",
-          "width": "32.5%",
-        },
-      }
-    }
-  />
-</Container>
+              "fontWeight": "400",
+              "lineHeight": "1.5",
+              "paddingLeft": "15px",
+              "paddingRight": "15px",
+              "textAlign": "left",
+            },
+            "errorSection": Object {
+              "backgroundColor": "#f0ad4e",
+              "border": "1px solid #eea236",
+              "borderRadius": "4px",
+              "color": "#fff",
+              "marginBottom": "20px",
+              "textAlign": "left",
+            },
+            "formContainer": Object {
+              "textAlign": "center",
+            },
+            "formRow": Object {
+              "marginBottom": "15px",
+            },
+            "formSection": Object {
+              "backgroundColor": "#fff",
+              "border": "1px solid #ddd",
+              "borderRadius": "4px",
+              "display": "inline-block",
+              "marginBottom": "20px",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "input": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+              "boxSizing": "border-box",
+              "color": "#555",
+              "display": "block",
+              "fontSize": "14px",
+              "height": "34px",
+              "lineHeight": "1.42857143",
+              "padding": "6px 12px",
+              "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+              "width": "100%",
+            },
+            "nav": Object {
+              "margin": "7.5px",
+            },
+            "navBar": Object {
+              "backgroundColor": "#f8f8f8",
+              "border": "1px solid transparent",
+              "borderColor": "#e7e7e7",
+              "marginBottom": "20px",
+              "marginLeft": "-15px",
+              "marginRight": "-15px",
+              "position": "relative",
+            },
+            "navButton": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "8px",
+              "marginTop": "8px",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "navItem": Object {
+              "display": "inline-block",
+              "lineHeight": "20px",
+              "padding": "10px 5px",
+            },
+            "navRight": Object {
+              "textAlign": "right",
+            },
+            "pre": Object {
+              "backgroundColor": "#f5f5f5",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "display": "block",
+              "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+              "fontSize": "13px",
+              "lineHeight": "1.42857143",
+              "margin": "0 0 10px",
+              "overflow": "auto",
+              "padding": "9.5px",
+              "wordBreak": "break-all",
+              "wordWrap": "break-word",
+            },
+            "sectionBody": Object {
+              "padding": "15px",
+            },
+            "sectionFooter": Object {
+              "backgroundColor": "#f5f5f5",
+              "borderTop": "1px solid #ddd",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#333",
+              "padding": "10px 15px",
+            },
+            "sectionHeader": Object {
+              "backgroundColor": "#337ab7",
+              "borderBottom": "1px solid transparent",
+              "borderColor": "#337ab7",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#fff",
+              "padding": "10px 15px",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "#facebook_signin_btn": Object {
+                "backgroundColor": "#3b5998",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "#google_signin_btn": Object {
+                "backgroundColor": "#dd4b39",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "display": "block",
+              "fontSize": "14px",
+              "marginTop": "2px",
+              "overflow": "hidden",
+              "padding": "6px 12px 6px 44px",
+              "position": "relative",
+              "textAlign": "left",
+              "textOverflow": "ellipsis",
+              "whiteSpace": "nowrap",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "20px",
+            },
+          }
+        }
+      />
+      <ForgotPassword
+        authState="signIn"
+        hide={Array []}
+        key=".7"
+        messageMap={[Function]}
+        onAuthEvent={[Function]}
+        onStateChange={[Function]}
+        theme={
+          Object {
+            "a": Object {
+              "color": "#007bff",
+              "cursor": "pointer",
+            },
+            "actionRow": Object {
+              "marginBottom": "15px",
+            },
+            "button": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "0",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "col1": Object {
+              "display": "inline-block",
+              "width": "8.33333333%",
+            },
+            "col10": Object {
+              "display": "inline-block",
+              "width": "83.33333333%",
+            },
+            "col11": Object {
+              "display": "inline-block",
+              "width": "91.66666667%",
+            },
+            "col12": Object {
+              "display": "inline-block",
+              "width": "100%",
+            },
+            "col2": Object {
+              "display": "inline-block",
+              "width": "16.66666667%",
+            },
+            "col3": Object {
+              "display": "inline-block",
+              "width": "25%",
+            },
+            "col4": Object {
+              "display": "inline-block",
+              "width": "33.33333333%",
+            },
+            "col5": Object {
+              "display": "inline-block",
+              "width": "41.66666667%",
+            },
+            "col6": Object {
+              "display": "inline-block",
+              "width": "50%",
+            },
+            "col7": Object {
+              "display": "inline-block",
+              "width": "58.33333333%",
+            },
+            "col8": Object {
+              "display": "inline-block",
+              "width": "66.66666667%",
+            },
+            "col9": Object {
+              "display": "inline-block",
+              "width": "75%",
+            },
+            "container": Object {
+              "color": "#212529",
+              "fontFamily": "-apple-system,
+                BlinkMacSystemFont,
+                \\"Segoe UI\\",
+                Roboto,
+                \\"Helvetica Neue\\",
+                Arial,
+                sans-serif,
+                \\"Apple Color Emoji\\",
+                \\"Segoe UI Emoji\\",
+                \\"Segoe UI Symbol\\"",
+              "fontWeight": "400",
+              "lineHeight": "1.5",
+              "paddingLeft": "15px",
+              "paddingRight": "15px",
+              "textAlign": "left",
+            },
+            "errorSection": Object {
+              "backgroundColor": "#f0ad4e",
+              "border": "1px solid #eea236",
+              "borderRadius": "4px",
+              "color": "#fff",
+              "marginBottom": "20px",
+              "textAlign": "left",
+            },
+            "formContainer": Object {
+              "textAlign": "center",
+            },
+            "formRow": Object {
+              "marginBottom": "15px",
+            },
+            "formSection": Object {
+              "backgroundColor": "#fff",
+              "border": "1px solid #ddd",
+              "borderRadius": "4px",
+              "display": "inline-block",
+              "marginBottom": "20px",
+              "textAlign": "left",
+              "width": "100%",
+            },
+            "input": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "boxShadow": "inset 0 1px 1px rgba(0,0,0,.075)",
+              "boxSizing": "border-box",
+              "color": "#555",
+              "display": "block",
+              "fontSize": "14px",
+              "height": "34px",
+              "lineHeight": "1.42857143",
+              "padding": "6px 12px",
+              "transition": "border-color ease-in-out .15s,box-shadow ease-in-out .15s",
+              "width": "100%",
+            },
+            "nav": Object {
+              "margin": "7.5px",
+            },
+            "navBar": Object {
+              "backgroundColor": "#f8f8f8",
+              "border": "1px solid transparent",
+              "borderColor": "#e7e7e7",
+              "marginBottom": "20px",
+              "marginLeft": "-15px",
+              "marginRight": "-15px",
+              "position": "relative",
+            },
+            "navButton": Object {
+              "backgroundColor": "#fff",
+              "backgroundImage": "none",
+              "border": "1px solid transparent",
+              "borderColor": "#ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "cursor": "pointer",
+              "display": "inline-block",
+              "fontSize": "14px",
+              "fontWeight": 400,
+              "lineHeight": "1.42857143",
+              "marginBottom": "8px",
+              "marginTop": "8px",
+              "padding": "6px 12px",
+              "textAlign": "center",
+              "touchAction": "manipulation",
+              "userSelect": "none",
+              "verticalAlign": "middle",
+              "whiteSpace": "nowrap",
+            },
+            "navItem": Object {
+              "display": "inline-block",
+              "lineHeight": "20px",
+              "padding": "10px 5px",
+            },
+            "navRight": Object {
+              "textAlign": "right",
+            },
+            "pre": Object {
+              "backgroundColor": "#f5f5f5",
+              "border": "1px solid #ccc",
+              "borderRadius": "4px",
+              "color": "#333",
+              "display": "block",
+              "fontFamily": "Menlo,
+                Monaco,
+                Consolas,
+                \\"Courier New\\",
+                monospace",
+              "fontSize": "13px",
+              "lineHeight": "1.42857143",
+              "margin": "0 0 10px",
+              "overflow": "auto",
+              "padding": "9.5px",
+              "wordBreak": "break-all",
+              "wordWrap": "break-word",
+            },
+            "sectionBody": Object {
+              "padding": "15px",
+            },
+            "sectionFooter": Object {
+              "backgroundColor": "#f5f5f5",
+              "borderTop": "1px solid #ddd",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#333",
+              "padding": "10px 15px",
+            },
+            "sectionHeader": Object {
+              "backgroundColor": "#337ab7",
+              "borderBottom": "1px solid transparent",
+              "borderColor": "#337ab7",
+              "borderTopLeftRadius": "3px",
+              "borderTopRightRadius": "3px",
+              "color": "#fff",
+              "padding": "10px 15px",
+              "textAlign": "center",
+            },
+            "signInButton": Object {
+              "#facebook_signin_btn": Object {
+                "backgroundColor": "#3b5998",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "#google_signin_btn": Object {
+                "backgroundColor": "#dd4b39",
+                "borderColor": "rgba(0,0,0,0.2)",
+                "color": "#fff",
+              },
+              "display": "block",
+              "fontSize": "14px",
+              "marginTop": "2px",
+              "overflow": "hidden",
+              "padding": "6px 12px 6px 44px",
+              "position": "relative",
+              "textAlign": "left",
+              "textOverflow": "ellipsis",
+              "whiteSpace": "nowrap",
+              "width": "100%",
+            },
+            "space": Object {
+              "display": "inline-block",
+              "width": "20px",
+            },
+          }
+        }
+      />
+    </Container>
+  </[object Object]>
+</[object Object]>
 `;
