@@ -1,4 +1,4 @@
-# Documentation
+# Guides
 
 * [Quick Start](media/quick_start.md)
 * [API Reference](api/index.html)
