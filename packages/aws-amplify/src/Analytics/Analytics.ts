@@ -268,8 +268,8 @@ export default class AnalyticsClass {
     }
 
     _initMobileAnalytics() {
-        const { credentials, region, endpointId } = this._config;
-        this.mobileAnalytics = new MobileAnalytics({ credentials, region, logger, endpoint: endpointId });
+        const { credentials, region } = this._config;
+        this.mobileAnalytics = new MobileAnalytics({ credentials, region });
     }
 
 
