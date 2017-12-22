@@ -88,7 +88,7 @@ export const FormSection = {
     border: '1px solid #ddd',
     borderRadius: '4px',
     textAlign: 'left',
-    width: '100%',
+    width: '400px',
     display: 'inline-block'
 }
 

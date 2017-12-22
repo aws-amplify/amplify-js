@@ -10,8 +10,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _fluidReact = require('fluid-react');
-
 var _awsAmplify = require('aws-amplify');
 
 var _awsAmplify2 = _interopRequireDefault(_awsAmplify);
@@ -201,18 +199,10 @@ var Authenticator = function (_Component) {
                 var errorRenderer = this.props.errorRenderer || this.errorRenderer;
                 var error = this.state.error;
                 return _react2['default'].createElement(
-                    _fluidReact.Row,
-                    { style: { justifyContent: 'center' } },
-                    _react2['default'].createElement(
-                        _fluidReact.Col,
-                        { xs: '9', sm: '8', md: '6', lg: '4' },
-                        _react2['default'].createElement(
-                            _AmplifyUI.Container,
-                            { theme: theme },
-                            render_children,
-                            error ? errorRenderer(error) : null
-                        )
-                    )
+                    _AmplifyUI.Container,
+                    { theme: theme },
+                    render_children,
+                    error ? errorRenderer(error) : null
                 );
             }
 
