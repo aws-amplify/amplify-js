@@ -26,6 +26,8 @@ var Hub_1 = require("./Hub");
 exports.Hub = Hub_1.default;
 var JS_1 = require("./JS");
 exports.JS = JS_1.default;
+var Signer_1 = require("./Signer");
+exports.Signer = Signer_1.default;
 exports.Constants = {
     userAgent: 'aws-amplify/0.1.22 js'
 };

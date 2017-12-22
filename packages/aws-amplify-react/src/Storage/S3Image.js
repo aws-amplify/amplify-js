@@ -93,7 +93,7 @@ export default class S3Image extends Component {
         Storage.put(key, file, { contentType: type, track })
             .then(data => {
                 logger.debug('handle pick data', data);
-                that.getImageSource(key, level);
+                that.getImageSource(key, level, track);
             })
             .catch(err => logger.debug('handle pick error', err));
     }
