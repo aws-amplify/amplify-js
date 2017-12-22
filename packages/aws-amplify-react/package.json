@@ -21,7 +21,6 @@
     "enzyme": "^3.1.0",
     "enzyme-adapter-react-16": "^1.0.3",
     "enzyme-to-json": "^3.2.1",
-    "fluid-react": "0.0.16",
     "jest": "^21.x",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",

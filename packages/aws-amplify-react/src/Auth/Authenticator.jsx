@@ -12,7 +12,6 @@
  */
 
 import React, { Component } from 'react';
-import { Row, Col } from 'fluid-react';
 import Amplify, { Auth, Logger } from 'aws-amplify';
 
 import Greetings from './Greetings';
@@ -121,14 +120,10 @@ export default class Authenticator extends Component {
         const errorRenderer = this.props.errorRenderer || this.errorRenderer;
         const error = this.state.error;
         return (
-            <Row style={{ justifyContent: 'center' }}>
-                <Col xs="9" sm="8" md="6" lg="4">
-                    <Container theme={theme}>
-                        {render_children}
-                        {error? errorRenderer(error) : null}
-                    </Container>
-                </Col>
-            </Row>
+            <Container theme={theme}>
+                {render_children}
+                {error? errorRenderer(error) : null}
+            </Container>
         )
     }
 }

@@ -161,7 +161,7 @@ exports[`S3Image render test render with picker true 1`] = `
             "display": "inline-block",
             "marginBottom": "20px",
             "textAlign": "left",
-            "width": "100%",
+            "width": "400px",
           },
           "input": Object {
             "backgroundColor": "#fff",
