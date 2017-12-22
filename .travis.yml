@@ -7,5 +7,6 @@ install:
 script:
   - npm run bootstrap
   - npm run lint
-  - npm run test && node node_modules/.bin/codecov || exit 0;
+  - npm run test
+  - npm run coverage
   - npm run build
