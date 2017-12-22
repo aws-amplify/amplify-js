@@ -10,3 +10,4 @@ script:
   - npm run test
   - npm run coverage
   - npm run build
+  - npm run docs
