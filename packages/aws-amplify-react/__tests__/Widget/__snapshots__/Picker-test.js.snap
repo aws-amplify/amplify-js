@@ -5,21 +5,32 @@ exports[`Picker test render test render correcly 1`] = `
   style={
     Object {
       "position": "relative",
-      "textAlign": "center",
-      "width": "100%",
     }
   }
 >
   <button
     style={
       Object {
-        "background": "#fff",
-        "border": "1px solid #ccc",
-        "fontSize": "1.2em",
-        "fontWeight": "200",
+        "backgroundColor": "#fff",
+        "backgroundImage": "none",
+        "border": "1px solid transparent",
+        "borderColor": "#ccc",
+        "borderRadius": "4px",
+        "color": "#333",
+        "cursor": "pointer",
+        "display": "inline-block",
+        "fontSize": "14px",
+        "fontWeight": 400,
         "height": "3em",
+        "lineHeight": "1.42857143",
+        "marginBottom": "0",
+        "padding": "6px 12px",
         "textAlign": "center",
-        "width": "100%",
+        "touchAction": "manipulation",
+        "userSelect": "none",
+        "verticalAlign": "middle",
+        "whiteSpace": "nowrap",
+        "width": "10em",
       }
     }
   >

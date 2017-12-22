@@ -30,29 +30,6 @@ import AmplifyMessageMap from '../AmplifyMessageMap';
 
 const logger = new Logger('Authenticator');
 
-class AuthDecorator {
-    constructor(onStateChange) {
-        this.onStateChange = onStateChange;
-    }
-
-    signIn(username, password) {
-        const that = this;
-        return Auth.signIn(username, password)
-            .then(data => {
-                that.onStateChange('signedIn');
-                return data;
-            });
-    }
-
-    signOut() {
-        const that = this;
-        return Auth.signOut()
-            .then(() => {
-                that.onStateChange('signedOut');
-            });
-    }
-}
-
 export default class Authenticator extends Component {
     constructor(props) {
         super(props);
@@ -137,8 +114,7 @@ export default class Authenticator extends Component {
                     authData: authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide,
-                    Auth: new AuthDecorator(this.handleStateChange)
+                    hide: hide
                 });
             })
 
