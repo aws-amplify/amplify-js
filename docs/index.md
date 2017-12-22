@@ -1,7 +1,7 @@
 # Documentation
 
 * [Quick Start](media/quick_start.md)
-* [API Reference](api/)
+* [API Reference](api/index.html)
 * [Developer Guide](media/developer_guide.md)
   * [Installation and Configuration](media/install_n_config.md)
   * [Authentication](media/authentication_guide.md)
