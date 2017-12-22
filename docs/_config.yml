@@ -1,6 +1,6 @@
 theme: jekyll-theme-midnight
 show_downloads: "true"
-includes: 
+include: 
 - api
 - api/assets
 - api/classes
