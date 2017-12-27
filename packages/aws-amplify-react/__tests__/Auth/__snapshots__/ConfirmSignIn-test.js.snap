@@ -140,12 +140,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
         "margin": "7.5px",
       },
       "navBar": Object {
-        "backgroundColor": "#f8f8f8",
         "border": "1px solid transparent",
         "borderColor": "#e7e7e7",
-        "marginBottom": "20px",
-        "marginLeft": "-15px",
-        "marginRight": "-15px",
         "position": "relative",
       },
       "navButton": Object {
@@ -385,12 +381,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
           "margin": "7.5px",
         },
         "navBar": Object {
-          "backgroundColor": "#f8f8f8",
           "border": "1px solid transparent",
           "borderColor": "#e7e7e7",
-          "marginBottom": "20px",
-          "marginLeft": "-15px",
-          "marginRight": "-15px",
           "position": "relative",
         },
         "navButton": Object {
@@ -632,12 +624,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
           "margin": "7.5px",
         },
         "navBar": Object {
-          "backgroundColor": "#f8f8f8",
           "border": "1px solid transparent",
           "borderColor": "#e7e7e7",
-          "marginBottom": "20px",
-          "marginLeft": "-15px",
-          "marginRight": "-15px",
           "position": "relative",
         },
         "navButton": Object {
@@ -882,12 +870,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
             "margin": "7.5px",
           },
           "navBar": Object {
-            "backgroundColor": "#f8f8f8",
             "border": "1px solid transparent",
             "borderColor": "#e7e7e7",
-            "marginBottom": "20px",
-            "marginLeft": "-15px",
-            "marginRight": "-15px",
             "position": "relative",
           },
           "navButton": Object {
@@ -1128,12 +1112,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
             "margin": "7.5px",
           },
           "navBar": Object {
-            "backgroundColor": "#f8f8f8",
             "border": "1px solid transparent",
             "borderColor": "#e7e7e7",
-            "marginBottom": "20px",
-            "marginLeft": "-15px",
-            "marginRight": "-15px",
             "position": "relative",
           },
           "navButton": Object {
@@ -1376,12 +1356,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
           "margin": "7.5px",
         },
         "navBar": Object {
-          "backgroundColor": "#f8f8f8",
           "border": "1px solid transparent",
           "borderColor": "#e7e7e7",
-          "marginBottom": "20px",
-          "marginLeft": "-15px",
-          "marginRight": "-15px",
           "position": "relative",
         },
         "navButton": Object {
@@ -1622,12 +1598,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
             "margin": "7.5px",
           },
           "navBar": Object {
-            "backgroundColor": "#f8f8f8",
             "border": "1px solid transparent",
             "borderColor": "#e7e7e7",
-            "marginBottom": "20px",
-            "marginLeft": "-15px",
-            "marginRight": "-15px",
             "position": "relative",
           },
           "navButton": Object {
