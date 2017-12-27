@@ -17,7 +17,7 @@ var Logger_1 = require("../Logger");
 var logger = new Logger_1.ConsoleLogger('ClientDevice_Browser');
 function clientInfo() {
     if (typeof window === 'undefined') {
-        return;
+        return {};
     }
     return browserClientInfo();
 }

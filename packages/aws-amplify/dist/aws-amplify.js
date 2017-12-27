@@ -36117,7 +36117,7 @@ var Logger_1 = __webpack_require__(13);
 var logger = new Logger_1.ConsoleLogger('ClientDevice_Browser');
 function clientInfo() {
     if (typeof window === 'undefined') {
-        return;
+        return {};
     }
     return browserClientInfo();
 }
