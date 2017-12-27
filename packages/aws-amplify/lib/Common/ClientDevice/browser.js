@@ -58,8 +58,8 @@ function dimension() {
 }
 exports.dimension = dimension;
 function browserTimezone() {
-    var tzMatch = /.+\(([A-Z]+)\)/.exec(new Date().toString());
-    return tzMatch[1] || "";
+    var tzMatch = /\(([\w\s]+)\)/.exec(new Date().toString());
+    return tzMatch ? tzMatch[1] : "";
 }
 function browserType(userAgent) {
     var operaMatch = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(userAgent);
