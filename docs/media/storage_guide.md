@@ -268,7 +268,7 @@ import { S3Image } from 'aws-amplify-react';
 **Image URL**
 `S3Image` converts path to actual URL. To get the URL, listen to `onReady` event
 ```
-    <S3Imag path={path} onReady={url => console.log(url)}
+    <S3Image path={path} onReady={url => console.log(url)}
 ```
 
 #### S3Album
