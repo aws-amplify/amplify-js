@@ -18,7 +18,6 @@ var logger = new Logger_1.ConsoleLogger('ClientDevice_Browser');
 function clientInfo() {
     if (typeof window === 'undefined') {
         return;
-        { }
     }
     return browserClientInfo();
 }

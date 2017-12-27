@@ -30,11 +30,7 @@ var Container = exports.Container = {
 
 var NavBar = exports.NavBar = {
     position: 'relative',
-    marginBottom: '20px',
-    marginLeft: '-15px',
-    marginRight: '-15px',
     border: '1px solid transparent',
-    backgroundColor: '#f8f8f8',
     borderColor: '#e7e7e7'
 };
 
