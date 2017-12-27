@@ -67,10 +67,10 @@ var S3Text = function (_Component) {
     _createClass(S3Text, [{
         key: 'getText',
         value: function () {
-            function getText(key, level) {
+            function getText(key, level, track) {
                 var _this2 = this;
 
-                _awsAmplify.Storage.get(key, { download: true, level: level ? level : 'public' }).then(function (data) {
+                _awsAmplify.Storage.get(key, { download: true, level: level ? level : 'public', track: track }).then(function (data) {
                     logger.debug(data);
                     var text = data.Body.toString('utf8');
                     _this2.setState({ text: text });
@@ -92,7 +92,8 @@ var S3Text = function (_Component) {
                     textKey = _props.textKey,
                     body = _props.body,
                     contentType = _props.contentType,
-                    level = _props.level;
+                    level = _props.level,
+                    track = _props.track;
 
                 if (!textKey && !path) {
                     logger.debug('empty textKey and path');
@@ -106,16 +107,17 @@ var S3Text = function (_Component) {
                     var type = contentType || 'text/*';
                     var ret = _awsAmplify.Storage.put(key, body, {
                         contentType: type,
-                        level: level ? level : 'public'
+                        level: level ? level : 'public',
+                        track: track
                     });
                     ret.then(function (data) {
                         logger.debug(data);
-                        that.getText(key, level);
+                        that.getText(key, level, track);
                     })['catch'](function (err) {
                         return logger.debug(err);
                     });
                 } else {
-                    that.getText(key, level);
+                    that.getText(key, level, track);
                 }
             }
 
@@ -157,16 +159,17 @@ var S3Text = function (_Component) {
                 var _props2 = this.props,
                     textKey = _props2.textKey,
                     level = _props2.level,
-                    fileToKey = _props2.fileToKey;
+                    fileToKey = _props2.fileToKey,
+                    track = _props2.track;
                 var file = data.file,
                     name = data.name,
                     size = data.size,
                     type = data.type;
 
                 var key = textKey || path + (0, _Common.calcKey)(data, fileToKey);
-                _awsAmplify.Storage.put(key, file, { contentType: type }).then(function (data) {
+                _awsAmplify.Storage.put(key, file, { contentType: type, track: track }).then(function (data) {
                     logger.debug('handle pick data', data);
-                    that.getText(key, level);
+                    that.getText(key, level, track);
                 })['catch'](function (err) {
                     return logger.debug('handle pick error', err);
                 });

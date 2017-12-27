@@ -17,3 +17,11 @@ test('AmplifyMessageMap error message', () => {
 test('AmplifyMessageMap happy case', () => {
     expect(AmplifyMessageMap('')).toBe('');
 });
+
+test('AmplifyMessageMap no match', () => {
+    expect(AmplifyMessageMap('abc')).toBe('abc');
+});
+
+test('AmplifyMessageMap return message instead of i18n token if message exists', () => {
+    expect(AmplifyMessageMap('invalid phone')).toBe('Invalid phone number format. Please use a phone number format of +12345678900');
+});

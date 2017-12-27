@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AmazonButton test render test render correctly 1`] = `
+<Button
+  amazonSignIn={[Function]}
+  amz="amz"
+/>
+`;
+
+exports[`withAmazon test render test render correctly 1`] = `
+<MockComp
+  amazonSignIn={[Function]}
+  amz="amz"
+/>
+`;

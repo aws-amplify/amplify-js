@@ -13,7 +13,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Browser = require("./browser");
-var ClientDevice = (function () {
+var ClientDevice = /** @class */ (function () {
     function ClientDevice() {
     }
     ClientDevice.clientInfo = function () {

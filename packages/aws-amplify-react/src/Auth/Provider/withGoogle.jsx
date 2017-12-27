@@ -15,19 +15,17 @@ export default function withGoogle(Comp) {
             this.signIn = this.signIn.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
 
-            this.state = {
-                ga: null
-            }
+            this.state = {};
         }
 
         signIn() {
-            const { ga } = this.state;
+            const ga = window.gapi.auth2.getAuthInstance();
             ga.signIn()
                 .then(googleUser => this.federatedSignIn(googleUser));
         }
 
         federatedSignIn(googleUser) {
-            const { id_token } = googleUser.getAuthResponse();
+            const { id_token, expires_at } = googleUser.getAuthResponse();
             const profile = googleUser.getBasicProfile();
             const user = {
                 email: profile.getEmail(),
@@ -35,7 +33,7 @@ export default function withGoogle(Comp) {
             };
 
             const { onStateChange } = this.props;
-            return Auth.federatedSignIn('google', id_token, user)
+            return Auth.federatedSignIn('google', { token: id_token, expires_at }, user)
                 .then(crednetials => {
                     if (onStateChange) {
                         onStateChange('signedIn');
@@ -65,14 +63,12 @@ export default function withGoogle(Comp) {
                 g.auth2.init({
                     client_id: google_client_id,
                     scope: 'profile email openid'
-                }).then(ga => {
-                    that.setState({ ga: ga });
                 });
             });
         }
 
         render() {
-            const { ga } = this.state;
+            const ga = (window.gapi && window.gapi.auth2) ? window.gapi.auth2.getAuthInstance() : null;
             return (
                 <Comp {...this.props} ga={ga} googleSignIn={this.signIn} />
             )

@@ -1360,12 +1360,15 @@ describe('auth unit test', () => {
                 return;
             });
 
-            auth.federatedSignIn('google', 'token', 'user');
+            auth.federatedSignIn('google', {token: 'token', expires_at: 'expires_at'}, 'user');
 
             expect(spyon).toBeCalledWith('federatedInfo', {
                 provider: 'google',
                 token: 'token',
                 user: 'user'
+            },
+            {
+                priority: 1
             });
             spyon.mockClear();
         });

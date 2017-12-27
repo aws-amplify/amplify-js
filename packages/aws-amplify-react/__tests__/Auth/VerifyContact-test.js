@@ -2,7 +2,7 @@ import VerifyContact from '../../src/Auth/VerifyContact';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, RadioRow, MessageRow, ButtonRow } from '../../src/AmplifyUI';
+import { Header, Footer, InputRow, RadioRow, MessageRow, ButtonRow, Link } from '../../src/AmplifyUI';
 import { Auth } from 'aws-amplify';
 
 const acceptedStates = [
@@ -20,14 +20,14 @@ const deniedStates = [
     'signUp'
 ];
 
-describe('signUp', () => {
-    describe('normal case', () => {
-        test('render correctly with authState verifyContact', () => {
+describe.only('VerifyContent test', () => {
+    describe('render test', () => {
+        test('render with accepted states', () => {
             const wrapper = shallow(<VerifyContact/>);
             for (var i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
-                    theme: AmplifyTheme,
+                    theme: 'theme',
                     authData: {
                     unverified: {
                         email: 'email@amazon.com',
@@ -38,65 +38,225 @@ describe('signUp', () => {
                 expect(wrapper).toMatchSnapshot();
             }
         });
-        
-        test('simulating clicking submit button', async () => {
-            const spyon = jest.spyOn(Auth, 'verifyCurrentUserAttributeSubmit')
-                .mockImplementation((attr, code) => {
-                    return new Promise((res, rej) => {
-                        res('data');
-                    })
-                });
 
+        test('render submitView if verifyAttr is set', () => {
             const wrapper = shallow(<VerifyContact/>);
-            const spyon2 = jest.spyOn(wrapper.instance(), 'changeState');
+            const props = {
+                authState: 'verifyContact',
+                theme: 'theme'
+            }
+            wrapper.setProps(props);
+            wrapper.setState({ verifyAttr: true });
 
-            wrapper.setProps({
-                authState: acceptedStates[0],
-                theme: AmplifyTheme,
+            expect(wrapper).toMatchSnapshot();
+        });
+
+        test('render verifyView with empty authData', () => {
+            const wrapper = shallow(<VerifyContact/>);
+            const props = {
+                authState: 'verifyContact',
+                theme: 'theme',
+                authData: {}
+            }
+            wrapper.setProps(props);
+
+            expect(wrapper).toMatchSnapshot();
+        });
+
+        test('render verifyView without phone_number and email', () => {
+            const wrapper = shallow(<VerifyContact/>);
+            const props = {
+                authState: 'verifyContact',
+                theme: 'theme',
                 authData: {
-                    unverified: {
-                        email: 'email@amazon.com',
-                        phone_number: '+12345678901'
-                    }
-                }
-            });
-
-           const event_code = {
-                target: {
-                    name: 'code',
-                    value: '123456'
+                    unverified: {}
                 }
             }
+            wrapper.setProps(props);
 
-            wrapper.setState({verifyAttr: true});
-
-            wrapper.find(InputRow).at(0).simulate('change', event_code);
-
-            await wrapper.find(ButtonRow).at(0).simulate('click');
-
-
-            expect.assertions(3);
-            expect(spyon.mock.calls[0][0]).toBe(true);
-            expect(spyon.mock.calls[0][1]).toBe('123456')
-            expect(spyon2).toBeCalled();
-
-            spyon.mockClear();
+            expect(wrapper).toMatchSnapshot();
         });
-    });
 
-    describe('null case with other authState', () => {
-        test('render corrently', () => {
+        test('render null with denied states', () => {
             const wrapper = shallow(<VerifyContact/>);
             
             for (var i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
-                    theme: AmplifyTheme
+                    theme: 'theme'
                 });
 
                 expect(wrapper).toMatchSnapshot();
             }
         });
+
+        test('hidden', () => {
+            const wrapper = shallow(<VerifyContact/>);
+            const props = {
+                authState: 'verifyContact',
+                theme: 'theme',
+                hide: [VerifyContact]
+            }
+            wrapper.setProps(props);
+
+            expect(wrapper).toMatchSnapshot();
+        });
     });
 
-})
+    describe('interaction test', () => {
+        test('Link clicked', () => {
+            const spyon = jest.spyOn(VerifyContact.prototype, 'changeState').mockImplementationOnce(() => {
+                return;
+            });
+            const wrapper = shallow(<VerifyContact/>);
+            const props = {
+                authState: 'verifyContact',
+                theme: 'theme'
+            }
+            wrapper.setProps(props);
+
+            wrapper.find(Link).simulate('click');
+
+            expect(spyon).toBeCalledWith('signedIn');
+
+            spyon.mockClear();
+        });
+
+        test('verifyView ButonRow clicked', () => {
+            const spyon = jest.spyOn(VerifyContact.prototype, 'verify').mockImplementationOnce(() => {
+                return;
+            });
+            const wrapper = shallow(<VerifyContact/>);
+            const props = {
+                authState: 'verifyContact',
+                theme: 'theme',
+                authData: {
+                unverified: {
+                    email: 'email@amazon.com',
+                    phone_number: '+12345678901'
+                    }
+                }   
+            }
+            wrapper.setProps(props);
+            
+            wrapper.find(ButtonRow).at(0).simulate('click');
+
+            //expect(spyon).toBeCalled();
+
+            spyon.mockClear();
+        });
+    });
+
+    describe('verify test', () => {
+        test('happy case', async () => {
+            const spyon = jest.spyOn(Auth, 'verifyCurrentUserAttribute').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('data');
+                });
+            });
+            const wrapper = shallow(<VerifyContact/>);
+            const verifyContact = wrapper.instance();
+            verifyContact.inputs = {
+                contact: 'contact'
+            }
+
+            await verifyContact.verify();
+            expect(spyon).toBeCalledWith('contact');
+
+            spyon.mockClear();
+        });
+
+        test('no cantact', async () => {
+            const spyon = jest.spyOn(VerifyContact.prototype, 'error').mockImplementationOnce(() => {
+                return;
+            });
+
+            const wrapper = shallow(<VerifyContact/>);
+            const verifyContact = wrapper.instance();
+            verifyContact.inputs = {
+                contact: null
+            }
+
+            await verifyContact.verify();
+            expect(spyon).toBeCalledWith('Neither Email nor Phone Number selected');
+
+            spyon.mockClear();
+        });
+
+        test('auth error', async () => {
+            const spyon = jest.spyOn(Auth, 'verifyCurrentUserAttribute').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                });
+            });
+            const spyon2 = jest.spyOn(VerifyContact.prototype, 'error').mockImplementationOnce(() => {
+                return;
+            });
+
+            const wrapper = shallow(<VerifyContact/>);
+            const verifyContact = wrapper.instance();
+            verifyContact.inputs = {
+                contact: 'contact'
+            }
+
+            await verifyContact.verify();
+            expect(wrapper.state('verifyAttr')).toBeNull();
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+    });
+
+    describe('submit test', () => {
+        test('happy case', async () => {
+            const spyon = jest.spyOn(Auth, 'verifyCurrentUserAttributeSubmit').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('data');
+                });
+            });
+            const spyon2 = jest.spyOn(VerifyContact.prototype, 'changeState').mockImplementationOnce(() => {
+                return;
+            });
+
+            const wrapper = shallow(<VerifyContact/>);
+            const verifyContact = wrapper.instance();
+            wrapper.setState({ verifyAttr: 'attr' });
+            verifyContact.inputs = {
+                code: 'code'
+            }
+
+            await verifyContact.submit();
+            expect(spyon).toBeCalledWith('attr', 'code');
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('auth error', async () => {
+            const spyon = jest.spyOn(Auth, 'verifyCurrentUserAttributeSubmit').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                });
+            });
+            const spyon2 = jest.spyOn(VerifyContact.prototype, 'error').mockImplementationOnce(() => {
+                return;
+            });
+            const spyon3 = jest.spyOn(VerifyContact.prototype, 'changeState').mockImplementationOnce(() => {
+                return;
+            });
+
+            const wrapper = shallow(<VerifyContact/>);
+            const verifyContact = wrapper.instance();
+            verifyContact.inputs = {
+                code: 'code'
+            }
+
+            await verifyContact.submit();
+            expect(spyon3).not.toBeCalled();
+
+            spyon.mockClear();
+            spyon2.mockClear();
+            spyon3.mockClear();
+        });
+    });
+});
