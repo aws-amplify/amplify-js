@@ -219,7 +219,7 @@ The Greetings component has messages for two different auth states: signedIn, an
 
 ### 5. Write Your Own Auth UI
 
-You may write your own Auth UI. JTo do this your component will leverage the following properties:
+You may write your own Auth UI. To do this your component will leverage the following properties:
 
 * authState
 * authData
