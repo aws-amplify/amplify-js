@@ -21,6 +21,7 @@ import { ConsoleLogger as Logger } from '../../Common';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
+import Loading from './Loading';
 import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
 import VerifyContact from './VerifyContact';
@@ -57,7 +58,7 @@ export default class Authenticator extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            authState: props.authState || 'signIn',
+            authState: props.authState || 'loading',
             authData: props.authData
         };
 
@@ -97,7 +98,10 @@ export default class Authenticator extends React.Component {
         Auth.currentUser().then(user => {
             const state = user ? 'signedIn' : 'signIn';
             this.handleStateChange(state, user);
-        }).catch(err => logger.error(err));
+        }).catch(err => {
+            this.handleStateChange('signIn', null);
+            logger.error(err);
+        });
     }
 
     render() {
@@ -107,7 +111,7 @@ export default class Authenticator extends React.Component {
 
         const { hideDefault } = this.props;
         const props_children = this.props.children || [];
-        const default_children = [React.createElement(SignIn, null), React.createElement(ConfirmSignIn, null), React.createElement(VerifyContact, null), React.createElement(SignUp, null), React.createElement(ConfirmSignUp, null), React.createElement(ForgotPassword, null), React.createElement(RequireNewPassword, null), React.createElement(Greetings, null)];
+        const default_children = [React.createElement(Loading, null), React.createElement(SignIn, null), React.createElement(ConfirmSignIn, null), React.createElement(VerifyContact, null), React.createElement(SignUp, null), React.createElement(ConfirmSignUp, null), React.createElement(ForgotPassword, null), React.createElement(RequireNewPassword, null), React.createElement(Greetings, null)];
         const children = (hideDefault ? [] : default_children).concat(props_children).map((child, index) => {
             return React.cloneElement(child, {
                 key: 'auth_piece_' + index,
