@@ -16,7 +16,7 @@ import { View, Text } from 'react-native';
 import AuthPiece from './AuthPiece';
 import { Header } from '../AmplifyUI';
 
-export default class SignIn extends AuthPiece {
+export default class Loading extends AuthPiece {
     render() {
         if (!['loading'].includes(this.props.authState)) {
             return null;
