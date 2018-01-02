@@ -144,12 +144,8 @@ exports[`FederatedButtons test render test render with correct authState 1`] = `
         "margin": "7.5px",
       },
       "navBar": Object {
-        "backgroundColor": "#f8f8f8",
         "border": "1px solid transparent",
         "borderColor": "#e7e7e7",
-        "marginBottom": "20px",
-        "marginLeft": "-15px",
-        "marginRight": "-15px",
         "position": "relative",
       },
       "navButton": Object {
@@ -399,12 +395,8 @@ exports[`FederatedButtons test render test render with correct authState and onl
         "margin": "7.5px",
       },
       "navBar": Object {
-        "backgroundColor": "#f8f8f8",
         "border": "1px solid transparent",
         "borderColor": "#e7e7e7",
-        "marginBottom": "20px",
-        "marginLeft": "-15px",
-        "marginRight": "-15px",
         "position": "relative",
       },
       "navButton": Object {
@@ -651,12 +643,8 @@ exports[`FederatedButtons test render test render with correct authState and onl
         "margin": "7.5px",
       },
       "navBar": Object {
-        "backgroundColor": "#f8f8f8",
         "border": "1px solid transparent",
         "borderColor": "#e7e7e7",
-        "marginBottom": "20px",
-        "marginLeft": "-15px",
-        "marginRight": "-15px",
         "position": "relative",
       },
       "navButton": Object {
@@ -907,12 +895,8 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
         "margin": "7.5px",
       },
       "navBar": Object {
-        "backgroundColor": "#f8f8f8",
         "border": "1px solid transparent",
         "borderColor": "#e7e7e7",
-        "marginBottom": "20px",
-        "marginLeft": "-15px",
-        "marginRight": "-15px",
         "position": "relative",
       },
       "navButton": Object {
@@ -1152,12 +1136,8 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
           "margin": "7.5px",
         },
         "navBar": Object {
-          "backgroundColor": "#f8f8f8",
           "border": "1px solid transparent",
           "borderColor": "#e7e7e7",
-          "marginBottom": "20px",
-          "marginLeft": "-15px",
-          "marginRight": "-15px",
           "position": "relative",
         },
         "navButton": Object {
@@ -1400,12 +1380,8 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
             "margin": "7.5px",
           },
           "navBar": Object {
-            "backgroundColor": "#f8f8f8",
             "border": "1px solid transparent",
             "borderColor": "#e7e7e7",
-            "marginBottom": "20px",
-            "marginLeft": "-15px",
-            "marginRight": "-15px",
             "position": "relative",
           },
           "navButton": Object {

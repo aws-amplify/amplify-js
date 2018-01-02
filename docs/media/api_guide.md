@@ -114,7 +114,7 @@ API.get(apiName, path, myInit).then(response => {
 Example with async/await
 
 ```
-async function getData() { 
+async getData() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
@@ -156,7 +156,7 @@ API.post(apiName, path, myInit).then(response => {
 Example with async/await
 
 ```
-async function postData() { 
+async postData() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
@@ -188,7 +188,7 @@ API.put(apiName, path, myInit).then(response => {
 Example with async/await
 
 ```
-async function putData() { 
+async putData() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
@@ -219,7 +219,7 @@ API.del(apiName, path, myInit).then(response => {
 Example with async/await
 
 ```
-async function deleteData() { 
+async deleteData() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
@@ -248,7 +248,7 @@ API.head(apiName, path, myInit).then(response => {
 Example with async/await
 
 ```
-async function head() { 
+async head() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
