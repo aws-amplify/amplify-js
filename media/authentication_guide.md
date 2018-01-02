@@ -106,7 +106,7 @@ Auth.forgotPasswordSubmit(username, code, new_password)
 
 ### 2. withAuthenticator HOC
 
-For React app, then simpliest way to add Auth flows into your app is to use `withAuthenticator`.
+For React apps, the simplest way to add Auth flows into your app is to use `withAuthenticator`.
 
 Just add these two lines to your `App.js`:
 
@@ -219,7 +219,7 @@ The Greetings component has messages for two different auth states: signedIn, an
 
 ### 5. Write Your Own Auth UI
 
-You may write your own Auth UI. JTo do this your component will leverage the following properties:
+You may write your own Auth UI. To do this your component will leverage the following properties:
 
 * authState
 * authData
@@ -356,4 +356,4 @@ const map = (message) => {
 <Authenticator errorMessage={map} />
 ```
 
-You may notice in `AmplifyMessageMap.js` it also handles intenationalization. The topic is covered in [I18n Guide](i18n_guide.md)
+You may notice in `AmplifyMessageMap.js` it also handles internationalization. The topic is covered in [I18n Guide](i18n_guide.md)

@@ -214,7 +214,7 @@ const size = Cache.getCacheCurSize().then(size => {...});
 
 - **configure()**
 
-Configure Cache with customized cnofiguration and return the configuration. You can see all the options in the [Configuration](#configuration) section.
+Configure Cache with customized configuration and return the configuration. You can see all the options in the [Configuration](#configuration) section.
 
 ```
 const config = {
@@ -276,7 +276,7 @@ The storage medium used to keep your Cache data. Supported mediums are LocalStor
 
 ### Item Configuration:
 
-1. prority: number
+1. priority: number
 
 Priority of the item.
 

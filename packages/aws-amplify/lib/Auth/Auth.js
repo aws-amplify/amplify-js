@@ -366,7 +366,7 @@ var AuthClass = (function () {
     };
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     AuthClass.prototype.currentUserPoolUser = function () {
         if (!this.userPool) {
@@ -390,7 +390,7 @@ var AuthClass = (function () {
     };
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     AuthClass.prototype.currentAuthenticatedUser = function () {
         var source = this.credentials_source;

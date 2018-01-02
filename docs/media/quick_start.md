@@ -103,7 +103,7 @@ import { Analytics } from 'aws-amplify';
 ...
 ```
 
-This will record an 'appRender' event everytime user opens app.
+This will record an 'appRender' event every time user opens app.
 
 For more about Analytics, click [here](analytics_guide.md)
 

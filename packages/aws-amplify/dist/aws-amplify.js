@@ -16506,7 +16506,7 @@ var AuthClass = (function () {
     };
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     AuthClass.prototype.currentUserPoolUser = function () {
         if (!this.userPool) {
@@ -16530,7 +16530,7 @@ var AuthClass = (function () {
     };
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     AuthClass.prototype.currentAuthenticatedUser = function () {
         var source = this.credentials_source;
@@ -36125,8 +36125,7 @@ var Logger_1 = __webpack_require__(13);
 var logger = new Logger_1.ConsoleLogger('ClientDevice_Browser');
 function clientInfo() {
     if (typeof window === 'undefined') {
-        return;
-        { }
+        return {};
     }
     return browserClientInfo();
 }

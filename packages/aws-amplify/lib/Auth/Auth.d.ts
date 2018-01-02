@@ -62,12 +62,12 @@ export default class AuthClass {
     }>;
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     currentUserPoolUser(): Promise<any>;
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     currentAuthenticatedUser(): Promise<any>;
     /**

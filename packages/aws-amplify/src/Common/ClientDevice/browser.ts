@@ -17,7 +17,7 @@ import { ConsoleLogger as Logger } from '../Logger';
 const logger = new Logger('ClientDevice_Browser');
 
 export function clientInfo() {
-    if (typeof window === 'undefined') { return; {} }
+    if (typeof window === 'undefined') { return {}; }
 
     return browserClientInfo();
 }

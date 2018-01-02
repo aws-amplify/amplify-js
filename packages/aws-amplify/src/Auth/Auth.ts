@@ -327,7 +327,7 @@ export default class AuthClass {
 
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     public currentUserPoolUser(): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
@@ -345,7 +345,7 @@ export default class AuthClass {
 
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     public currentAuthenticatedUser(): Promise<any> {
         const source = this.credentials_source;

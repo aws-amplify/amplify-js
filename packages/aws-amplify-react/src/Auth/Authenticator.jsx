@@ -12,7 +12,6 @@
  */
 
 import React, { Component } from 'react';
-import { Row, Col } from 'fluid-react';
 import Amplify, { Auth, Logger } from 'aws-amplify';
 
 import Greetings from './Greetings';
@@ -29,29 +28,6 @@ import { Container, ErrorSection, SectionBody } from '../AmplifyUI';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
 const logger = new Logger('Authenticator');
-
-class AuthDecorator {
-    constructor(onStateChange) {
-        this.onStateChange = onStateChange;
-    }
-
-    signIn(username, password) {
-        const that = this;
-        return Auth.signIn(username, password)
-            .then(data => {
-                that.onStateChange('signedIn');
-                return data;
-            });
-    }
-
-    signOut() {
-        const that = this;
-        return Auth.signOut()
-            .then(() => {
-                that.onStateChange('signedOut');
-            });
-    }
-}
 
 export default class Authenticator extends Component {
     constructor(props) {
@@ -137,22 +113,17 @@ export default class Authenticator extends Component {
                     authData: authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide,
-                    Auth: new AuthDecorator(this.handleStateChange)
+                    hide: hide
                 });
             })
 
         const errorRenderer = this.props.errorRenderer || this.errorRenderer;
         const error = this.state.error;
         return (
-            <Row style={{ justifyContent: 'center' }}>
-                <Col xs="9" sm="8" md="6" lg="4">
-                    <Container theme={theme}>
-                        {render_children}
-                        {error? errorRenderer(error) : null}
-                    </Container>
-                </Col>
-            </Row>
+            <Container theme={theme}>
+                {render_children}
+                {error? errorRenderer(error) : null}
+            </Container>
         )
     }
 }
