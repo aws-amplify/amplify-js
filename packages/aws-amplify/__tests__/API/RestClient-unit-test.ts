@@ -47,7 +47,7 @@ jest.mock('axios', () => {
         default: (signed_params) => {
             return new Promise((res, rej) => {
                 res({
-                    data: 'data';
+                    data: 'data'
                 })
             });
         }
@@ -97,7 +97,7 @@ describe('RestClient test', () => {
 
             const restClient = new RestClient(apiOptions);
 
-            expect(await restClient.ajax('url', 'method')).toEqual('data');
+            expect(await restClient.ajax('url', 'method', {})).toEqual('data');
         });
 
         test('ajax with no credentials', async () => {
@@ -118,7 +118,7 @@ describe('RestClient test', () => {
             const restClient = new RestClient(apiOptions);
 
             try {
-                await restClient.ajax('url', 'method');
+                await restClient.ajax('url', 'method', {});
             } catch (e) {
                 expect(e).toBe('credentials not set for API rest client ');
             }
@@ -153,7 +153,7 @@ describe('RestClient test', () => {
             const restClient = new RestClient(apiOptions);
 
             expect.assertions(2);
-            await restClient.get('url');
+            await restClient.get('url', {});
        
             expect(spyon.mock.calls[0][0]).toBe('url');
             expect(spyon.mock.calls[0][1]).toBe('GET');
@@ -264,7 +264,7 @@ describe('RestClient test', () => {
             const restClient = new RestClient(apiOptions);
 
             expect.assertions(2);
-            await restClient.del('url');
+            await restClient.del('url', {});
             
             expect(spyon.mock.calls[0][0]).toBe('url');
             expect(spyon.mock.calls[0][1]).toBe('DELETE');
@@ -300,7 +300,7 @@ describe('RestClient test', () => {
             const restClient = new RestClient(apiOptions);
 
             expect.assertions(2);
-            await restClient.head('url');
+            await restClient.head('url', {});
             
             expect(spyon.mock.calls[0][0]).toBe('url');
             expect(spyon.mock.calls[0][1]).toBe('HEAD');
