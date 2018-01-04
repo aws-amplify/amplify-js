@@ -19,7 +19,7 @@ var logger = new Common_1.ConsoleLogger('StorageCache');
  * Initialization of the cache
  *
  */
-var StorageCache = (function () {
+var StorageCache = /** @class */ (function () {
     /**
      * Initialize the cache
      * @param config - the configuration of the cache
