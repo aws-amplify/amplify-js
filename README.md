@@ -8,7 +8,7 @@
     <img src="https://badge.fury.io/js/aws-amplify.svg" alt="npm version" height="18">
   </a>
   <a href="https://npmjs.org/aws-amplify">
-    <img src="https://img.shields.io/npm/dt/localeval.svg" alt="npm downloads" height="18">
+    <img src="https://img.shields.io/npm/dm/aws-amplify.svg" alt="npm downloads" height="18">
   </a>
   <a href="https://travis-ci.org/aws/aws-amplify">
     <img src="https://travis-ci.org/aws/aws-amplify.svg?branch=master" alt="build:started">
