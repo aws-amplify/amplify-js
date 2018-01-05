@@ -49,6 +49,8 @@ export default class Picker extends Component {
         var that = this;
 
         const file = e.target.files[0];
+        if (!file) return;
+        
         const { name, size, type } = file;
         logger.debug(file);
 
@@ -61,6 +63,9 @@ export default class Picker extends Component {
                 type: type
             });
         }
+        
+        // in case the same file selected
+        document.getElementById("photoInput").value = null;;
     }
 
     render() {
@@ -78,15 +83,16 @@ export default class Picker extends Component {
 
         return (
             <div style={pickerStyle}>
-                <button style={buttonStyle}>
+                 <button style={buttonStyle}>
                     {I18n.get(title)}
-                </button>
-                <input
+                </button> 
+                 <input
+                    id="photoInput"
                     title={I18n.get(title)}
                     type="file" accept={accept}
                     style={inputStyle}
                     onChange={(e) => this.handleInput(e)}
-                />
+                /> 
             </div>
         )
     }
