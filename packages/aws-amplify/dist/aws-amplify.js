@@ -38676,7 +38676,7 @@ var AnalyticsClass = /** @class */ (function () {
     AnalyticsClass.prototype._endpointRequest = function () {
         var client_info = Common_1.ClientDevice.clientInfo();
         var credentials = this._config.credentials;
-        var user_id = credentials.authenticated ? credentials.identityId : null;
+        var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         logger.debug('demographic user id: ' + user_id);
         return {
             Demographic: {
