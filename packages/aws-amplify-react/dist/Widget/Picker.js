@@ -79,6 +79,8 @@ var Picker = function (_Component) {
                 var that = this;
 
                 var file = e.target.files[0];
+                if (!file) return;
+
                 var name = file.name,
                     size = file.size,
                     type = file.type;
@@ -95,6 +97,9 @@ var Picker = function (_Component) {
                         type: type
                     });
                 }
+
+                // in case the same file selected
+                document.getElementById("photoInput").value = null;;
             }
 
             return handleInput;
@@ -122,6 +127,7 @@ var Picker = function (_Component) {
                         _awsAmplify.I18n.get(title)
                     ),
                     _react2['default'].createElement('input', {
+                        id: 'photoInput',
                         title: _awsAmplify.I18n.get(title),
                         type: 'file', accept: accept,
                         style: inputStyle,
