@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import Picker from '../../src/Widget/Picker';
 
+const resetValue = jest.spyOn(document, 'getElementById').mockImplementation(() => {
+    return { value: 'value' };
+});
+
 describe('Picker test', () => {
     describe('render test', () => {
         test('render correcly', () => {
@@ -45,12 +49,17 @@ describe('Picker test', () => {
                     }]
                 }
             }
+
+            resetValue.mockClear();
+
             picker.handleInput(event);
             
             expect(onPickFn).toBeCalledWith({"file": {"name": "name", "size": "size", "type": "type"}, 
                                             "name": "name", 
                                             "size": "size", 
                                             "type": "type"});
+
+            expect(resetValue).toBeCalled();
         });
 
         test('no onPick', () => {

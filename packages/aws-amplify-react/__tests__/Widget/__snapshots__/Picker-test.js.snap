@@ -38,6 +38,7 @@ exports[`Picker test render test render correcly 1`] = `
   </button>
   <input
     accept="*/*"
+    id="photoInput"
     onChange={[Function]}
     style={
       Object {
