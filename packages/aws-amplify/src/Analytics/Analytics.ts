@@ -239,7 +239,7 @@ export default class AnalyticsClass {
     _endpointRequest() {
         const client_info: any = ClientDevice.clientInfo();
         const credentials = this._config.credentials;
-        const user_id = credentials.authenticated? credentials.identityId : null;
+        const user_id = (credentials && credentials.authenticated)? credentials.identityId : null;
         logger.debug('demographic user id: ' + user_id);
         return {
             Demographic: {
