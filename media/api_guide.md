@@ -30,7 +30,7 @@ After configuring this resources you can add these lines to your source code.
 ```js
 import Amplify, { API } from 'aws-amplify';
 
-Amplify.configure(
+Amplify.configure({
     Auth: {
         identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
         region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
