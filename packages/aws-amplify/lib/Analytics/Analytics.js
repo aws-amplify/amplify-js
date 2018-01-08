@@ -67,8 +67,9 @@ var AnalyticsClass = /** @class */ (function () {
         }
         // store endpointId into localstorage
         if (!this._config.endpointId) {
+            /*
             if (window.localStorage) {
-                var endpointId = window.localStorage.getItem('amplify_endpoint_id');
+                let endpointId = window.localStorage.getItem('amplify_endpoint_id');
                 if (!endpointId) {
                     endpointId = this.generateRandomString();
                     window.localStorage.setItem('amplify_endpoint_id', endpointId);
@@ -77,6 +78,10 @@ var AnalyticsClass = /** @class */ (function () {
             }
             else {
                 this._config.endpointId = this.generateRandomString();
+            }*/
+            var credentials = this._config.credentials;
+            if (credentials && credentials.identityId) {
+                this._config.endpointId = credentials.identityId;
             }
         }
         this._buffer = [];
