@@ -16756,10 +16756,11 @@ var AuthClass = /** @class */ (function () {
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String} username - The username to be signed up
      * @param {String} password - The password of the user
-     * @param {Object} attributeList - Other attributes
+     * @param {Object} attr - Other signup attributes or email
+     * @param {String} phone_number - the phone number of the user(to be used when email is string)
      * @return - A promise resolves callback data if success
      */
-    AuthClass.prototype.signUp = function (username, password, email, phone_number) {
+    AuthClass.prototype.signUp = function (username, password, attrs, phone_number) {
         var _this = this;
         if (!this.userPool) {
             return Promise.reject('No userPool');
@@ -16771,11 +16772,18 @@ var AuthClass = /** @class */ (function () {
             return Promise.reject('Password cannot be empty');
         }
         var attributes = [];
-        if (email) {
-            attributes.push({ Name: 'email', Value: email });
+        if (typeof (attrs) === 'string') {
+            if (attrs) {
+                attributes.push({ Name: 'email', Value: attrs });
+            }
+            if (phone_number) {
+                attributes.push({ Name: 'phone_number', Value: phone_number });
+            }
         }
-        if (phone_number) {
-            attributes.push({ Name: 'phone_number', Value: phone_number });
+        else {
+            for (var k in attrs) {
+                attributes.push({ 'Name': k, 'Value': attrs[k] });
+            }
         }
         return new Promise(function (resolve, reject) {
             _this.userPool.signUp(username, password, attributes, null, function (err, data) {
@@ -17009,7 +17017,7 @@ var AuthClass = /** @class */ (function () {
     };
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     AuthClass.prototype.currentUserPoolUser = function () {
         if (!this.userPool) {
@@ -17033,7 +17041,7 @@ var AuthClass = /** @class */ (function () {
     };
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     AuthClass.prototype.currentAuthenticatedUser = function () {
         var source = this.credentials_source;

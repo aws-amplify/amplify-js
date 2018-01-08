@@ -177,12 +177,23 @@ const session = new CognitoUserSession({
 
 describe('auth unit test', () => {
     describe('signUp', () => {
-        test('happy case', async () => {
+        test('happy case with email and phone string', async () => {
             const spyon = jest.spyOn(CognitoUserPool.prototype, "signUp");
             const auth = new Auth(authOptions);
 
             expect.assertions(1);
             expect(await auth.signUp('username', 'password', 'email','phone')).toBe('signUpResult');
+
+            spyon.mockClear();
+        });
+
+        test('happy case with attribute object', async () => {
+            const spyon = jest.spyOn(CognitoUserPool.prototype, "signUp");
+            const auth = new Auth(authOptions);
+
+            expect.assertions(1);
+            const attribute = {'email': 'foo@bar.com'};
+            expect(await auth.signUp('username', 'password', attribute)).toBe('signUpResult');
 
             spyon.mockClear();
         });

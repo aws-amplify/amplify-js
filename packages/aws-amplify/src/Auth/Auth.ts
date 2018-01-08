@@ -94,18 +94,28 @@ export default class AuthClass {
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String} username - The username to be signed up
      * @param {String} password - The password of the user
-     * @param {Object} attributeList - Other attributes
+     * @param {Object} attr - Other signup attributes or email
+     * @param {String} phone_number - the phone number of the user(to be used when email is string)
      * @return - A promise resolves callback data if success
      */
-    public signUp(username: string, password: string, email: string, phone_number: string): Promise<any> {
+    public signUp(username: string,
+                  password: string, 
+                  attrs?: string|Object, 
+                  phone_number?: string): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
         const attributes = [];
-        if (email) { attributes.push({Name: 'email', Value: email}); }
-        if (phone_number) { attributes.push({Name: 'phone_number', Value: phone_number}); }
-
+        if(typeof(attrs) === 'string'){
+            if (attrs) { attributes.push({Name: 'email', Value: attrs}); }
+            if (phone_number) { attributes.push({Name: 'phone_number', Value: phone_number}); }
+        }
+        else {
+            for (const k in attrs) {
+                attributes.push( { 'Name': k, 'Value': attrs[k] });
+            }
+        }
         return new Promise((resolve, reject) => {
             this.userPool.signUp(username, password, attributes, null, function(err, data) {
                 if (err) {
@@ -317,7 +327,7 @@ export default class AuthClass {
 
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     public currentUserPoolUser(): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
@@ -335,7 +345,7 @@ export default class AuthClass {
 
     /**
      * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
+     * @return - A promise resolves to current authenticated CognitoUser if success
      */
     public currentAuthenticatedUser(): Promise<any> {
         const source = this.credentials_source;
