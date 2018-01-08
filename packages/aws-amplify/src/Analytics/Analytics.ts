@@ -24,7 +24,7 @@ import Auth from '../Auth';
 import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
-
+const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 /**
 * Provide mobile analytics client functions
 */
@@ -38,6 +38,7 @@ export default class AnalyticsClass {
 
     private mobileAnalytics;
     private _sessionId;
+
 
     /**
      * Initialize Analtyics
@@ -228,7 +229,30 @@ export default class AnalyticsClass {
             });
         });
     }
+/*
+    _putEventsCallback() {
+        return (err, data, res, rej) => {
+            if (err) {
+                logger.debug('record event failed. ' + err);
+                if (err.statusCode === undefined || err.statusCode === 400){
+                    if (err.code === 'ThrottlingException') {
+                        // todo
+                        // cache events
+                        logger.debug('get throttled, caching events');
+                    }
+                }
+                rej(err);
+            }
+            else {
+                logger.debug('record event success. ' + data);
+                // try to clean cached events if exist
 
+
+                res(data);
+            }
+        };
+    }
+*/
     /**
     * Record one analytic event
     * @param {String} name - Event name
