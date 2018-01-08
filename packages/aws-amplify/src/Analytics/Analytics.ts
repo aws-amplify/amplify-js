@@ -324,6 +324,10 @@ export default class AnalyticsClass {
                 logger.debug('set credentials for analytics', cred);
                 conf.credentials = cred;
 
+                if (!conf.endpointId && conf.credentials) {
+                    conf.endpointId = conf.credentials.identityId;
+                }
+
                 return true;
             })
             .catch(err => {

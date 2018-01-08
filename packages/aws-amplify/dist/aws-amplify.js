@@ -32788,6 +32788,9 @@ var AnalyticsClass = /** @class */ (function () {
             var cred = Auth_1.default.essentialCredentials(credentials);
             logger.debug('set credentials for analytics', cred);
             conf.credentials = cred;
+            if (!conf.endpointId && conf.credentials) {
+                conf.endpointId = conf.credentials.identityId;
+            }
             return true;
         })
             .catch(function (err) {
