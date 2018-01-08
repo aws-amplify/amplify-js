@@ -15108,7 +15108,7 @@ var StorageCache = /** @class */ (function () {
             return this.config;
         }
         if (config.keyPrefix) {
-            logger.error("Don't try to configure keyPrefix!");
+            logger.warn("Don't try to configure keyPrefix!");
         }
         config.keyPrefix = this.config.keyPrefix;
         this.config = Object.assign({}, this.config, config);
@@ -32885,7 +32885,7 @@ var AnalyticsClass = /** @class */ (function () {
     AnalyticsClass.prototype._endpointRequest = function () {
         var client_info = Common_1.ClientDevice.clientInfo();
         var credentials = this._config.credentials;
-        var user_id = credentials.authenticated ? credentials.identityId : null;
+        var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         logger.debug('demographic user id: ' + user_id);
         return {
             Demographic: {
