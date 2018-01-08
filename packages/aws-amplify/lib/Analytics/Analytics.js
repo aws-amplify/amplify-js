@@ -50,6 +50,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
 var Auth_1 = require("../Auth");
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
+var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 /**
 * Provide mobile analytics client functions
 */
@@ -240,6 +241,30 @@ var AnalyticsClass = /** @class */ (function () {
             });
         });
     };
+    /*
+        _putEventsCallback() {
+            return (err, data, res, rej) => {
+                if (err) {
+                    logger.debug('record event failed. ' + err);
+                    if (err.statusCode === undefined || err.statusCode === 400){
+                        if (err.code === 'ThrottlingException') {
+                            // todo
+                            // cache events
+                            logger.debug('get throttled, caching events');
+                        }
+                    }
+                    rej(err);
+                }
+                else {
+                    logger.debug('record event success. ' + data);
+                    // try to clean cached events if exist
+    
+    
+                    res(data);
+                }
+            };
+        }
+    */
     /**
     * Record one analytic event
     * @param {String} name - Event name
