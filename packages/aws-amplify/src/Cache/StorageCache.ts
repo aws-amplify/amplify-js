@@ -63,7 +63,9 @@ export default class StorageCache {
         }
 
         if (this.config.itemMaxSize > this.config.capacityInBytes) {
-            logger.error('Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.');
+            logger.error(
+                'Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.'
+            );
             this.config.itemMaxSize = defaultConfig.itemMaxSize;
         }
 

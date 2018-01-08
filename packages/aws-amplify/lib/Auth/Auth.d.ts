@@ -134,6 +134,7 @@ export default class AuthClass {
      * @return {Object }- current User's information
      */
     currentUserInfo(): Promise<any>;
+    federatedSignIn(provider: any, response: any, user: any): Promise<any>;
     /**
      * Compact version of credentials
      * @param {Object} credentials
@@ -146,18 +147,7 @@ export default class AuthClass {
         identityId: any;
         authenticated: any;
     };
-    /**
-     * @return - A new guest CognitoIdentityCredentials
-     */
-    private noSessionCredentials();
-    /**
-     * Produce a credentials based on the session
-     * @param {Object} session - The session used to generate the credentials
-     * @return - A new CognitoIdentityCredentials
-     */
-    private sessionToCredentials(session);
     private attributesToObject(attributes);
-    federatedSignIn(provider: any, token: any, user: any): Promise<any>;
     private setCredentialsFromFederation(provider, token, user);
     private pickupCredentials();
     private setCredentialsFromAWS();

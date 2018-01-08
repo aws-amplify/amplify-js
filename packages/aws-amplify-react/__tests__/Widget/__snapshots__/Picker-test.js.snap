@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Picker test render test render correcly 1`] = `
+<div
+  style={
+    Object {
+      "position": "relative",
+    }
+  }
+>
+  <button
+    style={
+      Object {
+        "backgroundColor": "#fff",
+        "backgroundImage": "none",
+        "border": "1px solid transparent",
+        "borderColor": "#ccc",
+        "borderRadius": "4px",
+        "color": "#333",
+        "cursor": "pointer",
+        "display": "inline-block",
+        "fontSize": "14px",
+        "fontWeight": 400,
+        "height": "3em",
+        "lineHeight": "1.42857143",
+        "marginBottom": "0",
+        "padding": "6px 12px",
+        "textAlign": "center",
+        "touchAction": "manipulation",
+        "userSelect": "none",
+        "verticalAlign": "middle",
+        "whiteSpace": "nowrap",
+        "width": "10em",
+      }
+    }
+  >
+    Pick a File
+  </button>
+  <input
+    accept="*/*"
+    onChange={[Function]}
+    style={
+      Object {
+        "cursor": "pointer",
+        "display": "inline-block",
+        "height": "100%",
+        "left": 0,
+        "opacity": 0,
+        "position": "absolute",
+        "top": 0,
+        "width": "100%",
+      }
+    }
+    title="Pick a File"
+    type="file"
+  />
+</div>
+`;

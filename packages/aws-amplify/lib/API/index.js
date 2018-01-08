@@ -77,7 +77,6 @@ var API = /** @class */ (function () {
                 header: {},
             });
         }
-        ;
         _config = Object.assign({}, _config, conf);
         API.createInstance();
         return _config;

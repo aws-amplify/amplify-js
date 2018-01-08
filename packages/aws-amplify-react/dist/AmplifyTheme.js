@@ -3,301 +3,276 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.Hidden = exports.Center = exports.HalfHeight = exports.Col12 = exports.Col10 = exports.Col9 = exports.Col8 = exports.Col6 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Pre = exports.Space = exports.Label = exports.A = exports.OverlaySelected = exports.Overlay = exports.PickerInput = exports.PickerButton = exports.PickerPicker = exports.Picker = exports.Text = exports.AlbumText = exports.PhotoImg = exports.Photo = exports.AlbumPhoto = exports.Album = exports.SignInButton = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionFooter = exports.SectionBody = exports.SectionHeader = exports.NavButton = exports.NavItem = exports.NavRight = exports.Nav = exports.NavBar = exports.ErrorSection = exports.FormSection = exports.FormContainer = exports.Section = exports.Container = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /*
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * the License. A copy of the License is located at
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *     http://aws.amazon.com/apache2.0/
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * and limitations under the License.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+exports.Col12 = exports.Col11 = exports.Col10 = exports.Col9 = exports.Col8 = exports.Col7 = exports.Col6 = exports.Col5 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Col1 = exports.Pre = exports.A = exports.Space = exports.SignInButton = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionBody = exports.SectionFooter = exports.SectionHeader = exports.ErrorSection = exports.FormSection = exports.FormContainer = exports.NavButton = exports.NavItem = exports.Nav = exports.NavRight = exports.NavBar = exports.Container = undefined;
 
 var _awsAmplify = require('aws-amplify');
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 var Container = exports.Container = {
     fontFamily: '-apple-system,\n                BlinkMacSystemFont,\n                "Segoe UI",\n                Roboto,\n                "Helvetica Neue",\n                Arial,\n                sans-serif,\n                "Apple Color Emoji",\n                "Segoe UI Emoji",\n                "Segoe UI Symbol"',
-    textAlign: 'center'
-};
-
-var Section = exports.Section = {
-    fontWeight: '200'
-};
-
-var FormContainer = exports.FormContainer = {};
-
-var FormSection = exports.FormSection = {
-    display: 'inline-block',
-    fontWeight: '200',
-    maxWidth: '500px'
-};
-
-var ErrorSection = exports.ErrorSection = {
-    background: 'orange',
-    padding: '0.5em',
-    margin: '0.2em auto',
-    fontWeight: '300'
-};
+    fontWeight: '400',
+    lineHeight: '1.5',
+    color: '#212529',
+    textAlign: 'left',
+    paddingLeft: '15px',
+    paddingRight: '15px'
+}; /*
+    * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+    *
+    * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+    * the License. A copy of the License is located at
+    *
+    *     http://aws.amazon.com/apache2.0/
+    *
+    * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+    * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+    * and limitations under the License.
+    */
 
 var NavBar = exports.NavBar = {
-    padding: '0.5em 0.5em 0.2em',
-    marginBottom: '0.5em',
-    borderBottom: '1px solid #00fff6'
-};
-
-var Nav = exports.Nav = {
-    padding: '0.5em 0.5em 0.2em',
-    marginBottom: '0.5em',
-    borderBottom: '1px solid #00fff6'
+    position: 'relative',
+    border: '1px solid transparent',
+    borderColor: '#e7e7e7'
 };
 
 var NavRight = exports.NavRight = {
-    textAlign: 'right',
-    fontSize: '0.8em'
-};
-
-var NavItem = exports.NavItem = {};
-
-var NavButton = exports.NavButton = {
-    padding: '0',
-    border: 'none',
-    borderBottom: '1px solid #007bff',
-    margin: 'auto 0.3em',
-    background: '#fff',
-    color: '#007bff'
-};
-
-var SectionHeader = exports.SectionHeader = {
-    background: '#007bff',
-    color: '#fff',
-    padding: '0.6em',
-    fontSize: '1.2em',
-    fontWeight: 'normal',
-    textAlign: 'center'
-};
-
-var SectionBody = exports.SectionBody = {
-    background: '#fff',
-    color: '#000',
-    padding: '1em',
-    fontSize: '1em'
-};
-
-var SectionFooter = exports.SectionFooter = {
-    background: '#fff',
-    color: '#000',
-    padding: '1em',
-    fontSize: '0.8em',
-    textAlign: 'left',
-    borderBottom: '1px solid #00fff6'
-};
-
-var FormRow = exports.FormRow = {
-    marginBottom: '0.5em',
-    textAlign: 'left'
-};
-
-var ActionRow = exports.ActionRow = {
-    marginTop: '1.5em',
     textAlign: 'right'
 };
 
-var Input = exports.Input = {
-    fontSize: '1em',
-    fontWeight: '200',
-    width: '15em',
-    padding: '4px 2px',
-    border: '1px solid #aaa'
+var Nav = exports.Nav = {
+    margin: '7.5px'
 };
 
-var Button = exports.Button = {
-    fontSize: '1em',
-    padding: '0.3em 0.5em',
-    margin: 'auto 0.3em',
-    border: '1px solid #007bff',
-    background: '#fff',
-    color: '#007bff'
+var NavItem = exports.NavItem = {
+    display: 'inline-block',
+    padding: '10px 5px',
+    lineHeight: '20px'
 };
 
-var SignInButton = exports.SignInButton = {
-    fontSize: '1em',
-    padding: '0.3em 0.5em',
-    margin: '0.3em',
-    border: '1px solid #007bff',
-    background: '#fff',
-    color: '#007bff',
-    width: '100%'
+var NavButton = exports.NavButton = {
+    display: 'inline-block',
+    padding: '6px 12px',
+    marginTop: '8px',
+    marginBottom: '8px',
+    fontSize: '14px',
+    fontWeight: 400,
+    lineHeight: '1.42857143',
+    textAlign: 'center',
+    whiteSpace: 'nowrap',
+    verticalAlign: 'middle',
+    touchAction: 'manipulation',
+    cursor: 'pointer',
+    userSelect: 'none',
+    backgroundImage: 'none',
+    border: '1px solid transparent',
+    borderRadius: '4px',
+    color: '#333',
+    backgroundColor: '#fff',
+    borderColor: '#ccc'
 };
 
-var Album = exports.Album = {
-    display: 'block',
-    width: '100%',
+var FormContainer = exports.FormContainer = {
+    textAlign: 'center'
+};
+
+var FormSection = exports.FormSection = {
+    marginBottom: '20px',
+    backgroundColor: '#fff',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+    textAlign: 'left',
+    width: '400px',
+    display: 'inline-block'
+};
+
+var ErrorSection = exports.ErrorSection = {
+    marginBottom: '20px',
+    color: '#fff',
+    backgroundColor: '#f0ad4e',
+    border: '1px solid #eea236',
+    borderRadius: '4px',
     textAlign: 'left'
 };
 
-var AlbumPhoto = exports.AlbumPhoto = {
-    display: 'inline-block',
-    width: '32.5%',
-    margin: '0.2%',
-    verticalAlign: 'top'
-};
-
-var Photo = exports.Photo = {
-    display: 'inline-block',
-    width: '32.5%',
-    margin: '0.2%',
-    verticalAlign: 'top'
-};
-
-var PhotoImg = exports.PhotoImg = {
-    maxWidth: '100%'
-};
-
-var AlbumText = exports.AlbumText = {
-    display: 'inline-block',
-    width: '32.5%',
-    margin: '0.2%',
-    verticalAlign: 'top',
-    maxHeight: 320,
-    overflow: 'auto'
-};
-
-var Text = exports.Text = {
-    display: 'inline-block',
-    width: '32.5%',
-    margin: '0.2%',
-    verticalAlign: 'top',
-    maxHeight: 320,
-    overflow: 'auto'
-};
-
-var Picker = exports.Picker = {
-    width: '100%',
+var SectionHeader = exports.SectionHeader = {
+    color: '#fff',
+    backgroundColor: '#337ab7',
+    borderColor: '#337ab7',
+    padding: '10px 15px',
+    borderBottom: '1px solid transparent',
+    borderTopLeftRadius: '3px',
+    borderTopRightRadius: '3px',
     textAlign: 'center'
 };
 
-var PickerPicker = exports.PickerPicker = {
-    width: '100%',
-    textAlign: 'center'
+var SectionFooter = exports.SectionFooter = {
+    color: '#333',
+    backgroundColor: '#f5f5f5',
+    padding: '10px 15px',
+    borderTop: '1px solid #ddd',
+    borderTopLeftRadius: '3px',
+    borderTopRightRadius: '3px'
 };
 
-var PickerButton = exports.PickerButton = {
-    background: '#fff',
+var SectionBody = exports.SectionBody = {
+    padding: '15px'
+};
+
+var FormRow = exports.FormRow = {
+    marginBottom: '15px'
+};
+
+var ActionRow = exports.ActionRow = {
+    marginBottom: '15px'
+};
+
+var Input = exports.Input = {
+    display: 'block',
+    width: '100%',
+    height: '34px',
+    padding: '6px 12px',
+    fontSize: '14px',
+    lineHeight: '1.42857143',
+    color: '#555',
+    backgroundColor: '#fff',
+    backgroundImage: 'none',
     border: '1px solid #ccc',
-    fontWeight: '200',
-    width: '100%'
+    borderRadius: '4px',
+    boxShadow: 'inset 0 1px 1px rgba(0,0,0,.075)',
+    boxSizing: 'border-box',
+    transition: 'border-color ease-in-out .15s,box-shadow ease-in-out .15s'
 };
 
-var PickerInput = exports.PickerInput = {};
+var Button = exports.Button = {
+    display: 'inline-block',
+    padding: '6px 12px',
+    marginBottom: '0',
+    fontSize: '14px',
+    fontWeight: 400,
+    lineHeight: '1.42857143',
+    textAlign: 'center',
+    whiteSpace: 'nowrap',
+    verticalAlign: 'middle',
+    touchAction: 'manipulation',
+    cursor: 'pointer',
+    userSelect: 'none',
+    backgroundImage: 'none',
+    border: '1px solid transparent',
+    borderRadius: '4px',
+    color: '#333',
+    backgroundColor: '#fff',
+    borderColor: '#ccc'
+};
 
-var Overlay = exports.Overlay = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
+var SignInButton = exports.SignInButton = {
+    position: 'relative',
+    padding: '6px 12px 6px 44px',
+    fontSize: '14px',
+    textAlign: 'left',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: 'block',
     width: '100%',
-    height: '100%'
-};
-
-var OverlaySelected = exports.OverlaySelected = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    background: '#888',
-    opacity: '0.5',
-    border: '2px solid blue'
-};
-
-var A = exports.A = {
-    textDecoration: 'underline'
-};
-
-var Label = exports.Label = {
-    margin: 'auto 0.5em'
+    marginTop: '2px',
+    '#google_signin_btn': {
+        color: '#fff',
+        backgroundColor: '#dd4b39',
+        borderColor: 'rgba(0,0,0,0.2)'
+    },
+    '#facebook_signin_btn': {
+        color: '#fff',
+        backgroundColor: '#3b5998',
+        borderColor: 'rgba(0,0,0,0.2)'
+    }
 };
 
 var Space = exports.Space = {
     display: 'inline-block',
-    width: '1em'
+    width: '20px'
+};
+
+var A = exports.A = {
+    color: '#007bff',
+    cursor: 'pointer'
 };
 
 var Pre = exports.Pre = {
-    textAlign: 'left',
-    margin: '0',
-    padding: '1em',
-    background: '#eee',
-    overflow: 'auto'
+    overflow: 'auto',
+    fontFamily: 'Menlo,\n                Monaco,\n                Consolas,\n                "Courier New",\n                monospace',
+    display: 'block',
+    padding: '9.5px',
+    margin: '0 0 10px',
+    fontSize: '13px',
+    lineHeight: '1.42857143',
+    color: '#333',
+    wordBreak: 'break-all',
+    wordWrap: 'break-word',
+    backgroundColor: '#f5f5f5',
+    border: '1px solid #ccc',
+    borderRadius: '4px'
+};
+
+var Col1 = exports.Col1 = {
+    display: 'inline-block',
+    width: '8.33333333%'
 };
 
 var Col2 = exports.Col2 = {
     display: 'inline-block',
-    width: '16.6%'
+    width: '16.66666667%'
 };
 
 var Col3 = exports.Col3 = {
     display: 'inline-block',
-    width: '24.5%',
-    margin: '0.2%'
+    width: '25%'
 };
 
 var Col4 = exports.Col4 = {
     display: 'inline-block',
-    width: '32%',
-    margin: '0.2%'
+    width: '33.33333333%'
+};
+
+var Col5 = exports.Col5 = {
+    display: 'inline-block',
+    width: '41.66666667%'
 };
 
 var Col6 = exports.Col6 = {
     display: 'inline-block',
-    width: '49.5%',
-    margin: '0.2%'
+    width: '50%'
+};
+
+var Col7 = exports.Col7 = {
+    display: 'inline-block',
+    width: '58.33333333%'
 };
 
 var Col8 = exports.Col8 = {
     display: 'inline-block',
-    width: '66%',
-    margin: '0.2%'
+    width: '66.66666667%'
 };
 
 var Col9 = exports.Col9 = {
     display: 'inline-block',
-    width: '74.5%',
-    margin: '0.2%'
+    width: '75%'
 };
 
 var Col10 = exports.Col10 = {
     display: 'inline-block',
-    width: '83.6%',
-    margin: '0.2%'
+    width: '83.33333333%'
+};
+
+var Col11 = exports.Col11 = {
+    display: 'inline-block',
+    width: '91.66666667%'
 };
 
 var Col12 = exports.Col12 = {
     display: 'inline-block',
-    width: '99.2%',
-    margin: '0.2%'
+    width: '100%'
 };
 
-var HalfHeight = exports.HalfHeight = {
-    height: 320,
-    overflow: 'auto'
-};
-
-var Center = exports.Center = {
-    textAlign: 'center'
-};
-
-var Hidden = exports.Hidden = {
-    display: 'none'
-};
-
-var AmplifyTheme = {
+var Bootstrap = {
     container: Container,
 
     navBar: NavBar,
@@ -306,109 +281,37 @@ var AmplifyTheme = {
     navItem: NavItem,
     navButton: NavButton,
 
-    section: Section,
+    formContainer: FormContainer,
+    formSection: FormSection,
+    errorSection: ErrorSection,
     sectionHeader: SectionHeader,
     sectionBody: SectionBody,
     sectionFooter: SectionFooter,
 
-    formContainer: FormContainer,
-    formSection: FormSection,
     formRow: FormRow,
     actionRow: ActionRow,
-    input: Input,
-    button: Button,
+
+    space: Space,
+
     signInButton: SignInButton,
 
-    errorSection: ErrorSection,
-
-    photo: Photo,
-    photoImg: PhotoImg,
-    text: Text,
-    album: Album,
-    albumPhoto: AlbumPhoto,
-    albumText: AlbumText,
-    picker: Picker,
-    pickerPicker: PickerPicker,
-    pickerButton: PickerButton,
-    pickerInput: PickerInput,
-
-    overlay: Overlay,
-    overlaySelected: OverlaySelected,
-
+    input: Input,
+    button: Button,
     a: A,
-    label: Label,
-    space: Space,
     pre: Pre,
 
+    col1: Col1,
     col2: Col2,
     col3: Col3,
     col4: Col4,
+    col5: Col5,
     col6: Col6,
+    col7: Col7,
     col8: Col8,
     col9: Col9,
     col10: Col10,
-    col12: Col12,
-    halfHeight: HalfHeight,
-
-    center: Center,
-    hidden: Hidden
+    col11: Col11,
+    col12: Col12
 };
 
-var MediaQuery = function () {
-    function MediaQuery() {
-        _classCallCheck(this, MediaQuery);
-    }
-
-    _createClass(MediaQuery, [{
-        key: 'query',
-        value: function () {
-            function query() {
-                var dim = _awsAmplify.ClientDevice.dimension();
-                var width = dim.width,
-                    height = dim.height;
-
-
-                if (width < 576) {
-                    AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col6);
-                    AmplifyTheme.photo = Object.assign({}, Photo, Col12);
-                    AmplifyTheme.albumText = Object.assign({}, AlbumText, Col12);
-                } else if (width < 768) {
-                    AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col4);
-                    AmplifyTheme.photo = Object.assign({}, Photo, Col6);
-                    AmplifyTheme.albumText = Object.assign({}, AlbumText, Col8);
-                } else if (width < 992) {
-                    AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col3);
-                    AmplifyTheme.photo = Object.assign({}, Photo, Col6);
-                    AmplifyTheme.albumText = Object.assign({}, AlbumText, Col6);
-                } else {
-                    AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col2);
-                    AmplifyTheme.photo = Object.assign({}, Photo, Col4);
-                    AmplifyTheme.albumText = Object.assign({}, AlbumText, Col4);
-                }
-
-                AmplifyTheme.halfHeight = Object.assign({}, HalfHeight, { height: height / 2 });
-                AmplifyTheme.text = Object.assign({}, AmplifyTheme.text, { maxHeight: height / 2 });
-                AmplifyTheme.albumText = Object.assign({}, AmplifyTheme.albumText, { maxHeight: height / 3 });
-            }
-
-            return query;
-        }()
-    }, {
-        key: 'onHubCapsule',
-        value: function () {
-            function onHubCapsule() {
-                this.query();
-            }
-
-            return onHubCapsule;
-        }()
-    }]);
-
-    return MediaQuery;
-}();
-
-var mediaQuery = new MediaQuery();
-mediaQuery.query();
-_awsAmplify.Hub.listen('window', mediaQuery, 'AmplifyTheme');
-
-exports['default'] = AmplifyTheme;
+exports['default'] = Bootstrap;

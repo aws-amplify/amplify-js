@@ -12,6 +12,40 @@
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+var MIME_MAP = [
+    { type: 'text/plain', ext: 'txt' },
+    { type: 'text/html', ext: 'html' },
+    { type: 'text/javascript', ext: 'js' },
+    { type: 'text/css', ext: 'css' },
+    { type: 'text/csv', ext: 'csv' },
+    { type: 'text/yaml', ext: 'yml' },
+    { type: 'text/yaml', ext: 'yaml' },
+    { type: 'text/calendar', ext: 'ics' },
+    { type: 'text/calendar', ext: 'ical' },
+    { type: 'image/png', ext: 'png' },
+    { type: 'image/gif', ext: 'gif' },
+    { type: 'image/jpeg', ext: 'jpg' },
+    { type: 'image/jpeg', ext: 'jpeg' },
+    { type: 'image/bmp', ext: 'bmp' },
+    { type: 'image/x-icon', ext: 'ico' },
+    { type: 'image/tiff', ext: 'tif' },
+    { type: 'image/tiff', ext: 'tiff' },
+    { type: 'image/svg+xml', ext: 'svg' },
+    { type: 'application/json', ext: 'json' },
+    { type: 'application/xml', ext: 'xml' },
+    { type: 'application/x-sh', ext: 'sh' },
+    { type: 'application/zip', ext: 'zip' },
+    { type: 'application/x-rar-compressed', ext: 'rar' },
+    { type: 'application/x-tar', ext: 'tar' },
+    { type: 'application/x-bzip', ext: 'bz' },
+    { type: 'application/x-bzip2', ext: 'bz2' },
+    { type: 'application/pdf', ext: 'pdf' },
+    { type: 'application/java-archive', ext: 'jar' },
+    { type: 'application/msword', ext: 'doc' },
+    { type: 'application/vnd.ms-excel', ext: 'xls' },
+    { type: 'application/vnd.ms-excel', ext: 'xlsx' },
+    { type: 'message/rfc822', ext: 'eml' }
+];
 var JS = /** @class */ (function () {
     function JS() {
     }
@@ -20,7 +54,7 @@ var JS = /** @class */ (function () {
     };
     JS.sortByField = function (list, field, dir) {
         if (!list || !list.sort) {
-            return;
+            return false;
         }
         var dirX = (dir && dir === 'desc') ? -1 : 1;
         list.sort(function (a, b) {
@@ -40,6 +74,7 @@ var JS = /** @class */ (function () {
             }
             return 0;
         });
+        return true;
     };
     JS.objectLessAttributes = function (obj, less) {
         var ret = Object.assign({}, obj);
@@ -58,88 +93,8 @@ var JS = /** @class */ (function () {
     JS.filenameToContentType = function (filename, defVal) {
         if (defVal === void 0) { defVal = 'application/octet-stream'; }
         var name = filename.toLowerCase();
-        if (name.endsWith('.txt')) {
-            return 'text/plain';
-        }
-        else if (name.endsWith('.html')) {
-            return 'text/html';
-        }
-        else if (name.endsWith('.js')) {
-            return 'text/javascript';
-        }
-        else if (name.endsWith('.css')) {
-            return 'text/css';
-        }
-        else if (name.endsWith('.csv')) {
-            return 'text/csv';
-        }
-        else if (name.endsWith('.yml') || name.endsWith('.yaml')) {
-            return 'text/yaml';
-        }
-        else if (name.endsWith('.ics') || name.endsWith('.ical')) {
-            return 'text/calendar';
-        }
-        if (name.endsWith('.png')) {
-            return 'image/png';
-        }
-        else if (name.endsWith('.gif')) {
-            return 'image/gif';
-        }
-        else if (name.endsWith('.jpg') || name.endsWith('.jpeg')) {
-            return 'image/jpeg';
-        }
-        else if (name.endsWith('.bmp')) {
-            return 'image/bmp';
-        }
-        else if (name.endsWith('.ico')) {
-            return 'image/x-icon';
-        }
-        else if (name.endsWith('.tif') || name.endsWith('.tiff')) {
-            return 'image/tiff';
-        }
-        else if (name.endsWith('.svg')) {
-            return 'image/svg+xml';
-        }
-        if (name.endsWith('.json')) {
-            return 'application/json';
-        }
-        else if (name.endsWith('.xml')) {
-            return 'application/xml';
-        }
-        else if (name.endsWith('.sh')) {
-            return 'application/x-sh';
-        }
-        else if (name.endsWith('.zip')) {
-            return 'application/zip';
-        }
-        else if (name.endsWith('.rar')) {
-            return 'application/x-rar-compressed';
-        }
-        else if (name.endsWith('.tar')) {
-            return 'application/x-tar';
-        }
-        else if (name.endsWith('.bz')) {
-            return 'application/x-bzip';
-        }
-        else if (name.endsWith('.bz2')) {
-            return 'application/x-bzip2';
-        }
-        else if (name.endsWith('.pdf')) {
-            return 'application/pdf';
-        }
-        else if (name.endsWith('.jar')) {
-            return 'application/java-archive';
-        }
-        else if (name.endsWith('.doc')) {
-            return 'application/msword';
-        }
-        else if (name.endsWith('.xls') || name.endsWith('.xlsx')) {
-            return 'application/vnd.ms-excel';
-        }
-        if (name.endsWith('.eml')) {
-            return 'message/rfc822';
-        }
-        return defVal;
+        var filtered = MIME_MAP.filter(function (mime) { return name.endsWith('.' + mime.ext); });
+        return filtered.length > 0 ? filtered[0].type : defVal;
     };
     JS.isTextFile = function (contentType) {
         var type = contentType.toLowerCase();

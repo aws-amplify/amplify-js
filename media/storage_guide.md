@@ -13,7 +13,7 @@ AWS Amplify Storage module gives a simple mechanism for managing user content in
   - [S3Image](#s3image)
   - [S3Text](#s3text)
   - [S3Album](#s3album)
-
+  - [Analytics for S3 components](#analytics-for-s3-components)
 
 ## Installation and Configuration
 
@@ -56,9 +56,9 @@ To create a project fully functioning with the Storage category.
 To make calls to your S3 bucket from your App, make sure CORS is turned on:
 
 1. Go to [AWS S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's userfiles bucket.
-2. Click on the **Permissions** tab for your bucket, and then click on **CORS confguration** tile.
+2. Click on the **Permissions** tab for your bucket, and then click on **CORS configuration** tile.
 3. Update your bucket's CORS Policy to look like:
- ```xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
 <CORSRule>
@@ -113,6 +113,27 @@ There is also a shortcut `vault`, which is merely a Storage instance with `priva
 ```js
 Storage.vault.get('welcome.png'); // Get the welcome.png belonging to current user
 ```
+
+## Tracking
+
+You can enable automatic tracking of events by setting ```track``` to ```true``` when calling the API. (Note: this option is currently only supported in aws-amplify). Enabling this will automatically send 'Storage' events to Amazon Pinpoint and you will be able to see them within the AWS Pinpoint console under Custom Events. The event name will be 'Storage' and within the attributes will be details about the operations that occurred. For example Storage -> method -> put etc.
+
+For example:
+
+Track all the storage apis:
+
+```js
+Storage.configure({ track: true })
+``` 
+
+Track specified storage api:
+
+```js
+Storage.get('welcome.png', { track: true });
+```
+
+You can also use the track property directly on [React components](#analytics-for-s3-components).
+
 
 ## Call APIs
 
@@ -350,3 +371,13 @@ function fileToKey(data) {
 ```
 
 `S3Album` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
+
+### Analytics for S3 components
+
+You can automatically track ```Storage``` operations on the following React components: ```S3Album```, ```S3Text```, ```S3Image``` by providing a ```track``` prop:
+
+```jsx
+return <S3Album track/>
+```
+
+Enabling this will automatically send 'Storage' events to Amazon Pinpoint and you will be able to see them within the AWS Pinpoint console under Custom Events. The event name will be 'Storage' and within the attributes will be details about the operations that occurred. For example Storage -> method -> put etc.

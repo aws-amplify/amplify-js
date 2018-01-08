@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FacebookButton test render test render correctly 1`] = `
+<Button
+  facebookSignIn={[Function]}
+  fb="fb"
+/>
+`;
+
+exports[`withFacebook test render test render correctly 1`] = `
+<MockComp
+  facebookSignIn={[Function]}
+  fb="fb"
+/>
+`;

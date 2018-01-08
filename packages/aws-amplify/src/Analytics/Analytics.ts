@@ -21,7 +21,7 @@ import {
 
 import Auth from '../Auth';
 
-import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from './types'
+import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
 const ama_logger = new Logger('AMA');
@@ -56,7 +56,7 @@ export default class AnalyticsClass {
         }
 
         this._buffer = [];
-    } 
+    }
 
     configure(config) {
         logger.debug('configure Analytics');
@@ -120,9 +120,9 @@ export default class AnalyticsClass {
         if (!this.amaClient) {
             logger.debug('amaClient not ready, put in buffer');
             this._buffer.push({
-                name: name,
-                attribtues: attributes,
-                metrics: metrics
+                name,
+                attributes,
+                metrics
             });
             return;
         }
@@ -163,7 +163,7 @@ export default class AnalyticsClass {
                 return true;
             })
             .catch(err => {
-                logger.debug('ensure credentials error', err)
+                logger.debug('ensure credentials error', err);
                 return false;
             });
     }
@@ -185,13 +185,13 @@ export default class AnalyticsClass {
     _initAMA() {
         const { appId, clientId, region, credentials, platform } = this._config;
         this.amaClient = new AMA.Manager({
-            appId: appId,
-            platform: platform,
-            clientId: clientId,
+            appId,
+            platform,
+            clientId,
             logger: ama_logger,
             clientOptions: {
-                region: region,
-                credentials: credentials
+                region,
+                credentials
             }
         });
 
@@ -211,8 +211,8 @@ export default class AnalyticsClass {
     _initPinpoint() {
         const { region, appId, clientId, credentials } = this._config;
         this.pinpointClient = new Pinpoint({
-            region: region,
-            credentials: credentials
+            region,
+            credentials,
         });
 
         const request = this._endpointRequest();

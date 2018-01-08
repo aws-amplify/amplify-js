@@ -65,10 +65,10 @@ var S3Image = function (_Component) {
     _createClass(S3Image, [{
         key: 'getImageSource',
         value: function () {
-            function getImageSource(key, level) {
+            function getImageSource(key, level, track) {
                 var _this2 = this;
 
-                _awsAmplify.Storage.get(key, { level: level ? level : 'public' }).then(function (url) {
+                _awsAmplify.Storage.get(key, { level: level ? level : 'public', track: track }).then(function (url) {
                     _this2.setState({
                         src: url
                     });
@@ -88,7 +88,8 @@ var S3Image = function (_Component) {
                     path = _props.path,
                     body = _props.body,
                     contentType = _props.contentType,
-                    level = _props.level;
+                    level = _props.level,
+                    track = _props.track;
 
                 if (!imgKey && !path) {
                     logger.debug('empty imgKey and path');
@@ -102,16 +103,17 @@ var S3Image = function (_Component) {
                     var type = contentType || 'binary/octet-stream';
                     var ret = _awsAmplify.Storage.put(key, body, {
                         contentType: type,
-                        level: level ? level : 'public'
+                        level: level ? level : 'public',
+                        track: track
                     });
                     ret.then(function (data) {
                         logger.debug(data);
-                        that.getImageSource(key, level);
+                        that.getImageSource(key, level, track);
                     })['catch'](function (err) {
                         return logger.debug(err);
                     });
                 } else {
-                    that.getImageSource(key, level);
+                    that.getImageSource(key, level, track);
                 }
             }
 
@@ -153,16 +155,17 @@ var S3Image = function (_Component) {
                 var _props2 = this.props,
                     imgKey = _props2.imgKey,
                     level = _props2.level,
-                    fileToKey = _props2.fileToKey;
+                    fileToKey = _props2.fileToKey,
+                    track = _props2.track;
                 var file = data.file,
                     name = data.name,
                     size = data.size,
                     type = data.type;
 
                 var key = imgKey || path + (0, _Common.calcKey)(data, fileToKey);
-                _awsAmplify.Storage.put(key, file, { contentType: type }).then(function (data) {
+                _awsAmplify.Storage.put(key, file, { contentType: type, track: track }).then(function (data) {
                     logger.debug('handle pick data', data);
-                    that.getImageSource(key, level);
+                    that.getImageSource(key, level, track);
                 })['catch'](function (err) {
                     return logger.debug('handle pick error', err);
                 });

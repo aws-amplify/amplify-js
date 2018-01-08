@@ -21,13 +21,15 @@ export declare class AWSCredentials {
     /**
     * Secret Access Key
     *
-    * [Access Key ID and Secret Access Key](http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
+    * [Access Key ID and Secret Access Key]
+    * (http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
     */
     secretAccessKey: string;
     /**
     * Access Key ID
     *
-    * [Access Key ID and Secret Access Key](http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
+    * [Access Key ID and Secret Access Key]
+    * (http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
     */
     accessKeyId: string;
     /** Access Token of current session */

@@ -1,4 +1,4 @@
-import { withAuthenticator } from '../../src/Auth/index'
+import { withAuthenticator, AuthenticatorWrapper } from '../../src/Auth/index'
 import React, {Component} from 'react';
 
 describe('hoc tests', () => {
@@ -25,4 +25,15 @@ describe('hoc tests', () => {
             expect(wrapper).toMatchSnapshot();
         });
     });
+});
+
+describe('AuthenticatorWrapper test', () => {
+    describe('render test', () => {
+        test('render correctly', () => {
+            const mockfn = jest.fn();
+            const wrapper = shallow(<AuthenticatorWrapper children={mockfn}/>)
+
+            expect(wrapper).toMatchSnapshot();
+        });
+    }); 
 });

@@ -20,15 +20,6 @@ export interface SignUpParams {
     SignupAttributes?: Object;
 }
 
-
-/**
-* Third Party Auth providers
-*/
-export const ThirdPartyProvider : object= {
-    Google: 'accounts.google.com',
-    Facebook: 'graph.facebook.com'
-}
-
 /**
 * Auth instance options
 */

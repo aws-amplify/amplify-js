@@ -18,7 +18,7 @@ I18n.setLanguage('fr');
 
 ## Dictionary
 
-Dictionary is feeded by your vocabularies, which in essence, is a Javascript object
+Dictionary is fed by your vocabularies, which in essence, is a Javascript object
 ```
 const dict = {
     'fr': {

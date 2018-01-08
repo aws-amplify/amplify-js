@@ -34,12 +34,24 @@ Analytics.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;
     logger.debug('on hub capsule ' + channel, payload);
 
-    switch(name) {
+    switch(channel) {
         case 'auth':
             authEvent(payload);
             break;
+        case 'storage':
+            storageEvent(payload);
+            break;
     }
-}
+};
+
+const storageEvent = (payload) => {
+    const { attrs, metrics } = payload;
+    if (!attrs) return;
+
+    logger.debug('record storage events');
+    logger.debug(payload);
+    Analytics.record('Storage', attrs, metrics);
+};
 
 const authEvent = (payload) => {
     const { event } = payload;
@@ -60,6 +72,7 @@ const authEvent = (payload) => {
             Analytics.record('_userauth.auth_fail');
             break;
     }
-}
+};
 
 Hub.listen('auth', Analytics);
+Hub.listen('storage', Analytics);

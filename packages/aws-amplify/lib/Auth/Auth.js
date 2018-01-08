@@ -53,10 +53,7 @@ var logger = new Common_1.ConsoleLogger('AuthClass');
 var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
 var CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
 var dispatchAuthEvent = function (event, data) {
-    Common_1.Hub.dispatch('auth', {
-        event: event,
-        data: data
-    }, 'Auth');
+    Common_1.Hub.dispatch('auth', { event: event, data: data }, 'Auth');
 };
 /**
 * Provide authentication steps
@@ -490,7 +487,6 @@ var AuthClass = /** @class */ (function () {
         return that.currentUserPoolUser()
             .then(function (user) { return that.verifyUserAttribute(user, attr); });
     };
-    ;
     /**
      * Confirm current user's attribute using a confirmation code
      * @param {Object} attr - The attribute to be verified
@@ -502,7 +498,6 @@ var AuthClass = /** @class */ (function () {
         return that.currentUserPoolUser()
             .then(function (user) { return that.verifyUserAttributeSubmit(user, attr, code); });
     };
-    ;
     /**
      * Sign out method
      * @return - A promise resolved if success
@@ -639,6 +634,15 @@ var AuthClass = /** @class */ (function () {
             });
         });
     };
+    AuthClass.prototype.federatedSignIn = function (provider, response, user) {
+        var token = response.token, expires_at = response.expires_at;
+        this.setCredentialsFromFederation(provider, token, user);
+        // store it into localstorage
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1 });
+        dispatchAuthEvent('signIn', this.user);
+        logger.debug('federated sign in credentials', this.credentials);
+        return this.keepAlive();
+    };
     /**
      * Compact version of credentials
      * @param {Object} credentials
@@ -653,37 +657,6 @@ var AuthClass = /** @class */ (function () {
             authenticated: credentials.authenticated
         };
     };
-    /**
-     * @return - A new guest CognitoIdentityCredentials
-     */
-    AuthClass.prototype.noSessionCredentials = function () {
-        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
-        var credentials = new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId
-        }, {
-            region: region
-        });
-        credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
-        return credentials;
-    };
-    /**
-     * Produce a credentials based on the session
-     * @param {Object} session - The session used to generate the credentials
-     * @return - A new CognitoIdentityCredentials
-     */
-    AuthClass.prototype.sessionToCredentials = function (session) {
-        var idToken = session.getIdToken().getJwtToken();
-        var _a = this._config, region = _a.region, userPoolId = _a.userPoolId, identityPoolId = _a.identityPoolId;
-        var key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
-        var logins = {};
-        logins[key] = idToken;
-        return new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
-            Logins: logins
-        }, {
-            region: region
-        });
-    };
     AuthClass.prototype.attributesToObject = function (attributes) {
         var obj = {};
         attributes.map(function (attribute) {
@@ -691,22 +664,15 @@ var AuthClass = /** @class */ (function () {
         });
         return obj;
     };
-    AuthClass.prototype.federatedSignIn = function (provider, token, user) {
-        this.setCredentialsFromFederation(provider, token, user);
-        // store it into localstorage
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user });
-        dispatchAuthEvent('signIn', this.user);
-        logger.debug('federated sign in credentials', this.credentials);
-        return this.keepAlive();
-    };
     AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
         var domains = {
             'google': 'accounts.google.com',
-            'facebook': 'graph.facebook.com'
+            'facebook': 'graph.facebook.com',
+            'amazon': 'www.amazon.com'
         };
         var domain = domains[provider];
         if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook]');
+            return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
         }
         var logins = {};
         logins[domain] = token;
@@ -738,7 +704,8 @@ var AuthClass = /** @class */ (function () {
                 .then(function () { return _this.keepAlive(); })
                 .catch(function (err) {
                 logger.debug('error when pickup', err);
-                return null;
+                _this.setCredentialsForGuest();
+                return _this.keepAlive();
             });
         }
     };

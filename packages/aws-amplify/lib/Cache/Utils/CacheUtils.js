@@ -22,7 +22,7 @@ exports.defaultConfig = {
     defaultTTL: 259200000,
     defaultPriority: 5,
     warningThreshold: 0.8,
-    storage: (typeof window == 'undefined') ? null : window.localStorage
+    storage: (typeof window === 'undefined') ? null : window.localStorage
 };
 /**
  * return the byte size of the string

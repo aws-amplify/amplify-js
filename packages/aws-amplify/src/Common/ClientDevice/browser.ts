@@ -17,7 +17,7 @@ import { ConsoleLogger as Logger } from '../Logger';
 const logger = new Logger('ClientDevice_Browser');
 
 export function clientInfo() {
-    if (typeof window === 'undefined') { return; {} }
+    if (typeof window === 'undefined') { return {}; }
 
     return browserClientInfo();
 }
@@ -62,8 +62,8 @@ export function dimension() {
 }
 
 function browserTimezone() {
-    const tzMatch = /.+\(([A-Z]+)\)/.exec(new Date().toString());
-    return tzMatch[1] || "";
+    const tzMatch = /\(([A-Za-z\s].*)\)/.exec(new Date().toString());
+    return tzMatch ? tzMatch[1] || "" : "";
 }
 
 function browserType(userAgent) {

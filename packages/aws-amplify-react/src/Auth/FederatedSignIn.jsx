@@ -9,7 +9,8 @@ import {
 } from '../AmplifyUI';
 import {
     GoogleButton,
-    FacebookButton
+    FacebookButton,
+    AmazonButton
 } from './Provider';
 
 const logger = new Logger('FederatedSignIn');
@@ -37,6 +38,17 @@ export class FederatedButtons extends Component {
                 />
     }
 
+    amazon(amazon_client_id) {
+        if (!amazon_client_id) { return null; }
+
+        const { theme, onStateChange } = this.props;
+        return <AmazonButton
+                amazon_client_id={amazon_client_id}
+                theme={theme}
+                onStateChange={onStateChange}
+              />
+    }
+
     render() {
         const { authState } = this.props;
         if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
@@ -44,13 +56,14 @@ export class FederatedButtons extends Component {
         const federated = this.props.federated || {};
         if (JS.isEmpty(federated)) { return null; }
 
-        const { google_client_id, facebook_app_id } = federated;
+        const { google_client_id, facebook_app_id, amazon_client_id } = federated;
 
         const theme = this.props.theme || AmplifyTheme;
         return (
             <ActionRow theme={theme}>
                 {this.google(google_client_id)}
                 {this.facebook(facebook_app_id)}
+                {this.amazon(amazon_client_id)}
             </ActionRow>
         )
     }
@@ -61,7 +74,7 @@ export default class FederatedSignIn extends Component {
         const { federated, authState, onStateChange } = this.props;
         if (!federated) {
             logger.debug('federated prop is empty. show nothing');
-            logger.debug('federated={google_client_id: , facebook_app_id: }');
+            logger.debug('federated={google_client_id: , facebook_app_id: , amazon_client_id}');
             return null;
         }
         if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }

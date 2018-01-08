@@ -24,283 +24,263 @@ export const Container = {
                 "Apple Color Emoji",
                 "Segoe UI Emoji",
                 "Segoe UI Symbol"`,
-    textAlign: 'center'
-};
-
-export const Section = {
-    fontWeight: '200'
-};
-
-export const FormContainer = {
+    fontWeight: '400',
+    lineHeight: '1.5',
+    color: '#212529',
+    textAlign: 'left',
+    paddingLeft: '15px',
+    paddingRight: '15px'
 }
 
-export const FormSection = {
-    display: 'inline-block',
-    fontWeight: '200',
-    maxWidth: '500px'
-};
-
-export const ErrorSection = {
-    background: 'orange',
-    padding: '0.5em',
-    margin: '0.2em auto',
-    fontWeight: '300'
-};
-
 export const NavBar = {
-    padding: '0.5em 0.5em 0.2em',
-    marginBottom: '0.5em',
-    borderBottom: '1px solid #00fff6'
-};
-
-export const Nav = {
-    padding: '0.5em 0.5em 0.2em',
-    marginBottom: '0.5em',
-    borderBottom: '1px solid #00fff6'
-};
+    position: 'relative',
+    border: '1px solid transparent',
+    borderColor: '#e7e7e7'
+}
 
 export const NavRight = {
-    textAlign: 'right',
-    fontSize: '0.8em'
-};
+    textAlign: 'right'
+}
+
+export const Nav = {
+    margin: '7.5px'
+}
 
 export const NavItem = {
+    display: 'inline-block',
+    padding: '10px 5px',
+    lineHeight: '20px'
 }
 
 export const NavButton = {
-    padding: '0',
-    border: 'none',
-    borderBottom: '1px solid #007bff',
-    margin: 'auto 0.3em',
-    background: '#fff',
-    color: '#007bff'
+    display: 'inline-block',
+    padding: '6px 12px',
+    marginTop: '8px',
+    marginBottom: '8px',
+    fontSize: '14px',
+    fontWeight: 400,
+    lineHeight: '1.42857143',
+    textAlign: 'center',
+    whiteSpace: 'nowrap',
+    verticalAlign: 'middle',
+    touchAction: 'manipulation',
+    cursor: 'pointer',
+    userSelect: 'none',
+    backgroundImage: 'none',
+    border: '1px solid transparent',
+    borderRadius: '4px',
+    color: '#333',
+    backgroundColor: '#fff',
+    borderColor: '#ccc'
+}
+
+export const FormContainer = {
+    textAlign: 'center'
+}
+
+export const FormSection = {
+    marginBottom: '20px',
+    backgroundColor: '#fff',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+    textAlign: 'left',
+    width: '400px',
+    display: 'inline-block'
+}
+
+export const ErrorSection = {
+    marginBottom: '20px',
+    color: '#fff',
+    backgroundColor: '#f0ad4e',
+    border: '1px solid #eea236',
+    borderRadius: '4px',
+    textAlign: 'left'
 }
 
 export const SectionHeader = {
-    background: '#007bff',
     color: '#fff',
-    padding: '0.6em',
-    fontSize: '1.2em',
-    fontWeight: 'normal',
+    backgroundColor: '#337ab7',
+    borderColor: '#337ab7',
+    padding: '10px 15px',
+    borderBottom: '1px solid transparent',
+    borderTopLeftRadius: '3px',
+    borderTopRightRadius: '3px',
     textAlign: 'center'
-};
-
-export const SectionBody = {
-    background: '#fff',
-    color: '#000',
-    padding: '1em',
-    fontSize: '1em'
-};
+}
 
 export const SectionFooter = {
-    background: '#fff',
-    color: '#000',
-    padding: '1em',
-    fontSize: '0.8em',
-    textAlign: 'left',
-    borderBottom: '1px solid #00fff6'
-};
+    color: '#333',
+    backgroundColor: '#f5f5f5',
+    padding: '10px 15px',
+    borderTop: '1px solid #ddd',
+    borderTopLeftRadius: '3px',
+    borderTopRightRadius: '3px'
+}
+
+export const SectionBody = {
+    padding: '15px'
+}
 
 export const FormRow = {
-    marginBottom: '0.5em',
-    textAlign: 'left'
-};
+    marginBottom: '15px'
+}
 
 export const ActionRow = {
-    marginTop: '1.5em',
-    textAlign: 'right'
-};
+    marginBottom: '15px'
+}
 
 export const Input = {
-    fontSize: '1em',
-    fontWeight: '200',
-    width: '15em',
-    padding: '4px 2px',
-    border: '1px solid #aaa'
-};
+    display: 'block',
+    width: '100%',
+    height: '34px',
+    padding: '6px 12px',
+    fontSize: '14px',
+    lineHeight: '1.42857143',
+    color: '#555',
+    backgroundColor: '#fff',
+    backgroundImage: 'none',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    boxShadow: 'inset 0 1px 1px rgba(0,0,0,.075)',
+    boxSizing: 'border-box',
+    transition: 'border-color ease-in-out .15s,box-shadow ease-in-out .15s'
+}
 
 export const Button = {
-    fontSize: '1em',
-    padding: '0.3em 0.5em',
-    margin: 'auto 0.3em',
-    border: '1px solid #007bff',
-    background: '#fff',
-    color: '#007bff',
+    display: 'inline-block',
+    padding: '6px 12px',
+    marginBottom: '0',
+    fontSize: '14px',
+    fontWeight: 400,
+    lineHeight: '1.42857143',
+    textAlign: 'center',
+    whiteSpace: 'nowrap',
+    verticalAlign: 'middle',
+    touchAction: 'manipulation',
+    cursor: 'pointer',
+    userSelect: 'none',
+    backgroundImage: 'none',
+    border: '1px solid transparent',
+    borderRadius: '4px',
+    color: '#333',
+    backgroundColor: '#fff',
+    borderColor: '#ccc'
 }
 
 export const SignInButton = {
-    fontSize: '1em',
-    padding: '0.3em 0.5em',
-    margin: '0.3em',
-    border: '1px solid #007bff',
-    background: '#fff',
-    color: '#007bff',
-    width: '100%'
-}
-
-export const Album = {
+    position: 'relative',
+    padding: '6px 12px 6px 44px',
+    fontSize: '14px',
+    textAlign: 'left',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
     display: 'block',
     width: '100%',
-    textAlign: 'left'
-}
-
-export const AlbumPhoto = {
-    display: 'inline-block',
-    width: '32.5%',
-    margin: '0.2%',
-    verticalAlign: 'top'
-}
-
-export const Photo = {
-    display: 'inline-block',
-    width: '32.5%',
-    margin: '0.2%',
-    verticalAlign: 'top'
-}
-
-export const PhotoImg = {
-    maxWidth: '100%'
-}
-
-export const AlbumText = {
-    display: 'inline-block',
-    width: '32.5%',
-    margin: '0.2%',
-    verticalAlign: 'top',
-    maxHeight: 320,
-    overflow: 'auto'
-}
-
-export const Text = {
-    display: 'inline-block',
-    width: '32.5%',
-    margin: '0.2%',
-    verticalAlign: 'top',
-    maxHeight: 320,
-    overflow: 'auto'
-}
-
-export const Picker = {
-    width: '100%',
-    textAlign: 'center'
-}
-
-export const PickerPicker = {
-    width: '100%',
-    textAlign: 'center'
-}
-
-export const PickerButton = {
-    background: '#fff',
-    border: '1px solid #ccc',
-    fontWeight: '200',
-    width: '100%'
-}
-
-export const PickerInput = {
-}
-
-export const Overlay = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%'
-};
-
-export const OverlaySelected = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    background: '#888',
-    opacity: '0.5',
-    border: '2px solid blue'
-};
-
-export const A = {
-    textDecoration: 'underline'
-}
-
-export const Label = {
-    margin: 'auto 0.5em'
+    marginTop: '2px',
+    '#google_signin_btn': {
+        color: '#fff',
+        backgroundColor: '#dd4b39',
+        borderColor: 'rgba(0,0,0,0.2)',
+    },
+    '#facebook_signin_btn': {
+        color: '#fff',
+        backgroundColor: '#3b5998',
+        borderColor: 'rgba(0,0,0,0.2)',
+    }
 }
 
 export const Space = {
     display: 'inline-block',
-    width: '1em'
+    width: '20px'
+}
+
+export const A = {
+    color: '#007bff',
+    cursor: 'pointer'
 }
 
 export const Pre = {
-    textAlign: 'left',
-    margin: '0',
-    padding: '1em',
-    background: '#eee',
-    overflow: 'auto'
+    overflow: 'auto',
+    fontFamily: `Menlo,
+                Monaco,
+                Consolas,
+                "Courier New",
+                monospace`,
+    display: 'block',
+    padding: '9.5px',
+    margin: '0 0 10px',
+    fontSize: '13px',
+    lineHeight: '1.42857143',
+    color: '#333',
+    wordBreak: 'break-all',
+    wordWrap: 'break-word',
+    backgroundColor: '#f5f5f5',
+    border: '1px solid #ccc',
+    borderRadius: '4px'
+}
+
+export const Col1 = {
+    display: 'inline-block',
+    width: '8.33333333%'
 }
 
 export const Col2 = {
     display: 'inline-block',
-    width: '16.6%'
+    width: '16.66666667%'
 }
 
 export const Col3 = {
     display: 'inline-block',
-    width: '24.5%',
-    margin: '0.2%'
+    width: '25%'
 }
 
 export const Col4 = {
     display: 'inline-block',
-    width: '32%',
-    margin: '0.2%'
+    width: '33.33333333%'
+}
+
+export const Col5 = {
+    display: 'inline-block',
+    width: '41.66666667%'
 }
 
 export const Col6 = {
     display: 'inline-block',
-    width: '49.5%',
-    margin: '0.2%'
+    width: '50%'
+}
+
+export const Col7 = {
+    display: 'inline-block',
+    width: '58.33333333%'
 }
 
 export const Col8 = {
     display: 'inline-block',
-    width: '66%',
-    margin: '0.2%'
+    width: '66.66666667%'
 }
 
 export const Col9 = {
     display: 'inline-block',
-    width: '74.5%',
-    margin: '0.2%'
+    width: '75%'
 }
 
 export const Col10 = {
     display: 'inline-block',
-    width: '83.6%',
-    margin: '0.2%'
+    width: '83.33333333%'
+}
+
+export const Col11 = {
+    display: 'inline-block',
+    width: '91.66666667%'
 }
 
 export const Col12 = {
     display: 'inline-block',
-    width: '99.2%',
-    margin: '0.2%'
+    width: '100%'
 }
 
-export const HalfHeight = {
-    height: 320,
-    overflow: 'auto'
-}
-
-export const Center = {
-    textAlign: 'center'
-}
-
-export const Hidden = {
-    display: 'none'
-}
-
-const AmplifyTheme = {
+const Bootstrap = {
     container: Container,
 
     navBar: NavBar,
@@ -309,89 +289,37 @@ const AmplifyTheme = {
     navItem: NavItem,
     navButton: NavButton,
 
-    section: Section,
+    formContainer: FormContainer,
+    formSection: FormSection,
+    errorSection: ErrorSection,
     sectionHeader: SectionHeader,
     sectionBody: SectionBody,
     sectionFooter: SectionFooter,
 
-    formContainer: FormContainer,
-    formSection: FormSection,
     formRow: FormRow,
     actionRow: ActionRow,
-    input: Input,
-    button: Button,
+
+    space: Space,
+
     signInButton: SignInButton,
 
-    errorSection: ErrorSection,
-
-    photo: Photo,
-    photoImg: PhotoImg,
-    text: Text,
-    album: Album,
-    albumPhoto: AlbumPhoto,
-    albumText: AlbumText,
-    picker: Picker,
-    pickerPicker: PickerPicker,
-    pickerButton: PickerButton,
-    pickerInput: PickerInput,
-
-    overlay: Overlay,
-    overlaySelected: OverlaySelected,
-
+    input: Input,
+    button: Button,
     a: A,
-    label: Label,
-    space: Space,
     pre: Pre,
 
+    col1: Col1,
     col2: Col2,
     col3: Col3,
     col4: Col4,
+    col5: Col5,
     col6: Col6,
+    col7: Col7,
     col8: Col8,
     col9: Col9,
     col10: Col10,
-    col12: Col12,
-    halfHeight: HalfHeight,
-
-    center: Center,
-    hidden: Hidden
+    col11: Col11,
+    col12: Col12
 }
 
-class MediaQuery {
-    query() {
-        const dim = ClientDevice.dimension();
-        const { width, height } = dim;
-
-        if (width < 576) {
-            AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col6);
-            AmplifyTheme.photo = Object.assign({}, Photo, Col12);
-            AmplifyTheme.albumText = Object.assign({}, AlbumText, Col12);
-        } else if (width < 768) {
-            AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col4);
-            AmplifyTheme.photo = Object.assign({}, Photo, Col6);
-            AmplifyTheme.albumText = Object.assign({}, AlbumText, Col8);
-        } else if (width < 992) {
-            AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col3);
-            AmplifyTheme.photo = Object.assign({}, Photo, Col6);
-            AmplifyTheme.albumText = Object.assign({}, AlbumText, Col6);
-        } else {
-            AmplifyTheme.albumPhoto = Object.assign({}, AlbumPhoto, Col2);
-            AmplifyTheme.photo = Object.assign({}, Photo, Col4);
-            AmplifyTheme.albumText = Object.assign({}, AlbumText, Col4);
-        }
-
-        AmplifyTheme.halfHeight = Object.assign({}, HalfHeight, { height: height / 2 });
-        AmplifyTheme.text = Object.assign({}, AmplifyTheme.text, { maxHeight: height / 2 });
-        AmplifyTheme.albumText = Object.assign({}, AmplifyTheme.albumText, { maxHeight: height / 3 });
-    }
-
-    onHubCapsule() {
-        this.query();
-    }
-}
-
-const mediaQuery = new MediaQuery();
-mediaQuery.query();
-Hub.listen('window', mediaQuery, 'AmplifyTheme');
-
-export default AmplifyTheme;
+export default Bootstrap;

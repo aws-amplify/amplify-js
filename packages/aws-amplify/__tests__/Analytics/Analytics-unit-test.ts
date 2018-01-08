@@ -125,7 +125,27 @@ describe("Analytics test", () => {
             const analytics = new Analytics(options);
 
             const config = analytics.configure({});
+        });
 
+        test('if using aws_exports config', () => {
+            const options: AnalyticsOptions = {
+                appId: 'appId',
+                platform: 'platform',
+                clientId: 'clientId',
+                region: 'region',
+                credentials: new AWS.CognitoIdentityCredentials({
+                    IdentityId: 'identityId',
+                    Logins: {},
+                    LoginId: 'loginId'
+                })
+            };
+
+            const analytics = new Analytics(options);
+            const config = analytics.configure({
+                aws_mobile_analytics_app_id: 'id from exports'
+            });
+            
+            expect(config['appId']).toBe('id from exports');
         });
 
         test('no credentials provided', () => {
@@ -217,7 +237,7 @@ describe("Analytics test", () => {
     });
 
     describe("stopSession", () => {
-        test("happy case", () => {
+        test("happy case", async () => {
             const options: AnalyticsOptions = {
                 appId: 'appId',
                 platform: 'platform',
@@ -230,9 +250,9 @@ describe("Analytics test", () => {
                 })
             };
 
-            const analytics = new Analytics(options);
+            const analytics = await new Analytics(options);
 
-            analytics.stopSession();
+            await analytics.stopSession();
         });
     });
 
