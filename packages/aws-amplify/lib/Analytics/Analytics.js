@@ -53,7 +53,7 @@ var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 /**
 * Provide mobile analytics client functions
 */
-var AnalyticsClass = (function () {
+var AnalyticsClass = /** @class */ (function () {
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
