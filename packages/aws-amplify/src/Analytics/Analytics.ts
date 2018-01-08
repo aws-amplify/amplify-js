@@ -52,6 +52,7 @@ export default class AnalyticsClass {
 
         // store endpointId into localstorage
         if (!this._config.endpointId) {
+            /*
             if (window.localStorage) {
                 let endpointId = window.localStorage.getItem('amplify_endpoint_id');
                 if (!endpointId) {
@@ -62,6 +63,10 @@ export default class AnalyticsClass {
             }
             else {
                 this._config.endpointId = this.generateRandomString();
+            }*/
+            const credentials = this._config.credentials;
+            if (credentials && credentials.identityId) {
+                this._config.endpointId = credentials.identityId;
             }
         }
 
