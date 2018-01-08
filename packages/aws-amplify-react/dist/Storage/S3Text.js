@@ -167,7 +167,11 @@ var S3Text = function (_Component) {
                     type = data.type;
 
                 var key = textKey || path + (0, _Common.calcKey)(data, fileToKey);
-                _awsAmplify.Storage.put(key, file, { contentType: type, track: track }).then(function (data) {
+                _awsAmplify.Storage.put(key, file, {
+                    level: level ? level : 'public',
+                    contentType: type,
+                    track: track
+                }).then(function (data) {
                     logger.debug('handle pick data', data);
                     that.getText(key, level, track);
                 })['catch'](function (err) {

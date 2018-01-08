@@ -177,7 +177,7 @@ describe('S3Image', () => {
             await s3Image.handlePick(data);
 
             expect.assertions(2);
-            expect(spyon).toBeCalledWith('imgKey', 'file', {contentType: 'type'});
+            expect(spyon).toBeCalledWith('imgKey', 'file', {"contentType": "type", "level": "level", "track": undefined});
             expect(spyon2).toBeCalled();
 
             spyon.mockClear();
