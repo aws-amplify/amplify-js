@@ -38,8 +38,6 @@ var storageEvent = function (payload) {
     var attrs = payload.attrs, metrics = payload.metrics;
     if (!attrs)
         return;
-    logger.debug('record storage events');
-    logger.debug(payload);
     Analytics.record('Storage', attrs, metrics);
 };
 var authEvent = function (payload) {

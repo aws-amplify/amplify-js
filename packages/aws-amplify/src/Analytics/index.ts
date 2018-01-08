@@ -48,8 +48,6 @@ const storageEvent = (payload) => {
     const { attrs, metrics } = payload;
     if (!attrs) return;
 
-    logger.debug('record storage events');
-    logger.debug(payload);
     Analytics.record('Storage', attrs, metrics);
 };
 

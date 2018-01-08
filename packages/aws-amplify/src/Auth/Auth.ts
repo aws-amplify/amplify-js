@@ -571,6 +571,12 @@ export default class AuthClass {
         }
     }
 
+    /**
+     * For federated login
+     * @param {String} provider - federation login provider
+     * @param {Object} response - response including access_token
+     * @param {String} user - user info 
+     */
     public federatedSignIn(provider, response, user) {
         const { token, expires_at } = response;
         this.setCredentialsFromFederation(provider, token, user);

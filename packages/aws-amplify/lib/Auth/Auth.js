@@ -634,6 +634,12 @@ var AuthClass = /** @class */ (function () {
             });
         });
     };
+    /**
+     * For federated login
+     * @param {String} provider - federation login provider
+     * @param {Object} response - response including access_token
+     * @param {String} user - user info
+     */
     AuthClass.prototype.federatedSignIn = function (provider, response, user) {
         var token = response.token, expires_at = response.expires_at;
         this.setCredentialsFromFederation(provider, token, user);

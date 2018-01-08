@@ -129,7 +129,7 @@ describe('StorageCache', () => {
         });
 
         test("give a error message if config has the keyPrefix", () => {
-            const spyon = jest.spyOn(Logger.prototype, 'error');
+            const spyon = jest.spyOn(Logger.prototype, 'warn');
             const storage: StorageCache = new StorageCache(config);
 
             const customizedConfig: CacheConfig = {
