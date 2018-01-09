@@ -106,6 +106,60 @@ describe('RestClient test', () => {
                 expect(e).toBe('credentials not set for API rest client ');
             }
         });
+
+        test('ajax with extraParams', async () => {
+            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
+                return new Promise((res, rej) => {
+                    res({
+                        status: '200',
+                        json: () => {
+                            return signed_params.data;
+                        }
+                    });
+                });
+            });
+
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+
+            const restClient = new RestClient(apiOptions);
+
+            expect(await restClient.ajax('url', 'method', {body: 'body'})).toEqual('data');
+        });
+
+        test('ajax with Authorization header', async () => {
+            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
+                return new Promise((res, rej) => {
+                    res({
+                        status: '200',
+                        json: () => {
+                            return signed_params.data;
+                        }
+                    });
+                });
+            });
+
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+
+            const restClient = new RestClient(apiOptions);
+
+            expect(await restClient.ajax('url', 'method', {headers: {Authorization: 'authorization'}})).toEqual('data');
+        });
     });
 
     describe('get test', () => {
