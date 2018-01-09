@@ -15,6 +15,7 @@ import React, { Component } from 'react';
 
 import { I18n, Logger } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
+import { generateRandomId } from '../Common/RandomGenerator';
 
 const PickerPicker = {
     position: 'relative'
@@ -45,6 +46,13 @@ const PickerInput = {
 const logger = new Logger('Picker');
 
 export default class Picker extends Component {
+    constructor(props) {
+        super(props);
+
+        this.handleInput = this.handleInput.bind(this);
+        this.state = { pickerInputId: generateRandomId(4, 'pickerInput') };
+    }
+
     handleInput(e) {
         var that = this;
 
@@ -65,7 +73,8 @@ export default class Picker extends Component {
         }
         
         // in case the same file selected
-        document.getElementById("photoInput").value = null;
+        const { pickerInputId } = this.state;
+        document.getElementById(pickerInputId).value = null;
     }
 
     render() {
@@ -80,6 +89,7 @@ export default class Picker extends Component {
         );
         const buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
         const inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
+        const { pickerInputId } = this.state;
 
         return (
             <div style={pickerStyle}>
@@ -87,7 +97,8 @@ export default class Picker extends Component {
                     {I18n.get(title)}
                 </button> 
                  <input
-                    class="amplify-widget"
+                    className="amplify-widget"
+                    id={pickerInputId}
                     title={I18n.get(title)}
                     type="file" accept={accept}
                     style={inputStyle}
