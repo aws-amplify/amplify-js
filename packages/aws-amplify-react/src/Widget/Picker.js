@@ -65,7 +65,7 @@ export default class Picker extends Component {
         }
         
         // in case the same file selected
-        document.getElementById("photoInput").value = null;;
+        document.getElementById("photoInput").value = null;
     }
 
     render() {
@@ -87,7 +87,7 @@ export default class Picker extends Component {
                     {I18n.get(title)}
                 </button> 
                  <input
-                    id="photoInput"
+                    class="amplify-widget"
                     title={I18n.get(title)}
                     type="file" accept={accept}
                     style={inputStyle}
