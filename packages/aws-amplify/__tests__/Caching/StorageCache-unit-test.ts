@@ -1,20 +1,3 @@
-jest.mock('aws-sdk-mobile-analytics', () => {
-    const Manager = () => {}
-
-    Manager.prototype.recordEvent = () => {
-
-    }
-
-    Manager.prototype.recordMonetizationEvent = () => {
-
-    }
-
-    var ret =  {
-        Manager: Manager
-    }
-    return ret;
-});
-
 jest.mock('aws-sdk/clients/pinpoint', () => {
     const Pinpoint = () => {
         var pinpoint = null;
@@ -129,7 +112,7 @@ describe('StorageCache', () => {
         });
 
         test("give a error message if config has the keyPrefix", () => {
-            const spyon = jest.spyOn(Logger.prototype, 'error');
+            const spyon = jest.spyOn(Logger.prototype, 'warn');
             const storage: StorageCache = new StorageCache(config);
 
             const customizedConfig: CacheConfig = {

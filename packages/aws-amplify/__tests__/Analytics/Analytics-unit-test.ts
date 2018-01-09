@@ -1,28 +1,3 @@
-jest.mock('aws-sdk-mobile-analytics', () => {
-    const Manager = () => {}
-
-    Manager.prototype.recordEvent = () => {
-
-    }
-
-    Manager.prototype.recordMonetizationEvent = () => {
-
-    }
-
-    Manager.prototype.startSession = () => {
-
-    }
-
-    Manager.prototype.stopSession = () => {
-
-    }
-
-    var ret =  {
-        Manager: Manager
-    }
-    return ret;
-});
-
 jest.mock('aws-sdk/clients/pinpoint', () => {
     const Pinpoint = () => {
         var pinpoint = null;
@@ -36,176 +11,45 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
-/*
-jest.mock('../../src/Auth', () => {
-    return null;
+jest.mock('aws-sdk/clients/mobileanalytics', () => {
+    const MobileAnalytics = () => {
+        var mobileanalytics = null;
+        return mobileanalytics;
+    }
+
+    MobileAnalytics.prototype.putEvents = (params, callback) => {
+        callback(null, 'data');
+    }
+
+    return MobileAnalytics;
 });
-*/
-import * as AWS from 'aws-sdk/global';
-import * as Pinpoint from 'aws-sdk/clients/pinpoint';
-import * as AMA from 'aws-sdk-mobile-analytics';
-import * as Manager from 'aws-sdk-mobile-analytics/lib/MobileAnalyticsSessionManager';
+
+import { Pinpoint, AWS, MobileAnalytics, ClientDevice } from '../../src/Common';
 import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from '../../src/Analytics/types';
-import { ClientDevice } from '../../src/Common';
 import { default as Analytics } from "../../src/Analytics/Analytics";
 import { ConsoleLogger as Logger } from '../../src/Common/Logger';
 import Auth from '../../src/Auth/Auth';
 
-const spyon = jest.spyOn(Auth.prototype, 'currentCredentials')
-    .mockImplementationOnce(() => {
-        return new Promise((res, rej) => {
-            res('credentials');
-        });
-    });
+const options: AnalyticsOptions = {
+    appId: 'appId',
+    platform: 'platform',
+    clientId: 'clientId',
+    region: 'region'
+};
+
+const credentials = {
+    accessKeyId: 'accessKeyId',
+    sessionToken: 'sessionToken',
+    secretAccessKey: 'secretAccessKey',
+    identityId: 'identityId',
+    authenticated: true
+}
+
+jest.spyOn(Analytics.prototype, 'generateRandomString').mockReturnValue('randomString');
 
 describe("Analytics test", () => {
-    describe('configure test', () => {
-        test('happy case', () => {
-            const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
-
-            const spyon = jest.spyOn(Analytics.prototype, "_initClients");
-
-            const analytics = new Analytics(options);
-            const config = analytics.configure({});
-            
-            expect(spyon).toBeCalled();
-            spyon.mockClear();
-        });
-
-        test('init pinpoint failed', () => {
-            const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
-
-            const spyon = jest.spyOn(Pinpoint.prototype, 'updateEndpoint')
-                .mockImplementationOnce((params, callback) => {
-                    callback('err', null);
-                });
-
-            const analytics = new Analytics(options);
-            try{
-                const config = analytics.configure({});
-            } catch (e) {
-                expect(e).toBe('err');
-            }
-            spyon.mockClear();
-        });
-
-        test('no app Id', () => {
-            const options: AnalyticsOptions = {
-                appId: null,
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
-
-            const analytics = new Analytics(options);
-
-            const config = analytics.configure({});
-        });
-
-        test('if using aws_exports config', () => {
-            const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
-
-            const analytics = new Analytics(options);
-            const config = analytics.configure({
-                aws_mobile_analytics_app_id: 'id from exports'
-            });
-            
-            expect(config['appId']).toBe('id from exports');
-        });
-
-        test('no credentials provided', () => {
-           const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: null
-            };
-
-            const analytics = new Analytics(options);
-
-            const config = analytics.configure({});
-
-        });
-
-        test('get current credentials from auth', async () => {
-            const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
-
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res('cred1');
-                    });
-                });
-
-            const analytics = new Analytics(options);
-            const config = await analytics.configure({});
-            
-            expect(spyon).toBeCalled();
-
-            spyon.mockClear();
-        });
-    });
-
     describe("constructor test", () => {
         test("happy case", () => {
-            const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
-
             const spyon = jest.spyOn(Analytics.prototype, "configure");
 
             const analytics = new Analytics(options);
@@ -214,105 +58,245 @@ describe("Analytics test", () => {
 
             spyon.mockClear();
         });
-    });
 
-    describe("startSession", () => {
-        test("happy case", () => {
-            const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
+        test('with client_info platform', () => {
+            const spyon = jest.spyOn(Analytics.prototype, "configure");
+            const spyon2 = jest.spyOn(ClientDevice, 'clientInfo').mockImplementationOnce(() => {
+                return {
+                    platform: 'platform'
+                };
+            });
 
             const analytics = new Analytics(options);
+            
+            expect(spyon).toBeCalled();
 
-            analytics.startSession();
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+    });
+
+    describe('configure test', () => {
+        test('happy case with aws_exports', () => {
+            const analytics = new Analytics(options);
+
+            const config = Object.assign({}, {
+                aws_mobile_analytics_app_id: '123456',
+                aws_project_region: 'region'
+            }, options);
+
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
+
+            const curConfig = analytics.configure(config);
+
+            expect(spyon).toBeCalled();
+            expect(curConfig['appId']).toBe('123456');
+
+            spyon.mockClear();
+        });
+
+        test('no app id', () => {
+            const optionsWithNoAppId = {
+                appId: null,
+                platform: 'platform',
+                clientId: 'clientId',
+                region: 'region'
+            }
+            const analytics = new Analytics(optionsWithNoAppId);
+
+            const config = {
+                aws_mobile_analytics_app_id: null,
+                aws_project_region: 'region'
+            };
+
+            const curConfig = analytics.configure(config);
+        });
+    });
+
+    
+    describe("startSession", () => {
+        test("happy case", async () => {
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
+
+            const analytics = new Analytics(options);
+            await analytics._initClients();
+           
+            const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents');
+            spyon2.mockClear();
+            await analytics.startSession();
+
+            expect(spyon2).toBeCalled();
+            expect(spyon2.mock.calls[0][0].events[0].eventType).toBe('_session.start');
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test("put events error", async () => {
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
+
+            const analytics = new Analytics(options);
+            await analytics._initClients();
+           
+            const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
+                callback('err', null);
+            });
+
+            spyon2.mockClear();
+            try {
+                await analytics.startSession();
+            } catch (e) {
+                expect(e).toBe('err');
+            }
+
+            spyon.mockClear();
+            spyon2.mockClear();
         });
     });
 
     describe("stopSession", () => {
         test("happy case", async () => {
-            const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
 
-            const analytics = await new Analytics(options);
-
+            const analytics = new Analytics(options);
+            await analytics._initClients();
+           
+            const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents');
+            
+            spyon2.mockClear();
             await analytics.stopSession();
+
+            expect(spyon2).toBeCalled();
+            expect(spyon2.mock.calls[0][0].events[0].eventType).toBe('_session.stop');
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test("put events error", async () => {
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
+
+            const analytics = new Analytics(options);
+            await analytics._initClients();
+           
+            const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
+                callback('err', null);
+            });
+
+            spyon2.mockClear();
+            try {
+                await analytics.stopSession();
+            } catch (e) {
+                expect(e).toBe('err');
+            }
+
+            spyon.mockClear();
+            spyon2.mockClear();
         });
     });
 
     describe("restart", () => {
-        test("happy case", () => {
-            const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
+        test("happy case", async () => {
+            const analytics = new Analytics(options);
+            const spyon = jest.spyOn(Analytics.prototype, 'stopSession').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('data');
+                });
+            });
+
+            await analytics.restart();
+
+            expect(spyon).toBeCalled();
+
+            spyon.mockClear();
+        });
+
+        test("put events error", async () => {
+            const spyon = jest.spyOn(Analytics.prototype, 'stopSession').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                });
+            });
 
             const analytics = new Analytics(options);
+            try {
+                await analytics.restart();
+            } catch (e) {
+                expect(e).toBe('err');
+            }
 
-            analytics.restart();
+            spyon.mockClear();
         });
+
+        
     });
 
     describe("record", () => {
-        test("happy case", () => {
-            const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
+        test("happy case", async () => {
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
 
             const analytics = new Analytics(options);
+            await analytics._initClients();
+           
+            const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents');
+            spyon2.mockClear();
 
-            analytics.record('myevent');
+            await analytics.record('event');
+
+            expect(spyon2).toBeCalled();
+            expect(spyon2.mock.calls[0][0].events[0].eventType).toBe('event');
+
+            spyon.mockClear();
+            spyon2.mockClear();
         });
-    });
 
-    describe("recordMonetization", () => {
-        test("happy case", () => {
-            const options: AnalyticsOptions = {
-                appId: 'appId',
-                platform: 'platform',
-                clientId: 'clientId',
-                region: 'region',
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityId: 'identityId',
-                    Logins: {},
-                    LoginId: 'loginId'
-                })
-            };
+        test("put events error", async () => {
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
 
             const analytics = new Analytics(options);
+            await analytics._initClients();
+           
+            const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
+                callback('err', null);
+            });
 
-          //  analytics.recordMonetization('myevent');
+            spyon2.mockClear();
+            try {
+                await analytics.record('event');
+            } catch (e) {
+                expect(e).toBe('err');
+            }
+
+            spyon.mockClear();
+            spyon2.mockClear();
         });
     });
 });

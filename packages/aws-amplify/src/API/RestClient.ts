@@ -78,7 +78,7 @@ export class RestClient {
         const extraParams = Object.assign({}, init);
 
         if (extraParams.body) {
-            libraryHeaders['content-type'] = 'application/json';
+            libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
             params.data = JSON.stringify(extraParams.body);
         }
 

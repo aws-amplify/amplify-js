@@ -19,7 +19,7 @@ var logger = new Common_1.ConsoleLogger('StorageCache');
  * Initialization of the cache
  *
  */
-var StorageCache = /** @class */ (function () {
+var StorageCache = (function () {
     /**
      * Initialize the cache
      * @param config - the configuration of the cache
@@ -100,7 +100,7 @@ var StorageCache = /** @class */ (function () {
             return this.config;
         }
         if (config.keyPrefix) {
-            logger.error("Don't try to configure keyPrefix!");
+            logger.warn("Don't try to configure keyPrefix!");
         }
         config.keyPrefix = this.config.keyPrefix;
         this.config = Object.assign({}, this.config, config);
