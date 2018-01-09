@@ -79,7 +79,7 @@ export class RestClient {
         }
 
         if (init.body) {
-            libraryHeaders['content-type'] = 'application/json';
+            libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
             params.data = JSON.stringify(init.body);
         }
 

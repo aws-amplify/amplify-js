@@ -18,3 +18,25 @@
 * bugFix: aws-amplify-react-native: Update pinpoint region in React Native
 * feature: Better support for guest (Unauthenticated) credentials
 * bugFix: documentation: Fix broken link (to authentication)
+
+## 01/08/2018
+
+* aws-amplify - v0.1.31
+* aws-amplify-react - v0.1.30
+* aws-ampliify-react-native - v0.1.21
+
+* Feature: Export Authenticator in aws-amplify-react-native
+* Enhancement: Reduce bundle size by removing aws-mobile-analytics dependency
+* Security issue: Change dependency on typedoc for security issue
+* Bug fix: Timezone error for Windows
+* Bug fix: Npm badge fix
+* Bug fix: Doc syntax error fix
+* Bug fix: Add charset on default header for API
+
+## 01/09/2018
+
+* aws-amplify - v0.1.32
+* aws-amplify-react - v0.1.30
+* aws-ampliify-react-native - v0.1.21
+
+* Enhancement: remove aws-sdk-mobile-analytics dependency from package.json

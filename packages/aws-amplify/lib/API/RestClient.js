@@ -73,7 +73,7 @@ restClient.get('...')
     .catch(err => console.log(err));
 </pre>
 */
-var RestClient = /** @class */ (function () {
+var RestClient = (function () {
     /**
     * @param {RestClientOptions} [options] - Instance options
     */
@@ -115,7 +115,7 @@ var RestClient = /** @class */ (function () {
                 libraryHeaders = {};
                 extraParams = Object.assign({}, init);
                 if (extraParams.body) {
-                    libraryHeaders['content-type'] = 'application/json';
+                    libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
                     params.data = JSON.stringify(extraParams.body);
                 }
                 params.headers = __assign({}, libraryHeaders, extraParams.headers);

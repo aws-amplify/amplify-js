@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify",
-  "version": "0.1.30",
+  "version": "0.1.32",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "./lib/index.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "ts-jest": "^20.0.10",
     "tslint": "^5.7.0",
     "tslint-config-airbnb": "^5.3.0",
-    "typedoc": "^0.9.0",
+    "typedoc-dep-update": "^0.9.0",
     "typescript": "^2.4.2",
     "typescript-formatter": "^6.0.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
@@ -50,7 +50,6 @@
   "dependencies": {
     "amazon-cognito-identity-js": "^1.19.0",
     "aws-sdk": "^2.101.0",
-    "aws-sdk-mobile-analytics": "^0.9.2",
     "axios": "^0.17.0",
     "querystring-browser": "^1.0.4"
   },

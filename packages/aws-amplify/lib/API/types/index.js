@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
 * RestClient instance options
 */
-var RestClientOptions = /** @class */ (function () {
+var RestClientOptions = (function () {
     function RestClientOptions() {
         this.credentials_key = 'awsCredentials';
         this.headers = {};
@@ -26,7 +26,7 @@ exports.RestClientOptions = RestClientOptions;
 /**
 * AWS credentials needed for RestClient
 */
-var AWSCredentials = /** @class */ (function () {
+var AWSCredentials = (function () {
     function AWSCredentials() {
     }
     return AWSCredentials;
