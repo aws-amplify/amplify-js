@@ -1,3 +1,12 @@
+jest.mock('../../src/Common/RandomGenerator', () => {
+    return {
+        generateRandomId() {
+            return 'id';
+        }
+    }
+});
+
+
 import React, { Component } from 'react';
 import Picker from '../../src/Widget/Picker';
 
