@@ -32,3 +32,11 @@
 * Bug fix: Npm badge fix
 * Bug fix: Doc syntax error fix
 * Bug fix: Add charset on default header for API
+
+## 01/09/2018
+
+* aws-amplify - v0.1.32
+* aws-amplify-react - v0.1.30
+* aws-ampliify-react-native - v0.1.21
+
+* Enhancement: remove aws-sdk-mobile-analytics dependency from package.json
