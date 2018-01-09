@@ -134,6 +134,12 @@ export default class AuthClass {
      * @return {Object }- current User's information
      */
     currentUserInfo(): Promise<any>;
+    /**
+     * For federated login
+     * @param {String} provider - federation login provider
+     * @param {Object} response - response including access_token
+     * @param {String} user - user info
+     */
     federatedSignIn(provider: any, response: any, user: any): Promise<any>;
     /**
      * Compact version of credentials
