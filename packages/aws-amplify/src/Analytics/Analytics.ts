@@ -25,6 +25,9 @@ import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from '.
 
 const logger = new Logger('AnalyticsClass');
 const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
+const CACHE_EVENT_LIMIT = 500;
+const CACHE_EVENT_ID_RANGE = 1000000;
+
 /**
 * Provide mobile analytics client functions
 */
@@ -38,6 +41,7 @@ export default class AnalyticsClass {
 
     private mobileAnalytics;
     private _sessionId;
+    private _storage;
 
 
     /**
@@ -71,6 +75,7 @@ export default class AnalyticsClass {
         }
 
         this._buffer = [];
+        this._storage = window.localStorage;
     }
 
     /**
@@ -221,43 +226,103 @@ export default class AnalyticsClass {
                 }
             ]
         };
-        return new Promise<any>((res, rej) => {
-            this.mobileAnalytics.putEvents(params, (err, data) => {
-                if (err) {
-                    logger.debug('record event failed. ' + err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ' + data);
-                    res(data);
-                }
-            });
+        // return new Promise<any>((res, rej) => {
+        //     this.mobileAnalytics.putEvents(params, (err, data) => {
+        //         if (err) {
+        //             logger.debug('record event failed. ' + err);
+        //             rej(err);
+        //         }
+        //         else {
+        //             logger.debug('record event success. ' + data);
+        //             res(data);
+        //         }
+        //     });
+        // });
+        return new Promise<any>((res,rej) => {
+            this.mobileAnalytics.putEvents(params, this._putEventsCallback(params, res, rej));
         });
     }
-/*
-    _putEventsCallback() {
-        return (err, data, res, rej) => {
+
+    /**
+     * @private
+     * Callback function for MobileAnalytics putEvents
+     */
+    _putEventsCallback(params, res, rej) {
+        return (err, data) => {
             if (err) {
                 logger.debug('record event failed. ' + err);
                 if (err.statusCode === undefined || err.statusCode === 400){
                     if (err.code === 'ThrottlingException') {
-                        // todo
-                        // cache events
                         logger.debug('get throttled, caching events');
+                        this._cacheEvents(params);
                     }
                 }
                 rej(err);
             }
             else {
                 logger.debug('record event success. ' + data);
-                // try to clean cached events if exist
-
-
+                this._submitCachedEvents();
                 res(data);
             }
         };
     }
-*/
+
+    /**
+     * @private
+     * Submit cached events if put events succeeded
+     */
+    _submitCachedEvents() {
+        const { endpointId, appId } = this._config;
+        const key = 'amplify_analytics_events_' + appId + '_' + endpointId;
+
+        const cachedEvents = this._storage.getItem(key);
+        if (!cachedEvents && cachedEvents['length'] != 0) {
+            // get the first cached event
+            const first_item_id = (cachedEvents['last_item_id'] - cachedEvents['length'] + 1 + cachedEvents['max_item_id']) 
+                % cachedEvents['max_item_id'];
+            logger.debug(`getting cached event No.${first_item_id}`);
+            const params = cachedEvents[first_item_id];
+
+            // restore cached events into cache
+            cachedEvents['length'] -= 1;
+            this._storage.setItem(key, cachedEvents);
+            return new Promise((res, rej) => {
+                this.mobileAnalytics.putEvents(params, this._putEventsCallback(params, res, rej));
+            });
+        }
+
+        return Promise.resolve();
+    }
+
+    /**
+     * @private
+     * Cache events into the storage provided 
+     */
+    async _cacheEvents(params) {
+        const { endpointId, appId } = this._config;
+        const key = 'amplify_analytics_events_' + appId + '_' + endpointId;
+
+        let cachedEvents = await this._storage.getItem(key);
+
+        if (cachedEvents) {
+            if (cachedEvents['length'] > CACHE_EVENT_LIMIT) {
+                logger.debug('exceed limit of cached events. dumping it');
+                return;
+            }
+            cachedEvents['length'] += 1;
+            cachedEvents['last_item_id'] = (cachedEvents['last_item_id'] + 1) % cachedEvents['max_item_id'];
+            cachedEvents[cachedEvents['last_item_id']] = params;
+        } else {
+            cachedEvents = {};
+            cachedEvents['length'] = 1;
+            cachedEvents['last_item_id'] = 0;
+            cachedEvents['max_item_id'] = CACHE_EVENT_ID_RANGE;
+            cachedEvents[cachedEvents['last_item_id']] = params;
+        }
+
+        await this._storage.setItem(key, cachedEvents);
+    }
+
     /**
     * Record one analytic event
     * @param {String} name - Event name
