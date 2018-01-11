@@ -19,13 +19,16 @@ import {
     MobileAnalytics
 } from '../Common';
 
+//import MobileAnalytics from './AMAMock';
+
 import Auth from '../Auth';
+import Cache from '../Cache';
 
 import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
 const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
-const CACHE_EVENT_LIMIT = 500;
+const CACHE_EVENT_LIMIT = 200;
 const CACHE_EVENT_ID_RANGE = 1000000;
 
 /**
@@ -75,7 +78,6 @@ export default class AnalyticsClass {
         }
 
         this._buffer = [];
-        this._storage = window.localStorage;
     }
 
     /**
@@ -130,17 +132,8 @@ export default class AnalyticsClass {
                 }
             ]
         };
-        return new Promise<any>((res, rej) => {
-            this.mobileAnalytics.putEvents(params, (err, data) => {
-                if (err) {
-                    logger.debug('record event failed. ' + err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ' + data);
-                    res(data);
-                }
-            });
+        return new Promise<any>((res,rej) => {
+            this.mobileAnalytics.putEvents(params, this._putEventsCallback(params, res, rej));
         });
     }
 
@@ -166,17 +159,8 @@ export default class AnalyticsClass {
                 }
             ]
         };
-        return new Promise<any>((res, rej) => {
-            this.mobileAnalytics.putEvents(params, (err, data) => {
-                if (err) {
-                    logger.debug('record event failed. ' + err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ' + data);
-                    res(data);
-                }
-            });
+        return new Promise<any>((res,rej) => {
+            this.mobileAnalytics.putEvents(params, this._putEventsCallback(params, res, rej));
         });
     }
 
@@ -226,18 +210,7 @@ export default class AnalyticsClass {
                 }
             ]
         };
-        // return new Promise<any>((res, rej) => {
-        //     this.mobileAnalytics.putEvents(params, (err, data) => {
-        //         if (err) {
-        //             logger.debug('record event failed. ' + err);
-        //             rej(err);
-        //         }
-        //         else {
-        //             logger.debug('record event success. ' + data);
-        //             res(data);
-        //         }
-        //     });
-        // });
+
         return new Promise<any>((res,rej) => {
             this.mobileAnalytics.putEvents(params, this._putEventsCallback(params, res, rej));
         });
@@ -271,27 +244,29 @@ export default class AnalyticsClass {
      * @private
      * Submit cached events if put events succeeded
      */
-    _submitCachedEvents() {
-        const { endpointId, appId } = this._config;
-        const key = 'amplify_analytics_events_' + appId + '_' + endpointId;
+    async _submitCachedEvents() {
+        const { endpointId, appId, credentials } = this._config;
+        const key = 'amplify_analytics_events_' + appId + 
+            (credentials && credentials.authenticated? '_' + endpointId : '');
 
-        const cachedEvents = this._storage.getItem(key);
-        if (!cachedEvents && cachedEvents['length'] != 0) {
+        const cachedEvents = await Cache.getItem(key);
+        if (cachedEvents && cachedEvents['length'] != 0) {
             // get the first cached event
-            const first_item_id = (cachedEvents['last_item_id'] - cachedEvents['length'] + 1 + cachedEvents['max_item_id']) 
-                % cachedEvents['max_item_id'];
-            logger.debug(`getting cached event No.${first_item_id}`);
+            const first_item_id = (cachedEvents['last_item_id'] - cachedEvents['length'] + 1 + cachedEvents['max_item_id']) % 
+                cachedEvents['max_item_id'];
+            
             const params = cachedEvents[first_item_id];
-
-            // restore cached events into cache
+            logger.debug(`getting cached event No.${first_item_id} with params: `);
+            logger.debug(params);
+            // delete the event and restore cached events into cache
             cachedEvents['length'] -= 1;
-            this._storage.setItem(key, cachedEvents);
+            delete cachedEvents[first_item_id];
+
+            await Cache.setItem(key, cachedEvents);
             return new Promise((res, rej) => {
                 this.mobileAnalytics.putEvents(params, this._putEventsCallback(params, res, rej));
             });
         }
-
-        return Promise.resolve();
     }
 
     /**
@@ -299,10 +274,11 @@ export default class AnalyticsClass {
      * Cache events into the storage provided 
      */
     async _cacheEvents(params) {
-        const { endpointId, appId } = this._config;
-        const key = 'amplify_analytics_events_' + appId + '_' + endpointId;
+        const { endpointId, appId, credentials } = this._config;
+        const key = 'amplify_analytics_events_' + appId + 
+            (credentials && credentials.authenticated? '_' + endpointId : '');
 
-        let cachedEvents = await this._storage.getItem(key);
+        let cachedEvents = await Cache.getItem(key);
 
         if (cachedEvents) {
             if (cachedEvents['length'] > CACHE_EVENT_LIMIT) {
@@ -320,7 +296,7 @@ export default class AnalyticsClass {
             cachedEvents[cachedEvents['last_item_id']] = params;
         }
 
-        await this._storage.setItem(key, cachedEvents);
+        await Cache.setItem(key, cachedEvents);
     }
 
     /**
