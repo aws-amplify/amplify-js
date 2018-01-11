@@ -29,6 +29,7 @@ import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from '.
 import { default as Analytics } from "../../src/Analytics/Analytics";
 import { ConsoleLogger as Logger } from '../../src/Common/Logger';
 import Auth from '../../src/Auth/Auth';
+import Cache from '../../src/Cache';
 
 const options: AnalyticsOptions = {
     appId: 'appId',
@@ -294,6 +295,63 @@ describe("Analytics test", () => {
             } catch (e) {
                 expect(e).toBe('err');
             }
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('get throttled', async () => {
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
+
+            const analytics = new Analytics(options);
+            await analytics._initClients();
+           
+            const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
+                callback({statusCode: 400, code: 'ThrottlingException'}, null);
+            });
+
+            spyon2.mockClear();
+
+            try {
+                await analytics.record('event');
+            } catch (e) {
+                expect(e).not.toBeNull();
+            }
+      
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('send cached events if put events succeed', async () => {
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
+
+            const analytics = new Analytics(options);
+            await analytics._initClients();
+           
+            const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents');
+            spyon2.mockClear();
+
+            const spyon3 = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
+                return {
+                    last_item_id: 1,
+                    length: 1, 
+                    max_item_id: 10,
+                    '0': 'params'
+                }
+            });
+
+            await analytics.record('event');
+
+            expect(spyon2).toBeCalled();
+            expect(spyon2.mock.calls[0][0].events[0].eventType).toBe('event');
 
             spyon.mockClear();
             spyon2.mockClear();

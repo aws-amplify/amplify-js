@@ -9,6 +9,7 @@ export default class AnalyticsClass {
     private _buffer;
     private mobileAnalytics;
     private _sessionId;
+    private _storage;
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
@@ -43,6 +44,21 @@ export default class AnalyticsClass {
     * @return - A promise which resolves if event record successfully
     */
     record(name: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<any>;
+    /**
+     * @private
+     * Callback function for MobileAnalytics putEvents
+     */
+    _putEventsCallback(params: any, res: any, rej: any): (err: any, data: any) => void;
+    /**
+     * @private
+     * Submit cached events if put events succeeded
+     */
+    _submitCachedEvents(): Promise<{}>;
+    /**
+     * @private
+     * Cache events into the storage provided
+     */
+    _cacheEvents(params: any): Promise<void>;
     /**
     * Record one analytic event
     * @param {String} name - Event name
