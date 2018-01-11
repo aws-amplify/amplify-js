@@ -48,7 +48,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
-//import MobileAnalytics from './AMAMock';
 var Auth_1 = require("../Auth");
 var Cache_1 = require("../Cache");
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
@@ -140,16 +139,7 @@ var AnalyticsClass = /** @class */ (function () {
             ]
         };
         return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
-                if (err) {
-                    logger.debug('record event failed. ' + err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ' + data);
-                    res(data);
-                }
-            });
+            _this.mobileAnalytics.putEvents(params, _this._putEventsCallback(params, res, rej));
         });
     };
     /**
@@ -175,16 +165,7 @@ var AnalyticsClass = /** @class */ (function () {
             ]
         };
         return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
-                if (err) {
-                    logger.debug('record event failed. ' + err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ' + data);
-                    res(data);
-                }
-            });
+            _this.mobileAnalytics.putEvents(params, _this._putEventsCallback(params, res, rej));
         });
     };
     /**
@@ -237,18 +218,6 @@ var AnalyticsClass = /** @class */ (function () {
                 }
             ]
         };
-        // return new Promise<any>((res, rej) => {
-        //     this.mobileAnalytics.putEvents(params, (err, data) => {
-        //         if (err) {
-        //             logger.debug('record event failed. ' + err);
-        //             rej(err);
-        //         }
-        //         else {
-        //             logger.debug('record event success. ' + data);
-        //             res(data);
-        //         }
-        //     });
-        // });
         return new Promise(function (res, rej) {
             _this.mobileAnalytics.putEvents(params, _this._putEventsCallback(params, res, rej));
         });
@@ -294,9 +263,11 @@ var AnalyticsClass = /** @class */ (function () {
                         return [4 /*yield*/, Cache_1.default.getItem(key)];
                     case 1:
                         cachedEvents = _b.sent();
-                        if (!(cachedEvents && cachedEvents['length'] != 0)) return [3 /*break*/, 3];
-                        first_item_id = (cachedEvents['last_item_id'] - cachedEvents['length'] + 1 + cachedEvents['max_item_id']) %
-                            cachedEvents['max_item_id'];
+                        if (!(cachedEvents && cachedEvents['length'] !== 0)) return [3 /*break*/, 3];
+                        first_item_id = (cachedEvents['last_item_id']
+                            - cachedEvents['length'] + 1
+                            + cachedEvents['max_item_id'])
+                            % cachedEvents['max_item_id'];
                         params_1 = cachedEvents[first_item_id];
                         logger.debug("getting cached event No." + first_item_id + " with params: ");
                         logger.debug(params_1);

@@ -326,6 +326,42 @@ describe("Analytics test", () => {
             spyon2.mockClear();
         });
 
+        test('get throttled', async () => {
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
+
+            const analytics = new Analytics(options);
+            await analytics._initClients();
+           
+            const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
+                callback({statusCode: 400, code: 'ThrottlingException'}, null);
+            });
+
+            spyon2.mockClear();
+
+            const spyon3 = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
+                return {
+                    last_item_id: 1,
+                    length: 1, 
+                    max_item_id: 10,
+                    '0': 'params'
+                }
+            });
+
+            try {
+                await analytics.record('event');
+            } catch (e) {
+                expect(e).not.toBeNull();
+            }
+      
+            spyon.mockClear();
+            spyon2.mockClear();
+            spyon3.mockClear();
+        });
+
         test('send cached events if put events succeed', async () => {
             const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
@@ -355,6 +391,7 @@ describe("Analytics test", () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
     });
 });

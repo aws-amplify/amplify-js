@@ -19,8 +19,6 @@ import {
     MobileAnalytics
 } from '../Common';
 
-//import MobileAnalytics from './AMAMock';
-
 import Auth from '../Auth';
 import Cache from '../Cache';
 
@@ -250,10 +248,12 @@ export default class AnalyticsClass {
             (credentials && credentials.authenticated? '_' + endpointId : '');
 
         const cachedEvents = await Cache.getItem(key);
-        if (cachedEvents && cachedEvents['length'] != 0) {
+        if (cachedEvents && cachedEvents['length'] !== 0) {
             // get the first cached event
-            const first_item_id = (cachedEvents['last_item_id'] - cachedEvents['length'] + 1 + cachedEvents['max_item_id']) % 
-                cachedEvents['max_item_id'];
+            const first_item_id = (cachedEvents['last_item_id'] 
+                - cachedEvents['length'] + 1 
+                + cachedEvents['max_item_id']) 
+                % cachedEvents['max_item_id'];
             
             const params = cachedEvents[first_item_id];
             logger.debug(`getting cached event No.${first_item_id} with params: `);
