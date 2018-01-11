@@ -27,6 +27,7 @@ import VerifyContact from './VerifyContact';
 import SignUp from './SignUp';
 import ConfirmSignUp from './ConfirmSignUp';
 import ForgotPassword from './ForgotPassword';
+import RequireNewPassword from './RequireNewPassword';
 import Greetings from './Greetings';
 
 const logger = new Logger('Authenticator');
@@ -111,6 +112,7 @@ export default class Authenticator extends React.Component {
             <SignUp/>,
             <ConfirmSignUp/>,
             <ForgotPassword/>,
+            <RequireNewPassword />,
             <Greetings/>
         ];
         const children = (hideDefault? [] : default_children)
