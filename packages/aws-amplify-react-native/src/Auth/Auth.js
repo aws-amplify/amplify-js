@@ -85,11 +85,12 @@ class AuthClass {
             conf
         );
 
-        const { userPoolId, userPoolWebClientId } = this._config;
+        const { userPoolId, userPoolWebClientId, storage } = this._config;
         if (userPoolId) {
             this.userPool = new CognitoUserPool({
                 UserPoolId: userPoolId,
-                ClientId: userPoolWebClientId
+                ClientId: userPoolWebClientId,
+                Storage: storage
             });
         }
 
@@ -173,14 +174,16 @@ class AuthClass {
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
-        const { userPoolId, userPoolWebClientId } = this._config;
+        const { userPoolId, userPoolWebClientId, storage } = this._config;
         const pool = new CognitoUserPool({
                 UserPoolId: userPoolId,
-                ClientId: userPoolWebClientId
+                ClientId: userPoolWebClientId,
+                Storage: storage
             });
         const user = new CognitoUser({
             Username: username,
-            Pool: this.userPool
+            Pool: this.userPool,
+            Storage: storage
         });
         const authDetails = new AuthenticationDetails({
             Username: username,
