@@ -12,7 +12,7 @@
  */
 
 import Signer from '../Common/Signer';
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger, Constants } from '../Common';
 
 import Auth from '../Auth';
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
@@ -73,7 +73,9 @@ export class RestClient {
             data: null
         };
 
-        const libraryHeaders = {};
+        const libraryHeaders = {
+            'X-Amz-User-Agent': Constants.userAgent
+        };
 
         const extraParams = Object.assign({}, init);
 

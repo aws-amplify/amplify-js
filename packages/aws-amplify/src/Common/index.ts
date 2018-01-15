@@ -23,7 +23,7 @@ export { default as JS } from './JS';
 export { default as Signer } from './Signer';
 
 export const Constants = {
-    userAgent: 'aws-amplify/0.1.22 js'
+    userAgent: 'aws-amplify/0.1.x js'
 };
 
 const logger = new Logger('Common');
