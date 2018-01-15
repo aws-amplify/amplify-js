@@ -49,12 +49,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
 var Auth_1 = require("../Auth");
+var Cache_1 = require("../Cache");
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
+var CACHE_EVENT_LIMIT = 200;
+var CACHE_EVENT_ID_RANGE = 1000000;
 /**
 * Provide mobile analytics client functions
 */
-var AnalyticsClass = (function () {
+var AnalyticsClass = /** @class */ (function () {
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
@@ -136,16 +139,7 @@ var AnalyticsClass = (function () {
             ]
         };
         return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
-                if (err) {
-                    logger.debug('record event failed. ' + err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ' + data);
-                    res(data);
-                }
-            });
+            _this.mobileAnalytics.putEvents(params, _this._putEventsCallback(params, res, rej));
         });
     };
     /**
@@ -171,16 +165,7 @@ var AnalyticsClass = (function () {
             ]
         };
         return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
-                if (err) {
-                    logger.debug('record event failed. ' + err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ' + data);
-                    res(data);
-                }
-            });
+            _this.mobileAnalytics.putEvents(params, _this._putEventsCallback(params, res, rej));
         });
     };
     /**
@@ -234,42 +219,112 @@ var AnalyticsClass = (function () {
             ]
         };
         return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
-                if (err) {
-                    logger.debug('record event failed. ' + err);
-                    rej(err);
+            _this.mobileAnalytics.putEvents(params, _this._putEventsCallback(params, res, rej));
+        });
+    };
+    /**
+     * @private
+     * Callback function for MobileAnalytics putEvents
+     */
+    AnalyticsClass.prototype._putEventsCallback = function (params, res, rej) {
+        var _this = this;
+        return function (err, data) {
+            if (err) {
+                logger.debug('record event failed. ' + err);
+                if (err.statusCode === undefined || err.statusCode === 400) {
+                    if (err.code === 'ThrottlingException') {
+                        logger.debug('get throttled, caching events');
+                        _this._cacheEvents(params);
+                    }
                 }
-                else {
-                    logger.debug('record event success. ' + data);
-                    res(data);
+                rej(err);
+            }
+            else {
+                logger.debug('record event success. ' + data);
+                _this._submitCachedEvents();
+                res(data);
+            }
+        };
+    };
+    /**
+     * @private
+     * Submit cached events if put events succeeded
+     */
+    AnalyticsClass.prototype._submitCachedEvents = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var _a, endpointId, appId, credentials, key, cachedEvents, first_item_id, params_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this._config, endpointId = _a.endpointId, appId = _a.appId, credentials = _a.credentials;
+                        key = 'amplify_analytics_events_' + appId +
+                            (credentials && credentials.authenticated ? '_' + endpointId : '');
+                        return [4 /*yield*/, Cache_1.default.getItem(key)];
+                    case 1:
+                        cachedEvents = _b.sent();
+                        if (!(cachedEvents && cachedEvents['length'] !== 0)) return [3 /*break*/, 3];
+                        first_item_id = (cachedEvents['last_item_id']
+                            - cachedEvents['length'] + 1
+                            + cachedEvents['max_item_id'])
+                            % cachedEvents['max_item_id'];
+                        params_1 = cachedEvents[first_item_id];
+                        logger.debug("getting cached event No." + first_item_id + " with params: ");
+                        logger.debug(params_1);
+                        // delete the event and restore cached events into cache
+                        cachedEvents['length'] -= 1;
+                        delete cachedEvents[first_item_id];
+                        return [4 /*yield*/, Cache_1.default.setItem(key, cachedEvents)];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this.mobileAnalytics.putEvents(params_1, _this._putEventsCallback(params_1, res, rej));
+                            })];
+                    case 3: return [2 /*return*/];
                 }
             });
         });
     };
-    /*
-        _putEventsCallback() {
-            return (err, data, res, rej) => {
-                if (err) {
-                    logger.debug('record event failed. ' + err);
-                    if (err.statusCode === undefined || err.statusCode === 400){
-                        if (err.code === 'ThrottlingException') {
-                            // todo
-                            // cache events
-                            logger.debug('get throttled, caching events');
+    /**
+     * @private
+     * Cache events into the storage provided
+     */
+    AnalyticsClass.prototype._cacheEvents = function (params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, endpointId, appId, credentials, key, cachedEvents;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this._config, endpointId = _a.endpointId, appId = _a.appId, credentials = _a.credentials;
+                        key = 'amplify_analytics_events_' + appId +
+                            (credentials && credentials.authenticated ? '_' + endpointId : '');
+                        return [4 /*yield*/, Cache_1.default.getItem(key)];
+                    case 1:
+                        cachedEvents = _b.sent();
+                        if (cachedEvents) {
+                            if (cachedEvents['length'] > CACHE_EVENT_LIMIT) {
+                                logger.debug('exceed limit of cached events. dumping it');
+                                return [2 /*return*/];
+                            }
+                            cachedEvents['length'] += 1;
+                            cachedEvents['last_item_id'] = (cachedEvents['last_item_id'] + 1) % cachedEvents['max_item_id'];
+                            cachedEvents[cachedEvents['last_item_id']] = params;
                         }
-                    }
-                    rej(err);
+                        else {
+                            cachedEvents = {};
+                            cachedEvents['length'] = 1;
+                            cachedEvents['last_item_id'] = 0;
+                            cachedEvents['max_item_id'] = CACHE_EVENT_ID_RANGE;
+                            cachedEvents[cachedEvents['last_item_id']] = params;
+                        }
+                        return [4 /*yield*/, Cache_1.default.setItem(key, cachedEvents)];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/];
                 }
-                else {
-                    logger.debug('record event success. ' + data);
-                    // try to clean cached events if exist
-    
-    
-                    res(data);
-                }
-            };
-        }
-    */
+            });
+        });
+    };
     /**
     * Record one analytic event
     * @param {String} name - Event name
