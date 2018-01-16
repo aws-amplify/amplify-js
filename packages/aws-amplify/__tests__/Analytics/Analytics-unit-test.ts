@@ -59,6 +59,16 @@ describe("Analytics test", () => {
             spyon.mockClear();
         });
 
+        test("with no config", () => {
+            const spyon = jest.spyOn(Analytics.prototype, "configure");
+
+            const analytics = new Analytics(null);
+            
+            expect(spyon).not.toBeCalled();
+
+            spyon.mockClear();
+        });
+
         test('with client_info platform', () => {
             const spyon = jest.spyOn(Analytics.prototype, "configure");
             const spyon2 = jest.spyOn(ClientDevice, 'clientInfo').mockImplementationOnce(() => {
