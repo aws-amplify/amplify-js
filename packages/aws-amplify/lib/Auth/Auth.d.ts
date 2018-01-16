@@ -21,7 +21,7 @@ export default class AuthClass {
      * @param {Object} attributeList - Other attributes
      * @return - A promise resolves callback data if success
      */
-    signUp(username: string, password: string, email: string, phone_number: string): Promise<any>;
+    signUp(attrs: string | object, ...restOfAttrs: string[]): Promise<any>;
     /**
      * Send the verfication code to confirm sign up
      * @param {String} username - The username to be confirmed
