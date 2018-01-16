@@ -92,12 +92,10 @@ export default class AuthClass {
 
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String} username - The username to be signed up
-     * @param {String} password - The password of the user
-     * @param {Object} attributeList - Other attributes
+     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String[]} restOfAttrs - for the backward compatability 
      * @return - A promise resolves callback data if success
      */
-    //public signUp(username: string, password: string, attrs?: string | object, phone_number?: string): Promise<any> {
     public signUp(attrs: string | object, ...restOfAttrs: string[]): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
 
