@@ -25,12 +25,13 @@ import ConfirmSignIn from './ConfirmSignIn';
 import SignUp from './SignUp';
 import ConfirmSignUp from './ConfirmSignUp';
 import ForgotPassword from './ForgotPassword';
+import RequireNewPassword from './RequireNewPassword';
 import VerifyContact from './VerifyContact';
 import Greetings from './Greetings';
 
 const logger = new Logger('auth components');
 
-export { Authenticator, AuthPiece, SignIn, ConfirmSignIn, SignUp, ConfirmSignUp, ForgotPassword, VerifyContact, Greetings };
+export { Authenticator, AuthPiece, SignIn, ConfirmSignIn, SignUp, ConfirmSignUp, ForgotPassword, RequireNewPassword, VerifyContact, Greetings };
 
 export function withAuthenticator(Comp, includeGreetings = false) {
     class Wrapper extends React.Component {

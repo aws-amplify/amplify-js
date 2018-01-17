@@ -1152,7 +1152,7 @@ exports.JS = JS_1.default;
 var Signer_1 = __webpack_require__(104);
 exports.Signer = Signer_1.default;
 exports.Constants = {
-    userAgent: 'aws-amplify/0.1.22 js'
+    userAgent: 'aws-amplify/0.1.x js'
 };
 var logger = new Logger_1.ConsoleLogger('Common');
 if (Facet_1.AWS['util']) {
