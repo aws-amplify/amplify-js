@@ -60,7 +60,7 @@ export default class Authenticator extends React.Component {
         super(props);
         this.state = {
             authState: props.authState || 'signIn',
-            authDate: props.authData
+            authData: props.authData
         };
 
         this.handleStateChange = this.handleStateChange.bind(this);
