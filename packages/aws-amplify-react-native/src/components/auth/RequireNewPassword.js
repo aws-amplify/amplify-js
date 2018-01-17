@@ -73,7 +73,7 @@ export default class RequireNewPassword extends AuthPiece {
                     <Button
                         title={I18n.get('Change Password')}
                         onPress={this.change}
-                        disabled={!this.state.code}
+                        disabled={!this.state.password}
                     />
                 </View>
                 <Footer theme={theme} onStateChange={this.changeState}/>
