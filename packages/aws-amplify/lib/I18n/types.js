@@ -12,7 +12,7 @@
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var I18nOptions = (function () {
+var I18nOptions = /** @class */ (function () {
     function I18nOptions() {
         this.language = null;
     }
