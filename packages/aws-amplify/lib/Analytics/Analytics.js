@@ -307,17 +307,17 @@ var AnalyticsClass = /** @class */ (function () {
      * check if current crednetials exists
      */
     AnalyticsClass.prototype._ensureCredentials = function () {
+        var conf = this._config;
         // commented
         // will cause bug if another user logged in without refreshing page
         // if (conf.credentials) { return Promise.resolve(true); }
-        var _this = this;
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
             var cred = Auth_1.default.essentialCredentials(credentials);
-            _this._config.credentials = cred;
-            _this._config.endpointId = _this._config.credentials.identityId;
-            logger.debug('set endpointId for analytics', _this._config.endpointId);
-            logger.debug('set credentials for analytics', _this._config.credentials);
+            conf.credentials = cred;
+            conf.endpointId = conf.credentials.identityId;
+            logger.debug('set endpointId for analytics', conf.endpointId);
+            logger.debug('set credentials for analytics', conf.credentials);
             return true;
         })
             .catch(function (err) {

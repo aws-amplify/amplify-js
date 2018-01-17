@@ -298,7 +298,7 @@ export default class AnalyticsClass {
      * check if current crednetials exists
      */
     _ensureCredentials() {
-   
+        const conf = this._config;
         // commented
         // will cause bug if another user logged in without refreshing page
         // if (conf.credentials) { return Promise.resolve(true); }
@@ -307,10 +307,11 @@ export default class AnalyticsClass {
             .then(credentials => {
                 const cred = Auth.essentialCredentials(credentials);
                 
-                this._config.credentials = cred;
-                this._config.endpointId = this._config.credentials.identityId;
-                logger.debug('set endpointId for analytics', this._config.endpointId);
-                logger.debug('set credentials for analytics', this._config.credentials);
+                conf.credentials = cred;
+                conf.endpointId = conf.credentials.identityId;
+
+                logger.debug('set endpointId for analytics', conf.endpointId);
+                logger.debug('set credentials for analytics', conf.credentials);
 
                 return true;
             })
