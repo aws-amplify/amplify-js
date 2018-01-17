@@ -172,7 +172,7 @@ describe('S3Text test', () => {
             await s3Text.handlePick(data);
 
             expect.assertions(2);
-            expect(spyon).toBeCalledWith('textKey', 'file', { contentType: 'type' });
+            expect(spyon).toBeCalledWith('textKey', 'file', {"contentType": "type", "level": "level", "track": undefined});
             expect(spyon2).toBeCalled();
 
             spyon.mockClear();
