@@ -136,7 +136,7 @@ AWS.util.update(AWS, {
   Model: {
     Api: __webpack_require__(79),
     Operation: __webpack_require__(80),
-    Shape: __webpack_require__(14),
+    Shape: __webpack_require__(15),
     Paginator: __webpack_require__(81),
     ResourceWaiter: __webpack_require__(82)
   },
@@ -1225,7 +1225,7 @@ module.exports = create;
 
 
 var bind = __webpack_require__(108);
-var isBuffer = __webpack_require__(310);
+var isBuffer = __webpack_require__(311);
 
 /*global toString:true*/
 
@@ -2253,6 +2253,37 @@ __export(__webpack_require__(293));
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Auth_1 = __webpack_require__(114);
+var Common_1 = __webpack_require__(2);
+var logger = new Common_1.ConsoleLogger('Auth');
+var _instance = null;
+if (!_instance) {
+    logger.debug('Create Auth Instance');
+    _instance = new Auth_1.default(null);
+}
+var Auth = _instance;
+exports.default = Auth;
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var Collection = __webpack_require__(54);
 
 var util = __webpack_require__(1);
@@ -2609,7 +2640,7 @@ module.exports = Shape;
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(22),
@@ -2643,7 +2674,7 @@ module.exports = baseGetTag;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isFunction = __webpack_require__(21),
@@ -2682,12 +2713,12 @@ module.exports = isArrayLike;
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var arrayLikeKeys = __webpack_require__(136),
     baseKeys = __webpack_require__(64),
-    isArrayLike = __webpack_require__(16);
+    isArrayLike = __webpack_require__(17);
 
 /**
  * Creates an array of the own enumerable property names of `object`.
@@ -2725,7 +2756,7 @@ module.exports = keys;
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 /**
@@ -2757,37 +2788,6 @@ function isObjectLike(value) {
 }
 
 module.exports = isObjectLike;
-
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Auth_1 = __webpack_require__(114);
-var Common_1 = __webpack_require__(2);
-var logger = new Common_1.ConsoleLogger('Auth');
-var _instance = null;
-if (!_instance) {
-    logger.debug('Create Auth Instance');
-    _instance = new Auth_1.default(null);
-}
-var Auth = _instance;
-exports.default = Auth;
 
 
 /***/ }),
@@ -2943,7 +2943,7 @@ module.exports = {
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(15),
+var baseGetTag = __webpack_require__(16),
     isObject = __webpack_require__(5);
 
 /** `Object#toString` result references. */
@@ -3531,7 +3531,7 @@ module.exports = isPrototype;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsArguments = __webpack_require__(138),
-    isObjectLike = __webpack_require__(18);
+    isObjectLike = __webpack_require__(19);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -3764,8 +3764,8 @@ module.exports = isKey;
 /* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(15),
-    isObjectLike = __webpack_require__(18);
+var baseGetTag = __webpack_require__(16),
+    isObjectLike = __webpack_require__(19);
 
 /** `Object#toString` result references. */
 var symbolTag = '[object Symbol]';
@@ -7347,7 +7347,7 @@ exports.CacheList = CacheList_1.default;
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var normalizeHeaderName = __webpack_require__(312);
+var normalizeHeaderName = __webpack_require__(313);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -7478,7 +7478,7 @@ exports.MobileAnalytics = MobileAnalytics;
 var AWS = __webpack_require__(0);
 var util = __webpack_require__(1);
 var QueryParamSerializer = __webpack_require__(118);
-var Shape = __webpack_require__(14);
+var Shape = __webpack_require__(15);
 
 function buildRequest(req) {
   var operation = req.service.api.operations[req.operation];
@@ -7973,7 +7973,7 @@ module.exports = copyObject;
 /***/ (function(module, exports, __webpack_require__) {
 
 var eq = __webpack_require__(23),
-    isArrayLike = __webpack_require__(16),
+    isArrayLike = __webpack_require__(17),
     isIndex = __webpack_require__(36),
     isObject = __webpack_require__(5);
 
@@ -8120,7 +8120,7 @@ var DataView = __webpack_require__(150),
     Promise = __webpack_require__(151),
     Set = __webpack_require__(152),
     WeakMap = __webpack_require__(153),
-    baseGetTag = __webpack_require__(15),
+    baseGetTag = __webpack_require__(16),
     toSource = __webpack_require__(61);
 
 /** `Object#toString` result references. */
@@ -8431,7 +8431,7 @@ module.exports = Stack;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsEqualDeep = __webpack_require__(187),
-    isObjectLike = __webpack_require__(18);
+    isObjectLike = __webpack_require__(19);
 
 /**
  * The base implementation of `_.isEqual` which supports partial comparisons
@@ -9020,7 +9020,7 @@ module.exports = castPath;
 
 var Collection = __webpack_require__(54);
 var Operation = __webpack_require__(80);
-var Shape = __webpack_require__(14);
+var Shape = __webpack_require__(15);
 var Paginator = __webpack_require__(81);
 var ResourceWaiter = __webpack_require__(82);
 
@@ -9087,7 +9087,7 @@ module.exports = Api;
 /* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Shape = __webpack_require__(14);
+var Shape = __webpack_require__(15);
 
 var util = __webpack_require__(1);
 var property = util.property;
@@ -15146,12 +15146,12 @@ module.exports = function bind(fn, thisArg) {
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var settle = __webpack_require__(313);
-var buildURL = __webpack_require__(315);
-var parseHeaders = __webpack_require__(316);
-var isURLSameOrigin = __webpack_require__(317);
+var settle = __webpack_require__(314);
+var buildURL = __webpack_require__(316);
+var parseHeaders = __webpack_require__(317);
+var isURLSameOrigin = __webpack_require__(318);
 var createError = __webpack_require__(110);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(318);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(319);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -15248,7 +15248,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(319);
+      var cookies = __webpack_require__(320);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -15333,7 +15333,7 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(314);
+var enhanceError = __webpack_require__(315);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -15408,7 +15408,7 @@ module.exports = Cancel;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Auth_1 = __webpack_require__(19);
+var Auth_1 = __webpack_require__(14);
 exports.Auth = Auth_1.default;
 var Analytics_1 = __webpack_require__(302);
 exports.Analytics = Analytics_1.default;
@@ -15416,7 +15416,7 @@ var Storage_1 = __webpack_require__(304);
 exports.Storage = Storage_1.default;
 var API_1 = __webpack_require__(306);
 exports.API = API_1.default;
-var I18n_1 = __webpack_require__(327);
+var I18n_1 = __webpack_require__(328);
 exports.I18n = I18n_1.default;
 var Cache_1 = __webpack_require__(106);
 exports.Cache = Cache_1.default;
@@ -16754,9 +16754,9 @@ module.exports = XmlBuilder;
 var assignValue = __webpack_require__(57),
     copyObject = __webpack_require__(62),
     createAssigner = __webpack_require__(128),
-    isArrayLike = __webpack_require__(16),
+    isArrayLike = __webpack_require__(17),
     isPrototype = __webpack_require__(37),
-    keys = __webpack_require__(17);
+    keys = __webpack_require__(18);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -17344,8 +17344,8 @@ module.exports = baseTimes;
 /* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(15),
-    isObjectLike = __webpack_require__(18);
+var baseGetTag = __webpack_require__(16),
+    isObjectLike = __webpack_require__(19);
 
 /** `Object#toString` result references. */
 var argsTag = '[object Arguments]';
@@ -17392,9 +17392,9 @@ module.exports = stubFalse;
 /* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(15),
+var baseGetTag = __webpack_require__(16),
     isLength = __webpack_require__(35),
-    isObjectLike = __webpack_require__(18);
+    isObjectLike = __webpack_require__(19);
 
 /** `Object#toString` result references. */
 var argsTag = '[object Arguments]',
@@ -17792,7 +17792,7 @@ module.exports = overArg;
 /***/ (function(module, exports, __webpack_require__) {
 
 var copyObject = __webpack_require__(62),
-    keys = __webpack_require__(17);
+    keys = __webpack_require__(18);
 
 /**
  * The base implementation of `_.assign` without support for multiple sources
@@ -17854,7 +17854,7 @@ var baseKeys = __webpack_require__(64),
     getTag = __webpack_require__(66),
     isArguments = __webpack_require__(38),
     isArray = __webpack_require__(6),
-    isArrayLike = __webpack_require__(16),
+    isArrayLike = __webpack_require__(17),
     isBuffer = __webpack_require__(39),
     isPrototype = __webpack_require__(37),
     isTypedArray = __webpack_require__(41);
@@ -18124,7 +18124,7 @@ module.exports = baseEach;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseFor = __webpack_require__(159),
-    keys = __webpack_require__(17);
+    keys = __webpack_require__(18);
 
 /**
  * The base implementation of `_.forOwn` without support for iteratee shorthands.
@@ -18198,7 +18198,7 @@ module.exports = createBaseFor;
 /* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isArrayLike = __webpack_require__(16);
+var isArrayLike = __webpack_require__(17);
 
 /**
  * Creates a `baseEach` or `baseEachRight` function.
@@ -19443,7 +19443,7 @@ module.exports = equalObjects;
 
 var baseGetAllKeys = __webpack_require__(199),
     getSymbols = __webpack_require__(201),
-    keys = __webpack_require__(17);
+    keys = __webpack_require__(18);
 
 /**
  * Creates an array of own enumerable property names and symbols of `object`.
@@ -19612,7 +19612,7 @@ module.exports = stubArray;
 /***/ (function(module, exports, __webpack_require__) {
 
 var isStrictComparable = __webpack_require__(71),
-    keys = __webpack_require__(17);
+    keys = __webpack_require__(18);
 
 /**
  * Gets the property names, values, and compare flags of `object`.
@@ -27705,7 +27705,7 @@ AWS.SAMLCredentials = AWS.util.inherit(AWS.Credentials, {
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
-var Shape = __webpack_require__(14);
+var Shape = __webpack_require__(15);
 
 function DomXmlParser() { }
 
@@ -32531,7 +32531,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
-var Auth_1 = __webpack_require__(19);
+var Auth_1 = __webpack_require__(14);
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 /**
@@ -33021,7 +33021,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
-var Auth_1 = __webpack_require__(19);
+var Auth_1 = __webpack_require__(14);
 var logger = new Common_1.ConsoleLogger('StorageClass');
 var dispatchStorageEvent = function (track, attrs, metrics) {
     if (track) {
@@ -33329,6 +33329,37 @@ exports.default = StorageClass;
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+Object.defineProperty(exports, "__esModule", { value: true });
+var API_1 = __webpack_require__(307);
+var Common_1 = __webpack_require__(2);
+var logger = new Common_1.ConsoleLogger('API');
+var _instance = null;
+if (!_instance) {
+    logger.debug('Create API Instance');
+    _instance = new API_1.default(null);
+}
+var API = _instance;
+exports.default = API;
+
+
+/***/ }),
+/* 307 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -33365,48 +33396,54 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var RestClient_1 = __webpack_require__(307);
+var RestClient_1 = __webpack_require__(308);
+var Auth_1 = __webpack_require__(14);
 var Logger_1 = __webpack_require__(13);
 var logger = new Logger_1.ConsoleLogger('API');
-var _config = null;
-var _api = null;
 /**
  * Export Cloud Logic APIs
  */
 var API = /** @class */ (function () {
-    function API() {
+    /**
+     * Initialize Storage with AWS configurations
+     * @param {Object} options - Configuration object for storage
+     */
+    function API(options) {
+        this._api = null;
+        this._options = options;
+        logger.debug('API Options', this._options);
     }
     /**
      * Configure API part with aws configurations
      * @param {Object} config - Configuration of the API
      * @return {Object} - The current configuration
      */
-    API.configure = function (config) {
+    API.prototype.configure = function (options) {
         logger.debug('configure API');
-        var conf = config ? config.API || config : {};
-        if (conf['aws_project_region']) {
-            if (conf['aws_cloud_logic_custom']) {
-                var custom = conf['aws_cloud_logic_custom'];
-                conf.endpoints = (typeof custom === 'string') ? JSON.parse(custom)
+        var opt = options ? options.API || options : {};
+        if (opt['aws_project_region']) {
+            if (opt['aws_cloud_logic_custom']) {
+                var custom = opt['aws_cloud_logic_custom'];
+                opt.endpoints = (typeof custom === 'string') ? JSON.parse(custom)
                     : custom;
             }
-            conf = Object.assign({}, conf, {
-                region: conf['aws_project_region'],
+            opt = Object.assign({}, opt, {
+                region: opt['aws_project_region'],
                 header: {},
             });
         }
-        _config = Object.assign({}, _config, conf);
-        API.createInstance();
-        return _config;
+        this._options = Object.assign({}, this._options, opt);
+        this.createInstance();
+        return this._options;
     };
     /**
      * Create an instance of API for the library
      * @return - A promise of true if Success
      */
-    API.createInstance = function () {
+    API.prototype.createInstance = function () {
         logger.debug('create API instance');
-        if (_config) {
-            _api = new RestClient_1.RestClient(_config);
+        if (this._options) {
+            this._api = new RestClient_1.RestClient(this._options);
             return true;
         }
         else {
@@ -33420,13 +33457,13 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.get = function (apiName, path, init) {
+    API.prototype.get = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
-            var error_1, endpoint;
+            var error_1, credentialsOK, endpoint;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!!_api) return [3 /*break*/, 4];
+                        if (!!this._api) return [3 /*break*/, 4];
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
@@ -33436,14 +33473,18 @@ var API = /** @class */ (function () {
                         return [3 /*break*/, 4];
                     case 3:
                         error_1 = _a.sent();
-                        Promise.reject(error_1);
-                        return [3 /*break*/, 4];
-                    case 4:
-                        endpoint = _api.endpoint(apiName);
+                        return [2 /*return*/, Promise.reject(error_1)];
+                    case 4: return [4 /*yield*/, this._ensureCredentials()];
+                    case 5:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.reject('No credentials')];
+                        }
+                        endpoint = this._api.endpoint(apiName);
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, _api.get(endpoint + path, init)];
+                        return [2 /*return*/, this._api.get(endpoint + path, init)];
                 }
             });
         });
@@ -33455,13 +33496,13 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.post = function (apiName, path, init) {
+    API.prototype.post = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
-            var error_2, endpoint;
+            var error_2, credentialsOK, endpoint;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!!_api) return [3 /*break*/, 4];
+                        if (!!this._api) return [3 /*break*/, 4];
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
@@ -33471,14 +33512,18 @@ var API = /** @class */ (function () {
                         return [3 /*break*/, 4];
                     case 3:
                         error_2 = _a.sent();
-                        Promise.reject(error_2);
-                        return [3 /*break*/, 4];
-                    case 4:
-                        endpoint = _api.endpoint(apiName);
+                        return [2 /*return*/, Promise.reject(error_2)];
+                    case 4: return [4 /*yield*/, this._ensureCredentials()];
+                    case 5:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.reject('No credentials')];
+                        }
+                        endpoint = this._api.endpoint(apiName);
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, _api.post(endpoint + path, init)];
+                        return [2 /*return*/, this._api.post(endpoint + path, init)];
                 }
             });
         });
@@ -33490,13 +33535,13 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.put = function (apiName, path, init) {
+    API.prototype.put = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
-            var error_3, endpoint;
+            var error_3, credentialsOK, endpoint;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!!_api) return [3 /*break*/, 4];
+                        if (!!this._api) return [3 /*break*/, 4];
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
@@ -33506,14 +33551,18 @@ var API = /** @class */ (function () {
                         return [3 /*break*/, 4];
                     case 3:
                         error_3 = _a.sent();
-                        Promise.reject(error_3);
-                        return [3 /*break*/, 4];
-                    case 4:
-                        endpoint = _api.endpoint(apiName);
+                        return [2 /*return*/, Promise.reject(error_3)];
+                    case 4: return [4 /*yield*/, this._ensureCredentials()];
+                    case 5:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.reject('No credentials')];
+                        }
+                        endpoint = this._api.endpoint(apiName);
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, _api.put(endpoint + path, init)];
+                        return [2 /*return*/, this._api.put(endpoint + path, init)];
                 }
             });
         });
@@ -33525,13 +33574,13 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.del = function (apiName, path, init) {
+    API.prototype.del = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
-            var error_4, endpoint;
+            var error_4, credentialsOK, endpoint;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!!_api) return [3 /*break*/, 4];
+                        if (!!this._api) return [3 /*break*/, 4];
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
@@ -33541,14 +33590,18 @@ var API = /** @class */ (function () {
                         return [3 /*break*/, 4];
                     case 3:
                         error_4 = _a.sent();
-                        Promise.reject(error_4);
-                        return [3 /*break*/, 4];
-                    case 4:
-                        endpoint = _api.endpoint(apiName);
+                        return [2 /*return*/, Promise.reject(error_4)];
+                    case 4: return [4 /*yield*/, this._ensureCredentials()];
+                    case 5:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.reject('No credentials')];
+                        }
+                        endpoint = this._api.endpoint(apiName);
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, (_api.del(endpoint + path), init)];
+                        return [2 /*return*/, this._api.del(endpoint + path, init)];
                 }
             });
         });
@@ -33560,13 +33613,13 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.head = function (apiName, path, init) {
+    API.prototype.head = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
-            var error_5, endpoint;
+            var error_5, credentialsOK, endpoint;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!!_api) return [3 /*break*/, 4];
+                        if (!!this._api) return [3 /*break*/, 4];
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
@@ -33576,14 +33629,18 @@ var API = /** @class */ (function () {
                         return [3 /*break*/, 4];
                     case 3:
                         error_5 = _a.sent();
-                        Promise.reject(error_5);
-                        return [3 /*break*/, 4];
-                    case 4:
-                        endpoint = _api.endpoint(apiName);
+                        return [2 /*return*/, Promise.reject(error_5)];
+                    case 4: return [4 /*yield*/, this._ensureCredentials()];
+                    case 5:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.reject('No credentials')];
+                        }
+                        endpoint = this._api.endpoint(apiName);
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, _api.head(endpoint + path, init)];
+                        return [2 /*return*/, this._api.head(endpoint + path, init)];
                 }
             });
         });
@@ -33593,13 +33650,13 @@ var API = /** @class */ (function () {
     * @param {String} apiName - The name of the api
     * @return {String} - The endpoint of the api
     */
-    API.endpoint = function (apiName) {
+    API.prototype.endpoint = function (apiName) {
         return __awaiter(this, void 0, void 0, function () {
             var error_6;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!!_api) return [3 /*break*/, 4];
+                        if (!!this._api) return [3 /*break*/, 4];
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
@@ -33609,11 +33666,25 @@ var API = /** @class */ (function () {
                         return [3 /*break*/, 4];
                     case 3:
                         error_6 = _a.sent();
-                        Promise.reject(error_6);
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/, _api.endpoint(apiName)];
+                        return [2 /*return*/, Promise.reject(error_6)];
+                    case 4: return [2 /*return*/, this._api.endpoint(apiName)];
                 }
             });
+        });
+    };
+    /**
+     * @private
+     */
+    API.prototype._ensureCredentials = function () {
+        return Auth_1.default.currentCredentials()
+            .then(function (credentials) {
+            var cred = Auth_1.default.essentialCredentials(credentials);
+            logger.debug('set credentials for api', cred);
+            return true;
+        })
+            .catch(function (err) {
+            logger.warn('ensure credentials error', err);
+            return false;
         });
     };
     return API;
@@ -33622,7 +33693,7 @@ exports.default = API;
 
 
 /***/ }),
-/* 307 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33685,8 +33756,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Signer_1 = __webpack_require__(105);
 var Common_1 = __webpack_require__(2);
-var Auth_1 = __webpack_require__(19);
-var axios_1 = __webpack_require__(308);
+var Auth_1 = __webpack_require__(14);
+var axios_1 = __webpack_require__(309);
 var logger = new Common_1.ConsoleLogger('RestClient');
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -33857,13 +33928,13 @@ exports.RestClient = RestClient;
 
 
 /***/ }),
-/* 308 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(309);
+module.exports = __webpack_require__(310);
 
 /***/ }),
-/* 309 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33871,7 +33942,7 @@ module.exports = __webpack_require__(309);
 
 var utils = __webpack_require__(4);
 var bind = __webpack_require__(108);
-var Axios = __webpack_require__(311);
+var Axios = __webpack_require__(312);
 var defaults = __webpack_require__(51);
 
 /**
@@ -33906,14 +33977,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(112);
-axios.CancelToken = __webpack_require__(325);
+axios.CancelToken = __webpack_require__(326);
 axios.isCancel = __webpack_require__(111);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(326);
+axios.spread = __webpack_require__(327);
 
 module.exports = axios;
 
@@ -33922,7 +33993,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 310 */
+/* 311 */
 /***/ (function(module, exports) {
 
 /*!
@@ -33949,7 +34020,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 311 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33957,8 +34028,8 @@ function isSlowBuffer (obj) {
 
 var defaults = __webpack_require__(51);
 var utils = __webpack_require__(4);
-var InterceptorManager = __webpack_require__(320);
-var dispatchRequest = __webpack_require__(321);
+var InterceptorManager = __webpack_require__(321);
+var dispatchRequest = __webpack_require__(322);
 
 /**
  * Create a new instance of Axios
@@ -34035,7 +34106,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 312 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34054,7 +34125,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 313 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34087,7 +34158,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 314 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34115,7 +34186,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 315 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34190,7 +34261,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 316 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34250,7 +34321,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 317 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34325,7 +34396,7 @@ module.exports = (
 
 
 /***/ }),
-/* 318 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34368,7 +34439,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 319 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34428,7 +34499,7 @@ module.exports = (
 
 
 /***/ }),
-/* 320 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34487,18 +34558,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 321 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var transformData = __webpack_require__(322);
+var transformData = __webpack_require__(323);
 var isCancel = __webpack_require__(111);
 var defaults = __webpack_require__(51);
-var isAbsoluteURL = __webpack_require__(323);
-var combineURLs = __webpack_require__(324);
+var isAbsoluteURL = __webpack_require__(324);
+var combineURLs = __webpack_require__(325);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -34580,7 +34651,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 322 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34607,7 +34678,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 323 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34628,7 +34699,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 324 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34649,7 +34720,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 325 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34713,7 +34784,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 326 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34747,7 +34818,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 327 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34765,7 +34836,7 @@ module.exports = function spread(callback) {
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var I18n_1 = __webpack_require__(328);
+var I18n_1 = __webpack_require__(329);
 var Logger_1 = __webpack_require__(13);
 var logger = new Logger_1.ConsoleLogger('I18n');
 var _config = null;
@@ -34858,7 +34929,7 @@ exports.default = I18n;
 
 
 /***/ }),
-/* 328 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
