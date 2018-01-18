@@ -23,6 +23,7 @@ import ConfirmSignIn from './ConfirmSignIn';
 import SignUp from './SignUp';
 import ConfirmSignUp from './ConfirmSignUp';
 import ForgotPassword from './ForgotPassword';
+import RequireNewPassword from './RequireNewPassword';
 import VerifyContact from './VerifyContact';
 import Greetings from './Greetings';
 
@@ -36,6 +37,7 @@ export {
     SignUp,
     ConfirmSignUp,
     ForgotPassword,
+    RequireNewPassword,
     VerifyContact,
     Greetings
 };
