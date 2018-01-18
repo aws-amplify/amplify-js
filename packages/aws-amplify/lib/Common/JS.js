@@ -46,7 +46,7 @@ var MIME_MAP = [
     { type: 'application/vnd.ms-excel', ext: 'xlsx' },
     { type: 'message/rfc822', ext: 'eml' }
 ];
-var JS = (function () {
+var JS = /** @class */ (function () {
     function JS() {
     }
     JS.isEmpty = function (obj) {

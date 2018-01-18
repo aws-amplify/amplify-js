@@ -58,7 +58,7 @@ var dispatchAuthEvent = function (event, data) {
 /**
 * Provide authentication steps
 */
-var AuthClass = (function () {
+var AuthClass = /** @class */ (function () {
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -103,15 +103,44 @@ var AuthClass = (function () {
     };
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String} username - The username to be signed up
-     * @param {String} password - The password of the user
-     * @param {Object} attributeList - Other attributes
+     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
-    AuthClass.prototype.signUp = function (username, password, email, phone_number) {
+    AuthClass.prototype.signUp = function (attrs) {
         var _this = this;
+        var restOfAttrs = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            restOfAttrs[_i - 1] = arguments[_i];
+        }
         if (!this.userPool) {
             return Promise.reject('No userPool');
+        }
+        var username = null;
+        var password = null;
+        var attributes = [];
+        if (attrs && typeof attrs === 'string') {
+            username = attrs;
+            password = restOfAttrs ? restOfAttrs[0] : null;
+            var email = restOfAttrs ? restOfAttrs[1] : null;
+            var phone_number = restOfAttrs ? restOfAttrs[2] : null;
+            if (email)
+                attributes.push({ Name: 'email', Value: email });
+            if (phone_number)
+                attributes.push({ Name: 'phone_number', Value: phone_number });
+        }
+        else if (attrs && typeof attrs === 'object') {
+            username = attrs['username'];
+            password = attrs['password'];
+            Object.keys(attrs).map(function (key) {
+                if (key === 'username' || key === 'password')
+                    return;
+                var ele = { Name: key, Value: attrs[key] };
+                attributes.push(ele);
+            });
+        }
+        else {
+            return Promise.reject('The first parameter should either be non-null string or object');
         }
         if (!username) {
             return Promise.reject('Username cannot be empty');
@@ -119,13 +148,8 @@ var AuthClass = (function () {
         if (!password) {
             return Promise.reject('Password cannot be empty');
         }
-        var attributes = [];
-        if (email) {
-            attributes.push({ Name: 'email', Value: email });
-        }
-        if (phone_number) {
-            attributes.push({ Name: 'phone_number', Value: phone_number });
-        }
+        logger.debug('signUp attrs:');
+        logger.debug(attributes);
         return new Promise(function (resolve, reject) {
             _this.userPool.signUp(username, password, attributes, null, function (err, data) {
                 if (err) {

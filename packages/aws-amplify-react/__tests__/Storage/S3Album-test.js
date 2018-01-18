@@ -194,7 +194,7 @@ describe('S3Album test', () => {
 
             expect.assertions(2);
             expect(spyon).toBeCalledWith({"file": "file", "name": "name", "size": "size", "type": "type"});
-            expect(spyon2).toBeCalledWith('path', 'file', {contentType: 'type'});
+            expect(spyon2).toBeCalledWith('path', 'file', {"contentType": "type", "level": "public", "track": undefined});
         
             spyon.mockClear();
             spyon2.mockClear();
@@ -244,7 +244,7 @@ describe('S3Album test', () => {
 
             expect.assertions(3);
             expect(spyon).toBeCalledWith({"file": "file", "name": "name", "size": "size", "type": "type"});
-            expect(spyon2).toBeCalledWith('path', 'file', {contentType: 'type'});
+            expect(spyon2).toBeCalledWith('path', 'file', {"contentType": "type", "level": "public", "track": undefined});
             expect(spyon3).toBeCalledWith([{key: 'path2'}, 'data']);
         
             spyon.mockClear();
@@ -292,7 +292,7 @@ describe('S3Album test', () => {
 
             expect.assertions(2);
             expect(spyon).toBeCalledWith({"file": "file", "name": "name", "size": "size", "type": "type"});
-            expect(spyon2).toBeCalledWith('path', 'file', {contentType: 'type'});
+            expect(spyon2).toBeCalledWith('path', 'file', {"contentType": "type", "level": "public", "track": undefined});
         
             spyon.mockClear();
             spyon2.mockClear();

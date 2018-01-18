@@ -1,8 +1,9 @@
 {
   "name": "aws-amplify",
-  "version": "0.1.34",
+  "version": "0.1.35",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "scripts": {
     "test": "jest --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
