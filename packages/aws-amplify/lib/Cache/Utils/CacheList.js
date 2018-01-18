@@ -12,7 +12,7 @@
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var DoubleLinkedNode = /** @class */ (function () {
+var DoubleLinkedNode = (function () {
     function DoubleLinkedNode(keyVal) {
         this.key = keyVal ? keyVal : '';
         this.prevNode = null;
@@ -31,7 +31,7 @@ var DoubleLinkedNode = /** @class */ (function () {
  * @member hashtable - the hashtable which maps cache key to list node
  * @member length - length of the list
  */
-var CacheList = /** @class */ (function () {
+var CacheList = (function () {
     /**
      * initialization
      */
