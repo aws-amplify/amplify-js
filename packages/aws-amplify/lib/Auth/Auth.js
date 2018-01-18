@@ -103,12 +103,10 @@ var AuthClass = /** @class */ (function () {
     };
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String} username - The username to be signed up
-     * @param {String} password - The password of the user
-     * @param {Object} attributeList - Other attributes
+     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
-    //public signUp(username: string, password: string, attrs?: string | object, phone_number?: string): Promise<any> {
     AuthClass.prototype.signUp = function (attrs) {
         var _this = this;
         var restOfAttrs = [];
@@ -121,7 +119,7 @@ var AuthClass = /** @class */ (function () {
         var username = null;
         var password = null;
         var attributes = [];
-        if (typeof attrs === 'string') {
+        if (attrs && typeof attrs === 'string') {
             username = attrs;
             password = restOfAttrs ? restOfAttrs[0] : null;
             var email = restOfAttrs ? restOfAttrs[1] : null;
@@ -131,7 +129,7 @@ var AuthClass = /** @class */ (function () {
             if (phone_number)
                 attributes.push({ Name: 'phone_number', Value: phone_number });
         }
-        else {
+        else if (attrs && typeof attrs === 'object') {
             username = attrs['username'];
             password = attrs['password'];
             Object.keys(attrs).map(function (key) {
@@ -140,6 +138,9 @@ var AuthClass = /** @class */ (function () {
                 var ele = { Name: key, Value: attrs[key] };
                 attributes.push(ele);
             });
+        }
+        else {
+            return Promise.reject('The first parameter should either be non-null string or object');
         }
         if (!username) {
             return Promise.reject('Username cannot be empty');
