@@ -80,7 +80,7 @@ export default class RequireNewPassword extends AuthPiece {
                 React.createElement(Button, {
                     title: I18n.get('Change Password'),
                     onPress: this.change,
-                    disabled: !this.state.code
+                    disabled: !this.state.password
                 })
             ),
             React.createElement(Footer, { theme: theme, onStateChange: this.changeState }),
