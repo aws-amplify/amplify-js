@@ -98,24 +98,48 @@ class AuthClass {
 
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String} username - The username to be signed up
-     * @param {String} password - The password of the user
-     * @param {String} email - The email of the user
-     * @param {String} phone_number - the phone number of the user
-     * @return {Promise} - A promise resolves callback data if success
+     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String[]} restOfAttrs - for the backward compatability 
+     * @return - A promise resolves callback data if success
      */
-    signUp(username, password, email, phone_number) {
+    signUp(attrs, ...restOfAttrs) {
         if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (!username) { return Promise.reject('Username cannot be empty'); }
-        if (!password) { return Promise.reject('Password cannot be empty'); }
 
+        let username = null;
+        let password = null;
         const attributes = [];
-        if (email) { attributes.push({Name: 'email', Value: email}); }
-        if (phone_number) { attributes.push({Name: 'phone_number', Value: phone_number}); }
+        if (attrs && typeof attrs === 'string') {
+            username = attrs;
+            password = restOfAttrs? restOfAttrs[0] : null;
+            const email = restOfAttrs? restOfAttrs[1] : null;
+            const phone_number = restOfAttrs? restOfAttrs[2] : null;
+            if (email) attributes.push({Name: 'email', Value: email});
+            if (phone_number) attributes.push({Name: 'phone_number', Value: phone_number}); 
+        } else if (attrs && typeof attrs === 'object') {
+            username = attrs['username'];
+            password = attrs['password'];
+            Object.keys(attrs).map(key => {
+                if (key === 'username' || key === 'password') return;
+                const ele = { Name: key, Value: attrs[key] };
+                attributes.push(ele);
+            });
+        } else {
+            return Promise.reject('The first parameter should either be non-null string or object');
+        }
 
+        if (!username) { return Promise.reject('Username cannot be empty'); }
+        if (!password) { return Promise.reject('Password cannot be empty'); }     
+        
+        logger.debug('signUp attrs:');
+        logger.debug(attributes);
+        
         return new Promise((resolve, reject) => {
             this.userPool.signUp(username, password, attributes, null, function(err, data) {
-                if (err) { reject(err); } else { resolve(data); }
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
             });
         });
     }

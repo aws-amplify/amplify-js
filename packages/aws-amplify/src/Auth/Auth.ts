@@ -99,14 +99,14 @@ export default class AuthClass {
     public signUp(attrs: string | object, ...restOfAttrs: string[]): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
 
-        let username = null;
-        let password = null;
-        const attributes = [];
+        let username : string = null;
+        let password : string = null;
+        const attributes : object[] = [];
         if (attrs && typeof attrs === 'string') {
             username = attrs;
             password = restOfAttrs? restOfAttrs[0] : null;
-            const email = restOfAttrs? restOfAttrs[1] : null;
-            const phone_number = restOfAttrs? restOfAttrs[2] : null;
+            const email : string = restOfAttrs? restOfAttrs[1] : null;
+            const phone_number : string = restOfAttrs? restOfAttrs[2] : null;
             if (email) attributes.push({Name: 'email', Value: email});
             if (phone_number) attributes.push({Name: 'phone_number', Value: phone_number}); 
         } else if (attrs && typeof attrs === 'object') {
@@ -114,7 +114,7 @@ export default class AuthClass {
             password = attrs['password'];
             Object.keys(attrs).map(key => {
                 if (key === 'username' || key === 'password') return;
-                const ele = { Name: key, Value: attrs[key] };
+                const ele : object = { Name: key, Value: attrs[key] };
                 attributes.push(ele);
             });
         } else {
