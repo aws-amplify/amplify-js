@@ -54,7 +54,7 @@ var logger = new Logger_1.ConsoleLogger('API');
 /**
  * Export Cloud Logic APIs
  */
-var API = /** @class */ (function () {
+var API = (function () {
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
