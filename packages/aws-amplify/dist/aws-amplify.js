@@ -32543,29 +32543,15 @@ var AnalyticsClass = /** @class */ (function () {
      * @param config - Configuration of the Analytics
      */
     function AnalyticsClass(config) {
-        this.configure(config);
+        if (config) {
+            this.configure(config);
+        }
+        else {
+            this._config = {};
+        }
         var client_info = Common_1.ClientDevice.clientInfo();
         if (client_info.platform) {
             this._config.platform = client_info.platform;
-        }
-        // store endpointId into localstorage
-        if (!this._config.endpointId) {
-            /*
-            if (window.localStorage) {
-                let endpointId = window.localStorage.getItem('amplify_endpoint_id');
-                if (!endpointId) {
-                    endpointId = this.generateRandomString();
-                    window.localStorage.setItem('amplify_endpoint_id', endpointId);
-                }
-                this._config.endpointId = endpointId;
-            }
-            else {
-                this._config.endpointId = this.generateRandomString();
-            }*/
-            var credentials = this._config.credentials;
-            if (credentials && credentials.identityId) {
-                this._config.endpointId = credentials.identityId;
-            }
         }
         this._buffer = [];
     }
@@ -32621,11 +32607,11 @@ var AnalyticsClass = /** @class */ (function () {
         return new Promise(function (res, rej) {
             _this.mobileAnalytics.putEvents(params, function (err, data) {
                 if (err) {
-                    logger.debug('record event failed. ' + err);
+                    logger.debug('record event failed. ', err);
                     rej(err);
                 }
                 else {
-                    logger.debug('record event success. ' + data);
+                    logger.debug('record event success. ', data);
                     res(data);
                 }
             });
@@ -32656,11 +32642,11 @@ var AnalyticsClass = /** @class */ (function () {
         return new Promise(function (res, rej) {
             _this.mobileAnalytics.putEvents(params, function (err, data) {
                 if (err) {
-                    logger.debug('record event failed. ' + err);
+                    logger.debug('record event failed. ', err);
                     rej(err);
                 }
                 else {
-                    logger.debug('record event success. ' + data);
+                    logger.debug('record event success. ', data);
                     res(data);
                 }
             });
@@ -32676,6 +32662,7 @@ var AnalyticsClass = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 this.stopSession().then(function (data) {
+                    logger.debug('restarting clients');
                     return _this._initClients();
                 }).catch(function (e) {
                     logger.debug('restart error', e);
@@ -32719,11 +32706,11 @@ var AnalyticsClass = /** @class */ (function () {
         return new Promise(function (res, rej) {
             _this.mobileAnalytics.putEvents(params, function (err, data) {
                 if (err) {
-                    logger.debug('record event failed. ' + err);
+                    logger.debug('record event failed. ', err);
                     rej(err);
                 }
                 else {
-                    logger.debug('record event success. ' + data);
+                    logger.debug('record event success. ', data);
                     res(data);
                 }
             });
@@ -32810,11 +32797,10 @@ var AnalyticsClass = /** @class */ (function () {
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
             var cred = Auth_1.default.essentialCredentials(credentials);
-            logger.debug('set credentials for analytics', cred);
             conf.credentials = cred;
-            if (!conf.endpointId && conf.credentials) {
-                conf.endpointId = conf.credentials.identityId;
-            }
+            conf.endpointId = conf.credentials.identityId;
+            logger.debug('set endpointId for analytics', conf.endpointId);
+            logger.debug('set credentials for analytics', conf.credentials);
             return true;
         })
             .catch(function (err) {
@@ -32830,7 +32816,7 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype._initClients = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK;
+            var credentialsOK, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -32844,11 +32830,18 @@ var AnalyticsClass = /** @class */ (function () {
                             return [2 /*return*/, false];
                         }
                         this._initMobileAnalytics();
-                        return [4 /*yield*/, this._initPinpoint()];
+                        _a.label = 2;
                     case 2:
+                        _a.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this._initPinpoint()];
+                    case 3:
                         _a.sent();
                         this.startSession();
-                        return [2 /*return*/, true];
+                        return [3 /*break*/, 5];
+                    case 4:
+                        e_1 = _a.sent();
+                        return [2 /*return*/, false];
+                    case 5: return [2 /*return*/, true];
                 }
             });
         });
@@ -32888,7 +32881,7 @@ var AnalyticsClass = /** @class */ (function () {
             EndpointId: endpointId,
             EndpointRequest: request
         };
-        logger.debug(update_params);
+        logger.debug('updateEndpoint with params: ', update_params);
         return new Promise(function (res, rej) {
             _this.pinpointClient.updateEndpoint(update_params, function (err, data) {
                 if (err) {
@@ -32910,7 +32903,7 @@ var AnalyticsClass = /** @class */ (function () {
         var client_info = Common_1.ClientDevice.clientInfo();
         var credentials = this._config.credentials;
         var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
-        logger.debug('demographic user id: ' + user_id);
+        logger.debug('demographic user id: ', user_id);
         return {
             Demographic: {
                 AppVersion: this._config.appVersion || client_info.appVersion,
