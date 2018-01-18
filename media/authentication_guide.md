@@ -71,7 +71,14 @@ Auth.confirmSignIn(user, code)
 ```js
 import { Auth } from 'aws-amplify';
 
-Auth.signUp(username, password, email, phone)
+Auth.signUp({
+    username, 
+    password, 
+    email, // optional
+    phone, // optional
+    // other custom attributes if has been set in Cognito
+    // myAttr: ...
+    })
     .then(data => console.log(data))
     .catch(err => console.log(err));
 
