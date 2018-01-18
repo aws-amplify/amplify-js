@@ -160,7 +160,7 @@ const session = new CognitoUserSession({
 
 describe('auth unit test', () => {
     describe('signUp', () => {
-        test('happy case', async () => {
+        test('happy case with string attrs', async () => {
             const spyon = jest.spyOn(CognitoUserPool.prototype, "signUp");
             const auth = new Auth(authOptions);
 
@@ -168,6 +168,41 @@ describe('auth unit test', () => {
             expect(await auth.signUp('username', 'password', 'email','phone')).toBe('signUpResult');
 
             spyon.mockClear();
+        });
+
+        test('happy case with object attr', async () => {
+            const spyon = jest.spyOn(CognitoUserPool.prototype, "signUp");
+            const auth = new Auth(authOptions);
+
+            const attrs = {
+                username: 'username',
+                password: 'password',
+                email: 'email',
+                phone_number: 'phone_number',
+                otherAttrs: 'otherAttrs'
+            }
+            expect.assertions(1);
+            expect(await auth.signUp(attrs)).toBe('signUpResult');
+
+            spyon.mockClear();
+        });
+
+        test('object attr with null username', async () => {
+            const auth = new Auth(authOptions);
+
+            const attrs = {
+                username: null,
+                password: 'password',
+                email: 'email',
+                phone_number: 'phone_number',
+                otherAttrs: 'otherAttrs'
+            }
+            expect.assertions(1);
+            try {
+                await auth.signUp(attrs);
+            } catch (e) {
+                expect(e).not.toBeNull();
+            }
         });
 
         test('callback error', async () => {
@@ -200,7 +235,7 @@ describe('auth unit test', () => {
         });
 
         test('no username', async () => {
-            const auth = new Auth(authOptionsWithNoUserPoolId);
+            const auth = new Auth(authOptions);
 
             expect.assertions(1);
             try {
@@ -211,11 +246,22 @@ describe('auth unit test', () => {
         });
 
         test('no password', async () => {
-            const auth = new Auth(authOptionsWithNoUserPoolId);
+            const auth = new Auth(authOptions);
 
             expect.assertions(1);
             try {
                 await auth.signUp('username', null, 'email','phone');
+            } catch (e) {
+                expect(e).not.toBeNull();
+            }
+        });
+
+        test('only username', async () => {
+            const auth = new Auth(authOptions);
+
+            expect.assertions(1);
+            try {
+                await auth.signUp('username');
             } catch (e) {
                 expect(e).not.toBeNull();
             }

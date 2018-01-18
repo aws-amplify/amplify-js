@@ -1229,7 +1229,11 @@ module.exports = create;
 
 
 var bind = __webpack_require__(108);
+<<<<<<< HEAD
 var isBuffer = __webpack_require__(311);
+=======
+var isBuffer = __webpack_require__(310);
+>>>>>>> upstream/master
 
 /*global toString:true*/
 
@@ -2795,6 +2799,40 @@ module.exports = isObjectLike;
 
 
 /***/ }),
+<<<<<<< HEAD
+=======
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Auth_1 = __webpack_require__(114);
+var Common_1 = __webpack_require__(2);
+var logger = new Common_1.ConsoleLogger('Auth');
+var _instance = null;
+if (!_instance) {
+    logger.debug('Create Auth Instance');
+    _instance = new Auth_1.default(null);
+}
+var Auth = _instance;
+exports.default = Auth;
+
+
+/***/ }),
+>>>>>>> upstream/master
 /* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3535,7 +3573,11 @@ module.exports = isPrototype;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsArguments = __webpack_require__(138),
+<<<<<<< HEAD
     isObjectLike = __webpack_require__(19);
+=======
+    isObjectLike = __webpack_require__(18);
+>>>>>>> upstream/master
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -7351,7 +7393,11 @@ exports.CacheList = CacheList_1.default;
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
+<<<<<<< HEAD
 var normalizeHeaderName = __webpack_require__(313);
+=======
+var normalizeHeaderName = __webpack_require__(312);
+>>>>>>> upstream/master
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -7482,7 +7528,11 @@ exports.MobileAnalytics = MobileAnalytics;
 var AWS = __webpack_require__(0);
 var util = __webpack_require__(1);
 var QueryParamSerializer = __webpack_require__(118);
+<<<<<<< HEAD
 var Shape = __webpack_require__(15);
+=======
+var Shape = __webpack_require__(14);
+>>>>>>> upstream/master
 
 function buildRequest(req) {
   var operation = req.service.api.operations[req.operation];
@@ -7977,7 +8027,11 @@ module.exports = copyObject;
 /***/ (function(module, exports, __webpack_require__) {
 
 var eq = __webpack_require__(23),
+<<<<<<< HEAD
     isArrayLike = __webpack_require__(17),
+=======
+    isArrayLike = __webpack_require__(16),
+>>>>>>> upstream/master
     isIndex = __webpack_require__(36),
     isObject = __webpack_require__(5);
 
@@ -8124,7 +8178,11 @@ var DataView = __webpack_require__(150),
     Promise = __webpack_require__(151),
     Set = __webpack_require__(152),
     WeakMap = __webpack_require__(153),
+<<<<<<< HEAD
     baseGetTag = __webpack_require__(16),
+=======
+    baseGetTag = __webpack_require__(15),
+>>>>>>> upstream/master
     toSource = __webpack_require__(61);
 
 /** `Object#toString` result references. */
@@ -8435,7 +8493,11 @@ module.exports = Stack;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsEqualDeep = __webpack_require__(187),
+<<<<<<< HEAD
     isObjectLike = __webpack_require__(19);
+=======
+    isObjectLike = __webpack_require__(18);
+>>>>>>> upstream/master
 
 /**
  * The base implementation of `_.isEqual` which supports partial comparisons
@@ -12391,6 +12453,7 @@ var CognitoJwtToken = function () {
 
 /***/ }),
 /* 97 */
+<<<<<<< HEAD
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12502,6 +12565,119 @@ var CognitoRefreshToken = function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+=======
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__CognitoJwtToken__ = __webpack_require__(96);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+/** @class */
+
+var CognitoIdToken = function (_CognitoJwtToken) {
+  _inherits(CognitoIdToken, _CognitoJwtToken);
+
+  /**
+   * Constructs a new CognitoIdToken object
+   * @param {string=} IdToken The JWT Id token
+   */
+  function CognitoIdToken() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        IdToken = _ref.IdToken;
+
+    _classCallCheck(this, CognitoIdToken);
+
+    return _possibleConstructorReturn(this, _CognitoJwtToken.call(this, IdToken || ''));
+  }
+
+  return CognitoIdToken;
+}(__WEBPACK_IMPORTED_MODULE_0__CognitoJwtToken__["a" /* default */]);
+
+/* harmony default export */ __webpack_exports__["a"] = (CognitoIdToken);
+
+/***/ }),
+/* 98 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/** @class */
+var CognitoRefreshToken = function () {
+  /**
+   * Constructs a new CognitoRefreshToken object
+   * @param {string=} RefreshToken The JWT refresh token.
+   */
+  function CognitoRefreshToken() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        RefreshToken = _ref.RefreshToken;
+
+    _classCallCheck(this, CognitoRefreshToken);
+
+    // Assign object
+    this.token = RefreshToken || '';
+  }
+
+  /**
+   * @returns {string} the record's token.
+   */
+
+
+  CognitoRefreshToken.prototype.getToken = function getToken() {
+    return this.token;
+  };
+
+  return CognitoRefreshToken;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (CognitoRefreshToken);
+
+/***/ }),
+/* 99 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+>>>>>>> upstream/master
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_aws_sdk_global__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_aws_sdk_global___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_aws_sdk_global__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__BigInteger__ = __webpack_require__(94);
@@ -12785,12 +12961,21 @@ var CognitoUser = function () {
           var signatureString = __WEBPACK_IMPORTED_MODULE_0_aws_sdk_global__["util"].crypto.hmac(hkdf, __WEBPACK_IMPORTED_MODULE_0_aws_sdk_global__["util"].buffer.concat([new __WEBPACK_IMPORTED_MODULE_0_aws_sdk_global__["util"].Buffer(_this2.pool.getUserPoolId().split('_')[1], 'utf8'), new __WEBPACK_IMPORTED_MODULE_0_aws_sdk_global__["util"].Buffer(_this2.username, 'utf8'), new __WEBPACK_IMPORTED_MODULE_0_aws_sdk_global__["util"].Buffer(challengeParameters.SECRET_BLOCK, 'base64'), new __WEBPACK_IMPORTED_MODULE_0_aws_sdk_global__["util"].Buffer(dateNow, 'utf8')]), 'base64', 'sha256');
 
           var challengeResponses = {};
+<<<<<<< HEAD
 
           challengeResponses.USERNAME = _this2.username;
           challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK = challengeParameters.SECRET_BLOCK;
           challengeResponses.TIMESTAMP = dateNow;
           challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
 
+=======
+
+          challengeResponses.USERNAME = _this2.username;
+          challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK = challengeParameters.SECRET_BLOCK;
+          challengeResponses.TIMESTAMP = dateNow;
+          challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
+
+>>>>>>> upstream/master
           if (_this2.deviceKey != null) {
             challengeResponses.DEVICE_KEY = _this2.deviceKey;
           }
@@ -12822,6 +13007,7 @@ var CognitoUser = function () {
             if (errAuthenticate) {
               return callback.onFailure(errAuthenticate);
             }
+<<<<<<< HEAD
 
             var challengeName = dataAuthenticate.ChallengeName;
             if (challengeName === 'NEW_PASSWORD_REQUIRED') {
@@ -12836,6 +13022,22 @@ var CognitoUser = function () {
                 rawRequiredAttributes = JSON.parse(dataAuthenticate.ChallengeParameters.requiredAttributes);
               }
 
+=======
+
+            var challengeName = dataAuthenticate.ChallengeName;
+            if (challengeName === 'NEW_PASSWORD_REQUIRED') {
+              _this2.Session = dataAuthenticate.Session;
+              var userAttributes = null;
+              var rawRequiredAttributes = null;
+              var requiredAttributes = [];
+              var userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+
+              if (dataAuthenticate.ChallengeParameters) {
+                userAttributes = JSON.parse(dataAuthenticate.ChallengeParameters.userAttributes);
+                rawRequiredAttributes = JSON.parse(dataAuthenticate.ChallengeParameters.requiredAttributes);
+              }
+
+>>>>>>> upstream/master
               if (rawRequiredAttributes) {
                 for (var i = 0; i < rawRequiredAttributes.length; i++) {
                   requiredAttributes[i] = rawRequiredAttributes[i].substr(userAttributesPrefix.length);
@@ -13072,6 +13274,7 @@ var CognitoUser = function () {
           if (_this5.getUserContextData()) {
             jsonReqResp.UserContextData = _this5.getUserContextData();
           }
+<<<<<<< HEAD
 
           _this5.client.makeUnauthenticatedRequest('respondToAuthChallenge', jsonReqResp, function (errAuthenticate, dataAuthenticate) {
             if (errAuthenticate) {
@@ -13081,6 +13284,17 @@ var CognitoUser = function () {
             _this5.signInUserSession = _this5.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
             _this5.cacheTokens();
 
+=======
+
+          _this5.client.makeUnauthenticatedRequest('respondToAuthChallenge', jsonReqResp, function (errAuthenticate, dataAuthenticate) {
+            if (errAuthenticate) {
+              return callback.onFailure(errAuthenticate);
+            }
+
+            _this5.signInUserSession = _this5.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
+            _this5.cacheTokens();
+
+>>>>>>> upstream/master
             return callback.onSuccess(_this5.signInUserSession);
           });
           return undefined;
@@ -15150,12 +15364,21 @@ module.exports = function bind(fn, thisArg) {
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
+<<<<<<< HEAD
 var settle = __webpack_require__(314);
 var buildURL = __webpack_require__(316);
 var parseHeaders = __webpack_require__(317);
 var isURLSameOrigin = __webpack_require__(318);
 var createError = __webpack_require__(110);
 var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(319);
+=======
+var settle = __webpack_require__(313);
+var buildURL = __webpack_require__(315);
+var parseHeaders = __webpack_require__(316);
+var isURLSameOrigin = __webpack_require__(317);
+var createError = __webpack_require__(110);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(318);
+>>>>>>> upstream/master
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -15252,7 +15475,11 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
+<<<<<<< HEAD
       var cookies = __webpack_require__(320);
+=======
+      var cookies = __webpack_require__(319);
+>>>>>>> upstream/master
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -15337,7 +15564,11 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
+<<<<<<< HEAD
 var enhanceError = __webpack_require__(315);
+=======
+var enhanceError = __webpack_require__(314);
+>>>>>>> upstream/master
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -15412,7 +15643,11 @@ module.exports = Cancel;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+<<<<<<< HEAD
 var Auth_1 = __webpack_require__(14);
+=======
+var Auth_1 = __webpack_require__(19);
+>>>>>>> upstream/master
 exports.Auth = Auth_1.default;
 var Analytics_1 = __webpack_require__(302);
 exports.Analytics = Analytics_1.default;
@@ -15420,7 +15655,11 @@ var Storage_1 = __webpack_require__(304);
 exports.Storage = Storage_1.default;
 var API_1 = __webpack_require__(306);
 exports.API = API_1.default;
+<<<<<<< HEAD
 var I18n_1 = __webpack_require__(328);
+=======
+var I18n_1 = __webpack_require__(327);
+>>>>>>> upstream/master
 exports.I18n = I18n_1.default;
 var Cache_1 = __webpack_require__(106);
 exports.Cache = Cache_1.default;
@@ -15574,15 +15813,44 @@ var AuthClass = /** @class */ (function () {
     };
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String} username - The username to be signed up
-     * @param {String} password - The password of the user
-     * @param {Object} attributeList - Other attributes
+     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
-    AuthClass.prototype.signUp = function (username, password, email, phone_number) {
+    AuthClass.prototype.signUp = function (attrs) {
         var _this = this;
+        var restOfAttrs = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            restOfAttrs[_i - 1] = arguments[_i];
+        }
         if (!this.userPool) {
             return Promise.reject('No userPool');
+        }
+        var username = null;
+        var password = null;
+        var attributes = [];
+        if (attrs && typeof attrs === 'string') {
+            username = attrs;
+            password = restOfAttrs ? restOfAttrs[0] : null;
+            var email = restOfAttrs ? restOfAttrs[1] : null;
+            var phone_number = restOfAttrs ? restOfAttrs[2] : null;
+            if (email)
+                attributes.push({ Name: 'email', Value: email });
+            if (phone_number)
+                attributes.push({ Name: 'phone_number', Value: phone_number });
+        }
+        else if (attrs && typeof attrs === 'object') {
+            username = attrs['username'];
+            password = attrs['password'];
+            Object.keys(attrs).map(function (key) {
+                if (key === 'username' || key === 'password')
+                    return;
+                var ele = { Name: key, Value: attrs[key] };
+                attributes.push(ele);
+            });
+        }
+        else {
+            return Promise.reject('The first parameter should either be non-null string or object');
         }
         if (!username) {
             return Promise.reject('Username cannot be empty');
@@ -15590,13 +15858,8 @@ var AuthClass = /** @class */ (function () {
         if (!password) {
             return Promise.reject('Password cannot be empty');
         }
-        var attributes = [];
-        if (email) {
-            attributes.push({ Name: 'email', Value: email });
-        }
-        if (phone_number) {
-            attributes.push({ Name: 'phone_number', Value: phone_number });
-        }
+        logger.debug('signUp attrs:');
+        logger.debug(attributes);
         return new Promise(function (resolve, reject) {
             _this.userPool.signUp(username, password, attributes, null, function (err, data) {
                 if (err) {
@@ -16734,7 +16997,11 @@ module.exports = XmlBuilder;
 var assignValue = __webpack_require__(57),
     copyObject = __webpack_require__(62),
     createAssigner = __webpack_require__(128),
+<<<<<<< HEAD
     isArrayLike = __webpack_require__(17),
+=======
+    isArrayLike = __webpack_require__(16),
+>>>>>>> upstream/master
     isPrototype = __webpack_require__(37),
     keys = __webpack_require__(18);
 
@@ -18104,7 +18371,11 @@ module.exports = baseEach;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseFor = __webpack_require__(159),
+<<<<<<< HEAD
     keys = __webpack_require__(18);
+=======
+    keys = __webpack_require__(17);
+>>>>>>> upstream/master
 
 /**
  * The base implementation of `_.forOwn` without support for iteratee shorthands.
@@ -19423,7 +19694,11 @@ module.exports = equalObjects;
 
 var baseGetAllKeys = __webpack_require__(199),
     getSymbols = __webpack_require__(201),
+<<<<<<< HEAD
     keys = __webpack_require__(18);
+=======
+    keys = __webpack_require__(17);
+>>>>>>> upstream/master
 
 /**
  * Creates an array of own enumerable property names and symbols of `object`.
@@ -22340,9 +22615,13 @@ AWS.EventListeners = {
           censoredParams = filterSensitiveLog(inputShape, req.params);
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
         var params = __webpack_require__(232).inspect(censoredParams, true, null);
 =======
         var params = __webpack_require__(231).inspect(censoredParams, true, null);
+>>>>>>> upstream/master
+=======
+        var params = __webpack_require__(232).inspect(censoredParams, true, null);
 >>>>>>> upstream/master
         var message = '';
         if (ansi) message += '\x1B[33m';
@@ -32523,7 +32802,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
+<<<<<<< HEAD
 var Auth_1 = __webpack_require__(14);
+=======
+var Auth_1 = __webpack_require__(19);
+>>>>>>> upstream/master
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 /**
@@ -33013,7 +33296,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
+<<<<<<< HEAD
 var Auth_1 = __webpack_require__(14);
+=======
+var Auth_1 = __webpack_require__(19);
+>>>>>>> upstream/master
 var logger = new Common_1.ConsoleLogger('StorageClass');
 var dispatchStorageEvent = function (track, attrs, metrics) {
     if (track) {
@@ -33305,6 +33592,7 @@ exports.default = StorageClass;
 
 /***/ }),
 /* 306 */
+<<<<<<< HEAD
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33336,6 +33624,8 @@ exports.default = API;
 
 /***/ }),
 /* 307 */
+=======
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33388,14 +33678,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+<<<<<<< HEAD
 var RestClient_1 = __webpack_require__(308);
 var Auth_1 = __webpack_require__(14);
+=======
+var RestClient_1 = __webpack_require__(307);
+>>>>>>> upstream/master
 var Logger_1 = __webpack_require__(13);
 var logger = new Logger_1.ConsoleLogger('API');
 /**
  * Export Cloud Logic APIs
  */
 var API = /** @class */ (function () {
+<<<<<<< HEAD
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
@@ -33404,6 +33699,9 @@ var API = /** @class */ (function () {
         this._api = null;
         this._options = options;
         logger.debug('API Options', this._options);
+=======
+    function API() {
+>>>>>>> upstream/master
     }
     /**
      * Configure API part with aws configurations
@@ -33685,7 +33983,11 @@ exports.default = API;
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 308 */
+=======
+/* 307 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33748,8 +34050,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Signer_1 = __webpack_require__(105);
 var Common_1 = __webpack_require__(2);
+<<<<<<< HEAD
 var Auth_1 = __webpack_require__(14);
 var axios_1 = __webpack_require__(309);
+=======
+var Auth_1 = __webpack_require__(19);
+var axios_1 = __webpack_require__(308);
+>>>>>>> upstream/master
 var logger = new Common_1.ConsoleLogger('RestClient');
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -33920,6 +34227,7 @@ exports.RestClient = RestClient;
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -33927,6 +34235,15 @@ module.exports = __webpack_require__(310);
 
 /***/ }),
 /* 310 */
+=======
+/* 308 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(309);
+
+/***/ }),
+/* 309 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33934,7 +34251,11 @@ module.exports = __webpack_require__(310);
 
 var utils = __webpack_require__(4);
 var bind = __webpack_require__(108);
+<<<<<<< HEAD
 var Axios = __webpack_require__(312);
+=======
+var Axios = __webpack_require__(311);
+>>>>>>> upstream/master
 var defaults = __webpack_require__(51);
 
 /**
@@ -33969,14 +34290,22 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(112);
+<<<<<<< HEAD
 axios.CancelToken = __webpack_require__(326);
+=======
+axios.CancelToken = __webpack_require__(325);
+>>>>>>> upstream/master
 axios.isCancel = __webpack_require__(111);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
+<<<<<<< HEAD
 axios.spread = __webpack_require__(327);
+=======
+axios.spread = __webpack_require__(326);
+>>>>>>> upstream/master
 
 module.exports = axios;
 
@@ -33985,7 +34314,11 @@ module.exports.default = axios;
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 311 */
+=======
+/* 310 */
+>>>>>>> upstream/master
 /***/ (function(module, exports) {
 
 /*!
@@ -34012,7 +34345,11 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 312 */
+=======
+/* 311 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34020,8 +34357,13 @@ function isSlowBuffer (obj) {
 
 var defaults = __webpack_require__(51);
 var utils = __webpack_require__(4);
+<<<<<<< HEAD
 var InterceptorManager = __webpack_require__(321);
 var dispatchRequest = __webpack_require__(322);
+=======
+var InterceptorManager = __webpack_require__(320);
+var dispatchRequest = __webpack_require__(321);
+>>>>>>> upstream/master
 
 /**
  * Create a new instance of Axios
@@ -34098,7 +34440,11 @@ module.exports = Axios;
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 313 */
+=======
+/* 312 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34117,7 +34463,11 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 314 */
+=======
+/* 313 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34150,7 +34500,11 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 315 */
+=======
+/* 314 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34178,7 +34532,11 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 316 */
+=======
+/* 315 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34253,7 +34611,11 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 317 */
+=======
+/* 316 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34313,7 +34675,11 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 318 */
+=======
+/* 317 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34388,7 +34754,11 @@ module.exports = (
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 319 */
+=======
+/* 318 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34431,7 +34801,11 @@ module.exports = btoa;
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 320 */
+=======
+/* 319 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34491,7 +34865,11 @@ module.exports = (
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 321 */
+=======
+/* 320 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34550,18 +34928,30 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 322 */
+=======
+/* 321 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
+<<<<<<< HEAD
 var transformData = __webpack_require__(323);
 var isCancel = __webpack_require__(111);
 var defaults = __webpack_require__(51);
 var isAbsoluteURL = __webpack_require__(324);
 var combineURLs = __webpack_require__(325);
+=======
+var transformData = __webpack_require__(322);
+var isCancel = __webpack_require__(111);
+var defaults = __webpack_require__(51);
+var isAbsoluteURL = __webpack_require__(323);
+var combineURLs = __webpack_require__(324);
+>>>>>>> upstream/master
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -34643,7 +35033,11 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 323 */
+=======
+/* 322 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34670,7 +35064,11 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 324 */
+=======
+/* 323 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34691,7 +35089,11 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 325 */
+=======
+/* 324 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34712,7 +35114,11 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 326 */
+=======
+/* 325 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34776,7 +35182,11 @@ module.exports = CancelToken;
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 327 */
+=======
+/* 326 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34810,7 +35220,11 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 328 */
+=======
+/* 327 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34828,7 +35242,11 @@ module.exports = function spread(callback) {
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+<<<<<<< HEAD
 var I18n_1 = __webpack_require__(329);
+=======
+var I18n_1 = __webpack_require__(328);
+>>>>>>> upstream/master
 var Logger_1 = __webpack_require__(13);
 var logger = new Logger_1.ConsoleLogger('I18n');
 var _config = null;
@@ -34921,7 +35339,11 @@ exports.default = I18n;
 
 
 /***/ }),
+<<<<<<< HEAD
 /* 329 */
+=======
+/* 328 */
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
