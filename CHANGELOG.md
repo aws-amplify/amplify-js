@@ -1,6 +1,18 @@
 # Changelog for AWS Amplify
-<!--LATEST=0.1.35-->
+<!--LATEST=0.1.36-->
 <!--ENTRYINSERT-->
+
+## 01/18/2018
+* aws-amplify - v0.1.36
+    * Enhancement: Sign up with custom attributes #160
+    * Bug fix: Api cred refresh #118
+    * Bug fix: EndpointId for Pinpoint not get refreshed correctly #161
+* aws-amplify-react - v0.1.31
+    * Bug fix: Now S3Image can upload files to private folder #133
+* aws-amplify-react-native - v0.1.24
+    * Enahancement: Remove dependency from aws-mobile-analytics dependency #142
+    * Enhancement: Sign up with custom attributes #160
+    * Bug fix: EndpointId for Pinpoint not get refreshed correctly #161
 
 ## 01/16/2018
 * aws-amplify - v0.1.35
