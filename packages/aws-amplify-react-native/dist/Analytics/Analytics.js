@@ -17,41 +17,25 @@ import Auth from '../Auth';
 
 const logger = new Logger('AnalyticsClass');
 const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
+
 /**
 * Provide mobile analytics client functions
 */
 export default class AnalyticsClass {
-
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
      */
     constructor(config) {
-        this.configure(config);
+        if (config) {
+            this.configure(config);
+        } else {
+            this._config = {};
+        }
 
         const client_info = ClientDevice.clientInfo();
         if (client_info.platform) {
             this._config.platform = client_info.platform;
-        }
-
-        // store endpointId into localstorage
-        if (!this._config.endpointId) {
-            /*
-            if (window.localStorage) {
-                let endpointId = window.localStorage.getItem('amplify_endpoint_id');
-                if (!endpointId) {
-                    endpointId = this.generateRandomString();
-                    window.localStorage.setItem('amplify_endpoint_id', endpointId);
-                }
-                this._config.endpointId = endpointId;
-            }
-            else {
-                this._config.endpointId = this.generateRandomString();
-            }*/
-            const credentials = this._config.credentials;
-            if (credentials && credentials.identityId) {
-                this._config.endpointId = credentials.identityId;
-            }
         }
 
         this._buffer = [];
@@ -112,10 +96,10 @@ export default class AnalyticsClass {
         return new Promise((res, rej) => {
             this.mobileAnalytics.putEvents(params, (err, data) => {
                 if (err) {
-                    logger.debug('record event failed. ' + err);
+                    logger.debug('record event failed. ', err);
                     rej(err);
                 } else {
-                    logger.debug('record event success. ' + data);
+                    logger.debug('record event success. ', data);
                     res(data);
                 }
             });
@@ -145,10 +129,10 @@ export default class AnalyticsClass {
         return new Promise((res, rej) => {
             this.mobileAnalytics.putEvents(params, (err, data) => {
                 if (err) {
-                    logger.debug('record event failed. ' + err);
+                    logger.debug('record event failed. ', err);
                     rej(err);
                 } else {
-                    logger.debug('record event success. ' + data);
+                    logger.debug('record event success. ', data);
                     res(data);
                 }
             });
@@ -162,6 +146,7 @@ export default class AnalyticsClass {
      */
     async restart() {
         this.stopSession().then(data => {
+            logger.debug('restarting clients');
             return this._initClients();
         }).catch(e => {
             logger.debug('restart error', e);
@@ -202,10 +187,10 @@ export default class AnalyticsClass {
         return new Promise((res, rej) => {
             this.mobileAnalytics.putEvents(params, (err, data) => {
                 if (err) {
-                    logger.debug('record event failed. ' + err);
+                    logger.debug('record event failed. ', err);
                     rej(err);
                 } else {
-                    logger.debug('record event success. ' + data);
+                    logger.debug('record event success. ', data);
                     res(data);
                 }
             });
@@ -297,12 +282,12 @@ export default class AnalyticsClass {
 
         return Auth.currentCredentials().then(credentials => {
             const cred = Auth.essentialCredentials(credentials);
-            logger.debug('set credentials for analytics', cred);
-            conf.credentials = cred;
 
-            if (!conf.endpointId && conf.credentials) {
-                conf.endpointId = conf.credentials.identityId;
-            }
+            conf.credentials = cred;
+            conf.endpointId = conf.credentials.identityId;
+
+            logger.debug('set endpointId for analytics', conf.endpointId);
+            logger.debug('set credentials for analytics', conf.credentials);
 
             return true;
         }).catch(err => {
@@ -328,8 +313,12 @@ export default class AnalyticsClass {
         }
 
         this._initMobileAnalytics();
-        await this._initPinpoint();
-        this.startSession();
+        try {
+            await this._initPinpoint();
+            this.startSession();
+        } catch (e) {
+            return false;
+        }
 
         return true;
     }
@@ -370,7 +359,7 @@ export default class AnalyticsClass {
             EndpointId: endpointId,
             EndpointRequest: request
         };
-        logger.debug(update_params);
+        logger.debug('updateEndpoint with params: ', update_params);
 
         return new Promise((res, rej) => {
             this.pinpointClient.updateEndpoint(update_params, function (err, data) {
@@ -393,7 +382,7 @@ export default class AnalyticsClass {
         const client_info = ClientDevice.clientInfo();
         const credentials = this._config.credentials;
         const user_id = credentials && credentials.authenticated ? credentials.identityId : null;
-        logger.debug('demographic user id: ' + user_id);
+        logger.debug('demographic user id: ', user_id);
         return {
             Demographic: {
                 AppVersion: this._config.appVersion || client_info.appVersion,
