@@ -16,6 +16,8 @@ var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
+var _RandomGenerator = require('../Common/RandomGenerator');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -66,10 +68,14 @@ var logger = new _awsAmplify.Logger('Picker');
 var Picker = function (_Component) {
     _inherits(Picker, _Component);
 
-    function Picker() {
+    function Picker(props) {
         _classCallCheck(this, Picker);
 
-        return _possibleConstructorReturn(this, (Picker.__proto__ || Object.getPrototypeOf(Picker)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (Picker.__proto__ || Object.getPrototypeOf(Picker)).call(this, props));
+
+        _this.handleInput = _this.handleInput.bind(_this);
+        _this.state = { pickerInputId: (0, _RandomGenerator.generateRandomId)(4, 'pickerInput') };
+        return _this;
     }
 
     _createClass(Picker, [{
@@ -79,6 +85,8 @@ var Picker = function (_Component) {
                 var that = this;
 
                 var file = e.target.files[0];
+                if (!file) return;
+
                 var name = file.name,
                     size = file.size,
                     type = file.type;
@@ -95,6 +103,11 @@ var Picker = function (_Component) {
                         type: type
                     });
                 }
+
+                // in case the same file selected
+                var pickerInputId = this.state.pickerInputId;
+
+                document.getElementById(pickerInputId).value = null;
             }
 
             return handleInput;
@@ -112,6 +125,8 @@ var Picker = function (_Component) {
                 var pickerStyle = Object.assign({}, PickerPicker, theme.pickerPicker);
                 var buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
                 var inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
+                var pickerInputId = this.state.pickerInputId;
+
 
                 return _react2['default'].createElement(
                     'div',
@@ -122,6 +137,8 @@ var Picker = function (_Component) {
                         _awsAmplify.I18n.get(title)
                     ),
                     _react2['default'].createElement('input', {
+                        className: 'amplify-widget',
+                        id: pickerInputId,
                         title: _awsAmplify.I18n.get(title),
                         type: 'file', accept: accept,
                         style: inputStyle,

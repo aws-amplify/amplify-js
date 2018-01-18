@@ -15,6 +15,7 @@ import React, { Component } from 'react';
 
 import { I18n, Logger } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
+import { generateRandomId } from '../Common/RandomGenerator';
 
 const PickerPicker = {
     position: 'relative'
@@ -45,10 +46,19 @@ const PickerInput = {
 const logger = new Logger('Picker');
 
 export default class Picker extends Component {
+    constructor(props) {
+        super(props);
+
+        this.handleInput = this.handleInput.bind(this);
+        this.state = { pickerInputId: generateRandomId(4, 'pickerInput') };
+    }
+
     handleInput(e) {
         var that = this;
 
         const file = e.target.files[0];
+        if (!file) return;
+        
         const { name, size, type } = file;
         logger.debug(file);
 
@@ -61,6 +71,10 @@ export default class Picker extends Component {
                 type: type
             });
         }
+        
+        // in case the same file selected
+        const { pickerInputId } = this.state;
+        document.getElementById(pickerInputId).value = null;
     }
 
     render() {
@@ -75,18 +89,21 @@ export default class Picker extends Component {
         );
         const buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
         const inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
+        const { pickerInputId } = this.state;
 
         return (
             <div style={pickerStyle}>
-                <button style={buttonStyle}>
+                 <button style={buttonStyle}>
                     {I18n.get(title)}
-                </button>
-                <input
+                </button> 
+                 <input
+                    className="amplify-widget"
+                    id={pickerInputId}
                     title={I18n.get(title)}
                     type="file" accept={accept}
                     style={inputStyle}
                     onChange={(e) => this.handleInput(e)}
-                />
+                /> 
             </div>
         )
     }

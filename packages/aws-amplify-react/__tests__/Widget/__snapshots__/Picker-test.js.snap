@@ -38,6 +38,8 @@ exports[`Picker test render test render correcly 1`] = `
   </button>
   <input
     accept="*/*"
+    className="amplify-widget"
+    id="id"
     onChange={[Function]}
     style={
       Object {
