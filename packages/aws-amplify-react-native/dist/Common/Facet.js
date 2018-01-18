@@ -13,10 +13,10 @@
 
 import * as AWS from 'aws-sdk/dist/aws-sdk-react-native';
 import * as Cognito from 'amazon-cognito-identity-js';
-import * as AMA from 'aws-sdk-mobile-analytics';
 
 import ClientDevice from './ClientDevice';
 
 const Pinpoint = AWS.Pinpoint;
+const MobileAnalytics = AWS.MobileAnalytics;
 
-export { AWS, Cognito, AMA, Pinpoint, ClientDevice };
+export { AWS, Cognito, Pinpoint, ClientDevice, MobileAnalytics };

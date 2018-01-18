@@ -95,8 +95,8 @@ export default class VerifyContact extends AuthPiece {
                     selectedValue: this.state.pickAttr,
                     onValueChange: (value, index) => this.setState({ pickAttr: value })
                 },
-                email ? React.createElement(Picker.Item, { label: 'Email', value: 'email' }) : null,
-                phone_number ? React.createElement(Picker.Item, { label: 'Phone Number', value: 'phone_number' }) : null
+                email ? React.createElement(Picker.Item, { label: I18n.get('Email'), value: 'email' }) : null,
+                phone_number ? React.createElement(Picker.Item, { label: I18n.get('Phone Number'), value: 'phone_number' }) : null
             ),
             React.createElement(Button, {
                 title: I18n.get('Verify'),

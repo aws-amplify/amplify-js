@@ -16,12 +16,11 @@ export default class AuthClass {
     configure(config: any): AuthOptions;
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String} username - The username to be signed up
-     * @param {String} password - The password of the user
-     * @param {Object} attributeList - Other attributes
+     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
-    signUp(username: string, password: string, email: string, phone_number: string): Promise<any>;
+    signUp(attrs: string | object, ...restOfAttrs: string[]): Promise<any>;
     /**
      * Send the verfication code to confirm sign up
      * @param {String} username - The username to be confirmed
