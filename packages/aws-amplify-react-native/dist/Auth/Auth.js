@@ -668,12 +668,7 @@ class AuthClass {
             return [{}, {}];
         });
 
-        const info = {
-            username: user.username,
-            id: credentials.identityId,
-            email: attributes.email,
-            phone_number: attributes.phone_number
-        };
+        const info = Object.assign({}, { username: user.username, id: credentials.identityId }, attributes);
         logger.debug('user info', info);
         return info;
     }
@@ -732,7 +727,13 @@ class AuthClass {
     _attributesToObject(attributes) {
         const obj = {};
         attributes.map(attr => {
-            obj[attr.Name] = attr.Value === 'false' ? false : attr.Value;
+            if (attr.Value === 'true') {
+                obj[attr.Name] = true;
+            } else if (attr.Value === 'false') {
+                obj[attr.Name] = false;
+            } else {
+                obj[attr.Name] = attr.Value;
+            }
         });
         return obj;
     }

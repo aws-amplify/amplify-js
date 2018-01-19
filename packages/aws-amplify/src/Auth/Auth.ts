@@ -580,8 +580,7 @@ export default class AuthClass {
             const info = {
                 username: user.username,
                 id: credentials.identityId,
-                email: attributes.email,
-                phone_number: attributes.phone_number
+                ...this.attributesToObject(attributes)
             };
             return info;
         }
@@ -626,8 +625,14 @@ export default class AuthClass {
 
     private attributesToObject(attributes) {
         const obj = {};
-        attributes.map(attribute => {
-            obj[attribute.Name] = (attribute.Value === 'false')? false : attribute.Value;
+        attributes.map(attr => {
+            if (attr.Value === 'true') {
+                obj[attr.Name] = true;
+            } else if (attr.Value === 'false') {
+                obj[attr.Name] = false;
+            } else {
+                obj[attr.Name] = attr.Value;
+            }
         });
         return obj;
     }
