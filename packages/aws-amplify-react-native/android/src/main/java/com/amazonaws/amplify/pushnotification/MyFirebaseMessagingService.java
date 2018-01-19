@@ -37,6 +37,11 @@ import com.firebase.jobdispatcher.Job;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     // Intent action used in local broadcast
@@ -79,6 +84,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.e(TAG, "From: " + remoteMessage.getFrom());
+        
+        ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
+        ReactContext context = mReactInstanceManager.getCurrentReactContext();
+
+        RNPinpointSNSJsDelivery jsDelivery = new RNPinpointSNSJsDelivery((ReactApplicationContext) context);
+        Bundle bundle = convertMessageToBundle(remoteMessage);
+        jsDelivery.emitNotificationReceived(bundle);
 
         final NotificationClient notificationClient = PinpointSNSModule.getPinpointManager().getNotificationClient();
        // final Map<String, String> data = remoteMessage.getData();
@@ -100,5 +112,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
+    private Bundle convertMessageToBundle(RemoteMessage message) {
+        Bundle bundle = new Bundle();
+        bundle.putString("collapseKey", message.getCollapseKey());
+        bundle.putBundle("data", convertDataToBundle(message));
+        bundle.putString("sender", message.getFrom());
+        bundle.putString("messageId", message.getMessageId());
+        bundle.putString("messageType", message.getMessageType());
+        bundle.putLong("sentTime", message.getSentTime());
+        bundle.putString("destination", message.getTo());
+        bundle.putInt("ttl", message.getTtl());
+        return bundle;
+    }
+    
+    private Bundle convertDataToBundle(RemoteMessage message) {
+        Map<String, String> data = message.getData();
+
+        Bundle bundle = new Bundle();
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            bundle.putString(entry.getKey(), entry.getValue());
+        }
+
+        return bundle;
+    }
 
 }

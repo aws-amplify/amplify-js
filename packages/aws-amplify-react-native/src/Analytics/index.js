@@ -12,6 +12,7 @@
  */
 
 import AnalyticsClass from './Analytics';
+import Notification from './Notification';
 
 import Hub from '../Common/Hub';
 import { ConsoleLogger as Logger } from '../Common';
@@ -37,3 +38,5 @@ Analytics.onHubCapsule = (capsule) => {
 }
 
 Hub.listen('credentials', Analytics);
+
+export { Notification };

@@ -12,7 +12,7 @@
  */
 
 import Auth from './Auth';
-import Analytics from './Analytics';
+import Analytics, { Notification } from './Analytics';
 import API from './API';
 import Cache from './Cache';
 import Storage from './Storage';
@@ -52,4 +52,4 @@ Amplify.Logger = Logger;
 Amplify.Components = Components;
 Amplify.withAuthenticator = withAuthenticator;
 
-export { Auth, Authenticator, Analytics, API, Cache, Storage, I18n, Logger, Components, withAuthenticator, S3Album, S3Image };
+export { Auth, Authenticator, Analytics, API, Cache, Storage, I18n, Logger, Components, withAuthenticator, S3Album, S3Image, Notification };

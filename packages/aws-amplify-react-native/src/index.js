@@ -12,7 +12,7 @@
  */
 
 import Auth from './Auth';
-import Analytics from './Analytics';
+import Analytics , { Notification }from './Analytics';
 import API from './API';
 import Cache from './Cache';
 import Storage from './Storage';
@@ -66,5 +66,6 @@ export {
     Components,
     withAuthenticator,
     S3Album,
-    S3Image
+    S3Image,
+    Notification
 };
