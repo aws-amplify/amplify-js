@@ -11,6 +11,14 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -58,7 +66,7 @@ var dispatchAuthEvent = function (event, data) {
 /**
 * Provide authentication steps
 */
-var AuthClass = (function () {
+var AuthClass = /** @class */ (function () {
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -641,12 +649,7 @@ var AuthClass = (function () {
                             })];
                     case 2:
                         attributes = _a.sent();
-                        info = {
-                            username: user.username,
-                            id: credentials.identityId,
-                            email: attributes.email,
-                            phone_number: attributes.phone_number
-                        };
+                        info = __assign({ username: user.username, id: credentials.identityId }, this.attributesToObject(attributes));
                         return [2 /*return*/, info];
                     case 3:
                         if (source === 'federated') {
@@ -689,8 +692,16 @@ var AuthClass = (function () {
     };
     AuthClass.prototype.attributesToObject = function (attributes) {
         var obj = {};
-        attributes.map(function (attribute) {
-            obj[attribute.Name] = (attribute.Value === 'false') ? false : attribute.Value;
+        attributes.map(function (attr) {
+            if (attr.Value === 'true') {
+                obj[attr.Name] = true;
+            }
+            else if (attr.Value === 'false') {
+                obj[attr.Name] = false;
+            }
+            else {
+                obj[attr.Name] = attr.Value;
+            }
         });
         return obj;
     };
