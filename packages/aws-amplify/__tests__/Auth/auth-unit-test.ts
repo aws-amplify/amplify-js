@@ -1314,10 +1314,10 @@ describe('auth unit test', () => {
             const spyon2 = jest.spyOn(Auth.prototype, 'userAttributes')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej)=> {
-                        res({
-                            email: 'email',
-                            phone_number: 'phone_number'
-                        });
+                        res([
+                            {Name: 'email', Value: 'email'},
+                            {Name: 'phone_number', Value : 'phone_number'}
+                        ]);
                     });
                 });
 
