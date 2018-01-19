@@ -1316,7 +1316,9 @@ describe('auth unit test', () => {
                     return new Promise((res, rej)=> {
                         res([
                             {Name: 'email', Value: 'email'},
-                            {Name: 'phone_number', Value : 'phone_number'}
+                            {Name: 'phone_number', Value : 'phone_number'},
+                            {Name: 'email_verified', Value: 'false'},
+                            {Name: 'phone_number_verified', Value: 'true'}
                         ]);
                     });
                 });
@@ -1326,7 +1328,9 @@ describe('auth unit test', () => {
                 email: 'email',
                 id: 'identityId',
                 phone_number: 'phone_number',
-                username: 'username'
+                username: 'username',
+                email_verified: false,
+                phone_number_verified: true
             });
 
             spyon.mockClear();
