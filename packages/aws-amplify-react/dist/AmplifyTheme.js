@@ -3,10 +3,18 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.Col12 = exports.Col11 = exports.Col10 = exports.Col9 = exports.Col8 = exports.Col7 = exports.Col6 = exports.Col5 = exports.Col4 = exports.Col3 = exports.Col2 = exports.Col1 = exports.Pre = exports.A = exports.Space = exports.SignInButton = exports.Button = exports.Input = exports.ActionRow = exports.FormRow = exports.SectionBody = exports.SectionFooter = exports.SectionHeader = exports.ErrorSection = exports.FormSection = exports.FormContainer = exports.NavButton = exports.NavItem = exports.Nav = exports.NavRight = exports.NavBar = exports.Container = undefined;
-
-var _awsAmplify = require('aws-amplify');
-
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
 var Container = exports.Container = {
     fontFamily: '-apple-system,\n                BlinkMacSystemFont,\n                "Segoe UI",\n                Roboto,\n                "Helvetica Neue",\n                Arial,\n                sans-serif,\n                "Apple Color Emoji",\n                "Segoe UI Emoji",\n                "Segoe UI Symbol"',
     fontWeight: '400',
@@ -15,18 +23,7 @@ var Container = exports.Container = {
     textAlign: 'left',
     paddingLeft: '15px',
     paddingRight: '15px'
-}; /*
-    * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-    *
-    * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
-    * the License. A copy of the License is located at
-    *
-    *     http://aws.amazon.com/apache2.0/
-    *
-    * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-    * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
-    * and limitations under the License.
-    */
+};
 
 var NavBar = exports.NavBar = {
     position: 'relative',

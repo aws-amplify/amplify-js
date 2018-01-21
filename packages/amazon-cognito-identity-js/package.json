@@ -49,6 +49,7 @@
     "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
+    "test": "eslint src",
     "lint2": "eslint enhance-rn.js"
   },
   "main": "lib/index.js",
