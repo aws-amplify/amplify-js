@@ -1,4 +1,5 @@
-var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin")
 
 module.exports = {
     entry: {
@@ -22,6 +23,9 @@ module.exports = {
         new UglifyJsPlugin({
             minimize: true,
             sourceMap: true,
+            include: /\.min\.js$/,
+        }),
+        new CompressionPlugin({
             include: /\.min\.js$/,
         })
     ],

@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "test": "lerna run -- test",
+    "test": "lerna exec yarn test",
     "coverage": "codecov",
     "docs": "typedoc --out docs/api/ packages/aws-amplify/src/ --ignoreCompilerErrors --hideGenerator && touch docs/api/.nojekyll",
     "build": "lerna run -- build",
@@ -16,12 +16,16 @@
     "lint",
     "test"
   ],
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-amplify.git"
   },
   "author": "Amazon Web Services",
-  "license": "Apache 2.0",
+  "license": "Apache",
   "bugs": {
     "url": "https://github.com/aws/aws-amplify/issues"
   },
@@ -48,6 +52,8 @@
   "jest": {
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    }
+    },
+    "resetMocks": true,
+    "verbose": true
   }
 }

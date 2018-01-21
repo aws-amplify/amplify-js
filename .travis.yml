@@ -3,11 +3,10 @@ sudo: false
 node_js:
   - 8
 install:
-  - npm install
+  - yarn
 script:
-  - npm run bootstrap
-  - npm run lint
-  - npm run test
-  - npm run coverage
-  - npm run build
-  - npm run docs
+  - yarn bootstrap
+  - yarn test --scope aws-amplify
+  - yarn test --scope aws-amplify-react
+  - yarn coverage
+  - yarn build
