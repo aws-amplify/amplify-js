@@ -73,6 +73,8 @@
     "babel-loader": "^6.2.4",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.23.0",
     "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "cross-env": "^3.1.4",
     "eslint": "^3.19.0",
     "eslint-config-airbnb-base": "^5.0.2",

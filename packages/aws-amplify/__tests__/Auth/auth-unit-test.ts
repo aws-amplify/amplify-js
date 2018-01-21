@@ -1489,10 +1489,17 @@ describe('auth unit test', () => {
                 });
             
             expect.assertions(1);
-            expect(await auth.currentUserPoolUser()).toEqual(user);
+            auth.currentUserPoolUser()
+                .then((user) => {
+                    expect(user),toEqual(user);
+                    spyon.mockClear();
+                    spyon2.mockClear();
+                })
+                .catch((e) => {
+                    expect(e).toBe('No current user in userPool');
+                });
 
-            spyon.mockClear();
-            spyon2.mockClear();
+            //expect(await auth.currentUserPoolUser()).toEqual(user);
         });
 
         test('no current user', async () => {
