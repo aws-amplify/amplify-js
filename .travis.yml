@@ -6,6 +6,7 @@ install:
   - yarn
 script:
   - yarn bootstrap
+  - yarn link
   - yarn test --scope aws-amplify
   - yarn test --scope aws-amplify-react
   - yarn coverage
