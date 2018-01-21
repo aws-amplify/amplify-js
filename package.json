@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "bootstrap": "lerna bootstrap",
+    "link": "lerna link",
     "pre-commit": "lerna exec yarn test --scope aws-amplify",
     "test": "lerna exec yarn test",
     "coverage": "codecov",
@@ -15,10 +16,6 @@
   },
   "pre-commit": [
     "pre-commit"
-  ],
-  "private": true,
-  "workspaces": [
-    "packages/*"
   ],
   "repository": {
     "type": "git",

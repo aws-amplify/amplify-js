@@ -3,10 +3,10 @@ sudo: false
 node_js:
   - 6
 install:
-  - yarn config set workspaces-experimental true
   - yarn
 script:
   - yarn bootstrap
+  - yarn link
   - yarn test --scope aws-amplify
   - yarn test --scope aws-amplify-react
   - yarn coverage
