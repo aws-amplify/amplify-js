@@ -1,0 +1,23 @@
+{
+  "name": "babel-webpack",
+  "version": "1.0.0",
+  "description": "Babel webpack example ",
+  "scripts": {
+    "build": "webpack"
+  },
+  "devDependencies": {
+    "babel-core": "^6.17.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "babel-register": "^6.16.3",
+    "json-loader": "^0.5.4",
+    "webpack": "^1.13.2"
+  },
+  "dependencies": {
+    "amazon-cognito-identity-js": "^1.5.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  }
+}
