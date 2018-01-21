@@ -7,7 +7,8 @@ install:
 script:
   - npm run bootstrap
   - npm run lint
-  - npm run test
+  - cd packages/aws-amplify && npm run test
+  - cd packages/aws-amplify-react && npm run test
   - npm run coverage
   - npm run build
   - npm run docs

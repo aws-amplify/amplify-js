@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.185.0",
-    "amazon-cognito-identity-js": "../amazon-cognito-identity-js",
+    "amazon-cognito-identity-js": "file:../amazon-cognito-identity-js",
     "axios": "^0.17.0"
   },
   "jest": {
