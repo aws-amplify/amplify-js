@@ -5,7 +5,7 @@ node_js:
 install:
   - yarn
 script:
-  - yarn bootstrap
+  - yarn bootstrap --concurrency=1
   - yarn test --scope aws-amplify
   - yarn test --scope aws-amplify-react
   - yarn coverage
