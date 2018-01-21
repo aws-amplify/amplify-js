@@ -4,8 +4,9 @@ node_js:
   - 6
 install:
   - yarn
+  - yarn config set workspaces-experimental true
 script:
-  - yarn bootstrap --concurrency=1
+  - yarn bootstrap
   - yarn test --scope aws-amplify
   - yarn test --scope aws-amplify-react
   - yarn coverage
