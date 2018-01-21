@@ -13029,19 +13029,40 @@ exports.encode = exports.stringify = __webpack_require__(282);
 
 /***/ }),
 /* 105 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer___ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer____default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_buffer___);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_randombytes__ = __webpack_require__(304);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_randombytes___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_randombytes__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_create_hmac__ = __webpack_require__(106);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_create_hmac___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_create_hmac__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_create_hash__ = __webpack_require__(320);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_create_hash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_create_hash__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__BigInteger__ = __webpack_require__(117);
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _buffer = __webpack_require__(5);
+
+var _randombytes = __webpack_require__(304);
+
+var _randombytes2 = _interopRequireDefault(_randombytes);
+
+var _createHmac = __webpack_require__(106);
+
+var _createHmac2 = _interopRequireDefault(_createHmac);
+
+var _createHash = __webpack_require__(320);
+
+var _createHash2 = _interopRequireDefault(_createHash);
+
+var _BigInteger = __webpack_require__(117);
+
+var _BigInteger2 = _interopRequireDefault(_BigInteger);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -13060,13 +13081,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * limitations under the License.
  */
 
-
-
-
-
-
-
-
 var initN = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1' + '29024E088A67CC74020BBEA63B139B22514A08798E3404DD' + 'EF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245' + 'E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' + 'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3D' + 'C2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F' + '83655D23DCA3AD961C62F356208552BB9ED529077096966D' + '670C354E4ABC9804F1746C08CA18217C32905E462E36CE3B' + 'E39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9' + 'DE2BCBF6955817183995497CEA956AE515D2261898FA0510' + '15728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64' + 'ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7' + 'ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6B' + 'F12FFA06D98A0864D87602733EC86A64521F2B18177B200C' + 'BBE117577A615D6C770988C0BAD946E208E24FA074E5AB31' + '43DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF';
 
 var newPasswordRequiredChallengeUserAttributePrefix = 'userAttributes.';
@@ -13081,14 +13095,14 @@ var AuthenticationHelper = function () {
   function AuthenticationHelper(PoolName) {
     _classCallCheck(this, AuthenticationHelper);
 
-    this.N = new __WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */](initN, 16);
-    this.g = new __WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */]('2', 16);
-    this.k = new __WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */](this.hexHash('00' + this.N.toString(16) + '0' + this.g.toString(16)), 16);
+    this.N = new _BigInteger2.default(initN, 16);
+    this.g = new _BigInteger2.default('2', 16);
+    this.k = new _BigInteger2.default(this.hexHash('00' + this.N.toString(16) + '0' + this.g.toString(16)), 16);
 
     this.smallAValue = this.generateRandomSmallA();
     this.getLargeAValue(function () {});
 
-    this.infoBits = __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from('Caldera Derived Key', 'utf8');
+    this.infoBits = _buffer.Buffer.from('Caldera Derived Key', 'utf8');
 
     this.poolName = PoolName;
   }
@@ -13096,7 +13110,6 @@ var AuthenticationHelper = function () {
   /**
    * @returns {BigInteger} small A, a random number
    */
-
 
   AuthenticationHelper.prototype.getSmallAValue = function getSmallAValue() {
     return this.smallAValue;
@@ -13106,7 +13119,6 @@ var AuthenticationHelper = function () {
    * @param {nodeCallback<BigInteger>} callback Called with (err, largeAValue)
    * @returns {void}
    */
-
 
   AuthenticationHelper.prototype.getLargeAValue = function getLargeAValue(callback) {
     var _this = this;
@@ -13131,11 +13143,10 @@ var AuthenticationHelper = function () {
    * @private
    */
 
-
   AuthenticationHelper.prototype.generateRandomSmallA = function generateRandomSmallA() {
-    var hexRandom = __WEBPACK_IMPORTED_MODULE_1_randombytes___default()(128).toString('hex');
+    var hexRandom = (0, _randombytes2.default)(128).toString('hex');
 
-    var randomBigInt = new __WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */](hexRandom, 16);
+    var randomBigInt = new _BigInteger2.default(hexRandom, 16);
     var smallABigInt = randomBigInt.mod(this.N);
 
     return smallABigInt;
@@ -13147,15 +13158,13 @@ var AuthenticationHelper = function () {
    * @private
    */
 
-
   AuthenticationHelper.prototype.generateRandomString = function generateRandomString() {
-    return __WEBPACK_IMPORTED_MODULE_1_randombytes___default()(40).toString('base64');
+    return (0, _randombytes2.default)(40).toString('base64');
   };
 
   /**
    * @returns {string} Generated random value included in password hash.
    */
-
 
   AuthenticationHelper.prototype.getRandomPassword = function getRandomPassword() {
     return this.randomPassword;
@@ -13165,7 +13174,6 @@ var AuthenticationHelper = function () {
    * @returns {string} Generated random value included in devices hash.
    */
 
-
   AuthenticationHelper.prototype.getSaltDevices = function getSaltDevices() {
     return this.SaltToHashDevices;
   };
@@ -13173,7 +13181,6 @@ var AuthenticationHelper = function () {
   /**
    * @returns {string} Value used to verify devices.
    */
-
 
   AuthenticationHelper.prototype.getVerifierDevices = function getVerifierDevices() {
     return this.verifierDevices;
@@ -13187,7 +13194,6 @@ var AuthenticationHelper = function () {
    * @returns {void}
    */
 
-
   AuthenticationHelper.prototype.generateHashDevice = function generateHashDevice(deviceGroupKey, username, callback) {
     var _this2 = this;
 
@@ -13195,10 +13201,10 @@ var AuthenticationHelper = function () {
     var combinedString = '' + deviceGroupKey + username + ':' + this.randomPassword;
     var hashedString = this.hash(combinedString);
 
-    var hexRandom = __WEBPACK_IMPORTED_MODULE_1_randombytes___default()(16).toString('hex');
-    this.SaltToHashDevices = this.padHex(new __WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */](hexRandom, 16));
+    var hexRandom = (0, _randombytes2.default)(16).toString('hex');
+    this.SaltToHashDevices = this.padHex(new _BigInteger2.default(hexRandom, 16));
 
-    this.g.modPow(new __WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */](this.hexHash(this.SaltToHashDevices + hashedString), 16), this.N, function (err, verifierDevicesNotPadded) {
+    this.g.modPow(new _BigInteger2.default(this.hexHash(this.SaltToHashDevices + hashedString), 16), this.N, function (err, verifierDevicesNotPadded) {
       if (err) {
         callback(err, null);
       }
@@ -13217,7 +13223,6 @@ var AuthenticationHelper = function () {
    * @private
    */
 
-
   AuthenticationHelper.prototype.calculateA = function calculateA(a, callback) {
     var _this3 = this;
 
@@ -13226,7 +13231,7 @@ var AuthenticationHelper = function () {
         callback(err, null);
       }
 
-      if (A.mod(_this3.N).equals(__WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */].ZERO)) {
+      if (A.mod(_this3.N).equals(_BigInteger2.default.ZERO)) {
         callback(new Error('Illegal paramater. A mod N cannot be 0.'), null);
       }
 
@@ -13242,10 +13247,9 @@ var AuthenticationHelper = function () {
    * @private
    */
 
-
   AuthenticationHelper.prototype.calculateU = function calculateU(A, B) {
     this.UHexHash = this.hexHash(this.padHex(A) + this.padHex(B));
-    var finalU = new __WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */](this.UHexHash, 16);
+    var finalU = new _BigInteger2.default(this.UHexHash, 16);
 
     return finalU;
   };
@@ -13257,9 +13261,8 @@ var AuthenticationHelper = function () {
    * @private
    */
 
-
   AuthenticationHelper.prototype.hash = function hash(buf) {
-    var hashHex = __WEBPACK_IMPORTED_MODULE_3_create_hash___default()('sha256').update(buf).digest('hex');
+    var hashHex = (0, _createHash2.default)('sha256').update(buf).digest('hex');
     return new Array(64 - hashHex.length).join('0') + hashHex;
   };
 
@@ -13270,9 +13273,8 @@ var AuthenticationHelper = function () {
    * @private
    */
 
-
   AuthenticationHelper.prototype.hexHash = function hexHash(hexStr) {
-    return this.hash(__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(hexStr, 'hex'));
+    return this.hash(_buffer.Buffer.from(hexStr, 'hex'));
   };
 
   /**
@@ -13283,11 +13285,10 @@ var AuthenticationHelper = function () {
    * @private
    */
 
-
   AuthenticationHelper.prototype.computehkdf = function computehkdf(ikm, salt) {
-    var prk = __WEBPACK_IMPORTED_MODULE_2_create_hmac___default()('sha256', salt).update(ikm).digest();
-    var infoBitsUpdate = __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].concat([this.infoBits, __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(String.fromCharCode(1), 'utf8')]);
-    var hmac = __WEBPACK_IMPORTED_MODULE_2_create_hmac___default()('sha256', prk).update(infoBitsUpdate).digest();
+    var prk = (0, _createHmac2.default)('sha256', salt).update(ikm).digest();
+    var infoBitsUpdate = _buffer.Buffer.concat([this.infoBits, _buffer.Buffer.from(String.fromCharCode(1), 'utf8')]);
+    var hmac = (0, _createHmac2.default)('sha256', prk).update(infoBitsUpdate).digest();
     return hmac.slice(0, 16);
   };
 
@@ -13301,30 +13302,29 @@ var AuthenticationHelper = function () {
    * @returns {void}
    */
 
-
   AuthenticationHelper.prototype.getPasswordAuthenticationKey = function getPasswordAuthenticationKey(username, password, serverBValue, salt, callback) {
     var _this4 = this;
 
-    if (serverBValue.mod(this.N).equals(__WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */].ZERO)) {
+    if (serverBValue.mod(this.N).equals(_BigInteger2.default.ZERO)) {
       throw new Error('B cannot be zero.');
     }
 
     this.UValue = this.calculateU(this.largeAValue, serverBValue);
 
-    if (this.UValue.equals(__WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */].ZERO)) {
+    if (this.UValue.equals(_BigInteger2.default.ZERO)) {
       throw new Error('U cannot be zero.');
     }
 
     var usernamePassword = '' + this.poolName + username + ':' + password;
     var usernamePasswordHash = this.hash(usernamePassword);
 
-    var xValue = new __WEBPACK_IMPORTED_MODULE_4__BigInteger__["a" /* default */](this.hexHash(this.padHex(salt) + usernamePasswordHash), 16);
+    var xValue = new _BigInteger2.default(this.hexHash(this.padHex(salt) + usernamePasswordHash), 16);
     this.calculateS(xValue, serverBValue, function (err, sValue) {
       if (err) {
         callback(err, null);
       }
 
-      var hkdf = _this4.computehkdf(__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this4.padHex(sValue), 'hex'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this4.padHex(_this4.UValue.toString(16)), 'hex'));
+      var hkdf = _this4.computehkdf(_buffer.Buffer.from(_this4.padHex(sValue), 'hex'), _buffer.Buffer.from(_this4.padHex(_this4.UValue.toString(16)), 'hex'));
 
       callback(null, hkdf);
     });
@@ -13337,7 +13337,6 @@ var AuthenticationHelper = function () {
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
-
 
   AuthenticationHelper.prototype.calculateS = function calculateS(xValue, serverBValue, callback) {
     var _this5 = this;
@@ -13363,7 +13362,6 @@ var AuthenticationHelper = function () {
   * @return {newPasswordRequiredChallengeUserAttributePrefix} constant prefix value
   */
 
-
   AuthenticationHelper.prototype.getNewPasswordRequiredChallengeUserAttributePrefix = function getNewPasswordRequiredChallengeUserAttributePrefix() {
     return newPasswordRequiredChallengeUserAttributePrefix;
   };
@@ -13373,7 +13371,6 @@ var AuthenticationHelper = function () {
    * @param {BigInteger|String} bigInt Number or string to pad.
    * @returns {String} Padded hex string.
    */
-
 
   AuthenticationHelper.prototype.padHex = function padHex(bigInt) {
     var hashStr = bigInt.toString(16);
@@ -13388,7 +13385,7 @@ var AuthenticationHelper = function () {
   return AuthenticationHelper;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (AuthenticationHelper);
+exports.default = AuthenticationHelper;
 
 /***/ }),
 /* 106 */
@@ -15798,9 +15795,14 @@ module.exports = Sha512
 
 /***/ }),
 /* 117 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 // A small implementation of BigInteger based on http://www-cs-students.stanford.edu/~tjw/jsbn/
 //
 // All public methods have been removed except the following:
@@ -15818,7 +15820,7 @@ module.exports = Sha512
 //   divide
 //   modPow
 
-/* harmony default export */ __webpack_exports__["a"] = (BigInteger);
+exports.default = BigInteger;
 
 /*
  * Copyright (c) 2003-2005  Tom Wu
@@ -15852,6 +15854,7 @@ module.exports = Sha512
  */
 
 // (public) Constructor
+
 function BigInteger(a, b) {
   if (a != null) this.fromString(a, b);
 }
@@ -16600,15 +16603,40 @@ BigInteger.ONE = nbv(1);
 
 /***/ }),
 /* 118 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__CognitoJwtToken__ = __webpack_require__(119);
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _CognitoJwtToken2 = __webpack_require__(119);
+
+var _CognitoJwtToken3 = _interopRequireDefault(_CognitoJwtToken2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }return call && ((typeof call === "undefined" ? "undefined" : _typeof(call)) === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : _typeof(superClass)));
+  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
 
 /*
  * Copyright 2016 Amazon.com,
@@ -16626,8 +16654,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 
 /** @class */
 
@@ -16648,18 +16674,28 @@ var CognitoAccessToken = function (_CognitoJwtToken) {
   }
 
   return CognitoAccessToken;
-}(__WEBPACK_IMPORTED_MODULE_0__CognitoJwtToken__["a" /* default */]);
+}(_CognitoJwtToken3.default);
 
-/* harmony default export */ __webpack_exports__["a"] = (CognitoAccessToken);
+exports.default = CognitoAccessToken;
 
 /***/ }),
 /* 119 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer___ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer____default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_buffer___);
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _buffer = __webpack_require__(5);
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -16677,8 +16713,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 
 /** @class */
 
@@ -16699,7 +16733,6 @@ var CognitoJwtToken = function () {
    * @returns {string} the record's token.
    */
 
-
   CognitoJwtToken.prototype.getJwtToken = function getJwtToken() {
     return this.jwtToken;
   };
@@ -16707,7 +16740,6 @@ var CognitoJwtToken = function () {
   /**
    * @returns {int} the token's expiration (exp member).
    */
-
 
   CognitoJwtToken.prototype.getExpiration = function getExpiration() {
     return this.payload.exp;
@@ -16717,7 +16749,6 @@ var CognitoJwtToken = function () {
    * @returns {int} the token's "issued at" (iat member).
    */
 
-
   CognitoJwtToken.prototype.getIssuedAt = function getIssuedAt() {
     return this.payload.iat;
   };
@@ -16726,11 +16757,10 @@ var CognitoJwtToken = function () {
    * @returns {object} the token's payload.
    */
 
-
   CognitoJwtToken.prototype.decodePayload = function decodePayload() {
     var payload = this.jwtToken.split('.')[1];
     try {
-      return JSON.parse(__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(payload, 'base64').toString('utf8'));
+      return JSON.parse(_buffer.Buffer.from(payload, 'base64').toString('utf8'));
     } catch (err) {
       return {};
     }
@@ -16739,19 +16769,44 @@ var CognitoJwtToken = function () {
   return CognitoJwtToken;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (CognitoJwtToken);
+exports.default = CognitoJwtToken;
 
 /***/ }),
 /* 120 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__CognitoJwtToken__ = __webpack_require__(119);
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _CognitoJwtToken2 = __webpack_require__(119);
+
+var _CognitoJwtToken3 = _interopRequireDefault(_CognitoJwtToken2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }return call && ((typeof call === "undefined" ? "undefined" : _typeof(call)) === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : _typeof(superClass)));
+  }subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -16769,8 +16824,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 
 /** @class */
 
@@ -16791,16 +16844,25 @@ var CognitoIdToken = function (_CognitoJwtToken) {
   }
 
   return CognitoIdToken;
-}(__WEBPACK_IMPORTED_MODULE_0__CognitoJwtToken__["a" /* default */]);
+}(_CognitoJwtToken3.default);
 
-/* harmony default export */ __webpack_exports__["a"] = (CognitoIdToken);
+exports.default = CognitoIdToken;
 
 /***/ }),
 /* 121 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -16839,7 +16901,6 @@ var CognitoRefreshToken = function () {
    * @returns {string} the record's token.
    */
 
-
   CognitoRefreshToken.prototype.getToken = function getToken() {
     return this.token;
   };
@@ -16847,27 +16908,68 @@ var CognitoRefreshToken = function () {
   return CognitoRefreshToken;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (CognitoRefreshToken);
+exports.default = CognitoRefreshToken;
 
 /***/ }),
 /* 122 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer___ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer____default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_buffer___);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_create_hmac__ = __webpack_require__(106);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_create_hmac___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_create_hmac__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__BigInteger__ = __webpack_require__(117);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__ = __webpack_require__(105);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__CognitoAccessToken__ = __webpack_require__(118);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__CognitoIdToken__ = __webpack_require__(120);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__CognitoRefreshToken__ = __webpack_require__(121);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__CognitoUserSession__ = __webpack_require__(123);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__DateHelper__ = __webpack_require__(124);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__CognitoUserAttribute__ = __webpack_require__(125);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__StorageHelper__ = __webpack_require__(126);
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _buffer = __webpack_require__(5);
+
+var _createHmac = __webpack_require__(106);
+
+var _createHmac2 = _interopRequireDefault(_createHmac);
+
+var _BigInteger = __webpack_require__(117);
+
+var _BigInteger2 = _interopRequireDefault(_BigInteger);
+
+var _AuthenticationHelper = __webpack_require__(105);
+
+var _AuthenticationHelper2 = _interopRequireDefault(_AuthenticationHelper);
+
+var _CognitoAccessToken = __webpack_require__(118);
+
+var _CognitoAccessToken2 = _interopRequireDefault(_CognitoAccessToken);
+
+var _CognitoIdToken = __webpack_require__(120);
+
+var _CognitoIdToken2 = _interopRequireDefault(_CognitoIdToken);
+
+var _CognitoRefreshToken = __webpack_require__(121);
+
+var _CognitoRefreshToken2 = _interopRequireDefault(_CognitoRefreshToken);
+
+var _CognitoUserSession = __webpack_require__(123);
+
+var _CognitoUserSession2 = _interopRequireDefault(_CognitoUserSession);
+
+var _DateHelper = __webpack_require__(124);
+
+var _DateHelper2 = _interopRequireDefault(_DateHelper);
+
+var _CognitoUserAttribute = __webpack_require__(125);
+
+var _CognitoUserAttribute2 = _interopRequireDefault(_CognitoUserAttribute);
+
+var _StorageHelper = __webpack_require__(126);
+
+var _StorageHelper2 = _interopRequireDefault(_StorageHelper);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -16885,19 +16987,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * @callback nodeCallback
@@ -16964,7 +17053,7 @@ var CognitoUser = function () {
     this.signInUserSession = null;
     this.authenticationFlowType = 'USER_SRP_AUTH';
 
-    this.storage = data.Storage || new __WEBPACK_IMPORTED_MODULE_10__StorageHelper__["a" /* default */]().getStorage();
+    this.storage = data.Storage || new _StorageHelper2.default().getStorage();
   }
 
   /**
@@ -16972,7 +17061,6 @@ var CognitoUser = function () {
    * @param {CognitoUserSession} signInUserSession the session
    * @returns {void}
    */
-
 
   CognitoUser.prototype.setSignInUserSession = function setSignInUserSession(signInUserSession) {
     this.clearCachedTokens();
@@ -16984,7 +17072,6 @@ var CognitoUser = function () {
    * @returns {CognitoUserSession} the current session for this user
    */
 
-
   CognitoUser.prototype.getSignInUserSession = function getSignInUserSession() {
     return this.signInUserSession;
   };
@@ -16993,7 +17080,6 @@ var CognitoUser = function () {
    * @returns {string} the user's username
    */
 
-
   CognitoUser.prototype.getUsername = function getUsername() {
     return this.username;
   };
@@ -17001,7 +17087,6 @@ var CognitoUser = function () {
   /**
    * @returns {String} the authentication flow type
    */
-
 
   CognitoUser.prototype.getAuthenticationFlowType = function getAuthenticationFlowType() {
     return this.authenticationFlowType;
@@ -17012,7 +17097,6 @@ var CognitoUser = function () {
    * @param {string} authenticationFlowType New value.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.setAuthenticationFlowType = function setAuthenticationFlowType(authenticationFlowType) {
     this.authenticationFlowType = authenticationFlowType;
@@ -17028,7 +17112,6 @@ var CognitoUser = function () {
    * @param {authSuccess} callback.onSuccess Called on success with the new session.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.initiateAuth = function initiateAuth(authDetails, callback) {
     var _this = this;
@@ -17079,12 +17162,11 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.authenticateUser = function authenticateUser(authDetails, callback) {
     var _this2 = this;
 
-    var authenticationHelper = new __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__["a" /* default */](this.pool.getUserPoolId().split('_')[1]);
-    var dateHelper = new __WEBPACK_IMPORTED_MODULE_8__DateHelper__["a" /* default */]();
+    var authenticationHelper = new _AuthenticationHelper2.default(this.pool.getUserPoolId().split('_')[1]);
+    var dateHelper = new _DateHelper2.default();
 
     var serverBValue = void 0;
     var salt = void 0;
@@ -17125,8 +17207,8 @@ var CognitoUser = function () {
         var challengeParameters = data.ChallengeParameters;
 
         _this2.username = challengeParameters.USER_ID_FOR_SRP;
-        serverBValue = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](challengeParameters.SRP_B, 16);
-        salt = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](challengeParameters.SALT, 16);
+        serverBValue = new _BigInteger2.default(challengeParameters.SRP_B, 16);
+        salt = new _BigInteger2.default(challengeParameters.SALT, 16);
         _this2.getCachedDeviceKeyAndPassword();
 
         authenticationHelper.getPasswordAuthenticationKey(_this2.username, authDetails.getPassword(), serverBValue, salt, function (errOnHkdf, hkdf) {
@@ -17137,7 +17219,7 @@ var CognitoUser = function () {
 
           var dateNow = dateHelper.getNowString();
 
-          var signatureString = __WEBPACK_IMPORTED_MODULE_1_create_hmac___default()('sha256', hkdf).update(__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].concat([__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this2.pool.getUserPoolId().split('_')[1], 'utf8'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this2.username, 'utf8'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(challengeParameters.SECRET_BLOCK, 'base64'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(dateNow, 'utf8')])).digest('base64');
+          var signatureString = (0, _createHmac2.default)('sha256', hkdf).update(_buffer.Buffer.concat([_buffer.Buffer.from(_this2.pool.getUserPoolId().split('_')[1], 'utf8'), _buffer.Buffer.from(_this2.username, 'utf8'), _buffer.Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'), _buffer.Buffer.from(dateNow, 'utf8')])).digest('base64');
 
           var challengeResponses = {};
 
@@ -17218,7 +17300,6 @@ var CognitoUser = function () {
   * @returns {void}
   */
 
-
   CognitoUser.prototype.authenticateUserInternal = function authenticateUserInternal(dataAuthenticate, authenticationHelper, callback) {
     var _this3 = this;
 
@@ -17269,8 +17350,8 @@ var CognitoUser = function () {
       }
 
       var deviceSecretVerifierConfig = {
-        Salt: __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(authenticationHelper.getSaltDevices(), 'hex').toString('base64'),
-        PasswordVerifier: __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(authenticationHelper.getVerifierDevices(), 'hex').toString('base64')
+        Salt: _buffer.Buffer.from(authenticationHelper.getSaltDevices(), 'hex').toString('base64'),
+        PasswordVerifier: _buffer.Buffer.from(authenticationHelper.getVerifierDevices(), 'hex').toString('base64')
       };
 
       _this3.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
@@ -17314,14 +17395,13 @@ var CognitoUser = function () {
   * @returns {void}
   */
 
-
   CognitoUser.prototype.completeNewPasswordChallenge = function completeNewPasswordChallenge(newPassword, requiredAttributeData, callback) {
     var _this4 = this;
 
     if (!newPassword) {
       return callback.onFailure(new Error('New password is required.'));
     }
-    var authenticationHelper = new __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__["a" /* default */](this.pool.getUserPoolId().split('_')[1]);
+    var authenticationHelper = new _AuthenticationHelper2.default(this.pool.getUserPoolId().split('_')[1]);
     var userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
 
     var finalUserAttributes = {};
@@ -17363,12 +17443,11 @@ var CognitoUser = function () {
    * @private
    */
 
-
   CognitoUser.prototype.getDeviceResponse = function getDeviceResponse(callback) {
     var _this5 = this;
 
-    var authenticationHelper = new __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__["a" /* default */](this.deviceGroupKey);
-    var dateHelper = new __WEBPACK_IMPORTED_MODULE_8__DateHelper__["a" /* default */]();
+    var authenticationHelper = new _AuthenticationHelper2.default(this.deviceGroupKey);
+    var dateHelper = new _DateHelper2.default();
 
     var authParameters = {};
 
@@ -17397,8 +17476,8 @@ var CognitoUser = function () {
 
         var challengeParameters = data.ChallengeParameters;
 
-        var serverBValue = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](challengeParameters.SRP_B, 16);
-        var salt = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](challengeParameters.SALT, 16);
+        var serverBValue = new _BigInteger2.default(challengeParameters.SRP_B, 16);
+        var salt = new _BigInteger2.default(challengeParameters.SALT, 16);
 
         authenticationHelper.getPasswordAuthenticationKey(_this5.deviceKey, _this5.randomPassword, serverBValue, salt, function (errHkdf, hkdf) {
           // getPasswordAuthenticationKey callback start
@@ -17408,7 +17487,7 @@ var CognitoUser = function () {
 
           var dateNow = dateHelper.getNowString();
 
-          var signatureString = __WEBPACK_IMPORTED_MODULE_1_create_hmac___default()('sha256', hkdf).update(__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].concat([__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this5.deviceGroupKey, 'utf8'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this5.deviceKey, 'utf8'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(challengeParameters.SECRET_BLOCK, 'base64'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(dateNow, 'utf8')])).digest('base64');
+          var signatureString = (0, _createHmac2.default)('sha256', hkdf).update(_buffer.Buffer.concat([_buffer.Buffer.from(_this5.deviceGroupKey, 'utf8'), _buffer.Buffer.from(_this5.deviceKey, 'utf8'), _buffer.Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'), _buffer.Buffer.from(dateNow, 'utf8')])).digest('base64');
 
           var challengeResponses = {};
 
@@ -17455,7 +17534,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.confirmRegistration = function confirmRegistration(confirmationCode, forceAliasCreation, callback) {
     var jsonReq = {
       ClientId: this.pool.getClientId(),
@@ -17484,7 +17562,6 @@ var CognitoUser = function () {
    * @param {authSuccess} callback.onSuccess Called on success with the new session.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.sendCustomChallengeAnswer = function sendCustomChallengeAnswer(answerChallenge, callback) {
     var _this6 = this;
@@ -17528,7 +17605,6 @@ var CognitoUser = function () {
    * @param {authSuccess} callback.onSuccess Called on success with the new session.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.sendMFACode = function sendMFACode(confirmationCode, callback, mfaType) {
     var _this7 = this;
@@ -17574,15 +17650,15 @@ var CognitoUser = function () {
         return callback.onSuccess(_this7.signInUserSession);
       }
 
-      var authenticationHelper = new __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__["a" /* default */](_this7.pool.getUserPoolId().split('_')[1]);
+      var authenticationHelper = new _AuthenticationHelper2.default(_this7.pool.getUserPoolId().split('_')[1]);
       authenticationHelper.generateHashDevice(dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey, dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey, function (errGenHash) {
         if (errGenHash) {
           return callback.onFailure(errGenHash);
         }
 
         var deviceSecretVerifierConfig = {
-          Salt: __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(authenticationHelper.getSaltDevices(), 'hex').toString('base64'),
-          PasswordVerifier: __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(authenticationHelper.getVerifierDevices(), 'hex').toString('base64')
+          Salt: _buffer.Buffer.from(authenticationHelper.getSaltDevices(), 'hex').toString('base64'),
+          PasswordVerifier: _buffer.Buffer.from(authenticationHelper.getVerifierDevices(), 'hex').toString('base64')
         };
 
         _this7.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
@@ -17620,7 +17696,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.changePassword = function changePassword(oldUserPassword, newUserPassword, callback) {
     if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
       return callback(new Error('User is not authenticated'), null);
@@ -17644,7 +17719,6 @@ var CognitoUser = function () {
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.enableMFA = function enableMFA(callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
@@ -17678,7 +17752,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.setUserMfaPreference = function setUserMfaPreference(smsMfaSettings, softwareTokenMfaSettings, callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
       return callback(new Error('User is not authenticated'), null);
@@ -17702,7 +17775,6 @@ var CognitoUser = function () {
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.disableMFA = function disableMFA(callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
@@ -17728,7 +17800,6 @@ var CognitoUser = function () {
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.deleteUser = function deleteUser(callback) {
     var _this8 = this;
@@ -17759,7 +17830,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.updateAttributes = function updateAttributes(attributes, callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
       return callback(new Error('User is not authenticated'), null);
@@ -17783,7 +17853,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.getUserAttributes = function getUserAttributes(callback) {
     if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
       return callback(new Error('User is not authenticated'), null);
@@ -17803,7 +17872,7 @@ var CognitoUser = function () {
           Name: userData.UserAttributes[i].Name,
           Value: userData.UserAttributes[i].Value
         };
-        var userAttribute = new __WEBPACK_IMPORTED_MODULE_9__CognitoUserAttribute__["a" /* default */](attribute);
+        var userAttribute = new _CognitoUserAttribute2.default(attribute);
         attributeList.push(userAttribute);
       }
 
@@ -17817,7 +17886,6 @@ var CognitoUser = function () {
    * @param {nodeCallback<MFAOptions>} callback Called on success or error.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.getMFAOptions = function getMFAOptions(callback) {
     if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
@@ -17843,7 +17911,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.deleteAttributes = function deleteAttributes(attributeList, callback) {
     if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
       return callback(new Error('User is not authenticated'), null);
@@ -17867,7 +17934,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.resendConfirmationCode = function resendConfirmationCode(callback) {
     var jsonReq = {
       ClientId: this.pool.getClientId(),
@@ -17890,7 +17956,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.getSession = function getSession(callback) {
     if (this.username == null) {
       return callback(new Error('Username is null. Cannot retrieve a new session'), null);
@@ -17907,13 +17972,13 @@ var CognitoUser = function () {
     var clockDriftKey = keyPrefix + '.clockDrift';
 
     if (this.storage.getItem(idTokenKey)) {
-      var idToken = new __WEBPACK_IMPORTED_MODULE_5__CognitoIdToken__["a" /* default */]({
+      var idToken = new _CognitoIdToken2.default({
         IdToken: this.storage.getItem(idTokenKey)
       });
-      var accessToken = new __WEBPACK_IMPORTED_MODULE_4__CognitoAccessToken__["a" /* default */]({
+      var accessToken = new _CognitoAccessToken2.default({
         AccessToken: this.storage.getItem(accessTokenKey)
       });
-      var refreshToken = new __WEBPACK_IMPORTED_MODULE_6__CognitoRefreshToken__["a" /* default */]({
+      var refreshToken = new _CognitoRefreshToken2.default({
         RefreshToken: this.storage.getItem(refreshTokenKey)
       });
       var clockDrift = parseInt(this.storage.getItem(clockDriftKey), 0) || 0;
@@ -17924,7 +17989,7 @@ var CognitoUser = function () {
         RefreshToken: refreshToken,
         ClockDrift: clockDrift
       };
-      var cachedSession = new __WEBPACK_IMPORTED_MODULE_7__CognitoUserSession__["a" /* default */](sessionData);
+      var cachedSession = new _CognitoUserSession2.default(sessionData);
       if (cachedSession.isValid()) {
         this.signInUserSession = cachedSession;
         return callback(null, this.signInUserSession);
@@ -17948,7 +18013,6 @@ var CognitoUser = function () {
    * @param {nodeCallback<CognitoUserSession>} callback Called on success or error.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.refreshSession = function refreshSession(refreshToken, callback) {
     var _this9 = this;
@@ -17998,7 +18062,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.cacheTokens = function cacheTokens() {
     var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId();
     var idTokenKey = keyPrefix + '.' + this.username + '.idToken';
@@ -18019,7 +18082,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.cacheDeviceKeyAndPassword = function cacheDeviceKeyAndPassword() {
     var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId() + '.' + this.username;
     var deviceKeyKey = keyPrefix + '.deviceKey';
@@ -18035,7 +18097,6 @@ var CognitoUser = function () {
    * This is used to get current device key and device group and device password
    * @returns {void}
    */
-
 
   CognitoUser.prototype.getCachedDeviceKeyAndPassword = function getCachedDeviceKeyAndPassword() {
     var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId() + '.' + this.username;
@@ -18055,7 +18116,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.clearCachedDeviceKeyAndPassword = function clearCachedDeviceKeyAndPassword() {
     var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId() + '.' + this.username;
     var deviceKeyKey = keyPrefix + '.deviceKey';
@@ -18071,7 +18131,6 @@ var CognitoUser = function () {
    * This is used to clear the session tokens from local storage
    * @returns {void}
    */
-
 
   CognitoUser.prototype.clearCachedTokens = function clearCachedTokens() {
     var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId();
@@ -18093,11 +18152,10 @@ var CognitoUser = function () {
    * @private
    */
 
-
   CognitoUser.prototype.getCognitoUserSession = function getCognitoUserSession(authResult) {
-    var idToken = new __WEBPACK_IMPORTED_MODULE_5__CognitoIdToken__["a" /* default */](authResult);
-    var accessToken = new __WEBPACK_IMPORTED_MODULE_4__CognitoAccessToken__["a" /* default */](authResult);
-    var refreshToken = new __WEBPACK_IMPORTED_MODULE_6__CognitoRefreshToken__["a" /* default */](authResult);
+    var idToken = new _CognitoIdToken2.default(authResult);
+    var accessToken = new _CognitoAccessToken2.default(authResult);
+    var refreshToken = new _CognitoRefreshToken2.default(authResult);
 
     var sessionData = {
       IdToken: idToken,
@@ -18105,7 +18163,7 @@ var CognitoUser = function () {
       RefreshToken: refreshToken
     };
 
-    return new __WEBPACK_IMPORTED_MODULE_7__CognitoUserSession__["a" /* default */](sessionData);
+    return new _CognitoUserSession2.default(sessionData);
   };
 
   /**
@@ -18117,7 +18175,6 @@ var CognitoUser = function () {
    * @param {onSuccess} callback.onSuccess Called on success.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.forgotPassword = function forgotPassword(callback) {
     var jsonReq = {
@@ -18148,7 +18205,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.confirmPassword = function confirmPassword(confirmationCode, newPassword, callback) {
     var jsonReq = {
       ClientId: this.pool.getClientId(),
@@ -18175,7 +18231,6 @@ var CognitoUser = function () {
    * @param {inputVerificationCode} callback.inputVerificationCode Called on success.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.getAttributeVerificationCode = function getAttributeVerificationCode(attributeName, callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
@@ -18207,7 +18262,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.verifyAttribute = function verifyAttribute(attributeName, confirmationCode, callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
       return callback.onFailure(new Error('User is not authenticated'));
@@ -18233,7 +18287,6 @@ var CognitoUser = function () {
    * @param {onSuccess<*>} callback.onSuccess Called on success with device data.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.getDevice = function getDevice(callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
@@ -18261,7 +18314,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.forgetSpecificDevice = function forgetSpecificDevice(deviceKey, callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
       return callback.onFailure(new Error('User is not authenticated'));
@@ -18287,7 +18339,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.forgetDevice = function forgetDevice(callback) {
     var _this10 = this;
 
@@ -18310,7 +18361,6 @@ var CognitoUser = function () {
    * @param {onSuccess<string>} callback.onSuccess Called on success.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.setDeviceStatusRemembered = function setDeviceStatusRemembered(callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
@@ -18337,7 +18387,6 @@ var CognitoUser = function () {
    * @param {onSuccess<string>} callback.onSuccess Called on success.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.setDeviceStatusNotRemembered = function setDeviceStatusNotRemembered(callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
@@ -18368,7 +18417,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.listDevices = function listDevices(limit, paginationToken, callback) {
     if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
       return callback.onFailure(new Error('User is not authenticated'));
@@ -18395,7 +18443,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.globalSignOut = function globalSignOut(callback) {
     var _this11 = this;
 
@@ -18420,7 +18467,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.signOut = function signOut() {
     this.signInUserSession = null;
     this.clearCachedTokens();
@@ -18432,7 +18478,6 @@ var CognitoUser = function () {
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.sendMFASelectionAnswer = function sendMFASelectionAnswer(answerChallenge, callback) {
     var _this12 = this;
@@ -18470,7 +18515,6 @@ var CognitoUser = function () {
    * @returns {void}
    */
 
-
   CognitoUser.prototype.getUserContextData = function getUserContextData() {
     var pool = this.pool;
     return pool.getUserContextData(this.username);
@@ -18481,7 +18525,6 @@ var CognitoUser = function () {
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.associateSoftwareToken = function associateSoftwareToken(callback) {
     var _this13 = this;
@@ -18515,7 +18558,6 @@ var CognitoUser = function () {
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
-
 
   CognitoUser.prototype.verifySoftwareToken = function verifySoftwareToken(totpCode, friendlyDeviceName, callback) {
     var _this14 = this;
@@ -18568,14 +18610,23 @@ var CognitoUser = function () {
   return CognitoUser;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (CognitoUser);
+exports.default = CognitoUser;
 
 /***/ }),
 /* 123 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -18626,7 +18677,6 @@ var CognitoUserSession = function () {
    * @returns {CognitoIdToken} the session's Id token
    */
 
-
   CognitoUserSession.prototype.getIdToken = function getIdToken() {
     return this.idToken;
   };
@@ -18634,7 +18684,6 @@ var CognitoUserSession = function () {
   /**
    * @returns {CognitoRefreshToken} the session's refresh token
    */
-
 
   CognitoUserSession.prototype.getRefreshToken = function getRefreshToken() {
     return this.refreshToken;
@@ -18644,7 +18693,6 @@ var CognitoUserSession = function () {
    * @returns {CognitoAccessToken} the session's access token
    */
 
-
   CognitoUserSession.prototype.getAccessToken = function getAccessToken() {
     return this.accessToken;
   };
@@ -18653,7 +18701,6 @@ var CognitoUserSession = function () {
    * @returns {int} the session's clock drift
    */
 
-
   CognitoUserSession.prototype.getClockDrift = function getClockDrift() {
     return this.clockDrift;
   };
@@ -18661,7 +18708,6 @@ var CognitoUserSession = function () {
   /**
    * @returns {int} the computer's clock drift
    */
-
 
   CognitoUserSession.prototype.calculateClockDrift = function calculateClockDrift() {
     var now = Math.floor(new Date() / 1000);
@@ -18676,7 +18722,6 @@ var CognitoUserSession = function () {
    * @returns {boolean} if the session is still valid
    */
 
-
   CognitoUserSession.prototype.isValid = function isValid() {
     var now = Math.floor(new Date() / 1000);
     var adjusted = now - this.clockDrift;
@@ -18687,14 +18732,23 @@ var CognitoUserSession = function () {
   return CognitoUserSession;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (CognitoUserSession);
+exports.default = CognitoUserSession;
 
 /***/ }),
 /* 124 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -18759,14 +18813,23 @@ var DateHelper = function () {
   return DateHelper;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (DateHelper);
+exports.default = DateHelper;
 
 /***/ }),
 /* 125 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -18807,7 +18870,6 @@ var CognitoUserAttribute = function () {
    * @returns {string} the record's value.
    */
 
-
   CognitoUserAttribute.prototype.getValue = function getValue() {
     return this.Value;
   };
@@ -18818,7 +18880,6 @@ var CognitoUserAttribute = function () {
    * @returns {CognitoUserAttribute} The record for method chaining.
    */
 
-
   CognitoUserAttribute.prototype.setValue = function setValue(value) {
     this.Value = value;
     return this;
@@ -18827,7 +18888,6 @@ var CognitoUserAttribute = function () {
   /**
    * @returns {string} the record's name.
    */
-
 
   CognitoUserAttribute.prototype.getName = function getName() {
     return this.Name;
@@ -18839,7 +18899,6 @@ var CognitoUserAttribute = function () {
    * @returns {CognitoUserAttribute} The record for method chaining.
    */
 
-
   CognitoUserAttribute.prototype.setName = function setName(name) {
     this.Name = name;
     return this;
@@ -18849,7 +18908,6 @@ var CognitoUserAttribute = function () {
    * @returns {string} a string representation of the record.
    */
 
-
   CognitoUserAttribute.prototype.toString = function toString() {
     return JSON.stringify(this);
   };
@@ -18857,7 +18915,6 @@ var CognitoUserAttribute = function () {
   /**
    * @returns {object} a flat object representing the record.
    */
-
 
   CognitoUserAttribute.prototype.toJSON = function toJSON() {
     return {
@@ -18869,14 +18926,23 @@ var CognitoUserAttribute = function () {
   return CognitoUserAttribute;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (CognitoUserAttribute);
+exports.default = CognitoUserAttribute;
 
 /***/ }),
 /* 126 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -18922,7 +18988,6 @@ var MemoryStorage = function () {
    * @returns {string} the data item
    */
 
-
   MemoryStorage.getItem = function getItem(key) {
     return Object.prototype.hasOwnProperty.call(dataMemory, key) ? dataMemory[key] : undefined;
   };
@@ -18933,7 +18998,6 @@ var MemoryStorage = function () {
    * @returns {string} value - value that was deleted
    */
 
-
   MemoryStorage.removeItem = function removeItem(key) {
     return delete dataMemory[key];
   };
@@ -18942,7 +19006,6 @@ var MemoryStorage = function () {
    * This is used to clear the storage
    * @returns {string} nothing
    */
-
 
   MemoryStorage.clear = function clear() {
     dataMemory = {};
@@ -18953,7 +19016,6 @@ var MemoryStorage = function () {
 }();
 
 /** @class */
-
 
 var StorageHelper = function () {
 
@@ -18978,7 +19040,6 @@ var StorageHelper = function () {
    * @returns {object} the storage
    */
 
-
   StorageHelper.prototype.getStorage = function getStorage() {
     return this.storageWindow;
   };
@@ -18986,7 +19047,7 @@ var StorageHelper = function () {
   return StorageHelper;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (StorageHelper);
+exports.default = StorageHelper;
 
 /***/ }),
 /* 127 */
@@ -34334,67 +34395,131 @@ if (typeof self !== 'undefined') self.AWS = AWS;
 
 /***/ }),
 /* 302 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__AuthenticationDetails__ = __webpack_require__(303);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "AuthenticationDetails", function() { return __WEBPACK_IMPORTED_MODULE_0__AuthenticationDetails__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AuthenticationHelper__ = __webpack_require__(105);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "AuthenticationHelper", function() { return __WEBPACK_IMPORTED_MODULE_1__AuthenticationHelper__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__CognitoAccessToken__ = __webpack_require__(118);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoAccessToken", function() { return __WEBPACK_IMPORTED_MODULE_2__CognitoAccessToken__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__CognitoIdToken__ = __webpack_require__(120);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoIdToken", function() { return __WEBPACK_IMPORTED_MODULE_3__CognitoIdToken__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__CognitoRefreshToken__ = __webpack_require__(121);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoRefreshToken", function() { return __WEBPACK_IMPORTED_MODULE_4__CognitoRefreshToken__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__CognitoUser__ = __webpack_require__(122);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoUser", function() { return __WEBPACK_IMPORTED_MODULE_5__CognitoUser__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__CognitoUserAttribute__ = __webpack_require__(125);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoUserAttribute", function() { return __WEBPACK_IMPORTED_MODULE_6__CognitoUserAttribute__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__CognitoUserPool__ = __webpack_require__(321);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoUserPool", function() { return __WEBPACK_IMPORTED_MODULE_7__CognitoUserPool__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__CognitoUserSession__ = __webpack_require__(123);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoUserSession", function() { return __WEBPACK_IMPORTED_MODULE_8__CognitoUserSession__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__CookieStorage__ = __webpack_require__(323);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CookieStorage", function() { return __WEBPACK_IMPORTED_MODULE_9__CookieStorage__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__DateHelper__ = __webpack_require__(124);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "DateHelper", function() { return __WEBPACK_IMPORTED_MODULE_10__DateHelper__["a"]; });
-/*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
- */
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
+var _AuthenticationDetails = __webpack_require__(303);
 
+Object.defineProperty(exports, 'AuthenticationDetails', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_AuthenticationDetails).default;
+  }
+});
 
+var _AuthenticationHelper = __webpack_require__(105);
 
+Object.defineProperty(exports, 'AuthenticationHelper', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_AuthenticationHelper).default;
+  }
+});
 
+var _CognitoAccessToken = __webpack_require__(118);
 
+Object.defineProperty(exports, 'CognitoAccessToken', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_CognitoAccessToken).default;
+  }
+});
 
+var _CognitoIdToken = __webpack_require__(120);
 
+Object.defineProperty(exports, 'CognitoIdToken', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_CognitoIdToken).default;
+  }
+});
 
+var _CognitoRefreshToken = __webpack_require__(121);
 
+Object.defineProperty(exports, 'CognitoRefreshToken', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_CognitoRefreshToken).default;
+  }
+});
+
+var _CognitoUser = __webpack_require__(122);
+
+Object.defineProperty(exports, 'CognitoUser', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_CognitoUser).default;
+  }
+});
+
+var _CognitoUserAttribute = __webpack_require__(125);
+
+Object.defineProperty(exports, 'CognitoUserAttribute', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_CognitoUserAttribute).default;
+  }
+});
+
+var _CognitoUserPool = __webpack_require__(321);
+
+Object.defineProperty(exports, 'CognitoUserPool', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_CognitoUserPool).default;
+  }
+});
+
+var _CognitoUserSession = __webpack_require__(123);
+
+Object.defineProperty(exports, 'CognitoUserSession', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_CognitoUserSession).default;
+  }
+});
+
+var _CookieStorage = __webpack_require__(323);
+
+Object.defineProperty(exports, 'CookieStorage', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_CookieStorage).default;
+  }
+});
+
+var _DateHelper = __webpack_require__(124);
+
+Object.defineProperty(exports, 'DateHelper', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_DateHelper).default;
+  }
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
 /* 303 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -34442,7 +34567,6 @@ var AuthenticationDetails = function () {
    * @returns {string} the record's username
    */
 
-
   AuthenticationDetails.prototype.getUsername = function getUsername() {
     return this.username;
   };
@@ -34450,7 +34574,6 @@ var AuthenticationDetails = function () {
   /**
    * @returns {string} the record's password
    */
-
 
   AuthenticationDetails.prototype.getPassword = function getPassword() {
     return this.password;
@@ -34460,7 +34583,6 @@ var AuthenticationDetails = function () {
    * @returns {Array} the record's validationData
    */
 
-
   AuthenticationDetails.prototype.getValidationData = function getValidationData() {
     return this.validationData;
   };
@@ -34469,7 +34591,6 @@ var AuthenticationDetails = function () {
    * @returns {Array} the record's authParameters
    */
 
-
   AuthenticationDetails.prototype.getAuthParameters = function getAuthParameters() {
     return this.authParameters;
   };
@@ -34477,7 +34598,7 @@ var AuthenticationDetails = function () {
   return AuthenticationDetails;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (AuthenticationDetails);
+exports.default = AuthenticationDetails;
 
 /***/ }),
 /* 304 */
@@ -35337,13 +35458,34 @@ module.exports = function createHash (alg) {
 
 /***/ }),
 /* 321 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(322);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__CognitoUser__ = __webpack_require__(122);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__StorageHelper__ = __webpack_require__(126);
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _Client = __webpack_require__(322);
+
+var _Client2 = _interopRequireDefault(_Client);
+
+var _CognitoUser = __webpack_require__(122);
+
+var _CognitoUser2 = _interopRequireDefault(_CognitoUser);
+
+var _StorageHelper = __webpack_require__(126);
+
+var _StorageHelper2 = _interopRequireDefault(_StorageHelper);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /*!
  * Copyright 2016 Amazon.com,
@@ -35361,10 +35503,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-
-
 
 /** @class */
 
@@ -35400,7 +35538,7 @@ var CognitoUserPool = function () {
     this.userPoolId = UserPoolId;
     this.clientId = ClientId;
 
-    this.client = new __WEBPACK_IMPORTED_MODULE_0__Client__["a" /* default */](region, endpoint);
+    this.client = new _Client2.default(region, endpoint);
 
     /**
      * By default, AdvancedSecurityDataCollectionFlag is set to true,
@@ -35408,13 +35546,12 @@ var CognitoUserPool = function () {
      */
     this.advancedSecurityDataCollectionFlag = AdvancedSecurityDataCollectionFlag !== false;
 
-    this.storage = data.Storage || new __WEBPACK_IMPORTED_MODULE_2__StorageHelper__["a" /* default */]().getStorage();
+    this.storage = data.Storage || new _StorageHelper2.default().getStorage();
   }
 
   /**
    * @returns {string} the user pool id
    */
-
 
   CognitoUserPool.prototype.getUserPoolId = function getUserPoolId() {
     return this.userPoolId;
@@ -35423,7 +35560,6 @@ var CognitoUserPool = function () {
   /**
    * @returns {string} the client id
    */
-
 
   CognitoUserPool.prototype.getClientId = function getClientId() {
     return this.clientId;
@@ -35443,7 +35579,6 @@ var CognitoUserPool = function () {
    * @param {nodeCallback<SignUpResult>} callback Called on error or with the new user.
    * @returns {void}
    */
-
 
   CognitoUserPool.prototype.signUp = function signUp(username, password, userAttributes, validationData, callback) {
     var _this = this;
@@ -35470,7 +35605,7 @@ var CognitoUserPool = function () {
       };
 
       var returnData = {
-        user: new __WEBPACK_IMPORTED_MODULE_1__CognitoUser__["a" /* default */](cognitoUser),
+        user: new _CognitoUser2.default(cognitoUser),
         userConfirmed: data.UserConfirmed,
         userSub: data.UserSub
       };
@@ -35485,7 +35620,6 @@ var CognitoUserPool = function () {
    * @returns {CognitoUser} the user retrieved from storage
    */
 
-
   CognitoUserPool.prototype.getCurrentUser = function getCurrentUser() {
     var lastUserKey = 'CognitoIdentityServiceProvider.' + this.clientId + '.LastAuthUser';
 
@@ -35497,7 +35631,7 @@ var CognitoUserPool = function () {
         Storage: this.storage
       };
 
-      return new __WEBPACK_IMPORTED_MODULE_1__CognitoUser__["a" /* default */](cognitoUser);
+      return new _CognitoUser2.default(cognitoUser);
     }
 
     return null;
@@ -35511,7 +35645,6 @@ var CognitoUserPool = function () {
    * @param {string} username the username for the context data
    * @returns {string} the user context data
    **/
-
 
   CognitoUserPool.prototype.getUserContextData = function getUserContextData(username) {
     if (typeof AmazonCognitoAdvancedSecurityData === 'undefined') {
@@ -35536,14 +35669,23 @@ var CognitoUserPool = function () {
   return CognitoUserPool;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (CognitoUserPool);
+exports.default = CognitoUserPool;
 
 /***/ }),
 /* 322 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /** @class */
 var Client = function () {
@@ -35566,7 +35708,6 @@ var Client = function () {
    * @param {function} callback Callback called when a response is returned
    * @returns {void}
   */
-
 
   Client.prototype.request = function request(operation, params, callback) {
     var headers = {
@@ -35620,18 +35761,30 @@ var Client = function () {
   return Client;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (Client);
+exports.default = Client;
 
 /***/ }),
 /* 323 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_js_cookie__ = __webpack_require__(324);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_js_cookie___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_js_cookie__);
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _jsCookie = __webpack_require__(324);
+
+var Cookies = _interopRequireWildcard(_jsCookie);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
 
 /** @class */
 
@@ -35673,15 +35826,14 @@ var CookieStorage = function () {
    * @returns {string} value that was set
    */
 
-
   CookieStorage.prototype.setItem = function setItem(key, value) {
-    __WEBPACK_IMPORTED_MODULE_0_js_cookie__["set"](key, value, {
+    Cookies.set(key, value, {
       path: this.path,
       expires: this.expires,
       domain: this.domain,
       secure: this.secure
     });
-    return __WEBPACK_IMPORTED_MODULE_0_js_cookie__["get"](key);
+    return Cookies.get(key);
   };
 
   /**
@@ -35691,9 +35843,8 @@ var CookieStorage = function () {
    * @returns {string} the data item
    */
 
-
   CookieStorage.prototype.getItem = function getItem(key) {
-    return __WEBPACK_IMPORTED_MODULE_0_js_cookie__["get"](key);
+    return Cookies.get(key);
   };
 
   /**
@@ -35702,9 +35853,8 @@ var CookieStorage = function () {
    * @returns {string} value - value that was deleted
    */
 
-
   CookieStorage.prototype.removeItem = function removeItem(key) {
-    return __WEBPACK_IMPORTED_MODULE_0_js_cookie__["remove"](key, {
+    return Cookies.remove(key, {
       path: this.path,
       domain: this.domain,
       secure: this.secure
@@ -35716,12 +35866,11 @@ var CookieStorage = function () {
    * @returns {string} nothing
    */
 
-
   CookieStorage.prototype.clear = function clear() {
-    var cookies = __WEBPACK_IMPORTED_MODULE_0_js_cookie__["get"]();
+    var cookies = Cookies.get();
     var index = void 0;
     for (index = 0; index < cookies.length; ++index) {
-      __WEBPACK_IMPORTED_MODULE_0_js_cookie__["remove"](cookies[index]);
+      Cookies.remove(cookies[index]);
     }
     return {};
   };
@@ -35729,7 +35878,7 @@ var CookieStorage = function () {
   return CookieStorage;
 }();
 
-/* harmony default export */ __webpack_exports__["a"] = (CookieStorage);
+exports.default = CookieStorage;
 
 /***/ }),
 /* 324 */
