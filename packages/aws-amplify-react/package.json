@@ -9,7 +9,7 @@
     "build-with-test": "npm test && npm run build"
   },
   "devDependencies": {
-    "aws-amplify": "file:../aws-amplify",
+    "aws-amplify": "^0.1.x",
     "babel-cli": "^6.26.0",
     "babel-jest": "^21.2.0",
     "babel-polyfill": "^6.26.0",

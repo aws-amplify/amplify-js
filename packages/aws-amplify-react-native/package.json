@@ -19,8 +19,8 @@
     "rimraf": "^2.6.2"
   },
   "dependencies": {
-    "amazon-cognito-identity-js": "file:../amazon-cognito-identity-js",
-    "aws-amplify": "file:../aws-amplify",
+    "amazon-cognito-identity-js": "^1.29.x",
+    "aws-amplify": "0.1.x",
     "axios": "^0.17.1",
     "babel-preset-es2015": "^6.24.1"
   },
