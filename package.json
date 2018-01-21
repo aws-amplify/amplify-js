@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "test": "lerna exec yarn test",
+    "test": "lerna exec yarn test --scope aws-amplify",
     "coverage": "codecov",
     "docs": "typedoc --out docs/api/ packages/aws-amplify/src/ --ignoreCompilerErrors --hideGenerator && touch docs/api/.nojekyll",
     "build": "lerna run -- build",
@@ -13,7 +13,6 @@
     "lint": "lerna run -- lint"
   },
   "pre-commit": [
-    "lint",
     "test"
   ],
   "private": true,
