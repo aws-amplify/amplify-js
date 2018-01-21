@@ -34,7 +34,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "compression-webpack-plugin": "^1.1.3",
     "find": "^0.2.7",
-    "jest": "^21.x",
+    "jest": "^22.x",
     "json-loader": "^0.5.7",
     "prepend-file": "^1.3.1",
     "prettier": "^1.7.4",
@@ -50,8 +50,8 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "aws-sdk": "^2.185.0",
     "amazon-cognito-identity-js": "^1.29.x",
+    "aws-sdk": "^2.185.0",
     "axios": "^0.17.0"
   },
   "jest": {

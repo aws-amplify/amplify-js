@@ -34,7 +34,7 @@
     "@types/jest": "^20.0.7",
     "@types/node": "^8.0.24",
     "codecov": "^1.0.1",
-    "jest": "^21.x",
+    "jest": "^22.x",
     "json-loader": "^0.5.7",
     "lerna": "^2.4.0",
     "pre-commit": "^1.2.2",
