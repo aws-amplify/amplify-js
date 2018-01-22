@@ -23,7 +23,7 @@ var LOG_LEVELS = {
 * Write logs
 * @class Logger
 */
-var ConsoleLogger = (function () {
+var ConsoleLogger = /** @class */ (function () {
     /**
     * @constructor
     * @param {string} name - Name of the logger

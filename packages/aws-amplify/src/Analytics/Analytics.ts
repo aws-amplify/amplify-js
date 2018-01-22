@@ -18,7 +18,7 @@ import {
     missingConfig,
     MobileAnalytics
 } from '../Common';
-
+import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
 import Auth from '../Auth';
 
 import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from './types';
@@ -39,7 +39,7 @@ export default class AnalyticsClass {
     private mobileAnalytics;
     private _sessionId;
 
-    public provider;
+    private _provider;
 
     /**
      * Initialize Analtyics
@@ -48,7 +48,7 @@ export default class AnalyticsClass {
     constructor(config: AnalyticsOptions) {
         this._buffer = [];
 
-        this.provider = AWSAnalyticsProvider;
+        this._setProvider('AWS');
     }
 
     /**
@@ -60,20 +60,14 @@ export default class AnalyticsClass {
         let conf = config? config.Analytics || config : {};
 
         const { provider } = conf;
-        if (provider) {
-            this._setProvider(provider);
-        }
+        this._setProvider(provider);
 
-        const client_info:any = ClientDevice.clientInfo();
-        conf.client_info = conf.client_info? conf.client_info : client_info;
+        const clientInfo:any = ClientDevice.clientInfo();
+        conf.clientInfo = conf.client_info? conf.client_info : clientInfo;
 
-        this.provider.configure(conf);
         this._config = conf;
+        this._initClients();
         return conf;
-    }
-
-    private _setProvider(provider) {
-        // look into provider list
     }
 
     /**
@@ -81,7 +75,7 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if event record successfully
      */
     public startSession() {
-        this.provider.putEvent({eventName: 'session_start'});
+        return this._provider.putEvent({eventName: 'session_start'});
     }
 
     /**
@@ -89,7 +83,7 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if event record successfully
      */
     public stopSession() {
-        this.provider.putEvent({eventName: 'session_stop'});
+        return this._provider.putEvent({eventName: 'session_stop'});
     }
 
     /**
@@ -100,7 +94,7 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if event record successfully
      */
     public record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics) {
-        this.provider.putEvent({eventName, attributes, metrics});
+        return this._provider.putEvent({eventName, attributes, metrics});
     }
 
     /**
@@ -109,19 +103,14 @@ export default class AnalyticsClass {
      * @return - A promise ehich resolves to be true if current credential exists
      */
     async restart() {
-        this.stopSession().then((data) => {
-                logger.debug('restarting clients');
-                return this._initClients();
-            }).catch(e => {
-                logger.debug('restart error', e);
-            });
+        return this._initClients();
     }
 
     /**
      * @private
      * check if current crednetials exists
      */
-    _ensureCredentials() {
+    private _ensureCredentials() {
         const _analytics = this;
         const conf = this._config;
 
@@ -131,7 +120,6 @@ export default class AnalyticsClass {
                 
                 conf.credentials = cred;
                 conf.endpointId = conf.credentials.identityId;
-                _analytics.provider.configure(conf);
 
                 logger.debug('set endpointId for analytics', conf.endpointId);
                 logger.debug('set credentials for analytics', conf.credentials);
@@ -146,18 +134,29 @@ export default class AnalyticsClass {
 
     /**
      * @private
+     * set the Analytics client
+     * @param provider 
+     */
+    private _setProvider(provider) {
+        const list = {AWS: AWSAnalyticsProvider}
+        // look into provider list
+        if (provider in list) {
+        
+            this._provider = list[provider];
+        }
+    }
+
+    /**
+     * @private
      * @async
      * init clients for Anlytics including mobile analytics and pinpoint
      * @return - True if initilization succeeds
      */
-    async _initClients() {
+    private async _initClients() {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return false; }
-
-        after init clients
-        this.startSession();
    
-        
-        return true;
+        logger.debug('init clients with config', this._config);
+        return this._provider.initClients(this._config);
     }
 }

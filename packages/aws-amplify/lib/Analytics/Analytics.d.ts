@@ -9,6 +9,7 @@ export default class AnalyticsClass {
     private _buffer;
     private mobileAnalytics;
     private _sessionId;
+    private _provider;
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
@@ -23,83 +24,42 @@ export default class AnalyticsClass {
      * Record Session start
      * @return - A promise which resolves if event record successfully
      */
-    startSession(): Promise<any>;
+    startSession(): any;
     /**
      * Record Session stop
      * @return - A promise which resolves if event record successfully
      */
-    stopSession(): Promise<any>;
+    stopSession(): any;
+    /**
+     * Record one analytic event and send it to Pinpoint
+     * @param {String} name - The name of the event
+     * @param {Object} [attributs] - Attributes of the event
+     * @param {Object} [metrics] - Event metrics
+     * @return - A promise which resolves if event record successfully
+     */
+    record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics): any;
     /**
      * @async
      * Restart Analytics client and record session stop
      * @return - A promise ehich resolves to be true if current credential exists
      */
-    restart(): Promise<void>;
-    /**
-    * Record one analytic event and send it to Pinpoint
-    * @param {String} name - The name of the event
-    * @param {Object} [attributs] - Attributes of the event
-    * @param {Object} [metrics] - Event metrics
-    * @return - A promise which resolves if event record successfully
-    */
-    record(name: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<any>;
-    /**
-    * Record one analytic event
-    * @param {String} name - Event name
-    * @param {Object} [attributes] - Attributes of the event
-    * @param {Object} [metrics] - Event metrics
-    */
-    /**
-     * @private
-     * generate client context with endpoint Id and app Id provided
-     */
-    _generateClientContext(): string;
-    /**
-     * generate random string
-     */
-    generateRandomString(): string;
-    /**
-     * @private
-     * check if app Id exists
-     */
-    _checkConfig(): boolean;
+    restart(): Promise<any>;
     /**
      * @private
      * check if current crednetials exists
      */
-    _ensureCredentials(): any;
+    private _ensureCredentials();
+    /**
+     * @private
+     * set the Analytics client
+     * @param provider
+     */
+    private _setProvider(provider);
     /**
      * @private
      * @async
      * init clients for Anlytics including mobile analytics and pinpoint
      * @return - True if initilization succeeds
      */
-    _initClients(): Promise<boolean>;
-    /**
-     * @private
-     * Init mobile analytics and clear buffer
-     */
-    _initMobileAnalytics(): void;
-    /**
-     * @private
-     * Init Pinpoint with configuration and update pinpoint client endpoint
-     * @return - A promise resolves if endpoint updated successfully
-     */
-    _initPinpoint(): Promise<{}>;
-    /**
-     * EndPoint request
-     * @return {Object} - The request of updating endpoint
-     */
-    _endpointRequest(): {
-        Demographic: {
-            AppVersion: any;
-            Make: any;
-            Model: any;
-            ModelVersion: any;
-            Platform: any;
-        };
-        User: {
-            UserId: any;
-        };
-    };
+    private _initClients();
 }

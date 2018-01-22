@@ -1,17 +1,19 @@
-import { Pinpoint, MobileAnalytics, JS } from '../../Common';
+import { ConsoleLogger as Logger, Pinpoint, MobileAnalytics, JS } from '../../Common';
 
-class AWSAnalyticsProvider {
+const logger = new Logger('AWSAnalyticsProvider');
+
+export class AWSAnalyticsProvider {
     private _config;
     private mobileAnalytics;
     private pinpointClient;
     private _sessionId;
 
-    constructor(config) {
+    constructor() {
         this._config = {};
     }
 
     public configure(config) {
-        //logger.debug('configure Analytics');
+        logger.debug('configure Analytics');
         let conf = config? config : {};
         
         // using app_id from aws-exports if provided
@@ -22,6 +24,9 @@ class AWSAnalyticsProvider {
                 platform: 'other'
             };
         }
+
+        const {clientInfo, endpointId, credentials} = config;
+        conf = Object.assign(conf, {clientInfo, endpointId, credentials});
         // hard code region
         conf.region = 'us-east-1';
         this._config = Object.assign({}, this._config, conf);
@@ -33,6 +38,7 @@ class AWSAnalyticsProvider {
     }
 
     public initClients(config) {
+        logger.debug('init clients');
         if (config) {
             this.configure(config);
         }
@@ -66,7 +72,7 @@ class AWSAnalyticsProvider {
     }
 
     private _startSession(params) {
-        //logger.debug('record session start');
+        logger.debug('record session start');
         const sessionId = JS.generateRandomString();
         this._sessionId = sessionId;
 
@@ -88,11 +94,11 @@ class AWSAnalyticsProvider {
         return new Promise<any>((res, rej) => {
             this.mobileAnalytics.putEvents(eventParams, (err, data) => {
                 if (err) {
-                   // logger.debug('record event failed. ', err);
+                    logger.debug('record event failed. ', err);
                     rej(err);
                 }
                 else {
-                 //   logger.debug('record event success. ', data);
+                    logger.debug('record event success. ', data);
                     res(data);
                 }
             });
@@ -100,7 +106,7 @@ class AWSAnalyticsProvider {
     }
 
     private _stopSession(params) {
-      //  logger.debug('record session stop');
+        logger.debug('record session stop');
         
         const sessionId = this._sessionId ? this._sessionId : JS.generateRandomString();
         const clientContext = this._generateClientContext();
@@ -120,11 +126,11 @@ class AWSAnalyticsProvider {
         return new Promise<any>((res, rej) => {
             this.mobileAnalytics.putEvents(eventParams, (err, data) => {
                 if (err) {
-                  //  logger.debug('record event failed. ', err);
+                    logger.debug('record event failed. ', err);
                     rej(err);
                 }
                 else {
-                  //  logger.debug('record event success. ', data);
+                    logger.debug('record event success. ', data);
                     res(data);
                 }
             });
@@ -132,7 +138,7 @@ class AWSAnalyticsProvider {
     }
 
     private _recordCustomEvent(params) {
-        //logger.debug(`record event: { name: ${name}, attributes: ${attributes}, metrics: ${metrics}`);
+        logger.debug(`record event with params: ${params}`);
 
         const { attributes, metrics } = params;
         const clientContext = this._generateClientContext();
@@ -150,11 +156,11 @@ class AWSAnalyticsProvider {
         return new Promise<any>((res, rej) => {
             this.mobileAnalytics.putEvents(params, (err, data) => {
                 if (err) {
-                    //logger.debug('record event failed. ', err);
+                    logger.debug('record event failed. ', err);
                     rej(err);
                 }
                 else {
-                    //logger.debug('record event success. ', data);
+                    logger.debug('record event success. ', data);
                     res(data);
                 }
             });
@@ -193,15 +199,15 @@ class AWSAnalyticsProvider {
             EndpointId: endpointId,
             EndpointRequest: request
         };
-        //logger.debug('updateEndpoint with params: ', update_params);
+        logger.debug('updateEndpoint with params: ', update_params);
 
         return new Promise((res, rej) => {
             this.pinpointClient.updateEndpoint(update_params, function(err, data) {
                 if (err) {
-                    //logger.debug('Pinpoint ERROR', err);
+                    logger.debug('Pinpoint ERROR', err);
                     rej(err);
                 } else {
-                    //logger.debug('Pinpoint SUCCESS', data);
+                    logger.debug('Pinpoint SUCCESS', data);
                     res(data);
                 }
             });
@@ -216,7 +222,8 @@ class AWSAnalyticsProvider {
         const { clientInfo } = this._config;
         const credentials = this._config.credentials;
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
-        //logger.debug('demographic user id: ', user_id);
+        logger.debug('config', this._config);
+        logger.debug('demographic user id: ', user_id);
         return {
             Demographic: {
                 AppVersion: this._config.appVersion || clientInfo.appVersion,
@@ -248,3 +255,6 @@ class AWSAnalyticsProvider {
         return JSON.stringify(clientContext);
     }
 }
+
+const instance = new AWSAnalyticsProvider();
+export default instance;
