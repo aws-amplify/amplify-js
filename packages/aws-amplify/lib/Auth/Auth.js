@@ -337,7 +337,8 @@ var AuthClass = /** @class */ (function () {
      * @return {Promise}
      **/
     AuthClass.prototype.updateUserAttributes = function (user, attributes) {
-        var attr = {}, attributeList = [];
+        var attr = {};
+        var attributeList = [];
         return this.userSession(user)
             .then(function (session) {
             return new Promise(function (resolve, reject) {
@@ -674,11 +675,13 @@ var AuthClass = /** @class */ (function () {
                     case 2:
                         attributes = _a.sent();
                         userAttrs_1 = {};
-                        attributes.forEach(function (cognitoUserAttribute) {
-                            if (cognitoUserAttribute.Name && cognitoUserAttribute.Value) {
-                                userAttrs_1[cognitoUserAttribute.Name] = cognitoUserAttribute.Value;
-                            }
-                        });
+                        if (attributes && attributes.length > 0) {
+                            attributes.forEach(function (cognitoUserAttribute) {
+                                if (cognitoUserAttribute.Name && cognitoUserAttribute.Value) {
+                                    userAttrs_1[cognitoUserAttribute.Name] = cognitoUserAttribute.Value;
+                                }
+                            });
+                        }
                         info = {
                             'id': credentials.identityId,
                             'username': user.username,

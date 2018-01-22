@@ -611,7 +611,6 @@ export default class AuthClass {
                         userAttrs[cognitoUserAttribute.Name] = cognitoUserAttribute.Value;
                     }
                 });
-                info.attributes = userAttrs;
             }
             const info = {
                 'id': credentials.identityId,
