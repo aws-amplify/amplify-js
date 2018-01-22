@@ -293,6 +293,34 @@ export default class AuthClass {
     }
 
     /**
+     * Update an authenticated users' attributes
+     * @param {CognitoUser} - The currently logged in user object
+     * @return {Promise} 
+     **/
+    public updateUserAttributes(user, attributes:object): Promise<any> {
+        let attr:object = {};
+        const attributeList:Array<object> = [];
+        return this.userSession(user)
+            .then(session => {
+                return new Promise((resolve, reject) => {
+                    for (const key in attributes) {
+                        if ( key !== 'sub' &&
+                            key.indexOf('_verified') < 0 && 
+                            attributes[key] ) {
+                            attr = {
+                                'Name': key,
+                                'Value': attributes[key]
+                            };
+                            attributeList.push(attr);
+                        }
+                    }
+                    user.updateAttributes(attributeList, (err,result) => {
+                        if (err) { reject(err); } else { resolve(result); }
+                    });
+                });
+            }); 
+    }
+    /**
      * Return user attributes
      * @param {Object} user - The CognitoUser object
      * @return - A promise resolves to user attributes if success
@@ -576,12 +604,18 @@ export default class AuthClass {
                     logger.debug('currentUserInfo error', err);
                     return {};
                 });
-
+            const userAttrs:object = {};
+            if ( attributes && attributes.length > 0 ) {
+                attributes.forEach((cognitoUserAttribute) => {
+                    if (cognitoUserAttribute.Name && cognitoUserAttribute.Value) {
+                        userAttrs[cognitoUserAttribute.Name] = cognitoUserAttribute.Value;
+                    }
+                });
+            }
             const info = {
-                username: user.username,
-                id: credentials.identityId,
-                email: attributes.email,
-                phone_number: attributes.phone_number
+                'id': credentials.identityId,
+                'username': user.username,
+                'attributes': userAttrs
             };
             return info;
         }
