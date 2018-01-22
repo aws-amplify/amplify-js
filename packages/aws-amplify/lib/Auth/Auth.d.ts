@@ -49,6 +49,12 @@ export default class AuthClass {
     confirmSignIn(user: any, code: string): Promise<any>;
     completeNewPassword(user: any, password: string, requiredAttributes: any): Promise<any>;
     /**
+     * Update an authenticated users' attributes
+     * @param {CognitoUser} - The currently logged in user object
+     * @return {Promise}
+     **/
+    updateUserAttributes(user: any, attributes: object): Promise<any>;
+    /**
      * Return user attributes
      * @param {Object} user - The CognitoUser object
      * @return - A promise resolves to user attributes if success
