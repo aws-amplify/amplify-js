@@ -298,11 +298,12 @@ export default class AuthClass {
      * @return {Promise} 
      **/
     public updateUserAttributes(user, attributes:object): Promise<any> {
-        let attr:object = {}, attributeList:Array<object> = [];
+        let attr:object = {};
+        const attributeList:Array<object> = [];
         return this.userSession(user)
             .then(session => {
                 return new Promise((resolve, reject) => {
-                    for (let key in attributes) {
+                    for (const key in attributes) {
                         if ( key !== 'sub' &&
                             key.indexOf('_verified') < 0 && 
                             attributes[key] ) {
@@ -604,11 +605,14 @@ export default class AuthClass {
                     return {};
                 });
             const userAttrs:object = {};
-            attributes.forEach((cognitoUserAttribute) => {
-                if (cognitoUserAttribute.Name && cognitoUserAttribute.Value) {
-                    userAttrs[cognitoUserAttribute.Name] = cognitoUserAttribute.Value;
-                }
-            });
+            if ( attributes && attributes.length > 0 ) {
+                attributes.forEach((cognitoUserAttribute) => {
+                    if (cognitoUserAttribute.Name && cognitoUserAttribute.Value) {
+                        userAttrs[cognitoUserAttribute.Name] = cognitoUserAttribute.Value;
+                    }
+                });
+                info.attributes = userAttrs;
+            }
             const info = {
                 'id': credentials.identityId,
                 'username': user.username,

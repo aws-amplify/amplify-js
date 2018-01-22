@@ -1315,18 +1315,16 @@ describe('auth unit test', () => {
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej)=> {
                         res({
-                            email: 'email',
-                            phone_number: 'phone_number'
+                            attributes: {}
                         });
                     });
                 });
 
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toEqual({
-                email: 'email',
                 id: 'identityId',
-                phone_number: 'phone_number',
-                username: 'username'
+                username: 'username',
+                attributes: {}
             });
 
             spyon.mockClear();
@@ -1378,6 +1376,30 @@ describe('auth unit test', () => {
        
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toBe('federated_user');
+        });
+    });
+
+    describe('updateUserAttributes test', () => {
+        test('happy case', async () => {
+            const auth = new Auth(authOptions);
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool
+            });
+            const spyon = jest.spyOn(Auth.prototype, 'updateUserAttributes')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej)=> {
+                        res('SUCCESS');
+                    });
+                });
+            const attributes = {
+                'email': 'email',
+                'phone_number': 'phone_number',
+                'sub': 'sub'
+            }
+            expect.assertions(1);
+            expect(await auth.updateUserAttributes(user,attributes)).toBe('SUCCESS');
+            spyon.mockClear();
         });
     });
 
