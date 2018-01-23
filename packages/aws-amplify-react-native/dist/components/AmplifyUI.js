@@ -104,7 +104,7 @@ export const ErrorRow = props => {
         { style: theme.errorRow },
         React.createElement(
             Text,
-            null,
+            { style: theme.erroRowText },
             props.children
         )
     );
