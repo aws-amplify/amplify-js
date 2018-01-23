@@ -88,11 +88,11 @@ class AuthClass {
 
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String | object} params - The user attirbutes used for signin
      * @param {String[]} restOfAttrs - for the backward compatability 
      * @return - A promise resolves callback data if success
      */
-    signUp(attrs, ...restOfAttrs) {
+    signUp(params, ...restOfAttrs) {
         if (!this.userPool) {
             return Promise.reject('No userPool');
         }
@@ -100,21 +100,23 @@ class AuthClass {
         let username = null;
         let password = null;
         const attributes = [];
-        if (attrs && typeof attrs === 'string') {
-            username = attrs;
+        let validationData = null;
+        if (params && typeof params === 'string') {
+            username = params;
             password = restOfAttrs ? restOfAttrs[0] : null;
             const email = restOfAttrs ? restOfAttrs[1] : null;
             const phone_number = restOfAttrs ? restOfAttrs[2] : null;
             if (email) attributes.push({ Name: 'email', Value: email });
             if (phone_number) attributes.push({ Name: 'phone_number', Value: phone_number });
-        } else if (attrs && typeof attrs === 'object') {
-            username = attrs['username'];
-            password = attrs['password'];
+        } else if (params && typeof params === 'object') {
+            username = params['username'];
+            password = params['password'];
+            const attrs = params['attributes'];
             Object.keys(attrs).map(key => {
-                if (key === 'username' || key === 'password') return;
                 const ele = { Name: key, Value: attrs[key] };
                 attributes.push(ele);
             });
+            validationData = params['validationData'] || null;
         } else {
             return Promise.reject('The first parameter should either be non-null string or object');
         }
@@ -126,11 +128,11 @@ class AuthClass {
             return Promise.reject('Password cannot be empty');
         }
 
-        logger.debug('signUp attrs:');
-        logger.debug(attributes);
+        logger.debug('signUp attrs:', attributes);
+        logger.debug('signUp validation data:', validationData);
 
         return new Promise((resolve, reject) => {
-            this.userPool.signUp(username, password, attributes, null, function (err, data) {
+            this.userPool.signUp(username, password, attributes, validationData, function (err, data) {
                 if (err) {
                     reject(err);
                 } else {
@@ -315,6 +317,36 @@ class AuthClass {
                     user['challengeParam'] = challengeParam;
                     resolve(user);
                 }
+            });
+        });
+    }
+
+    /**
+     * Update an authenticated users' attributes
+     * @param {CognitoUser} - The currently logged in user object
+     * @return {Promise} 
+     **/
+    updateUserAttributes(user, attributes) {
+        let attr = {};
+        const attributeList = [];
+        return this.userSession(user).then(session => {
+            return new Promise((resolve, reject) => {
+                for (const key in attributes) {
+                    if (key !== 'sub' && key.indexOf('_verified') < 0 && attributes[key]) {
+                        attr = {
+                            'Name': key,
+                            'Value': attributes[key]
+                        };
+                        attributeList.push(attr);
+                    }
+                }
+                user.updateAttributes(attributeList, (err, result) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                });
             });
         });
     }
@@ -671,8 +703,7 @@ class AuthClass {
         const info = {
             username: user.username,
             id: credentials.identityId,
-            email: attributes.email,
-            phone_number: attributes.phone_number
+            attributes
         };
         logger.debug('user info', info);
         return info;
@@ -731,9 +762,19 @@ class AuthClass {
      */
     _attributesToObject(attributes) {
         const obj = {};
-        attributes.map(attr => {
-            obj[attr.Name] = attr.Value === 'false' ? false : attr.Value;
-        });
+        if (attributes) {
+            attributes.map(attribute => {
+                if (attribute.Name === 'sub') return;
+
+                if (attribute.Value === 'true') {
+                    obj[attribute.Name] = true;
+                } else if (attribute.Value === 'false') {
+                    obj[attribute.Name] = false;
+                } else {
+                    obj[attribute.Name] = attribute.Value;
+                }
+            });
+        }
         return obj;
     }
 }

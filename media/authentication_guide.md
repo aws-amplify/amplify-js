@@ -75,10 +75,13 @@ import { Auth } from 'aws-amplify';
 Auth.signUp({
     username, 
     password, 
-    email, // optional
-    phone, // optional
-    // other custom attributes if has been set in Cognito
-    // myAttr: ...
+    attributes: {
+        email, // optional
+        phone, // optional
+        // other custom attributes if has been set in Cognito
+        // myAttr: ...
+    },
+    validationData: [] //optional
     })
     .then(data => console.log(data))
     .catch(err => console.log(err));

@@ -20,7 +20,7 @@ export default class AuthClass {
      * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
-    signUp(attrs: string | object, ...restOfAttrs: string[]): Promise<any>;
+    signUp(params: string | object, ...restOfAttrs: string[]): Promise<any>;
     /**
      * Send the verfication code to confirm sign up
      * @param {String} username - The username to be confirmed
