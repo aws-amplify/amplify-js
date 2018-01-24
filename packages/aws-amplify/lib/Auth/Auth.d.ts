@@ -158,5 +158,5 @@ export default class AuthClass {
     private setCredentialsFromAWS();
     private setCredentialsForGuest();
     private setCredentialsFromSession(session);
-    private keepAlive();
+    private keepAlive(isRetrying?);
 }
