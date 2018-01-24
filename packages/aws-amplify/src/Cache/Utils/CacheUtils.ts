@@ -60,16 +60,16 @@ export function getCurrTime(): number {
 }
 
 /**
- * check if number is an integer
+ * check if passed value is an integer
  */
-export function isInteger(number): boolean {
+export function isInteger(value): boolean {
     if (Number.isInteger) {
-        return Number.isInteger(number);
+        return Number.isInteger(value);
     }
 
-    return _isInteger(number);
+    return _isInteger(value);
 }
 
-function _isInteger(number): boolean {
-    return typeof number === 'number' &&  isFinite(number) && Math.floor(number) === number;
+function _isInteger(value): boolean {
+    return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
 }
