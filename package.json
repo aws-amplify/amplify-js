@@ -32,7 +32,7 @@
     "codecov": "^1.0.1",
     "jest": "^21.x",
     "json-loader": "^0.5.7",
-    "lerna": "^2.4.0",
+    "lerna": "^2.8.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2",
     "source-map-loader": "^0.2.1",

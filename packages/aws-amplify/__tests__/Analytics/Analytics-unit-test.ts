@@ -130,13 +130,14 @@ describe("Analytics test", () => {
     
     describe("startSession", () => {
         test("happy case", async () => {
+            const analytics = new Analytics(options);
+
             const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res(credentials)
                 });
             });
 
-            const analytics = new Analytics(options);
             await analytics._initClients();
            
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents');
@@ -151,13 +152,14 @@ describe("Analytics test", () => {
         });
 
         test("put events error", async () => {
+            const analytics = new Analytics(options);
+
             const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res(credentials)
                 });
             });
 
-            const analytics = new Analytics(options);
             await analytics._initClients();
            
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
@@ -178,13 +180,13 @@ describe("Analytics test", () => {
 
     describe("stopSession", () => {
         test("happy case", async () => {
+            const analytics = new Analytics(options);
             const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res(credentials)
                 });
             });
 
-            const analytics = new Analytics(options);
             await analytics._initClients();
            
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents');
@@ -199,14 +201,14 @@ describe("Analytics test", () => {
             spyon2.mockClear();
         });
 
-        test("put events error", async () => {
+        test("put events error", async () => {  
+            const analytics = new Analytics(options);
             const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res(credentials)
                 });
             });
 
-            const analytics = new Analytics(options);
             await analytics._initClients();
            
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
@@ -263,13 +265,14 @@ describe("Analytics test", () => {
 
     describe("record", () => {
         test("happy case", async () => {
+            const analytics = new Analytics(options);
+
             const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res(credentials)
                 });
             });
 
-            const analytics = new Analytics(options);
             await analytics._initClients();
            
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents');
@@ -285,13 +288,14 @@ describe("Analytics test", () => {
         });
 
         test("put events error", async () => {
+            const analytics = new Analytics(options);
+
             const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res(credentials)
                 });
             });
 
-            const analytics = new Analytics(options);
             await analytics._initClients();
            
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {

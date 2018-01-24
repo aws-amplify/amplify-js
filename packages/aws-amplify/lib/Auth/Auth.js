@@ -58,7 +58,7 @@ var dispatchAuthEvent = function (event, data) {
 /**
 * Provide authentication steps
 */
-var AuthClass = (function () {
+var AuthClass = /** @class */ (function () {
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -775,7 +775,7 @@ var AuthClass = (function () {
         this.credentials.authenticated = true;
         this.credentials_source = 'userPool';
     };
-    AuthClass.prototype.keepAlive = function () {
+    AuthClass.prototype.keepAlive = function (isRetrying) {
         if (!this.credentials) {
             this.setCredentialsForGuest();
         }
@@ -786,15 +786,21 @@ var AuthClass = (function () {
         if (!expired && expireTime > ts + delta) {
             return Promise.resolve(credentials);
         }
+        var that = this;
         return new Promise(function (resolve, reject) {
-            credentials.refresh(function (err) {
-                if (err) {
-                    logger.debug('refresh credentials error', err);
-                    resolve(null);
-                }
-                else {
-                    resolve(credentials);
-                }
+            that.currentUserCredentials()
+                .then(function () {
+                credentials = that.credentials;
+                credentials.refresh(function (err) {
+                    logger.debug('changed from previous');
+                    if (err) {
+                        logger.debug('refresh credentials error', err);
+                        resolve(null);
+                    }
+                    else {
+                        resolve(credentials);
+                    }
+                });
             });
         });
     };
