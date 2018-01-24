@@ -29,7 +29,7 @@ export const defaultConfig: CacheConfig = {
 
 /**
  * return the byte size of the string
- * @param str 
+ * @param str
  */
 export function getByteLength(str: string): number {
     let ret: number = 0;
@@ -57,4 +57,19 @@ export function getByteLength(str: string): number {
 export function getCurrTime(): number {
     const currTime = new Date();
     return currTime.getTime();
+}
+
+/**
+ * check if number is an integer
+ */
+export function isInteger(number): boolean {
+    if (Number.isInteger) {
+        return Number.isInteger(number);
+    }
+
+    return _isInteger(number);
+}
+
+function _isInteger(number): boolean {
+    return typeof number === 'number' &&  isFinite(number) && Math.floor(number) === number;
 }
