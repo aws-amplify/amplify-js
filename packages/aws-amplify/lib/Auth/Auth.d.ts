@@ -20,7 +20,7 @@ export default class AuthClass {
      * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
-    signUp(attrs: string | object, ...restOfAttrs: string[]): Promise<any>;
+    signUp(params: string | object, ...restOfAttrs: string[]): Promise<any>;
     /**
      * Send the verfication code to confirm sign up
      * @param {String} username - The username to be confirmed
@@ -48,6 +48,12 @@ export default class AuthClass {
      */
     confirmSignIn(user: any, code: string): Promise<any>;
     completeNewPassword(user: any, password: string, requiredAttributes: any): Promise<any>;
+    /**
+     * Update an authenticated users' attributes
+     * @param {CognitoUser} - The currently logged in user object
+     * @return {Promise}
+     **/
+    updateUserAttributes(user: any, attributes: object): Promise<any>;
     /**
      * Return user attributes
      * @param {Object} user - The CognitoUser object
