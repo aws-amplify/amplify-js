@@ -20,7 +20,7 @@ var _i18n = null;
 /**
  * Export I18n APIs
  */
-var I18n = (function () {
+var I18n = /** @class */ (function () {
     function I18n() {
     }
     /**

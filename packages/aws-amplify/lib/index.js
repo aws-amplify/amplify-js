@@ -31,7 +31,7 @@ exports.JS = Common_1.JS;
 exports.ClientDevice = Common_1.ClientDevice;
 exports.Signer = Common_1.Signer;
 var logger = new Common_1.ConsoleLogger('Amplify');
-var Amplify = (function () {
+var Amplify = /** @class */ (function () {
     function Amplify() {
     }
     Amplify.configure = function (config) {

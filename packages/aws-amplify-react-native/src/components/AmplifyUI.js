@@ -104,7 +104,7 @@ export const ErrorRow = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
         <View style={theme.errorRow}>
-            <Text>{props.children}</Text>
+            <Text style={theme.erroRowText}>{props.children}</Text>
         </View>
     )
 }
