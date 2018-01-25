@@ -58,7 +58,7 @@ var dispatchAuthEvent = function (event, data) {
 /**
 * Provide authentication steps
 */
-var AuthClass = (function () {
+var AuthClass = /** @class */ (function () {
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -107,7 +107,7 @@ var AuthClass = (function () {
      * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
-    AuthClass.prototype.signUp = function (attrs) {
+    AuthClass.prototype.signUp = function (params) {
         var _this = this;
         var restOfAttrs = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -119,8 +119,9 @@ var AuthClass = (function () {
         var username = null;
         var password = null;
         var attributes = [];
-        if (attrs && typeof attrs === 'string') {
-            username = attrs;
+        var validationData = null;
+        if (params && typeof params === 'string') {
+            username = params;
             password = restOfAttrs ? restOfAttrs[0] : null;
             var email = restOfAttrs ? restOfAttrs[1] : null;
             var phone_number = restOfAttrs ? restOfAttrs[2] : null;
@@ -129,15 +130,17 @@ var AuthClass = (function () {
             if (phone_number)
                 attributes.push({ Name: 'phone_number', Value: phone_number });
         }
-        else if (attrs && typeof attrs === 'object') {
-            username = attrs['username'];
-            password = attrs['password'];
-            Object.keys(attrs).map(function (key) {
-                if (key === 'username' || key === 'password')
-                    return;
-                var ele = { Name: key, Value: attrs[key] };
-                attributes.push(ele);
-            });
+        else if (params && typeof params === 'object') {
+            username = params['username'];
+            password = params['password'];
+            var attrs_1 = params['attributes'];
+            if (attrs_1) {
+                Object.keys(attrs_1).map(function (key) {
+                    var ele = { Name: key, Value: attrs_1[key] };
+                    attributes.push(ele);
+                });
+            }
+            validationData = params['validationData'] || null;
         }
         else {
             return Promise.reject('The first parameter should either be non-null string or object');
@@ -148,10 +151,11 @@ var AuthClass = (function () {
         if (!password) {
             return Promise.reject('Password cannot be empty');
         }
-        logger.debug('signUp attrs:');
-        logger.debug(attributes);
+        logger.debug('signUp attrs:', attributes);
+        logger.debug('signUp validation data:', validationData);
+        logger.debug(params);
         return new Promise(function (resolve, reject) {
-            _this.userPool.signUp(username, password, attributes, null, function (err, data) {
+            _this.userPool.signUp(username, password, attributes, validationData, function (err, data) {
                 if (err) {
                     dispatchAuthEvent('signUp_failure', err);
                     reject(err);
@@ -328,6 +332,39 @@ var AuthClass = (function () {
                     user['challengeParam'] = challengeParam;
                     resolve(user);
                 }
+            });
+        });
+    };
+    /**
+     * Update an authenticated users' attributes
+     * @param {CognitoUser} - The currently logged in user object
+     * @return {Promise}
+     **/
+    AuthClass.prototype.updateUserAttributes = function (user, attributes) {
+        var attr = {};
+        var attributeList = [];
+        return this.userSession(user)
+            .then(function (session) {
+            return new Promise(function (resolve, reject) {
+                for (var key in attributes) {
+                    if (key !== 'sub' &&
+                        key.indexOf('_verified') < 0 &&
+                        attributes[key]) {
+                        attr = {
+                            'Name': key,
+                            'Value': attributes[key]
+                        };
+                        attributeList.push(attr);
+                    }
+                }
+                user.updateAttributes(attributeList, function (err, result) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(result);
+                    }
+                });
             });
         });
     };
@@ -617,7 +654,7 @@ var AuthClass = (function () {
      */
     AuthClass.prototype.currentUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var credentials, source, user, attributes, info, user;
+            var credentials, source, user, attributes, userAttrs, info, err_1, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -626,7 +663,7 @@ var AuthClass = (function () {
                         if (!source) {
                             return [2 /*return*/, null];
                         }
-                        if (!(source === 'aws' || source === 'userPool')) return [3 /*break*/, 3];
+                        if (!(source === 'aws' || source === 'userPool')) return [3 /*break*/, 5];
                         return [4 /*yield*/, this.currentUserPoolUser()
                                 .catch(function (err) { return logger.debug(err); })];
                     case 1:
@@ -634,21 +671,25 @@ var AuthClass = (function () {
                         if (!user) {
                             return [2 /*return*/, null];
                         }
-                        return [4 /*yield*/, this.userAttributes(user)
-                                .catch(function (err) {
-                                logger.debug('currentUserInfo error', err);
-                                return {};
-                            })];
+                        _a.label = 2;
                     case 2:
+                        _a.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this.userAttributes(user)];
+                    case 3:
                         attributes = _a.sent();
+                        userAttrs = this.attributesToObject(attributes);
                         info = {
-                            username: user.username,
-                            id: credentials.identityId,
-                            email: attributes.email,
-                            phone_number: attributes.phone_number
+                            'id': credentials.identityId,
+                            'username': user.username,
+                            'attributes': userAttrs
                         };
                         return [2 /*return*/, info];
-                    case 3:
+                    case 4:
+                        err_1 = _a.sent();
+                        console.warn(err_1);
+                        logger.debug('currentUserInfo error', err_1);
+                        return [2 /*return*/, {}];
+                    case 5:
                         if (source === 'federated') {
                             user = this.user;
                             return [2 /*return*/, user ? user : {}];
@@ -689,9 +730,21 @@ var AuthClass = (function () {
     };
     AuthClass.prototype.attributesToObject = function (attributes) {
         var obj = {};
-        attributes.map(function (attribute) {
-            obj[attribute.Name] = (attribute.Value === 'false') ? false : attribute.Value;
-        });
+        if (attributes) {
+            attributes.map(function (attribute) {
+                if (attribute.Name === 'sub')
+                    return;
+                if (attribute.Value === 'true') {
+                    obj[attribute.Name] = true;
+                }
+                else if (attribute.Value === 'false') {
+                    obj[attribute.Name] = false;
+                }
+                else {
+                    obj[attribute.Name] = attribute.Value;
+                }
+            });
+        }
         return obj;
     };
     AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
