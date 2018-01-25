@@ -83,15 +83,15 @@ CanonicalRequest =
     HexEncode(Hash(RequestPayload))
 </pre>
 */
-var canonical_request = function(request) {
+var canonical_request = function (request) {
     var url_info = url.parse(request.url);
-
+    var sorted_query = url_info.query ? url_info.query.split('&').sort((a,b) => a < b ? -1 : 1).join('&') : '';
     return [
-        request.method || '/',
-        url_info.path,
-        url_info.query,
-        canonical_headers(request.headers),
-        signed_headers(request.headers),
+        request.method || '/', 
+        url_info.pathname, 
+        sorted_query, 
+        canonical_headers(request.headers), 
+        signed_headers(request.headers), 
         hash(request.data)
     ].join('\n');
 };
