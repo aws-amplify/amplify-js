@@ -83,10 +83,10 @@ export default class Greetings extends AuthPiece {
             if (response.status === 'connected') {
                 return new Promise((res, rej) => {
                     logger.debug('facebook signing out');
-                    FB.logout(response => {
+                    fb.logout(response => {
                         res(response);
                     });
-                })
+                });
             } else {
                 return Promise.resolve(null);
             }
