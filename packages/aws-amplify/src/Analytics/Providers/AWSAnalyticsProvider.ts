@@ -139,23 +139,24 @@ export class AWSAnalyticsProvider {
     }
 
     private _recordCustomEvent(params) {
-        logger.debug(`record event with params: ${params}`);
+        
 
-        const { attributes, metrics } = params;
+        const { eventName, attributes, metrics } = params;
         const clientContext = this._generateClientContext();
         const eventParams = {
             clientContext,
             events: [
                 {
-                    eventType: name,
+                    eventType: eventName,
                     timestamp: new Date().toISOString(),
                     attributes,
                     metrics
                 }
             ]
         };
+        logger.debug('record event with params', eventParams);
         return new Promise<any>((res, rej) => {
-            this.mobileAnalytics.putEvents(params, (err, data) => {
+            this.mobileAnalytics.putEvents(eventParams, (err, data) => {
                 if (err) {
                     logger.debug('record event failed. ', err);
                     rej(err);

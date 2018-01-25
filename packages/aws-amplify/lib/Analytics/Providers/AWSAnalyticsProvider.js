@@ -124,22 +124,22 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     };
     AWSAnalyticsProvider.prototype._recordCustomEvent = function (params) {
         var _this = this;
-        logger.debug("record event with params: " + params);
-        var attributes = params.attributes, metrics = params.metrics;
+        var eventName = params.eventName, attributes = params.attributes, metrics = params.metrics;
         var clientContext = this._generateClientContext();
         var eventParams = {
             clientContext: clientContext,
             events: [
                 {
-                    eventType: name,
+                    eventType: eventName,
                     timestamp: new Date().toISOString(),
                     attributes: attributes,
                     metrics: metrics
                 }
             ]
         };
+        logger.debug('record event with params', eventParams);
         return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
+            _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
                 if (err) {
                     logger.debug('record event failed. ', err);
                     rej(err);
