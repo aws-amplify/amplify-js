@@ -42,6 +42,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
         });
     };
     AWSAnalyticsProvider.prototype.putEvent = function (params) {
+        logger.debug('putEvent params', params);
         var eventName = params.eventName;
         switch (eventName) {
             case 'session_start':

@@ -53,6 +53,7 @@ export class AWSAnalyticsProvider {
     }
 
     public putEvent(params) {
+        logger.debug('putEvent params', params);
         const { eventName} = params;
 
         switch (eventName) {
