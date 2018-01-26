@@ -1,3 +1,4 @@
+import * as AWS from 'aws-sdk';
 /**
 * Analytics instance options
 */

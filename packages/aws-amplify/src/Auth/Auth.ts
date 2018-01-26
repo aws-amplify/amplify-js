@@ -92,31 +92,35 @@ export default class AuthClass {
 
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String | object} params - The user attirbutes used for signin
      * @param {String[]} restOfAttrs - for the backward compatability 
      * @return - A promise resolves callback data if success
      */
-    public signUp(attrs: string | object, ...restOfAttrs: string[]): Promise<any> {
+    public signUp(params: string | object, ...restOfAttrs: string[]): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
 
         let username : string = null;
         let password : string = null;
         const attributes : object[] = [];
-        if (attrs && typeof attrs === 'string') {
-            username = attrs;
+        let validationData: object[] = null;
+        if (params && typeof params === 'string') {
+            username = params;
             password = restOfAttrs? restOfAttrs[0] : null;
             const email : string = restOfAttrs? restOfAttrs[1] : null;
             const phone_number : string = restOfAttrs? restOfAttrs[2] : null;
             if (email) attributes.push({Name: 'email', Value: email});
             if (phone_number) attributes.push({Name: 'phone_number', Value: phone_number}); 
-        } else if (attrs && typeof attrs === 'object') {
-            username = attrs['username'];
-            password = attrs['password'];
-            Object.keys(attrs).map(key => {
-                if (key === 'username' || key === 'password') return;
-                const ele : object = { Name: key, Value: attrs[key] };
-                attributes.push(ele);
-            });
+        } else if (params && typeof params === 'object') {
+            username = params['username'];
+            password = params['password'];
+            const attrs = params['attributes'];
+            if (attrs) {
+                Object.keys(attrs).map(key => {
+                    const ele : object = { Name: key, Value: attrs[key] };
+                    attributes.push(ele);
+                });
+            }
+            validationData = params['validationData'] || null;
         } else {
             return Promise.reject('The first parameter should either be non-null string or object');
         }
@@ -124,11 +128,11 @@ export default class AuthClass {
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }     
         
-        logger.debug('signUp attrs:');
-        logger.debug(attributes);
+        logger.debug('signUp attrs:', attributes);
+        logger.debug('signUp validation data:', validationData);
         
         return new Promise((resolve, reject) => {
-            this.userPool.signUp(username, password, attributes, null, function(err, data) {
+            this.userPool.signUp(username, password, attributes, validationData, function(err, data) {
                 if (err) {
                     dispatchAuthEvent('signUp_failure', err);
                     reject(err);
@@ -292,6 +296,34 @@ export default class AuthClass {
         });
     }
 
+    /**
+     * Update an authenticated users' attributes
+     * @param {CognitoUser} - The currently logged in user object
+     * @return {Promise} 
+     **/
+    public updateUserAttributes(user, attributes:object): Promise<any> {
+        let attr:object = {};
+        const attributeList:Array<object> = [];
+        return this.userSession(user)
+            .then(session => {
+                return new Promise((resolve, reject) => {
+                    for (const key in attributes) {
+                        if ( key !== 'sub' &&
+                            key.indexOf('_verified') < 0 && 
+                            attributes[key] ) {
+                            attr = {
+                                'Name': key,
+                                'Value': attributes[key]
+                            };
+                            attributeList.push(attr);
+                        }
+                    }
+                    user.updateAttributes(attributeList, (err,result) => {
+                        if (err) { reject(err); } else { resolve(result); }
+                    });
+                });
+            }); 
+    }
     /**
      * Return user attributes
      * @param {Object} user - The CognitoUser object
@@ -571,19 +603,21 @@ export default class AuthClass {
                 .catch(err => logger.debug(err));
             if (!user) { return null; }
 
-            const attributes = await this.userAttributes(user)
-                .catch(err => {
-                    logger.debug('currentUserInfo error', err);
-                    return {};
-                });
-
-            const info = {
-                username: user.username,
-                id: credentials.identityId,
-                email: attributes.email,
-                phone_number: attributes.phone_number
-            };
-            return info;
+            try {
+                const attributes = await this.userAttributes(user);
+                const userAttrs:object = this.attributesToObject(attributes);
+            
+                const info = {
+                    'id': credentials.identityId,
+                    'username': user.username,
+                    'attributes': userAttrs
+                };
+                return info;
+            } catch(err) {
+                console.warn(err);
+                logger.debug('currentUserInfo error', err);
+                return {};
+            }
         }
 
         if (source === 'federated') {
@@ -626,9 +660,19 @@ export default class AuthClass {
 
     private attributesToObject(attributes) {
         const obj = {};
-        attributes.map(attribute => {
-            obj[attribute.Name] = (attribute.Value === 'false')? false : attribute.Value;
-        });
+        if (attributes) {
+            attributes.map(attribute => {
+                if (attribute.Name === 'sub') return;
+
+                if (attribute.Value === 'true') {
+                    obj[attribute.Name] = true;
+                } else if (attribute.Value === 'false') {
+                    obj[attribute.Name] = false;
+                } else {
+                    obj[attribute.Name] = attribute.Value;
+                }
+            });
+        }
         return obj;
     }
 
