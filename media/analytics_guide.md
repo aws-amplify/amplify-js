@@ -40,15 +40,28 @@ In the above configuration you are required to pass in an Amazon Cognito Identit
 
 To create a project fully functioning with the Analytics category.
 
-<p align="center">
-  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/analytics.zip">
-    <span>
-        <img height="100%" src="https://s3.amazonaws.com/deploytomh/button-deploy-aws-mh.png"/>
-    </span>
-  </a>
-</p>
+```
+$ npm install -g awsmobile-cli
+$ cd my-app
+$ awsmobile init
+$ awsmobile enable analytics
+```
 
-After configuration, user session metrics are automatically collected and send to Amazon Pinpoint. To see these metrics click [here](https://console.aws.amazon.com/pinpoint/home/) or in your Mobile Hub project click the **Engage** tab on the left of the screen.
+In your project i.e. App.js:
+
+```
+import Amplify, { Analytics } from 'aws-amplify';
+import aws_exports from './aws-exports';
+Amplify.configure(aws_exports);
+```
+
+After configuration, user session metrics are automatically collected and send to Amazon Pinpoint. To see these metrics click [here](https://console.aws.amazon.com/pinpoint/home/), or on the cli (from your project directory):
+
+```
+$ awsmobile console
+```
+
+Then click **Analytics**.
 
 ![Session](mobile_hub_3.png)
 
