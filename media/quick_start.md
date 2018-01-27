@@ -23,7 +23,15 @@ AWS Amplify is available as an npm packages. Run the following from the current 
 yarn add aws-amplify
 yarn add aws-amplify-react
 ```
-To setup a new Mobile Hub project you can use the 
+
+To setup a new or existing AWS Mobile Hub project you can use the [awsmobile-cli](https://github.com/aws/awsmobile-cli).
+
+```
+$ npm install -g awsmobile-cli
+$ cd my-app
+$ awsmobile init <optional-mobile-hub-project-id>
+```
+
 ## Configuration
 
 At the entry point of your application (typically `App.js` for a React application) add in the following code before your first [Component](https://reactjs.org/docs/components-and-props.html) in order to configure the library:
