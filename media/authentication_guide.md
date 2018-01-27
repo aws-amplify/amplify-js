@@ -40,13 +40,20 @@ Amplify.configure({
 
 To create a project fully functioning with the Auth category.
 
-<p align="center">
-  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/user-signin.zip">
-    <span>
-        <img height="100%" src="https://s3.amazonaws.com/deploytomh/button-deploy-aws-mh.png"/>
-    </span>
-  </a>
-</p>
+```
+$ npm install -g awsmobile-cli
+$ cd my-app
+$ awsmobile init
+$ awsmobile enable user-signin
+```
+
+In your project i.e. App.js:
+
+```
+import Amplify, { Auth } from 'aws-amplify';
+import aws_exports from './aws-exports';
+Amplify.configure(aws_exports);
+```
 
 ## Integration
 
@@ -57,6 +64,7 @@ APIs can be used in any Javascript framework. [API Reference](api_reference.md) 
 #### Sign In
 ```js
 import { Auth } from 'aws-amplify';
+import './aws-exports' // <-- use this if you used the cli to bootstrap your project
 
 Auth.signIn(username, password)
     .then(user => console.log(user))

@@ -20,10 +20,10 @@ You should see a basic React application running in your browser.
 ## Install Amplify 
 AWS Amplify is available as an npm packages. Run the following from the current directory of your application:
 ```bash
-npm install --save aws-amplify
-npm install --save aws-amplify-react
+yarn add aws-amplify
+yarn add aws-amplify-react
 ```
-
+To setup a new Mobile Hub project you can use the 
 ## Configuration
 
 At the entry point of your application (typically `App.js` for a React application) add in the following code before your first [Component](https://reactjs.org/docs/components-and-props.html) in order to configure the library:

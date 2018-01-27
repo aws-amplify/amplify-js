@@ -1,11 +1,10 @@
 # API
 
-AWS Amplify API module provides a simple solution when making HTTP request to Amazon API Gateway. 
+AWS Amplify API module provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
 
-* [Installation](#installation)
-* [Configuration](#configuration)
-  * [Manual Setup](#manual-setup)
-  * [Automated Setup](#automated-setup)
+* [Installation and Configuration](#installation-and-configuration)
+  - [Manual Setup](#manual-setup)
+  - [Automated Setup](#automated-setup)
 * [Integration](#integration)
   * [GET](#get)
   * [POST](#post)
@@ -13,31 +12,25 @@ AWS Amplify API module provides a simple solution when making HTTP request to Am
   * [DELETE](#delete)
   * [HEAD](#head)
 
-## Installation
+## Installation and Configuration
 
-For Web development, regardless of framework, `aws-amplify` provides core functionality
+Please refer to this [Guide](install_n_config.md) for general setup. Here are Analytics specific setup.
 
-```
-npm install aws-amplify
-```
+The API module can be used out of the box for signed requests against Amazon API Gateway when the API Authorization is set to **AWS_IAM**. 
 
-## Configuration
+You are required to pass in an Amazon Cognito Identity Pool ID, allowing the library to retrieve base credentials for a user even in an UnAuthenticated state. AWS Amplify also requires a list of your APIs, comprised of a friendly name for the API and the endpoint URL. 
 
-You are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. AWS Amplify also require a list of your API, you must provide a name for identify it later and the endpoint. Amazon Cognito Identity Pool requires to have access to the API using Amazon IAM. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup)!
-
-### Manual Setup
-
-[Amazon Cognito Identity](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-identity-pools.html)
-
-[Amazon IAM](http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started.html)
+Amazon Cognito Identity Pool requires to have access to the API using Amazon IAM. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup)!
 
 [Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started.html)
 
+### Manual Setup
+
 After configuring this resources you can add these lines to your source code.
-```
+```js
 import Amplify, { API } from 'aws-amplify';
 
-Amplify.configure(
+Amplify.configure({
     Auth: {
         identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
         region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
@@ -62,44 +55,40 @@ Amplify.configure(
 
 ### Automated Setup
 
-AWS Mobile Hub streamlines the steps above for you. Simply click the button:
+To create a project fully functioning with the API category.
 
-<p align="center">
-  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home?#/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/api.zip">
-    <span>
-        <img height="100%" src="https://s3.amazonaws.com/deploytomh/button-deploy-aws-mh.png"/>
-    </span>
-  </a>
-</p>
+```
+$ npm install -g awsmobile-cli
+$ cd my-app
+$ awsmobile init
+$ awsmobile enable cloud-api
+```
 
-This will create a project that works with API category fully functioning. Before proceeding further, in the Mobile Hub console click the Cloud Logic tile and ensure that the API deployment status at the bottom shows CREATE_COMPLETE (this can take a few moments). After the project is created in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
+In your project i.e. App.js:
 
-![Mobile Hub](console.gif)
-
-Then copy the file to a visible folder of your project
-
-Now you can simply import the file and pass it as the configuration to the Amplify library:
-
-Add these lines to your source.
 ```
 import Amplify, { API } from 'aws-amplify';
-import aws_exports from './PATH_TO_EXPORTS/aws-exports.js';
-
+import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
 ```
 
+This will create a project that works with API category fully functioning. Your lambda function will be in the awsmobilejs folder within your project. You can edit your lambda code and then upload the changes with:
+
+```
+$ awsmobile push
+```
 
 ## Integration
 
-First check the name of the API that you want to invoke. In case you manually configure the API you already know the API name. If you use Automated Setup or configure your API on AWS Mobile Hub you can check the API name in the Mobile Hub console by clicking Cloud Logic tile. You can use the below code as is if you use Automated Setup.
+First note the name of the API that you want to invoke. If you manually configured the API, you most likely already know the API name. If you use Automated Setup or configure your API on AWS Mobile Hub you can check the API name in the Mobile Hub console by clicking Cloud Logic tile. 
 
-Now you can invoke your API with GET, POST, PUT, DELETE and HEAD methods.
+The below code assumes use of the Automated Setup.
 
-Each method of Amplify's API module returns a Promise which is seen in the below examples on different HTTP verbs. Configure the apiName, path and headers according to your settings.
+Each method of Amplify's API module returns a Promise which is seen in the below examples with different HTTP verbs. Configure the `apiName`, `path` and `headers` according to your settings.
 
 ### **GET**
 
-```
+```js
 let apiName = 'MyApiName';
 let path = '/path'; 
 let myInit = { // OPTIONAL
@@ -113,8 +102,8 @@ API.get(apiName, path, myInit).then(response => {
 
 Example with async/await
 
-```
-async getData() { 
+```js
+async function getData() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
@@ -126,20 +115,22 @@ async getData() {
 getData();
 ```
 ### Note about headers
-To use custom headers on your HTTP request you need to add this on Amazon API Gateway first. For more info about configuring headers go [here](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html)
 
-If you use one click import or AWS Mobile Hub to create your API, you can do the following:
+To use custom headers on your HTTP request you need to add these to Amazon API Gateway first. For more info about configuring headers go [here](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html)
+
+If you used one click import or AWS Mobile Hub to create your API, you can do the following:
+
 1. Go to your project on AWS Mobile Hub console.
 2. Go to resources and click the link on Amazon API Gateway section. This will redirect you to Amazon API Gateway console.
 3. On Amazon API Gateway console, click on the path you want to configure (e.g. /{proxy+})
-4. Then click on Actions and select Enable CORS
-5. You can add your custom header (e.g. my-custom-header) on the text field Access-Control-Allow-Headers like this: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,my-custom-header'
+4. Then click the Actions dropdown and select **Enable CORS**
+5. Add your custom header (e.g. my-custom-header) on the text field Access-Control-Allow-Headers, separated by commas, like so: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,my-custom-header'
 6. Click on 'Enable CORS and replace existing CORS headers' and confirm.
-7. Last step, on the same path you click on step 3, click on Actions and select Deploy API. Select 'Development' on deployment stage and click Deploy. (Deployment could take a couple of minutes).
+7. Finally, similar to step 3, click the Actions dropdown and then **Deploy API**. Select **Development** on deployment stage and then **Deploy**. (Deployment could take a couple of minutes).
 
 ### **POST**
 
-```
+```js
 let apiName = 'MyApiName'; // replace this with your api name.
 let path = '/path'; //replace this with the path you have configured on your API
 let myInit = {
@@ -155,8 +146,8 @@ API.post(apiName, path, myInit).then(response => {
 
 Example with async/await
 
-```
-async postData() { 
+```js
+async function postData() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
@@ -171,7 +162,7 @@ postData();
 
 ### **PUT**
 
-```
+```js
 let apiName = 'MyApiName'; // replace this with your api name.
 let path = '/path'; // replace this with the path you have configured on your API
 let myInit = {
@@ -187,8 +178,8 @@ API.put(apiName, path, myInit).then(response => {
 
 Example with async/await
 
-```
-async putData() { 
+```js
+async function putData() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
@@ -203,7 +194,7 @@ putData();
 
 ### **DELETE**
 
-```
+```js
 let apiName = 'MyApiName'; // replace this with your api name.
 let path = '/path'; //replace this with the path you have configured on your API
 let myInit = { // OPTIONAL
@@ -218,8 +209,8 @@ API.del(apiName, path, myInit).then(response => {
 
 Example with async/await
 
-```
-async deleteData() { 
+```js
+async function deleteData() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
@@ -233,7 +224,7 @@ deleteData();
 
 ### **HEAD**
 
-```
+```js
 let apiName = 'MyApiName'; // replace this with your api name.
 let path = '/path'; //replace this with the path you have configured on your API
 let myInit = { // OPTIONAL
@@ -247,8 +238,8 @@ API.head(apiName, path, myInit).then(response => {
 
 Example with async/await
 
-```
-async head() { 
+```js
+async function head() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL

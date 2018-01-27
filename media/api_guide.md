@@ -57,17 +57,26 @@ Amplify.configure({
 
 To create a project fully functioning with the API category.
 
-<p align="center">
-  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/api.zip">
-    <span>
-        <img height="100%" src="https://s3.amazonaws.com/deploytomh/button-deploy-aws-mh.png"/>
-    </span>
-  </a>
-</p>
+```
+$ npm install -g awsmobile-cli
+$ cd my-app
+$ awsmobile init
+$ awsmobile enable cloud-api
+```
 
-This will create a project that works with API category fully functioning. Before proceeding further, in the Mobile Hub console click the Cloud Logic tile and ensure that the API deployment status at the bottom shows CREATE_COMPLETE (this can take a few moments). After the project is created in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
+In your project i.e. App.js:
 
-![Mobile Hub](console.gif)
+```
+import Amplify, { API } from 'aws-amplify';
+import aws_exports from './aws-exports';
+Amplify.configure(aws_exports);
+```
+
+This will create a project that works with API category fully functioning. Your lambda function will be in the awsmobilejs folder within your project. You can edit your lambda code and then upload the changes with:
+
+```
+$ awsmobile push
+```
 
 ## Integration
 

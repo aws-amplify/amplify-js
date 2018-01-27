@@ -43,13 +43,20 @@ Amplify.configure(
 
 To create a project fully functioning with the Storage category.
 
-<p align="center">
-  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/user-files.zip">
-    <span>
-        <img height="100%" src="https://s3.amazonaws.com/deploytomh/button-deploy-aws-mh.png"/>
-    </span>
-  </a>
-</p>
+```
+$ npm install -g awsmobile-cli
+$ cd my-app
+$ awsmobile init
+$ awsmobile enable user-files
+```
+
+In your project i.e. App.js:
+
+```
+import Amplify, { Storage } from 'aws-amplify';
+import aws_exports from './aws-exports';
+Amplify.configure(aws_exports);
+```
 
 ## Amazon S3 Bucket CORS Policy
 
