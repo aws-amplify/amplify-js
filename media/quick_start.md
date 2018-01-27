@@ -26,7 +26,7 @@ yarn add aws-amplify-react
 
 To setup a new or existing AWS Mobile Hub project you can use the [awsmobile-cli](https://github.com/aws/awsmobile-cli).
 
-```
+```bash
 $ npm install -g awsmobile-cli
 $ cd my-app
 $ awsmobile init <optional-mobile-hub-project-id>
