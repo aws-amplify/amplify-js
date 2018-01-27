@@ -112,7 +112,9 @@ var RestClient = /** @class */ (function () {
                     headers: {},
                     data: null
                 };
-                libraryHeaders = {};
+                libraryHeaders = {
+                    'User-Agent': 'aws-amplify/0.1.x'
+                };
                 extraParams = Object.assign({}, init);
                 if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
