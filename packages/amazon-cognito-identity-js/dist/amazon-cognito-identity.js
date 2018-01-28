@@ -6545,7 +6545,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.endpoint = endpoint || 'https://cognito-idp.' + region + '.amazonaws.com/';
 	    this.userAgent = _UserAgent2.default.prototype.userAgent || 'aws-amplify/0.1.x js';
-	    console.log('userAgent set to: ', this.userAgent);
 	  }
 
 	  /**

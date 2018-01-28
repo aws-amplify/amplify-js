@@ -14,8 +14,8 @@
 import React, { Component } from 'react';
 import { Image, StyleSheet } from 'react-native';
 
-import Storage from '../../Storage';
-import { ConsoleLogger as Logger } from '../../Common';
+import { Storage, Logger } from 'aws-amplify';
+
 import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('Storage.S3Image');

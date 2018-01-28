@@ -16,8 +16,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 import React, { Component } from 'react';
 import { ScrollView, Dimensions, StyleSheet } from 'react-native';
 
-import Storage from '../../Storage';
-import { ConsoleLogger as Logger } from '../../Common';
+import { Storage, Logger } from 'aws-amplify';
+
 import AmplifyTheme from '../AmplifyTheme';
 import S3Image from './S3Image';
 

@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import I18n from '../I18n';
+import { I18n } from 'aws-amplify';
 
 export const MapEntries = [['User does not exist', /user.*not.*exist/i], ['User already exists', /user.*already.*exist/i], ['Incorrect username or password', /incorrect.*username.*password/i], ['Invalid password format', /validation.*password/i], ['Invalid phone number format', /invalid.*phone/i, 'Invalid phone number format. Please use a phone number format of +12345678900']];
 

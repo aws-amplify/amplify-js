@@ -14,9 +14,15 @@
 import React from 'react';
 import { View, Text, TextInput, Button, TouchableHighlight } from 'react-native';
 
-import Auth from '../../Auth';
-import I18n from '../../I18n';
-import { ConsoleLogger as Logger, JS } from '../../Common';
+//import Auth from '../../Auth';
+//import I18n from '../../I18n';
+//import { Logger, JS } from '../../Common';
+
+import {
+    Auth,
+    I18n,
+    Logger
+} from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import { Username, Password, LinkCell, Header, ErrorRow } from '../AmplifyUI';

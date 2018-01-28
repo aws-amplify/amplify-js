@@ -13,8 +13,7 @@
 
 import React from 'react';
 
-import Auth from '../../Auth';
-import { ConsoleLogger as Logger } from '../../Common/Logger';
+import { Auth, Logger } from 'aws-amplify';
 
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';

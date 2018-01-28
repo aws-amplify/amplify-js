@@ -14,7 +14,7 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableHighlight } from 'react-native';
 
-import I18n from '../I18n';
+import { I18n } from 'aws-amplify';
 
 export const Username = (props) => {
     const theme = props.theme || AmplifyTheme;

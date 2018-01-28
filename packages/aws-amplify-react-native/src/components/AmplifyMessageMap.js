@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import I18n from '../I18n';
+import { I18n } from 'aws-amplify';
 
 export const MapEntries = [
     ['User does not exist', /user.*not.*exist/i],

@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import I18n from '../I18n';
+import { I18n } from 'aws-amplify';
 import dict from './AmplifyI18n';
 
 export { default as AmplifyTheme } from './AmplifyTheme';

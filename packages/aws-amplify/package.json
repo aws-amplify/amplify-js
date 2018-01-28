@@ -14,6 +14,10 @@
     "generate-docs-local": "typedoc --out docs src",
     "generate-docs-root": "typedoc --out ../../docs src"
   },
+  "react-native": {
+    "./Cache": "./Cache/reactnative",
+    "./Common/ClientDevice": "./Common/ClientDevice/reactnative"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aws/aws-amplify.git"
@@ -50,7 +54,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "amazon-cognito-identity-js": "^1.29.x",
+    "amazon-cognito-identity-js": "1.29.0",
     "aws-sdk": "^2.185.0",
     "axios": "^0.17.0"
   },

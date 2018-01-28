@@ -14,9 +14,15 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
-import Auth from '../../Auth';
-import Analytics from '../../Analytics';
-import { ConsoleLogger as Logger } from '../../Common';
+//import Auth from '../../Auth';
+//import Analytics from '../../Analytics';
+//import { Logger } from '../../Common';
+
+import { 
+    Auth, 
+    Analytics,
+    Logger 
+} from 'aws-amplify';
 
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
@@ -90,7 +96,7 @@ export default class Authenticator extends React.Component {
     }
 
     checkUser() {
-        Auth.currentUser()
+        Auth.currentAuthenticatedUser()
             .then(user => {
                 const state = user? 'signedIn' : 'signIn';
                 this.handleStateChange(state, user)

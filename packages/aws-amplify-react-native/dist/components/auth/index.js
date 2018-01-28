@@ -16,7 +16,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 import React from 'react';
 import { View } from 'react-native';
 
-import { ConsoleLogger as Logger } from '../../Common';
+import { Logger } from 'aws-amplify';
 
 import Authenticator from './Authenticator';
 import AuthPiece from './AuthPiece';
