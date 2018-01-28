@@ -48,6 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
+var Platform_1 = require("../Common/Platform");
 var Cache_1 = require("../Cache");
 var logger = new Common_1.ConsoleLogger('AuthClass');
 var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
@@ -492,20 +493,46 @@ var AuthClass = /** @class */ (function () {
      * @return - A promise resolves to be current user's credentials
      */
     AuthClass.prototype.currentUserCredentials = function () {
-        var _this = this;
-        // first to check whether there is federation info in the local storage
-        var federatedInfo = Cache_1.default.getItem('federatedInfo');
-        if (federatedInfo) {
-            var provider_1 = federatedInfo.provider, token_1 = federatedInfo.token, user_1 = federatedInfo.user;
-            return new Promise(function (resolve, reject) {
-                _this.setCredentialsFromFederation(provider_1, token_1, user_1);
-                resolve();
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var federatedInfo, provider_1, token_1, user_1, federatedInfo, provider_2, token_2, user_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!Platform_1.default.isReactNative) return [3 /*break*/, 2];
+                        return [4 /*yield*/, Cache_1.default.getItem('federatedInfo')];
+                    case 1:
+                        federatedInfo = _a.sent();
+                        if (federatedInfo) {
+                            provider_1 = federatedInfo.provider, token_1 = federatedInfo.token, user_1 = federatedInfo.user;
+                            return [2 /*return*/, new Promise(function (resolve, reject) {
+                                    _this.setCredentialsFromFederation(provider_1, token_1, user_1);
+                                    resolve();
+                                })];
+                        }
+                        else {
+                            return [2 /*return*/, this.currentSession()
+                                    .then(function (session) { return _this.setCredentialsFromSession(session); })];
+                        }
+                        return [3 /*break*/, 3];
+                    case 2:
+                        federatedInfo = Cache_1.default.getItem('federatedInfo');
+                        if (federatedInfo) {
+                            provider_2 = federatedInfo.provider, token_2 = federatedInfo.token, user_2 = federatedInfo.user;
+                            return [2 /*return*/, new Promise(function (resolve, reject) {
+                                    _this.setCredentialsFromFederation(provider_2, token_2, user_2);
+                                    resolve();
+                                })];
+                        }
+                        else {
+                            return [2 /*return*/, this.currentSession()
+                                    .then(function (session) { return _this.setCredentialsFromSession(session); })];
+                        }
+                        _a.label = 3;
+                    case 3: return [2 /*return*/];
+                }
             });
-        }
-        else {
-            return this.currentSession()
-                .then(function (session) { return _this.setCredentialsFromSession(session); });
-        }
+        });
     };
     AuthClass.prototype.currentCredentials = function () {
         return this.pickupCredentials();

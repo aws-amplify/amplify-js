@@ -22,9 +22,9 @@ export { default as Hub } from './Hub';
 export { default as JS } from './JS';
 export { default as Signer } from './Signer';
 
-import UserAgent from './UserAgent';
+import Platform from './Platform';
 export const Constants = {
-    'userAgent': UserAgent
+    'userAgent': Platform.userAgent
 };
 
 const logger = new Logger('Common');

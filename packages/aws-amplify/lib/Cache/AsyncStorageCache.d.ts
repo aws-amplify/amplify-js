@@ -1,7 +1,7 @@
 import StorageCache from './StorageCache';
 import { AsyncStorage } from 'react-native';
 import { ICache } from './types';
-declare class AsyncStorageCache extends StorageCache {
+declare class AsyncStorageCache extends StorageCache implements ICache {
     /**
      * initialize the cache
      *

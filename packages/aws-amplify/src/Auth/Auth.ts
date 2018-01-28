@@ -20,6 +20,7 @@ import {
     Constants,
     Hub
 } from '../Common';
+import Platform from '../Common/Platform';
 import Cache from '../Cache';
 
 const logger = new Logger('AuthClass');
@@ -410,7 +411,6 @@ export default class AuthClass {
      */
     public currentSession() : Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
-
         const user = this.userPool.getCurrentUser();
         if (!user) { return Promise.reject('No current user'); }
         return this.userSession(user);
@@ -434,18 +434,33 @@ export default class AuthClass {
      * Get authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
-    public currentUserCredentials() : Promise<any> {
-        // first to check whether there is federation info in the local storage
-        const federatedInfo = Cache.getItem('federatedInfo');
-        if (federatedInfo) {
-            const { provider, token, user} = federatedInfo;
-            return new Promise((resolve, reject) => {
-                this.setCredentialsFromFederation(provider, token, user);
-                resolve();
-            });
+    public async currentUserCredentials() : Promise<any> {
+        if (Platform.isReactNative) {
+            // asyncstorage
+            let federatedInfo = await Cache.getItem('federatedInfo');
+            if (federatedInfo) {
+                const { provider, token, user} = federatedInfo;
+                return new Promise((resolve, reject) => {
+                    this.setCredentialsFromFederation(provider, token, user);
+                    resolve();
+                });
+            } else {
+                return this.currentSession()
+                    .then(session => this.setCredentialsFromSession(session));
+            }
         } else {
-            return this.currentSession()
-                .then(session => this.setCredentialsFromSession(session));
+            // first to check whether there is federation info in the local storage
+            let federatedInfo = Cache.getItem('federatedInfo');
+            if (federatedInfo) {
+                const { provider, token, user} = federatedInfo;
+                return new Promise((resolve, reject) => {
+                    this.setCredentialsFromFederation(provider, token, user);
+                    resolve();
+                });
+            } else {
+                return this.currentSession()
+                    .then(session => this.setCredentialsFromSession(session));
+            }
         }
     }
 

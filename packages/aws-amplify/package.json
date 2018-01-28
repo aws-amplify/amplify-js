@@ -15,8 +15,8 @@
     "generate-docs-root": "typedoc --out ../../docs src"
   },
   "react-native": {
-    "./Cache": "./Cache/reactnative",
-    "./Common/ClientDevice": "./Common/ClientDevice/reactnative"
+    "./lib/Cache": "./lib/Cache/reactnative.js",
+    "./lib/Common/ClientDevice": "./lib/Common/ClientDevice/reactnative.js"
   },
   "repository": {
     "type": "git",

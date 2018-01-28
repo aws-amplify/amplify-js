@@ -22,7 +22,7 @@ const logger = new Logger('AsyncStorageCache');
 /*
  * Customized cache which based on the AsyncStorage with LRU implemented
  */
-class AsyncStorageCache extends StorageCache {
+class AsyncStorageCache extends StorageCache implements ICache {
 
   /**
    * initialize the cache
@@ -32,6 +32,7 @@ class AsyncStorageCache extends StorageCache {
   constructor(config?) {
     const cache_config = config ? Object.assign({}, defaultConfig, config) : defaultConfig;
     super(cache_config);
+    logger.debug('Using AsyncStorageCache');
   }
 
   /**
@@ -238,7 +239,7 @@ class AsyncStorageCache extends StorageCache {
    * @return {Prmoise}
    */
   async setItem(key, value, options) {
-    logger.log(`Set item: key is ${key}, value is ${value} with options: ${options}`);
+    logger.debug(`Set item: key is ${key}, value is ${value} with options: ${options}`);
     const prefixedKey = this.config.keyPrefix + key;
     // invalid keys
     if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
@@ -308,7 +309,7 @@ class AsyncStorageCache extends StorageCache {
    * @return {Promise} - return a promise resolves to be the value of the item
    */
   async getItem(key, options) {
-    logger.log(`Get item: key is ${key} with options ${options}`);
+    console.log(`Get item: key is ${key} with options ${options}`);
     let ret = null;
     const prefixedKey = this.config.keyPrefix + key;
 
@@ -353,7 +354,7 @@ class AsyncStorageCache extends StorageCache {
    * @return {Promise}
    */
   async removeItem(key) {
-    logger.log(`Remove item: key is ${key}`);
+    logger.debug(`Remove item: key is ${key}`);
     const prefixedKey = this.config.keyPrefix + key;
 
     if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
@@ -377,7 +378,7 @@ class AsyncStorageCache extends StorageCache {
    * @return {Promise}
    */
   async clear() {
-    logger.log(`Clear Cache`);
+    logger.debug(`Clear Cache`);
     try {
       const keys = await AsyncStorage.getAllKeys();
 

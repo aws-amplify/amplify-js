@@ -62,7 +62,7 @@ var CacheUtils_1 = require("./Utils/CacheUtils");
 var react_native_1 = require("react-native");
 exports.AsyncStorage = react_native_1.AsyncStorage;
 var Common_1 = require("../Common");
-var logger = new Common_1.ConsoleLogger('Cache');
+var logger = new Common_1.ConsoleLogger('AsyncStorageCache');
 /*
  * Customized cache which based on the AsyncStorage with LRU implemented
  */
@@ -77,6 +77,7 @@ var AsyncStorageCache = /** @class */ (function (_super) {
         var _this = this;
         var cache_config = config ? Object.assign({}, CacheUtils_1.defaultConfig, config) : CacheUtils_1.defaultConfig;
         _this = _super.call(this, cache_config) || this;
+        logger.debug('Using AsyncStorageCache');
         return _this;
     }
     /**
@@ -431,7 +432,7 @@ var AsyncStorageCache = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        logger.log("Set item: key is " + key + ", value is " + value + " with options: " + options);
+                        logger.debug("Set item: key is " + key + ", value is " + value + " with options: " + options);
                         prefixedKey = this.config.keyPrefix + key;
                         // invalid keys
                         if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
@@ -519,7 +520,7 @@ var AsyncStorageCache = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        logger.log("Get item: key is " + key + " with options " + options);
+                        console.log("Get item: key is " + key + " with options " + options);
                         ret = null;
                         prefixedKey = this.config.keyPrefix + key;
                         if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
@@ -579,7 +580,7 @@ var AsyncStorageCache = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        logger.log("Remove item: key is " + key);
+                        logger.debug("Remove item: key is " + key);
                         prefixedKey = this.config.keyPrefix + key;
                         if (prefixedKey === this.config.keyPrefix || prefixedKey === this.cacheCurSizeKey) {
                             return [2 /*return*/];
@@ -617,7 +618,7 @@ var AsyncStorageCache = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        logger.log("Clear Cache");
+                        logger.debug("Clear Cache");
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 7, , 8]);
