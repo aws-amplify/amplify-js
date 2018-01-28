@@ -18,12 +18,13 @@ import AuthPiece from './AuthPiece';
 import { Header } from '../AmplifyUI';
 
 export default class Loading extends AuthPiece {
-    render() {
-        if (!['loading'].includes(this.props.authState)) {
-            return null;
-        }
+    constructor(props) {
+        super(props);
 
-        const theme = this.props.theme || AmplifyTheme;
+        this._validAuthStates = ['loading'];
+    }
+
+    showComponent(theme) {
         return React.createElement(
             View,
             { style: theme.section },
