@@ -48,7 +48,7 @@ export default class AnalyticsClass {
     constructor(config: AnalyticsOptions) {
         this._buffer = [];
 
-        this._setProvider('AWS');
+        this._setProvider(AWSAnalyticsProvider);
     }
 
     /**
@@ -59,8 +59,8 @@ export default class AnalyticsClass {
         logger.debug('configure Analytics');
         let conf = config? config.Analytics || config : {};
 
-        const { provider } = conf;
-        this._setProvider(provider);
+        const provider = conf.providers? conf.providers.Analytics : conf.provider;
+        if (provider) this._setProvider(provider);
 
         const clientInfo:any = ClientDevice.clientInfo();
         conf.clientInfo = conf.client_info? conf.client_info : clientInfo;
@@ -138,12 +138,13 @@ export default class AnalyticsClass {
      * @param provider 
      */
     private _setProvider(provider) {
-        const list = {AWS: AWSAnalyticsProvider}
-        // look into provider list
-        if (provider in list) {
+        // const list = {AWS: AWSAnalyticsProvider}
+        // // look into provider list
+        // if (provider in list) {
         
-            this._provider = list[provider];
-        }
+        //     this._provider = list[provider];
+        // }
+        this._provider = provider;
     }
 
     /**

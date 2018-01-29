@@ -62,7 +62,7 @@ var AnalyticsClass = /** @class */ (function () {
      */
     function AnalyticsClass(config) {
         this._buffer = [];
-        this._setProvider('AWS');
+        this._setProvider(AWSAnalyticsProvider_1.default);
     }
     /**
      * configure Analytics
@@ -71,8 +71,9 @@ var AnalyticsClass = /** @class */ (function () {
     AnalyticsClass.prototype.configure = function (config) {
         logger.debug('configure Analytics');
         var conf = config ? config.Analytics || config : {};
-        var provider = conf.provider;
-        this._setProvider(provider);
+        var provider = conf.providers ? conf.providers.Analytics : conf.provider;
+        if (provider)
+            this._setProvider(provider);
         var clientInfo = Common_1.ClientDevice.clientInfo();
         conf.clientInfo = conf.client_info ? conf.client_info : clientInfo;
         this._config = conf;
@@ -142,11 +143,12 @@ var AnalyticsClass = /** @class */ (function () {
      * @param provider
      */
     AnalyticsClass.prototype._setProvider = function (provider) {
-        var list = { AWS: AWSAnalyticsProvider_1.default };
-        // look into provider list
-        if (provider in list) {
-            this._provider = list[provider];
-        }
+        // const list = {AWS: AWSAnalyticsProvider}
+        // // look into provider list
+        // if (provider in list) {
+        //     this._provider = list[provider];
+        // }
+        this._provider = provider;
     };
     /**
      * @private
