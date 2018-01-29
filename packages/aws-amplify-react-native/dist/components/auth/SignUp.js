@@ -59,7 +59,7 @@ export default class SignUp extends AuthPiece {
     signUp() {
         const { username, password, email, phone_number } = this.state;
         logger.debug('Sign Up for ' + username);
-        Auth.signUp({username, password, attributes: {email, phone_number, address:'addressssss'}}).then(data => {
+        Auth.signUp(username, password, email, phone_number).then(data => {
             logger.debug(data);
             this.changeState('confirmSignUp', username);
         }).catch(err => this.error(err));

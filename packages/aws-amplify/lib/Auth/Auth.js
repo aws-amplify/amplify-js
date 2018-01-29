@@ -103,7 +103,7 @@ var AuthClass = /** @class */ (function () {
     };
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String | object} params - The user attirbutes used for signin
      * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
@@ -153,7 +153,6 @@ var AuthClass = /** @class */ (function () {
         }
         logger.debug('signUp attrs:', attributes);
         logger.debug('signUp validation data:', validationData);
-        logger.debug(params);
         return new Promise(function (resolve, reject) {
             _this.userPool.signUp(username, password, attributes, validationData, function (err, data) {
                 if (err) {

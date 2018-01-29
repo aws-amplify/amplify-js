@@ -12,12 +12,12 @@ The Amplify Cache module provides a generic [LRU](https://en.wikipedia.org/wiki/
 ## Installation
 
 For Web development, install `aws-amplify`
-```
+```bash
 npm install aws-amplify
 ```
 
 For React Native development, install `aws-amplify-react-native`
-```
+```bash
 npm install aws-amplify-react-native
 ```
 
@@ -26,7 +26,7 @@ npm install aws-amplify-react-native
 ### Integrate into Web application
 
 First import the library:
-```
+```js
 import { Cache } from ‘aws-amplify’;
 ```
 
@@ -36,7 +36,7 @@ After importing you can invoke the appropriate methods from your application.
 
   You can set number, string, boolean or object into the cache. You can also specify options along with the call such as the priority or expiration time.
 
-```
+```js
 Cache.setItem(key, value[, options]);
     
 // Standard case
@@ -52,7 +52,7 @@ Cache.setItem('key', 'value', { expires: expiration.getTime() });
 
 When using the `priority` setting the lower number will be evicted last. For example:
 
-```
+```js
 Cache.setItem('mothersBirthday', 'July 18th', { priority: 1 });
 Cache.setItem('breakfastFoodOrder', 'Pancakes', { priority: 3 });
 ```
@@ -63,7 +63,7 @@ In the example above once the cache fills, the key of `breakfastFoodOrder` will 
 
   Retrieve an item from the cache. It will return null if the item doesn’t exist or it has expired.
 
-```
+```js
 Cache.getItem(key[, options]);
 
 // Standard case
@@ -79,7 +79,7 @@ Cache.getItem('key', { callback: callback });
 
   Remove item from cache.
 
-```
+```js
 Cache.removeItem(key);
 ```
 
@@ -87,7 +87,7 @@ Cache.removeItem(key);
 
 Clears all of the items in the cache.
 
-```
+```js
 Cache.clear();
 ```
 
@@ -95,7 +95,7 @@ Cache.clear();
 
   Returns all of the keys in the cache.
 
-```
+```js
 Cache.getAllKeys();
 ```
 
@@ -103,7 +103,7 @@ Cache.getAllKeys();
 
   Returns the current size of the cache.
 
-```
+```js
 const size = Cache.getCacheCurSize();
 ```
 
@@ -111,7 +111,7 @@ const size = Cache.getCacheCurSize();
 
   Configure Cache such as default settings for `setItem` functionality. You can see all the options in the [Configuration](#configuration) section.
 
-```
+```js
 const config = {
   itemMaxSize: 3000, // 3000 bytes
   defaultPriority: 4
@@ -127,7 +127,7 @@ const myCacheConfig = Cache.configure(config);
 
   Create a new instance of Cache with customized configuration
 
-```
+```js
 const config = {
   itemMaxSize: 3000, // 3000 bytes
   storage: window.sessionStorage // switch to sessionStorage
@@ -140,7 +140,7 @@ const myCache = Cache.createInstance(config);
 ### Integrate into React Native
 
 First Import
-```
+```js
 import { Cache } from ‘aws-amplify-react-native’;
 ```
 Then call the methods
@@ -149,7 +149,7 @@ Then call the methods
 
   You can set number, string, boolean or object into the cache. You can also specify options along with the call such as the priority or expiration time.
 
-```
+```js
 Cache.setItem(key, value[, options]);
     
 // Standard case
@@ -167,7 +167,7 @@ Cache.setItem('key', 'value', { expires: expiration.getTime() });
 
   Retrieve an item from the cache. It will return null if the item doesn’t exist or it has expired.
 
-```
+```js
 Cache.getItem(key[, options]);
 
 // Standard case
@@ -183,7 +183,7 @@ Cache.getItem('key', { callback: callback });
 
   Remove item from cache.
 
-```
+```js
 Cache.removeItem('key');
 ```
 
@@ -192,7 +192,7 @@ Cache.removeItem('key');
 
   Clear all items in the cache.
 
-```
+```js
 Cache.clear();
 ```
 
@@ -200,7 +200,7 @@ Cache.clear();
 
   Return all the keys in the cache.
 
-```
+```js
 Cache.getAllKeys().then(keys => {...});
 ```
 
@@ -208,7 +208,7 @@ Cache.getAllKeys().then(keys => {...});
 
   Return the current size of the cache.
 
-```
+```js
 const size = Cache.getCacheCurSize().then(size => {...});
 ```
 
@@ -216,7 +216,7 @@ const size = Cache.getCacheCurSize().then(size => {...});
 
 Configure Cache with customized configuration and return the configuration. You can see all the options in the [Configuration](#configuration) section.
 
-```
+```js
 const config = {
   itemMaxSize: 3000, // 3000 bytes
   defaultPriority: 4
@@ -232,7 +232,7 @@ const myCacheConfig = Cache.configure(config);
 
 Create a new instance of Cache with customized configuration
 
-```
+```js
 const config = {
   itemMaxSize: 3000, // 3000 bytes
   defaultPriority: 4
