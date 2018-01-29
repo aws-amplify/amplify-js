@@ -17,6 +17,8 @@ import { ConsoleLogger as Logger } from '../Common';
 import Auth from '../Auth';
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
+import Platform from '../Common/Platform';
+
 const logger = new Logger('RestClient');
 
 /**
@@ -73,8 +75,9 @@ export class RestClient {
             data: null
         };
 
+        const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
         const libraryHeaders = {
-            'User-Agent': 'aws-amplify/0.1.x'
+            'User-Agent': userAgent
         };
 
         const extraParams = Object.assign({}, init);
