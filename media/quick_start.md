@@ -1,0 +1,1 @@
+### AWS Amplify docs have moved [here](https://aws.github.io/aws-amplify/media/quick_start.html)
