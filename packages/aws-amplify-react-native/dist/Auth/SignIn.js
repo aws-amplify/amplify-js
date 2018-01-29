@@ -82,6 +82,7 @@ export default class SignIn extends AuthPiece {
     }
 
     render() {
+        const { authState, hide, federated, onStateChange } = this.props;
         if (!['signIn', 'signedOut', 'signedUp'].includes(this.props.authState)) {
             return null;
         }

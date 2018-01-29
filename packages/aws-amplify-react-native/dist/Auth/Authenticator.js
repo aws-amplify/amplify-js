@@ -100,9 +100,9 @@ export default class Authenticator extends React.Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        const { hideDefault } = this.props;
+        const { hideDefault, federated } = this.props;
         const props_children = this.props.children || [];
-        const default_children = [React.createElement(SignIn, null), React.createElement(ConfirmSignIn, null), React.createElement(VerifyContact, null), React.createElement(SignUp, null), React.createElement(ConfirmSignUp, null), React.createElement(ForgotPassword, null), React.createElement(RequireNewPassword, null), React.createElement(Greetings, null)];
+        const default_children = [React.createElement(SignIn, { federated: federated }), React.createElement(ConfirmSignIn, null), React.createElement(VerifyContact, null), React.createElement(SignUp, null), React.createElement(ConfirmSignUp, null), React.createElement(ForgotPassword, null), React.createElement(RequireNewPassword, null), React.createElement(Greetings, null)];
         const children = (hideDefault ? [] : default_children).concat(props_children).map((child, index) => {
             return React.cloneElement(child, {
                 key: 'auth_piece_' + index,

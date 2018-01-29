@@ -22,11 +22,11 @@ exports.clientInfo = function () {
     var Version = react_native_1.Platform.Version;
     var _a = dimToMake(dim), make = _a.make, model = _a.model;
     return {
-        platform: OS,
-        version: String(Version),
-        appVersion: [OS, String(Version)].join('/'),
-        make: make,
-        model: model
+        'platform': OS,
+        'version': String(Version),
+        'appVersion': [OS, String(Version)].join('/'),
+        'make': make,
+        'model': model
     };
 };
 function dimToMake(dim) {

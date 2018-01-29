@@ -508,13 +508,13 @@ var AuthClass = /** @class */ (function () {
      * @return - A promise resolves to session object if success
      */
     AuthClass.prototype.currentSession = function () {
-        var user = null, that = this;
+        var user;
+        var that = this;
         if (!this.userPool) {
             return Promise.reject('No userPool');
         }
         if (Platform_1.default.isReactNative) {
             return this.getSyncedUser().then(function (user) {
-                user = that.userPool.getCurrentUser();
                 if (!user) {
                     return Promise.reject('No current user');
                 }

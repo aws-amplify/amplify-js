@@ -12,14 +12,12 @@
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Logger_1 = require("../Logger");
 var Platform = {
     'userAgent': 'aws-amplify/0.1.x js',
     'product': '',
     'navigator': null,
     'isReactNative': false
 };
-var logger = new Logger_1.ConsoleLogger('Platform');
 if (navigator && navigator.product) {
     Platform.product = navigator.product || '';
     Platform.navigator = navigator || null;
