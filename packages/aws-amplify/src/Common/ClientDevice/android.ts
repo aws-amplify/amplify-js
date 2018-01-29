@@ -28,4 +28,4 @@ export const clientInfo = () => {
         version: String(Version),
         appVersion: [OS, String(Version)].join('/')
     };
-}
+};

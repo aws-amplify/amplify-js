@@ -19,24 +19,21 @@ const logger = new Logger('DeviceInfo');
 export const clientInfo = () => {
     const dim = Dimensions.get('screen');
     logger.debug(Platform, dim);
-
     const OS = 'ios';
     const { Version } = Platform;
-
     const { make, model } = dimToMake(dim);
-
     return {
-        platform: OS,
-        version: String(Version),
-        appVersion: [OS, String(Version)].join('/'),
-        make: make,
-        model: model
+        'platform': OS,
+        'version': String(Version),
+        'appVersion': [OS, String(Version)].join('/'),
+        'make': make,
+        'model': model
     };
-}
+};
 
 function dimToMake(dim) {
     let { height, width } = dim;
-    if (height < width) { let tmp = height; height = width; width = tmp; }
+    if (height < width) { const tmp = height; height = width; width = tmp; }
 
     if (width === 320 && height === 568) { return { make: 'iPhone', model: 'iPhone 5' }; }
     if (width === 375 && height === 667) { return { make: 'iPhone', model: 'iPhone 6/7/8' }; }

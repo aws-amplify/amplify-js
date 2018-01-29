@@ -15808,6 +15808,7 @@ var AuthClass = /** @class */ (function () {
         }
     }
     AuthClass.prototype.configure = function (config) {
+        var _this = this;
         logger.debug('configure Auth');
         var conf = config ? config.Auth || config : {};
         if (conf['aws_cognito_identity_pool_id']) {
@@ -15828,7 +15829,22 @@ var AuthClass = /** @class */ (function () {
                 UserPoolId: userPoolId,
                 ClientId: userPoolWebClientId
             });
-            this.pickupCredentials();
+            if (Platform_1.default.isReactNative) {
+                var that = this;
+                this._userPoolStorageSync = new Promise(function (resolve, reject) {
+                    _this.userPool.storage.sync(function (err, data) {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            resolve(data);
+                        }
+                    });
+                });
+            }
+            else {
+                this.pickupCredentials();
+            }
         }
         return this._config;
     };
@@ -16155,20 +16171,51 @@ var AuthClass = /** @class */ (function () {
         if (!this.userPool) {
             return Promise.reject('No userPool');
         }
-        var user = this.userPool.getCurrentUser();
-        if (!user) {
-            return Promise.reject('No current user in userPool');
-        }
-        logger.debug(user);
-        return new Promise(function (resolve, reject) {
-            user.getSession(function (err, session) {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(user);
-                }
+        var user = null;
+        if (Platform_1.default.isReactNative) {
+            var that = this;
+            return this.getSyncedUser().then(function (user) {
+                return new Promise(function (resolve, reject) {
+                    user.getSession(function (err, session) {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            resolve(user);
+                        }
+                    });
+                });
             });
+        }
+        else {
+            user = this.userPool.getCurrentUser();
+            if (!user) {
+                return Promise.reject('No current user in userPool');
+            }
+            return new Promise(function (resolve, reject) {
+                user.getSession(function (err, session) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(user);
+                    }
+                });
+            });
+        }
+    };
+    /**
+     * Return the current user after synchornizing AsyncStorage
+     * @return - A promise with the current authenticated user
+     **/
+    AuthClass.prototype.getSyncedUser = function () {
+        var that = this;
+        return (this._userPoolStorageSync || Promise.resolve()).then(function (result) {
+            if (!that.userPool) {
+                return Promise.reject('No userPool');
+            }
+            that.credentials_source = 'userPool';
+            return that.userPool.getCurrentUser();
         });
     };
     /**
@@ -16191,14 +16238,26 @@ var AuthClass = /** @class */ (function () {
      * @return - A promise resolves to session object if success
      */
     AuthClass.prototype.currentSession = function () {
+        var user = null, that = this;
         if (!this.userPool) {
             return Promise.reject('No userPool');
         }
-        var user = this.userPool.getCurrentUser();
-        if (!user) {
-            return Promise.reject('No current user');
+        if (Platform_1.default.isReactNative) {
+            return this.getSyncedUser().then(function (user) {
+                user = that.userPool.getCurrentUser();
+                if (!user) {
+                    return Promise.reject('No current user');
+                }
+                return that.userSession(user);
+            });
         }
-        return this.userSession(user);
+        else {
+            user = this.userPool.getCurrentUser();
+            if (!user) {
+                return Promise.reject('No current user');
+            }
+            return this.userSession(user);
+        }
     };
     /**
      * Get the corresponding user session
@@ -16223,46 +16282,44 @@ var AuthClass = /** @class */ (function () {
      * @return - A promise resolves to be current user's credentials
      */
     AuthClass.prototype.currentUserCredentials = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            var federatedInfo, provider_1, token_1, user_1, federatedInfo, provider_2, token_2, user_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!Platform_1.default.isReactNative) return [3 /*break*/, 2];
-                        return [4 /*yield*/, Cache_1.default.getItem('federatedInfo')];
-                    case 1:
-                        federatedInfo = _a.sent();
-                        if (federatedInfo) {
-                            provider_1 = federatedInfo.provider, token_1 = federatedInfo.token, user_1 = federatedInfo.user;
-                            return [2 /*return*/, new Promise(function (resolve, reject) {
-                                    _this.setCredentialsFromFederation(provider_1, token_1, user_1);
-                                    resolve();
-                                })];
-                        }
-                        else {
-                            return [2 /*return*/, this.currentSession()
-                                    .then(function (session) { return _this.setCredentialsFromSession(session); })];
-                        }
-                        return [3 /*break*/, 3];
-                    case 2:
-                        federatedInfo = Cache_1.default.getItem('federatedInfo');
-                        if (federatedInfo) {
-                            provider_2 = federatedInfo.provider, token_2 = federatedInfo.token, user_2 = federatedInfo.user;
-                            return [2 /*return*/, new Promise(function (resolve, reject) {
-                                    _this.setCredentialsFromFederation(provider_2, token_2, user_2);
-                                    resolve();
-                                })];
-                        }
-                        else {
-                            return [2 /*return*/, this.currentSession()
-                                    .then(function (session) { return _this.setCredentialsFromSession(session); })];
-                        }
-                        _a.label = 3;
-                    case 3: return [2 /*return*/];
+        var _this = this;
+        if (Platform_1.default.isReactNative) {
+            // asyncstorage
+            var that_1 = this;
+            return Cache_1.default.getItem('federatedInfo')
+                .then(function (federatedInfo) {
+                if (federatedInfo) {
+                    var provider_1 = federatedInfo.provider, token_1 = federatedInfo.token, user_1 = federatedInfo.user;
+                    return new Promise(function (resolve, reject) {
+                        that_1.setCredentialsFromFederation(provider_1, token_1, user_1);
+                        resolve();
+                    });
                 }
+                else {
+                    return that_1.currentSession()
+                        .then(function (session) { return that_1.setCredentialsFromSession(session); });
+                }
+            }).catch(function (error) {
+                return new Promise(function (resolve, reject) {
+                    reject(error);
+                });
             });
-        });
+        }
+        else {
+            // first to check whether there is federation info in the local storage
+            var federatedInfo = Cache_1.default.getItem('federatedInfo');
+            if (federatedInfo) {
+                var provider_2 = federatedInfo.provider, token_2 = federatedInfo.token, user_2 = federatedInfo.user;
+                return new Promise(function (resolve, reject) {
+                    _this.setCredentialsFromFederation(provider_2, token_2, user_2);
+                    resolve();
+                });
+            }
+            else {
+                return this.currentSession()
+                    .then(function (session) { return _this.setCredentialsFromSession(session); });
+            }
+        }
     };
     AuthClass.prototype.currentCredentials = function () {
         return this.pickupCredentials();
@@ -16538,7 +16595,6 @@ var AuthClass = /** @class */ (function () {
             return this.keepAlive();
         }
         else {
-            logger.debug('pickup from userPool');
             return this.currentUserCredentials()
                 .then(function () { return _this.keepAlive(); })
                 .catch(function (err) {

@@ -11,14 +11,12 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger } from '../Logger';
 const Platform = {
 	'userAgent': 'aws-amplify/0.1.x js',
 	'product': '',
 	'navigator': null,
 	'isReactNative': false
 };
-const logger = new Logger('Platform');
 if (navigator && navigator.product) {
 	Platform.product = navigator.product || '';
 	Platform.navigator = navigator || null;

@@ -12,7 +12,7 @@
  */
 
 import StorageCache from './StorageCache';
-import {defaultConfig, getCurrTime} from './Utils/CacheUtils'
+import {defaultConfig, getCurrTime} from './Utils/CacheUtils';
 import { AsyncStorage } from 'react-native';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '../Common';
@@ -255,7 +255,7 @@ class AsyncStorageCache extends StorageCache implements ICache {
     const cacheItemOptions = {
       priority: options && options.priority !== undefined ? options.priority : this.config.defaultPriority,
       expires: options && options.expires !== undefined ? options.expires : (this.config.defaultTTL + getCurrTime())
-    }
+    };
 
     if (cacheItemOptions.priority < 1 || cacheItemOptions.priority > 5) {
       logger.warn(`Invalid parameter: priority due to out or range. It should be within 1 and 5.`);

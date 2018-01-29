@@ -45,6 +45,7 @@ const dispatchAuthEvent = (event, data) => {
 */
 export default class AuthClass {
     private _config: AuthOptions;
+    private _userPoolStorageSync: Promise<any>;
     private userPool = null;
 
     private credentials = null;
@@ -85,7 +86,20 @@ export default class AuthClass {
                 UserPoolId: userPoolId,
                 ClientId: userPoolWebClientId
             });
-            this.pickupCredentials();
+            if (Platform.isReactNative) {
+                const that = this;
+                this._userPoolStorageSync = new Promise((resolve, reject) => {
+                    this.userPool.storage.sync((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
+                });
+            } else {
+                this.pickupCredentials();
+            }
         }
 
         return this._config;
@@ -375,15 +389,39 @@ export default class AuthClass {
      */
     public currentUserPoolUser(): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
-
-        const user = this.userPool.getCurrentUser();
-        if (!user) { return Promise.reject('No current user in userPool'); }
-
-        logger.debug(user);
-        return new Promise((resolve, reject) => {
-            user.getSession(function(err, session) {
-                if (err) { reject(err); } else { resolve(user); }
+        let user = null;
+        if (Platform.isReactNative) {
+            const that = this;
+            return this.getSyncedUser().then(user => {
+                return new Promise((resolve, reject) => {
+                    user.getSession(function(err, session) {
+                        if (err) { reject(err); } else { resolve(user); }
+                    });
+                });
             });
+        } else {
+            user = this.userPool.getCurrentUser();
+            if (!user) { return Promise.reject('No current user in userPool'); }
+            return new Promise((resolve, reject) => {
+                user.getSession(function(err, session) {
+                    if (err) { reject(err); } else { resolve(user); }
+                });
+            });
+        }
+    }
+
+    /**
+     * Return the current user after synchornizing AsyncStorage
+     * @return - A promise with the current authenticated user
+     **/
+    private getSyncedUser(): Promise<any> {
+        const that = this;
+        return (this._userPoolStorageSync || Promise.resolve()).then(result => {
+            if (!that.userPool) {
+                return Promise.reject('No userPool');
+            }
+            that.credentials_source = 'userPool';
+            return that.userPool.getCurrentUser();
         });
     }
 
@@ -397,11 +435,9 @@ export default class AuthClass {
         if (!source || source === 'aws' || source === 'userPool') {
             return this.currentUserPoolUser();
         }
-
         if (source === 'federated') {
             return Promise.resolve(this.user);
         }
-
         return Promise.reject('not authenticated');
     }
 
@@ -410,10 +446,19 @@ export default class AuthClass {
      * @return - A promise resolves to session object if success 
      */
     public currentSession() : Promise<any> {
+        let user:any;
+        const that = this;
         if (!this.userPool) { return Promise.reject('No userPool'); }
-        const user = this.userPool.getCurrentUser();
-        if (!user) { return Promise.reject('No current user'); }
-        return this.userSession(user);
+        if (Platform.isReactNative) {
+            return this.getSyncedUser().then(user => {
+                if (!user) { return Promise.reject('No current user'); }
+                return that.userSession(user);
+            });
+        } else {
+            user = this.userPool.getCurrentUser();
+            if (!user) { return Promise.reject('No current user'); }
+            return this.userSession(user);
+        }
     }
 
     /**
@@ -434,23 +479,30 @@ export default class AuthClass {
      * Get authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
-    public async currentUserCredentials() : Promise<any> {
+    public currentUserCredentials() : Promise<any> {
         if (Platform.isReactNative) {
             // asyncstorage
-            let federatedInfo = await Cache.getItem('federatedInfo');
-            if (federatedInfo) {
-                const { provider, token, user} = federatedInfo;
+            const that = this;
+            return Cache.getItem('federatedInfo')
+                .then((federatedInfo) => {
+                    if (federatedInfo) {
+                        const { provider, token, user} = federatedInfo;
+                        return new Promise((resolve, reject) => {
+                            that.setCredentialsFromFederation(provider, token, user);
+                            resolve();
+                        });
+                    } else {
+                        return that.currentSession()
+                            .then(session => that.setCredentialsFromSession(session));
+                    }
+            }).catch((error) => {
                 return new Promise((resolve, reject) => {
-                    this.setCredentialsFromFederation(provider, token, user);
-                    resolve();
+                    reject(error);
                 });
-            } else {
-                return this.currentSession()
-                    .then(session => this.setCredentialsFromSession(session));
-            }
+            });
         } else {
             // first to check whether there is federation info in the local storage
-            let federatedInfo = Cache.getItem('federatedInfo');
+            const federatedInfo = Cache.getItem('federatedInfo');
             if (federatedInfo) {
                 const { provider, token, user} = federatedInfo;
                 return new Promise((resolve, reject) => {
@@ -731,7 +783,6 @@ export default class AuthClass {
         } else if (this.setCredentialsFromAWS()) {
             return this.keepAlive();
         } else {
-            logger.debug('pickup from userPool');
             return this.currentUserCredentials()
                 .then(() => this.keepAlive())
                 .catch(err => {
@@ -748,7 +799,6 @@ export default class AuthClass {
             this.credentials_source = 'aws';
             return true;
         }
-
         return false;
     }
 
