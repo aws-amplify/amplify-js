@@ -58,23 +58,23 @@ You will need to [link](https://facebook.github.io/react-native/docs/linking-lib
 
 ## Documentation
 
-* [Quick Start](media/quick_start.md)
-* [API Reference](media/api_reference.md)
-* [Developer Guide](media/developer_guide.md)
-  * [Installation and Configuration](media/install_n_config.md)
-  * [Authentication](media/authentication_guide.md)
-  * [Analytics](media/analytics_guide.md)
-  * [API](media/api_guide.md)
-  * [Storage](media/storage_guide.md)
-  * [Cache](media/cache_guide.md)
+* [Quick Start](docs/media/quick_start.md)
+* [API Reference](docs/media/api_reference.md)
+* [Developer Guide](docs/media/developer_guide.md)
+  * [Installation and Configuration](docs/media/install_n_config.md)
+  * [Authentication](docs/media/authentication_guide.md)
+  * [Analytics](docs/media/analytics_guide.md)
+  * [API](docs/media/api_guide.md)
+  * [Storage](docs/media/storage_guide.md)
+  * [Cache](docs/media/cache_guide.md)
   * Utilities
-    - [I18n](media/i18n_guide.md)
-    - [Logger](media/logger_guide.md)
-    - [Hub](media/hub_guide.md)
+    - [I18n](docs/media/i18n_guide.md)
+    - [Logger](docs/media/logger_guide.md)
+    - [Hub](docs/media/hub_guide.md)
 
 ## Examples
 
-AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](media/developer_guide.md). A couple of samples are below.
+AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](docs/media/developer_guide.md). A couple of samples are below.
 
 ### 1. Collect user session metrics
 
