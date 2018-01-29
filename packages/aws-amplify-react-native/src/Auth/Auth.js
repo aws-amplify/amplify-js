@@ -91,6 +91,11 @@ class AuthClass {
                 UserPoolId: userPoolId,
                 ClientId: userPoolWebClientId
             });
+            this._userPoolStorageSync = new Promise((resolve, reject) => {
+                this.userPool.storage.sync((err, data) => {
+                    if (err) { reject(err); } else { resolve(data); }
+                });
+            });
         }
 
         return this._config;
@@ -376,10 +381,10 @@ class AuthClass {
      * @return {Promise} - A promise resolves to curret CognitoUser if success
      */
     currentUser() {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-
-        const user = this.userPool.getCurrentUser();
-        return user? Promise.resolve(user) : Promise.reject('UserPool doesnot have current user');
+        return this._getSyncedUser()
+            .then(user => {
+                return user? Promise.resolve(user) : Promise.reject('UserPool does not have current user');
+            });
     }
 
     /**
@@ -387,16 +392,16 @@ class AuthClass {
      * @return {Promise} - A promise resolves to curret authenticated CognitoUser if success
      */
     currentAuthenticatedUser() {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        return this._getSyncedUser()
+            .then(user => {
+                if (!user) { return Promise.reject('No current user'); }
 
-        const user = this.userPool.getCurrentUser();
-        if (!user) { return Promise.reject('No current user'); }
-
-        return new Promise((resolve, reject) => {
-            user.getSession(function(err, session) {
-                if (err) { reject(err); } else { resolve(user); }
+                return new Promise((resolve, reject) => {
+                    user.getSession(function(err, session) {
+                        if (err) { reject(err); } else { resolve(user); }
+                    });
+                });
             });
-        });
     }
 
     /**
@@ -404,11 +409,11 @@ class AuthClass {
      * @return {Promise} - A promise resolves to session object if success
      */
     currentUserSession() {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-
-        const user = this.userPool.getCurrentUser();
-        if (!user) { return Promise.reject('No current user'); }
-        return this.userSession(user);
+        return this._getSyncedUser()
+            .then(user => {
+                if (!user) { return Promise.reject('No current user'); }
+                return this.userSession(user);
+            });
     }
 
     /**
@@ -519,19 +524,19 @@ class AuthClass {
      * @return {Promise} - A promise resolved if success
      */
     signOut() {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        return this._getSyncedUser()
+            .then(user => {
+                if (!user) { return Promise.resolve(); }
 
-        const user = this.userPool.getCurrentUser();
-        if (!user) { return Promise.resolve(); }
-
-        const _auth = this;
-        return new Promise((resolve, reject) => {
-            user.signOut();
-            _auth.currentCredentials()
-                .then(credentials => dispatchCredentialsChange(credentials))
-                .catch(err => logger.error('get credentials failed', err));
-            resolve();
-        });
+                const _auth = this;
+                return new Promise((resolve, reject) => {
+                    user.signOut();
+                    _auth.currentCredentials()
+                        .then(credentials => dispatchCredentialsChange(credentials))
+                        .catch(err => logger.error('get credentials failed', err));
+                    resolve();
+                });
+            });
     }
 
     /**
@@ -705,6 +710,15 @@ class AuthClass {
             });
         }
         return obj;
+    }
+
+    _getSyncedUser() {
+        const that = this;
+        return (this._userPoolStorageSync || Promise.resolve()).then(result => {
+            if (!that.userPool) { return Promise.reject('No userPool'); }
+
+            return that.userPool.getCurrentUser();
+        });
     }
 }
 

@@ -21,6 +21,7 @@ import { ConsoleLogger as Logger } from '../../Common';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
+import Loading from './Loading';
 import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
 import VerifyContact from './VerifyContact';
@@ -59,7 +60,7 @@ export default class Authenticator extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            authState: props.authState || 'signIn',
+            authState: props.authState || 'loading',
             authData: props.authData
         };
 
@@ -95,7 +96,10 @@ export default class Authenticator extends React.Component {
                 const state = user? 'signedIn' : 'signIn';
                 this.handleStateChange(state, user)
             })
-            .catch(err => logger.error(err));
+            .catch(err => {
+                this.handleStateChange('signIn', null);
+                logger.error(err);
+            });
     }
 
     render() {
@@ -106,6 +110,7 @@ export default class Authenticator extends React.Component {
         const { hideDefault } = this.props;
         const props_children = this.props.children || [];
         const default_children = [
+            <Loading/>,
             <SignIn/>,
             <ConfirmSignIn/>,
             <VerifyContact/>,
