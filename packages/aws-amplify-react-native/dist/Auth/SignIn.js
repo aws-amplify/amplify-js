@@ -55,7 +55,7 @@ export default class SignIn extends AuthPiece {
     checkContact(user) {
         Auth.verifiedContact(user).then(data => {
             logger.debug('verified user attributes', data);
-            if (!JS.isEmpty(data.verified)) {
+            if (data.verified) {
                 this.changeState('signedIn', user);
             } else {
                 user = Object.assign(user, data);
