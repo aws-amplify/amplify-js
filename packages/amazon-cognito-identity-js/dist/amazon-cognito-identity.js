@@ -76,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _AuthenticationDetails = __webpack_require__(22);
+	var _AuthenticationDetails = __webpack_require__(19);
 
 	Object.defineProperty(exports, 'AuthenticationDetails', {
 	  enumerable: true,
@@ -139,7 +139,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	});
 
-	var _CognitoUserPool = __webpack_require__(24);
+	var _CognitoUserPool = __webpack_require__(21);
 
 	Object.defineProperty(exports, 'CognitoUserPool', {
 	  enumerable: true,
@@ -157,7 +157,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	});
 
-	var _CookieStorage = __webpack_require__(25);
+	var _CookieStorage = __webpack_require__(22);
 
 	Object.defineProperty(exports, 'CookieStorage', {
 	  enumerable: true,
@@ -2024,10 +2024,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _buffer = __webpack_require__(1);
 
-	var _randombytes = __webpack_require__(20);
-
-	var _randombytes2 = _interopRequireDefault(_randombytes);
-
 	var _cryptoBrowserify = __webpack_require__(14);
 
 	var crypto = _interopRequireWildcard(_cryptoBrowserify);
@@ -2036,9 +2032,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _BigInteger2 = _interopRequireDefault(_BigInteger);
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /*!
 	                                                                                                                                                           * Copyright 2016 Amazon.com,
@@ -2057,12 +2053,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                                                                                                                           * limitations under the License.
 	                                                                                                                                                           */
 
-	//import createHmac from 'create-hmac';
-	//import createHash from 'create-hash';
-
-
 	var createHash = crypto.createHash;
 	var createHmac = crypto.createHmac;
+	var randomBytes = crypto.randomBytes;
 
 	var initN = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1' + '29024E088A67CC74020BBEA63B139B22514A08798E3404DD' + 'EF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245' + 'E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' + 'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3D' + 'C2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F' + '83655D23DCA3AD961C62F356208552BB9ED529077096966D' + '670C354E4ABC9804F1746C08CA18217C32905E462E36CE3B' + 'E39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9' + 'DE2BCBF6955817183995497CEA956AE515D2261898FA0510' + '15728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64' + 'ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7' + 'ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6B' + 'F12FFA06D98A0864D87602733EC86A64521F2B18177B200C' + 'BBE117577A615D6C770988C0BAD946E208E24FA074E5AB31' + '43DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF';
 
@@ -2130,7 +2123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  AuthenticationHelper.prototype.generateRandomSmallA = function generateRandomSmallA() {
-	    var hexRandom = (0, _randombytes2.default)(128).toString('hex');
+	    var hexRandom = randomBytes(128).toString('hex');
 
 	    var randomBigInt = new _BigInteger2.default(hexRandom, 16);
 	    var smallABigInt = randomBigInt.mod(this.N);
@@ -2146,7 +2139,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  AuthenticationHelper.prototype.generateRandomString = function generateRandomString() {
-	    return (0, _randombytes2.default)(40).toString('base64');
+	    return randomBytes(40).toString('base64');
 	  };
 
 	  /**
@@ -2192,7 +2185,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var combinedString = '' + deviceGroupKey + username + ':' + this.randomPassword;
 	    var hashedString = this.hash(combinedString);
 
-	    var hexRandom = (0, _randombytes2.default)(16).toString('hex');
+	    var hexRandom = randomBytes(16).toString('hex');
 	    this.SaltToHashDevices = this.padHex(new _BigInteger2.default(hexRandom, 16));
 
 	    this.g.modPow(new _BigInteger2.default(this.hexHash(this.SaltToHashDevices + hashedString), 16), this.N, function (err, verifierDevicesNotPadded) {
@@ -5631,10 +5624,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, exports, __webpack_require__) {
 
 	var Buffer = __webpack_require__(1).Buffer
-	var sha = __webpack_require__(29)
-	var sha256 = __webpack_require__(30)
-	var rng = __webpack_require__(28)
-	var md5 = __webpack_require__(27)
+	var sha = __webpack_require__(26)
+	var sha256 = __webpack_require__(27)
+	var rng = __webpack_require__(25)
+	var md5 = __webpack_require__(24)
 
 	var algorithms = {
 	  sha1: sha,
@@ -6125,309 +6118,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 19 */
 /***/ (function(module, exports) {
 
-	// shim for using process in browser
-	var process = module.exports = {};
-
-	// cached from whatever global is present so that test runners that stub it
-	// don't break things.  But we need to wrap it in a try catch in case it is
-	// wrapped in strict mode code which doesn't define any globals.  It's inside a
-	// function because try/catches deoptimize in certain engines.
-
-	var cachedSetTimeout;
-	var cachedClearTimeout;
-
-	function defaultSetTimout() {
-	    throw new Error('setTimeout has not been defined');
-	}
-	function defaultClearTimeout () {
-	    throw new Error('clearTimeout has not been defined');
-	}
-	(function () {
-	    try {
-	        if (typeof setTimeout === 'function') {
-	            cachedSetTimeout = setTimeout;
-	        } else {
-	            cachedSetTimeout = defaultSetTimout;
-	        }
-	    } catch (e) {
-	        cachedSetTimeout = defaultSetTimout;
-	    }
-	    try {
-	        if (typeof clearTimeout === 'function') {
-	            cachedClearTimeout = clearTimeout;
-	        } else {
-	            cachedClearTimeout = defaultClearTimeout;
-	        }
-	    } catch (e) {
-	        cachedClearTimeout = defaultClearTimeout;
-	    }
-	} ())
-	function runTimeout(fun) {
-	    if (cachedSetTimeout === setTimeout) {
-	        //normal enviroments in sane situations
-	        return setTimeout(fun, 0);
-	    }
-	    // if setTimeout wasn't available but was latter defined
-	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-	        cachedSetTimeout = setTimeout;
-	        return setTimeout(fun, 0);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedSetTimeout(fun, 0);
-	    } catch(e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-	            return cachedSetTimeout.call(null, fun, 0);
-	        } catch(e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-	            return cachedSetTimeout.call(this, fun, 0);
-	        }
-	    }
-
-
-	}
-	function runClearTimeout(marker) {
-	    if (cachedClearTimeout === clearTimeout) {
-	        //normal enviroments in sane situations
-	        return clearTimeout(marker);
-	    }
-	    // if clearTimeout wasn't available but was latter defined
-	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-	        cachedClearTimeout = clearTimeout;
-	        return clearTimeout(marker);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedClearTimeout(marker);
-	    } catch (e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-	            return cachedClearTimeout.call(null, marker);
-	        } catch (e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-	            return cachedClearTimeout.call(this, marker);
-	        }
-	    }
-
-
-
-	}
-	var queue = [];
-	var draining = false;
-	var currentQueue;
-	var queueIndex = -1;
-
-	function cleanUpNextTick() {
-	    if (!draining || !currentQueue) {
-	        return;
-	    }
-	    draining = false;
-	    if (currentQueue.length) {
-	        queue = currentQueue.concat(queue);
-	    } else {
-	        queueIndex = -1;
-	    }
-	    if (queue.length) {
-	        drainQueue();
-	    }
-	}
-
-	function drainQueue() {
-	    if (draining) {
-	        return;
-	    }
-	    var timeout = runTimeout(cleanUpNextTick);
-	    draining = true;
-
-	    var len = queue.length;
-	    while(len) {
-	        currentQueue = queue;
-	        queue = [];
-	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
-	        }
-	        queueIndex = -1;
-	        len = queue.length;
-	    }
-	    currentQueue = null;
-	    draining = false;
-	    runClearTimeout(timeout);
-	}
-
-	process.nextTick = function (fun) {
-	    var args = new Array(arguments.length - 1);
-	    if (arguments.length > 1) {
-	        for (var i = 1; i < arguments.length; i++) {
-	            args[i - 1] = arguments[i];
-	        }
-	    }
-	    queue.push(new Item(fun, args));
-	    if (queue.length === 1 && !draining) {
-	        runTimeout(drainQueue);
-	    }
-	};
-
-	// v8 likes predictible objects
-	function Item(fun, array) {
-	    this.fun = fun;
-	    this.array = array;
-	}
-	Item.prototype.run = function () {
-	    this.fun.apply(null, this.array);
-	};
-	process.title = 'browser';
-	process.browser = true;
-	process.env = {};
-	process.argv = [];
-	process.version = ''; // empty string to avoid regexp issues
-	process.versions = {};
-
-	function noop() {}
-
-	process.on = noop;
-	process.addListener = noop;
-	process.once = noop;
-	process.off = noop;
-	process.removeListener = noop;
-	process.removeAllListeners = noop;
-	process.emit = noop;
-	process.prependListener = noop;
-	process.prependOnceListener = noop;
-
-	process.listeners = function (name) { return [] }
-
-	process.binding = function (name) {
-	    throw new Error('process.binding is not supported');
-	};
-
-	process.cwd = function () { return '/' };
-	process.chdir = function (dir) {
-	    throw new Error('process.chdir is not supported');
-	};
-	process.umask = function() { return 0; };
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global, process) {'use strict'
-
-	function oldBrowser () {
-	  throw new Error('Secure random number generation is not supported by this browser.\nUse Chrome, Firefox or Internet Explorer 11')
-	}
-
-	var Buffer = __webpack_require__(21).Buffer
-	var crypto = global.crypto || global.msCrypto
-
-	if (crypto && crypto.getRandomValues) {
-	  module.exports = randomBytes
-	} else {
-	  module.exports = oldBrowser
-	}
-
-	function randomBytes (size, cb) {
-	  // phantomjs needs to throw
-	  if (size > 65536) throw new Error('requested too many random bytes')
-	  // in case browserify  isn't using the Uint8Array version
-	  var rawBytes = new global.Uint8Array(size)
-
-	  // This will not work in older browsers.
-	  // See https://developer.mozilla.org/en-US/docs/Web/API/window.crypto.getRandomValues
-	  if (size > 0) {  // getRandomValues fails on IE if size == 0
-	    crypto.getRandomValues(rawBytes)
-	  }
-
-	  // XXX: phantomjs doesn't like a buffer being passed here
-	  var bytes = Buffer.from(rawBytes.buffer)
-
-	  if (typeof cb === 'function') {
-	    return process.nextTick(function () {
-	      cb(null, bytes)
-	    })
-	  }
-
-	  return bytes
-	}
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(19)))
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/* eslint-disable node/no-deprecated-api */
-	var buffer = __webpack_require__(1)
-	var Buffer = buffer.Buffer
-
-	// alternative to using Object.keys for old browsers
-	function copyProps (src, dst) {
-	  for (var key in src) {
-	    dst[key] = src[key]
-	  }
-	}
-	if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
-	  module.exports = buffer
-	} else {
-	  // Copy properties from require('buffer')
-	  copyProps(buffer, exports)
-	  exports.Buffer = SafeBuffer
-	}
-
-	function SafeBuffer (arg, encodingOrOffset, length) {
-	  return Buffer(arg, encodingOrOffset, length)
-	}
-
-	// Copy static methods from Buffer
-	copyProps(Buffer, SafeBuffer)
-
-	SafeBuffer.from = function (arg, encodingOrOffset, length) {
-	  if (typeof arg === 'number') {
-	    throw new TypeError('Argument must not be a number')
-	  }
-	  return Buffer(arg, encodingOrOffset, length)
-	}
-
-	SafeBuffer.alloc = function (size, fill, encoding) {
-	  if (typeof size !== 'number') {
-	    throw new TypeError('Argument must be a number')
-	  }
-	  var buf = Buffer(size)
-	  if (fill !== undefined) {
-	    if (typeof encoding === 'string') {
-	      buf.fill(fill, encoding)
-	    } else {
-	      buf.fill(fill)
-	    }
-	  } else {
-	    buf.fill(0)
-	  }
-	  return buf
-	}
-
-	SafeBuffer.allocUnsafe = function (size) {
-	  if (typeof size !== 'number') {
-	    throw new TypeError('Argument must be a number')
-	  }
-	  return Buffer(size)
-	}
-
-	SafeBuffer.allocUnsafeSlow = function (size) {
-	  if (typeof size !== 'number') {
-	    throw new TypeError('Argument must be a number')
-	  }
-	  return buffer.SlowBuffer(size)
-	}
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports) {
-
 	"use strict";
 
 	exports.__esModule = true;
@@ -6518,14 +6208,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = AuthenticationDetails;
 
 /***/ }),
-/* 23 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _UserAgent = __webpack_require__(26);
+	var _UserAgent = __webpack_require__(23);
 
 	var _UserAgent2 = _interopRequireDefault(_UserAgent);
 
@@ -6545,7 +6235,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.endpoint = endpoint || 'https://cognito-idp.' + region + '.amazonaws.com/';
 	    this.userAgent = _UserAgent2.default.prototype.userAgent || 'aws-amplify/0.1.x js';
-	    console.log('userAgent set to: ', this.userAgent);
 	  }
 
 	  /**
@@ -6613,14 +6302,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Client;
 
 /***/ }),
-/* 24 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Client = __webpack_require__(23);
+	var _Client = __webpack_require__(20);
 
 	var _Client2 = _interopRequireDefault(_Client);
 
@@ -6823,7 +6512,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = CognitoUserPool;
 
 /***/ }),
-/* 25 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6936,7 +6625,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = CookieStorage;
 
 /***/ }),
-/* 26 */
+/* 23 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -6951,7 +6640,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	UserAgent.prototype.userAgent = 'aws-amplify/0.1.x js';
 
 /***/ }),
-/* 27 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -7120,7 +6809,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 28 */
+/* 25 */
 /***/ (function(module, exports) {
 
 	// Original code adapted from Robert Kieffer.
@@ -7157,7 +6846,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 29 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -7264,7 +6953,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 30 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	
