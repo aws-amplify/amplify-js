@@ -87,7 +87,7 @@ export default class API {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    async ajax(apiName, method, init) {
+    async ajax(apiName, path, method, init) {
         if (!this._api) {
             try {
                 await this.createInstance();
