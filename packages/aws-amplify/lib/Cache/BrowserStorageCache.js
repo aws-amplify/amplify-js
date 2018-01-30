@@ -40,6 +40,7 @@ var BrowserStorageCache = /** @class */ (function (_super) {
         var cacheConfig = config ? Object.assign({}, Utils_1.defaultConfig, config) : Utils_1.defaultConfig;
         _this = _super.call(this, cacheConfig) || this;
         _this.config.storage = cacheConfig.storage;
+        logger.debug('Using AsyncStorageCache');
         return _this;
     }
     /**
