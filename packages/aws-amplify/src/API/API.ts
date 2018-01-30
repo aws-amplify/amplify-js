@@ -80,33 +80,6 @@ export default class API {
     }
 
     /**
-     * Make an ajax request with provided method
-     * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request'
-     * @param {string} method - The method of the request'
-     * @param {json} [init] - Request extra params
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    async ajax(apiName, path, method, init) {
-        if (!this._api) {
-            try {
-                await this.createInstance();
-            } catch(error) {
-                return Promise.reject(error);
-            }
-        }
-
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
-
-        const endpoint = this._api.endpoint(apiName);
-        if (endpoint.length === 0) {
-            return Promise.reject('Api ' + apiName + ' does not exist');
-        }
-        return this._api.ajax(endpoint + path, method, init);
-    }
-
-    /**
      * Make a GET request
      * @param {string} apiName  - The api name of the request
      * @param {string} path - The path of the request'
@@ -182,6 +155,32 @@ export default class API {
             return Promise.reject('Api ' + apiName + ' does not exist');
         }
         return this._api.put(endpoint + path, init);
+    }
+
+    /**
+     * Make a PATCH request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
+     * @param {json} [init] - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
+    async patch(apiName, path, init) {
+        if (!this._api) {
+            try {
+                await this.createInstance();
+            } catch(error) {
+                return Promise.reject(error);
+            }
+        }
+
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.reject('No credentials'); }
+
+        const endpoint = this._api.endpoint(apiName);
+        if (endpoint.length === 0) {
+            return Promise.reject('Api ' + apiName + ' does not exist');
+        }
+        return this._api.patch(endpoint + path, init);
     }
 
     /**
