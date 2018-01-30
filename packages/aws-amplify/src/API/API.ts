@@ -80,9 +80,36 @@ export default class API {
     }
 
     /**
+     * Make an ajax request with provided method
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request'
+     * @param {string} method - The method of the request'
+     * @param {json} [init] - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
+    async ajax(apiName, method, init) {
+        if (!this._api) {
+            try {
+                await this.createInstance();
+            } catch(error) {
+                return Promise.reject(error);
+            }
+        }
+
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.reject('No credentials'); }
+
+        const endpoint = this._api.endpoint(apiName);
+        if (endpoint.length === 0) {
+            return Promise.reject('Api ' + apiName + ' does not exist');
+        }
+        return this._api.ajax(endpoint + path, method, init);
+    }
+
+    /**
      * Make a GET request
-     * @param {String} apiName  - The api name of the request
-     * @param {JSON} path - The path of the request'
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request'
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -107,8 +134,8 @@ export default class API {
     
     /**
      * Make a POST request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -133,8 +160,8 @@ export default class API {
 
     /**
      * Make a PUT request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -159,8 +186,8 @@ export default class API {
 
     /**
      * Make a DEL request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -185,8 +212,8 @@ export default class API {
 
     /**
      * Make a HEAD request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -211,8 +238,8 @@ export default class API {
 
     /**
     * Getting endpoint for API
-    * @param {String} apiName - The name of the api
-    * @return {String} - The endpoint of the api
+    * @param {string} apiName - The name of the api
+    * @return {string} - The endpoint of the api
     */
     async endpoint(apiName) {
         if (!this._api) {
