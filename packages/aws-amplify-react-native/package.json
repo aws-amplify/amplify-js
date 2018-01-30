@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "amazon-cognito-identity-js": "1.29.0",
+    "aws-amplify": "0.1.36",
     "aws-sdk": "^2.185.0",
     "axios": "^0.17.1",
     "babel-preset-es2015": "^6.24.1"

@@ -11,60 +11,12 @@
  * and limitations under the License.
  */
 
-import Auth from './Auth';
-import Analytics from './Analytics';
-import API from './API';
-import Cache from './Cache';
-import Storage from './Storage';
+import { I18n } from 'aws-amplify';
+import dict from './AmplifyI18n';
 
-import I18n from './I18n';
-import { ConsoleLogger as Logger } from './Common';
+export { default as AmplifyTheme } from './AmplifyTheme';
+export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
+export * from './Auth';
+export * from './Storage';
 
-import * as Components from './components';
-import { Authenticator, withAuthenticator, S3Album, S3Image } from './components';
-
-const logger = new Logger('Amplify');
-
-export default class Amplify {
-    static configure(config) {
-        logger.info('configure Amplify');
-
-        Auth.configure(config);
-        Analytics.configure(config);
-        I18n.configure(config);
-        Storage.configure(config);
-
-        API.configure(config);
-        API.createInstance();
-        Cache.configure(config);
-    }
-}
-
-Amplify.Auth = Auth;
-Amplify.Analytics = Analytics;
-Amplify.API = API;
-Amplify.Cache = Cache;
-Amplify.Storage = Storage;
-
-Amplify.I18n = I18n;
-Amplify.Logger = Logger;
-
-Amplify.Components = Components;
-Amplify.withAuthenticator = withAuthenticator;
-
-export {
-    Auth,
-    Authenticator,
-    Analytics,
-    API,
-    Cache,
-    Storage,
-
-    I18n,
-    Logger,
-
-    Components,
-    withAuthenticator,
-    S3Album,
-    S3Image
-};
+I18n.putVocabularies(dict);
