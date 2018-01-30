@@ -73,7 +73,9 @@ export class RestClient {
             data: null
         };
 
-        const libraryHeaders = {};
+        const libraryHeaders = {
+            'User-Agent': 'aws-amplify/0.1.x'
+        };
 
         const extraParams = Object.assign({}, init);
 
