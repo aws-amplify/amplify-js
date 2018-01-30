@@ -49,12 +49,10 @@ npm install aws-amplify-react --save
 ### React Native Development
 
 For React Native development, install `aws-amplify` 
-
 ```
-npm install aws-amplify-react-native --save
+npm install aws-amplify --save
 ```
 If you are developing a [React](https://github.com/facebook/react-native) app, you can install an additional package `aws-amplify-react-native` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
-
 ```
 npm install aws-amplify-react-native --save
 ```
