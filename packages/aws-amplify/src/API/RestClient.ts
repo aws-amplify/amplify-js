@@ -75,10 +75,14 @@ export class RestClient {
             data: null
         };
 
+        let libraryHeaders = {};
+
+        if (Platform.isReactNative) {
         const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
-        const libraryHeaders = {
-            'User-Agent': userAgent
-        };
+            libraryHeaders = {
+                'User-Agent': userAgent
+            };
+        }
 
         const extraParams = Object.assign({}, init);
 
