@@ -839,21 +839,27 @@ export default class AuthClass {
 
         const ts = new Date().getTime();
         const delta = 10 * 60 * 1000; // 10 minutes
-        const credentials = this.credentials;
+        let credentials = this.credentials;
         const { expired, expireTime } = credentials;
         if (!expired && expireTime > ts + delta) {
             return Promise.resolve(credentials);
         }
 
+        const that = this;
         return new Promise((resolve, reject) => {
-            credentials.refresh(err => {
-                if (err) {
-                    logger.debug('refresh credentials error', err);
-                    resolve(null);
-                } else {
-                    resolve(credentials);
-                }
-            });
+            that.currentUserCredentials()
+                .then(() => {
+                    credentials = that.credentials;
+                    credentials.refresh(err => {
+                        logger.debug('changed from previous');
+                        if (err) {
+                            logger.debug('refresh credentials error', err);
+                            resolve(null);
+                        } else {
+                            resolve(credentials);
+                        }
+                    });
+                });
         });
     }
 }

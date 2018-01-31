@@ -14,7 +14,8 @@
 import {
     getCurrTime,
     getByteLength,
-    defaultConfig
+    defaultConfig,
+    isInteger
 } from './Utils';
 
 import { CacheConfig, CacheItem, CacheItemOptions } from './types';
@@ -24,7 +25,7 @@ const logger = new Logger('StorageCache');
 
 /**
  * Initialization of the cache
- * 
+ *
  */
 export default class StorageCache {
     protected cacheCurSizeKey: string;
@@ -42,22 +43,22 @@ export default class StorageCache {
 
     private checkConfig(): void {
         // check configuration
-        if (!Number.isInteger(this.config.capacityInBytes)) {
+        if (!isInteger(this.config.capacityInBytes)) {
             logger.error('Invalid parameter: capacityInBytes. It should be an Integer. Setting back to default.');
             this.config.capacityInBytes = defaultConfig.capacityInBytes;
         }
 
-        if (!Number.isInteger(this.config.itemMaxSize)) {
+        if (!isInteger(this.config.itemMaxSize)) {
             logger.error('Invalid parameter: itemMaxSize. It should be an Integer. Setting back to default.');
             this.config.itemMaxSize = defaultConfig.itemMaxSize;
         }
 
-        if (!Number.isInteger(this.config.defaultTTL)) {
+        if (!isInteger(this.config.defaultTTL)) {
             logger.error('Invalid parameter: defaultTTL. It should be an Integer. Setting back to default.');
             this.config.defaultTTL = defaultConfig.defaultTTL;
         }
 
-        if (!Number.isInteger(this.config.defaultPriority)) {
+        if (!isInteger(this.config.defaultPriority)) {
             logger.error('Invalid parameter: defaultPriority. It should be an Integer. Setting back to default.');
             this.config.defaultPriority = defaultConfig.defaultPriority;
         }
@@ -90,7 +91,7 @@ export default class StorageCache {
     * produce a JSON object with meta-data and data value
     * @param value - the value of the item
     * @param options - optional, the specified meta-data
-    * 
+    *
     * @return - the item which has the meta-data and the value
     */
     protected fillCacheItem(
@@ -117,7 +118,7 @@ export default class StorageCache {
     /**
      * set cache with customized configuration
      * @param config - customized configuration
-     * 
+     *
      * @return - the current configuration
      */
     public configure(config?: CacheConfig): CacheConfig {
@@ -127,7 +128,6 @@ export default class StorageCache {
         if (config.keyPrefix) {
             logger.warn(`Don't try to configure keyPrefix!`);
         }
-        config.keyPrefix = this.config.keyPrefix;
 
         this.config = Object.assign({}, this.config, config);
         this.checkConfig();

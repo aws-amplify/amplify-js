@@ -86,11 +86,14 @@ CanonicalRequest =
 */
 const canonical_request = function(request) {
     const url_info = url.parse(request.url);
+    const sorted_query = url_info.query
+        ? url_info.query.split('&').sort((a,b) => a < b ? -1 : 1).join('&')
+        : '';
 
     return [
         request.method || '/',
-        url_info.path,
-        url_info.query,
+        url_info.pathname,
+        sorted_query,
         canonical_headers(request.headers),
         signed_headers(request.headers),
         hash(request.data)

@@ -311,4 +311,40 @@ describe('S3Text test', () => {
             spyon.mockClear();
         });
     });
+
+    describe('getText test', () => {
+        test('happy case', () => {
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
+
+            const spyon = jest.spyOn(Storage, 'get').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('url');
+                });
+            });
+
+            s3Text.getText('key', 'level', false);
+            expect(spyon).toBeCalledWith('key', {"download": true, "level": "level", "track": false});
+            spyon.mockClear();
+        });
+
+        test('error case', () => {
+            const wrapper = shallow(<S3Text/>);
+            const s3Text = wrapper.instance();
+
+            const spyon = jest.spyOn(Storage, 'get').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                });
+            });
+
+            try {
+                s3Text.getText('key', 'level', false);
+            } catch (e) {
+                expect(e).not.toBeNull();
+            }
+    
+            spyon.mockClear();
+        });
+    });
 });
