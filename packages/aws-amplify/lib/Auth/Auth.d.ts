@@ -4,6 +4,7 @@ import { AuthOptions } from './types';
 */
 export default class AuthClass {
     private _config;
+    private _userPoolStorageSync;
     private userPool;
     private credentials;
     private credentials_source;
@@ -16,7 +17,7 @@ export default class AuthClass {
     configure(config: any): AuthOptions;
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String | object} params - The user attirbutes used for signin
      * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
@@ -69,6 +70,11 @@ export default class AuthClass {
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
     currentUserPoolUser(): Promise<any>;
+    /**
+     * Return the current user after synchornizing AsyncStorage
+     * @return - A promise with the current authenticated user
+     **/
+    private getSyncedUser();
     /**
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success

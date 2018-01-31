@@ -128,7 +128,6 @@ export default class StorageCache {
         if (config.keyPrefix) {
             logger.warn(`Don't try to configure keyPrefix!`);
         }
-        config.keyPrefix = this.config.keyPrefix;
 
         this.config = Object.assign({}, this.config, config);
         this.checkConfig();
