@@ -51,13 +51,29 @@ npm install aws-amplify-react --save
 
 ### React Native Development
 
-For React Native development, install `aws-amplify-react-native` instead of `aws-amplify`
-
+For React Native development, install `aws-amplify` 
+```
+npm install aws-amplify --save
+```
+If you are developing a [React Native](https://github.com/facebook/react-native) app, you can install an additional package `aws-amplify-react-native` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
 ```
 npm install aws-amplify-react-native --save
 ```
 
-Unless your react-native app was created using [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), you will need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) libraries in your project for the Auth module on React Native. Follow the instructions [here](https://github.com/aws/aws-amplify/blob/master/media/quick_start.md#react-native-development).
+Unless you're react-native app was created using [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), you will need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) libraries in your project for the Auth module on React Native.
+
+To link `amazon-cognito-identity-js`, you must first `eject` the project:
+
+```bash
+npm run eject
+react-native link amazon-cognito-identity-js
+```
+
+Now run your application as normal:
+
+```bash
+react-native run-ios
+```
 
 ## Documentation
 
