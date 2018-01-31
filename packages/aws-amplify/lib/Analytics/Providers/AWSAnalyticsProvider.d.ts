@@ -1,11 +1,13 @@
-export declare class AWSAnalyticsProvider {
+import { AnalyticsProvider } from '../types';
+export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private _config;
     private mobileAnalytics;
     private pinpointClient;
     private _sessionId;
-    constructor();
+    constructor(config?: any);
+    getCategory(): string;
     configure(config: any): any;
-    initClients(config: any): Promise<boolean>;
+    init(config: any): Promise<boolean>;
     putEvent(params: any): void;
     private _startSession(params);
     private _stopSession(params);
@@ -33,5 +35,3 @@ export declare class AWSAnalyticsProvider {
      */
     private _generateClientContext();
 }
-declare const instance: AWSAnalyticsProvider;
-export default instance;

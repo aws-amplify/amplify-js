@@ -18,7 +18,7 @@ var logger = new Common_1.ConsoleLogger('Analytics');
 var _instance = null;
 if (!_instance) {
     logger.debug('Create Analytics Instance');
-    _instance = new Analytics_1.default(null);
+    _instance = new Analytics_1.default();
 }
 var Analytics = _instance;
 exports.default = Analytics;

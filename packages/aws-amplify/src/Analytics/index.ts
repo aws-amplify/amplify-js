@@ -24,7 +24,7 @@ let _instance = null;
 
 if (!_instance) {
     logger.debug('Create Analytics Instance');
-    _instance = new AnalyticsClass(null);
+    _instance = new AnalyticsClass();
 }
 
 const Analytics = _instance;

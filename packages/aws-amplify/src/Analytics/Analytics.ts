@@ -16,12 +16,13 @@ import {
     ClientDevice,
     ConsoleLogger as Logger,
     missingConfig,
-    MobileAnalytics
+    MobileAnalytics,
+    Parser
 } from '../Common';
 import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
 import Auth from '../Auth';
 
-import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from './types';
+import { EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
 const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
@@ -30,25 +31,15 @@ const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException
 */
 export default class AnalyticsClass {
     private _config;
-
-    private amaClient: any;
-    private pinpointClient: any;
-
     private _buffer;
-
-    private mobileAnalytics;
-    private _sessionId;
-
     private _provider;
 
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
      */
-    constructor(config: AnalyticsOptions) {
+    constructor() {
         this._buffer = [];
-
-        this._setProvider(AWSAnalyticsProvider);
     }
 
     /**
@@ -57,17 +48,39 @@ export default class AnalyticsClass {
      */
     public configure(config) {
         logger.debug('configure Analytics');
-        let conf = config? config.Analytics || config : {};
-
-        const provider = conf.providers? conf.providers.Analytics : conf.provider;
-        if (provider) this._setProvider(provider);
+        const conf = Object.assign({}, Parser.parseMobilehubConfig(config).Analytics);
 
         const clientInfo:any = ClientDevice.clientInfo();
-        conf.clientInfo = conf.client_info? conf.client_info : clientInfo;
+        conf['clientInfo'] = conf['client_info']? conf['client_info'] : clientInfo;
 
         this._config = conf;
-        this._initClients();
         return conf;
+    }
+
+    /**
+     * @async
+     * init clients for Anlytics including mobile analytics and pinpoint
+     * @return - True if initilization succeeds
+     */
+    public async init() {
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return false; }
+   
+        logger.debug('init clients with config', this._config);
+        
+        // default one
+        if (!this._provider) {
+            this._provider = new AWSAnalyticsProvider();
+        }
+        return this._provider.init(this._config);
+    }
+
+        /**
+     * set the Analytics client
+     * @param provider 
+     */
+    public setProvider(provider) {
+        this._provider = provider;
     }
 
     /**
@@ -103,7 +116,7 @@ export default class AnalyticsClass {
      * @return - A promise ehich resolves to be true if current credential exists
      */
     async restart() {
-        return this._initClients();
+        return this.init();
     }
 
     /**
@@ -130,34 +143,5 @@ export default class AnalyticsClass {
                 logger.debug('ensure credentials error', err);
                 return false;
             });
-    }
-
-    /**
-     * @private
-     * set the Analytics client
-     * @param provider 
-     */
-    private _setProvider(provider) {
-        // const list = {AWS: AWSAnalyticsProvider}
-        // // look into provider list
-        // if (provider in list) {
-        
-        //     this._provider = list[provider];
-        // }
-        this._provider = provider;
-    }
-
-    /**
-     * @private
-     * @async
-     * init clients for Anlytics including mobile analytics and pinpoint
-     * @return - True if initilization succeeds
-     */
-    private async _initClients() {
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return false; }
-   
-        logger.debug('init clients with config', this._config);
-        return this._provider.initClients(this._config);
     }
 }

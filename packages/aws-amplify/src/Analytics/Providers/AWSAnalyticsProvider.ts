@@ -1,43 +1,30 @@
 import { ConsoleLogger as Logger, Pinpoint, MobileAnalytics, JS } from '../../Common';
+import { AnalyticsProvider } from '../types';
 
 const logger = new Logger('AWSAnalyticsProvider');
 
-export class AWSAnalyticsProvider {
+export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private _config;
     private mobileAnalytics;
     private pinpointClient;
     private _sessionId;
 
-    constructor() {
-        this._config = {};
+    constructor(config?) {
+        this._config = config? config : {};
+    }
+
+    public getCategory() {
+        return 'Analytics';
     }
 
     public configure(config) {
         logger.debug('configure Analytics');
-        let conf = config? config : {};
-        
-        // using app_id from aws-exports if provided
-        if (conf['aws_mobile_analytics_app_id']) {
-            conf = {
-                appId: conf['aws_mobile_analytics_app_id'],
-                region: conf['aws_project_region'],
-                platform: 'other'
-            };
-        }
-
-        const {clientInfo, endpointId, credentials} = config;
-        conf = Object.assign(conf, {clientInfo, endpointId, credentials});
-        // hard code region
-        conf.region = 'us-east-1';
+        const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
-
-        // no app id provided
-       // if (!this._config.appId) { logger.debug('Do not have appId yet.'); 
-
         return this._config;
     }
 
-    public initClients(config) {
+    public init(config) {
         logger.debug('init clients');
         if (config) {
             this.configure(config);
@@ -49,7 +36,7 @@ export class AWSAnalyticsProvider {
             return Promise.resolve(true);
         }).catch((err) => {
             return Promise.resolve(false);
-        })
+        });
     }
 
     public putEvent(params) {
@@ -257,6 +244,3 @@ export class AWSAnalyticsProvider {
         return JSON.stringify(clientContext);
     }
 }
-
-const instance = new AWSAnalyticsProvider();
-export default instance;

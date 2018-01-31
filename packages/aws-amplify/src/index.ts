@@ -22,7 +22,8 @@ import {
     Hub,
     JS,
     ClientDevice,
-    Signer
+    Signer,
+    Builder
 } from './Common';
 
 const logger = new Logger('Amplify');
@@ -46,6 +47,8 @@ export default class Amplify {
         API.configure(config);
         Storage.configure(config);
         Cache.configure(config);
+
+        return new Builder();
     }
 }
 

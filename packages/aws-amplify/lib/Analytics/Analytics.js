@@ -60,9 +60,8 @@ var AnalyticsClass = /** @class */ (function () {
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
      */
-    function AnalyticsClass(config) {
+    function AnalyticsClass() {
         this._buffer = [];
-        this._setProvider(AWSAnalyticsProvider_1.default);
     }
     /**
      * configure Analytics
@@ -70,15 +69,44 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.configure = function (config) {
         logger.debug('configure Analytics');
-        var conf = config ? config.Analytics || config : {};
-        var provider = conf.providers ? conf.providers.Analytics : conf.provider;
-        if (provider)
-            this._setProvider(provider);
+        var conf = Object.assign({}, Common_1.Parser.parseMobilehubConfig(config).Analytics);
         var clientInfo = Common_1.ClientDevice.clientInfo();
-        conf.clientInfo = conf.client_info ? conf.client_info : clientInfo;
+        conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
         this._config = conf;
-        this._initClients();
         return conf;
+    };
+    /**
+     * @async
+     * init clients for Anlytics including mobile analytics and pinpoint
+     * @return - True if initilization succeeds
+     */
+    AnalyticsClass.prototype.init = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var credentialsOK;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, false];
+                        }
+                        logger.debug('init clients with config', this._config);
+                        // default one
+                        if (!this._provider) {
+                            this._provider = new AWSAnalyticsProvider_1.default();
+                        }
+                        return [2 /*return*/, this._provider.init(this._config)];
+                }
+            });
+        });
+    };
+    /**
+ * set the Analytics client
+ * @param provider
+ */
+    AnalyticsClass.prototype.setProvider = function (provider) {
+        this._provider = provider;
     };
     /**
      * Record Session start
@@ -112,7 +140,7 @@ var AnalyticsClass = /** @class */ (function () {
     AnalyticsClass.prototype.restart = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this._initClients()];
+                return [2 /*return*/, this.init()];
             });
         });
     };
@@ -135,42 +163,6 @@ var AnalyticsClass = /** @class */ (function () {
             .catch(function (err) {
             logger.debug('ensure credentials error', err);
             return false;
-        });
-    };
-    /**
-     * @private
-     * set the Analytics client
-     * @param provider
-     */
-    AnalyticsClass.prototype._setProvider = function (provider) {
-        // const list = {AWS: AWSAnalyticsProvider}
-        // // look into provider list
-        // if (provider in list) {
-        //     this._provider = list[provider];
-        // }
-        this._provider = provider;
-    };
-    /**
-     * @private
-     * @async
-     * init clients for Anlytics including mobile analytics and pinpoint
-     * @return - True if initilization succeeds
-     */
-    AnalyticsClass.prototype._initClients = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._ensureCredentials()];
-                    case 1:
-                        credentialsOK = _a.sent();
-                        if (!credentialsOK) {
-                            return [2 /*return*/, false];
-                        }
-                        logger.debug('init clients with config', this._config);
-                        return [2 /*return*/, this._provider.initClients(this._config)];
-                }
-            });
         });
     };
     return AnalyticsClass;

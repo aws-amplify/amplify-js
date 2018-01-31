@@ -1,25 +1,32 @@
-import { AnalyticsOptions, EventAttributes, EventMetrics } from './types';
+import { EventAttributes, EventMetrics } from './types';
 /**
 * Provide mobile analytics client functions
 */
 export default class AnalyticsClass {
     private _config;
-    private amaClient;
-    private pinpointClient;
     private _buffer;
-    private mobileAnalytics;
-    private _sessionId;
     private _provider;
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
      */
-    constructor(config: AnalyticsOptions);
+    constructor();
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
      */
-    configure(config: any): any;
+    configure(config: any): object & {};
+    /**
+     * @async
+     * init clients for Anlytics including mobile analytics and pinpoint
+     * @return - True if initilization succeeds
+     */
+    init(): Promise<any>;
+    /**
+ * set the Analytics client
+ * @param provider
+ */
+    setProvider(provider: any): void;
     /**
      * Record Session start
      * @return - A promise which resolves if event record successfully
@@ -49,17 +56,4 @@ export default class AnalyticsClass {
      * check if current crednetials exists
      */
     private _ensureCredentials();
-    /**
-     * @private
-     * set the Analytics client
-     * @param provider
-     */
-    private _setProvider(provider);
-    /**
-     * @private
-     * @async
-     * init clients for Anlytics including mobile analytics and pinpoint
-     * @return - True if initilization succeeds
-     */
-    private _initClients();
 }

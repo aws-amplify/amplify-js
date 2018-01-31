@@ -44,6 +44,7 @@ var Amplify = /** @class */ (function () {
         API_1.default.configure(config);
         Storage_1.default.configure(config);
         Cache_1.default.configure(config);
+        return new Common_1.Builder();
     };
     Amplify.Auth = null;
     Amplify.Analytics = null;

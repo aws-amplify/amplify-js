@@ -3,30 +3,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../../Common");
 var logger = new Common_1.ConsoleLogger('AWSAnalyticsProvider');
 var AWSAnalyticsProvider = /** @class */ (function () {
-    function AWSAnalyticsProvider() {
-        this._config = {};
+    function AWSAnalyticsProvider(config) {
+        this._config = config ? config : {};
     }
+    AWSAnalyticsProvider.prototype.getCategory = function () {
+        return 'Analytics';
+    };
     AWSAnalyticsProvider.prototype.configure = function (config) {
         logger.debug('configure Analytics');
         var conf = config ? config : {};
-        // using app_id from aws-exports if provided
-        if (conf['aws_mobile_analytics_app_id']) {
-            conf = {
-                appId: conf['aws_mobile_analytics_app_id'],
-                region: conf['aws_project_region'],
-                platform: 'other'
-            };
-        }
-        var clientInfo = config.clientInfo, endpointId = config.endpointId, credentials = config.credentials;
-        conf = Object.assign(conf, { clientInfo: clientInfo, endpointId: endpointId, credentials: credentials });
-        // hard code region
-        conf.region = 'us-east-1';
         this._config = Object.assign({}, this._config, conf);
-        // no app id provided
-        // if (!this._config.appId) { logger.debug('Do not have appId yet.'); 
         return this._config;
     };
-    AWSAnalyticsProvider.prototype.initClients = function (config) {
+    AWSAnalyticsProvider.prototype.init = function (config) {
         logger.debug('init clients');
         if (config) {
             this.configure(config);
@@ -235,7 +224,5 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     };
     return AWSAnalyticsProvider;
 }());
-exports.AWSAnalyticsProvider = AWSAnalyticsProvider;
-var instance = new AWSAnalyticsProvider();
-exports.default = instance;
+exports.default = AWSAnalyticsProvider;
 //# sourceMappingURL=AWSAnalyticsProvider.js.map
