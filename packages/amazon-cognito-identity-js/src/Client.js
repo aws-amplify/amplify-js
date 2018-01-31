@@ -1,12 +1,14 @@
+import UserAgent from './UserAgent';
 /** @class */
 export default class Client {
   /**
    * Constructs a new AWS Cognito Identity Provider client object
-   * @param {string} region AWS region.
+   * @param {string} region AWS region
    * @param {string} endpoint endpoint
    */
   constructor(region, endpoint) {
     this.endpoint = endpoint || `https://cognito-idp.${region}.amazonaws.com/`;
+    this.userAgent = UserAgent.prototype.userAgent || 'aws-amplify/0.1.x js';
   }
 
   /**
@@ -21,7 +23,7 @@ export default class Client {
     const headers = {
       'Content-Type': 'application/x-amz-json-1.1',
       'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
-      'X-Amz-User-Agent': 'aws-amplify/1.0',
+      'X-Amz-User-Agent': this.userAgent
     };
 
     const options = {

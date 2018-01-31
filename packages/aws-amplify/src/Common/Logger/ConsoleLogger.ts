@@ -73,7 +73,7 @@ export class ConsoleLogger implements Logger {
         }
 
         let log = console.log;
-        if (type === 'ERROR' && console.error) { log = console.error; }
+        // if (type === 'ERROR' && console.error) { log = console.error; }
         if (type === 'WARN' && console.warn) { log = console.warn; }
 
         if (msg.length === 1 && typeof msg[0] === 'string') {

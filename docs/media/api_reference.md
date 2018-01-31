@@ -1,3 +1,3 @@
 # API Reference
 
-API Reference is on https://github.io/aws-amplify.
+[API Reference](https://aws.github.io/aws-amplify/api/)
