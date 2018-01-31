@@ -97,8 +97,6 @@
         <div id="title">
           <h1><a href="/aws-amplify" title="Back to Home">{{ site.title | default: site.github.repository_name }}</a></h1>
           <p>{{ site.description | default: site.github.project_tagline }}</p>
-          <span class="credits left">Project maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></span>
-          <span class="credits right"><a href="https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md">Contributing Guidelines</a></span>
           
           <div class="navbar">
             <a href="/aws-amplify/media/quick_start.html">Quick Start</a>
@@ -134,6 +132,11 @@
 
         <div id="content">
           {{ content }}
+        </div>
+        
+        <div id="footer">
+           <span class="credits left">Project maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></span>
+            <span class="credits right"><a href="https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md">Contributing Guidelines</a></span>
         </div>
       </section>
     </div>
