@@ -25,6 +25,11 @@ jest.mock('aws-sdk/clients/mobileanalytics', () => {
 });
 
 
+jest.mock('../../../src/Common/Builder', () => {
+    return {
+        default: null
+    };
+});
 
 import { Pinpoint, AWS, MobileAnalytics, JS } from '../../../src/Common';
 import Analytics from "../../../src/Analytics/Providers/AwsAnalyticsProvider";
@@ -47,38 +52,35 @@ import { ConsoleLogger as Logger } from '../../../src/Common/Logger';
 
 // jest.spyOn(JS, 'generateRandomString').mockReturnValue('randomString');
 
-test('', () => {
-    const a = 3;
-    expect(a).toBe(3);
-});
 describe("Analytics test", () => {
     describe('getCategory test', () => {
-        test.only('happy case', () => {
+        test('happy case', () => {
             const analytics = new Analytics();
 
             expect(analytics.getCategory()).toBe('Analytics');
         });
     });
-});
 
-//     describe('configure test', () => {
-//         test('happy case', () => {
-//             const analytics = new Analytics();
 
-//             expect(analytics.configure({appId: 'appId'})).toEqual({appId: 'appId'});
-//         });
-//     });
+    describe('configure test', () => {
+        test('happy case', () => {
+            const analytics = new Analytics();
+
+            expect(analytics.configure({appId: 'appId'})).toEqual({appId: 'appId'});
+        });
+    });
     
-//     describe('init test', () => {
-//         test('happy case', async () => {
-//             const analytics = new Analytics();
-//             const spyon = jest.spyOn(analytics, 'configure').mockImplementationOnce(() => {return;});
+    describe('init test', () => {
+        test('happy case', async () => {
+            const analytics = new Analytics();
+            const spyon = jest.spyOn(analytics, 'configure').mockImplementationOnce(() => {return;});
 
-//             expect(await analytics.init({appId: 'appId'})).toBe(true);
+            expect(await analytics.init({appId: 'appId'})).toBe(true);
 
             
-//         });
-//     });
+        });
+    });
+});
     
 //     describe("startSession", () => {
 //         test("happy case", async () => {
