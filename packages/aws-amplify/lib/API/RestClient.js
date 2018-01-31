@@ -147,17 +147,26 @@ var RestClient = /** @class */ (function () {
     };
     /**
     * PUT HTTP request
-    * @param {String} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     RestClient.prototype.put = function (url, init) {
         return this.ajax(url, 'PUT', init);
     };
     /**
+    * PATCH HTTP request
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
+    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+    */
+    RestClient.prototype.patch = function (url, init) {
+        return this.ajax(url, 'PATCH', init);
+    };
+    /**
     * POST HTTP request
-    * @param {String} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     RestClient.prototype.post = function (url, init) {
@@ -166,7 +175,7 @@ var RestClient = /** @class */ (function () {
     /**
     * DELETE HTTP request
     * @param {string} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     RestClient.prototype.del = function (url, init) {
@@ -175,7 +184,7 @@ var RestClient = /** @class */ (function () {
     /**
     * HEAD HTTP request
     * @param {string} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     RestClient.prototype.head = function (url, init) {
