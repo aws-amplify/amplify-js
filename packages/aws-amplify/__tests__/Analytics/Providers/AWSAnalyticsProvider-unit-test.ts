@@ -42,13 +42,21 @@ import { ConsoleLogger as Logger } from '../../../src/Common/Logger';
 //     region: 'region'
 // };
 
-// const credentials = {
-//     accessKeyId: 'accessKeyId',
-//     sessionToken: 'sessionToken',
-//     secretAccessKey: 'secretAccessKey',
-//     identityId: 'identityId',
-//     authenticated: true
-// }
+const credentials = {
+    accessKeyId: 'accessKeyId',
+    sessionToken: 'sessionToken',
+    secretAccessKey: 'secretAccessKey',
+    identityId: 'identityId',
+    authenticated: true
+}
+
+const clientInfo = {
+    appVersion: '1.0',
+    make: 'make',
+    model: 'model',
+    version: '1.0.0',
+    platform: 'platform'
+}
 
 // jest.spyOn(JS, 'generateRandomString').mockReturnValue('randomString');
 
@@ -73,12 +81,16 @@ describe("Analytics test", () => {
     describe('init test', () => {
         test('happy case', async () => {
             const analytics = new Analytics();
-            const spyon = jest.spyOn(analytics, 'configure').mockImplementationOnce(() => {return;});
 
-            expect(await analytics.init({appId: 'appId'})).toBe(true);
-
-            
+            expect(await analytics.init({
+                appId: 'appId',
+                clientInfo: clientInfo,
+                credentials: credentials
+            })).toBe(true);
         });
+
+     //   test('')
+        
     });
 });
     

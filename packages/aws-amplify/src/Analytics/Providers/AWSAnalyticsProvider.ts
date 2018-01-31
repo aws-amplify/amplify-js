@@ -208,8 +208,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @return {Object} - The request of updating endpoint
      */
     private _endpointRequest() {
-        const { clientInfo } = this._config;
-        const credentials = this._config.credentials;
+        const { clientInfo, credentials } = this._config;
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         logger.debug('config', this._config);
         logger.debug('demographic user id: ', user_id);
