@@ -18,10 +18,10 @@ npm start
 You should see a basic React application running in your browser.
 
 ## Install Amplify 
-AWS Amplify is available as an npm packages. Run the following from the current directory of your application:
+AWS Amplify is available as an npm package. Run the following from the current directory of your application:
 ```bash
-yarn add aws-amplify
-yarn add aws-amplify-react
+npm install aws-amplify
+npm install aws-amplify-react
 ```
 
 To setup a new or existing AWS Mobile Hub project you can use the [awsmobile-cli](https://github.com/aws/awsmobile-cli).
@@ -139,8 +139,8 @@ For more about Authenticator, click [here](authentication_guide.md)
 
 AWS Amplify is available as an npm package and supports both web and React Native core APIs. Run the following from the current directory of your application:
 ```bash
-yarn add aws-amplify
-yarn add aws-amplify-react-native
+npm install aws-amplify
+npm install aws-amplify-react-native
 ```
 
 Second, authentication requires a native bridge for mathematical performance not available in the JavaScript runtime. As a result, you need to [Link Libraries](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) to your project. The below steps outline how you can do this with a new React Native application:
@@ -161,8 +161,8 @@ Note: project name is in camelCase to avoid problems when testing on a physical 
 **Install AWS Amplify**
 
 ```bash
-yarn add aws-amplify
-yarn add aws-amplify-react-native
+npm install aws-amplify
+npm install aws-amplify-react-native
 ```
 
 **React Native Link**
