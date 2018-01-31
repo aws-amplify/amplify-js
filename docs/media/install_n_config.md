@@ -7,7 +7,7 @@
 
 ## Installation
 
-For Web development, regardless of framework, `aws-amplify` provides core APIs
+For React Native and Web development, regardless of framework, `aws-amplify` provides core APIs
 
 ```bash
 npm install aws-amplify
@@ -19,7 +19,7 @@ On React app, there are helper components in `aws-amplify-react`
 npm install aws-amplify-react
 ```
 
-In React Native development, core APIs and components are packaged into `aws-amplify-react-native`
+In React Native development, helper components are packaged into `aws-amplify-react-native`
 
 ```bash
 npm install aws-amplify-react-native
