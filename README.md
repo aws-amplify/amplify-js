@@ -72,7 +72,6 @@ Now run your application as normal:
 react-native run-ios
 ```
 
-
 ## Documentation
 
 * [Quick Start](docs/media/quick_start.md)
