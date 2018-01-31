@@ -207,26 +207,29 @@ Amplify.configure({
 });
 ```
 
+You can also configure the library using the `aws-exports.js` file on your [AWS Mobile Hub](https://console.aws.amazon.com/mobilehub/home) project. Just click on the **Hosting and Streaming** feature tile then **Download aws-exports.js**.
+Add the `aws-exports.js` file to the `src` folder in your app and add the following in your code:
+```js
+import Amplify from 'aws-amplify';
+import aws_exports from './aws-exports';
+
+Amplify.configure(aws_exports);
+
+```
+
 **Include Authenticator**
 
 Modify `App.js`:
 
 ```js
 ...
-
 import { withAuthenticator } from 'aws-amplify-react-native';
-import aws_exports from './aws-exports';
-
-Amplify.configure(aws_exports);
 
 class App extends React.Component {
-
 ...
-
 }
 
 export default withAuthenticator(App);
-
 ...
 ```
 
