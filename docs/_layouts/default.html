@@ -91,24 +91,8 @@
   <body>
       <div id="header">
         <nav>
-          <li class="fork"><a href="{{ site.github.repository_url }}">View On GitHub</a></li>
-          {% if site.show_downloads %}
-            <li class="downloads"><a href="{{ site.github.zip_url }}">ZIP</a></li>
-            <li class="downloads"><a href="{{ site.github.tar_url }}">TAR</a></li>
-            <li class="title">DOWNLOADS</li>
-          {% endif %}
-        </nav>
-      </div><!-- end header -->
-
-    <div class="wrapper">
-
-      <section>
-        
-        <div id="title">
-          <h1><a href="/aws-amplify" title="Back to Home">{{ site.title | default: site.github.repository_name }}</a></h1>
-          <p>{{ site.description | default: site.github.project_tagline }}</p>
-          
           <div class="navbar">
+            <a href="{{ site.github.repository_url }}">View On GitHub</a>
             <a href="/aws-amplify/media/quick_start.html">Quick Start</a>
             <a href="/aws-amplify/api/index.html" target="_blank" style="float:right;">API Docs</a>
               
@@ -137,6 +121,16 @@
                 </div>
             </div>
         </div>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        
+        <div id="title">
+          <h1><a href="/aws-amplify" title="Back to Home">{{ site.title | default: site.github.repository_name }}</a></h1>
+          <p>{{ site.description | default: site.github.project_tagline }}</p>
         </div>
 
         <div id="content">
