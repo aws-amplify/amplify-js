@@ -42,16 +42,28 @@
         </div>
         
         <div id="navigation">
-          {% for item in site.data.navigation.docs %}
-            <h3>{{ item.title }}</h3>
+          <ul>
+            <li><a href="/aws-amplify/media/quick_start.html">Quick Start</a></li>
+            <li><a href="/aws-amplify/api/index.html">API Reference</a></li>
+            <li><a href="/aws-amplify/media/developer_guide.html">Developer Guide</a>
               <ul>
-                {% for entry in item.subfolderitems %}
-                  <li><a href="{{ entry.url }}">{{ entry.page }}</a></li>
-                {% endfor %}
+                <li><a href="/aws-amplify/media/install_n_config.html">Installation and Configuration</a></li>
+                <li><a href="/aws-amplify/media/authentication_guide.html">Authentication</a></li>
+                <li><a href="/aws-amplify/media/analytics_guide.html">Analytics</a></li>
+                <li><a href="/aws-amplify/media/api_guide.html">API</a></li>
+                <li><a href="/aws-amplify/media/storage_guide.html">Storage</a></li>
+                <li><a href="/aws-amplify/media/cache_guide.html">Cache</a></li>
+                <li>Utilities
+                  <ul>
+                    <li><a href="/aws-amplify/media/i18n_guide.html">I18n</a></li>
+                    <li><a href="/aws-amplify/media/logger_guide.html">Logger</a></li>
+                    <li><a href="/aws-amplify/media/hub_guide.html">Hub</a></li>
+                  </ul>
+                </li>
               </ul>
-          {% endfor %}
+            </li>
+          </ul>
         </div>
-
         <div id="content">
           {{ content }}
         </div>
