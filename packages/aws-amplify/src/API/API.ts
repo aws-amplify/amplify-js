@@ -82,7 +82,7 @@ export default class API {
     /**
      * Make a GET request
      * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request'
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
