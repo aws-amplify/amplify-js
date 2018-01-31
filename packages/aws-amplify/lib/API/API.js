@@ -102,13 +102,13 @@ var API = /** @class */ (function () {
         }
     };
     /**
-     * Make an patch request
+     * Make a GET request
      * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request'
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.patch = function (apiName, path, init) {
+    API.prototype.get = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_1, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -135,19 +135,19 @@ var API = /** @class */ (function () {
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, this._api.patch(endpoint + path, init)];
+                        return [2 /*return*/, this._api.get(endpoint + path, init)];
                 }
             });
         });
     };
     /**
-     * Make a GET request
+     * Make a POST request
      * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request'
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.get = function (apiName, path, init) {
+    API.prototype.post = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_2, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -174,19 +174,19 @@ var API = /** @class */ (function () {
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, this._api.get(endpoint + path, init)];
+                        return [2 /*return*/, this._api.post(endpoint + path, init)];
                 }
             });
         });
     };
     /**
-     * Make a POST request
+     * Make a PUT request
      * @param {string} apiName  - The api name of the request
      * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.post = function (apiName, path, init) {
+    API.prototype.put = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_3, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -213,19 +213,19 @@ var API = /** @class */ (function () {
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, this._api.post(endpoint + path, init)];
+                        return [2 /*return*/, this._api.put(endpoint + path, init)];
                 }
             });
         });
     };
     /**
-     * Make a PUT request
+     * Make a PATCH request
      * @param {string} apiName  - The api name of the request
      * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.put = function (apiName, path, init) {
+    API.prototype.patch = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_4, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -252,7 +252,7 @@ var API = /** @class */ (function () {
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, this._api.put(endpoint + path, init)];
+                        return [2 /*return*/, this._api.patch(endpoint + path, init)];
                 }
             });
         });

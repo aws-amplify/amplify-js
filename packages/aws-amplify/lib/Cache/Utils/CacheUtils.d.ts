@@ -12,3 +12,7 @@ export declare function getByteLength(str: string): number;
  * get current time
  */
 export declare function getCurrTime(): number;
+/**
+ * check if passed value is an integer
+ */
+export declare function isInteger(value: any): boolean;
