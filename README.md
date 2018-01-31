@@ -16,7 +16,7 @@
   <a href="https://codecov.io/gh/aws/aws-amplify">
     <img src="https://codecov.io/gh/aws/aws-amplify/branch/master/graph/badge.svg" />
   </a>
-  <a href="https://gitter.im/aws/aws-amplify" target="_blank">
+  <a href="https://gitter.im/AWS-Amplify/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link" target="_blank">
     <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />  
   </a>
 </p>
