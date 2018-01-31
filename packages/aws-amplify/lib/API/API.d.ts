@@ -24,17 +24,9 @@ export default class API {
      */
     createInstance(): true | Promise<never>;
     /**
-     * Make an patch request
-     * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request'
-     * @param {json} [init] - Request extra params
-     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-     */
-    patch(apiName: any, path: any, init: any): Promise<any>;
-    /**
      * Make a GET request
      * @param {string} apiName  - The api name of the request
-     * @param {string} path - The path of the request'
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -55,6 +47,14 @@ export default class API {
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
     put(apiName: any, path: any, init: any): Promise<any>;
+    /**
+     * Make a PATCH request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
+     * @param {json} [init] - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
+    patch(apiName: any, path: any, init: any): Promise<any>;
     /**
      * Make a DEL request
      * @param {string} apiName  - The api name of the request
