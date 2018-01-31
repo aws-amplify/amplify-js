@@ -24,6 +24,8 @@ jest.mock('aws-sdk/clients/mobileanalytics', () => {
     return MobileAnalytics;
 });
 
+
+
 import { Pinpoint, AWS, MobileAnalytics, JS } from '../../../src/Common';
 import Analytics from "../../../src/Analytics/Providers/AwsAnalyticsProvider";
 import { ConsoleLogger as Logger } from '../../../src/Common/Logger';

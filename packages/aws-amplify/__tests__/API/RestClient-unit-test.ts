@@ -37,6 +37,11 @@ jest.mock('axios', () => {
     }
 });
 
+jest.mock('../../src/Common/Builder', () => {
+    return {
+        default: null
+    };
+});
 
 import { RestClient } from '../../src/API/RestClient';
 import * as AWS from 'aws-sdk';

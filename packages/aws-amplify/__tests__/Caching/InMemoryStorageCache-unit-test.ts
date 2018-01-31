@@ -11,6 +11,12 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
+jest.mock('../../src/Common/Builder', () => {
+    return {
+        default: null
+    };
+});
+
 import {default as cache, InMemoryCache } from '../../src/Cache/InMemoryCache';
 import { defaultConfig, getByteLength } from '../../src/Cache/Utils/CacheUtils'
 import { CacheConfig, CacheItem, CacheItemOptions } from '../../src/Cache/types/Cache';

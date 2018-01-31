@@ -11,6 +11,12 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
+jest.mock('../../src/Common/Builder', () => {
+    return {
+        default: null
+    };
+});
+
 import API from '../../src/API/API';
 import Auth from '../../src/Auth';
 import { RestClient } from '../../src/API/RestClient';
