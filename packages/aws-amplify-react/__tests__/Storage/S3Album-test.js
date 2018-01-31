@@ -378,6 +378,7 @@ describe('S3Album test', () => {
 
     describe('list test', () => {
         test('happy case', async () => {
+            // this is for component did mount
             const spyon = jest.spyOn(Storage, 'list')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
@@ -397,19 +398,27 @@ describe('S3Album test', () => {
             const s3Album = wrapper.instance();
             wrapper.setProps(props);
 
+            const spyon3 = jest.spyOn(Storage, 'list')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res('data');
+                    });
+                });
+
             await s3Album.list();
 
-            expect(spyon).toBeCalledWith('path', {level: 'public'});
+            expect(spyon3).toBeCalledWith('path', {level: 'public'});
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         }); 
 
         test('storage list error', async () => {
             const spyon = jest.spyOn(Storage, 'list')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
-                        rej('err');
+                        res('data');
                     });
                 });
 
@@ -422,9 +431,17 @@ describe('S3Album test', () => {
             const s3Album = wrapper.instance();
             wrapper.setProps(props);
 
+            const spyon2 = jest.spyOn(Storage, 'list')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        rej('err');
+                    });
+                });
+
             expect(await s3Album.list()).toEqual([]);
 
             spyon.mockClear();
+            spyon2.mockClear();
         });
     });
 
