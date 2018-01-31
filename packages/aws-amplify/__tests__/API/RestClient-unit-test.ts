@@ -241,6 +241,43 @@ describe('RestClient test', () => {
         });
     });
 
+    describe('patch test', () => {
+        test('happy case', async () => {
+            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
+                return new Promise((res, rej) => {
+                    res({
+                        status: '200',
+                        json: () => {
+                            return signed_params.data;
+                        }
+                    });
+                });
+            });
+
+            const spyon = jest.spyOn(RestClient.prototype, 'ajax');
+
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+
+            const restClient = new RestClient(apiOptions);
+
+            expect.assertions(3);
+            await restClient.patch('url', 'data');
+            
+            expect(spyon.mock.calls[0][0]).toBe('url');
+            expect(spyon.mock.calls[0][1]).toBe('PATCH');
+            expect(spyon.mock.calls[0][2]).toBe('data');
+            spyon.mockClear();
+        });
+    });
+
     describe('post test', () => {
         test('happy case', async () => {
             window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {

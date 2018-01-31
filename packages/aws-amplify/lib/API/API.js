@@ -102,13 +102,13 @@ var API = /** @class */ (function () {
         }
     };
     /**
-     * Make a GET request
-     * @param {String} apiName  - The api name of the request
-     * @param {JSON} path - The path of the request'
+     * Make an patch request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request'
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.get = function (apiName, path, init) {
+    API.prototype.patch = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_1, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -135,19 +135,19 @@ var API = /** @class */ (function () {
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, this._api.get(endpoint + path, init)];
+                        return [2 /*return*/, this._api.patch(endpoint + path, init)];
                 }
             });
         });
     };
     /**
-     * Make a POST request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * Make a GET request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request'
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.post = function (apiName, path, init) {
+    API.prototype.get = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_2, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -174,19 +174,19 @@ var API = /** @class */ (function () {
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, this._api.post(endpoint + path, init)];
+                        return [2 /*return*/, this._api.get(endpoint + path, init)];
                 }
             });
         });
     };
     /**
-     * Make a PUT request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * Make a POST request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.put = function (apiName, path, init) {
+    API.prototype.post = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_3, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -213,19 +213,19 @@ var API = /** @class */ (function () {
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, this._api.put(endpoint + path, init)];
+                        return [2 /*return*/, this._api.post(endpoint + path, init)];
                 }
             });
         });
     };
     /**
-     * Make a DEL request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * Make a PUT request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.del = function (apiName, path, init) {
+    API.prototype.put = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_4, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -252,19 +252,19 @@ var API = /** @class */ (function () {
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, this._api.del(endpoint + path, init)];
+                        return [2 /*return*/, this._api.put(endpoint + path, init)];
                 }
             });
         });
     };
     /**
-     * Make a HEAD request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * Make a DEL request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.head = function (apiName, path, init) {
+    API.prototype.del = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_5, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -291,19 +291,21 @@ var API = /** @class */ (function () {
                         if (endpoint.length === 0) {
                             return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
                         }
-                        return [2 /*return*/, this._api.head(endpoint + path, init)];
+                        return [2 /*return*/, this._api.del(endpoint + path, init)];
                 }
             });
         });
     };
     /**
-    * Getting endpoint for API
-    * @param {String} apiName - The name of the api
-    * @return {String} - The endpoint of the api
-    */
-    API.prototype.endpoint = function (apiName) {
+     * Make a HEAD request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
+     * @param {json} [init] - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
+    API.prototype.head = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
-            var error_6;
+            var error_6, credentialsOK, endpoint;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -318,6 +320,43 @@ var API = /** @class */ (function () {
                     case 3:
                         error_6 = _a.sent();
                         return [2 /*return*/, Promise.reject(error_6)];
+                    case 4: return [4 /*yield*/, this._ensureCredentials()];
+                    case 5:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.reject('No credentials')];
+                        }
+                        endpoint = this._api.endpoint(apiName);
+                        if (endpoint.length === 0) {
+                            return [2 /*return*/, Promise.reject('Api ' + apiName + ' does not exist')];
+                        }
+                        return [2 /*return*/, this._api.head(endpoint + path, init)];
+                }
+            });
+        });
+    };
+    /**
+    * Getting endpoint for API
+    * @param {string} apiName - The name of the api
+    * @return {string} - The endpoint of the api
+    */
+    API.prototype.endpoint = function (apiName) {
+        return __awaiter(this, void 0, void 0, function () {
+            var error_7;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!!this._api) return [3 /*break*/, 4];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, this.createInstance()];
+                    case 2:
+                        _a.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        error_7 = _a.sent();
+                        return [2 /*return*/, Promise.reject(error_7)];
                     case 4: return [2 /*return*/, this._api.endpoint(apiName)];
                 }
             });
