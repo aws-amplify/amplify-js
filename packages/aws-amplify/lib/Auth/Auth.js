@@ -936,7 +936,8 @@ var AuthClass = /** @class */ (function () {
                         resolve(credentials);
                     }
                 });
-            });
+            })
+                .catch(function () { return resolve(null); });
         });
     };
     return AuthClass;

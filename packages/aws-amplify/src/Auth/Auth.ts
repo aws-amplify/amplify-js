@@ -859,7 +859,8 @@ export default class AuthClass {
                             resolve(credentials);
                         }
                     });
-                });
+                })
+                .catch(() => resolve(null));
         });
     }
 }
