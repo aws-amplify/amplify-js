@@ -15,35 +15,140 @@
     <link rel="stylesheet" href="{{ '/assets/css/ie.css' | relative_url }}">
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <style>
+    #header nav {
+      background: transparent;
+    }
+    .navbar {
+        overflow: hidden;
+        background-color: #333;
+        font-family: Arial;
+    }
 
+    .navbar a {
+        float: left;
+        font-size: 16px;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    .dropdown {
+        float: left;
+        overflow: hidden;
+    }
+
+    .dropdown .dropbtn {
+        font-size: 16px;    
+        border: none;
+        outline: none;
+        color: white;
+        padding: 14px 16px;
+        background-color: inherit;
+        font: inherit;
+        margin: 0;
+    }
+
+    .navbar a:hover, .dropdown:hover .dropbtn {
+        background-color: #000000;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        float: none;
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        text-align: left;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #ddd;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+    .left {
+      float:left; 
+     }
+    .right {
+      float:right;  
+    }
+    #footer {
+      height: 2em;
+      margin-top:1em;
+    }
+    </style>
   </head>
   <body>
       <div id="header">
         <nav>
-          <li class="fork"><a href="{{ site.github.repository_url }}">View On GitHub</a></li>
-          {% if site.show_downloads %}
-            <li class="downloads"><a href="{{ site.github.zip_url }}">ZIP</a></li>
-            <li class="downloads"><a href="{{ site.github.tar_url }}">TAR</a></li>
-            <li class="title">DOWNLOADS</li>
-          {% endif %}
+          <div class="navbar">
+            <a href="/aws-amplify/media/quick_start.html">Quick Start</a>
+            <a href="/aws-amplify/api/index.html" target="_blank" style="float:right;">API Docs</a>
+              
+            <div class="dropdown">
+              <button class="dropbtn">Developer Guides 
+                <i class="fa fa-caret-down"></i>
+              </button>
+              <div class="dropdown-content">
+                <a href="/aws-amplify/media/install_n_config.html">Installation and Configuration</a>
+                <a href="/aws-amplify/media/authentication_guide.html">Authentication</a>
+                <a href="/aws-amplify/media/analytics_guide.html">Analytics</a>
+                <a href="/aws-amplify/media/api_guide.html">API</a>
+                <a href="/aws-amplify/media/storage_guide.html">Storage</a>
+                <a href="/aws-amplify/media/cache_guide.html">Cache</a>
+              </div>
+            </div>
+
+            <div class="dropdown">
+              <button class="dropbtn">Utilities 
+                <i class="fa fa-caret-down"></i>
+              </button>
+                <div class="dropdown-content">
+                  <a href="/aws-amplify/media/i18n_guide.html">I18n</a>
+                  <a href="/aws-amplify/media/logger_guide.html">Logger</a>
+                  <a href="/aws-amplify/media/hub_guide.html">Hub</a>
+                </div>
+            </div>
+            <a href="{{ site.github.repository_url }}">GitHub</a>
+        </div>
         </nav>
       </div><!-- end header -->
 
     <div class="wrapper">
 
       <section>
+        
         <div id="title">
           <h1><a href="/aws-amplify" title="Back to Home">{{ site.title | default: site.github.repository_name }}</a></h1>
           <p>{{ site.description | default: site.github.project_tagline }}</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></span>
-          <span class="credits right"><a href="https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md">Contributing Guidelines</a></span>
         </div>
-
-        {{ content }}
-
+        
+        <hr/>
+        
+        <div id="content">
+          {{ content }}
+        </div>
+        
+        <hr/>
+        
+        <div id="footer">
+           <span class="credits left">Project maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></span>
+           <span class="credits right"><a href="https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md">Contributing Guidelines</a></span>
+        </div>
       </section>
-
     </div>
   </body>
 </html>

@@ -2,6 +2,18 @@
 <!--LATEST=0.1.36-->
 <!--ENTRYINSERT-->
 
+## 01/31/2018
+* aws-amplify - v0.2.0
+    * Enhancement: Allow SignUp with validation data #182
+    * Enhancement: Add .patch() interface to API #207
+    * Enhancement: Number.isInteger #185
+    * Enhancement: Add protected level to Storage #213
+    * Bug fix: Cache configure keyPrefix #210
+* aws-amplify-react - v0.1.32
+    * Bug fix: S3Album private level #213
+* aws-amplify-react-native - v0.2.0
+    * Enahancement: Refactor to use core library instead of duplicate implemntation #200
+
 ## 01/18/2018
 * aws-amplify - v0.1.36
     * Enhancement: Sign up with custom attributes #160

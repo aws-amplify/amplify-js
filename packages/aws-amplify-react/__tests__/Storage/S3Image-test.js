@@ -310,4 +310,40 @@ describe('S3Image', () => {
             spyon.mockClear();
         });
     });
+
+    describe('getImageSource test', () => {
+        test('happy case', () => {
+            const wrapper = shallow(<S3Image/>);
+            const s3Image = wrapper.instance();
+
+            const spyon = jest.spyOn(Storage, 'get').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('url');
+                });
+            });
+
+            s3Image.getImageSource('key', 'level', false);
+            expect(spyon).toBeCalledWith('key', {level: 'level', track: false});
+            spyon.mockClear();
+        });
+
+        test('error case', () => {
+            const wrapper = shallow(<S3Image/>);
+            const s3Image = wrapper.instance();
+
+            const spyon = jest.spyOn(Storage, 'get').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                });
+            });
+
+            try {
+                s3Image.getImageSource('key', 'level', false);
+            } catch (e) {
+                expect(e).not.toBeNull();
+            }
+    
+            spyon.mockClear();
+        });
+    });
 });
