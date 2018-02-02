@@ -83,7 +83,7 @@ Choose the features you would like to enable i.e. user-signin for authentication
 
 ```js
 import Amplify from 'aws-amplify';
-import aws_exports from './aws-exports.js';
+import aws_exports from './aws-exports';
 
 Amplify.configure(aws_exports);
 ```
