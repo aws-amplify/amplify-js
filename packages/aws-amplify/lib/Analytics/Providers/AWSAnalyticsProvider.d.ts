@@ -1,5 +1,4 @@
-import { AnalyticsProvider } from '../types';
-export default class AWSAnalyticsProvider implements AnalyticsProvider {
+export default class AWSAnalyticsProvider {
     private _config;
     private mobileAnalytics;
     private pinpointClient;
@@ -7,16 +6,10 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
     constructor(config?: any);
     getCategory(): string;
     configure(config: any): any;
-    init(config: any): Promise<boolean>;
-    putEvent(params: any): void;
-    private _startSession(params);
-    private _stopSession(params);
-    private _recordCustomEvent(params);
-    /**
-     * @private
-     * check if app Id exists
-     */
-    private _checkConfig();
+    private _init(config);
+    startSession(config: any): Promise<any>;
+    stopSession(config: any): Promise<any>;
+    record(params: any, config: any): Promise<any>;
     private _initMobileAnalytics();
     /**
  * @private

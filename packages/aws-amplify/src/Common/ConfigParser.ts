@@ -1,7 +1,7 @@
 import { AmplifyConfig } from './types';
 
 export default class ConfigParser {
-    static parseMobilehubConfig(config: object): AmplifyConfig {
+    static parseMobilehubConfig(config): AmplifyConfig {
         const amplifyConfig: AmplifyConfig = {};
         // Analytics
         if (config['aws_mobile_analytics_app_id']) {
@@ -11,6 +11,7 @@ export default class ConfigParser {
             amplifyConfig.Analytics = Analytics;
         }
 
+        amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
         return amplifyConfig;
     }
 }

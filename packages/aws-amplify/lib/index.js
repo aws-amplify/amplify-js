@@ -44,7 +44,27 @@ var Amplify = /** @class */ (function () {
         API_1.default.configure(config);
         Storage_1.default.configure(config);
         Cache_1.default.configure(config);
-        return new Common_1.Builder();
+        return config;
+    };
+    Amplify.usePluggable = function (pluggable) {
+        if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
+            var category = pluggable.getCategory();
+            switch (category) {
+                case 'Analytics':
+                    Analytics_1.default.addPluggable(pluggable);
+                    break;
+                case 'Auth':
+                    break;
+                case 'API':
+                    break;
+                case 'Cache':
+                    break;
+                case 'Storage':
+                    break;
+                default:
+                    break;
+            }
+        }
     };
     Amplify.Auth = null;
     Amplify.Analytics = null;

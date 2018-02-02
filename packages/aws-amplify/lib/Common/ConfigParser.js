@@ -12,6 +12,7 @@ var ConfigParser = /** @class */ (function () {
             Analytics['region'] = config['aws_mobile_analytics_app_region'];
             amplifyConfig.Analytics = Analytics;
         }
+        amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
         return amplifyConfig;
     };
     return ConfigParser;

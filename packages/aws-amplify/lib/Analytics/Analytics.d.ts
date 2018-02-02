@@ -6,6 +6,7 @@ export default class AnalyticsClass {
     private _config;
     private _buffer;
     private _provider;
+    private _pluggables;
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
@@ -15,28 +16,28 @@ export default class AnalyticsClass {
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
      */
-    configure(config: any): object & {};
+    configure(config: any): any;
     /**
      * @async
      * init clients for Anlytics including mobile analytics and pinpoint
      * @return - True if initilization succeeds
      */
-    init(): Promise<any>;
     /**
- * set the Analytics client
- * @param provider
- */
+     * set the Analytics client
+     * @param provider
+     */
     setProvider(provider: any): void;
+    addPluggable(pluggable: any): void;
     /**
      * Record Session start
      * @return - A promise which resolves if event record successfully
      */
-    startSession(): any;
+    startSession(): Promise<void>;
     /**
      * Record Session stop
      * @return - A promise which resolves if event record successfully
      */
-    stopSession(): any;
+    stopSession(): Promise<void>;
     /**
      * Record one analytic event and send it to Pinpoint
      * @param {String} name - The name of the event
@@ -44,16 +45,15 @@ export default class AnalyticsClass {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if event record successfully
      */
-    record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics): any;
+    record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<void>;
     /**
      * @async
      * Restart Analytics client and record session stop
-     * @return - A promise ehich resolves to be true if current credential exists
+     * @return - A promise which resolves to be true if current credential exists
      */
-    restart(): Promise<any>;
     /**
      * @private
      * check if current crednetials exists
      */
-    private _ensureCredentials();
+    private _getCredentials();
 }

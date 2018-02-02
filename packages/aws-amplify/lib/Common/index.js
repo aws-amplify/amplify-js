@@ -30,8 +30,7 @@ var Signer_1 = require("./Signer");
 exports.Signer = Signer_1.default;
 var ConfigParser_1 = require("./ConfigParser");
 exports.Parser = ConfigParser_1.default;
-var Builder_1 = require("./Builder");
-exports.Builder = Builder_1.default;
+//export { default as Builder } from './Builder';
 var Platform_1 = require("./Platform");
 exports.Constants = {
     'userAgent': Platform_1.default.userAgent

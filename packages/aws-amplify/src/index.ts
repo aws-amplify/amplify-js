@@ -22,8 +22,7 @@ import {
     Hub,
     JS,
     ClientDevice,
-    Signer,
-    Builder
+    Signer
 } from './Common';
 
 const logger = new Logger('Amplify');
@@ -48,7 +47,28 @@ export default class Amplify {
         Storage.configure(config);
         Cache.configure(config);
 
-        return new Builder();
+        return config;
+    }
+
+    static usePluggable(pluggable) {
+        if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
+            const category = pluggable.getCategory();
+            switch(category) {
+                case 'Analytics':
+                    Analytics.addPluggable(pluggable);
+                    break;
+                case 'Auth':
+                    break;
+                case 'API':
+                    break;
+                case 'Cache':
+                    break;
+                case 'Storage':
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
 

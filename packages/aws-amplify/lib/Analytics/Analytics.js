@@ -62,17 +62,25 @@ var AnalyticsClass = /** @class */ (function () {
      */
     function AnalyticsClass() {
         this._buffer = [];
+        this._config = {};
+        this._pluggables = [];
+        // default one
+        this._pluggables.push(new AWSAnalyticsProvider_1.default());
     }
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
      */
     AnalyticsClass.prototype.configure = function (config) {
+        var _this = this;
         logger.debug('configure Analytics');
-        var conf = Object.assign({}, Common_1.Parser.parseMobilehubConfig(config).Analytics);
+        var conf = Object.assign({}, this._config, Common_1.Parser.parseMobilehubConfig(config).Analytics);
         var clientInfo = Common_1.ClientDevice.clientInfo();
         conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
         this._config = conf;
+        this._pluggables.map(function (pluggable) {
+            pluggable.configure(_this._config);
+        });
         return conf;
     };
     /**
@@ -80,47 +88,74 @@ var AnalyticsClass = /** @class */ (function () {
      * init clients for Anlytics including mobile analytics and pinpoint
      * @return - True if initilization succeeds
      */
-    AnalyticsClass.prototype.init = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._ensureCredentials()];
-                    case 1:
-                        credentialsOK = _a.sent();
-                        if (!credentialsOK) {
-                            return [2 /*return*/, false];
-                        }
-                        logger.debug('init clients with config', this._config);
-                        // default one
-                        if (!this._provider) {
-                            this._provider = new AWSAnalyticsProvider_1.default();
-                        }
-                        return [2 /*return*/, this._provider.init(this._config)];
-                }
-            });
-        });
-    };
+    // public async init() {
+    //     const credentialsOK = await this._ensureCredentials();
+    //     if (!credentialsOK) { return false; }
+    //     logger.debug('init clients with config', this._config);
+    //     // default one
+    //     if (!this._provider) {
+    //         this._provider = new AWSAnalyticsProvider();
+    //     }
+    //     return this._provider.init(this._config);
+    // }
     /**
- * set the Analytics client
- * @param provider
- */
+     * set the Analytics client
+     * @param provider
+     */
     AnalyticsClass.prototype.setProvider = function (provider) {
         this._provider = provider;
+    };
+    AnalyticsClass.prototype.addPluggable = function (pluggable) {
+        if (pluggable) {
+            this._pluggables.push(pluggable);
+            pluggable.configure(this._config);
+        }
     };
     /**
      * Record Session start
      * @return - A promise which resolves if event record successfully
      */
     AnalyticsClass.prototype.startSession = function () {
-        return this._provider.putEvent({ eventName: 'session_start' });
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: 
+                    //return this._provider.putEvent({eventName: 'session_start'});
+                    return [4 /*yield*/, this._getCredentials()];
+                    case 1:
+                        //return this._provider.putEvent({eventName: 'session_start'});
+                        _a.sent();
+                        this._pluggables.map(function (pluggable) {
+                            pluggable.startSession(_this._config);
+                        });
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     /**
      * Record Session stop
      * @return - A promise which resolves if event record successfully
      */
     AnalyticsClass.prototype.stopSession = function () {
-        return this._provider.putEvent({ eventName: 'session_stop' });
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: 
+                    //return this._provider.putEvent({eventName: 'session_stop'});
+                    return [4 /*yield*/, this._getCredentials()];
+                    case 1:
+                        //return this._provider.putEvent({eventName: 'session_stop'});
+                        _a.sent();
+                        this._pluggables.map(function (pluggable) {
+                            pluggable.stopSession(_this._config);
+                        });
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     /**
      * Record one analytic event and send it to Pinpoint
@@ -130,26 +165,37 @@ var AnalyticsClass = /** @class */ (function () {
      * @return - A promise which resolves if event record successfully
      */
     AnalyticsClass.prototype.record = function (eventName, attributes, metrics) {
-        return this._provider.putEvent({ eventName: eventName, attributes: attributes, metrics: metrics });
-    };
-    /**
-     * @async
-     * Restart Analytics client and record session stop
-     * @return - A promise ehich resolves to be true if current credential exists
-     */
-    AnalyticsClass.prototype.restart = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.init()];
+                switch (_a.label) {
+                    case 0: 
+                    //return this._provider.putEvent({eventName, attributes, metrics});
+                    return [4 /*yield*/, this._getCredentials()];
+                    case 1:
+                        //return this._provider.putEvent({eventName, attributes, metrics});
+                        _a.sent();
+                        this._pluggables.map(function (pluggable) {
+                            pluggable.record({ eventName: eventName, attributes: attributes, metrics: metrics }, _this._config);
+                        });
+                        return [2 /*return*/];
+                }
             });
         });
     };
     /**
+     * @async
+     * Restart Analytics client and record session stop
+     * @return - A promise which resolves to be true if current credential exists
+     */
+    // async restart() {
+    //     return this.init();
+    // }
+    /**
      * @private
      * check if current crednetials exists
      */
-    AnalyticsClass.prototype._ensureCredentials = function () {
-        var _analytics = this;
+    AnalyticsClass.prototype._getCredentials = function () {
         var conf = this._config;
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
