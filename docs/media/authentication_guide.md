@@ -338,11 +338,13 @@ You can pass in any user attributes during sign up:
 Auth.signUp({
     'username': 'jdoe',
     'password': 'mysecurerandompassword#123',
-    'email': 'me@domain.com',
-    'phone_number': '+12128601234',
-    'first_name': 'Jane',
-    'last_name': 'Doe',
-    'nick_name': 'Jane'
+    'attributes': {
+        'email': 'me@domain.com',
+        'phone_number': '+12128601234',
+        'first_name': 'Jane',
+        'last_name': 'Doe',
+        'nick_name': 'Jane'
+    }
 });
 ```
 
