@@ -74,8 +74,9 @@ You can use the [awsmobile-cli](https://github.com/aws/awsmobile-cli) to automat
 ```
 $ npm install -g awsmobile-cli
 $ cd my-app
-$ awsmobile init
-$ awsmobile features
+$ awsmobile init        # initialize a new AWS Mobile Hub project
+$ awsmobile features    # select your features
+$ awsmobile push        # update your AWS backend
 ```
 
 Choose the features you would like to enable i.e. user-signin for authentication and your project will automatically be updated with an `aws-exports.js` file inside your source code directory containing the configuration for those features. Then, within your app (App.js or similar) simply import the file and pass it as the configuration to the Amplify:
