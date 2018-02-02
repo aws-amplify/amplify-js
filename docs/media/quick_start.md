@@ -154,9 +154,10 @@ Note: project name is in camelCase to avoid problems when testing on a physical 
 **Install AWS Amplify**
 
 ```bash
-npm install aws-amplify
 npm install aws-amplify-react-native
 ```
+
+Unless your react-native app was created using [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), you will need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) libraries in your project for the Auth module on React Native.
 
 **React Native Link**
 
