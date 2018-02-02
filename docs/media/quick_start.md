@@ -69,37 +69,30 @@ Alternatively you can automate this process with a single button click outlined 
 
 ### Automated Setup
 
-AWS Mobile Hub streamlines the steps above for you. Simply click the button:
+You can use the [awsmobile-cli](https://github.com/aws/awsmobile-cli) to automatically boostrap your AWS backend:
 
-<p align="center">
-  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home#/starterkit/?config=https%3A%2F%2Fgithub.com%2Fawslabs%2Faws-mobile-react-sample%2Fblob%2Fmaster%2Fbackend%2Fimport_mobilehub%2Freact-sample.zip&app=web">
-    <span>
-        <img height="100%" src="https://s3.amazonaws.com/deploytomh/button-deploy-aws-mh.png"/>
-    </span>
-  </a>
-</p>
+```
+$ npm install -g awsmobile-cli
+$ cd my-app
+$ awsmobile init        # initialize a new AWS Mobile Hub project
+$ awsmobile features    # select your features
+$ awsmobile push        # update your AWS backend
+```
 
-This will create a fully functioning project that works with the Auth and Analytics categories. After the project is created, in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
-
-![Mobile Hub](mobile_hub_1.png)
-
-Download aws-exports.js, then copy the file to `/src` folder of your project.
-
-![Download](mobile_hub_2.png)
-
-
-Now simply import the file and pass it as the configuration to the Amplify library:
+Choose the features you would like to enable i.e. user-signin for authentication and your project will automatically be updated with an `aws-exports.js` file inside your source code directory containing the configuration for those features. Then, within your app (App.js or similar) simply import the file and pass it as the configuration to the Amplify:
 
 ```js
 import Amplify from 'aws-amplify';
-import aws_exports from './aws-exports.js';
+import aws_exports from './aws-exports';
 
 Amplify.configure(aws_exports);
 ```
 
-After configuration, user session metrics are automatically collected and send to Amazon Pinpoint. To see these metrics click [here](https://console.aws.amazon.com/pinpoint/home/) or in your Mobile Hub project click the **Engage** tab on the left of the screen.
+After configuration, user session metrics are automatically collected and sent to Amazon Pinpoint. To see these metrics click [here](https://console.aws.amazon.com/pinpoint/home/), or on the cli (from your project directory):
 
-![Session](mobile_hub_3.png)
+```
+$ awsmobile console
+```
 
 ## More Analytics
 

@@ -55,15 +55,13 @@ import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
 ```
 
-After configuration, user session metrics are automatically collected and send to Amazon Pinpoint. To see these metrics click [here](https://console.aws.amazon.com/pinpoint/home/), or on the cli (from your project directory):
+After configuration, user session metrics are automatically collected and sent to Amazon Pinpoint. To see these metrics click [here](https://console.aws.amazon.com/pinpoint/home/), or on the cli (from your project directory):
 
 ```
 $ awsmobile console
 ```
 
 Then click **Analytics**.
-
-![Session](mobile_hub_3.png)
 
 ## Integration
 
