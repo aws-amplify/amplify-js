@@ -567,7 +567,8 @@ var AuthClass = /** @class */ (function () {
                 }
                 else {
                     return that_1.currentSession()
-                        .then(function (session) { return that_1.setCredentialsFromSession(session); });
+                        .then(function (session) { return that_1.setCredentialsFromSession(session); })
+                        .catch(function (error) { return that_1.setCredentialsForGuest(); });
                 }
             }).catch(function (error) {
                 return new Promise(function (resolve, reject) {
@@ -587,7 +588,8 @@ var AuthClass = /** @class */ (function () {
             }
             else {
                 return this.currentSession()
-                    .then(function (session) { return _this.setCredentialsFromSession(session); });
+                    .then(function (session) { return _this.setCredentialsFromSession(session); })
+                    .catch(function (error) { return _this.setCredentialsForGuest(); });
             }
         }
     };

@@ -67,7 +67,6 @@ export default class AuthClass {
 
     configure(config) {
         logger.debug('configure Auth');
-
         let conf = config? config.Auth || config : {};
         if (conf['aws_cognito_identity_pool_id']) {
             conf = {
@@ -79,7 +78,6 @@ export default class AuthClass {
         }
         this._config = Object.assign({}, this._config, conf);
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
-
         const { userPoolId, userPoolWebClientId } = this._config;
         if (userPoolId) {
             this.userPool = new CognitoUserPool({
@@ -101,7 +99,6 @@ export default class AuthClass {
                 this.pickupCredentials();
             }
         }
-
         return this._config;
     }
 
@@ -493,7 +490,8 @@ export default class AuthClass {
                         });
                     } else {
                         return that.currentSession()
-                            .then(session => that.setCredentialsFromSession(session));
+                            .then(session => that.setCredentialsFromSession(session))
+                            .catch((error) => that.setCredentialsForGuest());
                     }
             }).catch((error) => {
                 return new Promise((resolve, reject) => {
@@ -511,7 +509,8 @@ export default class AuthClass {
                 });
             } else {
                 return this.currentSession()
-                    .then(session => this.setCredentialsFromSession(session));
+                    .then(session => this.setCredentialsFromSession(session))
+                    .catch((error) => this.setCredentialsForGuest());
             }
         }
     }
