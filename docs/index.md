@@ -75,7 +75,7 @@ react-native run-ios
 
 ## Examples
 
-AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](docs/media/developer_guide.md). A couple of samples are below.
+AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the Developer Guides. A couple of samples are below.
 
 ### 1. Collect user session metrics
 
@@ -87,6 +87,8 @@ import aws_exports from './aws-exports';
 
 Amplify.configure(aws_exports);
 ```
+
+ The `aws-exports.js` file can be retrieved either via the AWS Console or automatically by using the [awsmobile-cli](https://github.com/aws/awsmobile-cli). See the developer guides for detailed examples.
 
 ### 2. Add Authentication to your App
 Take a fresh React app created by `create-react-app` as an example and edit the `App.js` file:
