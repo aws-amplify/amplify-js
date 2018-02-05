@@ -24,6 +24,7 @@ export default class AuthPiece extends React.Component {
     constructor(props) {
         super(props);
 
+        this._isHidden = true;
         this._validAuthStates = [];
         this.changeState = this.changeState.bind(this);
         this.error = this.error.bind(this);
@@ -54,11 +55,15 @@ export default class AuthPiece extends React.Component {
 
     render() {
         if (!this._validAuthStates.includes(this.props.authState)) {
+            this._isHidden = true;
             return null;
         }
 
-        const { track } = this.props;
-        if (track) track();
+        if (this._isHidden) {
+            const { track } = this.props;
+            if (track) track();
+        }
+        this._isHidden = false;
 
         return this.showComponent(this.props.theme || AmplifyTheme);
     }
