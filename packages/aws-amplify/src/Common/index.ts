@@ -21,8 +21,7 @@ export * from './Errors';
 export { default as Hub } from './Hub';
 export { default as JS } from './JS';
 export { default as Signer } from './Signer';
-export { default as Parser } from './ConfigParser';
-//export { default as Builder } from './Builder';
+export { default as Parser } from './Parser';
 
 import Platform from './Platform';
 export const Constants = {

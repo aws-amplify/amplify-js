@@ -1,6 +1,6 @@
 import { AmplifyConfig } from './types';
 
-export default class ConfigParser {
+export default class Parser {
     static parseMobilehubConfig(config): AmplifyConfig {
         const amplifyConfig: AmplifyConfig = {};
         // Analytics

@@ -64,31 +64,6 @@ export default class AnalyticsClass {
         return conf;
     }
 
-    /**
-     * @async
-     * init clients for Anlytics including mobile analytics and pinpoint
-     * @return - True if initilization succeeds
-     */
-    // public async init() {
-    //     const credentialsOK = await this._ensureCredentials();
-    //     if (!credentialsOK) { return false; }
-    //     logger.debug('init clients with config', this._config);
-        
-    //     // default one
-    //     if (!this._provider) {
-    //         this._provider = new AWSAnalyticsProvider();
-    //     }
-    //     return this._provider.init(this._config);
-    // }
-
-    /**
-     * set the Analytics client
-     * @param provider 
-     */
-    public setProvider(provider) {
-        this._provider = provider;
-    }
-
     public addPluggable(pluggable) {
         if (pluggable) {
             this._pluggables.push(pluggable);
@@ -101,8 +76,9 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if event record successfully
      */
     public async startSession() {
-        //return this._provider.putEvent({eventName: 'session_start'});
-        await this._getCredentials();
+        const ensureCredentails = await this._getCredentials();
+        if (!ensureCredentails) return Promise.resolve(false);
+
         this._pluggables.map((pluggable) => {
             pluggable.startSession(this._config);
         });
@@ -113,8 +89,9 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if event record successfully
      */
     public async stopSession() {
-        //return this._provider.putEvent({eventName: 'session_stop'});
-        await this._getCredentials();
+        const ensureCredentails = await this._getCredentials();
+        if (!ensureCredentails) return Promise.resolve(false);
+
         this._pluggables.map((pluggable) => {
             pluggable.stopSession(this._config);
         });
@@ -128,22 +105,13 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if event record successfully
      */
     public async record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics) {
-        //return this._provider.putEvent({eventName, attributes, metrics});
-
-        await this._getCredentials();
+        const ensureCredentails = await this._getCredentials();
+        if (!ensureCredentails) return Promise.resolve(false);
+        
         this._pluggables.map((pluggable) => {
             pluggable.record({eventName, attributes, metrics}, this._config);
         });
     }
-
-    /**
-     * @async
-     * Restart Analytics client and record session stop
-     * @return - A promise which resolves to be true if current credential exists
-     */
-    // async restart() {
-    //     return this.init();
-    // }
 
     /**
      * @private

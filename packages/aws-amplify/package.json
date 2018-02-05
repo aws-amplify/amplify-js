@@ -85,8 +85,7 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "index.ts"
+      "/node_modules/"
     ]
   }
 }

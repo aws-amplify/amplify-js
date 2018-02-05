@@ -38,128 +38,169 @@ describe("Analytics test", () => {
                     Analytics: {appId: 'appId'}
                 }
             });
+            const spyon3 = jest.spyOn(AWSAnalyticsProvider.prototype, 'configure').mockImplementationOnce(() => { return; });
 
             expect(analytics.configure({attr: 'attr'})).toEqual({appId: 'appId', clientInfo: 'clientInfo'});
 
             spyon.mockClear();
             spyon2.mockClear();
-        });
-    });
-
-    describe('init test', () => {
-        test('happy case with default provider', async () => {
-            const analytics = new Analytics();
-
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res(credentials);
-                });
-            });
-
-            const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'init').mockImplementationOnce(() => {
-                return true;
-            });
-
-            expect(await analytics.init()).toBe(true);
-            expect(spyon2).toBeCalled();
-
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
-
-        test('can not get credentials', async () => {
-            const analytics = new Analytics();
-            
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    rej('err');
-                });
-            });
-
-            expect(await analytics.init()).toBe(false);
-
-            spyon.mockClear();
-        });
-
-        test('if provider provided', async () => {
-            const provider = {
-                init: jest.fn()
-            }
-            
-            const analytics = new Analytics();
-
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res(credentials);
-                });
-            });
-
-            analytics.setProvider(provider);
-            await analytics.init();
-            expect(provider.init).toBeCalled();
-
-            spyon.mockClear();
+            spyon3.mockClear();
         });
     });
 
     describe('startSession test', () => {
         test('happy case', async () => {
             const provider = {
-                putEvent: jest.fn()
+                configure: jest.fn(),
+                startSession: jest.fn()
             }
             
             const analytics = new Analytics();
 
-            analytics.setProvider(provider);
+            analytics.addPluggable(provider);
+
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials);
+                })
+            });
+
+            const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'startSession').mockImplementationOnce(() => { return; });
 
             await analytics.startSession();
 
-            expect(provider.putEvent).toBeCalledWith({eventName: 'session_start'});
+            expect(provider.startSession).toBeCalled();
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('get credentials error', async () => {
+            const provider = {
+                configure: jest.fn(),
+                startSession: jest.fn()
+            }
+            
+            const analytics = new Analytics();
+
+            analytics.addPluggable(provider);
+
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                })
+            });
+
+            const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'startSession').mockImplementationOnce(() => { return; });
+
+            expect(await analytics.startSession()).toBe(false);
+
+            spyon.mockClear();
+            spyon2.mockClear();
         });
     });
 
     describe('stopSession test', () => {
         test('happy case', async () => {
             const provider = {
-                putEvent: jest.fn()
+                configure: jest.fn(),
+                stopSession: jest.fn()
             }
             
             const analytics = new Analytics();
 
-            analytics.setProvider(provider);
+            analytics.addPluggable(provider);
+
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials);
+                })
+            });
+
+            const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'stopSession').mockImplementationOnce(() => { return; });
 
             await analytics.stopSession();
 
-            expect(provider.putEvent).toBeCalledWith({eventName: 'session_stop'});
+            expect(provider.stopSession).toBeCalled();
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('get credentials error', async () => {
+            const provider = {
+                configure: jest.fn(),
+                stopSession: jest.fn()
+            }
+            
+            const analytics = new Analytics();
+
+            analytics.addPluggable(provider);
+
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                })
+            });
+
+            const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'stopSession').mockImplementationOnce(() => { return; });
+
+            expect(await analytics.stopSession()).toBe(false);
+
+            spyon.mockClear();
+            spyon2.mockClear();
         });
     });
 
     describe('record test', () => {
         test('happy case', async () => {
             const provider = {
-                putEvent: jest.fn()
+                configure: jest.fn(),
+                record: jest.fn()
             }
             
             const analytics = new Analytics();
 
-            analytics.setProvider(provider);
+            analytics.addPluggable(provider);
 
-            await analytics.record('eventName');
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials);
+                })
+            });
 
-            expect(provider.putEvent).toBeCalledWith({eventName: 'eventName'});
+            const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'record').mockImplementationOnce(() => { return; });
+
+            await analytics.record('myevent')
+
+            expect(provider.record).toBeCalled();
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('get credentials error', async () => {
+            const provider = {
+                configure: jest.fn(),
+                record: jest.fn()
+            }
+            
+            const analytics = new Analytics();
+
+            analytics.addPluggable(provider);
+
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                })
+            });
+
+            const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'record').mockImplementationOnce(() => { return; });
+
+            expect(await analytics.record('myevent')).toBe(false);
+
+            spyon.mockClear();
+            spyon2.mockClear();
         });
     });
-
-    describe('restart test', () => {
-        test('happy case', async () => {
-            const spyon = jest.spyOn(Analytics.prototype, 'init');
-
-            const analytics = new Analytics();
-            await analytics.restart();
-
-            expect(spyon).toBeCalled();
-            
-            spyon.mockClear();
-        });
-    })
 });

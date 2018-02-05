@@ -41,6 +41,11 @@ Analytics.onHubCapsule = (capsule) => {
         case 'storage':
             storageEvent(payload);
             break;
+        case 'analytics':
+            analyticsEvent(payload);
+            break;
+        default:
+            break;
     }
 };
 
@@ -57,14 +62,12 @@ const authEvent = (payload) => {
 
     switch(event) {
         case 'signIn':
-            Analytics.restart();
             Analytics.record('_userauth.sign_in');
             break;
         case 'signUp':
             Analytics.record('_userauth.sign_up');
             break;
         case 'signOut':
-            Analytics.restart();
             break;
         case 'signIn_failure':
             Analytics.record('_userauth.auth_fail');
@@ -72,5 +75,17 @@ const authEvent = (payload) => {
     }
 };
 
+const analyticsEvent = (payload) => {
+    const { eventType } = payload;
+    if (!eventType) return;
+
+    // switch(eventType) {
+    //     case 'session_start':
+    //         Analytics.startSession();
+    //         break;
+    // }
+};
+
 Hub.listen('auth', Analytics);
 Hub.listen('storage', Analytics);
+Hub.listen('analytics', Analytics);

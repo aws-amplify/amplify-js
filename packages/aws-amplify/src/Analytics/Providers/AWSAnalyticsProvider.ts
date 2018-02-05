@@ -152,144 +152,12 @@ export default class AWSAnalyticsProvider {
         });
     }
 
-        // public init(config) {
-    //     logger.debug('init clients');
-    //     if (config) {
-    //         this.configure(config);
-    //     }
-    //     if (!this._checkConfig()) { return Promise.resolve(false); }
-
-    //     this._initMobileAnalytics();
-    //     return new Promise((res, rej) => {
-    //         this._initPinpoint().then((data) => {
-    //             res(true);
-    //         }).catch((err) => {
-    //             res(false);
-    //         });
-    //     });
-    // }
-
-    // public putEvent(params) {
-    //     logger.debug('putEvent params', params);
-    //     const { eventName } = params;
-
-    //     switch (eventName) {
-    //         case 'session_start':
-    //             this._startSession(params).catch((err) => {
-    //             });
-    //             break;
-    //         case 'session_stop':
-    //             this._stopSession(params).catch((err) => {
-    //             });
-    //             break;
-    //         default:
-    //             this._recordCustomEvent(params).catch((err) => {
-    //             });
-    //             break;
-    //     }
-    // }
-
-    // private _startSession(params) {
-    //     logger.debug('record session start');
-    //     const sessionId = JS.generateRandomString();
-    //     this._sessionId = sessionId;
-
-    //     const clientContext = this._generateClientContext();
-    //     const eventParams = {
-    //         clientContext,
-    //         events: [
-    //             {
-    //                 eventType: '_session.start',
-    //                 timestamp: new Date().toISOString(),
-    //                 'session': {
-    //                     'id': sessionId,
-    //                     'startTimestamp': new Date().toISOString()
-    //                 }
-    //             }
-    //         ]
-    //     };
-
-    //     return new Promise<any>((res, rej) => {
-    //         this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-    //             if (err) {
-    //                 logger.debug('record event failed. ', err);
-    //                 rej(err);
-    //             }
-    //             else {
-    //                 logger.debug('record event success. ', data);
-    //                 res(data);
-    //             }
-    //         });
-    //     });
-    // }
-
-    // private _stopSession(params) {
-    //     logger.debug('record session stop');
-        
-    //     const sessionId = this._sessionId ? this._sessionId : JS.generateRandomString();
-    //     const clientContext = this._generateClientContext();
-    //     const eventParams = {
-    //         clientContext,
-    //         events: [
-    //             {
-    //                 eventType: '_session.stop',
-    //                 timestamp: new Date().toISOString(),
-    //                 'session': {
-    //                     'id': sessionId,
-    //                     'startTimestamp': new Date().toISOString()
-    //                 }
-    //             }
-    //         ]
-    //     };
-    //     return new Promise<any>((res, rej) => {
-    //         this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-    //             if (err) {
-    //                 logger.debug('record event failed. ', err);
-    //                 rej(err);
-    //             }
-    //             else {
-    //                 logger.debug('record event success. ', data);
-    //                 res(data);
-    //             }
-    //         });
-    //     });
-    // }
-
-    // private _recordCustomEvent(params) {
-    //     const { eventName, attributes, metrics } = params;
-    //     const clientContext = this._generateClientContext();
-    //     const eventParams = {
-    //         clientContext,
-    //         events: [
-    //             {
-    //                 eventType: eventName,
-    //                 timestamp: new Date().toISOString(),
-    //                 attributes,
-    //                 metrics
-    //             }
-    //         ]
-    //     };
-    //     logger.debug('record event with params', eventParams);
-    //     return new Promise<any>((res, rej) => {
-    //         this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-    //             if (err) {
-    //                 logger.debug('record event failed. ', err);
-    //                 rej(err);
-    //             }
-    //             else {
-    //                 logger.debug('record event success. ', data);
-    //                 res(data);
-    //             }
-    //         });
-    //     });
-    // }
-
     private _initMobileAnalytics() {
         const { credentials, region } = this._config;
         this.mobileAnalytics = new MobileAnalytics({ credentials, region });
     }
 
-        /**
+    /**
      * @private
      * Init Pinpoint with configuration and update pinpoint client endpoint
      * @return - A promise resolves if endpoint updated successfully
@@ -322,7 +190,7 @@ export default class AWSAnalyticsProvider {
         });
     }
 
-        /**
+    /**
      * EndPoint request
      * @return {Object} - The request of updating endpoint
      */
