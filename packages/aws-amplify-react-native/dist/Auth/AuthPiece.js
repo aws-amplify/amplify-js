@@ -56,6 +56,10 @@ export default class AuthPiece extends React.Component {
         if (!this._validAuthStates.includes(this.props.authState)) {
             return null;
         }
+
+        const { track } = this.props;
+        if (track) track();
+
         return this.showComponent(this.props.theme || AmplifyTheme);
     }
 
