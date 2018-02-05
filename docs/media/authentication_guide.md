@@ -12,7 +12,7 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
   - [4. Compose Authenticator](#4-compose-authenticator)
   - [5. Write Your Own Auth UI](#5-write-your-own-auth-ui)
   - [6. Federated Identity](#6-federated-identity)
-  - [7. User Attributes](#6-user-attributes)
+  - [7. User Attributes](#7-user-attributes)
 * [Extension](#extension)
   - [UI Theme](#ui-theme)
   - [Error Message](#error-message)
@@ -49,7 +49,7 @@ $ awsmobile enable user-signin
 
 In your project i.e. App.js:
 
-```
+```js
 import Amplify, { Auth } from 'aws-amplify';
 import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
@@ -81,8 +81,8 @@ Auth.confirmSignIn(user, code)
 import { Auth } from 'aws-amplify';
 
 Auth.signUp({
-    username, 
-    password, 
+    username,
+    password,
     attributes: {
         email, // optional
         phone, // optional
@@ -153,44 +153,6 @@ const federated = {
 };
 
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
-```
-
-#### User Attributes
-
-You can pass in any user attributes during sign in:
-
-```js
-Auth.signUp({
-        'username': 'jdoe',
-        'password': 'mysecurerandompassword#123',
-        'email': 'me@domain.com',
-        'phone_number': '+12128601234',
-        'first_name': 'Jane',
-        'last_name': 'Doe',
-        'nick_name': 'Jane'
-    });
-```
-
-You can retrieve user attributes:
-
-```js
-let profile = await Auth.currentUserInfo();
-```
-
-You can then update the user attributes:
-
-```js
-let result = await Auth.updateUserAttributes({
-        'email': 'me@anotherdomain.com',
-        'last_name': 'Lastname'
-    });
-console.log(result); // SUCCESS
-```
-
-If you change the email address you will receive a confirmation code to that email and you can confirm it with the code:
-
-```js
-let result = await Auth.verifyCurrentUserAttributeSubmit('email',abc123);
 ```
 
 #### Sign Out Button
@@ -366,6 +328,46 @@ const Federated = withFederated(Buttons);
     };
 
     <Federated federated={federated} onStateChange={this.handleAuthStateChange} />
+```
+
+### 7 User Attributes
+
+You can pass in any user attributes during sign up:
+
+```js
+Auth.signUp({
+    'username': 'jdoe',
+    'password': 'mysecurerandompassword#123',
+    'attributes': {
+        'email': 'me@domain.com',
+        'phone_number': '+12128601234',
+        'first_name': 'Jane',
+        'last_name': 'Doe',
+        'nick_name': 'Jane'
+    }
+});
+```
+
+You can retrieve user attributes:
+
+```js
+let profile = await Auth.currentUserInfo();
+```
+
+You can then update the user attributes:
+
+```js
+let result = await Auth.updateUserAttributes(profile, {
+    'email': 'me@anotherdomain.com',
+    'last_name': 'Lastname'
+});
+console.log(result); // SUCCESS
+```
+
+If you change the email address you will receive a confirmation code to that email and you can confirm it with the code:
+
+```js
+let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
 ```
 
 ## Extensions

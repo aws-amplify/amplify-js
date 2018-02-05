@@ -39,7 +39,6 @@ export default class Amplify {
 
     static configure(config) {
         if (!config) { return; }
-
         Auth.configure(config);
         I18n.configure(config);
         Analytics.configure(config);

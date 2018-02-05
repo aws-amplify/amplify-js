@@ -49,6 +49,8 @@ export default class Picker extends Component {
         var that = this;
 
         const file = e.target.files[0];
+        if (!file) { return; }
+
         const { name, size, type } = file;
         logger.debug(file);
 

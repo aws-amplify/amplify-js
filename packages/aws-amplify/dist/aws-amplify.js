@@ -1151,9 +1151,6 @@ var JS_1 = __webpack_require__(303);
 exports.JS = JS_1.default;
 var Signer_1 = __webpack_require__(107);
 exports.Signer = Signer_1.default;
-var ConfigParser_1 = __webpack_require__(304);
-exports.Parser = ConfigParser_1.default;
-//export { default as Builder } from './Builder';
 var Platform_1 = __webpack_require__(50);
 exports.Constants = {
     'userAgent': Platform_1.default.userAgent
@@ -14825,6 +14822,119 @@ function _classCallCheck(instance, Constructor) {
  * limitations under the License.
  */
 
+/** @class */
+var CognitoUserAttribute = function () {
+  /**
+   * Constructs a new CognitoUserAttribute object
+   * @param {string=} Name The record's name
+   * @param {string=} Value The record's value
+   */
+  function CognitoUserAttribute() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        Name = _ref.Name,
+        Value = _ref.Value;
+
+    _classCallCheck(this, CognitoUserAttribute);
+
+    this.Name = Name || '';
+    this.Value = Value || '';
+  }
+
+  /**
+   * @returns {string} the record's value.
+   */
+
+  CognitoUserAttribute.prototype.getValue = function getValue() {
+    return this.Value;
+  };
+
+  /**
+   * Sets the record's value.
+   * @param {string} value The new value.
+   * @returns {CognitoUserAttribute} The record for method chaining.
+   */
+
+  CognitoUserAttribute.prototype.setValue = function setValue(value) {
+    this.Value = value;
+    return this;
+  };
+
+  /**
+   * @returns {string} the record's name.
+   */
+
+  CognitoUserAttribute.prototype.getName = function getName() {
+    return this.Name;
+  };
+
+  /**
+   * Sets the record's name
+   * @param {string} name The new name.
+   * @returns {CognitoUserAttribute} The record for method chaining.
+   */
+
+  CognitoUserAttribute.prototype.setName = function setName(name) {
+    this.Name = name;
+    return this;
+  };
+
+  /**
+   * @returns {string} a string representation of the record.
+   */
+
+  CognitoUserAttribute.prototype.toString = function toString() {
+    return JSON.stringify(this);
+  };
+
+  /**
+   * @returns {object} a flat object representing the record.
+   */
+
+  CognitoUserAttribute.prototype.toJSON = function toJSON() {
+    return {
+      Name: this.Name,
+      Value: this.Value
+    };
+  };
+
+  return CognitoUserAttribute;
+}();
+
+exports.default = CognitoUserAttribute;
+
+/***/ }),
+/* 105 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 var dataMemory = {};
 
 /** @class */
@@ -16675,16 +16785,23 @@ var AuthClass = /** @class */ (function () {
         if (!expired && expireTime > ts + delta) {
             return Promise.resolve(credentials);
         }
+        var that = this;
         return new Promise(function (resolve, reject) {
-            credentials.refresh(function (err) {
-                if (err) {
-                    logger.debug('refresh credentials error', err);
-                    resolve(null);
-                }
-                else {
-                    resolve(credentials);
-                }
-            });
+            that.currentUserCredentials()
+                .then(function () {
+                credentials = that.credentials;
+                credentials.refresh(function (err) {
+                    logger.debug('changed from previous');
+                    if (err) {
+                        logger.debug('refresh credentials error', err);
+                        resolve(null);
+                    }
+                    else {
+                        resolve(credentials);
+                    }
+                });
+            })
+                .catch(function () { return resolve(null); });
         });
     };
     return AuthClass;
@@ -34552,7 +34669,7 @@ var StorageClass = /** @class */ (function () {
      */
     StorageClass.prototype.put = function (key, object, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, opt, bucket, region, credentials, contentType, level, track, type, prefix, final_key, s3, params;
+            var credentialsOK, opt, bucket, region, credentials, level, track, contentType, cacheControl, expires, metadata, type, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._ensureCredentials()];
@@ -34562,7 +34679,8 @@ var StorageClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.reject('No credentials')];
                         }
                         opt = Object.assign({}, this._options, options);
-                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, contentType = opt.contentType, level = opt.level, track = opt.track;
+                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, track = opt.track;
+                        contentType = opt.contentType, cacheControl = opt.cacheControl, expires = opt.expires, metadata = opt.metadata;
                         type = contentType ? contentType : 'binary/octet-stream';
                         prefix = this._prefix(opt);
                         final_key = prefix + key;
@@ -34574,6 +34692,15 @@ var StorageClass = /** @class */ (function () {
                             Body: object,
                             ContentType: type
                         };
+                        if (cacheControl) {
+                            params.CacheControl = cacheControl;
+                        }
+                        if (expires) {
+                            params.Expires = expires;
+                        }
+                        if (metadata) {
+                            params.Metadata = metadata;
+                        }
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 s3.upload(params, function (err, data) {
                                     if (err) {
@@ -34715,7 +34842,14 @@ var StorageClass = /** @class */ (function () {
      */
     StorageClass.prototype._prefix = function (options) {
         var credentials = options.credentials, level = options.level;
-        return (level === 'private') ? "private/" + credentials.identityId + "/" : 'public/';
+        switch (level) {
+            case 'private':
+                return "private/" + credentials.identityId + "/";
+            case 'protected':
+                return "protected/" + credentials.identityId + "/";
+            default:
+                return 'public/';
+        }
     };
     /**
      * @private
@@ -35222,7 +35356,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Signer_1 = __webpack_require__(107);
 var Common_1 = __webpack_require__(2);
 var Auth_1 = __webpack_require__(15);
+<<<<<<< HEAD
 var axios_1 = __webpack_require__(317);
+=======
+var axios_1 = __webpack_require__(315);
+>>>>>>> upstream/master
 var Platform_1 = __webpack_require__(50);
 var logger = new Common_1.ConsoleLogger('RestClient');
 /**
@@ -35423,7 +35561,7 @@ module.exports = __webpack_require__(318);
 
 var utils = __webpack_require__(4);
 var bind = __webpack_require__(110);
-var Axios = __webpack_require__(320);
+var Axios = __webpack_require__(318);
 var defaults = __webpack_require__(52);
 
 /**
@@ -36049,8 +36187,8 @@ var utils = __webpack_require__(4);
 var transformData = __webpack_require__(331);
 var isCancel = __webpack_require__(113);
 var defaults = __webpack_require__(52);
-var isAbsoluteURL = __webpack_require__(332);
-var combineURLs = __webpack_require__(333);
+var isAbsoluteURL = __webpack_require__(330);
+var combineURLs = __webpack_require__(331);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
