@@ -27,6 +27,7 @@ export default class AuthPiece extends React.Component {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = [];
         this.changeState = this.changeState.bind(this);
         this.error = this.error.bind(this);
     }
@@ -52,5 +53,16 @@ export default class AuthPiece extends React.Component {
         const map = this.props.errorMessage || AmplifyMessageMap;
         msg = (typeof map === 'string')? msp : map(msg);
         this.setState({ error: msg });
+    }
+
+    render() {
+        if (!this._validAuthStates.includes(this.props.authState)) {
+            return null;
+        }
+        return this.showComponent(this.props.theme || AmplifyTheme);
+    }
+
+    showComponent(theme) {
+        throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
     }
 }

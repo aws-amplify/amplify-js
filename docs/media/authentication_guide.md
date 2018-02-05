@@ -240,12 +240,12 @@ When inside `Authenticator`, the App component will get a few properties.
 * authData - additional data to the authState, when signedIn it is an user object
 * onStateChange - callback function, for what's inside `Authenticator` to notify authState changes.
 
-With that, to control when to render App component, simply add the following line to the `render()` method of the `App` component:
+With that, to control when to render App component, simply add
 ```js
-    render() {
-        if (this.props.authState !== 'signedIn') { return null; }
-    ...
+    this._validAuthStates = ['signedIn'];
 ```
+to the component's constructor, then implement `showComponent(theme) {}` in lieu of the typical
+`render() {}` method.
 
 ### 4. Compose Authenticator
 
