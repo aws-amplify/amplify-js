@@ -11,12 +11,36 @@
  * and limitations under the License.
  */
 
-import { I18n } from 'aws-amplify';
+import { default as AmplifyCore, I18n } from 'aws-amplify';
 import dict from './AmplifyI18n';
 
 export { default as AmplifyTheme } from './AmplifyTheme';
 export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
 export * from './Auth';
 export * from './Storage';
+
+const configure = function(config) {
+  const msg = [
+    '',
+    '\x1b[33mWarning: Amplify.configure() is deprecated from aws-amplify-react-native.',
+    '        Please import aws-amplify package to configure AWS Amplify\x1b[0m',
+    '',
+    '        Example:',
+    '',
+    '        \x1b[36mimport Amplify from \'aws-amplify\';',
+    '        import aws_exports from \'./aws-exports\';',
+    '',
+    '        Amplify.configure(aws_exports)\x1b[0m',
+    ''
+  ].join('\n');
+  console.log(msg);
+  AmplifyCore.configure(config);
+};
+
+const Amplify = {
+  configure: configure
+};
+
+export default Amplify;
 
 I18n.putVocabularies(dict);
