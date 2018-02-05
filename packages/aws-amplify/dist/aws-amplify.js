@@ -1226,7 +1226,7 @@ module.exports = create;
 
 
 var bind = __webpack_require__(110);
-var isBuffer = __webpack_require__(319);
+var isBuffer = __webpack_require__(317);
 
 /*global toString:true*/
 
@@ -7435,8 +7435,8 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(306));
-var CacheList_1 = __webpack_require__(307);
+__export(__webpack_require__(305));
+var CacheList_1 = __webpack_require__(306);
 exports.CacheList = CacheList_1.default;
 
 
@@ -7448,7 +7448,7 @@ exports.CacheList = CacheList_1.default;
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var normalizeHeaderName = __webpack_require__(321);
+var normalizeHeaderName = __webpack_require__(319);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -14822,119 +14822,6 @@ function _classCallCheck(instance, Constructor) {
  * limitations under the License.
  */
 
-/** @class */
-var CognitoUserAttribute = function () {
-  /**
-   * Constructs a new CognitoUserAttribute object
-   * @param {string=} Name The record's name
-   * @param {string=} Value The record's value
-   */
-  function CognitoUserAttribute() {
-    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        Name = _ref.Name,
-        Value = _ref.Value;
-
-    _classCallCheck(this, CognitoUserAttribute);
-
-    this.Name = Name || '';
-    this.Value = Value || '';
-  }
-
-  /**
-   * @returns {string} the record's value.
-   */
-
-  CognitoUserAttribute.prototype.getValue = function getValue() {
-    return this.Value;
-  };
-
-  /**
-   * Sets the record's value.
-   * @param {string} value The new value.
-   * @returns {CognitoUserAttribute} The record for method chaining.
-   */
-
-  CognitoUserAttribute.prototype.setValue = function setValue(value) {
-    this.Value = value;
-    return this;
-  };
-
-  /**
-   * @returns {string} the record's name.
-   */
-
-  CognitoUserAttribute.prototype.getName = function getName() {
-    return this.Name;
-  };
-
-  /**
-   * Sets the record's name
-   * @param {string} name The new name.
-   * @returns {CognitoUserAttribute} The record for method chaining.
-   */
-
-  CognitoUserAttribute.prototype.setName = function setName(name) {
-    this.Name = name;
-    return this;
-  };
-
-  /**
-   * @returns {string} a string representation of the record.
-   */
-
-  CognitoUserAttribute.prototype.toString = function toString() {
-    return JSON.stringify(this);
-  };
-
-  /**
-   * @returns {object} a flat object representing the record.
-   */
-
-  CognitoUserAttribute.prototype.toJSON = function toJSON() {
-    return {
-      Name: this.Name,
-      Value: this.Value
-    };
-  };
-
-  return CognitoUserAttribute;
-}();
-
-exports.default = CognitoUserAttribute;
-
-/***/ }),
-/* 105 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-/*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
- */
-
 var dataMemory = {};
 
 /** @class */
@@ -15371,9 +15258,9 @@ exports.default = Signer;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var BrowserStorageCache_1 = __webpack_require__(305);
+var BrowserStorageCache_1 = __webpack_require__(304);
 exports.BrowserStorageCache = BrowserStorageCache_1.default;
-var InMemoryCache_1 = __webpack_require__(308);
+var InMemoryCache_1 = __webpack_require__(307);
 exports.InMemoryCache = InMemoryCache_1.default;
 exports.default = BrowserStorageCache_1.default;
 
@@ -15522,12 +15409,12 @@ module.exports = function bind(fn, thisArg) {
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var settle = __webpack_require__(322);
-var buildURL = __webpack_require__(324);
-var parseHeaders = __webpack_require__(325);
-var isURLSameOrigin = __webpack_require__(326);
+var settle = __webpack_require__(320);
+var buildURL = __webpack_require__(322);
+var parseHeaders = __webpack_require__(323);
+var isURLSameOrigin = __webpack_require__(324);
 var createError = __webpack_require__(112);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(327);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(325);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -15624,7 +15511,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(328);
+      var cookies = __webpack_require__(326);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -15709,7 +15596,7 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(323);
+var enhanceError = __webpack_require__(321);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -15786,13 +15673,13 @@ module.exports = Cancel;
 Object.defineProperty(exports, "__esModule", { value: true });
 var Auth_1 = __webpack_require__(15);
 exports.Auth = Auth_1.default;
-var Analytics_1 = __webpack_require__(309);
+var Analytics_1 = __webpack_require__(308);
 exports.Analytics = Analytics_1.default;
-var Storage_1 = __webpack_require__(312);
+var Storage_1 = __webpack_require__(310);
 exports.Storage = Storage_1.default;
-var API_1 = __webpack_require__(314);
+var API_1 = __webpack_require__(312);
 exports.API = API_1.default;
-var I18n_1 = __webpack_require__(336);
+var I18n_1 = __webpack_require__(334);
 exports.I18n = I18n_1.default;
 var Cache_1 = __webpack_require__(108);
 exports.Cache = Cache_1.default;
@@ -15816,27 +15703,6 @@ var Amplify = /** @class */ (function () {
         API_1.default.configure(config);
         Storage_1.default.configure(config);
         Cache_1.default.configure(config);
-        return config;
-    };
-    Amplify.usePluggable = function (pluggable) {
-        if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
-            var category = pluggable.getCategory();
-            switch (category) {
-                case 'Analytics':
-                    Analytics_1.default.addPluggable(pluggable);
-                    break;
-                case 'Auth':
-                    break;
-                case 'API':
-                    break;
-                case 'Cache':
-                    break;
-                case 'Storage':
-                    break;
-                default:
-                    break;
-            }
-        }
     };
     Amplify.Auth = null;
     Amplify.Analytics = null;
@@ -32678,17 +32544,6 @@ var JS = /** @class */ (function () {
             'application/xml' === type ||
             'application/sh' === type);
     };
-    /**
-     * generate random string
-     */
-    JS.generateRandomString = function () {
-        var result = '';
-        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        for (var i = 32; i > 0; i -= 1) {
-            result += chars[Math.floor(Math.random() * chars.length)];
-        }
-        return result;
-    };
     return JS;
 }());
 exports.default = JS;
@@ -32696,33 +32551,6 @@ exports.default = JS;
 
 /***/ }),
 /* 304 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var ConfigParser = /** @class */ (function () {
-    function ConfigParser() {
-    }
-    ConfigParser.parseMobilehubConfig = function (config) {
-        var amplifyConfig = {};
-        // Analytics
-        if (config['aws_mobile_analytics_app_id']) {
-            var Analytics = {};
-            Analytics['appId'] = config['aws_mobile_analytics_app_id'];
-            Analytics['region'] = config['aws_mobile_analytics_app_region'];
-            amplifyConfig.Analytics = Analytics;
-        }
-        amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
-        return amplifyConfig;
-    };
-    return ConfigParser;
-}());
-exports.default = ConfigParser;
-
-
-/***/ }),
-/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33164,7 +32992,7 @@ exports.default = instance;
 
 
 /***/ }),
-/* 306 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33241,7 +33069,7 @@ function _isInteger(value) {
 
 
 /***/ }),
-/* 307 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33415,7 +33243,7 @@ exports.default = CacheList;
 
 
 /***/ }),
-/* 308 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33761,7 +33589,7 @@ exports.default = instance;
 
 
 /***/ }),
-/* 309 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33779,13 +33607,13 @@ exports.default = instance;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Analytics_1 = __webpack_require__(310);
+var Analytics_1 = __webpack_require__(309);
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('Analytics');
 var _instance = null;
 if (!_instance) {
     logger.debug('Create Analytics Instance');
-    _instance = new Analytics_1.default();
+    _instance = new Analytics_1.default(null);
 }
 var Analytics = _instance;
 exports.default = Analytics;
@@ -33833,7 +33661,7 @@ Common_1.Hub.listen('storage', Analytics);
 
 
 /***/ }),
-/* 310 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33887,7 +33715,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
-var AWSAnalyticsProvider_1 = __webpack_require__(311);
 var Auth_1 = __webpack_require__(15);
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
@@ -33899,76 +33726,77 @@ var AnalyticsClass = /** @class */ (function () {
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
      */
-    function AnalyticsClass() {
+    function AnalyticsClass(config) {
+        if (config) {
+            this.configure(config);
+        }
+        else {
+            this._config = {};
+        }
+        var client_info = Common_1.ClientDevice.clientInfo();
+        if (client_info.platform) {
+            this._config.platform = client_info.platform;
+        }
         this._buffer = [];
-        this._config = {};
-        this._pluggables = [];
-        // default one
-        this._pluggables.push(new AWSAnalyticsProvider_1.default());
     }
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
      */
     AnalyticsClass.prototype.configure = function (config) {
-        var _this = this;
         logger.debug('configure Analytics');
-        var conf = Object.assign({}, this._config, Common_1.Parser.parseMobilehubConfig(config).Analytics);
-        var clientInfo = Common_1.ClientDevice.clientInfo();
-        conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
-        this._config = conf;
-        this._pluggables.map(function (pluggable) {
-            pluggable.configure(_this._config);
-        });
-        return conf;
-    };
-    /**
-     * @async
-     * init clients for Anlytics including mobile analytics and pinpoint
-     * @return - True if initilization succeeds
-     */
-    // public async init() {
-    //     const credentialsOK = await this._ensureCredentials();
-    //     if (!credentialsOK) { return false; }
-    //     logger.debug('init clients with config', this._config);
-    //     // default one
-    //     if (!this._provider) {
-    //         this._provider = new AWSAnalyticsProvider();
-    //     }
-    //     return this._provider.init(this._config);
-    // }
-    /**
-     * set the Analytics client
-     * @param provider
-     */
-    AnalyticsClass.prototype.setProvider = function (provider) {
-        this._provider = provider;
-    };
-    AnalyticsClass.prototype.addPluggable = function (pluggable) {
-        if (pluggable) {
-            this._pluggables.push(pluggable);
-            pluggable.configure(this._config);
+        var conf = config ? config.Analytics || config : {};
+        // using app_id from aws-exports if provided
+        if (conf['aws_mobile_analytics_app_id']) {
+            conf = {
+                appId: conf['aws_mobile_analytics_app_id'],
+                region: conf['aws_project_region'],
+                platform: 'other'
+            };
         }
+        // hard code region
+        conf.region = 'us-east-1';
+        this._config = Object.assign({}, this._config, conf);
+        // no app id provided
+        if (!this._config.appId) {
+            logger.debug('Do not have appId yet.');
+        }
+        // async init clients
+        this._initClients();
+        return this._config;
     };
     /**
      * Record Session start
      * @return - A promise which resolves if event record successfully
      */
     AnalyticsClass.prototype.startSession = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: 
-                    //return this._provider.putEvent({eventName: 'session_start'});
-                    return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        //return this._provider.putEvent({eventName: 'session_start'});
-                        _a.sent();
-                        this._pluggables.map(function (pluggable) {
-                            pluggable.startSession(_this._config);
-                        });
-                        return [2 /*return*/];
+        var _this = this;
+        logger.debug('record session start');
+        var sessionId = this.generateRandomString();
+        this._sessionId = sessionId;
+        var clientContext = this._generateClientContext();
+        var params = {
+            clientContext: clientContext,
+            events: [
+                {
+                    eventType: '_session.start',
+                    timestamp: new Date().toISOString(),
+                    'session': {
+                        'id': sessionId,
+                        'startTimestamp': new Date().toISOString()
+                    }
+                }
+            ]
+        };
+        return new Promise(function (res, rej) {
+            _this.mobileAnalytics.putEvents(params, function (err, data) {
+                if (err) {
+                    logger.debug('record event failed. ', err);
+                    rej(err);
+                }
+                else {
+                    logger.debug('record event success. ', data);
+                    res(data);
                 }
             });
         });
@@ -33978,46 +33806,32 @@ var AnalyticsClass = /** @class */ (function () {
      * @return - A promise which resolves if event record successfully
      */
     AnalyticsClass.prototype.stopSession = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: 
-                    //return this._provider.putEvent({eventName: 'session_stop'});
-                    return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        //return this._provider.putEvent({eventName: 'session_stop'});
-                        _a.sent();
-                        this._pluggables.map(function (pluggable) {
-                            pluggable.stopSession(_this._config);
-                        });
-                        return [2 /*return*/];
+        var _this = this;
+        logger.debug('record session stop');
+        var sessionId = this._sessionId ? this._sessionId : this.generateRandomString();
+        var clientContext = this._generateClientContext();
+        var params = {
+            clientContext: clientContext,
+            events: [
+                {
+                    eventType: '_session.stop',
+                    timestamp: new Date().toISOString(),
+                    'session': {
+                        'id': sessionId,
+                        'startTimestamp': new Date().toISOString()
+                    }
                 }
-            });
-        });
-    };
-    /**
-     * Record one analytic event and send it to Pinpoint
-     * @param {String} name - The name of the event
-     * @param {Object} [attributs] - Attributes of the event
-     * @param {Object} [metrics] - Event metrics
-     * @return - A promise which resolves if event record successfully
-     */
-    AnalyticsClass.prototype.record = function (eventName, attributes, metrics) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: 
-                    //return this._provider.putEvent({eventName, attributes, metrics});
-                    return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        //return this._provider.putEvent({eventName, attributes, metrics});
-                        _a.sent();
-                        this._pluggables.map(function (pluggable) {
-                            pluggable.record({ eventName: eventName, attributes: attributes, metrics: metrics }, _this._config);
-                        });
-                        return [2 /*return*/];
+            ]
+        };
+        return new Promise(function (res, rej) {
+            _this.mobileAnalytics.putEvents(params, function (err, data) {
+                if (err) {
+                    logger.debug('record event failed. ', err);
+                    rej(err);
+                }
+                else {
+                    logger.debug('record event success. ', data);
+                    res(data);
                 }
             });
         });
@@ -34025,17 +33839,145 @@ var AnalyticsClass = /** @class */ (function () {
     /**
      * @async
      * Restart Analytics client and record session stop
-     * @return - A promise which resolves to be true if current credential exists
+     * @return - A promise ehich resolves to be true if current credential exists
      */
-    // async restart() {
-    //     return this.init();
+    AnalyticsClass.prototype.restart = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                this.stopSession().then(function (data) {
+                    logger.debug('restarting clients');
+                    return _this._initClients();
+                }).catch(function (e) {
+                    logger.debug('restart error', e);
+                });
+                return [2 /*return*/];
+            });
+        });
+    };
+    /**
+    * Record one analytic event and send it to Pinpoint
+    * @param {String} name - The name of the event
+    * @param {Object} [attributs] - Attributes of the event
+    * @param {Object} [metrics] - Event metrics
+    * @return - A promise which resolves if event record successfully
+    */
+    AnalyticsClass.prototype.record = function (name, attributes, metrics) {
+        var _this = this;
+        logger.debug("record event: { name: " + name + ", attributes: " + attributes + ", metrics: " + metrics);
+        // if mobile analytics client not ready, buffer it
+        if (!this.mobileAnalytics) {
+            logger.debug('mobileAnalytics not ready, put in buffer');
+            this._buffer.push({
+                name: name,
+                attributes: attributes,
+                metrics: metrics
+            });
+            return;
+        }
+        var clientContext = this._generateClientContext();
+        var params = {
+            clientContext: clientContext,
+            events: [
+                {
+                    eventType: name,
+                    timestamp: new Date().toISOString(),
+                    attributes: attributes,
+                    metrics: metrics
+                }
+            ]
+        };
+        return new Promise(function (res, rej) {
+            _this.mobileAnalytics.putEvents(params, function (err, data) {
+                if (err) {
+                    logger.debug('record event failed. ', err);
+                    rej(err);
+                }
+                else {
+                    logger.debug('record event success. ', data);
+                    res(data);
+                }
+            });
+        });
+    };
+    /*
+        _putEventsCallback() {
+            return (err, data, res, rej) => {
+                if (err) {
+                    logger.debug('record event failed. ' + err);
+                    if (err.statusCode === undefined || err.statusCode === 400){
+                        if (err.code === 'ThrottlingException') {
+                            // todo
+                            // cache events
+                            logger.debug('get throttled, caching events');
+                        }
+                    }
+                    rej(err);
+                }
+                else {
+                    logger.debug('record event success. ' + data);
+                    // try to clean cached events if exist
+    
+    
+                    res(data);
+                }
+            };
+        }
+    */
+    /**
+    * Record one analytic event
+    * @param {String} name - Event name
+    * @param {Object} [attributes] - Attributes of the event
+    * @param {Object} [metrics] - Event metrics
+    */
+    // async recordMonetization(name, attributes?: EventAttributes, metrics?: EventMetrics) {
+    //     this.amaClient.recordMonetizationEvent(name, attributes, metrics);
     // }
+    /**
+     * @private
+     * generate client context with endpoint Id and app Id provided
+     */
+    AnalyticsClass.prototype._generateClientContext = function () {
+        var _a = this._config, endpointId = _a.endpointId, appId = _a.appId;
+        var clientContext = {
+            client: {
+                client_id: endpointId
+            },
+            services: {
+                mobile_analytics: {
+                    app_id: appId
+                }
+            }
+        };
+        return JSON.stringify(clientContext);
+    };
+    /**
+     * generate random string
+     */
+    AnalyticsClass.prototype.generateRandomString = function () {
+        var result = '';
+        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (var i = 32; i > 0; i -= 1) {
+            result += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return result;
+    };
+    /**
+     * @private
+     * check if app Id exists
+     */
+    AnalyticsClass.prototype._checkConfig = function () {
+        return !!this._config.appId;
+    };
     /**
      * @private
      * check if current crednetials exists
      */
-    AnalyticsClass.prototype._getCredentials = function () {
+    AnalyticsClass.prototype._ensureCredentials = function () {
         var conf = this._config;
+        // commented
+        // will cause bug if another user logged in without refreshing page
+        // if (conf.credentials) { return Promise.resolve(true); }
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
             var cred = Auth_1.default.essentialCredentials(credentials);
@@ -34050,357 +33992,67 @@ var AnalyticsClass = /** @class */ (function () {
             return false;
         });
     };
-    return AnalyticsClass;
-}());
-exports.default = AnalyticsClass;
-
-
-/***/ }),
-/* 311 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = __webpack_require__(2);
-var logger = new Common_1.ConsoleLogger('AWSAnalyticsProvider');
-var AWSAnalyticsProvider = /** @class */ (function () {
-    function AWSAnalyticsProvider(config) {
-        this._config = config ? config : {};
-    }
-    AWSAnalyticsProvider.prototype.getCategory = function () {
-        return 'Analytics';
-    };
-    AWSAnalyticsProvider.prototype.configure = function (config) {
-        logger.debug('configure Analytics');
-        var conf = config ? config : {};
-        this._config = Object.assign({}, this._config, conf);
-        return this._config;
-    };
-    AWSAnalyticsProvider.prototype._init = function (config) {
+    /**
+     * @private
+     * @async
+     * init clients for Anlytics including mobile analytics and pinpoint
+     * @return - True if initilization succeeds
+     */
+    AnalyticsClass.prototype._initClients = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                logger.debug('init clients');
-                this._config = Object.assign(this._config, config);
-                this._initMobileAnalytics();
-                return [2 /*return*/, new Promise(function (res, rej) {
-                        _this._initPinpoint().then(function (data) {
-                            res(true);
-                        }).catch(function (err) {
-                            res(false);
-                        });
-                    })];
-            });
-        });
-    };
-    AWSAnalyticsProvider.prototype.startSession = function (config) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            var initClients, sessionId, clientContext, eventParams;
+            var credentialsOK, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(this._config.endpointId !== config.endpointId)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this._init(config)];
-                    case 1:
-                        initClients = _a.sent();
-                        if (!initClients)
+                        if (!this._checkConfig()) {
                             return [2 /*return*/, false];
+                        }
+                        return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, false];
+                        }
+                        this._initMobileAnalytics();
                         _a.label = 2;
                     case 2:
-                        logger.debug('record session start');
-                        sessionId = Common_1.JS.generateRandomString();
-                        this._sessionId = sessionId;
-                        clientContext = this._generateClientContext();
-                        eventParams = {
-                            clientContext: clientContext,
-                            events: [
-                                {
-                                    eventType: '_session.start',
-                                    timestamp: new Date().toISOString(),
-                                    'session': {
-                                        'id': sessionId,
-                                        'startTimestamp': new Date().toISOString()
-                                    }
-                                }
-                            ]
-                        };
-                        return [2 /*return*/, new Promise(function (res, rej) {
-                                _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
-                                    if (err) {
-                                        logger.debug('record event failed. ', err);
-                                        res(false);
-                                    }
-                                    else {
-                                        logger.debug('record event success. ', data);
-                                        res(true);
-                                    }
-                                });
-                            })];
+                        _a.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this._initPinpoint()];
+                    case 3:
+                        _a.sent();
+                        this.startSession();
+                        return [3 /*break*/, 5];
+                    case 4:
+                        e_1 = _a.sent();
+                        return [2 /*return*/, false];
+                    case 5: return [2 /*return*/, true];
                 }
             });
         });
-    };
-    AWSAnalyticsProvider.prototype.stopSession = function (config) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            var initClients, sessionId, clientContext, eventParams;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!(this._config.endpointId !== config.endpointId)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this._init(config)];
-                    case 1:
-                        initClients = _a.sent();
-                        if (!initClients)
-                            return [2 /*return*/, false];
-                        _a.label = 2;
-                    case 2:
-                        logger.debug('record session stop');
-                        sessionId = this._sessionId ? this._sessionId : Common_1.JS.generateRandomString();
-                        clientContext = this._generateClientContext();
-                        eventParams = {
-                            clientContext: clientContext,
-                            events: [
-                                {
-                                    eventType: '_session.stop',
-                                    timestamp: new Date().toISOString(),
-                                    'session': {
-                                        'id': sessionId,
-                                        'startTimestamp': new Date().toISOString()
-                                    }
-                                }
-                            ]
-                        };
-                        return [2 /*return*/, new Promise(function (res, rej) {
-                                _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
-                                    if (err) {
-                                        logger.debug('record event failed. ', err);
-                                        res(false);
-                                    }
-                                    else {
-                                        logger.debug('record event success. ', data);
-                                        res(true);
-                                    }
-                                });
-                            })];
-                }
-            });
-        });
-    };
-    AWSAnalyticsProvider.prototype.record = function (params, config) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            var initClients, eventName, attributes, metrics, clientContext, eventParams;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!(this._config.endpointId !== config.endpointId)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this._init(config)];
-                    case 1:
-                        initClients = _a.sent();
-                        if (!initClients)
-                            return [2 /*return*/, false];
-                        _a.label = 2;
-                    case 2:
-                        eventName = params.eventName, attributes = params.attributes, metrics = params.metrics;
-                        clientContext = this._generateClientContext();
-                        eventParams = {
-                            clientContext: clientContext,
-                            events: [
-                                {
-                                    eventType: eventName,
-                                    timestamp: new Date().toISOString(),
-                                    attributes: attributes,
-                                    metrics: metrics
-                                }
-                            ]
-                        };
-                        logger.debug('record event with params', eventParams);
-                        return [2 /*return*/, new Promise(function (res, rej) {
-                                _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
-                                    if (err) {
-                                        logger.debug('record event failed. ', err);
-                                        res(false);
-                                    }
-                                    else {
-                                        logger.debug('record event success. ', data);
-                                        res(true);
-                                    }
-                                });
-                            })];
-                }
-            });
-        });
-    };
-    // public init(config) {
-    //     logger.debug('init clients');
-    //     if (config) {
-    //         this.configure(config);
-    //     }
-    //     if (!this._checkConfig()) { return Promise.resolve(false); }
-    //     this._initMobileAnalytics();
-    //     return new Promise((res, rej) => {
-    //         this._initPinpoint().then((data) => {
-    //             res(true);
-    //         }).catch((err) => {
-    //             res(false);
-    //         });
-    //     });
-    // }
-    // public putEvent(params) {
-    //     logger.debug('putEvent params', params);
-    //     const { eventName } = params;
-    //     switch (eventName) {
-    //         case 'session_start':
-    //             this._startSession(params).catch((err) => {
-    //             });
-    //             break;
-    //         case 'session_stop':
-    //             this._stopSession(params).catch((err) => {
-    //             });
-    //             break;
-    //         default:
-    //             this._recordCustomEvent(params).catch((err) => {
-    //             });
-    //             break;
-    //     }
-    // }
-    // private _startSession(params) {
-    //     logger.debug('record session start');
-    //     const sessionId = JS.generateRandomString();
-    //     this._sessionId = sessionId;
-    //     const clientContext = this._generateClientContext();
-    //     const eventParams = {
-    //         clientContext,
-    //         events: [
-    //             {
-    //                 eventType: '_session.start',
-    //                 timestamp: new Date().toISOString(),
-    //                 'session': {
-    //                     'id': sessionId,
-    //                     'startTimestamp': new Date().toISOString()
-    //                 }
-    //             }
-    //         ]
-    //     };
-    //     return new Promise<any>((res, rej) => {
-    //         this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-    //             if (err) {
-    //                 logger.debug('record event failed. ', err);
-    //                 rej(err);
-    //             }
-    //             else {
-    //                 logger.debug('record event success. ', data);
-    //                 res(data);
-    //             }
-    //         });
-    //     });
-    // }
-    // private _stopSession(params) {
-    //     logger.debug('record session stop');
-    //     const sessionId = this._sessionId ? this._sessionId : JS.generateRandomString();
-    //     const clientContext = this._generateClientContext();
-    //     const eventParams = {
-    //         clientContext,
-    //         events: [
-    //             {
-    //                 eventType: '_session.stop',
-    //                 timestamp: new Date().toISOString(),
-    //                 'session': {
-    //                     'id': sessionId,
-    //                     'startTimestamp': new Date().toISOString()
-    //                 }
-    //             }
-    //         ]
-    //     };
-    //     return new Promise<any>((res, rej) => {
-    //         this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-    //             if (err) {
-    //                 logger.debug('record event failed. ', err);
-    //                 rej(err);
-    //             }
-    //             else {
-    //                 logger.debug('record event success. ', data);
-    //                 res(data);
-    //             }
-    //         });
-    //     });
-    // }
-    // private _recordCustomEvent(params) {
-    //     const { eventName, attributes, metrics } = params;
-    //     const clientContext = this._generateClientContext();
-    //     const eventParams = {
-    //         clientContext,
-    //         events: [
-    //             {
-    //                 eventType: eventName,
-    //                 timestamp: new Date().toISOString(),
-    //                 attributes,
-    //                 metrics
-    //             }
-    //         ]
-    //     };
-    //     logger.debug('record event with params', eventParams);
-    //     return new Promise<any>((res, rej) => {
-    //         this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-    //             if (err) {
-    //                 logger.debug('record event failed. ', err);
-    //                 rej(err);
-    //             }
-    //             else {
-    //                 logger.debug('record event success. ', data);
-    //                 res(data);
-    //             }
-    //         });
-    //     });
-    // }
-    AWSAnalyticsProvider.prototype._initMobileAnalytics = function () {
-        var _a = this._config, credentials = _a.credentials, region = _a.region;
-        this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });
     };
     /**
- * @private
- * Init Pinpoint with configuration and update pinpoint client endpoint
- * @return - A promise resolves if endpoint updated successfully
- */
-    AWSAnalyticsProvider.prototype._initPinpoint = function () {
+     * @private
+     * Init mobile analytics and clear buffer
+     */
+    AnalyticsClass.prototype._initMobileAnalytics = function () {
+        var _this = this;
+        var _a = this._config, credentials = _a.credentials, region = _a.region;
+        this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });
+        if (this._buffer.length > 0) {
+            logger.debug('something in buffer, flush it');
+            var buffer = this._buffer;
+            this._buffer = [];
+            buffer.forEach(function (event) {
+                _this.record(event.name, event.attributes, event.metrics);
+            });
+        }
+    };
+    /**
+     * @private
+     * Init Pinpoint with configuration and update pinpoint client endpoint
+     * @return - A promise resolves if endpoint updated successfully
+     */
+    AnalyticsClass.prototype._initPinpoint = function () {
         var _this = this;
         var _a = this._config, region = _a.region, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials;
         this.pinpointClient = new Common_1.Pinpoint({
@@ -34428,50 +34080,32 @@ var AWSAnalyticsProvider = /** @class */ (function () {
         });
     };
     /**
- * EndPoint request
- * @return {Object} - The request of updating endpoint
- */
-    AWSAnalyticsProvider.prototype._endpointRequest = function () {
-        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials;
+     * EndPoint request
+     * @return {Object} - The request of updating endpoint
+     */
+    AnalyticsClass.prototype._endpointRequest = function () {
+        var client_info = Common_1.ClientDevice.clientInfo();
+        var credentials = this._config.credentials;
         var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
-        logger.debug('config', this._config);
         logger.debug('demographic user id: ', user_id);
         return {
             Demographic: {
-                AppVersion: this._config.appVersion || clientInfo.appVersion,
-                Make: clientInfo.make,
-                Model: clientInfo.model,
-                ModelVersion: clientInfo.version,
-                Platform: clientInfo.platform
+                AppVersion: this._config.appVersion || client_info.appVersion,
+                Make: client_info.make,
+                Model: client_info.model,
+                ModelVersion: client_info.version,
+                Platform: client_info.platform
             },
             User: { UserId: user_id }
         };
     };
-    /**
-     * @private
-     * generate client context with endpoint Id and app Id provided
-     */
-    AWSAnalyticsProvider.prototype._generateClientContext = function () {
-        var _a = this._config, endpointId = _a.endpointId, appId = _a.appId;
-        var clientContext = {
-            client: {
-                client_id: endpointId
-            },
-            services: {
-                mobile_analytics: {
-                    app_id: appId
-                }
-            }
-        };
-        return JSON.stringify(clientContext);
-    };
-    return AWSAnalyticsProvider;
+    return AnalyticsClass;
 }());
-exports.default = AWSAnalyticsProvider;
+exports.default = AnalyticsClass;
 
 
 /***/ }),
-/* 312 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34489,7 +34123,7 @@ exports.default = AWSAnalyticsProvider;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Storage_1 = __webpack_require__(313);
+var Storage_1 = __webpack_require__(311);
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('Storage');
 var _instance = null;
@@ -34510,7 +34144,7 @@ exports.default = Storage;
 
 
 /***/ }),
-/* 313 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34872,7 +34506,7 @@ exports.default = StorageClass;
 
 
 /***/ }),
-/* 314 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34890,7 +34524,7 @@ exports.default = StorageClass;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var API_1 = __webpack_require__(315);
+var API_1 = __webpack_require__(313);
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('API');
 var _instance = null;
@@ -34903,7 +34537,7 @@ exports.default = API;
 
 
 /***/ }),
-/* 315 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34956,7 +34590,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var RestClient_1 = __webpack_require__(316);
+var RestClient_1 = __webpack_require__(314);
 var Auth_1 = __webpack_require__(15);
 var Logger_1 = __webpack_require__(14);
 var logger = new Logger_1.ConsoleLogger('API');
@@ -35292,7 +34926,7 @@ exports.default = API;
 
 
 /***/ }),
-/* 316 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35356,11 +34990,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Signer_1 = __webpack_require__(107);
 var Common_1 = __webpack_require__(2);
 var Auth_1 = __webpack_require__(15);
-<<<<<<< HEAD
-var axios_1 = __webpack_require__(317);
-=======
 var axios_1 = __webpack_require__(315);
->>>>>>> upstream/master
 var Platform_1 = __webpack_require__(50);
 var logger = new Common_1.ConsoleLogger('RestClient');
 /**
@@ -35547,13 +35177,13 @@ exports.RestClient = RestClient;
 
 
 /***/ }),
-/* 317 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(318);
+module.exports = __webpack_require__(316);
 
 /***/ }),
-/* 318 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35596,14 +35226,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(114);
-axios.CancelToken = __webpack_require__(334);
+axios.CancelToken = __webpack_require__(332);
 axios.isCancel = __webpack_require__(113);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(335);
+axios.spread = __webpack_require__(333);
 
 module.exports = axios;
 
@@ -35612,7 +35242,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 319 */
+/* 317 */
 /***/ (function(module, exports) {
 
 /*!
@@ -35639,7 +35269,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 320 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35647,8 +35277,8 @@ function isSlowBuffer (obj) {
 
 var defaults = __webpack_require__(52);
 var utils = __webpack_require__(4);
-var InterceptorManager = __webpack_require__(329);
-var dispatchRequest = __webpack_require__(330);
+var InterceptorManager = __webpack_require__(327);
+var dispatchRequest = __webpack_require__(328);
 
 /**
  * Create a new instance of Axios
@@ -35725,7 +35355,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 321 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35744,7 +35374,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 322 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35777,7 +35407,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 323 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35805,7 +35435,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 324 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35880,7 +35510,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 325 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35940,7 +35570,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 326 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36015,7 +35645,7 @@ module.exports = (
 
 
 /***/ }),
-/* 327 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36058,7 +35688,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 328 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36118,7 +35748,7 @@ module.exports = (
 
 
 /***/ }),
-/* 329 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36177,14 +35807,14 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 330 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var transformData = __webpack_require__(331);
+var transformData = __webpack_require__(329);
 var isCancel = __webpack_require__(113);
 var defaults = __webpack_require__(52);
 var isAbsoluteURL = __webpack_require__(330);
@@ -36270,7 +35900,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 331 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36297,7 +35927,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 332 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36318,7 +35948,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 333 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36339,7 +35969,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 334 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36403,7 +36033,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 335 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36437,7 +36067,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 336 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36455,7 +36085,7 @@ module.exports = function spread(callback) {
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var I18n_1 = __webpack_require__(337);
+var I18n_1 = __webpack_require__(335);
 var Logger_1 = __webpack_require__(14);
 var logger = new Logger_1.ConsoleLogger('I18n');
 var _config = null;
@@ -36548,7 +36178,7 @@ exports.default = I18n;
 
 
 /***/ }),
-/* 337 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
