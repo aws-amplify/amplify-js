@@ -351,13 +351,13 @@ Auth.signUp({
 You can retrieve user attributes:
 
 ```js
-let profile = await Auth.currentUserInfo();
+let user = await Auth.currentAuthenticatedUser();
 ```
 
 You can then update the user attributes:
 
 ```js
-let result = await Auth.updateUserAttributes(profile, {
+let result = await Auth.updateUserAttributes(user, {
     'email': 'me@anotherdomain.com',
     'last_name': 'Lastname'
 });
