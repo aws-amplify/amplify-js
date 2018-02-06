@@ -32,7 +32,7 @@ jest.mock('../../../src/Common/Builder', () => {
 });
 
 import { Pinpoint, AWS, MobileAnalytics, JS } from '../../../src/Common';
-import AnalyticsProvider from "../../../src/Analytics/Providers/AwsAnalyticsProvider";
+import AnalyticsProvider from "../../../src/Analytics/Providers/AWSAnalyticsProvider";
 import { ConsoleLogger as Logger } from '../../../src/Common/Logger';
 
 const credentials = {
