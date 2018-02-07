@@ -14,15 +14,20 @@ const {
 const logger = new Logger('Credentials');
 
 export default class CognitoCredentials {
-    private credentials = null;
+    private _credentials;
     private credentials_source = ''; // aws, guest, userPool, federated
+    private _config;
 
-    constructor() {
-
+    constructor(config?) {
+        this._config = config? config: {};
+        this._credentials = null;
     }
 
     configure(config) {
-
+        logger.debug('configure CognitoCredentials');
+        const conf= config? config: {};
+        this._config = Object.assign({}, this._config, conf);
+        return this._config;
     }
 
     getCategory() {
@@ -34,8 +39,7 @@ export default class CognitoCredentials {
     }
 
     setCredentials(config) {
-        const { session, guest, provider } = config;
-        if (provider !== 'cognito') return;
+        const { session, guest } = config;
         
         if (!session) {
             this.setCredentialsFromSession(session);
@@ -45,16 +49,12 @@ export default class CognitoCredentials {
         }
     }
 
-    getCredentials() {
-        return {};
-    }
-
     removeCredentials() {
-        this.credentials.clearCachedId();
+        this._credentials.clearCachedId();
     }
 
     refreshCredentials(credentials): Promise<any> {
-        const cred = credentials || this.credentials;
+        const cred = credentials || this._credentials;
         if (!cred) {
             return Promise.reject(new Error('no credentials provided for refreshing!'));
         }
@@ -65,7 +65,7 @@ export default class CognitoCredentials {
                     logger.debug('refresh credentials error', err);
                     resolve(null);
                 } else {
-                    resolve(credentials);
+                    resolve(cred);
                 }
             });
         });
@@ -96,15 +96,15 @@ export default class CognitoCredentials {
             .catch((error) => that.setCredentialsForGuest());
     }
 
-    public currentCredentials(): Promise<any> {
-        if (this.credentials && !this.isExpired(this.credentials)) {
-            return this.refreshCredentials(this.credentials);
+    public getCredentials(): Promise<any> {
+        if (this._credentials && !this.isExpired(this._credentials)) {
+            return this.refreshCredentials(this._credentials);
         }
         else{
             const that = this;
             return this.retrieveCredentialsFromAuth()
                 .then(() => {
-                    const credentials = that.credentials;
+                    const credentials = that._credentials;
                     return that.refreshCredentials(credentials);
                 })
                 .catch(() => {
@@ -128,44 +128,35 @@ export default class CognitoCredentials {
         };
     }
 
-    private setCredentialsFromAWS() {
-        if (AWS.config && AWS.config.credentials) {
-            this.credentials = AWS.config.credentials;
-            this.credentials_source = 'aws';
-            return true;
-        }
-        return false;
-    }
-
     private setCredentialsForGuest() {
-        const { identityPoolId, region } = this._config;
+        const { cognitoIdentityPoolId, cognitoRegion } = this._config;
         const credentials = new CognitoIdentityCredentials(
             {
-            IdentityPoolId: identityPoolId
+            IdentityPoolId: cognitoIdentityPoolId
         },  {
-            region
+            region: cognitoRegion
         });
         credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
-        this.credentials = credentials;
-        this.credentials.authenticated = false;
+        this._credentials = credentials;
+        this._credentials.authenticated = false;
         this.credentials_source = 'guest';
     }
     
     private setCredentialsFromSession(session) {
         logger.debug('set credentials from session');
         const idToken = session.getIdToken().getJwtToken();
-        const { region, userPoolId, identityPoolId } = this._config;
-        const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
+        const { cognitoRegion, cognitoUserPoolId, cognitoIdentityPoolId } = this._config;
+        const key = 'cognito-idp.' + cognitoRegion + '.amazonaws.com/' + cognitoUserPoolId;
         const logins = {};
         logins[key] = idToken;
-        this.credentials = new CognitoIdentityCredentials(
+        this._credentials = new CognitoIdentityCredentials(
             {
-            IdentityPoolId: identityPoolId,
+            IdentityPoolId: cognitoIdentityPoolId,
             Logins: logins
         },  {
-            region
+            region: cognitoRegion
         });
-        this.credentials.authenticated = true;
+        this._credentials.authenticated = true;
         this.credentials_source = 'userPool';
     }
 }

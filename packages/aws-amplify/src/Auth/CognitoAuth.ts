@@ -43,25 +43,21 @@ const dispatchAuthEvent = (event, data) => {
 export default class CognitoAuth {
     private _config: AuthOptions;
     private _userPoolStorageSync: Promise<any>;
-    private userPool = null;
-
-    private user:any = null;
+    private _userPool;
+    private _user: any;
 
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
      */
-    constructor(config: AuthOptions) {
-        this.configure(config);
-        if (AWS.config) {
-            AWS.config.update({customUserAgent: Constants.userAgent});
-        } else {
-            logger.warn('No AWS.config');
-        }
+    constructor(config?: AuthOptions) {
+        this._userPool = null;
+        this._user = null;
+        this._config = config? config: null;
     }
 
     configure(config) {
-        logger.debug('configure Auth');
+        logger.debug('configure CognitoAuth');
         let conf = config? config.Auth || config : {};
         if (conf['aws_cognito_identity_pool_id']) {
             conf = {
@@ -95,6 +91,14 @@ export default class CognitoAuth {
             }
         }
         return this._config;
+    }
+
+    getCategory() {
+        return 'Auth';
+    }
+
+    getProviderName() {
+        return 'AWSCognito';
     }
 
     /**
@@ -193,20 +197,15 @@ export default class CognitoAuth {
         });
     }
 
-    /**
-     * Sign in
-     * @param {String} username - The username to be signed in 
-     * @param {String} password - The password of the username
-     * @return - A promise resolves the CognitoUser object if success or mfa required
-     */
-    public signIn(username: string, password: string): Promise<any> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+    public signIn(params: any): Promise<any> {
+        const { username, password } = params;
+        if (!this._userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
         const user = new CognitoUser({
             Username: username,
-            Pool: this.userPool
+            Pool: this._userPool
         });
         const authDetails = new AuthenticationDetails({
             Username: username,
@@ -217,11 +216,9 @@ export default class CognitoAuth {
             user.authenticateUser(authDetails, {
                 onSuccess: (session) => {
                     logger.debug(session);
-                    //that.setCredentialsFromSession(session);
-                    Credentials.setCredentils({session, providerName: 'AWSCognito'})
-                    that.user = user;
+                    that._user = user;
                     dispatchAuthEvent('signIn', user);
-                    resolve(user);
+                    resolve({ user, session });
                 },
                 onFailure: (err) => {
                     logger.debug('signIn failure', err);
@@ -232,7 +229,7 @@ export default class CognitoAuth {
                     logger.debug('signIn MFA required');
                     user['challengeName'] = challengeName;
                     user['challengeParam'] = challengeParam;
-                    resolve(user);
+                    resolve({ user });
                 },
                 newPasswordRequired: (userAttributes, requiredAttributes) => {
                     logger.debug('signIn new password');
@@ -241,7 +238,7 @@ export default class CognitoAuth {
                         userAttributes,
                         requiredAttributes
                     };
-                    resolve(user);
+                    resolve({ user });
                 }
             });
         });
