@@ -12,10 +12,10 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, Button, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, TouchableHighlight } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
-import { Username, Password, Email, PhoneNumber, LinkCell, Header, ErrorRow } from '../AmplifyUI';
+import { Username, Password, Email, PhoneNumber, Button, LinkCell, Padding, Header, ErrorRow } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('SignUp');
@@ -70,6 +70,7 @@ export default class SignUp extends AuthPiece {
         return React.createElement(
             View,
             { style: theme.section },
+            React.createElement(Padding, { theme: theme }),
             React.createElement(
                 Header,
                 { theme: theme },
@@ -94,18 +95,23 @@ export default class SignUp extends AuthPiece {
                     theme: theme,
                     onChangeText: text => this.setState({ phone_number: text })
                 }),
-                React.createElement(Button, {
-                    title: I18n.get('Sign Up'),
-                    onPress: this.signUp,
-                    disabled: !this.state.username || !this.state.password
-                })
+                React.createElement(
+                    View,
+                    { style: theme.sectionActions },
+                    React.createElement(Button, {
+                        title: I18n.get('Sign Up'),
+                        onPress: this.signUp,
+                        disabled: !this.state.username || !this.state.password
+                    })
+                )
             ),
             React.createElement(Footer, { theme: theme, onStateChange: this.changeState }),
             React.createElement(
                 ErrorRow,
                 { theme: theme },
                 this.state.error
-            )
+            ),
+            React.createElement(Padding, { theme: theme })
         );
     }
 }

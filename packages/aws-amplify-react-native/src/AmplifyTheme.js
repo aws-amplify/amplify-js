@@ -13,67 +13,108 @@
 
 import { StyleSheet } from 'react-native';
 export default AmplifyTheme = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        paddingTop: 20,
-        width: '100%'
-    },
-    section: {
-        flex: 1,
-        width: '100%'
-    },
-    sectionHeader: {
-    },
-    sectionHeaderText: {
-        width: '100%',
-        padding: 10,
-        textAlign: 'center',
-        backgroundColor: '#007bff',
-        color: '#ffffff',
-        fontSize: 20,
-        fontWeight: '500'
-    },
-    sectionFooter: {
-        width: '100%',
-        marginTop: 15,
-        padding: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    sectionFooterLink: {
-        fontSize: 14,
-        color: '#007bff',
-        alignItems: 'baseline',
-        textAlign: 'center'
-    },
-    sectionBody: {
-    },
-    cell: {
-        flex: 1,
-        width: '50%'
-    },
-    errorRow: {
-        flex: 1
-    },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 20,
+    width: '100%'
+  },
+  padding: {
+    flex: -1,
+    height: 120,
+    minHeight: 60
+  },
+  section: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'flex-start'
+  },
+  sectionHeader: {
+    flex: 0,
+    minHeight: 30,
+    padding: 10,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#337ab7'
+  },
+  sectionHeaderText: {
+    color: '#ffffff',
+    fontSize: 24
+  },
+  sectionFooter: {
+    flex: 0,
+    minHeight: 30,
+    marginTop: 30,
+    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  sectionFooterLink: {
+    fontSize: 16,
+    color: '#007bff',
+    alignItems: 'baseline',
+    textAlign: 'center',
+    textDecorationLine: 'underline'
+  },
+  sectionBody: {
+    padding: 10,
+    flexDirection: 'column',
+    justifyContent: 'space-around'
+  },
+  sectionActions: {
+    flex: 0,
+    minHeight: 30,
+    padding: 10,
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end'
+  },
+  cell: {
+    flex: 1
+  },
+  errorRow: {
+    flex: 0,
+    minHeight: 30,
+    padding: 10,
+    backgroundColor: '#f0ad4e'
+  },
+  errorRowText: {
+    color: '#fff'
+  },
 
-    photo: {
-        width: '100%'
-    },
-    album: {
-        width: '100%'
-    },
+  navBar: {
+    flex: 0,
+    minHeight: 30
+  },
 
-    a: {
-    },
-    button: {
-        backgroundColor: '#007bff'
-    },
+  photo: {
+    width: '100%'
+  },
+  album: {
+    width: '100%'
+  },
 
-    input: {
-        margin: 6
-    }
+  a: {
+  },
+  buttonWrap: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    paddingTop: 6,
+    paddingBottom: 6,
+    paddingLeft: 16,
+    paddingRight: 16,
+  },
+  buttonText: {
+    color: '#333',
+    fontSize: 18
+  },
+
+  input: {
+    margin: 10,
+    fontSize: 18
+  }
 });
 

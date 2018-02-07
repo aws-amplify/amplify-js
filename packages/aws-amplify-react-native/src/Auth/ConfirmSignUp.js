@@ -16,7 +16,6 @@ import {
     View, 
     Text, 
     TextInput, 
-    Button, 
     TouchableHighlight 
 } from 'react-native';
 import {
@@ -29,7 +28,9 @@ import AmplifyTheme from '../AmplifyTheme';
 import { 
     Username, 
     ConfirmationCode, 
+    Button, 
     LinkCell, 
+    Padding,
     Header, 
     ErrorRow 
 } from '../AmplifyUI';
@@ -91,6 +92,7 @@ export default class ConfirmSignUp extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <View style={theme.section}>
+                <Padding theme={theme} />
                 <Header theme={theme}>{I18n.get('Confirm Sign Up')}</Header>
                 <View style={theme.sectionBody}>
                     <Username
@@ -102,19 +104,22 @@ export default class ConfirmSignUp extends AuthPiece {
                         theme={theme}
                         onChangeText={(text) => this.setState({ code: text })}
                     />
-                    <Button
-                        title={I18n.get('Confirm')}
-                        onPress={this.confirm}
-                        disabled={!this.state.username || !this.state.code}
-                    />
-                    <Button
-                        title={I18n.get('Resend a Code')}
-                        onPress={this.resend}
-                        disabled={!this.state.username}
-                    />
+                    <View style={theme.sectionActions}>
+                        <Button
+                            title={I18n.get('Confirm')}
+                            onPress={this.confirm}
+                            disabled={!this.state.username || !this.state.code}
+                        />
+                        <Button
+                            title={I18n.get('Resend a Code')}
+                            onPress={this.resend}
+                            disabled={!this.state.username}
+                        />
+                    </View>
                 </View>
                 <Footer theme={theme} onStateChange={this.changeState} />
                 <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+                <Padding theme={theme} />
             </View>
         );
     }

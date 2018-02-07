@@ -12,11 +12,11 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, Button, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, TouchableHighlight } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 
 import AmplifyTheme from '../AmplifyTheme';
-import { Username, ConfirmationCode, LinkCell, Header, ErrorRow } from '../AmplifyUI';
+import { Username, ConfirmationCode, Button, LinkCell, Padding, Header, ErrorRow } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('SignIn');
@@ -76,6 +76,7 @@ export default class ConfirmSignUp extends AuthPiece {
         return React.createElement(
             View,
             { style: theme.section },
+            React.createElement(Padding, { theme: theme }),
             React.createElement(
                 Header,
                 { theme: theme },
@@ -93,23 +94,28 @@ export default class ConfirmSignUp extends AuthPiece {
                     theme: theme,
                     onChangeText: text => this.setState({ code: text })
                 }),
-                React.createElement(Button, {
-                    title: I18n.get('Confirm'),
-                    onPress: this.confirm,
-                    disabled: !this.state.username || !this.state.code
-                }),
-                React.createElement(Button, {
-                    title: I18n.get('Resend a Code'),
-                    onPress: this.resend,
-                    disabled: !this.state.username
-                })
+                React.createElement(
+                    View,
+                    { style: theme.sectionActions },
+                    React.createElement(Button, {
+                        title: I18n.get('Confirm'),
+                        onPress: this.confirm,
+                        disabled: !this.state.username || !this.state.code
+                    }),
+                    React.createElement(Button, {
+                        title: I18n.get('Resend a Code'),
+                        onPress: this.resend,
+                        disabled: !this.state.username
+                    })
+                )
             ),
             React.createElement(Footer, { theme: theme, onStateChange: this.changeState }),
             React.createElement(
                 ErrorRow,
                 { theme: theme },
                 this.state.error
-            )
+            ),
+            React.createElement(Padding, { theme: theme })
         );
     }
 }

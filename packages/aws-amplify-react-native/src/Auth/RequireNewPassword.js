@@ -13,10 +13,9 @@
 
 import React from 'react';
 import { 
-    View, 
-    Text, 
-    TextInput, 
-    Button 
+    View,
+    Text,
+    TextInput
 } from 'react-native';
 import {
     Auth,
@@ -25,9 +24,11 @@ import {
 } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import { 
-    Password, 
-    LinkCell, 
-    Header, 
+    Password,
+    Button,
+    LinkCell,
+    Padding,
+    Header,
     ErrorRow 
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
@@ -74,20 +75,24 @@ export default class RequireNewPassword extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <View style={theme.section}>
+                <Padding theme={theme} />
                 <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
                 <View style={theme.sectionBody}>
                     <Password
                         theme={theme}
                         onChangeText={(text) => this.setState({ password: text })}
                     />
-                    <Button
-                        title={I18n.get('Change Password')}
-                        onPress={this.change}
-                        disabled={!this.state.password}
-                    />
+                    <View style={theme.sectionActions}>
+                        <Button
+                            title={I18n.get('Change Password')}
+                            onPress={this.change}
+                            disabled={!this.state.password}
+                        />
+                    </View>
                 </View>
                 <Footer theme={theme} onStateChange={this.changeState}/>
                 <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+                <Padding theme={theme} />
             </View>
         );
     }

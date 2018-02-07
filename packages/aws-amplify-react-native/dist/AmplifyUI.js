@@ -14,7 +14,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
  */
 
 import React from 'react';
-import { View, Text, TextInput, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, TouchableHighlight } from 'react-native';
 
 import { I18n } from 'aws-amplify';
 
@@ -84,6 +84,32 @@ export const LinkCell = props => {
     );
 };
 
+export const Button = props => {
+    const theme = props.theme || AmplifyTheme;
+    const style = theme.button || {};
+    return React.createElement(
+        TouchableOpacity,
+        {
+            onPress: props.onPress,
+            disabled: props.disabled
+        },
+        React.createElement(
+            View,
+            { style: theme.buttonWrap },
+            React.createElement(
+                Text,
+                { style: theme.buttonText },
+                props.title
+            )
+        )
+    );
+};
+
+export const Padding = props => {
+    const theme = props.theme || AmplifyTheme;
+    return React.createElement(View, { style: theme.padding });
+};
+
 export const Header = props => {
     const theme = props.theme || AmplifyTheme;
     return React.createElement(
@@ -99,6 +125,10 @@ export const Header = props => {
 
 export const ErrorRow = props => {
     const theme = props.theme || AmplifyTheme;
+    if (!props.children) {
+        return null;
+    }
+
     return React.createElement(
         View,
         { style: theme.errorRow },

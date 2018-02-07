@@ -16,7 +16,6 @@ import {
     View, 
     Text, 
     TextInput, 
-    Button, 
     TouchableHighlight 
 } from 'react-native';
 import {
@@ -28,7 +27,9 @@ import AuthPiece from './AuthPiece';
 import { 
     Username, 
     Password, 
+    Button, 
     LinkCell, 
+    Padding,
     Header, 
     ErrorRow 
 } from '../AmplifyUI';
@@ -105,6 +106,7 @@ export default class SignIn extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <View style={theme.section}>
+                <Padding theme={theme} />
                 <Header theme={theme}>{I18n.get('Sign In')}</Header>
                 <View style={theme.sectionBody}>
                     <Username
@@ -115,15 +117,18 @@ export default class SignIn extends AuthPiece {
                         theme={theme}
                         onChangeText={(text) => this.setState({ password: text })}
                     />
-                    <Button
-                        title={I18n.get('Sign In')}
-                        style={theme.button}
-                        onPress={this.signIn}
-                        disabled={!this.state.username || !this.state.password}
-                    />
+                    <View style={theme.sectionActions}>
+                        <Button
+                            title={I18n.get('Sign In')}
+                            style={theme.button}
+                            onPress={this.signIn}
+                            disabled={!this.state.username || !this.state.password}
+                        />
+                    </View>
                 </View>
                 <Footer theme={theme} onStateChange={this.changeState} />
                 <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+                <Padding theme={theme} />
             </View>
         );
     }

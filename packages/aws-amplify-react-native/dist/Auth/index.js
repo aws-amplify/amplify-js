@@ -16,6 +16,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 import React from 'react';
 import { View } from 'react-native';
 import { Logger } from 'aws-amplify';
+import AmplifyTheme from '../AmplifyTheme';
 import Authenticator from './Authenticator';
 import AuthPiece from './AuthPiece';
 import SignIn from './SignIn';
@@ -53,7 +54,9 @@ export function withAuthenticator(Comp, includeGreetings = false) {
             const signedIn = authState === 'signedIn';
             if (signedIn) {
                 if (!includeGreetings) {
-                    return React.createElement(Comp, _extends({}, this.props, {
+                    return React.createElement(Comp, _extends({
+                        key: 'comp'
+                    }, this.props, {
                         authState: authState,
                         authData: authData,
                         onStateChange: this.handleAuthStateChange
@@ -62,21 +65,27 @@ export function withAuthenticator(Comp, includeGreetings = false) {
 
                 return React.createElement(
                     View,
-                    null,
+                    { key: 'greetings_comp', style: AmplifyTheme.container },
                     React.createElement(Greetings, {
                         authState: authState,
                         authData: authData,
                         onStateChange: this.handleAuthStateChange
                     }),
-                    React.createElement(Comp, _extends({}, this.props, {
-                        authState: authState,
-                        authData: authData,
-                        onStateChange: this.handleAuthStateChange
-                    }))
+                    React.createElement(
+                        View,
+                        { style: AmplifyTheme.section },
+                        React.createElement(Comp, _extends({}, this.props, {
+                            authState: authState,
+                            authData: authData,
+                            onStateChange: this.handleAuthStateChange
+                        }))
+                    )
                 );
             }
 
-            return React.createElement(Authenticator, _extends({}, this.props, {
+            return React.createElement(Authenticator, _extends({
+                key: 'authenticator'
+            }, this.props, {
                 onStateChange: this.handleAuthStateChange
             }));
         }

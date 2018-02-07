@@ -12,10 +12,10 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, Picker, Button, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, Picker } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
-import { ConfirmationCode, LinkCell, Header, ErrorRow } from '../AmplifyUI';
+import { ConfirmationCode, Button, LinkCell, Padding, Header, ErrorRow } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('SignIn');
@@ -94,11 +94,15 @@ export default class VerifyContact extends AuthPiece {
                 email ? React.createElement(Picker.Item, { label: I18n.get('Email'), value: 'email' }) : null,
                 phone_number ? React.createElement(Picker.Item, { label: I18n.get('Phone Number'), value: 'phone_number' }) : null
             ),
-            React.createElement(Button, {
-                title: I18n.get('Verify'),
-                onPress: this.verify,
-                disabled: !this.state.pickAttr
-            })
+            React.createElement(
+                View,
+                { style: theme.sectionActions },
+                React.createElement(Button, {
+                    title: I18n.get('Verify'),
+                    onPress: this.verify,
+                    disabled: !this.state.pickAttr
+                })
+            )
         );
     }
 
@@ -110,11 +114,15 @@ export default class VerifyContact extends AuthPiece {
                 theme: theme,
                 onChangeText: text => this.setState({ code: text })
             }),
-            React.createElement(Button, {
-                title: I18n.get('Submit'),
-                onPress: this.submit,
-                disabled: !this.state.code
-            })
+            React.createElement(
+                View,
+                { style: theme.sectionActions },
+                React.createElement(Button, {
+                    title: I18n.get('Submit'),
+                    onPress: this.submit,
+                    disabled: !this.state.code
+                })
+            )
         );
     }
 
@@ -127,6 +135,7 @@ export default class VerifyContact extends AuthPiece {
         return React.createElement(
             View,
             { style: theme.section },
+            React.createElement(Padding, { theme: theme }),
             React.createElement(
                 Header,
                 { theme: theme },
@@ -139,7 +148,8 @@ export default class VerifyContact extends AuthPiece {
                 ErrorRow,
                 { theme: theme },
                 this.state.error
-            )
+            ),
+            React.createElement(Padding, { theme: theme })
         );
     }
 }
