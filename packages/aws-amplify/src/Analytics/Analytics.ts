@@ -59,7 +59,7 @@ export default class AnalyticsClass {
         this._config = conf;
 
         this._pluggables.map((pluggable) => {
-            pluggable.configure(this._config);
+            pluggable.configure(conf);
         });
         return conf;
     }
@@ -79,8 +79,9 @@ export default class AnalyticsClass {
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
+        const conf = this._config;
         this._pluggables.map((pluggable) => {
-            pluggable.startSession(this._config);
+            pluggable.startSession(conf);
         });
     }
 
@@ -92,8 +93,9 @@ export default class AnalyticsClass {
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
+        const conf = this._config;
         this._pluggables.map((pluggable) => {
-            pluggable.stopSession(this._config);
+            pluggable.stopSession(conf);
         });
     }
 
@@ -108,8 +110,9 @@ export default class AnalyticsClass {
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
         
+        const conf = this._config;
         this._pluggables.map((pluggable) => {
-            pluggable.record({eventName, attributes, metrics}, this._config);
+            pluggable.record({eventName, attributes, metrics}, conf);
         });
     }
 
