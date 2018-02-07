@@ -218,7 +218,7 @@ export default class CognitoAuth {
                 onSuccess: (session) => {
                     logger.debug(session);
                     //that.setCredentialsFromSession(session);
-                    Credentials.setCredentialsFromSession();
+                    Credentials.setCredentils({session, providerName: 'AWSCognito'})
                     that.user = user;
                     dispatchAuthEvent('signIn', user);
                     resolve(user);
@@ -260,7 +260,7 @@ export default class CognitoAuth {
             user.sendMFACode(code, {
                 onSuccess: (session) => {
                     logger.debug(session);
-                    Credentials.setCredentialsFromSession();
+                    Credentials.setCredentils({session, providerName: 'AWSCognito'})
                     that.user = user;
                     dispatchAuthEvent('signIn', user);
                     resolve(user);
@@ -285,7 +285,7 @@ export default class CognitoAuth {
             user.completeNewPasswordChallenge(password, requiredAttributes, {
                 onSuccess: (session) => {
                     logger.debug(session);
-                    Credentials.setCredentialsFromSession();
+                    Credentials.setCredentils({session, providerName: 'AWSCognito'})
                     that.user = user;
                     dispatchAuthEvent('signIn', user);
                     resolve(user);
@@ -517,14 +517,14 @@ export default class CognitoAuth {
     public signOut(): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
 
-        Credentials.removeCredentials();
+        Credentials.removeCredentials({provider: 'AWSCognito'});
         const user = this.userPool.getCurrentUser();
         if (!user) { return Promise.resolve(); }
 
         user.signOut();
         
         return new Promise((resolve, reject) => {
-            Credentials.setCredentialsForGuest();
+            Credentials.setCredentils({providerName: 'AWSCognito', guest: true})
             dispatchAuthEvent('signOut', this.user);
             this.user = null;
             resolve();
@@ -600,7 +600,7 @@ export default class CognitoAuth {
         try {
             const attributes = await this.userAttributes(user);
             const userAttrs:object = this.attributesToObject(attributes);
-            const credentials = Credentials.getCredentials();
+            const credentials = await Credentials.getCredentials({providerName: 'AWSCognito'});
             const info = {
                 'id': credentials['identityId'],
                 'username': user.username,

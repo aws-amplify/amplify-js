@@ -25,8 +25,18 @@ export default class CognitoCredentials {
 
     }
 
+    getCategory() {
+        return 'Credentials';
+    }
+
+    getProviderName() {
+        return 'AWSCognito';
+    }
+
     setCredentials(config) {
-        const { session, guest } = config;
+        const { session, guest, provider } = config;
+        if (provider !== 'cognito') return;
+        
         if (!session) {
             this.setCredentialsFromSession(session);
         }
