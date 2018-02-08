@@ -21,7 +21,7 @@ npm install aws-amplify
 
 First import the library:
 ```js
-import { Cache } from ‘aws-amplify’;
+import { Cache } from 'aws-amplify';
 ```
 
 After importing you can invoke the appropriate methods from your application.
@@ -32,7 +32,7 @@ After importing you can invoke the appropriate methods from your application.
 
 ```js
 Cache.setItem(key, value[, options]);
-    
+
 // Standard case
 Cache.setItem('key', 'value');
 
@@ -63,8 +63,8 @@ Cache.getItem(key[, options]);
 // Standard case
 Cache.getItem('key');
 
-// Get item with callback function. 
-// The callback function will be called if the item is not in the cache. 
+// Get item with callback function.
+// The callback function will be called if the item is not in the cache.
 // After the callback function returns, the value will be set into cache.
 Cache.getItem('key', { callback: callback });
 ```
