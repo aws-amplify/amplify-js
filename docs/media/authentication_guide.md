@@ -125,12 +125,12 @@ Auth.forgotPasswordSubmit(username, code, new_password)
 
 ### 2. withAuthenticator HOC
 
-For React apps, the simplest way to add Auth flows into your app is to use `withAuthenticator`.
+For React and React Native apps, the simplest way to add Auth flows into your app is to use `withAuthenticator`.
 
 Just add these two lines to your `App.js`:
 
 ```js
-import { withAuthenticator } from 'aws-amplify-react';
+import { withAuthenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
 
 ...
 
@@ -155,6 +155,8 @@ const federated = {
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
 
+ NOTE: Federated Identity is not yet supported on React Native
+
 #### Sign Out Button
 
 The default `withAuthenticator` renders just the App component after a user is signed in, preventing interference with your app. Then question comes, how does the user sign out?
@@ -173,7 +175,7 @@ The `withAuthenticator` HOC essentially just wraps `Authenticator` component. Yo
 
 App.js
 ```js
-import { Authenticator } from 'aws-amplify-react';
+import { Authenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native'
 
 ...
 
