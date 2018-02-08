@@ -50,7 +50,7 @@ export default class StorageClass {
     /**
      * @private
      */
-    _ensureCredentials(): any;
+    _ensureCredentials(): Promise<boolean>;
     /**
      * @private
      */

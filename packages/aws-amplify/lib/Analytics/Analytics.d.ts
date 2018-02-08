@@ -67,7 +67,7 @@ export default class AnalyticsClass {
      * @private
      * check if current crednetials exists
      */
-    _ensureCredentials(): any;
+    _ensureCredentials(): Promise<boolean>;
     /**
      * @private
      * @async

@@ -18,7 +18,7 @@ import {
     Hub
 } from '../Common';
 
-import Auth from '../Auth';
+import Credentials from '../Credentials';
 import { StorageOptions } from './types';
 
 const logger = new Logger('StorageClass');
@@ -286,9 +286,9 @@ export default class StorageClass {
         // will cause bug if another user logged in without refreshing page
         // if (this._options.credentials) { return Promise.resolve(true); }
 
-        return Auth.currentCredentials()
+        return Credentials.getCredentials()
             .then(credentials => {
-                const cred = Auth.essentialCredentials(credentials);
+                const cred = Credentials.essentialCredentials({credentials});
                 logger.debug('set credentials for storage', cred);
                 this._options.credentials = cred;
 

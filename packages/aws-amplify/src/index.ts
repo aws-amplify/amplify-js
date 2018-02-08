@@ -17,6 +17,7 @@ import Storage from './Storage';
 import API from './API';
 import I18n from './I18n';
 import Cache from './Cache';
+import Credentials from './Credentials';
 import {
     ConsoleLogger as Logger,
     Hub,
@@ -45,6 +46,7 @@ export default class Amplify {
         API.configure(config);
         Storage.configure(config);
         Cache.configure(config);
+        Credentials.configure(config);
     }
 }
 

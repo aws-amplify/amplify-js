@@ -48,7 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
-var Auth_1 = require("../Auth");
+var Credentials_1 = require("../Credentials");
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 /**
@@ -311,9 +311,9 @@ var AnalyticsClass = /** @class */ (function () {
         // commented
         // will cause bug if another user logged in without refreshing page
         // if (conf.credentials) { return Promise.resolve(true); }
-        return Auth_1.default.currentCredentials()
+        return Credentials_1.default.getCredentials()
             .then(function (credentials) {
-            var cred = Auth_1.default.essentialCredentials(credentials);
+            var cred = Credentials_1.default.essentialCredentials({ credentials: credentials });
             conf.credentials = cred;
             conf.endpointId = conf.credentials.identityId;
             logger.debug('set endpointId for analytics', conf.endpointId);

@@ -13,7 +13,7 @@
 
 import { RestClient as RestClass } from './RestClient';
 
-import Auth from '../Auth';
+import Credentials from '../Credentials';
 import { ConsoleLogger as Logger } from '../Common/Logger';
 
 const logger = new Logger('API');
@@ -255,9 +255,10 @@ export default class API {
      * @private
      */
     _ensureCredentials() {
-        return Auth.currentCredentials()
+        return Credentials.getCredentials()
             .then(credentials => {
-                const cred = Auth.essentialCredentials(credentials);
+                const cred = Credentials.essentialCredentials({credentials});
+
                 logger.debug('set credentials for api', cred);
 
                 return true;

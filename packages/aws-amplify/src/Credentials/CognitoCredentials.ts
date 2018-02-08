@@ -7,11 +7,12 @@ import {
 } from '../Common';
 
 import Auth from '../Auth'; 
+import Cache from '../Cache';
 const {
     CognitoIdentityCredentials
 } = AWS;
 
-const logger = new Logger('Credentials');
+const logger = new Logger('CognitoCredentials');
 
 export default class CognitoCredentials {
     private _credentials;
@@ -39,18 +40,22 @@ export default class CognitoCredentials {
     }
 
     setCredentials(config) {
-        const { session, guest } = config;
+        const { session, guest, federated } = config;
         
-        if (!session) {
-            this.setCredentialsFromSession(session);
-        }
-        if (!guest) {
-            this.setCredentialsForGuest();
+        if (session) {
+            return this.setCredentialsFromSession(session);
+        } else if (guest) {
+            return this.setCredentialsForGuest();
+        } else if (federated) {
+            return this.setCredentialsFromFederation(federated);
         }
     }
 
     removeCredentials() {
         this._credentials.clearCachedId();
+        Cache.removeItem('federatedInfo');
+        this._credentials = null;
+        this.credentials_source = '';
     }
 
     refreshCredentials(credentials): Promise<any> {
@@ -89,11 +94,24 @@ export default class CognitoCredentials {
      * Get authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
-    public retrieveCredentialsFromAuth() : Promise<any> {
-        const that = this;
-        return Auth.currentSession()
-            .then(session => that.setCredentialsFromSession(session))
-            .catch((error) => that.setCredentialsForGuest());
+    public async retrieveCredentialsFromAuth() : Promise<any> {
+        try {
+            const federatedInfo = await Cache.getItem('federatedInfo');
+            if (federatedInfo) {
+                const { provider, token, user} = federatedInfo;
+                return new Promise((resolve, reject) => {
+                    this.setCredentialsFromFederation({ provider, token, user });
+                    resolve();
+                });
+            } else {
+                const that = this;
+                return Auth.currentSession()
+                    .then(session => that.setCredentialsFromSession(session))
+                    .catch((error) => that.setCredentialsForGuest());
+            }
+        } catch (e) {
+            return Promise.reject(e);
+        }
     }
 
     public getCredentials(): Promise<any> {
@@ -118,7 +136,8 @@ export default class CognitoCredentials {
      * @param {Object} credentials
      * @return {Object} - Credentials
      */
-    public essentialCredentials(credentials) {
+    public essentialCredentials(params) {
+        const { credentials } = params;
         return {
             accessKeyId: credentials.accessKeyId,
             sessionToken: credentials.sessionToken,
@@ -140,6 +159,8 @@ export default class CognitoCredentials {
         this._credentials = credentials;
         this._credentials.authenticated = false;
         this.credentials_source = 'guest';
+
+        return Promise.resolve(this._credentials);
     }
     
     private setCredentialsFromSession(session) {
@@ -158,5 +179,39 @@ export default class CognitoCredentials {
         });
         this._credentials.authenticated = true;
         this.credentials_source = 'userPool';
+
+        return Promise.resolve(this._credentials);
+    }
+
+    private setCredentialsFromFederation(federated) {
+        const { provider, token, user } = federated;
+        const domains = {
+            'google': 'accounts.google.com',
+            'facebook': 'graph.facebook.com',
+            'amazon': 'www.amazon.com'
+        };
+
+        Cache.setItem('federatedInfo', { provider, token, user }, { priority: 1 });
+
+        const domain = domains[provider];
+        if (!domain) {
+            return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
+        }
+
+        const logins = {};
+        logins[domain] = token;
+
+        const { cognitoIdentityPoolId, cognitoRegion } = this._config;
+        this._credentials = new AWS.CognitoIdentityCredentials(
+            {
+            IdentityPoolId: cognitoIdentityPoolId,
+            Logins: logins
+        },  {
+            region: cognitoRegion
+        });
+        this._credentials.authenticated = true;
+        this.credentials_source = 'federated';
+
+        return Promise.resolve(this._credentials);
     }
 }

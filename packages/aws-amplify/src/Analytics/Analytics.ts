@@ -19,7 +19,7 @@ import {
     MobileAnalytics
 } from '../Common';
 
-import Auth from '../Auth';
+import Credentials from '../Credentials';
 
 import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from './types';
 
@@ -303,10 +303,9 @@ export default class AnalyticsClass {
         // will cause bug if another user logged in without refreshing page
         // if (conf.credentials) { return Promise.resolve(true); }
 
-        return Auth.currentCredentials()
+        return Credentials.getCredentials()
             .then(credentials => {
-                const cred = Auth.essentialCredentials(credentials);
-                
+                const cred = Credentials.essentialCredentials({credentials});
                 conf.credentials = cred;
                 conf.endpointId = conf.credentials.identityId;
 

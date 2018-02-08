@@ -6,9 +6,8 @@ export default class AuthClass {
     private _config;
     private _userPoolStorageSync;
     private userPool;
-    private credentials;
-    private credentials_source;
     private user;
+    private user_source;
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -92,12 +91,6 @@ export default class AuthClass {
      */
     userSession(user: any): Promise<any>;
     /**
-     * Get authenticated credentials of current user.
-     * @return - A promise resolves to be current user's credentials
-     */
-    currentUserCredentials(): Promise<any>;
-    currentCredentials(): Promise<any>;
-    /**
      * Initiate an attribute confirmation request
      * @param {Object} user - The CognitoUser
      * @param {Object} attr - The attributes to be verified
@@ -145,30 +138,12 @@ export default class AuthClass {
      * @return {Object }- current User's information
      */
     currentUserInfo(): Promise<any>;
+    private attributesToObject(attributes);
     /**
      * For federated login
      * @param {String} provider - federation login provider
      * @param {Object} response - response including access_token
      * @param {String} user - user info
      */
-    federatedSignIn(provider: any, response: any, user: any): Promise<any>;
-    /**
-     * Compact version of credentials
-     * @param {Object} credentials
-     * @return {Object} - Credentials
-     */
-    essentialCredentials(credentials: any): {
-        accessKeyId: any;
-        sessionToken: any;
-        secretAccessKey: any;
-        identityId: any;
-        authenticated: any;
-    };
-    private attributesToObject(attributes);
-    private setCredentialsFromFederation(provider, token, user);
-    private pickupCredentials();
-    private setCredentialsFromAWS();
-    private setCredentialsForGuest();
-    private setCredentialsFromSession(session);
-    private keepAlive();
+    federatedSignIn(provider: any, response: any, user: any): Promise<{}>;
 }

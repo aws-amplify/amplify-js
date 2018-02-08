@@ -34,23 +34,36 @@ export default class Credentials{
         this._pluggables.map((pluggable) => {
             pluggable.configure(conf);
         })
+
+        return this._config;
     }
 
     public addPluggable(pluggable) {
 
     }
 
-    public setCredentils(config) {
-        const { providerName } = config;
-        this._pluggables.map((pluggable) => {
-            if (pluggable.getProviderName() === providerName) {
-                pluggable.setCredentils(config);
-            }
+    public setCredentials(config?) {
+        let providerName = 'AWSCognito';
+        if (config && config.providerName) providerName = config.providerName;
+
+        return new Promise((res, rej) => {
+            this._pluggables.map((pluggable) => {
+                if (pluggable.getProviderName() === providerName) {
+                    pluggable.setCredentials(config)
+                        .then(cred => {
+                            res(cred);
+                        }).catch(e => {
+                            rej('set credentials failed: ' + e);
+                        });
+                }
+            });
         });
     }
 
-    public removeCredentials(config) {
-        const { providerName } = config;
+    public removeCredentials(config?) {
+        let providerName = 'AWSCognito';
+        if (config && config.providerName) providerName = config.providerName;
+
         this._pluggables.map((pluggable) => {
             if (pluggable.getProviderName() === providerName) {
                 pluggable.removeCredentials();
@@ -58,12 +71,36 @@ export default class Credentials{
         });
     }
 
-    public getCredentials(config) {
-        const { providerName } = config;
+    public essentialCredentials(params) {
+        let providerName = 'AWSCognito';
+        if (params && params.providerName) providerName = params.providerName;
+
+        let ret = null;
         this._pluggables.map((pluggable) => {
             if (pluggable.getProviderName() === providerName) {
-                return pluggable.getCredentials(config);
+                ret = pluggable.essentialCredentials(params);
             }
+        });
+
+        return ret;
+    }
+
+    public getCredentials(config?) {
+        let providerName = 'AWSCognito';
+        if (config && config.providerName) providerName = config.providerName;
+
+        const that = this;
+        return new Promise((res, rej) => {
+            that._pluggables.map((pluggable) => {
+                if (providerName && pluggable.getProviderName() === providerName) {
+                    pluggable.getCredentials(config)
+                        .then(cred => {
+                            res(cred);
+                        }).catch(err => {
+                            res(null);
+                        })
+                    }
+                });
         });
     }
 }

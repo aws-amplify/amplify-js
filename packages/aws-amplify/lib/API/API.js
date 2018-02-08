@@ -48,7 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var RestClient_1 = require("./RestClient");
-var Auth_1 = require("../Auth");
+var Credentials_1 = require("../Credentials");
 var Logger_1 = require("../Common/Logger");
 var logger = new Logger_1.ConsoleLogger('API');
 /**
@@ -366,9 +366,9 @@ var API = /** @class */ (function () {
      * @private
      */
     API.prototype._ensureCredentials = function () {
-        return Auth_1.default.currentCredentials()
+        return Credentials_1.default.getCredentials()
             .then(function (credentials) {
-            var cred = Auth_1.default.essentialCredentials(credentials);
+            var cred = Credentials_1.default.essentialCredentials({ credentials: credentials });
             logger.debug('set credentials for api', cred);
             return true;
         })

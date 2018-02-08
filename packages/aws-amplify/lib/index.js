@@ -24,6 +24,7 @@ var I18n_1 = require("./I18n");
 exports.I18n = I18n_1.default;
 var Cache_1 = require("./Cache");
 exports.Cache = Cache_1.default;
+var Credentials_1 = require("./Credentials");
 var Common_1 = require("./Common");
 exports.Logger = Common_1.ConsoleLogger;
 exports.Hub = Common_1.Hub;
@@ -44,6 +45,7 @@ var Amplify = /** @class */ (function () {
         API_1.default.configure(config);
         Storage_1.default.configure(config);
         Cache_1.default.configure(config);
+        Credentials_1.default.configure(config);
     };
     Amplify.Auth = null;
     Amplify.Analytics = null;
