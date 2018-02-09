@@ -636,6 +636,15 @@ export default class CognitoUser {
     const challengeResponses = {};
     challengeResponses.USERNAME = this.username;
     challengeResponses.ANSWER = answerChallenge;
+
+    const authenticationHelper = new AuthenticationHelper(
+      this.pool.getUserPoolId().split('_')[1]
+    );
+    this.getCachedDeviceKeyAndPassword();
+    if (this.deviceKey != null) {
+      challengeResponses.DEVICE_KEY = this.deviceKey;
+    }
+
     const jsonReq = {
       ChallengeName: 'CUSTOM_CHALLENGE',
       ChallengeResponses: challengeResponses,
@@ -650,16 +659,7 @@ export default class CognitoUser {
         return callback.onFailure(err);
       }
 
-      const challengeName = data.ChallengeName;
-
-      if (challengeName === 'CUSTOM_CHALLENGE') {
-        this.Session = data.Session;
-        return callback.customChallenge(data.ChallengeParameters);
-      }
-
-      this.signInUserSession = this.getCognitoUserSession(data.AuthenticationResult);
-      this.cacheTokens();
-      return callback.onSuccess(this.signInUserSession);
+      return this.authenticateUserInternal(data, authenticationHelper, callback);
     });
   }
 
@@ -1634,7 +1634,7 @@ export default class CognitoUser {
         if (err) {
           return callback.onFailure(err);
         }
-        return callback(null, data);
+        return callback.onSuccess(data);
       });
     }
   }
