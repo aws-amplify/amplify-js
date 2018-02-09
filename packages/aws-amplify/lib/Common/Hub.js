@@ -65,6 +65,7 @@ var HubClass = /** @class */ (function () {
                 logger.warn('error dispatching ' + channel + ' event to ' + listener.name);
             }
         });
+        this.bus.pop();
     };
     return HubClass;
 }());

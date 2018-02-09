@@ -58,6 +58,7 @@ const options = {
     endpointId: 'endpointId',
     region: 'region'
 };
+const timestamp = new Date().getTime();
 
 // // jest.spyOn(JS, 'generateRandomString').mockReturnValue('randomString');
 
@@ -86,7 +87,8 @@ describe("AnalyticsProvider test", () => {
                 callback(null, 'data');
             });
 
-            await analytics.startSession(options);
+            const params = {eventName: '_session_start', config: options, timestamp};
+            await analytics.record(params);
             expect(spyon).toBeCalled();
             expect(spyon.mock.calls[0][0].events[0].eventType).toBe('_session.start');
 
@@ -101,7 +103,8 @@ describe("AnalyticsProvider test", () => {
             });
 
             try {
-                await analytics.startSession(options);
+                const params = {eventName: '_session_start', config: options, timestamp};
+                await analytics.record(params);
             } catch (e) {
                 expect(e).toBe('err');
             }
@@ -116,7 +119,8 @@ describe("AnalyticsProvider test", () => {
                 callback('err', null);
             });
 
-            expect(await analytics.startSession(options)).toBe(false);
+            const params = {eventName: '_session_start', config: options, timestamp};
+            expect(await analytics.record(params)).toBe(false);
 
             spyon.mockClear();
         });
@@ -129,7 +133,8 @@ describe("AnalyticsProvider test", () => {
                 callback(null, 'data');
             });
 
-            await analytics.stopSession(options);
+            const params = {eventName: '_session_stop', config: options, timestamp};
+            await analytics.record(params);
             expect(spyon).toBeCalled();
             expect(spyon.mock.calls[0][0].events[0].eventType).toBe('_session.stop');
 
@@ -144,7 +149,8 @@ describe("AnalyticsProvider test", () => {
             });
 
             try {
-                await analytics.stopSession(options);
+                const params = {eventName: '_session_start', config: options, timestamp};
+                await analytics.record(params);
             } catch (e) {
                 expect(e).toBe('err');
             }
@@ -159,7 +165,8 @@ describe("AnalyticsProvider test", () => {
                 callback('err', null);
             });
 
-            expect(await analytics.stopSession(options)).toBe(false);
+            const params = {eventName: '_session_start', config: options, timestamp};
+            expect(await analytics.record(params)).toBe(false);
 
             spyon.mockClear();
         });
@@ -172,11 +179,8 @@ describe("AnalyticsProvider test", () => {
                 callback(null, 'data');
             });
 
-            const params = {
-                eventName: 'custom event'
-            };
-
-            await analytics.record(params, options);
+            const params = {eventName: 'custom event', config: options, timestamp};
+            await analytics.record(params);
             expect(spyon).toBeCalled();
             expect(spyon.mock.calls[0][0].events[0].eventType).toBe('custom event');
 
@@ -190,12 +194,9 @@ describe("AnalyticsProvider test", () => {
                 callback('err', null);
             });
 
-            const params = {
-                eventName: 'custom event'
-            };
-
             try {
-                await analytics.record(params, options);
+                const params = {eventName: 'custom event', config: options, timestamp};
+                await analytics.record(params);
             } catch (e) {
                 expect(e).toBe('err');
             }
@@ -210,11 +211,8 @@ describe("AnalyticsProvider test", () => {
                 callback('err', null);
             });
 
-            const params = {
-                eventName: 'custom event'
-            };
-
-            expect(await analytics.record(params, options)).toBe(false);
+            const params = {eventName: 'custom event', config: options, timestamp};
+            expect(await analytics.record(params)).toBe(false);
 
             spyon.mockClear();
         });

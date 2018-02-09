@@ -38,8 +38,21 @@ export default class AWSAnalyticsProvider {
         });
     }
 
-    public async startSession(config) {
+    public record(params) {
+        const { eventName } = params;
+        switch (eventName) {
+            case '_session_start':
+                return this._startSession(params);
+            case '_session_stop':
+                return this._stopSession(params);
+            default:
+                return this._recordCustomEvent(params);
+        }
+    }
+
+    private async _startSession(params) {
         // credentials updated
+        const { timestamp, config } = params;
         if (this._config.endpointId !== config.endpointId) {
             const initClients = await this._init(config);
             if (!initClients) return false;
@@ -49,16 +62,17 @@ export default class AWSAnalyticsProvider {
         const sessionId = JS.generateRandomString();
         this._sessionId = sessionId;
 
+        
         const clientContext = this._generateClientContext();
         const eventParams = {
             clientContext,
             events: [
                 {
                     eventType: '_session.start',
-                    timestamp: new Date().toISOString(),
+                    timestamp: new Date(timestamp).toISOString(),
                     'session': {
                         'id': sessionId,
-                        'startTimestamp': new Date().toISOString()
+                        'startTimestamp': new Date(timestamp).toISOString()
                     }
                 }
             ]
@@ -78,15 +92,16 @@ export default class AWSAnalyticsProvider {
         });
     }
 
-    public async stopSession(config) {
+    private async _stopSession(params) {
         // credentials updated
+        const { timestamp, config } = params;
         if (this._config.endpointId !== config.endpointId) {
             const initClients = await this._init(config);
             if (!initClients) return false;
         }
 
         logger.debug('record session stop');
-        
+    
         const sessionId = this._sessionId ? this._sessionId : JS.generateRandomString();
         const clientContext = this._generateClientContext();
         const eventParams = {
@@ -94,10 +109,10 @@ export default class AWSAnalyticsProvider {
             events: [
                 {
                     eventType: '_session.stop',
-                    timestamp: new Date().toISOString(),
+                    timestamp: new Date(timestamp).toISOString(),
                     'session': {
                         'id': sessionId,
-                        'startTimestamp': new Date().toISOString()
+                        'startTimestamp': new Date(timestamp).toISOString()
                     }
                 }
             ]
@@ -116,21 +131,21 @@ export default class AWSAnalyticsProvider {
         });
     }
 
-    public async record(params, config) {
+    private async _recordCustomEvent(params) {
         // credentials updated
+        const { eventName, attributes, metrics, timestamp, config } = params;
         if (this._config.endpointId !== config.endpointId) {
             const initClients = await this._init(config);
             if (!initClients) return false;
         }
 
-        const { eventName, attributes, metrics } = params;
         const clientContext = this._generateClientContext();
         const eventParams = {
             clientContext,
             events: [
                 {
                     eventType: eventName,
-                    timestamp: new Date().toISOString(),
+                    timestamp: new Date(timestamp).toISOString(),
                     attributes,
                     metrics
                 }

@@ -23,7 +23,9 @@ import Auth from '../Auth';
 import { EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
-const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
+const BUFFER_SIZE = 1000;
+const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
+const interval = 2*1000; // 2s
 /**
 * Provide mobile analytics client functions
 */
@@ -43,6 +45,19 @@ export default class AnalyticsClass {
         this._pluggables = [];
         // default one
         this._pluggables.push(new AWSAnalyticsProvider());
+
+        // events batch
+        const that = this;
+
+        setInterval(
+            () => {
+                const size = this._buffer.length < MAX_SIZE_PER_FLUSH ? this._buffer.length : MAX_SIZE_PER_FLUSH;
+                for (let i = 0; i < size; i += 1) {
+                    const params = this._buffer.shift();
+                    that._sendFromBuffer(params);
+                }
+            }, 
+            interval);
     }
 
     /**
@@ -79,10 +94,9 @@ export default class AnalyticsClass {
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
-        const conf = this._config;
-        this._pluggables.map((pluggable) => {
-            pluggable.startSession(conf);
-        });
+        const timestamp = new Date().getTime();
+        const params = {eventName: '_session_start', timestamp, config: this._config};
+        return this._putToCache(params);
     }
 
     /**
@@ -93,10 +107,9 @@ export default class AnalyticsClass {
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
-        const conf = this._config;
-        this._pluggables.map((pluggable) => {
-            pluggable.stopSession(conf);
-        });
+        const timestamp = new Date().getTime();
+        const params = {eventName: '_session_stop', timestamp, config: this._config};
+        return this._putToCache(params);
     }
 
     /**
@@ -109,11 +122,30 @@ export default class AnalyticsClass {
     public async record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics) {
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
-        
-        const conf = this._config;
+
+        const timestamp = new Date().getTime();
+        const params = {eventName, attributes, metrics, timestamp, config: this._config};
+        return this._putToCache(params);
+    }
+
+    private _sendFromBuffer(params) {
+        const that = this;
         this._pluggables.map((pluggable) => {
-            pluggable.record({eventName, attributes, metrics}, conf);
+            pluggable.record(params)
+                .then(success => {
+                    if (!success) {
+                        that._putToCache(params);
+                    }
+                });
         });
+    }
+
+    private _putToCache(params) {
+        if (this._buffer.length < BUFFER_SIZE) {
+            this._buffer.push(params);
+            return Promise.resolve();
+        }
+        else return Promise.reject('exceed buffer size');
     }
 
     /**

@@ -30,6 +30,7 @@ if (!_instance) {
 const Analytics = _instance;
 export default Analytics;
 
+
 Analytics.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;
     logger.debug('on hub capsule ' + channel, payload);

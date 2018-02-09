@@ -32,6 +32,11 @@ Analytics.onHubCapsule = function (capsule) {
         case 'storage':
             storageEvent(payload);
             break;
+        case 'analytics':
+            analyticsEvent(payload);
+            break;
+        default:
+            break;
     }
 };
 var storageEvent = function (payload) {
@@ -47,20 +52,29 @@ var authEvent = function (payload) {
     }
     switch (event) {
         case 'signIn':
-            Analytics.restart();
             Analytics.record('_userauth.sign_in');
             break;
         case 'signUp':
             Analytics.record('_userauth.sign_up');
             break;
         case 'signOut':
-            Analytics.restart();
             break;
         case 'signIn_failure':
             Analytics.record('_userauth.auth_fail');
             break;
     }
 };
+var analyticsEvent = function (payload) {
+    var eventType = payload.eventType;
+    if (!eventType)
+        return;
+    // switch(eventType) {
+    //     case 'session_start':
+    //         Analytics.startSession();
+    //         break;
+    // }
+};
 Common_1.Hub.listen('auth', Analytics);
 Common_1.Hub.listen('storage', Analytics);
+Common_1.Hub.listen('analytics', Analytics);
 //# sourceMappingURL=index.js.map

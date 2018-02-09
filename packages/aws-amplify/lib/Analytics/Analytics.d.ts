@@ -17,27 +17,17 @@ export default class AnalyticsClass {
      * @param {Object} config - Configuration of the Analytics
      */
     configure(config: any): any;
-    /**
-     * @async
-     * init clients for Anlytics including mobile analytics and pinpoint
-     * @return - True if initilization succeeds
-     */
-    /**
-     * set the Analytics client
-     * @param provider
-     */
-    setProvider(provider: any): void;
     addPluggable(pluggable: any): void;
     /**
      * Record Session start
      * @return - A promise which resolves if event record successfully
      */
-    startSession(): Promise<void>;
+    startSession(): Promise<boolean | void>;
     /**
      * Record Session stop
      * @return - A promise which resolves if event record successfully
      */
-    stopSession(): Promise<void>;
+    stopSession(): Promise<boolean | void>;
     /**
      * Record one analytic event and send it to Pinpoint
      * @param {String} name - The name of the event
@@ -45,12 +35,9 @@ export default class AnalyticsClass {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if event record successfully
      */
-    record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<void>;
-    /**
-     * @async
-     * Restart Analytics client and record session stop
-     * @return - A promise which resolves to be true if current credential exists
-     */
+    record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<boolean | void>;
+    private _sendFromBuffer(params);
+    private _putToCache(params);
     /**
      * @private
      * check if current crednetials exists

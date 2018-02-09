@@ -51,7 +51,9 @@ var Common_1 = require("../Common");
 var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
 var Auth_1 = require("../Auth");
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
-var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
+var BUFFER_SIZE = 1000;
+var MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
+var interval = 2 * 1000; // 2s
 /**
 * Provide mobile analytics client functions
 */
@@ -61,49 +63,36 @@ var AnalyticsClass = /** @class */ (function () {
      * @param config - Configuration of the Analytics
      */
     function AnalyticsClass() {
+        var _this = this;
         this._buffer = [];
         this._config = {};
         this._pluggables = [];
         // default one
         this._pluggables.push(new AWSAnalyticsProvider_1.default());
+        // events batch
+        var that = this;
+        setInterval(function () {
+            var size = _this._buffer.length < MAX_SIZE_PER_FLUSH ? _this._buffer.length : MAX_SIZE_PER_FLUSH;
+            for (var i = 0; i < size; i += 1) {
+                var params = _this._buffer.shift();
+                that._sendFromBuffer(params);
+            }
+        }, interval);
     }
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
      */
     AnalyticsClass.prototype.configure = function (config) {
-        var _this = this;
         logger.debug('configure Analytics');
         var conf = Object.assign({}, this._config, Common_1.Parser.parseMobilehubConfig(config).Analytics);
         var clientInfo = Common_1.ClientDevice.clientInfo();
         conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
         this._config = conf;
         this._pluggables.map(function (pluggable) {
-            pluggable.configure(_this._config);
+            pluggable.configure(conf);
         });
         return conf;
-    };
-    /**
-     * @async
-     * init clients for Anlytics including mobile analytics and pinpoint
-     * @return - True if initilization succeeds
-     */
-    // public async init() {
-    //     const credentialsOK = await this._ensureCredentials();
-    //     if (!credentialsOK) { return false; }
-    //     logger.debug('init clients with config', this._config);
-    //     // default one
-    //     if (!this._provider) {
-    //         this._provider = new AWSAnalyticsProvider();
-    //     }
-    //     return this._provider.init(this._config);
-    // }
-    /**
-     * set the Analytics client
-     * @param provider
-     */
-    AnalyticsClass.prototype.setProvider = function (provider) {
-        this._provider = provider;
     };
     AnalyticsClass.prototype.addPluggable = function (pluggable) {
         if (pluggable) {
@@ -117,19 +106,17 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.startSession = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
+            var ensureCredentails, timestamp, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: 
-                    //return this._provider.putEvent({eventName: 'session_start'});
-                    return [4 /*yield*/, this._getCredentials()];
+                    case 0: return [4 /*yield*/, this._getCredentials()];
                     case 1:
-                        //return this._provider.putEvent({eventName: 'session_start'});
-                        _a.sent();
-                        this._pluggables.map(function (pluggable) {
-                            pluggable.startSession(_this._config);
-                        });
-                        return [2 /*return*/];
+                        ensureCredentails = _a.sent();
+                        if (!ensureCredentails)
+                            return [2 /*return*/, Promise.resolve(false)];
+                        timestamp = new Date().getTime();
+                        params = { eventName: '_session_start', timestamp: timestamp, config: this._config };
+                        return [2 /*return*/, this._putToCache(params)];
                 }
             });
         });
@@ -140,19 +127,17 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.stopSession = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
+            var ensureCredentails, timestamp, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: 
-                    //return this._provider.putEvent({eventName: 'session_stop'});
-                    return [4 /*yield*/, this._getCredentials()];
+                    case 0: return [4 /*yield*/, this._getCredentials()];
                     case 1:
-                        //return this._provider.putEvent({eventName: 'session_stop'});
-                        _a.sent();
-                        this._pluggables.map(function (pluggable) {
-                            pluggable.stopSession(_this._config);
-                        });
-                        return [2 /*return*/];
+                        ensureCredentails = _a.sent();
+                        if (!ensureCredentails)
+                            return [2 /*return*/, Promise.resolve(false)];
+                        timestamp = new Date().getTime();
+                        params = { eventName: '_session_stop', timestamp: timestamp, config: this._config };
+                        return [2 /*return*/, this._putToCache(params)];
                 }
             });
         });
@@ -166,31 +151,40 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.record = function (eventName, attributes, metrics) {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
+            var ensureCredentails, timestamp, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: 
-                    //return this._provider.putEvent({eventName, attributes, metrics});
-                    return [4 /*yield*/, this._getCredentials()];
+                    case 0: return [4 /*yield*/, this._getCredentials()];
                     case 1:
-                        //return this._provider.putEvent({eventName, attributes, metrics});
-                        _a.sent();
-                        this._pluggables.map(function (pluggable) {
-                            pluggable.record({ eventName: eventName, attributes: attributes, metrics: metrics }, _this._config);
-                        });
-                        return [2 /*return*/];
+                        ensureCredentails = _a.sent();
+                        if (!ensureCredentails)
+                            return [2 /*return*/, Promise.resolve(false)];
+                        timestamp = new Date().getTime();
+                        params = { eventName: eventName, attributes: attributes, metrics: metrics, timestamp: timestamp, config: this._config };
+                        return [2 /*return*/, this._putToCache(params)];
                 }
             });
         });
     };
-    /**
-     * @async
-     * Restart Analytics client and record session stop
-     * @return - A promise which resolves to be true if current credential exists
-     */
-    // async restart() {
-    //     return this.init();
-    // }
+    AnalyticsClass.prototype._sendFromBuffer = function (params) {
+        var that = this;
+        this._pluggables.map(function (pluggable) {
+            pluggable.record(params)
+                .then(function (success) {
+                if (!success) {
+                    that._putToCache(params);
+                }
+            });
+        });
+    };
+    AnalyticsClass.prototype._putToCache = function (params) {
+        if (this._buffer.length < BUFFER_SIZE) {
+            this._buffer.push(params);
+            return Promise.resolve();
+        }
+        else
+            return Promise.reject('exceed buffer size');
+    };
     /**
      * @private
      * check if current crednetials exists

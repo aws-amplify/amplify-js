@@ -67,13 +67,26 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             });
         });
     };
-    AWSAnalyticsProvider.prototype.startSession = function (config) {
+    AWSAnalyticsProvider.prototype.record = function (params) {
+        var eventName = params.eventName;
+        switch (eventName) {
+            case '_session_start':
+                return this._startSession(params);
+            case '_session_stop':
+                return this._stopSession(params);
+            default:
+                return this._recordCustomEvent(params);
+                ;
+        }
+    };
+    AWSAnalyticsProvider.prototype._startSession = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var initClients, sessionId, clientContext, eventParams;
+            var timestamp, config, initClients, sessionId, clientContext, eventParams;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        timestamp = params.timestamp, config = params.config;
                         if (!(this._config.endpointId !== config.endpointId)) return [3 /*break*/, 2];
                         return [4 /*yield*/, this._init(config)];
                     case 1:
@@ -91,10 +104,10 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                             events: [
                                 {
                                     eventType: '_session.start',
-                                    timestamp: new Date().toISOString(),
+                                    timestamp: new Date(timestamp).toISOString(),
                                     'session': {
                                         'id': sessionId,
-                                        'startTimestamp': new Date().toISOString()
+                                        'startTimestamp': new Date(timestamp).toISOString()
                                     }
                                 }
                             ]
@@ -115,13 +128,14 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             });
         });
     };
-    AWSAnalyticsProvider.prototype.stopSession = function (config) {
+    AWSAnalyticsProvider.prototype._stopSession = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var initClients, sessionId, clientContext, eventParams;
+            var timestamp, config, initClients, sessionId, clientContext, eventParams;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        timestamp = params.timestamp, config = params.config;
                         if (!(this._config.endpointId !== config.endpointId)) return [3 /*break*/, 2];
                         return [4 /*yield*/, this._init(config)];
                     case 1:
@@ -138,10 +152,10 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                             events: [
                                 {
                                     eventType: '_session.stop',
-                                    timestamp: new Date().toISOString(),
+                                    timestamp: new Date(timestamp).toISOString(),
                                     'session': {
                                         'id': sessionId,
-                                        'startTimestamp': new Date().toISOString()
+                                        'startTimestamp': new Date(timestamp).toISOString()
                                     }
                                 }
                             ]
@@ -162,13 +176,14 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             });
         });
     };
-    AWSAnalyticsProvider.prototype.record = function (params, config) {
+    AWSAnalyticsProvider.prototype._recordCustomEvent = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var initClients, eventName, attributes, metrics, clientContext, eventParams;
+            var eventName, attributes, metrics, timestamp, config, initClients, clientContext, eventParams;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        eventName = params.eventName, attributes = params.attributes, metrics = params.metrics, timestamp = params.timestamp, config = params.config;
                         if (!(this._config.endpointId !== config.endpointId)) return [3 /*break*/, 2];
                         return [4 /*yield*/, this._init(config)];
                     case 1:
@@ -177,14 +192,13 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                             return [2 /*return*/, false];
                         _a.label = 2;
                     case 2:
-                        eventName = params.eventName, attributes = params.attributes, metrics = params.metrics;
                         clientContext = this._generateClientContext();
                         eventParams = {
                             clientContext: clientContext,
                             events: [
                                 {
                                     eventType: eventName,
-                                    timestamp: new Date().toISOString(),
+                                    timestamp: new Date(timestamp).toISOString(),
                                     attributes: attributes,
                                     metrics: metrics
                                 }
@@ -207,137 +221,15 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             });
         });
     };
-    // public init(config) {
-    //     logger.debug('init clients');
-    //     if (config) {
-    //         this.configure(config);
-    //     }
-    //     if (!this._checkConfig()) { return Promise.resolve(false); }
-    //     this._initMobileAnalytics();
-    //     return new Promise((res, rej) => {
-    //         this._initPinpoint().then((data) => {
-    //             res(true);
-    //         }).catch((err) => {
-    //             res(false);
-    //         });
-    //     });
-    // }
-    // public putEvent(params) {
-    //     logger.debug('putEvent params', params);
-    //     const { eventName } = params;
-    //     switch (eventName) {
-    //         case 'session_start':
-    //             this._startSession(params).catch((err) => {
-    //             });
-    //             break;
-    //         case 'session_stop':
-    //             this._stopSession(params).catch((err) => {
-    //             });
-    //             break;
-    //         default:
-    //             this._recordCustomEvent(params).catch((err) => {
-    //             });
-    //             break;
-    //     }
-    // }
-    // private _startSession(params) {
-    //     logger.debug('record session start');
-    //     const sessionId = JS.generateRandomString();
-    //     this._sessionId = sessionId;
-    //     const clientContext = this._generateClientContext();
-    //     const eventParams = {
-    //         clientContext,
-    //         events: [
-    //             {
-    //                 eventType: '_session.start',
-    //                 timestamp: new Date().toISOString(),
-    //                 'session': {
-    //                     'id': sessionId,
-    //                     'startTimestamp': new Date().toISOString()
-    //                 }
-    //             }
-    //         ]
-    //     };
-    //     return new Promise<any>((res, rej) => {
-    //         this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-    //             if (err) {
-    //                 logger.debug('record event failed. ', err);
-    //                 rej(err);
-    //             }
-    //             else {
-    //                 logger.debug('record event success. ', data);
-    //                 res(data);
-    //             }
-    //         });
-    //     });
-    // }
-    // private _stopSession(params) {
-    //     logger.debug('record session stop');
-    //     const sessionId = this._sessionId ? this._sessionId : JS.generateRandomString();
-    //     const clientContext = this._generateClientContext();
-    //     const eventParams = {
-    //         clientContext,
-    //         events: [
-    //             {
-    //                 eventType: '_session.stop',
-    //                 timestamp: new Date().toISOString(),
-    //                 'session': {
-    //                     'id': sessionId,
-    //                     'startTimestamp': new Date().toISOString()
-    //                 }
-    //             }
-    //         ]
-    //     };
-    //     return new Promise<any>((res, rej) => {
-    //         this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-    //             if (err) {
-    //                 logger.debug('record event failed. ', err);
-    //                 rej(err);
-    //             }
-    //             else {
-    //                 logger.debug('record event success. ', data);
-    //                 res(data);
-    //             }
-    //         });
-    //     });
-    // }
-    // private _recordCustomEvent(params) {
-    //     const { eventName, attributes, metrics } = params;
-    //     const clientContext = this._generateClientContext();
-    //     const eventParams = {
-    //         clientContext,
-    //         events: [
-    //             {
-    //                 eventType: eventName,
-    //                 timestamp: new Date().toISOString(),
-    //                 attributes,
-    //                 metrics
-    //             }
-    //         ]
-    //     };
-    //     logger.debug('record event with params', eventParams);
-    //     return new Promise<any>((res, rej) => {
-    //         this.mobileAnalytics.putEvents(eventParams, (err, data) => {
-    //             if (err) {
-    //                 logger.debug('record event failed. ', err);
-    //                 rej(err);
-    //             }
-    //             else {
-    //                 logger.debug('record event success. ', data);
-    //                 res(data);
-    //             }
-    //         });
-    //     });
-    // }
     AWSAnalyticsProvider.prototype._initMobileAnalytics = function () {
         var _a = this._config, credentials = _a.credentials, region = _a.region;
         this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });
     };
     /**
- * @private
- * Init Pinpoint with configuration and update pinpoint client endpoint
- * @return - A promise resolves if endpoint updated successfully
- */
+     * @private
+     * Init Pinpoint with configuration and update pinpoint client endpoint
+     * @return - A promise resolves if endpoint updated successfully
+     */
     AWSAnalyticsProvider.prototype._initPinpoint = function () {
         var _this = this;
         var _a = this._config, region = _a.region, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials;
@@ -366,9 +258,9 @@ var AWSAnalyticsProvider = /** @class */ (function () {
         });
     };
     /**
- * EndPoint request
- * @return {Object} - The request of updating endpoint
- */
+     * EndPoint request
+     * @return {Object} - The request of updating endpoint
+     */
     AWSAnalyticsProvider.prototype._endpointRequest = function () {
         var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials;
         var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
