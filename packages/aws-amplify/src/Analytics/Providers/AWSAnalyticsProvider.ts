@@ -2,6 +2,7 @@ import { ConsoleLogger as Logger, Pinpoint, MobileAnalytics, JS } from '../../Co
 import { AnalyticsProvider } from '../types';
 
 const logger = new Logger('AWSAnalyticsProvider');
+const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 
 export default class AWSAnalyticsProvider {
     private _config;
@@ -13,10 +14,17 @@ export default class AWSAnalyticsProvider {
         this._config = config? config : {};
     }
 
+    /**
+     * get the category of the plugin
+     */
     public getCategory() {
         return 'Analytics';
     }
 
+    /**
+     * configure the plugin
+     * @param {Object} config - configuration
+     */
     public configure(config) {
         logger.debug('configure Analytics');
         const conf = config? config : {};
@@ -24,20 +32,10 @@ export default class AWSAnalyticsProvider {
         return this._config;
     }
 
-    private async _init(config) {
-        logger.debug('init clients');
-
-        this._config = Object.assign(this._config, config);
-        this._initMobileAnalytics();
-        return new Promise((res, rej) => {
-            this._initPinpoint().then((data) => {
-                res(true);
-            }).catch((err) => {
-                res(false);
-            });
-        });
-    }
-
+    /**
+     * record an event
+     * @param {Object} params - the params of an event
+     */
     public record(params) {
         const { eventName } = params;
         switch (eventName) {
@@ -50,6 +48,10 @@ export default class AWSAnalyticsProvider {
         }
     }
 
+    /**
+     * @private
+     * @param params 
+     */
     private async _startSession(params) {
         // credentials updated
         const { timestamp, config } = params;
@@ -82,7 +84,7 @@ export default class AWSAnalyticsProvider {
             this.mobileAnalytics.putEvents(eventParams, (err, data) => {
                 if (err) {
                     logger.debug('record event failed. ', err);
-                    res(false);
+                    res(this._checkErrCode(err.code));
                 }
                 else {
                     logger.debug('record event success. ', data);
@@ -92,6 +94,10 @@ export default class AWSAnalyticsProvider {
         });
     }
 
+    /**
+     * @private
+     * @param params 
+     */
     private async _stopSession(params) {
         // credentials updated
         const { timestamp, config } = params;
@@ -121,7 +127,7 @@ export default class AWSAnalyticsProvider {
             this.mobileAnalytics.putEvents(eventParams, (err, data) => {
                 if (err) {
                     logger.debug('record event failed. ', err);
-                    res(false);
+                    res(this._checkErrCode(err.code));
                 }
                 else {
                     logger.debug('record event success. ', data);
@@ -131,6 +137,10 @@ export default class AWSAnalyticsProvider {
         });
     }
 
+    /**
+     * @private
+     * @param params 
+     */
     private async _recordCustomEvent(params) {
         // credentials updated
         const { eventName, attributes, metrics, timestamp, config } = params;
@@ -157,7 +167,7 @@ export default class AWSAnalyticsProvider {
             this.mobileAnalytics.putEvents(eventParams, (err, data) => {
                 if (err) {
                     logger.debug('record event failed. ', err);
-                    res(false);
+                    res(this._checkErrCode(err.code));
                 }
                 else {
                     logger.debug('record event success. ', data);
@@ -167,6 +177,41 @@ export default class AWSAnalyticsProvider {
         });
     }
 
+    /**
+     * @private
+     * @param code 
+     * Check if the error is retryable
+     */
+    private _checkErrCode(code) {
+        for (let i = 0; i < NON_RETRYABLE_EXCEPTIONS.length; i++) {
+            if (code === NON_RETRYABLE_EXCEPTIONS[i]) return true;
+        }
+        return false;
+    }
+
+    /**
+     * @private
+     * @param config 
+     * Init the clients
+     */
+    private async _init(config) {
+        logger.debug('init clients');
+
+        this._config = Object.assign(this._config, config);
+        this._initMobileAnalytics();
+        return new Promise((res, rej) => {
+            this._initPinpoint().then((data) => {
+                res(true);
+            }).catch((err) => {
+                res(false);
+            });
+        });
+    }
+
+    /**
+     * @private
+     * Init the MobileAnalytics client
+     */
     private _initMobileAnalytics() {
         const { credentials, region } = this._config;
         this.mobileAnalytics = new MobileAnalytics({ credentials, region });

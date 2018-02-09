@@ -23,6 +23,8 @@ import Auth from '../Auth';
 import { EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
+
+// events buffer
 const BUFFER_SIZE = 1000;
 const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
 const interval = 2*1000; // 2s
@@ -49,6 +51,7 @@ export default class AnalyticsClass {
         // events batch
         const that = this;
 
+        // flush event buffer
         setInterval(
             () => {
                 const size = this._buffer.length < MAX_SIZE_PER_FLUSH ? this._buffer.length : MAX_SIZE_PER_FLUSH;
@@ -79,6 +82,10 @@ export default class AnalyticsClass {
         return conf;
     }
 
+    /**
+     * add plugin into Analytics category
+     * @param {Object} pluggable - an instance of the plugin 
+     */
     public addPluggable(pluggable) {
         if (pluggable) {
             this._pluggables.push(pluggable);
@@ -88,7 +95,7 @@ export default class AnalyticsClass {
 
     /**
      * Record Session start
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
     public async startSession() {
         const ensureCredentails = await this._getCredentials();
@@ -96,12 +103,12 @@ export default class AnalyticsClass {
 
         const timestamp = new Date().getTime();
         const params = {eventName: '_session_start', timestamp, config: this._config};
-        return this._putToCache(params);
+        return this._putToBuffer(params);
     }
 
     /**
      * Record Session stop
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
     public async stopSession() {
         const ensureCredentails = await this._getCredentials();
@@ -109,7 +116,7 @@ export default class AnalyticsClass {
 
         const timestamp = new Date().getTime();
         const params = {eventName: '_session_stop', timestamp, config: this._config};
-        return this._putToCache(params);
+        return this._putToBuffer(params);
     }
 
     /**
@@ -117,7 +124,7 @@ export default class AnalyticsClass {
      * @param {String} name - The name of the event
      * @param {Object} [attributs] - Attributes of the event
      * @param {Object} [metrics] - Event metrics
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
     public async record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics) {
         const ensureCredentails = await this._getCredentials();
@@ -125,22 +132,32 @@ export default class AnalyticsClass {
 
         const timestamp = new Date().getTime();
         const params = {eventName, attributes, metrics, timestamp, config: this._config};
-        return this._putToCache(params);
+        return this._putToBuffer(params);
     }
 
+    /**
+     * @private
+     * @param {Object} params - params for the event recording
+     * Send events from buffer
+     */
     private _sendFromBuffer(params) {
         const that = this;
         this._pluggables.map((pluggable) => {
             pluggable.record(params)
                 .then(success => {
                     if (!success) {
-                        that._putToCache(params);
+                        that._putToBuffer(params);
                     }
                 });
         });
     }
 
-    private _putToCache(params) {
+    /**
+     * @private
+     * @param params - params for the event recording
+     * Put events into buffer
+     */
+    private _putToBuffer(params) {
         if (this._buffer.length < BUFFER_SIZE) {
             this._buffer.push(params);
             return Promise.resolve();
