@@ -83,7 +83,6 @@ var CognitoCredentials = /** @class */ (function () {
         }
         return new Promise(function (resolve, reject) {
             cred.refresh(function (err) {
-                logger.debug('changed from previous');
                 if (err) {
                     logger.debug('refresh credentials error', err);
                     resolve(null);
@@ -144,7 +143,7 @@ var CognitoCredentials = /** @class */ (function () {
             });
         });
     };
-    CognitoCredentials.prototype.getCredentials = function () {
+    CognitoCredentials.prototype.getCredentials = function (config) {
         if (this._credentials && !this.isExpired(this._credentials)) {
             return this.refreshCredentials(this._credentials);
         }

@@ -15,7 +15,7 @@ export default class CognitoCredentials {
      * @return - A promise resolves to be current user's credentials
      */
     retrieveCredentialsFromAuth(): Promise<any>;
-    getCredentials(): Promise<any>;
+    getCredentials(config?: any): Promise<any>;
     /**
      * Compact version of credentials
      * @param {Object} credentials

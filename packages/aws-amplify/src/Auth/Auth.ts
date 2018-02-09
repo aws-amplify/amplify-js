@@ -534,12 +534,13 @@ export default class AuthClass {
     public signOut(): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
 
+        // for federated user
         Credentials.removeCredentials({provider: 'AWSCognito'});
         Cache.removeItem('federatedUser');
-        const user = this.userPool.getCurrentUser();
-        if (!user) { return Promise.resolve(); }
 
-        user.signOut();
+        // for cognito user
+        const user = this.userPool.getCurrentUser();
+        if (user) user.signOut();
         
         return new Promise((resolve, reject) => {
             Credentials.setCredentials({providerName: 'AWSCognito', guest: true})
@@ -614,8 +615,10 @@ export default class AuthClass {
     public async currentUserInfo() {
         const source = this.user_source;
 
+        const credentials = await Credentials.getCredentials();
+
         if (source === 'federated') {
-            const user = this.user;
+            const user = Object.assign(this.user, { 'id': credentials? credentials['identityId'] : null });
             return user? user : {};
         }
 
@@ -626,9 +629,9 @@ export default class AuthClass {
         try {
             const attributes = await this.userAttributes(user);
             const userAttrs:object = this.attributesToObject(attributes);
-        
+            
             const info = {
-                //'id': credentials.identityId,
+                'id': credentials? credentials['identityId'] : null,
                 'username': user.username,
                 'attributes': userAttrs
             };

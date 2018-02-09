@@ -65,7 +65,6 @@ export default class CognitoCredentials {
         }
         return new Promise((resolve,reject) => {
             cred.refresh(err => {
-                logger.debug('changed from previous');
                 if (err) {
                     logger.debug('refresh credentials error', err);
                     resolve(null);
@@ -114,11 +113,10 @@ export default class CognitoCredentials {
         }
     }
 
-    public getCredentials(): Promise<any> {
+    public getCredentials(config?): Promise<any> {
         if (this._credentials && !this.isExpired(this._credentials)) {
             return this.refreshCredentials(this._credentials);
-        }
-        else{
+        } else {
             const that = this;
             return this.retrieveCredentialsFromAuth()
                 .then(() => {

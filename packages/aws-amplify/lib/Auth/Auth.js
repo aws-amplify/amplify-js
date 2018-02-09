@@ -617,13 +617,13 @@ var AuthClass = /** @class */ (function () {
         if (!this.userPool) {
             return Promise.reject('No userPool');
         }
+        // for federated user
         Credentials_1.default.removeCredentials({ provider: 'AWSCognito' });
         Cache_1.default.removeItem('federatedUser');
+        // for cognito user
         var user = this.userPool.getCurrentUser();
-        if (!user) {
-            return Promise.resolve();
-        }
-        user.signOut();
+        if (user)
+            user.signOut();
         return new Promise(function (resolve, reject) {
             Credentials_1.default.setCredentials({ providerName: 'AWSCognito', guest: true });
             dispatchAuthEvent('signOut', _this.user);
@@ -699,41 +699,44 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.currentUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var source, user_1, user, attributes, userAttrs, info, err_1;
+            var source, credentials, user_1, user, attributes, userAttrs, info, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         source = this.user_source;
+                        return [4 /*yield*/, Credentials_1.default.getCredentials()];
+                    case 1:
+                        credentials = _a.sent();
                         if (source === 'federated') {
-                            user_1 = this.user;
+                            user_1 = Object.assign(this.user, { 'id': credentials ? credentials['identityId'] : null });
                             return [2 /*return*/, user_1 ? user_1 : {}];
                         }
                         return [4 /*yield*/, this.currentUserPoolUser()
                                 .catch(function (err) { return logger.debug(err); })];
-                    case 1:
+                    case 2:
                         user = _a.sent();
                         if (!user) {
                             return [2 /*return*/, null];
                         }
-                        _a.label = 2;
-                    case 2:
-                        _a.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, this.userAttributes(user)];
+                        _a.label = 3;
                     case 3:
+                        _a.trys.push([3, 5, , 6]);
+                        return [4 /*yield*/, this.userAttributes(user)];
+                    case 4:
                         attributes = _a.sent();
                         userAttrs = this.attributesToObject(attributes);
                         info = {
-                            //'id': credentials.identityId,
+                            'id': credentials ? credentials['identityId'] : null,
                             'username': user.username,
                             'attributes': userAttrs
                         };
                         return [2 /*return*/, info];
-                    case 4:
+                    case 5:
                         err_1 = _a.sent();
                         console.warn(err_1);
                         logger.debug('currentUserInfo error', err_1);
                         return [2 /*return*/, {}];
-                    case 5: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
                 }
             });
         });

@@ -98,7 +98,7 @@ export default class Credentials{
                             res(cred);
                         }).catch(err => {
                             res(null);
-                        })
+                        });
                     }
                 });
         });
