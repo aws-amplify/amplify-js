@@ -2,6 +2,13 @@
 <!--LATEST=0.1.36-->
 <!--ENTRYINSERT-->
 
+## 02/07/2018
+* aws-amplify - v0.2.4
+    * Bug fix: Safe check for navigator variable
+    * Bug fix: Retrieve unauth credentials if not logged in, Fixes #229
+* aws-amplify-react-native - v0.2.3
+    * Enahancement: warning for configure (deprecated)
+
 ## 01/31/2018
 * aws-amplify - v0.2.0
     * Enhancement: Allow SignUp with validation data #182
@@ -22,7 +29,7 @@
 * aws-amplify-react - v0.1.31
     * Bug fix: Now S3Image can upload files to private folder #133
 * aws-amplify-react-native - v0.1.24
-    * Enahancement: Remove dependency from aws-mobile-analytics dependency #142
+    * Enhancement: Remove dependency from aws-mobile-analytics dependency #142
     * Enhancement: Sign up with custom attributes #160
     * Bug fix: EndpointId for Pinpoint not get refreshed correctly #161
 
