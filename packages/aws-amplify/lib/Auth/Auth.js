@@ -649,27 +649,37 @@ var AuthClass = /** @class */ (function () {
      * @return - A promise resolved if success
      */
     AuthClass.prototype.signOut = function () {
-        var _this = this;
-        var source = this.credentials_source;
-        // clean out the cached stuff
-        this.credentials.clearCachedId();
-        // clear federatedInfo
-        Cache_1.default.removeItem('federatedInfo');
-        if (source === 'aws' || source === 'userPool') {
-            if (!this.userPool) {
-                return Promise.reject('No userPool');
-            }
-            var user = this.userPool.getCurrentUser();
-            if (!user) {
-                return Promise.resolve();
-            }
-            user.signOut();
-        }
-        return new Promise(function (resolve, reject) {
-            _this.setCredentialsForGuest();
-            dispatchAuthEvent('signOut', _this.user);
-            _this.user = null;
-            resolve();
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var source, user;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.currentUserCredentials()];
+                    case 1:
+                        _a.sent();
+                        source = this.credentials_source;
+                        // clean out the cached stuff
+                        this.credentials.clearCachedId();
+                        // clear federatedInfo
+                        Cache_1.default.removeItem('federatedInfo');
+                        if (source === 'aws' || source === 'userPool') {
+                            if (!this.userPool) {
+                                return [2 /*return*/, Promise.reject('No userPool')];
+                            }
+                            user = this.userPool.getCurrentUser();
+                            if (!user) {
+                                return [2 /*return*/, Promise.resolve()];
+                            }
+                            user.signOut();
+                        }
+                        return [2 /*return*/, new Promise(function (resolve, reject) {
+                                _this.setCredentialsForGuest();
+                                dispatchAuthEvent('signOut', _this.user);
+                                _this.user = null;
+                                resolve();
+                            })];
+                }
+            });
         });
     };
     /**
