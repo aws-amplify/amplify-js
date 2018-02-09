@@ -139,7 +139,7 @@ class App extends Component {
 export default withAuthenticator(App);
 ```
 
-If you are working in React Native the exact same setup is used. Simply include `aws-amplify-react-natve` instead:
+If you are working in React Native the exact same setup is used. Simply include `aws-amplify-react-native` instead:
 
 ```jsx
 ...
