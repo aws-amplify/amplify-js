@@ -573,7 +573,9 @@ export default class AuthClass {
      * Sign out method
      * @return - A promise resolved if success
      */
-    public signOut(): Promise<any> {
+    public async signOut(): Promise<any> {
+        await this.currentUserCredentials();
+
         const source = this.credentials_source;
 
         // clean out the cached stuff
