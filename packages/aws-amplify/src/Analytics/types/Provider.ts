@@ -1,6 +1,6 @@
 export interface AnalyticsProvider {
-    configure(config: object): any;
-    init(config?: object): any;
-    putEvent(params: object): any;
+    configure(config: object): object;
+    record(params: object): Promise<boolean>;
     getCategory(): string;
+    getProviderName(): string;
 }

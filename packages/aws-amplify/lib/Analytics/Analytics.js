@@ -51,6 +51,7 @@ var Common_1 = require("../Common");
 var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
 var Auth_1 = require("../Auth");
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
+// events buffer
 var BUFFER_SIZE = 1000;
 var MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
 var interval = 2 * 1000; // 2s
@@ -68,9 +69,10 @@ var AnalyticsClass = /** @class */ (function () {
         this._config = {};
         this._pluggables = [];
         // default one
-        this._pluggables.push(new AWSAnalyticsProvider_1.default());
+        this.addPluggable(new AWSAnalyticsProvider_1.default());
         // events batch
         var that = this;
+        // flush event buffer
         setInterval(function () {
             var size = _this._buffer.length < MAX_SIZE_PER_FLUSH ? _this._buffer.length : MAX_SIZE_PER_FLUSH;
             for (var i = 0; i < size; i += 1) {
@@ -94,6 +96,10 @@ var AnalyticsClass = /** @class */ (function () {
         });
         return conf;
     };
+    /**
+     * add plugin into Analytics category
+     * @param {Object} pluggable - an instance of the plugin
+     */
     AnalyticsClass.prototype.addPluggable = function (pluggable) {
         if (pluggable) {
             this._pluggables.push(pluggable);
@@ -102,7 +108,7 @@ var AnalyticsClass = /** @class */ (function () {
     };
     /**
      * Record Session start
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
     AnalyticsClass.prototype.startSession = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -116,14 +122,14 @@ var AnalyticsClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.resolve(false)];
                         timestamp = new Date().getTime();
                         params = { eventName: '_session_start', timestamp: timestamp, config: this._config };
-                        return [2 /*return*/, this._putToCache(params)];
+                        return [2 /*return*/, this._putToBuffer(params)];
                 }
             });
         });
     };
     /**
      * Record Session stop
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
     AnalyticsClass.prototype.stopSession = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -137,7 +143,7 @@ var AnalyticsClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.resolve(false)];
                         timestamp = new Date().getTime();
                         params = { eventName: '_session_stop', timestamp: timestamp, config: this._config };
-                        return [2 /*return*/, this._putToCache(params)];
+                        return [2 /*return*/, this._putToBuffer(params)];
                 }
             });
         });
@@ -147,7 +153,7 @@ var AnalyticsClass = /** @class */ (function () {
      * @param {String} name - The name of the event
      * @param {Object} [attributs] - Attributes of the event
      * @param {Object} [metrics] - Event metrics
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
     AnalyticsClass.prototype.record = function (eventName, attributes, metrics) {
         return __awaiter(this, void 0, void 0, function () {
@@ -161,23 +167,33 @@ var AnalyticsClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.resolve(false)];
                         timestamp = new Date().getTime();
                         params = { eventName: eventName, attributes: attributes, metrics: metrics, timestamp: timestamp, config: this._config };
-                        return [2 /*return*/, this._putToCache(params)];
+                        return [2 /*return*/, this._putToBuffer(params)];
                 }
             });
         });
     };
+    /**
+     * @private
+     * @param {Object} params - params for the event recording
+     * Send events from buffer
+     */
     AnalyticsClass.prototype._sendFromBuffer = function (params) {
         var that = this;
         this._pluggables.map(function (pluggable) {
             pluggable.record(params)
                 .then(function (success) {
                 if (!success) {
-                    that._putToCache(params);
+                    that._putToBuffer(params);
                 }
             });
         });
     };
-    AnalyticsClass.prototype._putToCache = function (params) {
+    /**
+     * @private
+     * @param params - params for the event recording
+     * Put events into buffer
+     */
+    AnalyticsClass.prototype._putToBuffer = function (params) {
         if (this._buffer.length < BUFFER_SIZE) {
             this._buffer.push(params);
             return Promise.resolve();
@@ -190,14 +206,14 @@ var AnalyticsClass = /** @class */ (function () {
      * check if current crednetials exists
      */
     AnalyticsClass.prototype._getCredentials = function () {
-        var conf = this._config;
+        var that = this;
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
             var cred = Auth_1.default.essentialCredentials(credentials);
-            conf.credentials = cred;
-            conf.endpointId = conf.credentials.identityId;
-            logger.debug('set endpointId for analytics', conf.endpointId);
-            logger.debug('set credentials for analytics', conf.credentials);
+            that._config.credentials = cred;
+            that._config.endpointId = cred.identityId;
+            logger.debug('set endpointId for analytics', that._config.endpointId);
+            logger.debug('set credentials for analytics', that._config.credentials);
             return true;
         })
             .catch(function (err) {

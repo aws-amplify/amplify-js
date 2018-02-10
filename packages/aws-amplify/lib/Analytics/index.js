@@ -68,13 +68,14 @@ var analyticsEvent = function (payload) {
     var eventType = payload.eventType;
     if (!eventType)
         return;
-    // switch(eventType) {
-    //     case 'session_start':
-    //         Analytics.startSession();
-    //         break;
-    // }
+    switch (eventType) {
+        case 'session_start':
+            Analytics.startSession();
+            break;
+    }
 };
 Common_1.Hub.listen('auth', Analytics);
 Common_1.Hub.listen('storage', Analytics);
 Common_1.Hub.listen('analytics', Analytics);
+Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
 //# sourceMappingURL=index.js.map

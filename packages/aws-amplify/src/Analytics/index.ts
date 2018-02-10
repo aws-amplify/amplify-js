@@ -80,13 +80,14 @@ const analyticsEvent = (payload) => {
     const { eventType } = payload;
     if (!eventType) return;
 
-    // switch(eventType) {
-    //     case 'session_start':
-    //         Analytics.startSession();
-    //         break;
-    // }
+     switch(eventType) {
+         case 'session_start':
+             Analytics.startSession();
+             break;
+     }
 };
 
 Hub.listen('auth', Analytics);
 Hub.listen('storage', Analytics);
 Hub.listen('analytics', Analytics);
+Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');

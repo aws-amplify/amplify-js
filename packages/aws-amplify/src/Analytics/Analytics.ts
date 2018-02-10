@@ -20,7 +20,7 @@ import {
 import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
 import Auth from '../Auth';
 
-import { EventAttributes, EventMetrics } from './types';
+import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
 
@@ -35,7 +35,7 @@ export default class AnalyticsClass {
     private _config;
     private _buffer;
     private _provider;
-    private _pluggables;
+    private _pluggables: AnalyticsProvider[];
 
     /**
      * Initialize Analtyics
@@ -46,7 +46,7 @@ export default class AnalyticsClass {
         this._config = {};
         this._pluggables = [];
         // default one
-        this._pluggables.push(new AWSAnalyticsProvider());
+        this.addPluggable(new AWSAnalyticsProvider());
 
         // events batch
         const that = this;
@@ -170,17 +170,15 @@ export default class AnalyticsClass {
      * check if current crednetials exists
      */
     private _getCredentials() {
-        const conf = this._config;
-
+        const that = this;
         return Auth.currentCredentials()
             .then(credentials => {
                 const cred = Auth.essentialCredentials(credentials);
 
-                conf.credentials = cred;
-                conf.endpointId = conf.credentials.identityId;
-                logger.debug('set endpointId for analytics', conf.endpointId);
-                logger.debug('set credentials for analytics', conf.credentials);
-
+                that._config.credentials = cred;
+                that._config.endpointId = cred.identityId;
+                logger.debug('set endpointId for analytics', that._config.endpointId);
+                logger.debug('set credentials for analytics', that._config.credentials);
                 return true;
             })
             .catch(err => {

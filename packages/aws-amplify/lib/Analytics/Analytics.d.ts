@@ -17,15 +17,19 @@ export default class AnalyticsClass {
      * @param {Object} config - Configuration of the Analytics
      */
     configure(config: any): any;
+    /**
+     * add plugin into Analytics category
+     * @param {Object} pluggable - an instance of the plugin
+     */
     addPluggable(pluggable: any): void;
     /**
      * Record Session start
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
     startSession(): Promise<boolean | void>;
     /**
      * Record Session stop
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
     stopSession(): Promise<boolean | void>;
     /**
@@ -33,11 +37,21 @@ export default class AnalyticsClass {
      * @param {String} name - The name of the event
      * @param {Object} [attributs] - Attributes of the event
      * @param {Object} [metrics] - Event metrics
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
     record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<boolean | void>;
+    /**
+     * @private
+     * @param {Object} params - params for the event recording
+     * Send events from buffer
+     */
     private _sendFromBuffer(params);
-    private _putToCache(params);
+    /**
+     * @private
+     * @param params - params for the event recording
+     * Put events into buffer
+     */
+    private _putToBuffer(params);
     /**
      * @private
      * check if current crednetials exists

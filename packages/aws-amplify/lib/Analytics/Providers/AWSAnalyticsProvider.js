@@ -36,37 +36,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../../Common");
+var uuid_1 = require("uuid");
 var logger = new Common_1.ConsoleLogger('AWSAnalyticsProvider');
+var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 var AWSAnalyticsProvider = /** @class */ (function () {
     function AWSAnalyticsProvider(config) {
         this._config = config ? config : {};
     }
+    /**
+     * get the category of the plugin
+     */
     AWSAnalyticsProvider.prototype.getCategory = function () {
         return 'Analytics';
     };
+    /**
+     * get provider name of the plugin
+     */
+    AWSAnalyticsProvider.prototype.getProviderName = function () {
+        return 'AWSAnalytics';
+    };
+    /**
+     * configure the plugin
+     * @param {Object} config - configuration
+     */
     AWSAnalyticsProvider.prototype.configure = function (config) {
         logger.debug('configure Analytics');
         var conf = config ? config : {};
         this._config = Object.assign({}, this._config, conf);
         return this._config;
     };
-    AWSAnalyticsProvider.prototype._init = function (config) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                logger.debug('init clients');
-                this._config = Object.assign(this._config, config);
-                this._initMobileAnalytics();
-                return [2 /*return*/, new Promise(function (res, rej) {
-                        _this._initPinpoint().then(function (data) {
-                            res(true);
-                        }).catch(function (err) {
-                            res(false);
-                        });
-                    })];
-            });
-        });
-    };
+    /**
+     * record an event
+     * @param {Object} params - the params of an event
+     */
     AWSAnalyticsProvider.prototype.record = function (params) {
         var eventName = params.eventName;
         switch (eventName) {
@@ -76,9 +78,12 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                 return this._stopSession(params);
             default:
                 return this._recordCustomEvent(params);
-                ;
         }
     };
+    /**
+     * @private
+     * @param params
+     */
     AWSAnalyticsProvider.prototype._startSession = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
@@ -86,6 +91,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        console.log(params);
                         timestamp = params.timestamp, config = params.config;
                         if (!(this._config.endpointId !== config.endpointId)) return [3 /*break*/, 2];
                         return [4 /*yield*/, this._init(config)];
@@ -96,8 +102,8 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         logger.debug('record session start');
-                        sessionId = Common_1.JS.generateRandomString();
-                        this._sessionId = sessionId;
+                        this._sessionId = uuid_1.v1();
+                        sessionId = this._sessionId;
                         clientContext = this._generateClientContext();
                         eventParams = {
                             clientContext: clientContext,
@@ -116,7 +122,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                                 _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
                                     if (err) {
                                         logger.debug('record event failed. ', err);
-                                        res(false);
+                                        res(_this._checkErrCode(err.code));
                                     }
                                     else {
                                         logger.debug('record event success. ', data);
@@ -128,6 +134,10 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             });
         });
     };
+    /**
+     * @private
+     * @param params
+     */
     AWSAnalyticsProvider.prototype._stopSession = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
@@ -145,7 +155,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         logger.debug('record session stop');
-                        sessionId = this._sessionId ? this._sessionId : Common_1.JS.generateRandomString();
+                        sessionId = this._sessionId ? this._sessionId : uuid_1.v1();
                         clientContext = this._generateClientContext();
                         eventParams = {
                             clientContext: clientContext,
@@ -164,7 +174,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                                 _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
                                     if (err) {
                                         logger.debug('record event failed. ', err);
-                                        res(false);
+                                        res(_this._checkErrCode(err.code));
                                     }
                                     else {
                                         logger.debug('record event success. ', data);
@@ -176,6 +186,10 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             });
         });
     };
+    /**
+     * @private
+     * @param params
+     */
     AWSAnalyticsProvider.prototype._recordCustomEvent = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
@@ -209,7 +223,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                                 _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
                                     if (err) {
                                         logger.debug('record event failed. ', err);
-                                        res(false);
+                                        res(_this._checkErrCode(err.code));
                                     }
                                     else {
                                         logger.debug('record event success. ', data);
@@ -221,6 +235,44 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             });
         });
     };
+    /**
+     * @private
+     * @param code
+     * Check if the error is retryable
+     */
+    AWSAnalyticsProvider.prototype._checkErrCode = function (code) {
+        for (var i = 0; i < NON_RETRYABLE_EXCEPTIONS.length; i++) {
+            if (code === NON_RETRYABLE_EXCEPTIONS[i])
+                return true;
+        }
+        return false;
+    };
+    /**
+     * @private
+     * @param config
+     * Init the clients
+     */
+    AWSAnalyticsProvider.prototype._init = function (config) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                logger.debug('init clients');
+                this._config = Object.assign(this._config, config);
+                this._initMobileAnalytics();
+                return [2 /*return*/, new Promise(function (res, rej) {
+                        _this._initPinpoint().then(function (data) {
+                            res(true);
+                        }).catch(function (err) {
+                            res(false);
+                        });
+                    })];
+            });
+        });
+    };
+    /**
+     * @private
+     * Init the MobileAnalytics client
+     */
     AWSAnalyticsProvider.prototype._initMobileAnalytics = function () {
         var _a = this._config, credentials = _a.credentials, region = _a.region;
         this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });

@@ -1,10 +1,11 @@
-import { ConsoleLogger as Logger, Pinpoint, MobileAnalytics, JS } from '../../Common';
+import { ConsoleLogger as Logger, Pinpoint, MobileAnalytics} from '../../Common';
 import { AnalyticsProvider } from '../types';
+import { v1 as uuid } from 'uuid';
 
 const logger = new Logger('AWSAnalyticsProvider');
 const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 
-export default class AWSAnalyticsProvider {
+export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private _config;
     private mobileAnalytics;
     private pinpointClient;
@@ -17,15 +18,22 @@ export default class AWSAnalyticsProvider {
     /**
      * get the category of the plugin
      */
-    public getCategory() {
+    public getCategory(): string {
         return 'Analytics';
+    }
+
+    /**
+     * get provider name of the plugin
+     */
+    public getProviderName(): string {
+        return 'AWSAnalytics';
     }
 
     /**
      * configure the plugin
      * @param {Object} config - configuration
      */
-    public configure(config) {
+    public configure(config): object {
         logger.debug('configure Analytics');
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
@@ -36,7 +44,7 @@ export default class AWSAnalyticsProvider {
      * record an event
      * @param {Object} params - the params of an event
      */
-    public record(params) {
+    public record(params): Promise<boolean> {
         const { eventName } = params;
         switch (eventName) {
             case '_session_start':
@@ -53,6 +61,7 @@ export default class AWSAnalyticsProvider {
      * @param params 
      */
     private async _startSession(params) {
+        console.log(params);
         // credentials updated
         const { timestamp, config } = params;
         if (this._config.endpointId !== config.endpointId) {
@@ -61,9 +70,8 @@ export default class AWSAnalyticsProvider {
         }
 
         logger.debug('record session start');
-        const sessionId = JS.generateRandomString();
-        this._sessionId = sessionId;
-
+        this._sessionId = uuid();
+        const sessionId = this._sessionId;
         
         const clientContext = this._generateClientContext();
         const eventParams = {
@@ -108,7 +116,7 @@ export default class AWSAnalyticsProvider {
 
         logger.debug('record session stop');
     
-        const sessionId = this._sessionId ? this._sessionId : JS.generateRandomString();
+        const sessionId = this._sessionId ? this._sessionId : uuid();
         const clientContext = this._generateClientContext();
         const eventParams = {
             clientContext,

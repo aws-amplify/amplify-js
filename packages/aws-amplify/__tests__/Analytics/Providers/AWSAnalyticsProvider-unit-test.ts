@@ -31,6 +31,11 @@ jest.mock('../../../src/Common/Builder', () => {
     };
 });
 
+jest.mock('uuid', () => {
+    const mockfn = () => {return 'sessionId'};
+    return { v1: mockfn };
+})
+
 import { Pinpoint, AWS, MobileAnalytics, JS } from '../../../src/Common';
 import AnalyticsProvider from "../../../src/Analytics/Providers/AWSAnalyticsProvider";
 import { ConsoleLogger as Logger } from '../../../src/Common/Logger';
@@ -60,14 +65,20 @@ const options = {
 };
 const timestamp = new Date().getTime();
 
-// // jest.spyOn(JS, 'generateRandomString').mockReturnValue('randomString');
-
 describe("AnalyticsProvider test", () => {
     describe('getCategory test', () => {
         test('happy case', () => {
             const analytics = new AnalyticsProvider();
 
             expect(analytics.getCategory()).toBe('Analytics');
+        });
+    });
+
+    describe('getProviderName test', () => {
+        test('happy case', () => {
+            const analytics = new AnalyticsProvider();
+
+            expect(analytics.getProviderName()).toBe('AWSAnalytics');
         });
     });
 
