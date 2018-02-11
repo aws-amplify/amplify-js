@@ -77,21 +77,7 @@ Now run your application as normal:
 react-native run-ios
 ```
 
-## Documentation
-
-* [Quick Start](docs/media/quick_start.md)
-* [API Reference](docs/media/api_reference.md)
-* [Developer Guide](docs/media/developer_guide.md)
-  * [Installation and Configuration](docs/media/install_n_config.md)
-  * [Authentication](docs/media/authentication_guide.md)
-  * [Analytics](docs/media/analytics_guide.md)
-  * [API](docs/media/api_guide.md)
-  * [Storage](docs/media/storage_guide.md)
-  * [Cache](docs/media/cache_guide.md)
-  * Utilities
-    - [I18n](docs/media/i18n_guide.md)
-    - [Logger](docs/media/logger_guide.md)
-    - [Hub](docs/media/hub_guide.md)
+Documentation is available [here](https://aws.github.io/aws-amplify)
 
 ## Examples
 
