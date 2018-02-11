@@ -184,11 +184,17 @@
       a.icon {
         display: none;
       }
+      #githubLink {
+        display:block;
+      }
     }
 
     @media print, screen and (max-width: 480px) {
       nav { display: block !important; }
       .navbar { display: none; }
+      #githubLink {
+        display:none;
+      }
       a.icon {
         position: absolute;
         top: 20px;
@@ -199,6 +205,10 @@
         display: inline-grid;
         background: #24303e;
         top: 4em;
+        padding: 1em;
+      }
+      .responsive a {
+        text-align: left !important;
       }
     }
     </style>
@@ -209,7 +219,7 @@
           <a href="javascript:void(0);" style="font-size:25px;" class="icon" onclick="showMobileNav()">&#9776;</a>
           <div id="topNav" class="navbar">
             <a href="/aws-amplify/media/quick_start.html">Quick Start</a>
-            <a href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
+            <a id="githubLink" href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
               <span>aws/aws-amplify</span>
             </a>
             <div class="dropdown">
