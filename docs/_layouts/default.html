@@ -180,10 +180,14 @@
       padding: 0 5px 0 5px !important;
     }
 
+    a.icon {
+      display: none;
+    }
+
     @media print, screen and (max-width: 480px) {
       nav { display: block !important; }
       .navbar { display: none; }
-      .navbar a.icon {
+      a.icon {
         float: right !important;
         display: block !important;
       }
@@ -192,7 +196,7 @@
     @media print, screen and (max-width: 480px) {
       nav { display: block !important; }
       .navbar.responsive { position: relative; }
-      .navbar.responsive .icon {
+      .icon {
         position: absolute !important;
         right: 0 !important;
         top: 0 !important;
