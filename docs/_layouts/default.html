@@ -180,8 +180,10 @@
       padding: 0 5px 0 5px !important;
     }
 
-    a.icon {
-      display: none;
+    @media print, screen and (min-width: 481px) {
+      a.icon {
+        display: none;
+      }
     }
 
     @media print, screen and (max-width: 480px) {
