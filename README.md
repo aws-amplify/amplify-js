@@ -95,7 +95,13 @@ react-native run-ios
 
 ## Examples
 
-AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](docs/media/developer_guide.md). A couple of samples are below.
+AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](docs/media/developer_guide.md). A couple of samples are below. For in-depth samples with specific frameworks:
+
+ - [React](https://github.com/awslabs/aws-mobile-react-sample)
+ - [React Native](https://github.com/awslabs/aws-mobile-react-native-starter)
+ - [Ionic](https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws)
+ - Vue (coming soon)
+ - Angular (coming soon)
 
 ### 1. Collect user session metrics
 
