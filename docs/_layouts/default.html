@@ -209,7 +209,7 @@
       <div id="header">
         <nav>
           <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="showMobileNav()">&#9776;</a>
-          <div class="navbar">
+          <div id="topNav" class="navbar">
             <a href="/aws-amplify/media/quick_start.html">Quick Start</a>
             <a href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
               <span>aws/aws-amplify</span>
@@ -264,7 +264,7 @@
 
     <script>
       function showMobileNav() {
-          var x = document.getElementById("myTopnav");
+          var x = document.getElementById("topNav");
           if (x.className === "navbar") {
               x.className += " responsive";
           } else {
