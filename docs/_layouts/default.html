@@ -180,25 +180,25 @@
       padding: 0 5px 0 5px !important;
     }
 
-    @media screen and (max-width: 600px) {
+    @media print, screen and (max-width: 480px) {
       .navbar a:not(:first-child) {display: none;}
       .navbar a.icon {
-        float: right;
-        display: block;
+        float: right !important;
+        display: block !important;
       }
     }
 
-    @media screen and (max-width: 600px) {
+    @media print, screen and (max-width: 480px) {
       .navbar.responsive {position: relative;}
       .navbar.responsive .icon {
-        position: absolute;
-        right: 0;
-        top: 0;
+        position: absolute !important;
+        right: 0 !important;
+        top: 0 !important;
       }
       .navbar.responsive a {
-        float: none;
-        display: block;
-        text-align: left;
+        float: none !important;
+        display: block !important;
+        text-align: left !important;
       }
     }
     </style>
