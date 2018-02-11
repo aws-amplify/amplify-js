@@ -111,6 +111,10 @@
         color: #e9903a !important;
     }
 
+    .navbar .icon {
+      display: none;
+    }
+
     .dropdown-content {
         top: 4em;
         display: none;
@@ -175,14 +179,62 @@
     .aws-button span {
       padding: 0 5px 0 5px !important;
     }
+
+    @media print, screen and (min-width: 481px) {
+      a.icon {
+        display: none;
+      }
+      #githubLink {
+        display:block;
+      }
+      #githubLinkResponsive {
+        display:none;
+      }
+    }
+
+    @media print, screen and (max-width: 480px) {
+      nav { display: block !important; }
+      .navbar { display: none; }
+      #githubLink {
+        display:none;
+      }
+      #githubLinkResponsive {
+        margin: 18px 0 0 0;
+        display:block;
+      }
+      a.icon {
+        position: absolute;
+        top: 20px;
+        display: block !important;
+      }
+      .responsive {
+        position: absolute;
+        display: inline-grid;
+        background: #24303e;
+        top: 4em;
+        left: 0;
+        padding: 1em;
+        overflow: visible;
+      }
+      .responsive a {
+        text-align: left !important;
+      }
+      .dropdown-content {
+        left: 12em;
+      }
+    }
     </style>
   </head>
   <body>
       <div id="header">
         <nav>
-          <div class="navbar">
+          <a href="javascript:void(0);" style="font-size:25px;" class="icon" onclick="showMobileNav()">&#9776;</a>
+          <a id="githubLinkResponsive" href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
+              <span>aws/aws-amplify</span>
+            </a>
+          <div id="topNav" class="navbar">
             <a href="/aws-amplify/media/quick_start.html">Quick Start</a>
-            <a href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
+            <a id="githubLink" href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
               <span>aws/aws-amplify</span>
             </a>
             <div class="dropdown">
@@ -232,5 +284,17 @@
         </div>
       </section>
     </div>
+
+    <script>
+      function showMobileNav() {
+          var x = document.getElementById("topNav");
+          if (x.className === "navbar") {
+              x.className += " responsive";
+          } else {
+              x.className = "navbar";
+          }
+      }
+    </script>
+
   </body>
 </html>
