@@ -1,7 +1,4 @@
-<a href="https://nodei.co/npm/aws-amplify/">
-  <img src="https://nodei.co/npm/aws-amplify.svg?downloads=true&downloadRank=true&stars=true">
-</a>
-<p>
+<p style="text-align:center;">
   <a href="https://gitter.im/AWS-Amplify/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link" target="_blank">
     <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />  
   </a>

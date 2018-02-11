@@ -17,12 +17,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <style>
 
+    /** Theme Overrides **/
     a {
       color: #e9903a !important;
     }
 
     a:hover {
       color: white !important;
+    }
+
+    section #title p {
+      font-size: 16px !important;
     }
 
     #header {
@@ -33,6 +38,9 @@
     #header nav {
       background: transparent;
     }
+    
+    /** Custom **/
+
     .navbar {
         overflow: hidden;
     }
@@ -106,10 +114,10 @@
     }
 
     .aws-button {
-      color: #333 !important;
+      font-weight: bold !important;
       display: inline-block;
       margin: 8px 0 0 0px;
-      min-width: 171px;
+      min-width: 125px;
       width: auto;
       max-width: 100%;
       padding: 7px 16px 6px !important;
@@ -136,7 +144,7 @@
         <nav>
           <div class="navbar">
             <a href="/aws-amplify/media/quick_start.html">Quick Start</a>
-            <button href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;">GitHub</button>
+            <a href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">GitHub</a>
             <div class="dropdown">
               <a class="dropbtn">Developer Guides</a>
               <div class="dropdown-content">
@@ -156,7 +164,7 @@
                   <a href="/aws-amplify/media/hub_guide.html">Hub</a>
                 </div>
             </div>
-            <a href="/aws-amplify/api/index.html">API</a>
+            <a href="/aws-amplify/api/index.html" target="_blank">API</a>
         </div>
         </nav>
       </div><!-- end header -->
