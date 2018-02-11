@@ -111,6 +111,10 @@
         color: #e9903a !important;
     }
 
+    .navbar .icon {
+      display: none;
+    }
+
     .dropdown-content {
         top: 4em;
         display: none;
@@ -175,6 +179,28 @@
     .aws-button span {
       padding: 0 5px 0 5px !important;
     }
+
+    @media screen and (max-width: 600px) {
+      .navbar a:not(:first-child) {display: none;}
+      .navbar a.icon {
+        float: right;
+        display: block;
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      .navbar.responsive {position: relative;}
+      .navbar.responsive .icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+      .navbar.responsive a {
+        float: none;
+        display: block;
+        text-align: left;
+      }
+    }
     </style>
   </head>
   <body>
@@ -205,6 +231,7 @@
                 </div>
             </div>
             <a href="/aws-amplify/api/index.html" target="_blank">API</a>
+            <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="showMobileNav()">&#9776;</a>
         </div>
         </nav>
       </div><!-- end header -->
@@ -232,5 +259,17 @@
         </div>
       </section>
     </div>
+
+    <script>
+      function showMobileNav() {
+          var x = document.getElementById("myTopnav");
+          if (x.className === "navbar") {
+              x.className += " responsive";
+          } else {
+              x.className = "navbar";
+          }
+      }
+    </script>
+
   </body>
 </html>
