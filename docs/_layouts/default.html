@@ -187,6 +187,9 @@
       #githubLink {
         display:block;
       }
+      #githubLinkResponsive {
+        display:none;
+      }
     }
 
     @media print, screen and (max-width: 480px) {
@@ -194,6 +197,9 @@
       .navbar { display: none; }
       #githubLink {
         display:none;
+      }
+      #githubLinkResponsive {
+        display:block;
       }
       a.icon {
         position: absolute;
@@ -222,6 +228,9 @@
       <div id="header">
         <nav>
           <a href="javascript:void(0);" style="font-size:25px;" class="icon" onclick="showMobileNav()">&#9776;</a>
+          <a id="githubLinkResponsive" href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
+              <span>aws/aws-amplify</span>
+            </a>
           <div id="topNav" class="navbar">
             <a href="/aws-amplify/media/quick_start.html">Quick Start</a>
             <a id="githubLink" href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
