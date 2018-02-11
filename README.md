@@ -23,10 +23,12 @@
 
 AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications. The library is a declarative interface across different categories of operations in order to make common tasks easier to add into your application. The default implementation works with Amazon Web Services (AWS) resources but is designed to be open and pluggable for usage with other cloud services that wish to provide an implementation or custom backends.
 
+<img src="https://dha4w82d62smt.cloudfront.net/items/1z3c0R3C3R1M063M3g2D/Screen%20Recording%202018-02-11%20at%2009.02%20AM.gif" style="display: block;height: auto;width: 100%;"/>
+
 * [Installation](#installation)
   - [Web Development](#web-development)
   - [React Native Development](#react-native-development)
-* [Documentation](#documentation)
+* [Documentation](https://aws.github.io/aws-amplify)
 * [Examples](#example)
   - [1. Collect user session metrics.](#1-collect-user-session-metrics)
   - [2. Add Authentication](#2-add-authentication-to-your-app)
@@ -93,7 +95,13 @@ react-native run-ios
 
 ## Examples
 
-AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](docs/media/developer_guide.md). A couple of samples are below.
+AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](docs/media/developer_guide.md). A couple of samples are below. For in-depth samples with specific frameworks:
+
+ - [React](https://github.com/awslabs/aws-mobile-react-sample)
+ - [React Native](https://github.com/awslabs/aws-mobile-react-native-starter)
+ - [Ionic](https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws)
+ - Vue (coming soon)
+ - Angular (coming soon)
 
 ### 1. Collect user session metrics
 
