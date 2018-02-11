@@ -197,13 +197,22 @@ export default AppWithAuth;
 
 In the above example you'll see the App rendered even before the user is signed in. This is easy to change.
 
-When inside `Authenticator`, the App component will get a few properties.
+When inside `Authenticator`, the App component will receive a few properties.
 
-* authState - current authentication state, signIn | signUp | confirmSignIn | confirmSignUp | forgotPassword | verifyContact | signedIn
-* authData - additional data to the authState, when signedIn it is an user object
-* onStateChange - callback function, for what's inside `Authenticator` to notify authState changes.
+**authState** is the current authentication state (a string):
+ - `signIn`
+ - `signUp`
+ - `confirmSignIn`
+ - `confirmSignUp`
+ - `forgotPassword`
+ - `verifyContact`
+ - `signedIn`
 
-With that, to control when to render App component, simply add the following line to the `render()` method of the `App` component:
+**authData** - additional data within authState, when `signedIn`, it is a `user` object
+
+**onStateChange** - callback function for `Authenticator` which notifies authState changes.
+
+With `Authenticator`, you can control when to render your App component. For example, simply add the following line to the `render()` method of your `App` component:
 ```js
     render() {
         if (this.props.authState !== 'signedIn') { return null; }
