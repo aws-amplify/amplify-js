@@ -106,19 +106,19 @@
     }
 
     .aws-button {
+      color: #333 !important;
       display: inline-block;
-      margin: 17px 0 0 15px;
+      margin: 8px 0 0 0px;
       min-width: 171px;
       width: auto;
       max-width: 100%;
-      height: 35px;
-      padding: 7px 16px 6px;
+      padding: 7px 16px 6px !important;
       border: 1px solid;
       border-color: #be952c #a68226 #9b7924;
       line-height: 1.4;
       vertical-align: middle;
       text-align: center;
-      font-size: 14px;
+      font-size: 14px !important;
       font-weight: 500;
       text-shadow: hsla(0,0%,100%,.8) 0 1px 0;
       text-decoration: none!important;
@@ -136,7 +136,7 @@
         <nav>
           <div class="navbar">
             <a href="/aws-amplify/media/quick_start.html">Quick Start</a>
-            <a href="/aws-amplify/api/index.html" target="_blank" style="float:right;">API Docs</a>
+            <button href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;">GitHub</button>
             <div class="dropdown">
               <a class="dropbtn">Developer Guides</a>
               <div class="dropdown-content">
@@ -156,7 +156,7 @@
                   <a href="/aws-amplify/media/hub_guide.html">Hub</a>
                 </div>
             </div>
-            <a href="{{ site.github.repository_url }}">GitHub</a>
+            <a href="/aws-amplify/api/index.html">API</a>
         </div>
         </nav>
       </div><!-- end header -->
