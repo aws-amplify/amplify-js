@@ -28,7 +28,7 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
 * [Installation](#installation)
   - [Web Development](#web-development)
   - [React Native Development](#react-native-development)
-* [Documentation](#documentation)
+* [Documentation](https://aws.github.io/aws-amplify)
 * [Examples](#example)
   - [1. Collect user session metrics.](#1-collect-user-session-metrics)
   - [2. Add Authentication](#2-add-authentication-to-your-app)
