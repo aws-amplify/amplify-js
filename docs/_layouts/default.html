@@ -69,6 +69,10 @@
     #header nav {
       background: transparent;
     }
+
+    ul {
+      list-style-image: none;
+    }
     
     /** Custom **/
 
@@ -168,6 +172,9 @@
       border-radius: 3px;
       cursor: pointer;
     }
+    .aws-button span {
+      padding: 0 5px 0 5px !important;
+    }
     </style>
   </head>
   <body>
@@ -175,7 +182,9 @@
         <nav>
           <div class="navbar">
             <a href="/aws-amplify/media/quick_start.html">Quick Start</a>
-            <a href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">GitHub</a>
+            <a href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
+              <span>aws/aws-amplify</span>
+            </a>
             <div class="dropdown">
               <a class="dropbtn">Developer Guides</a>
               <div class="dropdown-content">
