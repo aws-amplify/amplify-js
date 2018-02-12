@@ -2,6 +2,14 @@
 <!--LATEST=0.1.36-->
 <!--ENTRYINSERT-->
 
+## 02/12/2018
+* aws-amplify - v0.2.5
+    * Bug fix: Wait for current credentials before signOut #247
+    * Documentation updated #253 #251 #258 #264 #265 #266 #269 #270 #271 
+* amazon-cognito-identity-js - v1.32.0
+    * Enhancement: Merge cognito pr 662 and 668 #248
+    * Ehhancement: Adding migration trigger support #257
+
 ## 02/07/2018
 * aws-amplify - v0.2.4
     * Bug fix: Safe check for navigator variable
