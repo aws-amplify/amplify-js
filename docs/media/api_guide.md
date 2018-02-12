@@ -24,6 +24,26 @@ Amazon Cognito Identity Pool requires to have access to the API using Amazon IAM
 
 [Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started.html)
 
+### Automated Setup
+
+To create a project fully functioning with the API category.
+
+```
+$ npm install -g awsmobile-cli
+$ cd my-app
+$ awsmobile init
+$ awsmobile enable cloud-api
+$ awsmobile push
+```
+
+In your project i.e. App.js:
+
+```
+import Amplify, { API } from 'aws-amplify';
+import aws_exports from './aws-exports';
+Amplify.configure(aws_exports);
+```
+
 ### Manual Setup
 
 After configuring this resources you can add these lines to your source code.
@@ -32,10 +52,14 @@ import Amplify, { API } from 'aws-amplify';
 
 Amplify.configure({
     Auth: {
-        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
-        region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
-        userPoolId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito User Pool ID
-        userPoolWebClientId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito Web Client ID
+    // REQUIRED - Amazon Cognito Identity Pool ID
+        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
+    // REQUIRED - Amazon Cognito Region
+        region: 'XX-XXXX-X', 
+    // OPTIONAL - Amazon Cognito User Pool ID
+        userPoolId: 'XX-XXXX-X_abcd1234', 
+    // OPTIONAL - Amazon Cognito Web Client ID
+        userPoolWebClientId: 'XX-XXXX-X_abcd1234',
     },
     API: {
         endpoints: [
@@ -51,31 +75,6 @@ Amplify.configure({
     }
 });
 
-```
-
-### Automated Setup
-
-To create a project fully functioning with the API category.
-
-```
-$ npm install -g awsmobile-cli
-$ cd my-app
-$ awsmobile init
-$ awsmobile enable cloud-api
-```
-
-In your project i.e. App.js:
-
-```
-import Amplify, { API } from 'aws-amplify';
-import aws_exports from './aws-exports';
-Amplify.configure(aws_exports);
-```
-
-This will create a project that works with API category fully functioning. Your lambda function will be in the awsmobilejs folder within your project. You can edit your lambda code and then upload the changes with:
-
-```
-$ awsmobile push
 ```
 
 ## Integration
