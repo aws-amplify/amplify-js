@@ -3,8 +3,8 @@
 AWS Amplify API module provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
 
 * [Installation and Configuration](#installation-and-configuration)
-  - [Manual Setup](#manual-setup)
   - [Automated Setup](#automated-setup)
+  - [Manual Setup](#manual-setup)
 * [Integration](#integration)
   * [GET](#get)
   * [POST](#post)
