@@ -21,7 +21,36 @@
   </a>
 </p>
 
-AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications. The library is a declarative interface across different categories of operations in order to make common tasks easier to add into your application. The default implementation works with Amazon Web Services (AWS) resources but is designed to be open and pluggable for usage with other cloud services that wish to provide an implementation or custom backends.
+---
+
+AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications. The library is a declarative interface across different categories of operations in order to make common tasks easier to add into your application. 
+
+## AWS services    
+
+- [Identity](https://aws.github.io/aws-amplify/media/authentication_guide.html) - [Amazon Cognito](https://aws.amazon.com/cognito/)
+- [Storage](https://aws.github.io/aws-amplify/media/storage_guide.html) - [Amazon S3](https://aws.amazon.com/s3/)
+- [Analytics](https://aws.github.io/aws-amplify/media/analytics_guide.html) - [Amazon Pinpoint](https://aws.amazon.com/pinpoint/)
+- [GraphQL](https://aws.amazon.com/appsync/) - [AWS AppSync](https://aws.amazon.com/appsync/)
+- [API](https://aws.github.io/aws-amplify/media/api_guide.html) - [Amazon API Gateway](https://aws.amazon.com/api-gateway/)
+
+## Other Cloud Services    
+
+The default implementation works with Amazon Web Services (AWS) resources but is designed to be open and pluggable for usage with other cloud services that wish to provide an implementation or custom backends.
+
+## Platforms & Frameworks Supported    
+
+#### Mobile
+  - iOS
+  - Android
+  - React Native
+  - Ionic
+#### Web
+  - Vue
+  - React
+  - Angular
+
+
+## Getting Started
 
 <img src="https://dha4w82d62smt.cloudfront.net/items/1z3c0R3C3R1M063M3g2D/Screen%20Recording%202018-02-11%20at%2009.02%20AM.gif" style="display: block;height: auto;width: 100%;"/>
 
@@ -35,6 +64,7 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
   - [3. Sign HTTP requests](#3-sign-http-requests)
   - [4. Upload and Download public or private content](#4-upload-and-download-public-or-private-content)
 * [Contributing](#contributing)
+* [API Overview](#api-overview)
 
 ## Installation
 
@@ -193,3 +223,45 @@ With configurable settings, store content in an S3 bucket in public folders for 
 ## Contributing
 
 See [Contributing Guidelines](https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md)
+
+----
+
+## API Overview
+
+### Auth
+
+```
+import { Auth } from 'aws-amplify'
+
+Auth
+  .signUp(username, password)
+  .then(userData => console.log({ userData }))
+  .catch(err => console.log({ err }))
+```
+
+| Method Name   | Usage                                                        | Return type |
+| ------------- | ------------------------------------------------------------ | ----------- |
+| [configure](https://aws.github.io/aws-amplify/api/classes/authclass.html#configure) | configure(config: any) | any |
+| [signUp](https://aws.github.io/aws-amplify/api/classes/authclass.html#signup)        | signUp(user: any, password: string, requiredAttributes: any) | Promise: any |
+| [confirmSignUp](https://aws.github.io/aws-amplify/api/classes/authclass.html#confirmsignup) | confirmSignUp(username: string, code: string) | Promise: any |
+| [signIn](https://aws.github.io/aws-amplify/api/classes/authclass.html#signin) | signIn(username: string, password: string) | Promise: any |
+| [confirmSignIn](https://aws.github.io/aws-amplify/api/classes/authclass.html#confirmsignin) | confirmSignIn(user: any, code: string) | Promise: any |
+| [completeNewPassword](https://aws.github.io/aws-amplify/api/classes/authclass.html#completenewpassword) | completeNewPassword(user: any, password: string, requiredAttributes: any) | Promise: any |
+| [currentAuthenticatedUser](https://aws.github.io/aws-amplify/api/classes/authclass.html#currentauthenticateduser) | currentAuthenticatedUser() | Promise: any |
+| [currentCredentials](https://aws.github.io/aws-amplify/api/classes/authclass.html#currentcredentials) | currentCredentials() | Promise: any |
+| [currentSession](https://aws.github.io/aws-amplify/api/classes/authclass.html#currentsession) | currentSession() | Promise: any |
+| [currentUserCredentials](https://aws.github.io/aws-amplify/api/classes/authclass.html#currentusercredentials) | currentUserCredentials() | Promise: any |
+| [currentUserInfo](https://aws.github.io/aws-amplify/api/classes/authclass.html#currentuserinfo) | currentUserInfo() | Promise: any |
+| [currentUserPoolUser](https://aws.github.io/aws-amplify/api/classes/authclass.html#currentuserpooluser) | currentUserPoolUser() | Promise: any |
+| [essentialCredentials](https://aws.github.io/aws-amplify/api/classes/authclass.html#essentialcredentials) | essentialCredentials(credentials: any) | object |
+| [federatedSignIn](https://aws.github.io/aws-amplify/api/classes/authclass.html#federatedsignin) | federatedSignIn(provider: any, response: any, user: any) | any |
+| [forgotPassword](https://aws.github.io/aws-amplify/api/classes/authclass.html#forgotpassword) | forgotPassword(username: string) | Promise: any |
+| [forgotPasswordSubmit](https://aws.github.io/aws-amplify/api/classes/authclass.html#forgotpasswordsubmit) | forgotPasswordSubmit(username: string, code: string, password: string) | Promise: any |
+| [resendSignup](https://aws.github.io/aws-amplify/api/classes/authclass.html#resendsignup) | resendSignUp(username: string) | Promise |
+| [updateUserAttributes](https://aws.github.io/aws-amplify/api/classes/authclass.html#updateuserattributes) | updateUserAttributes(user: any, attributes: object) | Promise: any |
+| [userSession](https://aws.github.io/aws-amplify/api/classes/authclass.html#usersession) | userSession(user: any) | Promise:any |
+| [verifiedContact](https://aws.github.io/aws-amplify/api/classes/authclass.html#verifiedcontact) | verifiedContact(user: any) | Promise: object |
+| [verifyCurrentUserAttribute](https://aws.github.io/aws-amplify/api/classes/authclass.html#verifycurrentuserattribute) | verifyCurrentUserAttribute(attr: any) | Promise: any |
+| [verifyCurrentUserAttributeSubmit](https://aws.github.io/aws-amplify/api/classes/authclass.html#verifycurrentuserattributesubmit) | verifyCurrentUserAttributeSubmit(attr: any, code: any) | Promise: any |
+| [verifyUserAttribute](https://aws.github.io/aws-amplify/api/classes/authclass.html#verifyuserattribute) | verifyUserAttribute(user: any, attr: any) | Promise: any |
+| [verifyUserAttributeSubmit](https://aws.github.io/aws-amplify/api/classes/authclass.html#verifyuserattributesubmit) | verifyUserAttributeSubmit(user: any, attr: any, code: any) | Promise: any |
