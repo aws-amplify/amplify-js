@@ -109,7 +109,7 @@ See [here](https://aws.github.io/aws-amplify/media/analytics_guide.html) for the
 
 ### 2. Add Authentication to your App
 
-<a href="https://cl.ly/1n1B2C0S1X1r" target="_blank"><img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/></a>
+<img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
 
 Take a fresh React app created by `create-react-app` as an example and edit the `App.js` file:
 
