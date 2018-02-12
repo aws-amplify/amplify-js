@@ -1,7 +1,4 @@
-<a href="https://nodei.co/npm/aws-amplify/">
-  <img src="https://nodei.co/npm/aws-amplify.svg?downloads=true&downloadRank=true&stars=true">
-</a>
-<p>
+<p style="text-align:center;">
   <a href="https://gitter.im/AWS-Amplify/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link" target="_blank">
     <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />  
   </a>
@@ -21,11 +18,7 @@
 
 AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications. The library is a declarative interface across different categories of operations in order to make common tasks easier to add into your application. The default implementation works with Amazon Web Services (AWS) resources but is designed to be open and pluggable for usage with other cloud services that wish to provide an implementation or custom backends.
 
-* [Installation](#installation)
-  - [Web Development](#web-development)
-  - [React Native Development](#react-native-development)
-* [Documentation](#documentation)
-* [Contributing](#contributing)
+<img src="https://dha4w82d62smt.cloudfront.net/items/1z3c0R3C3R1M063M3g2D/Screen%20Recording%202018-02-11%20at%2009.02%20AM.gif" style="display: block;height: auto;width: 100%;"/>
 
 ## Installation
 

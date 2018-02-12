@@ -23,10 +23,12 @@
 
 AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications. The library is a declarative interface across different categories of operations in order to make common tasks easier to add into your application. The default implementation works with Amazon Web Services (AWS) resources but is designed to be open and pluggable for usage with other cloud services that wish to provide an implementation or custom backends.
 
+<img src="https://dha4w82d62smt.cloudfront.net/items/1z3c0R3C3R1M063M3g2D/Screen%20Recording%202018-02-11%20at%2009.02%20AM.gif" style="display: block;height: auto;width: 100%;"/>
+
 * [Installation](#installation)
   - [Web Development](#web-development)
   - [React Native Development](#react-native-development)
-* [Documentation](#documentation)
+* [Documentation](https://aws.github.io/aws-amplify)
 * [Examples](#example)
   - [1. Collect user session metrics.](#1-collect-user-session-metrics)
   - [2. Add Authentication](#2-add-authentication-to-your-app)
@@ -40,24 +42,27 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
 AWS Amplify is available as the `aws-amplify` package on [npm](https://www.npmjs.com/)
 
 ```
-npm install aws-amplify --save
+$ npm install aws-amplify --save
 ```
 
 If you are developing a [React](https://github.com/facebook/react/) app, you can install an additional package `aws-amplify-react` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
 
 ```
-npm install aws-amplify-react --save
+$ npm install aws-amplify-react --save
 ```
 
 ### React Native Development
 
 For React Native development, install `aws-amplify` 
+
+```bash
+$ npm install aws-amplify --save
 ```
-npm install aws-amplify --save
-```
+
 If you are developing a [React Native](https://github.com/facebook/react-native) app, you can install an additional package `aws-amplify-react-native` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
-```
-npm install aws-amplify-react-native --save
+
+```bash
+$ npm install aws-amplify-react-native --save
 ```
 
 Unless your react-native app was created using [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), you will need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) libraries in your project for the Auth module on React Native.
@@ -65,35 +70,27 @@ Unless your react-native app was created using [Expo v25.0.0 or greater](https:/
 To link `amazon-cognito-identity-js`, you must first `eject` the project:
 
 ```bash
-npm run eject
-react-native link amazon-cognito-identity-js
+$ npm run eject
+$ react-native link amazon-cognito-identity-js
 ```
 
 Now run your application as normal:
 
 ```bash
-react-native run-ios
+$ react-native run-ios
 ```
 
-## Documentation
-
-* [Quick Start](docs/media/quick_start.md)
-* [API Reference](docs/media/api_reference.md)
-* [Developer Guide](docs/media/developer_guide.md)
-  * [Installation and Configuration](docs/media/install_n_config.md)
-  * [Authentication](docs/media/authentication_guide.md)
-  * [Analytics](docs/media/analytics_guide.md)
-  * [API](docs/media/api_guide.md)
-  * [Storage](docs/media/storage_guide.md)
-  * [Cache](docs/media/cache_guide.md)
-  * Utilities
-    - [I18n](docs/media/i18n_guide.md)
-    - [Logger](docs/media/logger_guide.md)
-    - [Hub](docs/media/hub_guide.md)
+Documentation is available [here](https://aws.github.io/aws-amplify)
 
 ## Examples
 
-AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](docs/media/developer_guide.md). A couple of samples are below.
+AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](docs/media/developer_guide.md). A couple of samples are below. For in-depth samples with specific frameworks:
+
+ - [React](https://github.com/awslabs/aws-mobile-react-sample)
+ - [React Native](https://github.com/awslabs/aws-mobile-react-native-starter)
+ - [Ionic](https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws)
+ - Vue (coming soon)
+ - Angular (coming soon)
 
 ### 1. Collect user session metrics
 
@@ -104,9 +101,16 @@ import Amplify, { Analytics } from 'aws-amplify';
 import aws_exports from './aws-exports';
 
 Amplify.configure(aws_exports);
+...
+Analytics.record('myCustomEvent');
 ```
 
+See [here](https://aws.github.io/aws-amplify/media/analytics_guide.html) for the Analytics developer guide. 
+
 ### 2. Add Authentication to your App
+
+<img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
+
 Take a fresh React app created by `create-react-app` as an example and edit the `App.js` file:
 
 ```jsx

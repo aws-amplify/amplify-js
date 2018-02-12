@@ -3,8 +3,8 @@
 The AWS Amplify Auth module provides Authentication APIs and building blocks to developers wishing to use pre-build components or scaffold out custom UX. Depending on needs, Auth can be integrated at different levels.
 
 * [Installation and Configuration](#installation-and-configuratoin)
-  - [Manual Setup](#manual-setup)
   - [Automated Setup](#automated-setup)
+  - [Manual Setup](#manual-setup)
 * [Integration](#integration)
   - [1. Call APIs](#1-call-apis)
   - [2. withAuthenticator HOC](#2-withauthenticator-hoc)
@@ -21,21 +21,6 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
 
 Please refer to this [Guide](install_n_config.md) for general setup. Here are Authentication specific setup.
 
-### Manual Setup
-
-```js
-import Amplify from 'aws-amplify';
-
-Amplify.configure({
-    Auth: {
-        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
-        region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
-        userPoolId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito User Pool ID
-        userPoolWebClientId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito Web Client ID
-    }
-});
-```
-
 ### Automated Setup
 
 To create a project fully functioning with the Auth category.
@@ -45,6 +30,7 @@ $ npm install -g awsmobile-cli
 $ cd my-app
 $ awsmobile init
 $ awsmobile enable user-signin
+$ awsmobile push
 ```
 
 In your project i.e. App.js:
@@ -53,6 +39,25 @@ In your project i.e. App.js:
 import Amplify, { Auth } from 'aws-amplify';
 import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
+```
+
+### Manual Setup
+
+```js
+import Amplify from 'aws-amplify';
+
+Amplify.configure({
+    Auth: {
+    // REQUIRED - Amazon Cognito Identity Pool ID
+        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
+    // REQUIRED - Amazon Cognito Region
+        region: 'XX-XXXX-X', 
+    // OPTIONAL - Amazon Cognito User Pool ID
+        userPoolId: 'XX-XXXX-X_abcd1234',
+    // OPTIONAL - Amazon Cognito Web Client ID
+        userPoolWebClientId: 'XX-XXXX-X_abcd1234',
+    }
+});
 ```
 
 ## Integration
@@ -123,6 +128,8 @@ Auth.forgotPasswordSubmit(username, code, new_password)
 ```
 
 ### 2. withAuthenticator HOC
+
+<img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
 
 For React and React Native apps, the simplest way to add Auth flows into your app is to use `withAuthenticator`.
 
@@ -197,13 +204,22 @@ export default AppWithAuth;
 
 In the above example you'll see the App rendered even before the user is signed in. This is easy to change.
 
-When inside `Authenticator`, the App component will get a few properties.
+When inside `Authenticator`, the App component will receive a few properties.
 
-* authState - current authentication state, signIn | signUp | confirmSignIn | confirmSignUp | forgotPassword | verifyContact | signedIn
-* authData - additional data to the authState, when signedIn it is an user object
-* onStateChange - callback function, for what's inside `Authenticator` to notify authState changes.
+**authState** is the current authentication state (a string):
+ - `signIn`
+ - `signUp`
+ - `confirmSignIn`
+ - `confirmSignUp`
+ - `forgotPassword`
+ - `verifyContact`
+ - `signedIn`
 
-With that, to control when to render App component, simply add the following line to the `render()` method of the `App` component:
+**authData** - additional data within authState, when `signedIn`, it is a `user` object
+
+**onStateChange** - callback function for `Authenticator` which notifies authState changes.
+
+With `Authenticator`, you can control when to render your App component. For example, simply add the following line to the `render()` method of your `App` component:
 ```js
     render() {
         if (this.props.authState !== 'signedIn') { return null; }
