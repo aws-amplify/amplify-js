@@ -2,8 +2,8 @@
 AWS Amplify is not limited to AWS or React. The library is designed to support different contributions across categories for alternative implementations, both on the Cloud interactions as well as the JavaScript framework components. However, there are React & React Native specific extensions that can be leveraged. Additionally, we showcase the usage with AWS resources to streamline getting started.
 
 * [Installation & Configuration](#installation)
-* [Analytics](#more-analytics)
-* [Authentication](#bind-authentications)
+* [Analytics](#analytics)
+* [Authentication](#authentication)
 * [React Native Development](#react-native-development)
 
 You can begin with an existing React application. Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app).
