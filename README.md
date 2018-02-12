@@ -42,24 +42,27 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
 AWS Amplify is available as the `aws-amplify` package on [npm](https://www.npmjs.com/)
 
 ```
-npm install aws-amplify --save
+$ npm install aws-amplify --save
 ```
 
 If you are developing a [React](https://github.com/facebook/react/) app, you can install an additional package `aws-amplify-react` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
 
 ```
-npm install aws-amplify-react --save
+$ npm install aws-amplify-react --save
 ```
 
 ### React Native Development
 
 For React Native development, install `aws-amplify` 
+
+```bash
+$ npm install aws-amplify --save
 ```
-npm install aws-amplify --save
-```
+
 If you are developing a [React Native](https://github.com/facebook/react-native) app, you can install an additional package `aws-amplify-react-native` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
-```
-npm install aws-amplify-react-native --save
+
+```bash
+$ npm install aws-amplify-react-native --save
 ```
 
 Unless your react-native app was created using [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), you will need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) libraries in your project for the Auth module on React Native.
@@ -67,14 +70,14 @@ Unless your react-native app was created using [Expo v25.0.0 or greater](https:/
 To link `amazon-cognito-identity-js`, you must first `eject` the project:
 
 ```bash
-npm run eject
-react-native link amazon-cognito-identity-js
+$ npm run eject
+$ react-native link amazon-cognito-identity-js
 ```
 
 Now run your application as normal:
 
 ```bash
-react-native run-ios
+$ react-native run-ios
 ```
 
 Documentation is available [here](https://aws.github.io/aws-amplify)
@@ -98,9 +101,16 @@ import Amplify, { Analytics } from 'aws-amplify';
 import aws_exports from './aws-exports';
 
 Amplify.configure(aws_exports);
+...
+Analytics.record('myCustomEvent');
 ```
 
+See [here](https://aws.github.io/aws-amplify/media/analytics_guide.html) for the Analytics developer guide. 
+
 ### 2. Add Authentication to your App
+
+<a href="https://cl.ly/1n1B2C0S1X1r" target="_blank"><img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/></a>
+
 Take a fresh React app created by `create-react-app` as an example and edit the `App.js` file:
 
 ```jsx
