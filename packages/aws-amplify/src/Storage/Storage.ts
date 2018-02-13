@@ -39,6 +39,11 @@ export default class StorageClass {
     private _options;
 
     /**
+     * @public
+     */
+    public vault: StorageClass;
+
+    /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
      */
