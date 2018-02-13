@@ -816,6 +816,26 @@ The CookieStorage object receives a map (data) in its constructor that may have 
             console.log('call result ' + result)
         });
   ```
+  
+**Use case 30.** Authenticating a user with a user password auth flow. 
+
+  ```js
+	     cognitoUser.setAuthenticationFlowType('USER_PASSWORD_AUTH');
+	
+	     cognitoUser.initiateAuth(authenticationDetails, {
+	        onSuccess: function(result) {
+	            // User authentication was successful
+	        },
+	        onFailure: function(err) {
+	            // User authentication was not successful
+	        },
+	        mfaRequired: function (codeDeliveryDetails) {
+	            // MFA is required to complete user authentication.  
+	            // Get the code from user and call
+	            cognitoUser.sendMFACode(verificationCode, this);
+	        }
+	     });
+  ```
 
 ## Network Configuration
 The Amazon Cognito Identity JavaScript SDK will make requests to the following endpoints
@@ -830,6 +850,18 @@ In order to authenticate with the Amazon Cognito Identity Service, the client ne
 
 ## Change Log
 
+**v1.32.0:**
+* What has changed
+  * Added migration lambda trigger support. 
+
+**v1.31.0:**
+* What has changed
+  * Added lib folder.
+
+**v1.30.0:**
+* What has changed
+  * Temporary fix to lock down the AWS SDK version to a compatible one.
+  
 **v1.29.0:**
 * What has changed
   * Fixing verify software token call to work with access token.
