@@ -37,6 +37,7 @@ export default class VerifyContact extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['verifyContact'];
         this.state = {
             verifyAttr: null,
             error: null
@@ -118,12 +119,7 @@ export default class VerifyContact extends AuthPiece {
         );
     }
 
-    render() {
-        if (!['verifyContact'].includes(this.props.authState)) {
-            return null;
-        }
-
-        const theme = this.props.theme || AmplifyTheme;
+    showComponent(theme) {
         return React.createElement(
             View,
             { style: theme.section },

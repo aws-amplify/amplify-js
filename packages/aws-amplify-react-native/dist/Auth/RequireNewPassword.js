@@ -37,6 +37,7 @@ export default class RequireNewPassword extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['requireNewPassword'];
         this.state = {
             password: null,
             error: null
@@ -52,12 +53,7 @@ export default class RequireNewPassword extends AuthPiece {
         Auth.completeNewPassword(user, password, user.challengeParam.requiredAttributes).then(data => this.changeState('signedIn')).catch(err => this.error(err));
     }
 
-    render() {
-        if (!['requireNewPassword'].includes(this.props.authState)) {
-            return null;
-        }
-
-        const theme = this.props.theme || AmplifyTheme;
+    showComponent(theme) {
         return React.createElement(
             View,
             { style: theme.section },
