@@ -51,6 +51,7 @@ var VerifyContact = function (_AuthPiece) {
 
         var _this = _possibleConstructorReturn(this, (VerifyContact.__proto__ || Object.getPrototypeOf(VerifyContact)).call(this, props));
 
+        _this._validAuthStates = ['verifyContact'];
         _this.verify = _this.verify.bind(_this);
         _this.submit = _this.submit.bind(_this);
 
@@ -175,21 +176,14 @@ var VerifyContact = function (_AuthPiece) {
             return submitView;
         }()
     }, {
-        key: 'render',
+        key: 'showComponent',
         value: function () {
-            function render() {
+            function showComponent(theme) {
                 var _this4 = this;
 
                 var _props = this.props,
-                    authState = _props.authState,
                     authData = _props.authData,
                     hide = _props.hide;
-
-                if (authState !== 'verifyContact') {
-                    return null;
-                }
-
-                var theme = this.props.theme || _AmplifyTheme2['default'];
 
                 if (hide && hide.includes(VerifyContact)) {
                     return null;
@@ -231,7 +225,7 @@ var VerifyContact = function (_AuthPiece) {
                 );
             }
 
-            return render;
+            return showComponent;
         }()
     }]);
 
