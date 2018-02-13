@@ -79,6 +79,10 @@ var Picker = function (_Component) {
                 var that = this;
 
                 var file = e.target.files[0];
+                if (!file) {
+                    return;
+                }
+
                 var name = file.name,
                     size = file.size,
                     type = file.type;

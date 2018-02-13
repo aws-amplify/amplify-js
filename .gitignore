@@ -6,4 +6,5 @@ node_modules/**
 packages/*/node_modules/**
 .DS_Store
 .vscode
+.idea
 *.log

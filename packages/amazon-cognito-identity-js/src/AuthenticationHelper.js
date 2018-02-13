@@ -16,12 +16,10 @@
  */
 
 import { Buffer } from 'buffer/';
-import randomBytes from 'randombytes';
-//import createHmac from 'create-hmac';
-//import createHash from 'create-hash';
 import * as crypto from 'crypto-browserify';
 const createHash = crypto.createHash;
 const createHmac = crypto.createHmac;
+const randomBytes = crypto.randomBytes;
 
 import BigInteger from './BigInteger';
 

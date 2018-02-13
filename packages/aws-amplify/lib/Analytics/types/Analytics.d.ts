@@ -1,4 +1,4 @@
-import * as AWS from 'aws-sdk';
+import { AWS } from '../../Common';
 /**
 * Analytics instance options
 */

@@ -76,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.__esModule = true;
 
-	var _AuthenticationDetails = __webpack_require__(22);
+	var _AuthenticationDetails = __webpack_require__(19);
 
 	Object.defineProperty(exports, 'AuthenticationDetails', {
 	  enumerable: true,
@@ -139,7 +139,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	});
 
-	var _CognitoUserPool = __webpack_require__(24);
+	var _CognitoUserPool = __webpack_require__(21);
 
 	Object.defineProperty(exports, 'CognitoUserPool', {
 	  enumerable: true,
@@ -157,7 +157,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	});
 
-	var _CookieStorage = __webpack_require__(25);
+	var _CookieStorage = __webpack_require__(22);
 
 	Object.defineProperty(exports, 'CookieStorage', {
 	  enumerable: true,
@@ -2024,10 +2024,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _buffer = __webpack_require__(1);
 
-	var _randombytes = __webpack_require__(20);
-
-	var _randombytes2 = _interopRequireDefault(_randombytes);
-
 	var _cryptoBrowserify = __webpack_require__(14);
 
 	var crypto = _interopRequireWildcard(_cryptoBrowserify);
@@ -2036,9 +2032,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _BigInteger2 = _interopRequireDefault(_BigInteger);
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /*!
 	                                                                                                                                                           * Copyright 2016 Amazon.com,
@@ -2057,12 +2053,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                                                                                                                                           * limitations under the License.
 	                                                                                                                                                           */
 
-	//import createHmac from 'create-hmac';
-	//import createHash from 'create-hash';
-
-
 	var createHash = crypto.createHash;
 	var createHmac = crypto.createHmac;
+	var randomBytes = crypto.randomBytes;
 
 	var initN = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1' + '29024E088A67CC74020BBEA63B139B22514A08798E3404DD' + 'EF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245' + 'E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' + 'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3D' + 'C2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F' + '83655D23DCA3AD961C62F356208552BB9ED529077096966D' + '670C354E4ABC9804F1746C08CA18217C32905E462E36CE3B' + 'E39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9' + 'DE2BCBF6955817183995497CEA956AE515D2261898FA0510' + '15728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64' + 'ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7' + 'ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6B' + 'F12FFA06D98A0864D87602733EC86A64521F2B18177B200C' + 'BBE117577A615D6C770988C0BAD946E208E24FA074E5AB31' + '43DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF';
 
@@ -2130,7 +2123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  AuthenticationHelper.prototype.generateRandomSmallA = function generateRandomSmallA() {
-	    var hexRandom = (0, _randombytes2.default)(128).toString('hex');
+	    var hexRandom = randomBytes(128).toString('hex');
 
 	    var randomBigInt = new _BigInteger2.default(hexRandom, 16);
 	    var smallABigInt = randomBigInt.mod(this.N);
@@ -2146,7 +2139,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  AuthenticationHelper.prototype.generateRandomString = function generateRandomString() {
-	    return (0, _randombytes2.default)(40).toString('base64');
+	    return randomBytes(40).toString('base64');
 	  };
 
 	  /**
@@ -2192,7 +2185,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var combinedString = '' + deviceGroupKey + username + ':' + this.randomPassword;
 	    var hashedString = this.hash(combinedString);
 
-	    var hexRandom = (0, _randombytes2.default)(16).toString('hex');
+	    var hexRandom = randomBytes(16).toString('hex');
 	    this.SaltToHashDevices = this.padHex(new _BigInteger2.default(hexRandom, 16));
 
 	    this.g.modPow(new _BigInteger2.default(this.hexHash(this.SaltToHashDevices + hashedString), 16), this.N, function (err, verifierDevicesNotPadded) {
@@ -3690,7 +3683,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  /**
-	   * This is used for authenticating the user. it calls the AuthenticationHelper for SRP related
+	   * This is used for authenticating the user.
 	   * stuff
 	   * @param {AuthenticationDetails} authDetails Contains the authentication data
 	   * @param {object} callback Result callback map.
@@ -3707,6 +3700,32 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.authenticateUser = function authenticateUser(authDetails, callback) {
+	    if (this.authenticationFlowType === 'USER_PASSWORD_AUTH') {
+	      return this.authenticateUserPlainUsernamePassword(authDetails, callback);
+	    } else if (this.authenticationFlowType === 'USER_SRP_AUTH') {
+	      return this.authenticateUserDefaultAuth(authDetails, callback);
+	    }
+	    return callback.onFailure(new Error('Authentication flow type is invalid.'));
+	  };
+
+	  /**
+	   * This is used for authenticating the user. it calls the AuthenticationHelper for SRP related
+	   * stuff
+	   * @param {AuthenticationDetails} authDetails Contains the authentication data
+	   * @param {object} callback Result callback map.
+	   * @param {onFailure} callback.onFailure Called on any error.
+	   * @param {newPasswordRequired} callback.newPasswordRequired new
+	   *        password and any required attributes are required to continue
+	   * @param {mfaRequired} callback.mfaRequired MFA code
+	   *        required to continue.
+	   * @param {customChallenge} callback.customChallenge Custom challenge
+	   *        response required to continue.
+	   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	   * @returns {void}
+	   */
+
+
+	  CognitoUser.prototype.authenticateUserDefaultAuth = function authenticateUserDefaultAuth(authDetails, callback) {
 	    var _this2 = this;
 
 	    var authenticationHelper = new _AuthenticationHelper2.default(this.pool.getUserPoolId().split('_')[1]);
@@ -3836,6 +3855,54 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  /**
+	   * PRIVATE ONLY: This is an internal only method and should not
+	   * be directly called by the consumers.
+	   * @param {AuthenticationDetails} authDetails Contains the authentication data.
+	   * @param {object} callback Result callback map.
+	   * @param {onFailure} callback.onFailure Called on any error.
+	   * @param {mfaRequired} callback.mfaRequired MFA code
+	   *        required to continue.
+	   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	   * @returns {void}
+	   */
+
+
+	  CognitoUser.prototype.authenticateUserPlainUsernamePassword = function authenticateUserPlainUsernamePassword(authDetails, callback) {
+	    var _this3 = this;
+
+	    var authParameters = {};
+	    authParameters.USERNAME = this.username;
+	    authParameters.PASSWORD = authDetails.getPassword();
+	    if (!authParameters.PASSWORD) {
+	      callback.onFailure(new Error('PASSWORD parameter is required'));
+	      return;
+	    }
+	    var authenticationHelper = new _AuthenticationHelper2.default(this.pool.getUserPoolId().split('_')[1]);
+	    this.getCachedDeviceKeyAndPassword();
+	    if (this.deviceKey != null) {
+	      authParameters.DEVICE_KEY = this.deviceKey;
+	    }
+
+	    var jsonReq = {
+	      AuthFlow: 'USER_PASSWORD_AUTH',
+	      ClientId: this.pool.getClientId(),
+	      AuthParameters: authParameters,
+	      ClientMetadata: authDetails.getValidationData()
+	    };
+	    if (this.getUserContextData(this.username)) {
+	      jsonReq.UserContextData = this.getUserContextData(this.username);
+	    }
+	    // USER_PASSWORD_AUTH happens in a single round-trip: client sends userName and password,
+	    // Cognito UserPools verifies password and returns tokens.
+	    this.client.request('InitiateAuth', jsonReq, function (err, authResult) {
+	      if (err) {
+	        return callback.onFailure(err);
+	      }
+	      return _this3.authenticateUserInternal(authResult, authenticationHelper, callback);
+	    });
+	  };
+
+	  /**
 	  * PRIVATE ONLY: This is an internal only method and should not
 	  * be directly called by the consumers.
 	  * @param {object} dataAuthenticate authentication data
@@ -3846,7 +3913,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.authenticateUserInternal = function authenticateUserInternal(dataAuthenticate, authenticationHelper, callback) {
-	    var _this3 = this;
+	    var _this4 = this;
 
 	    var challengeName = dataAuthenticate.ChallengeName;
 	    var challengeParameters = dataAuthenticate.ChallengeParameters;
@@ -3899,13 +3966,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        PasswordVerifier: _buffer.Buffer.from(authenticationHelper.getVerifierDevices(), 'hex').toString('base64')
 	      };
 
-	      _this3.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
-	      _this3.deviceGroupKey = newDeviceMetadata.DeviceGroupKey;
-	      _this3.randomPassword = authenticationHelper.getRandomPassword();
+	      _this4.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
+	      _this4.deviceGroupKey = newDeviceMetadata.DeviceGroupKey;
+	      _this4.randomPassword = authenticationHelper.getRandomPassword();
 
-	      _this3.client.request('ConfirmDevice', {
+	      _this4.client.request('ConfirmDevice', {
 	        DeviceKey: newDeviceMetadata.DeviceKey,
-	        AccessToken: _this3.signInUserSession.getAccessToken().getJwtToken(),
+	        AccessToken: _this4.signInUserSession.getAccessToken().getJwtToken(),
 	        DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
 	        DeviceName: navigator.userAgent
 	      }, function (errConfirm, dataConfirm) {
@@ -3913,12 +3980,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return callback.onFailure(errConfirm);
 	        }
 
-	        _this3.deviceKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey;
-	        _this3.cacheDeviceKeyAndPassword();
+	        _this4.deviceKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey;
+	        _this4.cacheDeviceKeyAndPassword();
 	        if (dataConfirm.UserConfirmationNecessary === true) {
-	          return callback.onSuccess(_this3.signInUserSession, dataConfirm.UserConfirmationNecessary);
+	          return callback.onSuccess(_this4.signInUserSession, dataConfirm.UserConfirmationNecessary);
 	        }
-	        return callback.onSuccess(_this3.signInUserSession);
+	        return callback.onSuccess(_this4.signInUserSession);
 	      });
 	      return undefined;
 	    });
@@ -3942,7 +4009,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.completeNewPasswordChallenge = function completeNewPasswordChallenge(newPassword, requiredAttributeData, callback) {
-	    var _this4 = this;
+	    var _this5 = this;
 
 	    if (!newPassword) {
 	      return callback.onFailure(new Error('New password is required.'));
@@ -3973,7 +4040,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (errAuthenticate) {
 	        return callback.onFailure(errAuthenticate);
 	      }
-	      return _this4.authenticateUserInternal(dataAuthenticate, authenticationHelper, callback);
+	      return _this5.authenticateUserInternal(dataAuthenticate, authenticationHelper, callback);
 	    });
 	    return undefined;
 	  };
@@ -3991,7 +4058,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.getDeviceResponse = function getDeviceResponse(callback) {
-	    var _this5 = this;
+	    var _this6 = this;
 
 	    var authenticationHelper = new _AuthenticationHelper2.default(this.deviceGroupKey);
 	    var dateHelper = new _DateHelper2.default();
@@ -4010,13 +4077,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var jsonReq = {
 	        ChallengeName: 'DEVICE_SRP_AUTH',
-	        ClientId: _this5.pool.getClientId(),
+	        ClientId: _this6.pool.getClientId(),
 	        ChallengeResponses: authParameters
 	      };
-	      if (_this5.getUserContextData()) {
-	        jsonReq.UserContextData = _this5.getUserContextData();
+	      if (_this6.getUserContextData()) {
+	        jsonReq.UserContextData = _this6.getUserContextData();
 	      }
-	      _this5.client.request('RespondToAuthChallenge', jsonReq, function (err, data) {
+	      _this6.client.request('RespondToAuthChallenge', jsonReq, function (err, data) {
 	        if (err) {
 	          return callback.onFailure(err);
 	        }
@@ -4026,7 +4093,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var serverBValue = new _BigInteger2.default(challengeParameters.SRP_B, 16);
 	        var salt = new _BigInteger2.default(challengeParameters.SALT, 16);
 
-	        authenticationHelper.getPasswordAuthenticationKey(_this5.deviceKey, _this5.randomPassword, serverBValue, salt, function (errHkdf, hkdf) {
+	        authenticationHelper.getPasswordAuthenticationKey(_this6.deviceKey, _this6.randomPassword, serverBValue, salt, function (errHkdf, hkdf) {
 	          // getPasswordAuthenticationKey callback start
 	          if (errHkdf) {
 	            return callback.onFailure(errHkdf);
@@ -4034,35 +4101,35 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	          var dateNow = dateHelper.getNowString();
 
-	          var signatureString = createHmac('sha256', hkdf).update(_buffer.Buffer.concat([_buffer.Buffer.from(_this5.deviceGroupKey, 'utf8'), _buffer.Buffer.from(_this5.deviceKey, 'utf8'), _buffer.Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'), _buffer.Buffer.from(dateNow, 'utf8')])).digest('base64');
+	          var signatureString = createHmac('sha256', hkdf).update(_buffer.Buffer.concat([_buffer.Buffer.from(_this6.deviceGroupKey, 'utf8'), _buffer.Buffer.from(_this6.deviceKey, 'utf8'), _buffer.Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'), _buffer.Buffer.from(dateNow, 'utf8')])).digest('base64');
 
 	          var challengeResponses = {};
 
-	          challengeResponses.USERNAME = _this5.username;
+	          challengeResponses.USERNAME = _this6.username;
 	          challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK = challengeParameters.SECRET_BLOCK;
 	          challengeResponses.TIMESTAMP = dateNow;
 	          challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
-	          challengeResponses.DEVICE_KEY = _this5.deviceKey;
+	          challengeResponses.DEVICE_KEY = _this6.deviceKey;
 
 	          var jsonReqResp = {
 	            ChallengeName: 'DEVICE_PASSWORD_VERIFIER',
-	            ClientId: _this5.pool.getClientId(),
+	            ClientId: _this6.pool.getClientId(),
 	            ChallengeResponses: challengeResponses,
 	            Session: data.Session
 	          };
-	          if (_this5.getUserContextData()) {
-	            jsonReqResp.UserContextData = _this5.getUserContextData();
+	          if (_this6.getUserContextData()) {
+	            jsonReqResp.UserContextData = _this6.getUserContextData();
 	          }
 
-	          _this5.client.request('RespondToAuthChallenge', jsonReqResp, function (errAuthenticate, dataAuthenticate) {
+	          _this6.client.request('RespondToAuthChallenge', jsonReqResp, function (errAuthenticate, dataAuthenticate) {
 	            if (errAuthenticate) {
 	              return callback.onFailure(errAuthenticate);
 	            }
 
-	            _this5.signInUserSession = _this5.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
-	            _this5.cacheTokens();
+	            _this6.signInUserSession = _this6.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
+	            _this6.cacheTokens();
 
-	            return callback.onSuccess(_this5.signInUserSession);
+	            return callback.onSuccess(_this6.signInUserSession);
 	          });
 	          return undefined;
 	          // getPasswordAuthenticationKey callback end
@@ -4113,11 +4180,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.sendCustomChallengeAnswer = function sendCustomChallengeAnswer(answerChallenge, callback) {
-	    var _this6 = this;
+	    var _this7 = this;
 
 	    var challengeResponses = {};
 	    challengeResponses.USERNAME = this.username;
 	    challengeResponses.ANSWER = answerChallenge;
+
+	    var authenticationHelper = new _AuthenticationHelper2.default(this.pool.getUserPoolId().split('_')[1]);
+	    this.getCachedDeviceKeyAndPassword();
+	    if (this.deviceKey != null) {
+	      challengeResponses.DEVICE_KEY = this.deviceKey;
+	    }
+
 	    var jsonReq = {
 	      ChallengeName: 'CUSTOM_CHALLENGE',
 	      ChallengeResponses: challengeResponses,
@@ -4132,16 +4206,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return callback.onFailure(err);
 	      }
 
-	      var challengeName = data.ChallengeName;
-
-	      if (challengeName === 'CUSTOM_CHALLENGE') {
-	        _this6.Session = data.Session;
-	        return callback.customChallenge(data.ChallengeParameters);
-	      }
-
-	      _this6.signInUserSession = _this6.getCognitoUserSession(data.AuthenticationResult);
-	      _this6.cacheTokens();
-	      return callback.onSuccess(_this6.signInUserSession);
+	      return _this7.authenticateUserInternal(data, authenticationHelper, callback);
 	    });
 	  };
 
@@ -4157,7 +4222,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.sendMFACode = function sendMFACode(confirmationCode, callback, mfaType) {
-	    var _this7 = this;
+	    var _this8 = this;
 
 	    var challengeResponses = {};
 	    challengeResponses.USERNAME = this.username;
@@ -4189,18 +4254,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var challengeName = dataAuthenticate.ChallengeName;
 
 	      if (challengeName === 'DEVICE_SRP_AUTH') {
-	        _this7.getDeviceResponse(callback);
+	        _this8.getDeviceResponse(callback);
 	        return undefined;
 	      }
 
-	      _this7.signInUserSession = _this7.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
-	      _this7.cacheTokens();
+	      _this8.signInUserSession = _this8.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
+	      _this8.cacheTokens();
 
 	      if (dataAuthenticate.AuthenticationResult.NewDeviceMetadata == null) {
-	        return callback.onSuccess(_this7.signInUserSession);
+	        return callback.onSuccess(_this8.signInUserSession);
 	      }
 
-	      var authenticationHelper = new _AuthenticationHelper2.default(_this7.pool.getUserPoolId().split('_')[1]);
+	      var authenticationHelper = new _AuthenticationHelper2.default(_this8.pool.getUserPoolId().split('_')[1]);
 	      authenticationHelper.generateHashDevice(dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey, dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey, function (errGenHash) {
 	        if (errGenHash) {
 	          return callback.onFailure(errGenHash);
@@ -4211,13 +4276,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	          PasswordVerifier: _buffer.Buffer.from(authenticationHelper.getVerifierDevices(), 'hex').toString('base64')
 	        };
 
-	        _this7.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
-	        _this7.deviceGroupKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey;
-	        _this7.randomPassword = authenticationHelper.getRandomPassword();
+	        _this8.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
+	        _this8.deviceGroupKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey;
+	        _this8.randomPassword = authenticationHelper.getRandomPassword();
 
-	        _this7.client.request('ConfirmDevice', {
+	        _this8.client.request('ConfirmDevice', {
 	          DeviceKey: dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey,
-	          AccessToken: _this7.signInUserSession.getAccessToken().getJwtToken(),
+	          AccessToken: _this8.signInUserSession.getAccessToken().getJwtToken(),
 	          DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
 	          DeviceName: navigator.userAgent
 	        }, function (errConfirm, dataConfirm) {
@@ -4225,12 +4290,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return callback.onFailure(errConfirm);
 	          }
 
-	          _this7.deviceKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey;
-	          _this7.cacheDeviceKeyAndPassword();
+	          _this8.deviceKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey;
+	          _this8.cacheDeviceKeyAndPassword();
 	          if (dataConfirm.UserConfirmationNecessary === true) {
-	            return callback.onSuccess(_this7.signInUserSession, dataConfirm.UserConfirmationNecessary);
+	            return callback.onSuccess(_this8.signInUserSession, dataConfirm.UserConfirmationNecessary);
 	          }
-	          return callback.onSuccess(_this7.signInUserSession);
+	          return callback.onSuccess(_this8.signInUserSession);
 	        });
 	        return undefined;
 	      });
@@ -4357,7 +4422,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.deleteUser = function deleteUser(callback) {
-	    var _this8 = this;
+	    var _this9 = this;
 
 	    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 	      return callback(new Error('User is not authenticated'), null);
@@ -4369,7 +4434,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (err) {
 	        return callback(err, null);
 	      }
-	      _this8.clearCachedTokens();
+	      _this9.clearCachedTokens();
 	      return callback(null, 'SUCCESS');
 	    });
 	    return undefined;
@@ -4577,7 +4642,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.refreshSession = function refreshSession(refreshToken, callback) {
-	    var _this9 = this;
+	    var _this10 = this;
 
 	    var authParameters = {};
 	    authParameters.REFRESH_TOKEN = refreshToken.getToken();
@@ -4602,7 +4667,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.client.request('InitiateAuth', jsonReq, function (err, authResult) {
 	      if (err) {
 	        if (err.code === 'NotAuthorizedException') {
-	          _this9.clearCachedTokens();
+	          _this10.clearCachedTokens();
 	        }
 	        return callback(err, null);
 	      }
@@ -4611,9 +4676,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!Object.prototype.hasOwnProperty.call(authenticationResult, 'RefreshToken')) {
 	          authenticationResult.RefreshToken = refreshToken.getToken();
 	        }
-	        _this9.signInUserSession = _this9.getCognitoUserSession(authenticationResult);
-	        _this9.cacheTokens();
-	        return callback(null, _this9.signInUserSession);
+	        _this10.signInUserSession = _this10.getCognitoUserSession(authenticationResult);
+	        _this10.cacheTokens();
+	        return callback(null, _this10.signInUserSession);
 	      }
 	      return undefined;
 	    });
@@ -4915,15 +4980,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.forgetDevice = function forgetDevice(callback) {
-	    var _this10 = this;
+	    var _this11 = this;
 
 	    this.forgetSpecificDevice(this.deviceKey, {
 	      onFailure: callback.onFailure,
 	      onSuccess: function onSuccess(result) {
-	        _this10.deviceKey = null;
-	        _this10.deviceGroupKey = null;
-	        _this10.randomPassword = null;
-	        _this10.clearCachedDeviceKeyAndPassword();
+	        _this11.deviceKey = null;
+	        _this11.deviceGroupKey = null;
+	        _this11.randomPassword = null;
+	        _this11.clearCachedDeviceKeyAndPassword();
 	        return callback.onSuccess(result);
 	      }
 	    });
@@ -5023,7 +5088,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.globalSignOut = function globalSignOut(callback) {
-	    var _this11 = this;
+	    var _this12 = this;
 
 	    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 	      return callback.onFailure(new Error('User is not authenticated'));
@@ -5035,7 +5100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (err) {
 	        return callback.onFailure(err);
 	      }
-	      _this11.clearCachedTokens();
+	      _this12.clearCachedTokens();
 	      return callback.onSuccess('SUCCESS');
 	    });
 	    return undefined;
@@ -5061,7 +5126,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.sendMFASelectionAnswer = function sendMFASelectionAnswer(answerChallenge, callback) {
-	    var _this12 = this;
+	    var _this13 = this;
 
 	    var challengeResponses = {};
 	    challengeResponses.USERNAME = this.username;
@@ -5080,7 +5145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (err) {
 	        return callback.onFailure(err);
 	      }
-	      _this12.Session = data.Session;
+	      _this13.Session = data.Session;
 	      if (answerChallenge === 'SMS_MFA') {
 	        return callback.mfaRequired(data.challengeName, data.challengeParameters);
 	      }
@@ -5110,7 +5175,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.associateSoftwareToken = function associateSoftwareToken(callback) {
-	    var _this13 = this;
+	    var _this14 = this;
 
 	    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 	      this.client.request('AssociateSoftwareToken', {
@@ -5119,7 +5184,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (err) {
 	          return callback.onFailure(err);
 	        }
-	        _this13.Session = data.Session;
+	        _this14.Session = data.Session;
 	        return callback.associateSecretCode(data.SecretCode);
 	      });
 	    } else {
@@ -5135,7 +5200,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  /**
-	   * This is used by an authenticated or a user trying to authenticate to associate a TOTP MFA
+	   * This is used by an authenticated or a user trying to authenticate to verify a TOTP MFA
 	   * @param {string} totpCode The MFA code entered by the user.
 	   * @param {string} friendlyDeviceName The device name we are assigning to the device.
 	   * @param {nodeCallback<string>} callback Called on success or error.
@@ -5144,7 +5209,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.verifySoftwareToken = function verifySoftwareToken(totpCode, friendlyDeviceName, callback) {
-	    var _this14 = this;
+	    var _this15 = this;
 
 	    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 	      this.client.request('VerifySoftwareToken', {
@@ -5155,25 +5220,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (err) {
 	          return callback.onFailure(err);
 	        }
-	        _this14.Session = data.Session;
+	        _this15.Session = data.Session;
 	        var challengeResponses = {};
-	        challengeResponses.USERNAME = _this14.username;
+	        challengeResponses.USERNAME = _this15.username;
 	        var jsonReq = {
 	          ChallengeName: 'MFA_SETUP',
-	          ClientId: _this14.pool.getClientId(),
+	          ClientId: _this15.pool.getClientId(),
 	          ChallengeResponses: challengeResponses,
-	          Session: _this14.Session
+	          Session: _this15.Session
 	        };
-	        if (_this14.getUserContextData()) {
-	          jsonReq.UserContextData = _this14.getUserContextData();
+	        if (_this15.getUserContextData()) {
+	          jsonReq.UserContextData = _this15.getUserContextData();
 	        }
-	        _this14.client.request('RespondToAuthChallenge', jsonReq, function (errRespond, dataRespond) {
+	        _this15.client.request('RespondToAuthChallenge', jsonReq, function (errRespond, dataRespond) {
 	          if (errRespond) {
 	            return callback.onFailure(errRespond);
 	          }
-	          _this14.signInUserSession = _this14.getCognitoUserSession(dataRespond.AuthenticationResult);
-	          _this14.cacheTokens();
-	          return callback.onSuccess(_this14.signInUserSession);
+	          _this15.signInUserSession = _this15.getCognitoUserSession(dataRespond.AuthenticationResult);
+	          _this15.cacheTokens();
+	          return callback.onSuccess(_this15.signInUserSession);
 	        });
 	        return undefined;
 	      });
@@ -5186,7 +5251,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (err) {
 	          return callback.onFailure(err);
 	        }
-	        return callback(null, data);
+	        return callback.onSuccess(data);
 	      });
 	    }
 	  };
@@ -5631,10 +5696,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, exports, __webpack_require__) {
 
 	var Buffer = __webpack_require__(1).Buffer
-	var sha = __webpack_require__(29)
-	var sha256 = __webpack_require__(30)
-	var rng = __webpack_require__(28)
-	var md5 = __webpack_require__(27)
+	var sha = __webpack_require__(26)
+	var sha256 = __webpack_require__(27)
+	var rng = __webpack_require__(25)
+	var md5 = __webpack_require__(24)
 
 	var algorithms = {
 	  sha1: sha,
@@ -6125,309 +6190,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 19 */
 /***/ (function(module, exports) {
 
-	// shim for using process in browser
-	var process = module.exports = {};
-
-	// cached from whatever global is present so that test runners that stub it
-	// don't break things.  But we need to wrap it in a try catch in case it is
-	// wrapped in strict mode code which doesn't define any globals.  It's inside a
-	// function because try/catches deoptimize in certain engines.
-
-	var cachedSetTimeout;
-	var cachedClearTimeout;
-
-	function defaultSetTimout() {
-	    throw new Error('setTimeout has not been defined');
-	}
-	function defaultClearTimeout () {
-	    throw new Error('clearTimeout has not been defined');
-	}
-	(function () {
-	    try {
-	        if (typeof setTimeout === 'function') {
-	            cachedSetTimeout = setTimeout;
-	        } else {
-	            cachedSetTimeout = defaultSetTimout;
-	        }
-	    } catch (e) {
-	        cachedSetTimeout = defaultSetTimout;
-	    }
-	    try {
-	        if (typeof clearTimeout === 'function') {
-	            cachedClearTimeout = clearTimeout;
-	        } else {
-	            cachedClearTimeout = defaultClearTimeout;
-	        }
-	    } catch (e) {
-	        cachedClearTimeout = defaultClearTimeout;
-	    }
-	} ())
-	function runTimeout(fun) {
-	    if (cachedSetTimeout === setTimeout) {
-	        //normal enviroments in sane situations
-	        return setTimeout(fun, 0);
-	    }
-	    // if setTimeout wasn't available but was latter defined
-	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-	        cachedSetTimeout = setTimeout;
-	        return setTimeout(fun, 0);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedSetTimeout(fun, 0);
-	    } catch(e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-	            return cachedSetTimeout.call(null, fun, 0);
-	        } catch(e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-	            return cachedSetTimeout.call(this, fun, 0);
-	        }
-	    }
-
-
-	}
-	function runClearTimeout(marker) {
-	    if (cachedClearTimeout === clearTimeout) {
-	        //normal enviroments in sane situations
-	        return clearTimeout(marker);
-	    }
-	    // if clearTimeout wasn't available but was latter defined
-	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-	        cachedClearTimeout = clearTimeout;
-	        return clearTimeout(marker);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedClearTimeout(marker);
-	    } catch (e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-	            return cachedClearTimeout.call(null, marker);
-	        } catch (e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-	            return cachedClearTimeout.call(this, marker);
-	        }
-	    }
-
-
-
-	}
-	var queue = [];
-	var draining = false;
-	var currentQueue;
-	var queueIndex = -1;
-
-	function cleanUpNextTick() {
-	    if (!draining || !currentQueue) {
-	        return;
-	    }
-	    draining = false;
-	    if (currentQueue.length) {
-	        queue = currentQueue.concat(queue);
-	    } else {
-	        queueIndex = -1;
-	    }
-	    if (queue.length) {
-	        drainQueue();
-	    }
-	}
-
-	function drainQueue() {
-	    if (draining) {
-	        return;
-	    }
-	    var timeout = runTimeout(cleanUpNextTick);
-	    draining = true;
-
-	    var len = queue.length;
-	    while(len) {
-	        currentQueue = queue;
-	        queue = [];
-	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
-	        }
-	        queueIndex = -1;
-	        len = queue.length;
-	    }
-	    currentQueue = null;
-	    draining = false;
-	    runClearTimeout(timeout);
-	}
-
-	process.nextTick = function (fun) {
-	    var args = new Array(arguments.length - 1);
-	    if (arguments.length > 1) {
-	        for (var i = 1; i < arguments.length; i++) {
-	            args[i - 1] = arguments[i];
-	        }
-	    }
-	    queue.push(new Item(fun, args));
-	    if (queue.length === 1 && !draining) {
-	        runTimeout(drainQueue);
-	    }
-	};
-
-	// v8 likes predictible objects
-	function Item(fun, array) {
-	    this.fun = fun;
-	    this.array = array;
-	}
-	Item.prototype.run = function () {
-	    this.fun.apply(null, this.array);
-	};
-	process.title = 'browser';
-	process.browser = true;
-	process.env = {};
-	process.argv = [];
-	process.version = ''; // empty string to avoid regexp issues
-	process.versions = {};
-
-	function noop() {}
-
-	process.on = noop;
-	process.addListener = noop;
-	process.once = noop;
-	process.off = noop;
-	process.removeListener = noop;
-	process.removeAllListeners = noop;
-	process.emit = noop;
-	process.prependListener = noop;
-	process.prependOnceListener = noop;
-
-	process.listeners = function (name) { return [] }
-
-	process.binding = function (name) {
-	    throw new Error('process.binding is not supported');
-	};
-
-	process.cwd = function () { return '/' };
-	process.chdir = function (dir) {
-	    throw new Error('process.chdir is not supported');
-	};
-	process.umask = function() { return 0; };
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global, process) {'use strict'
-
-	function oldBrowser () {
-	  throw new Error('Secure random number generation is not supported by this browser.\nUse Chrome, Firefox or Internet Explorer 11')
-	}
-
-	var Buffer = __webpack_require__(21).Buffer
-	var crypto = global.crypto || global.msCrypto
-
-	if (crypto && crypto.getRandomValues) {
-	  module.exports = randomBytes
-	} else {
-	  module.exports = oldBrowser
-	}
-
-	function randomBytes (size, cb) {
-	  // phantomjs needs to throw
-	  if (size > 65536) throw new Error('requested too many random bytes')
-	  // in case browserify  isn't using the Uint8Array version
-	  var rawBytes = new global.Uint8Array(size)
-
-	  // This will not work in older browsers.
-	  // See https://developer.mozilla.org/en-US/docs/Web/API/window.crypto.getRandomValues
-	  if (size > 0) {  // getRandomValues fails on IE if size == 0
-	    crypto.getRandomValues(rawBytes)
-	  }
-
-	  // XXX: phantomjs doesn't like a buffer being passed here
-	  var bytes = Buffer.from(rawBytes.buffer)
-
-	  if (typeof cb === 'function') {
-	    return process.nextTick(function () {
-	      cb(null, bytes)
-	    })
-	  }
-
-	  return bytes
-	}
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(19)))
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/* eslint-disable node/no-deprecated-api */
-	var buffer = __webpack_require__(1)
-	var Buffer = buffer.Buffer
-
-	// alternative to using Object.keys for old browsers
-	function copyProps (src, dst) {
-	  for (var key in src) {
-	    dst[key] = src[key]
-	  }
-	}
-	if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
-	  module.exports = buffer
-	} else {
-	  // Copy properties from require('buffer')
-	  copyProps(buffer, exports)
-	  exports.Buffer = SafeBuffer
-	}
-
-	function SafeBuffer (arg, encodingOrOffset, length) {
-	  return Buffer(arg, encodingOrOffset, length)
-	}
-
-	// Copy static methods from Buffer
-	copyProps(Buffer, SafeBuffer)
-
-	SafeBuffer.from = function (arg, encodingOrOffset, length) {
-	  if (typeof arg === 'number') {
-	    throw new TypeError('Argument must not be a number')
-	  }
-	  return Buffer(arg, encodingOrOffset, length)
-	}
-
-	SafeBuffer.alloc = function (size, fill, encoding) {
-	  if (typeof size !== 'number') {
-	    throw new TypeError('Argument must be a number')
-	  }
-	  var buf = Buffer(size)
-	  if (fill !== undefined) {
-	    if (typeof encoding === 'string') {
-	      buf.fill(fill, encoding)
-	    } else {
-	      buf.fill(fill)
-	    }
-	  } else {
-	    buf.fill(0)
-	  }
-	  return buf
-	}
-
-	SafeBuffer.allocUnsafe = function (size) {
-	  if (typeof size !== 'number') {
-	    throw new TypeError('Argument must be a number')
-	  }
-	  return Buffer(size)
-	}
-
-	SafeBuffer.allocUnsafeSlow = function (size) {
-	  if (typeof size !== 'number') {
-	    throw new TypeError('Argument must be a number')
-	  }
-	  return buffer.SlowBuffer(size)
-	}
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports) {
-
 	"use strict";
 
 	exports.__esModule = true;
@@ -6518,14 +6280,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = AuthenticationDetails;
 
 /***/ }),
-/* 23 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _UserAgent = __webpack_require__(26);
+	var _UserAgent = __webpack_require__(23);
 
 	var _UserAgent2 = _interopRequireDefault(_UserAgent);
 
@@ -6545,7 +6307,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.endpoint = endpoint || 'https://cognito-idp.' + region + '.amazonaws.com/';
 	    this.userAgent = _UserAgent2.default.prototype.userAgent || 'aws-amplify/0.1.x js';
-	    console.log('userAgent set to: ', this.userAgent);
 	  }
 
 	  /**
@@ -6613,14 +6374,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Client;
 
 /***/ }),
-/* 24 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	exports.__esModule = true;
 
-	var _Client = __webpack_require__(23);
+	var _Client = __webpack_require__(20);
 
 	var _Client2 = _interopRequireDefault(_Client);
 
@@ -6823,7 +6584,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = CognitoUserPool;
 
 /***/ }),
-/* 25 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6936,7 +6697,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = CookieStorage;
 
 /***/ }),
-/* 26 */
+/* 23 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -6951,7 +6712,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	UserAgent.prototype.userAgent = 'aws-amplify/0.1.x js';
 
 /***/ }),
-/* 27 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -7120,7 +6881,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 28 */
+/* 25 */
 /***/ (function(module, exports) {
 
 	// Original code adapted from Robert Kieffer.
@@ -7157,7 +6918,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 29 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -7264,7 +7025,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 30 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	

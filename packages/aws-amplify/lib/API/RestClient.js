@@ -59,6 +59,7 @@ var Signer_1 = require("../Common/Signer");
 var Common_1 = require("../Common");
 var Auth_1 = require("../Auth");
 var axios_1 = require("axios");
+var Platform_1 = require("../Common/Platform");
 var logger = new Common_1.ConsoleLogger('RestClient');
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -100,7 +101,7 @@ var RestClient = /** @class */ (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders, extraParams;
+            var parsed_url, params, libraryHeaders, userAgent, extraParams;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -112,9 +113,13 @@ var RestClient = /** @class */ (function () {
                     headers: {},
                     data: null
                 };
-                libraryHeaders = {
-                    'User-Agent': 'aws-amplify/0.1.x'
-                };
+                libraryHeaders = {};
+                if (Platform_1.default.isReactNative) {
+                    userAgent = Platform_1.default.userAgent || 'aws-amplify/0.1.x';
+                    libraryHeaders = {
+                        'User-Agent': userAgent
+                    };
+                }
                 extraParams = Object.assign({}, init);
                 if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
@@ -142,17 +147,26 @@ var RestClient = /** @class */ (function () {
     };
     /**
     * PUT HTTP request
-    * @param {String} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     RestClient.prototype.put = function (url, init) {
         return this.ajax(url, 'PUT', init);
     };
     /**
+    * PATCH HTTP request
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
+    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+    */
+    RestClient.prototype.patch = function (url, init) {
+        return this.ajax(url, 'PATCH', init);
+    };
+    /**
     * POST HTTP request
-    * @param {String} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     RestClient.prototype.post = function (url, init) {
@@ -161,7 +175,7 @@ var RestClient = /** @class */ (function () {
     /**
     * DELETE HTTP request
     * @param {string} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     RestClient.prototype.del = function (url, init) {
@@ -170,7 +184,7 @@ var RestClient = /** @class */ (function () {
     /**
     * HEAD HTTP request
     * @param {string} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     RestClient.prototype.head = function (url, init) {

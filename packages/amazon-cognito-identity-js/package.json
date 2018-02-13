@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "1.29.0",
+  "version": "2.0.0",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -18,6 +18,7 @@
     "Paul Watts",
     "Gleb Promokhov",
     "Min Bi",
+    "Michael Labieniec",
     "Chetan Mehta <chetam@amazon.com>",
     "Ionut Trestian <trestian@amazon.com>"
   ],
@@ -63,8 +64,7 @@
   "dependencies": {
     "buffer": "4.9.1",
     "crypto-browserify": "1.0.9",
-    "js-cookie": "^2.1.4",
-    "randombytes": "^2.0.6"
+    "js-cookie": "^2.1.4"
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",

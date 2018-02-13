@@ -3,8 +3,8 @@
 The AWS Amplify Auth module provides Authentication APIs and building blocks to developers wishing to use pre-build components or scaffold out custom UX. Depending on needs, Auth can be integrated at different levels.
 
 * [Installation and Configuration](#installation-and-configuratoin)
-  - [Manual Setup](#manual-setup)
   - [Automated Setup](#automated-setup)
+  - [Manual Setup](#manual-setup)
 * [Integration](#integration)
   - [1. Call APIs](#1-call-apis)
   - [2. withAuthenticator HOC](#2-withauthenticator-hoc)
@@ -12,7 +12,7 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
   - [4. Compose Authenticator](#4-compose-authenticator)
   - [5. Write Your Own Auth UI](#5-write-your-own-auth-ui)
   - [6. Federated Identity](#6-federated-identity)
-  - [7. User Attributes](#6-user-attributes)
+  - [7. User Attributes](#7-user-attributes)
 * [Extension](#extension)
   - [UI Theme](#ui-theme)
   - [Error Message](#error-message)
@@ -20,21 +20,6 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
 ## Installation and Configuration
 
 Please refer to this [Guide](install_n_config.md) for general setup. Here are Authentication specific setup.
-
-### Manual Setup
-
-```js
-import Amplify from 'aws-amplify';
-
-Amplify.configure({
-    Auth: {
-        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
-        region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
-        userPoolId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito User Pool ID
-        userPoolWebClientId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito Web Client ID
-    }
-});
-```
 
 ### Automated Setup
 
@@ -45,14 +30,34 @@ $ npm install -g awsmobile-cli
 $ cd my-app
 $ awsmobile init
 $ awsmobile enable user-signin
+$ awsmobile push
 ```
 
 In your project i.e. App.js:
 
-```
+```js
 import Amplify, { Auth } from 'aws-amplify';
 import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
+```
+
+### Manual Setup
+
+```js
+import Amplify from 'aws-amplify';
+
+Amplify.configure({
+    Auth: {
+    // REQUIRED - Amazon Cognito Identity Pool ID
+        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
+    // REQUIRED - Amazon Cognito Region
+        region: 'XX-XXXX-X', 
+    // OPTIONAL - Amazon Cognito User Pool ID
+        userPoolId: 'XX-XXXX-X_abcd1234',
+    // OPTIONAL - Amazon Cognito Web Client ID
+        userPoolWebClientId: 'XX-XXXX-X_abcd1234',
+    }
+});
 ```
 
 ## Integration
@@ -81,15 +86,14 @@ Auth.confirmSignIn(user, code)
 import { Auth } from 'aws-amplify';
 
 Auth.signUp({
-    username, 
-    password, 
-    attributes: {
-        email, // optional
-        phone, // optional
-        // other custom attributes if has been set in Cognito
-        // myAttr: ...
-    },
-    validationData: [] //optional
+        username,
+        password,
+        attributes: {
+            email,          // optional
+            phone_number,   // optional - E.164 number convention
+            // other custom attributes
+        },
+        validationData: []  //optional
     })
     .then(data => console.log(data))
     .catch(err => console.log(err));
@@ -125,12 +129,14 @@ Auth.forgotPasswordSubmit(username, code, new_password)
 
 ### 2. withAuthenticator HOC
 
-For React apps, the simplest way to add Auth flows into your app is to use `withAuthenticator`.
+<img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
+
+For React and React Native apps, the simplest way to add Auth flows into your app is to use `withAuthenticator`.
 
 Just add these two lines to your `App.js`:
 
 ```js
-import { withAuthenticator } from 'aws-amplify-react';
+import { withAuthenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
 
 ...
 
@@ -155,43 +161,7 @@ const federated = {
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
 
-#### User Attributes
-
-You can pass in any user attributes during sign in:
-
-```js
-Auth.signUp({
-        'username': 'jdoe',
-        'password': 'mysecurerandompassword#123',
-        'email': 'me@domain.com',
-        'phone_number': '+12128601234',
-        'first_name': 'Jane',
-        'last_name': 'Doe',
-        'nick_name': 'Jane'
-    });
-```
-
-You can retrieve user attributes:
-
-```js
-let profile = await Auth.currentUserInfo();
-```
-
-You can then update the user attributes:
-
-```js
-let result = await Auth.updateUserAttributes({
-        'email': 'me@anotherdomain.com',
-        'last_name': 'Lastname'
-    });
-console.log(result); // SUCCESS
-```
-
-If you change the email address you will receive a confirmation code to that email and you can confirm it with the code:
-
-```js
-let result = await Auth.verifyCurrentUserAttributeSubmit('email',abc123);
-```
+ NOTE: Federated Identity HOCs are not yet available on React Native
 
 #### Sign Out Button
 
@@ -211,7 +181,7 @@ The `withAuthenticator` HOC essentially just wraps `Authenticator` component. Yo
 
 App.js
 ```js
-import { Authenticator } from 'aws-amplify-react';
+import { Authenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native'
 
 ...
 
@@ -234,13 +204,22 @@ export default AppWithAuth;
 
 In the above example you'll see the App rendered even before the user is signed in. This is easy to change.
 
-When inside `Authenticator`, the App component will get a few properties.
+When inside `Authenticator`, the App component will receive a few properties.
 
-* authState - current authentication state, signIn | signUp | confirmSignIn | confirmSignUp | forgotPassword | verifyContact | signedIn
-* authData - additional data to the authState, when signedIn it is an user object
-* onStateChange - callback function, for what's inside `Authenticator` to notify authState changes.
+**authState** is the current authentication state (a string):
+ - `signIn`
+ - `signUp`
+ - `confirmSignIn`
+ - `confirmSignUp`
+ - `forgotPassword`
+ - `verifyContact`
+ - `signedIn`
 
-With that, to control when to render App component, simply add the following line to the `render()` method of the `App` component:
+**authData** - additional data within authState, when `signedIn`, it is a `user` object
+
+**onStateChange** - callback function for `Authenticator` which notifies authState changes.
+
+With `Authenticator`, you can control when to render your App component. For example, simply add the following line to the `render()` method of your `App` component:
 ```js
     render() {
         if (this.props.authState !== 'signedIn') { return null; }
@@ -285,7 +264,7 @@ You may write your own Auth UI. To do this your component will leverage the foll
 This example creates an `AlwaysOn` Auth UI, which shows the current auth state.
 
 ```jsx
-import { Authenticator, SignIn, SignUp, ConfirmSignUp, Greetings } from 'aws-amplify-react’;
+import { Authenticator, SignIn, SignUp, ConfirmSignUp, Greetings } from 'aws-amplify-react';
 
 const AlwaysOn = (props) => {
     return (
@@ -366,6 +345,46 @@ const Federated = withFederated(Buttons);
     };
 
     <Federated federated={federated} onStateChange={this.handleAuthStateChange} />
+```
+
+### 7 User Attributes
+
+You can pass in any user attributes during sign up:
+
+```js
+Auth.signUp({
+    'username': 'jdoe',
+    'password': 'mysecurerandompassword#123',
+    'attributes': {
+        'email': 'me@domain.com',
+        'phone_number': '+12128601234', // E.164 number convention
+        'first_name': 'Jane',
+        'last_name': 'Doe',
+        'nick_name': 'Jane'
+    }
+});
+```
+
+You can retrieve user attributes:
+
+```js
+let user = await Auth.currentAuthenticatedUser();
+```
+
+You can then update the user attributes:
+
+```js
+let result = await Auth.updateUserAttributes(user, {
+    'email': 'me@anotherdomain.com',
+    'last_name': 'Lastname'
+});
+console.log(result); // SUCCESS
+```
+
+If you change the email address you will receive a confirmation code to that email and you can confirm it with the code:
+
+```js
+let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
 ```
 
 ## Extensions
