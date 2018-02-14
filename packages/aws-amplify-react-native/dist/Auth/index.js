@@ -31,7 +31,7 @@ const logger = new Logger('auth components');
 
 export { Authenticator, AuthPiece, SignIn, ConfirmSignIn, SignUp, ConfirmSignUp, ForgotPassword, RequireNewPassword, VerifyContact, Greetings };
 
-export function withAuthenticator(Comp, includeGreetings = false) {
+export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = []) {
     class Wrapper extends React.Component {
         constructor(props) {
             super(props);
@@ -77,7 +77,9 @@ export function withAuthenticator(Comp, includeGreetings = false) {
             }
 
             return React.createElement(Authenticator, _extends({}, this.props, {
-                onStateChange: this.handleAuthStateChange
+                hideDefault: authenticatorComponents.length > 0,
+                onStateChange: this.handleAuthStateChange,
+                children: authenticatorComponents
             }));
         }
     }

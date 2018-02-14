@@ -5,6 +5,22 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.white1X1 = exports.transparent1X1 = exports.AmplifyMessageMapEntries = exports.AmplifyTheme = undefined;
 
+var _AmplifyUI = require('./AmplifyUI');
+
+Object.keys(_AmplifyUI).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      function get() {
+        return _AmplifyUI[key];
+      }
+
+      return get;
+    }()
+  });
+});
+
 var _Auth = require('./Auth');
 
 Object.keys(_Auth).forEach(function (key) {
@@ -94,9 +110,6 @@ Object.defineProperty(exports, 'AmplifyMessageMapEntries', {
     return get;
   }()
 });
-
-var _AmplifyUI = require('./AmplifyUI');
-
 Object.defineProperty(exports, 'transparent1X1', {
   enumerable: true,
   get: function () {
