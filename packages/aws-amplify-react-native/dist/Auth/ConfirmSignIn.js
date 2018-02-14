@@ -37,6 +37,7 @@ export default class ConfirmSignIn extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['confirmSignIn'];
         this.state = {
             code: null,
             error: null
@@ -52,12 +53,7 @@ export default class ConfirmSignIn extends AuthPiece {
         Auth.confirmSignIn(user, code).then(data => this.changeState('signedIn')).catch(err => this.error(err));
     }
 
-    render() {
-        if (!['confirmSignIn'].includes(this.props.authState)) {
-            return null;
-        }
-
-        const theme = this.props.theme || AmplifyTheme;
+    showComponent(theme) {
         return React.createElement(
             View,
             { style: theme.section },

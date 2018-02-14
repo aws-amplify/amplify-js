@@ -405,9 +405,15 @@ awesome-typescript-loader@^3.2.2:
     object-assign "^4.1.1"
     source-map-support "^0.4.15"
 
+<<<<<<< HEAD
 aws-sdk@2.177.0:
   version "2.177.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.177.0.tgz#d5fbf1f82bab250e55153699b030b44f687f600b"
+=======
+aws-sdk@^2.177.0:
+  version "2.193.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.193.0.tgz#89ac3bde1ff6c914c52f7f0c28a2febf23edfaa5"
+>>>>>>> upstream/master
   dependencies:
     buffer "4.9.1"
     crypto-browserify "1.0.9"

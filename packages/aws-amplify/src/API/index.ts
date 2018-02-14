@@ -17,7 +17,7 @@ import { ConsoleLogger as Logger } from '../Common';
 
 const logger = new Logger('API');
 
-let _instance = null;
+let _instance: APIClass = null;
 
 if (!_instance) {
     logger.debug('Create API Instance');

@@ -27,7 +27,7 @@ const logger = new Logger('AnalyticsClass');
 // events buffer
 const BUFFER_SIZE = 1000;
 const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-const interval = 2*1000; // 2s
+const interval = 7*1000; // 7s
 /**
 * Provide mobile analytics client functions
 */
@@ -105,6 +105,12 @@ export default class AnalyticsClass {
         const params = {eventName: '_session_start', timestamp, config: this._config};
         return this._putToBuffer(params);
     }
+
+    /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+   public onHubCapsule(capsule: any): void {}
 
     /**
      * Record Session stop

@@ -20,7 +20,7 @@ import {
 
 const logger = new Logger('Analytics');
 
-let _instance = null;
+let _instance: AnalyticsClass = null;
 
 if (!_instance) {
     logger.debug('Create Analytics Instance');

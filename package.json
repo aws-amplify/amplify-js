@@ -7,7 +7,7 @@
     "pre-commit": "lerna exec yarn test --scope aws-amplify",
     "test": "lerna exec yarn test",
     "coverage": "codecov",
-    "docs": "typedoc --out docs/api/ packages/aws-amplify/src/ --ignoreCompilerErrors --hideGenerator && touch docs/api/.nojekyll",
+    "docs": "typedoc packages/aws-amplify/src --excludePrivate --ignoreCompilerErrors --mode file --theme minimal --out docs/api",
     "build": "lerna exec yarn build",
     "clean": "lerna run -- clean",
     "format": "lerna run -- format",
