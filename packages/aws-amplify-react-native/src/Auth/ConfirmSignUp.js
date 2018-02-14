@@ -52,6 +52,7 @@ export default class ConfirmSignUp extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['confirmSignUp'];
         this.state = {
             username: null,
             code: null,
@@ -83,12 +84,7 @@ export default class ConfirmSignUp extends AuthPiece {
         if (username && !this.state.username) { this.setState({ username: username }); }
     }
 
-    render() {
-        if (!['confirmSignUp'].includes(this.props.authState)) {
-            return null;
-        }
-
-        const theme = this.props.theme || AmplifyTheme;
+    showComponent(theme) {
         return (
             <View style={theme.section}>
                 <Header theme={theme}>{I18n.get('Confirm Sign Up')}</Header>

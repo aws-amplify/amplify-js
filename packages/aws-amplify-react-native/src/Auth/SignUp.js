@@ -56,6 +56,7 @@ export default class SignUp extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['signUp'];
         this.state = {
             username: null,
             password: null,
@@ -77,12 +78,7 @@ export default class SignUp extends AuthPiece {
             .catch(err => this.error(err));
     }
 
-    render() {
-        if (!['signUp'].includes(this.props.authState)) {
-            return null;
-        }
-
-        const theme = this.props.theme || AmplifyTheme;
+    showComponent(theme) {
         return (
             <View style={theme.section}>
                 <Header theme={theme}>{I18n.get('Sign Up')}</Header>

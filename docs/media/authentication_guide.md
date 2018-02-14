@@ -127,6 +127,13 @@ Auth.forgotPasswordSubmit(username, code, new_password)
     .catch(err => console.log(err));
 ```
 
+#### Current Session
+Return a `CognitoUserSession` which contains JWT `accessToken`, `idToken`, and `refreshToken`.
+```js
+let session = Auth.currentSession();
+// CognitoUserSession => { idToken, refreshToken, accessToken }
+```
+
 ### 2. withAuthenticator HOC
 
 <img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
@@ -217,14 +224,13 @@ When inside `Authenticator`, the App component will receive a few properties.
 
 **authData** - additional data within authState, when `signedIn`, it is a `user` object
 
-**onStateChange** - callback function for `Authenticator` which notifies authState changes.
+With that, to control when to render App component, simply add
 
-With `Authenticator`, you can control when to render your App component. For example, simply add the following line to the `render()` method of your `App` component:
 ```js
-    render() {
-        if (this.props.authState !== 'signedIn') { return null; }
-    ...
+    this._validAuthStates = ['signedIn'];
 ```
+to the component's constructor, then implement `showComponent(theme) {}` in lieu of the typical
+`render() {}` method.
 
 ### 4. Compose Authenticator
 

@@ -37,6 +37,7 @@ export default class ForgotPassword extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['forgotPassword'];
         this.state = { delivery: null };
 
         this.send = this.send.bind(this);
@@ -102,13 +103,7 @@ export default class ForgotPassword extends AuthPiece {
         );
     }
 
-    render() {
-        if (!['forgotPassword'].includes(this.props.authState)) {
-            return null;
-        }
-
-        const theme = this.props.theme || AmplifyTheme;
-
+    showComponent(theme) {
         return React.createElement(
             View,
             { style: theme.section },
