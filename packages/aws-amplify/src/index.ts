@@ -12,7 +12,7 @@
  */
 
 import Auth from './Auth';
-import Analytics from './Analytics';
+import Analytics, { AnalyticsProvider } from './Analytics';
 import Storage from './Storage';
 import API from './API';
 import I18n from './I18n';
@@ -80,4 +80,4 @@ Amplify.Cache = Cache;
 
 Amplify.Logger = Logger;
 
-export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
+export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer, AnalyticsProvider };

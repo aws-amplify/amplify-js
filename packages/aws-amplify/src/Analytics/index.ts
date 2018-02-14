@@ -12,6 +12,7 @@
  */
 
 import AnalyticsClass from './Analytics';
+import { AnalyticsProvider } from './types';
 
 import {
     ConsoleLogger as Logger,
@@ -29,6 +30,7 @@ if (!_instance) {
 
 const Analytics = _instance;
 export default Analytics;
+export { AnalyticsProvider };
 
 
 Analytics.onHubCapsule = (capsule) => {

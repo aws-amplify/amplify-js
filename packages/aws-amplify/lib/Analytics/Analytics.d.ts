@@ -1,4 +1,4 @@
-import { EventAttributes, EventMetrics } from './types';
+import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 /**
 * Provide mobile analytics client functions
 */
@@ -21,12 +21,17 @@ export default class AnalyticsClass {
      * add plugin into Analytics category
      * @param {Object} pluggable - an instance of the plugin
      */
-    addPluggable(pluggable: any): void;
+    addPluggable(pluggable: AnalyticsProvider): void;
     /**
      * Record Session start
      * @return - A promise which resolves if buffer doesn't overflow
      */
     startSession(): Promise<boolean | void>;
+    /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+    onHubCapsule(capsule: any): void;
     /**
      * Record Session stop
      * @return - A promise which resolves if buffer doesn't overflow

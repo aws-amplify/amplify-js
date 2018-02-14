@@ -54,7 +54,7 @@ var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 // events buffer
 var BUFFER_SIZE = 1000;
 var MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-var interval = 2 * 1000; // 2s
+var interval = 5 * 1000; // 7s
 /**
 * Provide mobile analytics client functions
 */
@@ -127,6 +127,11 @@ var AnalyticsClass = /** @class */ (function () {
             });
         });
     };
+    /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+    AnalyticsClass.prototype.onHubCapsule = function (capsule) { };
     /**
      * Record Session stop
      * @return - A promise which resolves if buffer doesn't overflow

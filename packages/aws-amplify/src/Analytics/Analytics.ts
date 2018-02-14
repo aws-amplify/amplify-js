@@ -27,7 +27,7 @@ const logger = new Logger('AnalyticsClass');
 // events buffer
 const BUFFER_SIZE = 1000;
 const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-const interval = 7*1000; // 7s
+const interval = 5*1000; // 7s
 /**
 * Provide mobile analytics client functions
 */
@@ -86,7 +86,7 @@ export default class AnalyticsClass {
      * add plugin into Analytics category
      * @param {Object} pluggable - an instance of the plugin 
      */
-    public addPluggable(pluggable) {
+    public addPluggable(pluggable: AnalyticsProvider) {
         if (pluggable) {
             this._pluggables.push(pluggable);
             pluggable.configure(this._config);
