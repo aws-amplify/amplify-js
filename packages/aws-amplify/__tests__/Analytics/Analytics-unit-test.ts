@@ -46,7 +46,7 @@ describe('setInterval test', () => {
 
         await analytics.startSession();
 
-        jest.advanceTimersByTime(2500);
+        jest.advanceTimersByTime(6000);
 
         expect(spyon2).toBeCalled();
         spyon.mockClear();
@@ -70,7 +70,7 @@ describe('setInterval test', () => {
 
         await analytics.startSession();
 
-        jest.advanceTimersByTime(2500);
+        jest.advanceTimersByTime(6000);
 
         expect(spyon2).toBeCalled();
         spyon.mockClear();

@@ -27,7 +27,7 @@ const logger = new Logger('AnalyticsClass');
 // events buffer
 const BUFFER_SIZE = 1000;
 const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-const interval = 5*1000; // 7s
+const interval = 5*1000; // 5s
 /**
 * Provide mobile analytics client functions
 */
