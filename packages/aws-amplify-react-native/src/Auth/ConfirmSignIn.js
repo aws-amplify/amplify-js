@@ -13,10 +13,9 @@
 
 import React from 'react';
 import { 
-    View, 
-    Text, 
-    TextInput, 
-    Button 
+    View,
+    Text,
+    TextInput
 } from 'react-native';
 import {
     Auth,
@@ -25,10 +24,12 @@ import {
 } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import { 
-    ConfirmationCode, 
-    LinkCell, 
-    Header, 
-    ErrorRow 
+    ConfirmationCode,
+    Button,
+    LinkCell,
+    Padding,
+    Header,
+    ErrorRow
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -70,20 +71,24 @@ export default class ConfirmSignIn extends AuthPiece {
     showComponent(theme) {
         return (
             <View style={theme.section}>
+                <Padding theme={theme} />
                 <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
                 <View style={theme.sectionBody}>
                     <ConfirmationCode
                         theme={theme}
                         onChangeText={(text) => this.setState({ code: text })}
                     />
-                    <Button
-                        title={I18n.get('Confirm')}
-                        onPress={this.confirm}
-                        disabled={!this.state.code}
-                    />
+                    <View style={theme.sectionActions}>
+                        <Button
+                            title={I18n.get('Confirm')}
+                            onPress={this.confirm}
+                            disabled={!this.state.code}
+                        />
+                    </View>
                 </View>
                 <Footer theme={theme} onStateChange={this.changeState}/>
                 <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+                <Padding theme={theme} />
             </View>
         );
     }

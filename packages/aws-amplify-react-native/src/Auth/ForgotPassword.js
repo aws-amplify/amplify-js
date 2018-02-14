@@ -16,7 +16,6 @@ import {
     View, 
     Text, 
     TextInput, 
-    Button, 
     TouchableHighlight 
 } from 'react-native';
 import {
@@ -29,7 +28,9 @@ import {
     Username, 
     Password, 
     ConfirmationCode, 
+    Button, 
     LinkCell, 
+    Padding,
     Header, 
     ErrorRow 
 } from '../AmplifyUI';
@@ -91,12 +92,14 @@ export default class ForgotPassword extends AuthPiece {
                     theme={theme}
                     onChangeText={(text) => this.setState({ username: text })}
                 />
-                <Button
-                    title="Send Code"
-                    style={theme.button}
-                    onPress={this.send}
-                    disabled={!this.state.username}
-                />
+                <View style={theme.sectionActions}>
+                    <Button
+                        title="Send Code"
+                        style={theme.button}
+                        onPress={this.send}
+                        disabled={!this.state.username}
+                    />
+                </View>
             </View>
         )
     }
@@ -113,12 +116,14 @@ export default class ForgotPassword extends AuthPiece {
                     placeholder="New Password"
                     onChangeText={(text) => this.setState({ password: text })}
                 />
-                <Button
-                    title={I18n.get('Submit')}
-                    style={theme.button}
-                    onPress={this.submit}
-                    disabled={!this.state.username}
-                />
+                <View style={theme.sectionActions}>
+                    <Button
+                        title={I18n.get('Submit')}
+                        style={theme.button}
+                        onPress={this.submit}
+                        disabled={!this.state.username}
+                    />
+                </View>
             </View>
         )
     }
@@ -126,6 +131,7 @@ export default class ForgotPassword extends AuthPiece {
     showComponent(theme) {
         return (
             <View style={theme.section}>
+                <Padding theme={theme} />
                 <Header theme={theme}>{I18n.get('Forgot Password')}</Header>
                 <View style={theme.sectionBody}>
                     { !this.state.delivery && this.forgotBody(theme) }
@@ -133,6 +139,7 @@ export default class ForgotPassword extends AuthPiece {
                 </View>
                 <Footer theme={theme} onStateChange={this.changeState}/>
                 <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+                <Padding theme={theme} />
             </View>
         )
     }

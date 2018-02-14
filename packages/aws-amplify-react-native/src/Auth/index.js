@@ -14,6 +14,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Logger } from 'aws-amplify';
+import AmplifyTheme from '../AmplifyTheme';
 import Authenticator from './Authenticator';
 import AuthPiece from './AuthPiece';
 import SignIn from './SignIn';
@@ -62,6 +63,7 @@ export function withAuthenticator(Comp, includeGreetings=false) {
                 if (!includeGreetings) {
                     return (
                         <Comp
+                            key="comp"
                             {...this.props}
                             authState={authState}
                             authData={authData}
@@ -71,23 +73,26 @@ export function withAuthenticator(Comp, includeGreetings=false) {
                 }
 
                 return (
-                    <View>
+                    <View key="greetings_comp" style={AmplifyTheme.container}>
                         <Greetings
                             authState={authState}
                             authData={authData}
                             onStateChange={this.handleAuthStateChange}
                         />
-                        <Comp
-                            {...this.props}
-                            authState={authState}
-                            authData={authData}
-                            onStateChange={this.handleAuthStateChange}
-                        />
+                        <View style={AmplifyTheme.section}>
+                            <Comp
+                                {...this.props}
+                                authState={authState}
+                                authData={authData}
+                                onStateChange={this.handleAuthStateChange}
+                            />
+                        </View>
                     </View>
                 )
             }
 
             return <Authenticator
+                key="authenticator"
                 {...this.props}
                 onStateChange={this.handleAuthStateChange}
             />

@@ -12,10 +12,10 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, Button, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, TouchableHighlight } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import AuthPiece from './AuthPiece';
-import { Username, Password, LinkCell, Header, ErrorRow } from '../AmplifyUI';
+import { Username, Password, Button, LinkCell, Padding, Header, ErrorRow } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('SignIn');
@@ -86,6 +86,7 @@ export default class SignIn extends AuthPiece {
         return React.createElement(
             View,
             { style: theme.section },
+            React.createElement(Padding, { theme: theme }),
             React.createElement(
                 Header,
                 { theme: theme },
@@ -102,19 +103,24 @@ export default class SignIn extends AuthPiece {
                     theme: theme,
                     onChangeText: text => this.setState({ password: text })
                 }),
-                React.createElement(Button, {
-                    title: I18n.get('Sign In'),
-                    style: theme.button,
-                    onPress: this.signIn,
-                    disabled: !this.state.username || !this.state.password
-                })
+                React.createElement(
+                    View,
+                    { style: theme.sectionActions },
+                    React.createElement(Button, {
+                        title: I18n.get('Sign In'),
+                        style: theme.button,
+                        onPress: this.signIn,
+                        disabled: !this.state.username || !this.state.password
+                    })
+                )
             ),
             React.createElement(Footer, { theme: theme, onStateChange: this.changeState }),
             React.createElement(
                 ErrorRow,
                 { theme: theme },
                 this.state.error
-            )
+            ),
+            React.createElement(Padding, { theme: theme })
         );
     }
 }

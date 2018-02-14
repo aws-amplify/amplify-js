@@ -112,7 +112,7 @@ export default class Authenticator extends React.Component {
             <ConfirmSignUp/>,
             <ForgotPassword/>,
             <RequireNewPassword />,
-            <Greetings/>
+            <Greetings />
         ];
         const children = (hideDefault? [] : default_children)
             .concat(props_children)

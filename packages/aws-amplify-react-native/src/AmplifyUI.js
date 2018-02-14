@@ -12,7 +12,13 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, TouchableHighlight } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableHighlight
+} from 'react-native';
 
 import { I18n } from 'aws-amplify';
 
@@ -91,6 +97,26 @@ export const LinkCell = (props) => {
     )
 }
 
+export const Button = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    const style = theme.button || {};
+    return (
+        <TouchableOpacity
+            onPress={props.onPress}
+            disabled={props.disabled}
+        >
+            <View style={theme.buttonWrap}>
+                <Text style={theme.buttonText}>{props.title}</Text>
+            </View>
+        </TouchableOpacity>
+    )
+}
+
+export const Padding = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    return <View style={theme.padding} />
+}
+
 export const Header = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
@@ -102,6 +128,8 @@ export const Header = (props) => {
 
 export const ErrorRow = (props) => {
     const theme = props.theme || AmplifyTheme;
+    if (!props.children) { return null; }
+
     return (
         <View style={theme.errorRow}>
             <Text style={theme.erroRowText}>{props.children}</Text>
