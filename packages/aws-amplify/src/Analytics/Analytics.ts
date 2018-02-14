@@ -219,6 +219,13 @@ export default class AnalyticsClass {
             });
         });
     }
+
+    /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+   public onHubCapsule(capsule: any): void {}
+
 /*
     _putEventsCallback() {
         return (err, data, res, rej) => {
