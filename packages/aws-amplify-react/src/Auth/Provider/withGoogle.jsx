@@ -14,6 +14,7 @@ export default function withGoogle(Comp) {
             this.initGapi = this.initGapi.bind(this);
             this.signIn = this.signIn.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
+            this.refreshGoogleToken = this.refreshGoogleToken.bind(this);
 
             this.state = {};
         }
@@ -42,7 +43,12 @@ export default function withGoogle(Comp) {
         }
 
         componentDidMount() {
+            const refreshInterval = 5000; // 5s
             this.createScript();
+            const that = this;
+            window.setInterval(() => {
+                that.refreshGoogleToken();
+            }, refreshInterval);
         }
 
         createScript() {
@@ -64,6 +70,38 @@ export default function withGoogle(Comp) {
                     client_id: google_client_id,
                     scope: 'profile email openid'
                 });
+            });
+        }
+
+        async refreshGoogleToken() {
+            const ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
+            if (!ga) {
+                logger.debug('no gapi auth2 available');
+                return Promise.resolve();
+            }
+
+            ga.getAuthInstance().then((googleAuth) => {
+                if (!googleAuth) {
+                    console.log('google Auth undefiend');
+                    return Promise.resolve();
+                }
+
+                const googleUser = googleAuth.currentUser.get();
+                // refresh the token
+                if (googleUser.isSignedIn()) {
+                    logger.debug('refreshing the google access token')
+                    googleUser.reloadAuthResponse()
+                        .then((authResponse) => {
+                            const { id_token, expires_at } = authResponse;
+                            const profile = googleUser.getBasicProfile();
+                            const user = {
+                                email: profile.getEmail(),
+                                name: profile.getName()
+                            };
+
+                            return Auth.federatedSignIn('google', { token: id_token, expires_at }, user);
+                        });
+                }
             });
         }
 

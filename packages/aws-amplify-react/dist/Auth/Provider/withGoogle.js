@@ -25,6 +25,8 @@ var _AmplifyUI = require('../../AmplifyUI');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -45,6 +47,7 @@ function withGoogle(Comp) {
             _this.initGapi = _this.initGapi.bind(_this);
             _this.signIn = _this.signIn.bind(_this);
             _this.federatedSignIn = _this.federatedSignIn.bind(_this);
+            _this.refreshGoogleToken = _this.refreshGoogleToken.bind(_this);
 
             _this.state = {};
             return _this;
@@ -93,7 +96,12 @@ function withGoogle(Comp) {
             key: 'componentDidMount',
             value: function () {
                 function componentDidMount() {
+                    var refreshInterval = 5000; // 5s
                     this.createScript();
+                    var that = this;
+                    window.setInterval(function () {
+                        that.refreshGoogleToken();
+                    }, refreshInterval);
                 }
 
                 return componentDidMount;
@@ -130,6 +138,74 @@ function withGoogle(Comp) {
                 }
 
                 return initGapi;
+            }()
+        }, {
+            key: 'refreshGoogleToken',
+            value: function () {
+                var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function () {
+                    function _callee() {
+                        var ga;
+                        return regeneratorRuntime.wrap(function () {
+                            function _callee$(_context) {
+                                while (1) {
+                                    switch (_context.prev = _context.next) {
+                                        case 0:
+                                            ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
+
+                                            if (ga) {
+                                                _context.next = 4;
+                                                break;
+                                            }
+
+                                            logger.debug('no gapi auth2 available');
+                                            return _context.abrupt('return', Promise.resolve());
+
+                                        case 4:
+
+                                            ga.getAuthInstance().then(function (googleAuth) {
+                                                if (!googleAuth) {
+                                                    console.log('google Auth undefiend');
+                                                    return Promise.resolve();
+                                                }
+
+                                                var googleUser = googleAuth.currentUser.get();
+                                                // refresh the token
+                                                if (googleUser.isSignedIn()) {
+                                                    logger.debug('refreshing the google access token');
+                                                    googleUser.reloadAuthResponse().then(function (authResponse) {
+                                                        var id_token = authResponse.id_token,
+                                                            expires_at = authResponse.expires_at;
+
+                                                        var profile = googleUser.getBasicProfile();
+                                                        var user = {
+                                                            email: profile.getEmail(),
+                                                            name: profile.getName()
+                                                        };
+
+                                                        return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user);
+                                                    });
+                                                }
+                                            });
+
+                                        case 5:
+                                        case 'end':
+                                            return _context.stop();
+                                    }
+                                }
+                            }
+
+                            return _callee$;
+                        }(), _callee, this);
+                    }
+
+                    return _callee;
+                }()));
+
+                function refreshGoogleToken() {
+                    return _ref.apply(this, arguments);
+                }
+
+                return refreshGoogleToken;
             }()
         }, {
             key: 'render',

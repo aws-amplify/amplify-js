@@ -110,10 +110,10 @@ var Greetings = function (_AuthPiece) {
                 if (!auth2) {
                     return Promise.resolve(null);
                 }
-                console.log(auth2);
+
                 auth2.getAuthInstance().then(function (googleAuth) {
                     if (!googleAuth) {
-                        logger.debug('google Auth undefiend');
+                        logger.debug('google Auth undefined');
                         return Promise.resolve(null);
                     }
 
@@ -138,7 +138,7 @@ var Greetings = function (_AuthPiece) {
                     if (response.status === 'connected') {
                         return new Promise(function (res, rej) {
                             logger.debug('facebook signing out');
-                            FB.logout(function (response) {
+                            fb.logout(function (response) {
                                 res(response);
                             });
                         });
