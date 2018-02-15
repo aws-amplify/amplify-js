@@ -39,6 +39,11 @@ export default class StorageClass {
     private _options;
 
     /**
+     * @public
+     */
+    public vault: StorageClass;
+
+    /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
      */
@@ -142,7 +147,8 @@ export default class StorageClass {
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, contentType, level, track } = opt;
+        const { bucket, region, credentials, level, track } = opt;
+        const { contentType, cacheControl, expires, metadata } = opt;
         const type = contentType? contentType: 'binary/octet-stream';
 
         const prefix = this._prefix(opt);
@@ -150,12 +156,15 @@ export default class StorageClass {
         const s3 = this._createS3(opt);
         logger.debug('put ' + key + ' to ' + final_key);
 
-        const params = {
+        const params: any = {
             Bucket: bucket,
             Key: final_key,
             Body: object,
             ContentType: type
         };
+        if (cacheControl) { params.CacheControl = cacheControl; }
+        if (expires) { params.Expires = expires; }
+        if (metadata) { params.Metadata = metadata; }
     
         return new Promise<Object>((res, rej) => {
             s3.upload(params, (err, data) => {
@@ -301,7 +310,14 @@ export default class StorageClass {
      */
     private _prefix(options) {
         const { credentials, level } = options;
-        return (level === 'private')? `private/${credentials.identityId}/` : 'public/';
+        switch(level) {
+          case 'private':
+            return `private/${credentials.identityId}/`;
+          case 'protected':
+            return `protected/${credentials.identityId}/`;
+          default:
+            return 'public/';
+        }
     }
 
     /**

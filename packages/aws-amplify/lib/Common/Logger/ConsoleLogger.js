@@ -69,9 +69,7 @@ var ConsoleLogger = /** @class */ (function () {
             return;
         }
         var log = console.log;
-        if (type === 'ERROR' && console.error) {
-            log = console.error;
-        }
+        // if (type === 'ERROR' && console.error) { log = console.error; }
         if (type === 'WARN' && console.warn) {
             log = console.warn;
         }

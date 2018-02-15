@@ -32,6 +32,7 @@ class CacheObject {
 
     constructor() {
         this.store = {};
+        logger.debug('Using InMemoryCache');
     }
 
     public clear(): void {

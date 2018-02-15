@@ -55,4 +55,17 @@ function getCurrTime() {
     return currTime.getTime();
 }
 exports.getCurrTime = getCurrTime;
+/**
+ * check if passed value is an integer
+ */
+function isInteger(value) {
+    if (Number.isInteger) {
+        return Number.isInteger(value);
+    }
+    return _isInteger(value);
+}
+exports.isInteger = isInteger;
+function _isInteger(value) {
+    return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
+}
 //# sourceMappingURL=CacheUtils.js.map

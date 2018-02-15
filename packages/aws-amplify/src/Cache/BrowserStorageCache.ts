@@ -33,8 +33,8 @@ export class BrowserStorageCache extends StorageCache implements ICache {
     constructor(config?: CacheConfig) {
         const cacheConfig = config ? Object.assign({}, defaultConfig, config) : defaultConfig;
         super(cacheConfig);
-
         this.config.storage = cacheConfig.storage;
+        logger.debug('Using AsyncStorageCache');
     }
 
     /**

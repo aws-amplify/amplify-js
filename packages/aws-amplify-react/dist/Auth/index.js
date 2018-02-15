@@ -199,6 +199,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function withAuthenticator(Comp) {
     var includeGreetings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    var authenticatorComponents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
     return function (_Component) {
         _inherits(_class, _Component);
@@ -253,7 +254,9 @@ function withAuthenticator(Comp) {
                     }
 
                     return _react2['default'].createElement(_Authenticator2['default'], _extends({}, this.props, {
-                        onStateChange: this.handleAuthStateChange
+                        hideDefault: authenticatorComponents.length > 0,
+                        onStateChange: this.handleAuthStateChange,
+                        children: authenticatorComponents
                     }));
                 }
 

@@ -17,6 +17,8 @@ import { ConsoleLogger as Logger } from '../Common';
 import Auth from '../Auth';
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
+import Platform from '../Common/Platform';
+
 const logger = new Logger('RestClient');
 
 /**
@@ -73,7 +75,14 @@ export class RestClient {
             data: null
         };
 
-        const libraryHeaders = {};
+        let libraryHeaders = {};
+
+        if (Platform.isReactNative) {
+        const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
+            libraryHeaders = {
+                'User-Agent': userAgent
+            };
+        }
 
         const extraParams = Object.assign({}, init);
 
@@ -104,8 +113,8 @@ export class RestClient {
 
     /**
     * PUT HTTP request
-    * @param {String} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     put(url: string, init) {
@@ -113,9 +122,19 @@ export class RestClient {
     }
 
     /**
+    * PATCH HTTP request
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
+    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+    */
+    patch(url: string, init) {
+        return this.ajax(url, 'PATCH', init);
+    }
+
+    /**
     * POST HTTP request
-    * @param {String} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     post(url: string, init) {
@@ -125,7 +144,7 @@ export class RestClient {
     /**
     * DELETE HTTP request
     * @param {string} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     del(url: string, init) {
@@ -135,7 +154,7 @@ export class RestClient {
     /**
     * HEAD HTTP request
     * @param {string} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     head(url: string, init) {
