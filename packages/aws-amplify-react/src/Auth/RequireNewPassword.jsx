@@ -32,6 +32,7 @@ export default class RequireNewPassword extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['requireNewPassword'];
         this.change = this.change.bind(this);
     }
 
@@ -47,12 +48,8 @@ export default class RequireNewPassword extends AuthPiece {
             .catch(err => this.error(err));
     }
 
-    render() {
-        const { authState, hide } = this.props;
-        if (authState !== 'requireNewPassword') { return null; }
-
-        const theme = this.props.theme || AmplifyTheme;
-
+    showComponent(theme) {
+        const { hide } = this.props;
         if (hide && hide.includes(RequireNewPassword)) { return null; }
 
         return (

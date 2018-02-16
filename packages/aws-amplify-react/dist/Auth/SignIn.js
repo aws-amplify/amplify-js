@@ -56,6 +56,7 @@ var SignIn = function (_AuthPiece) {
         _this.checkContact = _this.checkContact.bind(_this);
         _this.signIn = _this.signIn.bind(_this);
 
+        _this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
         _this.state = {};
         return _this;
     }
@@ -106,9 +107,9 @@ var SignIn = function (_AuthPiece) {
             return signIn;
         }()
     }, {
-        key: 'render',
+        key: 'showComponent',
         value: function () {
-            function render() {
+            function showComponent(theme) {
                 var _this4 = this;
 
                 var _props = this.props,
@@ -117,14 +118,10 @@ var SignIn = function (_AuthPiece) {
                     federated = _props.federated,
                     onStateChange = _props.onStateChange;
 
-                if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) {
-                    return null;
-                }
                 if (hide && hide.includes(SignIn)) {
                     return null;
                 }
 
-                var theme = this.props.theme || _AmplifyTheme2['default'];
                 return _react2['default'].createElement(
                     _AmplifyUI.FormSection,
                     { theme: theme },
@@ -201,7 +198,7 @@ var SignIn = function (_AuthPiece) {
                 );
             }
 
-            return render;
+            return showComponent;
         }()
     }]);
 
