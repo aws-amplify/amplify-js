@@ -86,7 +86,8 @@ var AuthClass = /** @class */ (function () {
                 userPoolId: conf['aws_user_pools_id'],
                 userPoolWebClientId: conf['aws_user_pools_web_client_id'],
                 region: conf['aws_cognito_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id']
+                identityPoolId: conf['aws_cognito_identity_pool_id'],
+                mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable' ? true : false
             };
         }
         this._config = Object.assign({}, this._config, conf);
@@ -870,7 +871,7 @@ var AuthClass = /** @class */ (function () {
         }
     };
     AuthClass.prototype.pickupCredentials = function () {
-        var _this = this;
+        var that = this;
         if (this.credentials) {
             return this.keepAlive();
         }
@@ -879,11 +880,16 @@ var AuthClass = /** @class */ (function () {
         }
         else {
             return this.currentUserCredentials()
-                .then(function () { return _this.keepAlive(); })
+                .then(function () {
+                if (that.credentials_source === 'no credentials') {
+                    return Promise.resolve(null);
+                }
+                return that.keepAlive();
+            })
                 .catch(function (err) {
                 logger.debug('error when pickup', err);
-                _this.setCredentialsForGuest();
-                return _this.keepAlive();
+                that.setCredentialsForGuest();
+                return that.keepAlive();
             });
         }
     };
@@ -896,7 +902,12 @@ var AuthClass = /** @class */ (function () {
         return false;
     };
     AuthClass.prototype.setCredentialsForGuest = function () {
-        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
+        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
+        if (mandatorySignIn) {
+            this.credentials = null;
+            this.credentials_source = 'no credentials';
+            return;
+        }
         var credentials = new CognitoIdentityCredentials({
             IdentityPoolId: identityPoolId
         }, {

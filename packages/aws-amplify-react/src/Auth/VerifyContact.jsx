@@ -34,6 +34,7 @@ export default class VerifyContact extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['verifyContact'];
         this.verify = this.verify.bind(this);
         this.submit = this.submit.bind(this);
 
@@ -121,12 +122,8 @@ export default class VerifyContact extends AuthPiece {
         )
     }
 
-    render() {
-        const { authState, authData, hide } = this.props;
-        if (authState !== 'verifyContact') { return null; }
-
-        const theme = this.props.theme || AmplifyTheme;
-
+    showComponent(theme) {
+        const { authData, hide } = this.props;
         if (hide && hide.includes(VerifyContact)) { return null; }
 
         return (
