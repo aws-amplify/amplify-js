@@ -156,7 +156,7 @@ export default class S3Image extends Component {
 
         return (
             <div style={photoStyle}>
-                { this.imageEl(src, theme) }
+                { photoStyle? this.imageEl(src, theme): null }
                 { picker? <div>
                               <PhotoPicker
                                   key="picker"

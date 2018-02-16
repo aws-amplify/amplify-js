@@ -140,7 +140,12 @@ describe("Analytics test", () => {
             await analytics._initClients();
            
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents');
-            spyon2.mockClear();
+            const spyon3 = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
+
             await analytics.startSession();
 
             expect(spyon2).toBeCalled();
@@ -148,6 +153,7 @@ describe("Analytics test", () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
 
         test("put events error", async () => {
@@ -165,8 +171,15 @@ describe("Analytics test", () => {
                 callback('err', null);
             });
 
-            spyon2.mockClear();
+            const spyon3 = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
+
+
             try {
+
                 await analytics.startSession();
             } catch (e) {
                 expect(e).toBe('err');
@@ -174,6 +187,7 @@ describe("Analytics test", () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
     });
 
@@ -190,8 +204,11 @@ describe("Analytics test", () => {
             await analytics._initClients();
            
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents');
-            
-            spyon2.mockClear();
+            const spyon3 = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
             await analytics.stopSession();
 
             expect(spyon2).toBeCalled();
@@ -199,6 +216,7 @@ describe("Analytics test", () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
 
         test("put events error", async () => {     
@@ -215,8 +233,11 @@ describe("Analytics test", () => {
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
                 callback('err', null);
             });
-
-            spyon2.mockClear();
+            const spyon3 = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
             try {
                 await analytics.stopSession();
             } catch (e) {
@@ -225,6 +246,7 @@ describe("Analytics test", () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
     });
 
@@ -277,7 +299,11 @@ describe("Analytics test", () => {
             await analytics._initClients();
            
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents');
-            spyon2.mockClear();
+            const spyon3 = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
 
             await analytics.record('event');
 
@@ -286,6 +312,7 @@ describe("Analytics test", () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
 
         test("put events error", async () => {      
@@ -302,8 +329,11 @@ describe("Analytics test", () => {
             const spyon2 = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
                 callback('err', null);
             });
-
-            spyon2.mockClear();
+            const spyon3 = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials)
+                });
+            });
             try {
                 await analytics.record('event');
             } catch (e) {
@@ -312,6 +342,7 @@ describe("Analytics test", () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
     });
 });

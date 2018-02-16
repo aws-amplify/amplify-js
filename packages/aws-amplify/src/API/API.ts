@@ -257,6 +257,7 @@ export default class API {
     _ensureCredentials() {
         return Auth.currentCredentials()
             .then(credentials => {
+                if (!credentials) return false;
                 const cred = Auth.essentialCredentials(credentials);
                 logger.debug('set credentials for api', cred);
 
