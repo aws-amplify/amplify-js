@@ -320,7 +320,7 @@ After setup. Just add `Google client_id`, `Facebook app_id` and/or `Amazon clien
 ```
 #### Custom federated identity UI
 
-Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle`, `withFacebook`, `withAmazon` if just need a single provider.
+Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle`, `withFacebook`, `withAmazon` if you just need a single provider.
 
 ```jsx
 import { withFederated } from 'aws-amplify-react';
