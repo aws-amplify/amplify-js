@@ -1,2 +1,3 @@
-declare const Analytics: any;
+import AnalyticsClass from './Analytics';
+declare const Analytics: AnalyticsClass;
 export default Analytics;

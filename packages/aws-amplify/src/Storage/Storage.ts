@@ -293,6 +293,7 @@ export default class StorageClass {
 
         return Auth.currentCredentials()
             .then(credentials => {
+                if (!credentials) return false;
                 const cred = Auth.essentialCredentials(credentials);
                 logger.debug('set credentials for storage', cred);
                 this._options.credentials = cred;

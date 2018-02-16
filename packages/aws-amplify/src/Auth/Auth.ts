@@ -73,7 +73,8 @@ export default class AuthClass {
                 userPoolId: conf['aws_user_pools_id'],
                 userPoolWebClientId: conf['aws_user_pools_web_client_id'],
                 region: conf['aws_cognito_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id']
+                identityPoolId: conf['aws_cognito_identity_pool_id'],
+                mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable'? true: false
             };
         }
         this._config = Object.assign({}, this._config, conf);
@@ -493,11 +494,11 @@ export default class AuthClass {
                             .then(session => that.setCredentialsFromSession(session))
                             .catch((error) => that.setCredentialsForGuest());
                     }
-            }).catch((error) => {
-                return new Promise((resolve, reject) => {
-                    reject(error);
+                }).catch((error) => {
+                    return new Promise((resolve, reject) => {
+                        reject(error);
+                    });
                 });
-            });
         } else {
             // first to check whether there is federation info in the local storage
             const federatedInfo = Cache.getItem('federatedInfo');
@@ -779,17 +780,23 @@ export default class AuthClass {
     }
 
     private pickupCredentials() {
+        const that = this;
         if (this.credentials) {
             return this.keepAlive();
         } else if (this.setCredentialsFromAWS()) {
             return this.keepAlive();
         } else {
             return this.currentUserCredentials()
-                .then(() => this.keepAlive())
+                .then(() => {
+                    if (that.credentials_source === 'no credentials') {
+                        return Promise.resolve(null);
+                    }
+                    return that.keepAlive();
+                })
                 .catch(err => {
                     logger.debug('error when pickup', err);
-                    this.setCredentialsForGuest();
-                    return this.keepAlive();
+                    that.setCredentialsForGuest();
+                    return that.keepAlive();
                 });
         }
     }
@@ -804,7 +811,13 @@ export default class AuthClass {
     }
 
     private setCredentialsForGuest() {
-        const { identityPoolId, region } = this._config;
+        const { identityPoolId, region, mandatorySignIn } = this._config;
+        if (mandatorySignIn) {
+            this.credentials = null;
+            this.credentials_source = 'no credentials';
+            return;
+        }
+
         const credentials = new CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId

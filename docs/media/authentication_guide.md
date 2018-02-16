@@ -56,6 +56,8 @@ Amplify.configure({
         userPoolId: 'XX-XXXX-X_abcd1234',
     // OPTIONAL - Amazon Cognito Web Client ID
         userPoolWebClientId: 'XX-XXXX-X_abcd1234',
+    // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
+        mandatorySignIn: false
     }
 });
 ```
