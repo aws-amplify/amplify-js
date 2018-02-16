@@ -288,6 +288,16 @@ import { S3Image } from 'aws-amplify-react';
     }
 ```
 
+To hide the image shown in the S3Image, set ```hidden```
+
+```jsx
+import { S3Image } from 'aws-amplify-react';
+
+    render() {
+        return <S3Image hidden imgKey={key} />
+    }
+```
+
 **Image URL**
 
 `S3Image` converts path to actual URL. To get the URL, listen to the `onLoad` event:

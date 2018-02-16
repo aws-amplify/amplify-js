@@ -266,7 +266,7 @@ var S3Image = function (_Component) {
                 return _react2['default'].createElement(
                     'div',
                     { style: photoStyle },
-                    this.imageEl(src, theme),
+                    photoStyle ? this.imageEl(src, theme) : null,
                     picker ? _react2['default'].createElement(
                         'div',
                         null,
