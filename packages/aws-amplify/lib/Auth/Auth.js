@@ -801,11 +801,12 @@ var AuthClass = /** @class */ (function () {
      * @param {String} user - user info
      */
     AuthClass.prototype.federatedSignIn = function (provider, response, user) {
-        var token = response.token, expires_at = response.expires_at;
+        var token = response.token, expires_at = response.expires_at, refreshing = response.refreshing;
         this.setCredentialsFromFederation(provider, token, user);
         // store it into localstorage
         Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1 });
-        // dispatchAuthEvent('signIn', this.user);
+        if (!refreshing)
+            dispatchAuthEvent('signIn', this.user);
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();
     };

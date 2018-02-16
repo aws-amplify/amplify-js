@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 
-import { Auth, Logger, Hub } from 'aws-amplify';
+import { Auth, Logger } from 'aws-amplify';
 import AmplifyTheme from '../../AmplifyTheme';
 import { SignInButton } from '../../AmplifyUI';
 
 const logger = new Logger('withGoogle');
-const dispatchAuthEvent = (event, data) => {
-    Hub.dispatch('auth', { event, data }, 'Auth');
-};
 
 export default function withGoogle(Comp) {
     return class extends Component {
@@ -36,9 +33,8 @@ export default function withGoogle(Comp) {
                 name: profile.getName()
             };
 
-            dispatchAuthEvent('signIn', user);
             const { onStateChange } = this.props;
-            return Auth.federatedSignIn('google', { token: id_token, expires_at }, user)
+            return Auth.federatedSignIn('google', { token: id_token, expires_at, refreshing: false }, user)
                 .then(crednetials => {
                     if (onStateChange) {
                         onStateChange('signedIn');
@@ -103,7 +99,7 @@ export default function withGoogle(Comp) {
                                 name: profile.getName()
                             };
 
-                            return Auth.federatedSignIn('google', { token: id_token, expires_at }, user);
+                            return Auth.federatedSignIn('google', { token: id_token, expires_at, refreshing: true }, user);
                         });
                 }
             });

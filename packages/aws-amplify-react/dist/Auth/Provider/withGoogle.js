@@ -32,9 +32,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var logger = new _awsAmplify.Logger('withGoogle');
-var dispatchAuthEvent = function dispatchAuthEvent(event, data) {
-    _awsAmplify.Hub.dispatch('auth', { event: event, data: data }, 'Auth');
-};
 
 function withGoogle(Comp) {
     return function (_Component) {
@@ -82,10 +79,9 @@ function withGoogle(Comp) {
                         name: profile.getName()
                     };
 
-                    dispatchAuthEvent('signIn', user);
                     var onStateChange = this.props.onStateChange;
 
-                    return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user).then(function (crednetials) {
+                    return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at, refreshing: false }, user).then(function (crednetials) {
                         if (onStateChange) {
                             onStateChange('signedIn');
                         }
@@ -171,7 +167,7 @@ function withGoogle(Comp) {
                                     name: profile.getName()
                                 };
 
-                                return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user);
+                                return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at, refreshing: true }, user);
                             });
                         }
                     });

@@ -15,6 +15,7 @@ export default function withFacebook(Comp) {
             this.initFB = this.initFB.bind(this);
             this.signIn = this.signIn.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
+            this.refreshFacebookToken = this.refreshFacebookToken.bind(this);
 
             this.state = {};
         }
@@ -53,8 +54,8 @@ export default function withFacebook(Comp) {
                     name: response.name
                 }
 
-                Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
-                    .then(crednetials => {
+                Auth.federatedSignIn('facebook', { token: accessToken, expires_at, refreshing: false }, user)
+                    .then(credentials => {
                         if (onStateChange) {
                             onStateChange('signedIn');
                         }
@@ -63,7 +64,12 @@ export default function withFacebook(Comp) {
         }
 
         componentDidMount() {
+            const refreshInterval = 25 * 60 * 1000; // 25min
             this.createScript();
+            const that = this;
+            window.setInterval(() => {
+                that.refreshFacebookToken();
+            }, refreshInterval);
         }
 
         fbAsyncInit() {
@@ -94,6 +100,40 @@ export default function withFacebook(Comp) {
             script.async = true;
             script.onload = this.initFB;
             document.body.appendChild(script);
+        }
+
+        refreshFacebookToken() {
+            const fb = window.FB;
+            if (!fb) {
+                logger.debug('no fb sdk available');
+                return Promise.resolve();
+            }
+
+            fb.getLoginStatus(response => {
+                if (response.status === 'connected') {
+                    const { authResponse } = response;
+                    const { accessToken, expiresIn } = authResponse;
+
+                    const date = new Date();
+                    const expires_at = expiresIn * 1000 + date.getTime();
+                    if (!accessToken) {
+                        return;
+                    }
+                    
+                    const fb = window.FB;
+                    fb.api('/me', response => {
+                        const user = {
+                            name: response.name
+                        }
+                        Auth.federatedSignIn('facebook', { token: accessToken, expires_at, refreshing: true }, user);
+                    });
+                } else {
+                    const { onStateChange } = this.props;
+                    if (onStateChange) {
+                        onStateChange('signIn');
+                    }
+                }
+            });
         }
 
         render() {
