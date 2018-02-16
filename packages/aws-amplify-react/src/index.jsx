@@ -15,6 +15,7 @@ import { I18n } from 'aws-amplify';
 
 import dict from './AmplifyI18n';
 
+export * from './AmplifyUI';
 export * from './Auth';
 export * from './Analytics';
 export * from './Storage';
