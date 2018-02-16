@@ -14,6 +14,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _awsAmplify = require('aws-amplify');
 
+var _AmplifyTheme = require('../AmplifyTheme');
+
+var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
+
 var _AmplifyMessageMap = require('../AmplifyMessageMap');
 
 var _AmplifyMessageMap2 = _interopRequireDefault(_AmplifyMessageMap);
@@ -49,6 +53,8 @@ var AuthPiece = function (_Component) {
 
         _this.inputs = {};
 
+        _this._isHidden = true;
+        _this._validAuthStates = [];
         _this.changeState = _this.changeState.bind(_this);
         _this.error = _this.error.bind(_this);
         _this.handleInputChange = _this.handleInputChange.bind(_this);
@@ -149,6 +155,36 @@ var AuthPiece = function (_Component) {
             }
 
             return handleInputChange;
+        }()
+    }, {
+        key: 'render',
+        value: function () {
+            function render() {
+                if (!this._validAuthStates.includes(this.props.authState)) {
+                    this._isHidden = true;
+                    return null;
+                }
+
+                if (this._isHidden) {
+                    var track = this.props.track;
+
+                    if (track) track();
+                }
+                this._isHidden = false;
+
+                return this.showComponent(this.props.theme || _AmplifyTheme2['default']);
+            }
+
+            return render;
+        }()
+    }, {
+        key: 'showComponent',
+        value: function () {
+            function showComponent(theme) {
+                throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
+            }
+
+            return showComponent;
         }()
     }]);
 

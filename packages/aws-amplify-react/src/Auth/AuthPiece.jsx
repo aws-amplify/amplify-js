@@ -14,6 +14,7 @@
 import React, { Component } from 'react';
 import { Logger } from 'aws-amplify';
 
+import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 
 const logger = new Logger('AuthPiece');
@@ -24,6 +25,8 @@ export default class AuthPiece extends Component {
 
         this.inputs = {};
 
+        this._isHidden = true;
+        this._validAuthStates = [];
         this.changeState = this.changeState.bind(this);
         this.error = this.error.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -75,5 +78,24 @@ export default class AuthPiece extends Component {
         const { name, value, type, checked } = evt.target;
         const check_type = ['radio', 'checkbox'].includes(type);
         this.inputs[name] = check_type? checked : value;
+    }
+
+    render() {
+        if (!this._validAuthStates.includes(this.props.authState)) {
+            this._isHidden = true;
+            return null;
+        }
+
+        if (this._isHidden) {
+            const { track } = this.props;
+            if (track) track();
+        }
+        this._isHidden = false;
+
+        return this.showComponent(this.props.theme || AmplifyTheme);
+    }
+
+    showComponent(theme) {
+        throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
     }
 }
