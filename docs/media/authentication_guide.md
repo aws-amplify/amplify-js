@@ -127,6 +127,13 @@ Auth.forgotPasswordSubmit(username, code, new_password)
     .catch(err => console.log(err));
 ```
 
+#### Current Session
+Return a `CognitoUserSession` which contains JWT `accessToken`, `idToken`, and `refreshToken`.
+```js
+let session = Auth.currentSession();
+// CognitoUserSession => { idToken, refreshToken, accessToken }
+```
+
 ### 2. withAuthenticator HOC
 
 <img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
@@ -311,7 +318,7 @@ After setup. Just add `Google client_id`, `Facebook app_id` and/or `Amazon clien
 ```
 #### Custom federated identity UI
 
-Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle`, `withFacebook`, `withAmazon` if just need a single provider.
+Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle`, `withFacebook`, `withAmazon` if you just need a single provider.
 
 ```jsx
 import { withFederated } from 'aws-amplify-react';

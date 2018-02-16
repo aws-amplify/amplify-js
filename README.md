@@ -32,8 +32,9 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
 * [Examples](#example)
   - [1. Collect user session metrics.](#1-collect-user-session-metrics)
   - [2. Add Authentication](#2-add-authentication-to-your-app)
-  - [3. Sign HTTP requests](#3-sign-http-requests)
-  - [4. Upload and Download public or private content](#4-upload-and-download-public-or-private-content)
+  - [3. Override default authentication screens](#3-override-default-authentication-screens)
+  - [4. Sign HTTP requests](#4-sign-http-requests)
+  - [5. Upload and Download public or private content](#5-upload-and-download-public-or-private-content)
 * [Contributing](#contributing)
 
 ## Installation
@@ -157,7 +158,40 @@ Amplify.configure(aws_exports);
 export default withAuthenticator(App);
 ```
 
-### 3. Sign HTTP requests
+### 3. Override default authentication screens
+
+The `withAuthenticator` HOC gives you some good default authentication screens. But if you need to
+customize those screens with more than simply styles, it also provides an optional third parameter
+through which you can pass the list of customized (or not) screens:
+
+```js
+import React, { Component } from 'react';
+import { ConfirmSignIn, ConfirmSignUp, ForgotPassword, SignIn, SignUp, VerifyContact, withAuthenticator } from 'aws-amplify-react';
+
+class App extends Component {
+  render() {
+    ...
+  }
+}
+
+class MySignIn extends SignIn {
+  render() {
+    ...
+  }
+}
+
+export default withAuthenticator(App, false, [
+  <MySignIn/>,
+  <ConfirmSignIn/>,
+  <VerifyContact/>,
+  <SignUp/>,
+  <ConfirmSignUp/>,
+  <ForgotPassword/>
+]);
+
+```
+
+### 4. Sign HTTP requests
 
 Sign REST requests with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html) using the API module to one or multiple endpoints:
 
@@ -172,7 +206,7 @@ API.get(apiName, path, options).then(response => {
 });
 ```
 
-### 4. Upload and Download public or private content
+### 5. Upload and Download public or private content
 
 With configurable settings, store content in an S3 bucket in public folders for all of your application's users or in private folders for each user identity:
 

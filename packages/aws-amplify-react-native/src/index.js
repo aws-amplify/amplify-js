@@ -16,6 +16,7 @@ import dict from './AmplifyI18n';
 
 export { default as AmplifyTheme } from './AmplifyTheme';
 export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
+export * from './AmplifyUI';
 export * from './Auth';
 export * from './Storage';
 
