@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 
-import { Auth, Logger } from 'aws-amplify';
+import { Auth, Logger, Hub } from 'aws-amplify';
 import AmplifyTheme from '../../AmplifyTheme';
 import { SignInButton } from '../../AmplifyUI';
 
 const logger = new Logger('withGoogle');
+const dispatchAuthEvent = (event, data) => {
+    Hub.dispatch('auth', { event, data }, 'Auth');
+};
 
 export default function withGoogle(Comp) {
     return class extends Component {
@@ -33,6 +36,7 @@ export default function withGoogle(Comp) {
                 name: profile.getName()
             };
 
+            dispatchAuthEvent('signIn', user);
             const { onStateChange } = this.props;
             return Auth.federatedSignIn('google', { token: id_token, expires_at }, user)
                 .then(crednetials => {
@@ -43,7 +47,7 @@ export default function withGoogle(Comp) {
         }
 
         componentDidMount() {
-            const refreshInterval = 5000; // 5s
+            const refreshInterval = 25 * 60 * 1000; // 25min
             this.createScript();
             const that = this;
             window.setInterval(() => {
@@ -73,8 +77,8 @@ export default function withGoogle(Comp) {
             });
         }
 
-        async refreshGoogleToken() {
-            const ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
+        refreshGoogleToken() {
+            const ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2 : null;
             if (!ga) {
                 logger.debug('no gapi auth2 available');
                 return Promise.resolve();

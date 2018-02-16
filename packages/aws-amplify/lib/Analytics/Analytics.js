@@ -233,6 +233,11 @@ var AnalyticsClass = /** @class */ (function () {
             });
         });
     };
+    /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+    AnalyticsClass.prototype.onHubCapsule = function (capsule) { };
     /*
         _putEventsCallback() {
             return (err, data, res, rej) => {

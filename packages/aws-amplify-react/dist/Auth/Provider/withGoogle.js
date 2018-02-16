@@ -25,8 +25,6 @@ var _AmplifyUI = require('../../AmplifyUI');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -34,6 +32,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var logger = new _awsAmplify.Logger('withGoogle');
+var dispatchAuthEvent = function dispatchAuthEvent(event, data) {
+    _awsAmplify.Hub.dispatch('auth', { event: event, data: data }, 'Auth');
+};
 
 function withGoogle(Comp) {
     return function (_Component) {
@@ -81,6 +82,7 @@ function withGoogle(Comp) {
                         name: profile.getName()
                     };
 
+                    dispatchAuthEvent('signIn', user);
                     var onStateChange = this.props.onStateChange;
 
                     return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user).then(function (crednetials) {
@@ -96,7 +98,7 @@ function withGoogle(Comp) {
             key: 'componentDidMount',
             value: function () {
                 function componentDidMount() {
-                    var refreshInterval = 5000; // 5s
+                    var refreshInterval = 25 * 60 * 1000; // 25min
                     this.createScript();
                     var that = this;
                     window.setInterval(function () {
@@ -142,67 +144,37 @@ function withGoogle(Comp) {
         }, {
             key: 'refreshGoogleToken',
             value: function () {
-                var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function () {
-                    function _callee() {
-                        var ga;
-                        return regeneratorRuntime.wrap(function () {
-                            function _callee$(_context) {
-                                while (1) {
-                                    switch (_context.prev = _context.next) {
-                                        case 0:
-                                            ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
-
-                                            if (ga) {
-                                                _context.next = 4;
-                                                break;
-                                            }
-
-                                            logger.debug('no gapi auth2 available');
-                                            return _context.abrupt('return', Promise.resolve());
-
-                                        case 4:
-
-                                            ga.getAuthInstance().then(function (googleAuth) {
-                                                if (!googleAuth) {
-                                                    console.log('google Auth undefiend');
-                                                    return Promise.resolve();
-                                                }
-
-                                                var googleUser = googleAuth.currentUser.get();
-                                                // refresh the token
-                                                if (googleUser.isSignedIn()) {
-                                                    logger.debug('refreshing the google access token');
-                                                    googleUser.reloadAuthResponse().then(function (authResponse) {
-                                                        var id_token = authResponse.id_token,
-                                                            expires_at = authResponse.expires_at;
-
-                                                        var profile = googleUser.getBasicProfile();
-                                                        var user = {
-                                                            email: profile.getEmail(),
-                                                            name: profile.getName()
-                                                        };
-
-                                                        return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user);
-                                                    });
-                                                }
-                                            });
-
-                                        case 5:
-                                        case 'end':
-                                            return _context.stop();
-                                    }
-                                }
-                            }
-
-                            return _callee$;
-                        }(), _callee, this);
+                function refreshGoogleToken() {
+                    var ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2 : null;
+                    if (!ga) {
+                        logger.debug('no gapi auth2 available');
+                        return Promise.resolve();
                     }
 
-                    return _callee;
-                }()));
+                    ga.getAuthInstance().then(function (googleAuth) {
+                        if (!googleAuth) {
+                            console.log('google Auth undefiend');
+                            return Promise.resolve();
+                        }
 
-                function refreshGoogleToken() {
-                    return _ref.apply(this, arguments);
+                        var googleUser = googleAuth.currentUser.get();
+                        // refresh the token
+                        if (googleUser.isSignedIn()) {
+                            logger.debug('refreshing the google access token');
+                            googleUser.reloadAuthResponse().then(function (authResponse) {
+                                var id_token = authResponse.id_token,
+                                    expires_at = authResponse.expires_at;
+
+                                var profile = googleUser.getBasicProfile();
+                                var user = {
+                                    email: profile.getEmail(),
+                                    name: profile.getName()
+                                };
+
+                                return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user);
+                            });
+                        }
+                    });
                 }
 
                 return refreshGoogleToken;
