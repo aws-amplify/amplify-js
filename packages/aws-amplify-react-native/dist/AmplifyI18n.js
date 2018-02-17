@@ -13,6 +13,7 @@
 
 export default dict = {
     'fr': {
+        'Loading...': "S'il vous plaît, attendez",
         'Sign In': "Se connecter",
         'Sign Up': "S'inscrire",
         'Sign Out': "Déconnexion",
@@ -43,6 +44,7 @@ Veuillez utiliser un format de numéro de téléphone du +12345678900`
     },
 
     'es': {
+        'Loading...': "Espere por favor",
         'Sign In': "Registrarse",
         'Sign Up': "Regístrate",
         'Sign Out': "Desconectar",
@@ -73,6 +75,7 @@ Utilice el formato de número de teléfono +12345678900`
     },
 
     'zh': {
+        'Loading...': "请稍候",
         'Sign In': "登录",
         'Sign Up': "注册",
         'Sign Out': "退出",
