@@ -85,7 +85,7 @@ The below code assumes use of the Automated Setup.
 
 Each method of Amplify's API module returns a Promise which is seen in the below examples with different HTTP verbs. Configure the `apiName`, `path` and `headers` according to your settings.
 
-Note: To get the full response from API call, set ```returnAll``` to ```true``` in the ```init``` object. That's a temporary solution, we will deprecate the old version in the future.
+Note: To get the full response from API call, set ```response``` to ```true``` in the ```init``` object. That's a temporary solution, we will deprecate the old version in the future.
 
 ### **GET**
 
@@ -94,6 +94,7 @@ let apiName = 'MyApiName';
 let path = '/path'; 
 let myInit = { // OPTIONAL
     headers: {} // OPTIONAL
+    response: true // OPTIONAL, (return entire response object instead of response.data)
 }
 API.get(apiName, path, myInit).then(response => {
     // Add your code here
