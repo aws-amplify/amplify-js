@@ -102,6 +102,9 @@ export default function withGoogle(Comp) {
                             return Auth.federatedSignIn('google', { token: id_token, expires_at, refreshing: true }, user);
                         });
                 }
+            }).catch(err => {
+                logger.debug('Failed to refresh google token', err);
+                return Promise.resolve();
             });
         }
 
