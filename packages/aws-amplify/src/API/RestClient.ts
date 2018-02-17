@@ -85,7 +85,7 @@ export class RestClient {
         }
 
         const extraParams = Object.assign({}, init);
-
+        const { returnAll } = init;
         if (extraParams.body) {
             libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
             params.data = JSON.stringify(extraParams.body);
@@ -95,10 +95,10 @@ export class RestClient {
 
         // Do not sign the request if client has added 'Authorization' header,
         // which means custom authorizer.
-        if (params.headers['Authorization']) { return this._request(params); }
+        if (params.headers['Authorization']) { return this._request(params, returnAll); }
 
         return Auth.currentCredentials()
-            .then(credentials => this._signed(params, credentials));
+            .then(credentials => this._signed(params, credentials, returnAll));
     }
 
     /**
@@ -179,7 +179,7 @@ export class RestClient {
 
     /** private methods **/
 
-    private _signed(params, credentials) {
+    private _signed(params, credentials, returnAll) {
 
         const signed_params = Signer.sign(params, {
             secret_key: credentials.secretAccessKey,
@@ -195,16 +195,16 @@ export class RestClient {
         delete signed_params.headers['host'];
 
         return axios(signed_params)
-            .then(response => response.data)
+            .then(response => returnAll? response : response.data)
             .catch((error) => {
                 logger.debug(error);
                 throw error;
             });
     }
 
-    private _request(params) {
+    private _request(params, returnAll) {
         return axios(params)
-            .then(response => response.data)
+            .then(response => returnAll? response : response.data)
             .catch((error) => {
                 logger.debug(error);
                 throw error;

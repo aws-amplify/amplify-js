@@ -101,7 +101,7 @@ var RestClient = /** @class */ (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders, userAgent, extraParams;
+            var parsed_url, params, libraryHeaders, userAgent, extraParams, returnAll;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -121,6 +121,7 @@ var RestClient = /** @class */ (function () {
                     };
                 }
                 extraParams = Object.assign({}, init);
+                returnAll = init.returnAll;
                 if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
                     params.data = JSON.stringify(extraParams.body);
@@ -129,10 +130,10 @@ var RestClient = /** @class */ (function () {
                 // Do not sign the request if client has added 'Authorization' header,
                 // which means custom authorizer.
                 if (params.headers['Authorization']) {
-                    return [2 /*return*/, this._request(params)];
+                    return [2 /*return*/, this._request(params, returnAll)];
                 }
                 return [2 /*return*/, Auth_1.default.currentCredentials()
-                        .then(function (credentials) { return _this._signed(params, credentials); })];
+                        .then(function (credentials) { return _this._signed(params, credentials, returnAll); })];
             });
         });
     };
@@ -206,7 +207,7 @@ var RestClient = /** @class */ (function () {
         return response;
     };
     /** private methods **/
-    RestClient.prototype._signed = function (params, credentials) {
+    RestClient.prototype._signed = function (params, credentials, returnAll) {
         var signed_params = Signer_1.default.sign(params, {
             secret_key: credentials.secretAccessKey,
             access_key: credentials.accessKeyId,
@@ -218,15 +219,15 @@ var RestClient = /** @class */ (function () {
         logger.debug(signed_params);
         delete signed_params.headers['host'];
         return axios_1.default(signed_params)
-            .then(function (response) { return response.data; })
+            .then(function (response) { return returnAll ? response : response.data; })
             .catch(function (error) {
             logger.debug(error);
             throw error;
         });
     };
-    RestClient.prototype._request = function (params) {
+    RestClient.prototype._request = function (params, returnAll) {
         return axios_1.default(params)
-            .then(function (response) { return response.data; })
+            .then(function (response) { return returnAll ? response : response.data; })
             .catch(function (error) {
             logger.debug(error);
             throw error;

@@ -83,7 +83,7 @@ export declare class RestClient {
     */
     endpoint(apiName: string): string;
     /** private methods **/
-    private _signed(params, credentials);
-    private _request(params);
+    private _signed(params, credentials, returnAll);
+    private _request(params, returnAll);
     private _parseUrl(url);
 }
