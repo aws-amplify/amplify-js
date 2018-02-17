@@ -63,7 +63,13 @@ export default class RequireNewPassword extends AuthPiece {
         const { password } = this.state;
         logger.debug('Require new password for ' + user.username);
         Auth.completeNewPassword(user, password, user.challengeParam.requiredAttributes)
-            .then(data => this.changeState('signedIn'))
+            .then(data => {
+                if (user.challengeName === 'SMS_MFA') {
+                    this.changeState('confirmSignIn', user);
+                } else {
+                    this.changeState('signedIn');
+                }
+            })
             .catch(err => this.error(err));
     }
 
