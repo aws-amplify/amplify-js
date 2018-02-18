@@ -94,7 +94,7 @@ let apiName = 'MyApiName';
 let path = '/path'; 
 let myInit = { // OPTIONAL
     headers: {} // OPTIONAL
-    response: true // OPTIONAL, (return entire response object instead of response.data)
+    response: true // OPTIONAL
 }
 API.get(apiName, path, myInit).then(response => {
     // Add your code here
