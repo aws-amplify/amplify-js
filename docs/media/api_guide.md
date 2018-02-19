@@ -69,7 +69,7 @@ Amplify.configure({
             },
             {
                 name: "ApiName2",
-                endpoint: "https://1234567890-abcdefghijkl.amazonaws.com"
+                endpoint: "https://api.my-custom-domain.com"
             }
         ]
     }
