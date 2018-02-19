@@ -446,6 +446,9 @@ var AuthClass = /** @class */ (function () {
         if (Platform_1.default.isReactNative) {
             var that = this;
             return this.getSyncedUser().then(function (user) {
+                if (!user) {
+                    return Promise.reject('No current user in userPool');
+                }
                 return new Promise(function (resolve, reject) {
                     user.getSession(function (err, session) {
                         if (err) {
