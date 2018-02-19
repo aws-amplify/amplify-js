@@ -172,7 +172,9 @@ export default class AuthClass {
             Username: username,
             Pool: this.userPool
         });
+
         return new Promise((resolve, reject) => {
+            
             user.confirmRegistration(code, true, function(err, data) {
                 if (err) { reject(err); } else { resolve(data); }
             });
@@ -218,6 +220,7 @@ export default class AuthClass {
             Username: username,
             Password: password
         });
+
         const that = this;
         return new Promise((resolve, reject) => {
             user.authenticateUser(authDetails, {
@@ -247,10 +250,51 @@ export default class AuthClass {
                         requiredAttributes
                     };
                     resolve(user);
+                },
+                mfaSetup: (challengeName, challengeParam) => {
+                    logger.debug('signIn mfa setup', challengeName);
+                },
+                associateSecretCode: (secretCode) => {
+                    logger.debug('signIn asscoiateSecretCode', secretCode);
+                },
+                totpRequired: (secretCode) => {
+                    logger.debug('signIn totpRequired', secretCode);
+                },
+                selectMFAType: (challengeName, challengeParam) => {
+                    logger.debug('signIn selectMFAType', challengeName);
                 }
             });
         });
     }
+
+    public setPreferedMFA(user, mfaMethod): Promise<any> {
+        let smsMfaSettings = null;
+        let totpMfaSettings = null;
+        if (mfaMethod === 'TOTP') {
+            totpMfaSettings = {
+                PreferredMfa : true,
+                Enabled : true
+            }
+        } else {
+            smsMfaSettings = {
+                PreferredMfa : true,
+                Enabled : true
+            }
+        }
+
+        return new Promise((res, rej) => {
+            user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, (err, result) => {
+                if (err) {
+                    logger.debug('Set user mfa preference error', err);
+                    rej(err);
+                }
+                logger.debug('Set user mfa success', result);
+                res(result);
+            });
+        });
+    }
+
+   
 
     /**
      * Send MFA code to confirm sign in
@@ -268,6 +312,18 @@ export default class AuthClass {
                     that.setCredentialsFromSession(session);
                     that.user = user;
                     dispatchAuthEvent('signIn', user);
+                    // delete it!!!!
+                    // that.setPreferedMFA(user, 'TOTP').catch((err) => logger.debug(err));
+                    user.associateSoftwareToken({
+                        onFailure: (err) => {
+                            logger.debug('associateSoftwareToken failed', err);
+                        },
+                        associateSecretCode: (secretCode) => {
+                            logger.debug('associateSoftwareToken sucess', secretCode);
+                        }
+                    });
+
+                    // ....
                     resolve(user);
                 },
                 onFailure: (err) => {

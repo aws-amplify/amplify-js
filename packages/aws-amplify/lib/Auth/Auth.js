@@ -295,7 +295,45 @@ var AuthClass = /** @class */ (function () {
                         requiredAttributes: requiredAttributes
                     };
                     resolve(user);
+                },
+                mfaSetup: function (challengeName, challengeParam) {
+                    logger.debug('signIn mfa setup', challengeName);
+                },
+                associateSecretCode: function (secretCode) {
+                    logger.debug('signIn asscoiateSecretCode', secretCode);
+                },
+                totpRequired: function (secretCode) {
+                    logger.debug('signIn totpRequired', secretCode);
+                },
+                selectMFAType: function (challengeName, challengeParam) {
+                    logger.debug('signIn selectMFAType', challengeName);
                 }
+            });
+        });
+    };
+    AuthClass.prototype.setPreferedMFA = function (user, mfaMethod) {
+        var smsMfaSettings = null;
+        var totpMfaSettings = null;
+        if (mfaMethod === 'TOTP') {
+            totpMfaSettings = {
+                PreferredMfa: true,
+                Enabled: true
+            };
+        }
+        else {
+            smsMfaSettings = {
+                PreferredMfa: true,
+                Enabled: true
+            };
+        }
+        return new Promise(function (res, rej) {
+            user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, function (err, result) {
+                if (err) {
+                    logger.debug('Set user mfa preference error', err);
+                    rej(err);
+                }
+                logger.debug('Set user mfa success', result);
+                res(result);
             });
         });
     };
@@ -316,6 +354,16 @@ var AuthClass = /** @class */ (function () {
                     that.setCredentialsFromSession(session);
                     that.user = user;
                     dispatchAuthEvent('signIn', user);
+                    // delete it!!!!
+                    // that.setPreferedMFA(user, 'TOTP').catch((err) => logger.debug(err));
+                    user.associateSoftwareToken({
+                        onFailure: function (err) {
+                            logger.debug('associateSoftwareToken failed', err);
+                        },
+                        associateSecretCode: function (secretCode) {
+                            logger.debug('associateSoftwareToken sucess', secretCode);
+                        }
+                    });
                     resolve(user);
                 },
                 onFailure: function (err) {
@@ -446,6 +494,9 @@ var AuthClass = /** @class */ (function () {
         if (Platform_1.default.isReactNative) {
             var that = this;
             return this.getSyncedUser().then(function (user) {
+                if (!user) {
+                    return Promise.reject('No current user in userPool');
+                }
                 return new Promise(function (resolve, reject) {
                     user.getSession(function (err, session) {
                         if (err) {

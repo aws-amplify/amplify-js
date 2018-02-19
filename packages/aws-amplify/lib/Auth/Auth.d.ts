@@ -42,6 +42,7 @@ export default class AuthClass {
      * @return - A promise resolves the CognitoUser object if success or mfa required
      */
     signIn(username: string, password: string): Promise<any>;
+    setPreferedMFA(user: any, mfaMethod: any): Promise<any>;
     /**
      * Send MFA code to confirm sign in
      * @param {Object} user - The CognitoUser object

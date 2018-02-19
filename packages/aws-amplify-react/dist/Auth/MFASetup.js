@@ -16,8 +16,6 @@ var _AuthPiece2 = require('./AuthPiece');
 
 var _AuthPiece3 = _interopRequireDefault(_AuthPiece2);
 
-var _FederatedSignIn = require('./FederatedSignIn');
-
 var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
@@ -43,85 +41,44 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * and limitations under the License.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var logger = new _awsAmplify.Logger('SignIn');
+var logger = new _awsAmplify.Logger('mfaSetup');
 
-var SignIn = function (_AuthPiece) {
-    _inherits(SignIn, _AuthPiece);
+var MFASetup = function (_AuthPiece) {
+    _inherits(MFASetup, _AuthPiece);
 
-    function SignIn(props) {
-        _classCallCheck(this, SignIn);
+    function MFASetup(props) {
+        _classCallCheck(this, MFASetup);
 
-        var _this = _possibleConstructorReturn(this, (SignIn.__proto__ || Object.getPrototypeOf(SignIn)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (MFASetup.__proto__ || Object.getPrototypeOf(MFASetup)).call(this, props));
 
-        _this.checkContact = _this.checkContact.bind(_this);
-        _this.signIn = _this.signIn.bind(_this);
-
-        _this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
-        _this.state = {};
+        _this._validAuthStates = ['mfaSetup'];
+        _this.setup = _this.setup.bind(_this);
         return _this;
     }
 
-    _createClass(SignIn, [{
-        key: 'checkContact',
+    _createClass(MFASetup, [{
+        key: 'setup',
         value: function () {
-            function checkContact(user) {
-                var _this2 = this;
-
-                _awsAmplify.Auth.verifiedContact(user).then(function (data) {
-                    if (!_awsAmplify.JS.isEmpty(data.verified)) {
-                        _this2.changeState('signedIn', user);
-                    } else {
-                        user = Object.assign(user, data);
-                        _this2.changeState('verifyContact', user);
-                    }
-                });
-            }
-
-            return checkContact;
-        }()
-    }, {
-        key: 'signIn',
-        value: function () {
-            function signIn() {
-                var _this3 = this;
-
-                var _inputs = this.inputs,
-                    username = _inputs.username,
-                    password = _inputs.password;
-
-                _awsAmplify.Auth.signIn(username, password).then(function (user) {
-                    logger.debug(user);
-                    if (user.challengeName === 'SMS_MFA') {
-                        _this3.changeState('confirmSignIn', user);
-                    } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-                        logger.debug('require new password', user.challengeParam);
-                        _this3.changeState('requireNewPassword', user);
-                    } else if (user.challengeName === 'MFA_SETUP') {
-                        logger.debug('mfa setup', user.challengeParam);
-                        _this3.changeState('mfaSetup');
-                    } else {
-                        _this3.checkContact(user);
-                    }
+            function setup() {
+                var user = this.props.authData;
+                _awsAmplify.Auth.mfaSetup(user).then(function (data) {
+                    logger.debug(data);
                 })['catch'](function (err) {
-                    _this3.error(err);
+                    return logger.debug('mfa setup failed', err);
                 });
             }
 
-            return signIn;
+            return setup;
         }()
     }, {
         key: 'showComponent',
         value: function () {
             function showComponent(theme) {
-                var _this4 = this;
+                var _this2 = this;
 
-                var _props = this.props,
-                    authState = _props.authState,
-                    hide = _props.hide,
-                    federated = _props.federated,
-                    onStateChange = _props.onStateChange;
+                var hide = this.props.hide;
 
-                if (hide && hide.includes(SignIn)) {
+                if (hide && hide.includes(ConfirmSignIn)) {
                     return null;
                 }
 
@@ -131,71 +88,38 @@ var SignIn = function (_AuthPiece) {
                     _react2['default'].createElement(
                         _AmplifyUI.SectionHeader,
                         { theme: theme },
-                        _awsAmplify.I18n.get('Sign In Account')
+                        _awsAmplify.I18n.get('Confirm Code')
                     ),
                     _react2['default'].createElement(
                         _AmplifyUI.SectionBody,
                         { theme: theme },
                         _react2['default'].createElement(_AmplifyUI.InputRow, {
                             autoFocus: true,
-                            placeholder: _awsAmplify.I18n.get('Username'),
+                            placeholder: _awsAmplify.I18n.get('Code'),
                             theme: theme,
-                            key: 'username',
-                            name: 'username',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            placeholder: _awsAmplify.I18n.get('Password'),
-                            theme: theme,
-                            key: 'password',
-                            type: 'password',
-                            name: 'password',
+                            key: 'code',
+                            name: 'code',
                             onChange: this.handleInputChange
                         }),
                         _react2['default'].createElement(
                             _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.signIn },
-                            _awsAmplify.I18n.get('Sign In')
-                        ),
-                        _react2['default'].createElement(_FederatedSignIn.FederatedButtons, {
-                            federated: federated,
-                            theme: theme,
-                            authState: authState,
-                            onStateChange: onStateChange
-                        })
+                            { theme: theme, onClick: this.setup },
+                            _awsAmplify.I18n.get('get secret key')
+                        )
                     ),
                     _react2['default'].createElement(
                         _AmplifyUI.SectionFooter,
                         { theme: theme },
                         _react2['default'].createElement(
-                            'div',
-                            { style: theme.col6 },
-                            _react2['default'].createElement(
-                                _AmplifyUI.Link,
-                                { theme: theme, onClick: function () {
-                                        function onClick() {
-                                            return _this4.changeState('forgotPassword');
-                                        }
+                            _AmplifyUI.Link,
+                            { theme: theme, onClick: function () {
+                                    function onClick() {
+                                        return _this2.changeState('signIn');
+                                    }
 
-                                        return onClick;
-                                    }() },
-                                _awsAmplify.I18n.get('Forgot Password')
-                            )
-                        ),
-                        _react2['default'].createElement(
-                            'div',
-                            { style: Object.assign({ textAlign: 'right' }, theme.col6) },
-                            _react2['default'].createElement(
-                                _AmplifyUI.Link,
-                                { theme: theme, onClick: function () {
-                                        function onClick() {
-                                            return _this4.changeState('signUp');
-                                        }
-
-                                        return onClick;
-                                    }() },
-                                _awsAmplify.I18n.get('Sign Up')
-                            )
+                                    return onClick;
+                                }() },
+                            _awsAmplify.I18n.get('Back to Sign In')
                         )
                     )
                 );
@@ -205,7 +129,7 @@ var SignIn = function (_AuthPiece) {
         }()
     }]);
 
-    return SignIn;
+    return MFASetup;
 }(_AuthPiece3['default']);
 
-exports['default'] = SignIn;
+exports['default'] = MFASetup;

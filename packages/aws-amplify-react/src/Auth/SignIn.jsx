@@ -62,7 +62,11 @@ export default class SignIn extends AuthPiece {
                 } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
                     logger.debug('require new password', user.challengeParam);
                     this.changeState('requireNewPassword', user);
-                } else {
+                } else if (user.challengeName === 'MFA_SETUP') {
+                    logger.debug('mfa setup', user.challengeParam);
+                    this.changeState('mfaSetup');
+                }
+                else {
                     this.checkContact(user);
                 }
             })
