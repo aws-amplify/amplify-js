@@ -36,6 +36,7 @@ restClient.get('...')
 */
 export class RestClient {
     private _options;
+    private _region:string = null;
 
     /**
     * @param {RestClientOptions} [options] - Instance options
@@ -172,6 +173,11 @@ export class RestClient {
         cloud_logic_array.forEach((v) => {
             if (v.name === apiName) {
                 response = v.endpoint;
+                if (typeof v.region === 'string') {
+                    this._region = v.region;
+                } else if (typeof this._options.region === 'string') {
+                    this._region = this._options.region;
+                }
             }
         });
         return response;
@@ -180,17 +186,22 @@ export class RestClient {
     /** private methods **/
 
     private _signed(params, credentials) {
-
-        const signed_params = Signer.sign(params, {
-            secret_key: credentials.secretAccessKey,
-            access_key: credentials.accessKeyId,
-            session_token: credentials.sessionToken
-        });
+        const endpoint_region:string = this._region || this._options.region;
+        const creds = {
+            'secret_key': credentials.secretAccessKey,
+            'access_key': credentials.accessKeyId,
+            'session_token': credentials.sessionToken 
+        };
+        const service_info = {
+            'service': 'execute-api',
+            'region': endpoint_region
+        };
+        const signed_params = Signer.sign(params,creds,service_info);
         if (signed_params.data) {
             signed_params.body = signed_params.data;
         }
 
-        logger.debug(signed_params);
+        logger.debug('Signed Request: ', signed_params);
 
         delete signed_params.headers['host'];
 
