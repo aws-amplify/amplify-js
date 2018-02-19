@@ -51,6 +51,7 @@ var ConfirmSignIn = function (_AuthPiece) {
 
         var _this = _possibleConstructorReturn(this, (ConfirmSignIn.__proto__ || Object.getPrototypeOf(ConfirmSignIn)).call(this, props));
 
+        _this._validAuthStates = ['confirmSignIn'];
         _this.confirm = _this.confirm.bind(_this);
         return _this;
     }
@@ -74,20 +75,12 @@ var ConfirmSignIn = function (_AuthPiece) {
             return confirm;
         }()
     }, {
-        key: 'render',
+        key: 'showComponent',
         value: function () {
-            function render() {
+            function showComponent(theme) {
                 var _this3 = this;
 
-                var _props = this.props,
-                    authState = _props.authState,
-                    hide = _props.hide;
-
-                if (authState !== 'confirmSignIn') {
-                    return null;
-                }
-
-                var theme = this.props.theme || _AmplifyTheme2['default'];
+                var hide = this.props.hide;
 
                 if (hide && hide.includes(ConfirmSignIn)) {
                     return null;
@@ -136,7 +129,7 @@ var ConfirmSignIn = function (_AuthPiece) {
                 );
             }
 
-            return render;
+            return showComponent;
         }()
     }]);
 

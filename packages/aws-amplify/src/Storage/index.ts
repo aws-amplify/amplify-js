@@ -17,7 +17,7 @@ import { ConsoleLogger as Logger } from '../Common';
 
 const logger = new Logger('Storage');
 
-let _instance = null;
+let _instance: StorageClass = null;
 
 if (!_instance) {
     logger.debug('Create Storage Instance');

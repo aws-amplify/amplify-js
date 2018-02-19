@@ -3,8 +3,8 @@
 AWS Amplify Analytics module helps you quickly collect analytics for user sessions, custom attributes or metrics.
 
 * [Installation and Configuration](#installation-and-configuration)
-  - [Manual Setup](#manual-setup)
   - [Automated Setup](#automated-setup)
+  - [Manual Setup](#manual-setup)
 * [Integration](#integration)
   - [1. Collect Session Data](#1-collect-session-data)
   - [2. Record Event](#2-record-event)
@@ -15,27 +15,6 @@ AWS Amplify Analytics module helps you quickly collect analytics for user sessio
 
 Please refer to this [Guide](install_n_config.md) for general setup. Here are Analytics specific setup.
 
-### Manual Setup
-
-```js
-import Amplify from 'aws-amplify';
-
-Amplify.configure(
-    Auth: {
-        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
-        region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
-        userPoolId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito User Pool ID
-        userPoolWebClientId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito Web Client ID
-    },
-    Analytics: {
-        appId: 'XXXXXXXXXXabcdefghij1234567890ab', //OPTIONAL -  Amazon Pinpoint App ID
-        region: 'XX-XXXX-X', //OPTIONAL -  Amazon service region
-    });
-
-```
-
-In the above configuration you are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. If you pass in properties in the Analytics section for Amazon Pinpoint the library will automatically track some base metrics for you without any effort on your part. 
-
 ### Automated Setup
 
 To create a project fully functioning with the Analytics category.
@@ -45,6 +24,7 @@ $ npm install -g awsmobile-cli
 $ cd my-app
 $ awsmobile init
 $ awsmobile enable analytics
+$ awsmobile push
 ```
 
 In your project i.e. App.js:
@@ -55,15 +35,31 @@ import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
 ```
 
-After configuration, user session metrics are automatically collected and send to Amazon Pinpoint. To see these metrics click [here](https://console.aws.amazon.com/pinpoint/home/), or on the cli (from your project directory):
+### Manual Setup
+
+```js
+import Amplify from 'aws-amplify';
+
+Amplify.configure(
+    Analytics: {
+    // OPTIONAL -  Amazon Pinpoint App ID
+        appId: 'XXXXXXXXXXabcdefghij1234567890ab',
+    // OPTIONAL -  Amazon service region
+        region: 'XX-XXXX-X',
+    } 
+);
+
+```
+
+In the above configuration you are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. If you pass in properties in the Analytics section for Amazon Pinpoint the library will automatically track some base metrics for you without any effort on your part. 
+
+After configuration, user session metrics are automatically collected and sent to Amazon Pinpoint. To see these metrics click [here](https://console.aws.amazon.com/pinpoint/home/), or on the cli (from your project directory):
 
 ```
 $ awsmobile console
 ```
 
 Then click **Analytics**.
-
-![Session](mobile_hub_3.png)
 
 ## Integration
 

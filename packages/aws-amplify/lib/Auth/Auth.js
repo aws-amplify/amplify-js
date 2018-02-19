@@ -86,7 +86,8 @@ var AuthClass = /** @class */ (function () {
                 userPoolId: conf['aws_user_pools_id'],
                 userPoolWebClientId: conf['aws_user_pools_web_client_id'],
                 region: conf['aws_cognito_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id']
+                identityPoolId: conf['aws_cognito_identity_pool_id'],
+                mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable' ? true : false
             };
         }
         this._config = Object.assign({}, this._config, conf);
@@ -445,6 +446,9 @@ var AuthClass = /** @class */ (function () {
         if (Platform_1.default.isReactNative) {
             var that = this;
             return this.getSyncedUser().then(function (user) {
+                if (!user) {
+                    return Promise.reject('No current user in userPool');
+                }
                 return new Promise(function (resolve, reject) {
                     user.getSession(function (err, session) {
                         if (err) {
@@ -567,7 +571,8 @@ var AuthClass = /** @class */ (function () {
                 }
                 else {
                     return that_1.currentSession()
-                        .then(function (session) { return that_1.setCredentialsFromSession(session); });
+                        .then(function (session) { return that_1.setCredentialsFromSession(session); })
+                        .catch(function (error) { return that_1.setCredentialsForGuest(); });
                 }
             }).catch(function (error) {
                 return new Promise(function (resolve, reject) {
@@ -587,7 +592,8 @@ var AuthClass = /** @class */ (function () {
             }
             else {
                 return this.currentSession()
-                    .then(function (session) { return _this.setCredentialsFromSession(session); });
+                    .then(function (session) { return _this.setCredentialsFromSession(session); })
+                    .catch(function (error) { return _this.setCredentialsForGuest(); });
             }
         }
     };
@@ -647,27 +653,37 @@ var AuthClass = /** @class */ (function () {
      * @return - A promise resolved if success
      */
     AuthClass.prototype.signOut = function () {
-        var _this = this;
-        var source = this.credentials_source;
-        // clean out the cached stuff
-        this.credentials.clearCachedId();
-        // clear federatedInfo
-        Cache_1.default.removeItem('federatedInfo');
-        if (source === 'aws' || source === 'userPool') {
-            if (!this.userPool) {
-                return Promise.reject('No userPool');
-            }
-            var user = this.userPool.getCurrentUser();
-            if (!user) {
-                return Promise.resolve();
-            }
-            user.signOut();
-        }
-        return new Promise(function (resolve, reject) {
-            _this.setCredentialsForGuest();
-            dispatchAuthEvent('signOut', _this.user);
-            _this.user = null;
-            resolve();
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var source, user;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.currentUserCredentials()];
+                    case 1:
+                        _a.sent();
+                        source = this.credentials_source;
+                        // clean out the cached stuff
+                        this.credentials.clearCachedId();
+                        // clear federatedInfo
+                        Cache_1.default.removeItem('federatedInfo');
+                        if (source === 'aws' || source === 'userPool') {
+                            if (!this.userPool) {
+                                return [2 /*return*/, Promise.reject('No userPool')];
+                            }
+                            user = this.userPool.getCurrentUser();
+                            if (!user) {
+                                return [2 /*return*/, Promise.resolve()];
+                            }
+                            user.signOut();
+                        }
+                        return [2 /*return*/, new Promise(function (resolve, reject) {
+                                _this.setCredentialsForGuest();
+                                dispatchAuthEvent('signOut', _this.user);
+                                _this.user = null;
+                                resolve();
+                            })];
+                }
+            });
         });
     };
     /**
@@ -857,7 +873,7 @@ var AuthClass = /** @class */ (function () {
         }
     };
     AuthClass.prototype.pickupCredentials = function () {
-        var _this = this;
+        var that = this;
         if (this.credentials) {
             return this.keepAlive();
         }
@@ -866,11 +882,16 @@ var AuthClass = /** @class */ (function () {
         }
         else {
             return this.currentUserCredentials()
-                .then(function () { return _this.keepAlive(); })
+                .then(function () {
+                if (that.credentials_source === 'no credentials') {
+                    return Promise.resolve(null);
+                }
+                return that.keepAlive();
+            })
                 .catch(function (err) {
                 logger.debug('error when pickup', err);
-                _this.setCredentialsForGuest();
-                return _this.keepAlive();
+                that.setCredentialsForGuest();
+                return that.keepAlive();
             });
         }
     };
@@ -883,7 +904,12 @@ var AuthClass = /** @class */ (function () {
         return false;
     };
     AuthClass.prototype.setCredentialsForGuest = function () {
-        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
+        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
+        if (mandatorySignIn) {
+            this.credentials = null;
+            this.credentials_source = 'no credentials';
+            return;
+        }
         var credentials = new CognitoIdentityCredentials({
             IdentityPoolId: identityPoolId
         }, {
@@ -936,7 +962,8 @@ var AuthClass = /** @class */ (function () {
                         resolve(credentials);
                     }
                 });
-            });
+            })
+                .catch(function () { return resolve(null); });
         });
     };
     return AuthClass;

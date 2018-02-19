@@ -49,6 +49,7 @@ export default class RequireNewPassword extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['requireNewPassword'];
         this.state = {
             password: null,
             error: null
@@ -62,16 +63,17 @@ export default class RequireNewPassword extends AuthPiece {
         const { password } = this.state;
         logger.debug('Require new password for ' + user.username);
         Auth.completeNewPassword(user, password, user.challengeParam.requiredAttributes)
-            .then(data => this.changeState('signedIn'))
+            .then(data => {
+                if (user.challengeName === 'SMS_MFA') {
+                    this.changeState('confirmSignIn', user);
+                } else {
+                    this.changeState('signedIn');
+                }
+            })
             .catch(err => this.error(err));
     }
 
-    render() {
-        if (!['requireNewPassword'].includes(this.props.authState)) {
-            return null;
-        }
-
-        const theme = this.props.theme || AmplifyTheme;
+    showComponent(theme) {
         return (
             <View style={theme.section}>
                 <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>

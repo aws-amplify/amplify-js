@@ -39,6 +39,11 @@ export default class StorageClass {
     private _options;
 
     /**
+     * @public
+     */
+    public vault: StorageClass;
+
+    /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
      */
@@ -288,6 +293,7 @@ export default class StorageClass {
 
         return Auth.currentCredentials()
             .then(credentials => {
+                if (!credentials) return false;
                 const cred = Auth.essentialCredentials(credentials);
                 logger.debug('set credentials for storage', cred);
                 this._options.credentials = cred;

@@ -44,6 +44,11 @@ export default class AnalyticsClass {
     */
     record(name: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<any>;
     /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+    onHubCapsule(capsule: any): void;
+    /**
     * Record one analytic event
     * @param {String} name - Event name
     * @param {Object} [attributes] - Attributes of the event
@@ -67,7 +72,7 @@ export default class AnalyticsClass {
      * @private
      * check if current crednetials exists
      */
-    _ensureCredentials(): any;
+    _ensureCredentials(): Promise<boolean>;
     /**
      * @private
      * @async

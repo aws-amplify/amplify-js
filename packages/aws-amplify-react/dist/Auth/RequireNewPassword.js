@@ -51,6 +51,7 @@ var RequireNewPassword = function (_AuthPiece) {
 
         var _this = _possibleConstructorReturn(this, (RequireNewPassword.__proto__ || Object.getPrototypeOf(RequireNewPassword)).call(this, props));
 
+        _this._validAuthStates = ['requireNewPassword'];
         _this.change = _this.change.bind(_this);
         return _this;
     }
@@ -67,7 +68,11 @@ var RequireNewPassword = function (_AuthPiece) {
 
                 _awsAmplify.Auth.completeNewPassword(user, password, requiredAttributes).then(function (user) {
                     logger.debug('complete new password', user);
-                    _this2.changeState('signedIn');
+                    if (user.challengeName === 'SMS_MFA') {
+                        _this2.changeState('confirmSignIn', user);
+                    } else {
+                        _this2.changeState('signedIn');
+                    }
                 })['catch'](function (err) {
                     return _this2.error(err);
                 });
@@ -76,20 +81,12 @@ var RequireNewPassword = function (_AuthPiece) {
             return change;
         }()
     }, {
-        key: 'render',
+        key: 'showComponent',
         value: function () {
-            function render() {
+            function showComponent(theme) {
                 var _this3 = this;
 
-                var _props = this.props,
-                    authState = _props.authState,
-                    hide = _props.hide;
-
-                if (authState !== 'requireNewPassword') {
-                    return null;
-                }
-
-                var theme = this.props.theme || _AmplifyTheme2['default'];
+                var hide = this.props.hide;
 
                 if (hide && hide.includes(RequireNewPassword)) {
                     return null;
@@ -139,7 +136,7 @@ var RequireNewPassword = function (_AuthPiece) {
                 );
             }
 
-            return render;
+            return showComponent;
         }()
     }]);
 

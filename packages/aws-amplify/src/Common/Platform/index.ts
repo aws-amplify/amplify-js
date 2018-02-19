@@ -17,7 +17,7 @@ const Platform = {
 	'navigator': null,
 	'isReactNative': false
 };
-if (navigator && navigator.product) {
+if (typeof navigator !== 'undefined' && navigator.product) {
 	Platform.product = navigator.product || '';
 	Platform.navigator = navigator || null;
 	switch(navigator.product) {

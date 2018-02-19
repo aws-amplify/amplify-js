@@ -368,6 +368,8 @@ var API = /** @class */ (function () {
     API.prototype._ensureCredentials = function () {
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
+            if (!credentials)
+                return false;
             var cred = Auth_1.default.essentialCredentials(credentials);
             logger.debug('set credentials for api', cred);
             return true;

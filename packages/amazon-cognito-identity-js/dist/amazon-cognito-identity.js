@@ -3683,7 +3683,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  /**
-	   * This is used for authenticating the user. it calls the AuthenticationHelper for SRP related
+	   * This is used for authenticating the user.
 	   * stuff
 	   * @param {AuthenticationDetails} authDetails Contains the authentication data
 	   * @param {object} callback Result callback map.
@@ -3700,6 +3700,32 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.authenticateUser = function authenticateUser(authDetails, callback) {
+	    if (this.authenticationFlowType === 'USER_PASSWORD_AUTH') {
+	      return this.authenticateUserPlainUsernamePassword(authDetails, callback);
+	    } else if (this.authenticationFlowType === 'USER_SRP_AUTH') {
+	      return this.authenticateUserDefaultAuth(authDetails, callback);
+	    }
+	    return callback.onFailure(new Error('Authentication flow type is invalid.'));
+	  };
+
+	  /**
+	   * This is used for authenticating the user. it calls the AuthenticationHelper for SRP related
+	   * stuff
+	   * @param {AuthenticationDetails} authDetails Contains the authentication data
+	   * @param {object} callback Result callback map.
+	   * @param {onFailure} callback.onFailure Called on any error.
+	   * @param {newPasswordRequired} callback.newPasswordRequired new
+	   *        password and any required attributes are required to continue
+	   * @param {mfaRequired} callback.mfaRequired MFA code
+	   *        required to continue.
+	   * @param {customChallenge} callback.customChallenge Custom challenge
+	   *        response required to continue.
+	   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	   * @returns {void}
+	   */
+
+
+	  CognitoUser.prototype.authenticateUserDefaultAuth = function authenticateUserDefaultAuth(authDetails, callback) {
 	    var _this2 = this;
 
 	    var authenticationHelper = new _AuthenticationHelper2.default(this.pool.getUserPoolId().split('_')[1]);
@@ -3829,6 +3855,54 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  /**
+	   * PRIVATE ONLY: This is an internal only method and should not
+	   * be directly called by the consumers.
+	   * @param {AuthenticationDetails} authDetails Contains the authentication data.
+	   * @param {object} callback Result callback map.
+	   * @param {onFailure} callback.onFailure Called on any error.
+	   * @param {mfaRequired} callback.mfaRequired MFA code
+	   *        required to continue.
+	   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	   * @returns {void}
+	   */
+
+
+	  CognitoUser.prototype.authenticateUserPlainUsernamePassword = function authenticateUserPlainUsernamePassword(authDetails, callback) {
+	    var _this3 = this;
+
+	    var authParameters = {};
+	    authParameters.USERNAME = this.username;
+	    authParameters.PASSWORD = authDetails.getPassword();
+	    if (!authParameters.PASSWORD) {
+	      callback.onFailure(new Error('PASSWORD parameter is required'));
+	      return;
+	    }
+	    var authenticationHelper = new _AuthenticationHelper2.default(this.pool.getUserPoolId().split('_')[1]);
+	    this.getCachedDeviceKeyAndPassword();
+	    if (this.deviceKey != null) {
+	      authParameters.DEVICE_KEY = this.deviceKey;
+	    }
+
+	    var jsonReq = {
+	      AuthFlow: 'USER_PASSWORD_AUTH',
+	      ClientId: this.pool.getClientId(),
+	      AuthParameters: authParameters,
+	      ClientMetadata: authDetails.getValidationData()
+	    };
+	    if (this.getUserContextData(this.username)) {
+	      jsonReq.UserContextData = this.getUserContextData(this.username);
+	    }
+	    // USER_PASSWORD_AUTH happens in a single round-trip: client sends userName and password,
+	    // Cognito UserPools verifies password and returns tokens.
+	    this.client.request('InitiateAuth', jsonReq, function (err, authResult) {
+	      if (err) {
+	        return callback.onFailure(err);
+	      }
+	      return _this3.authenticateUserInternal(authResult, authenticationHelper, callback);
+	    });
+	  };
+
+	  /**
 	  * PRIVATE ONLY: This is an internal only method and should not
 	  * be directly called by the consumers.
 	  * @param {object} dataAuthenticate authentication data
@@ -3839,7 +3913,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.authenticateUserInternal = function authenticateUserInternal(dataAuthenticate, authenticationHelper, callback) {
-	    var _this3 = this;
+	    var _this4 = this;
 
 	    var challengeName = dataAuthenticate.ChallengeName;
 	    var challengeParameters = dataAuthenticate.ChallengeParameters;
@@ -3892,13 +3966,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        PasswordVerifier: _buffer.Buffer.from(authenticationHelper.getVerifierDevices(), 'hex').toString('base64')
 	      };
 
-	      _this3.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
-	      _this3.deviceGroupKey = newDeviceMetadata.DeviceGroupKey;
-	      _this3.randomPassword = authenticationHelper.getRandomPassword();
+	      _this4.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
+	      _this4.deviceGroupKey = newDeviceMetadata.DeviceGroupKey;
+	      _this4.randomPassword = authenticationHelper.getRandomPassword();
 
-	      _this3.client.request('ConfirmDevice', {
+	      _this4.client.request('ConfirmDevice', {
 	        DeviceKey: newDeviceMetadata.DeviceKey,
-	        AccessToken: _this3.signInUserSession.getAccessToken().getJwtToken(),
+	        AccessToken: _this4.signInUserSession.getAccessToken().getJwtToken(),
 	        DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
 	        DeviceName: navigator.userAgent
 	      }, function (errConfirm, dataConfirm) {
@@ -3906,12 +3980,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return callback.onFailure(errConfirm);
 	        }
 
-	        _this3.deviceKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey;
-	        _this3.cacheDeviceKeyAndPassword();
+	        _this4.deviceKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey;
+	        _this4.cacheDeviceKeyAndPassword();
 	        if (dataConfirm.UserConfirmationNecessary === true) {
-	          return callback.onSuccess(_this3.signInUserSession, dataConfirm.UserConfirmationNecessary);
+	          return callback.onSuccess(_this4.signInUserSession, dataConfirm.UserConfirmationNecessary);
 	        }
-	        return callback.onSuccess(_this3.signInUserSession);
+	        return callback.onSuccess(_this4.signInUserSession);
 	      });
 	      return undefined;
 	    });
@@ -3935,7 +4009,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.completeNewPasswordChallenge = function completeNewPasswordChallenge(newPassword, requiredAttributeData, callback) {
-	    var _this4 = this;
+	    var _this5 = this;
 
 	    if (!newPassword) {
 	      return callback.onFailure(new Error('New password is required.'));
@@ -3966,7 +4040,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (errAuthenticate) {
 	        return callback.onFailure(errAuthenticate);
 	      }
-	      return _this4.authenticateUserInternal(dataAuthenticate, authenticationHelper, callback);
+	      return _this5.authenticateUserInternal(dataAuthenticate, authenticationHelper, callback);
 	    });
 	    return undefined;
 	  };
@@ -3984,7 +4058,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.getDeviceResponse = function getDeviceResponse(callback) {
-	    var _this5 = this;
+	    var _this6 = this;
 
 	    var authenticationHelper = new _AuthenticationHelper2.default(this.deviceGroupKey);
 	    var dateHelper = new _DateHelper2.default();
@@ -4003,13 +4077,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var jsonReq = {
 	        ChallengeName: 'DEVICE_SRP_AUTH',
-	        ClientId: _this5.pool.getClientId(),
+	        ClientId: _this6.pool.getClientId(),
 	        ChallengeResponses: authParameters
 	      };
-	      if (_this5.getUserContextData()) {
-	        jsonReq.UserContextData = _this5.getUserContextData();
+	      if (_this6.getUserContextData()) {
+	        jsonReq.UserContextData = _this6.getUserContextData();
 	      }
-	      _this5.client.request('RespondToAuthChallenge', jsonReq, function (err, data) {
+	      _this6.client.request('RespondToAuthChallenge', jsonReq, function (err, data) {
 	        if (err) {
 	          return callback.onFailure(err);
 	        }
@@ -4019,7 +4093,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var serverBValue = new _BigInteger2.default(challengeParameters.SRP_B, 16);
 	        var salt = new _BigInteger2.default(challengeParameters.SALT, 16);
 
-	        authenticationHelper.getPasswordAuthenticationKey(_this5.deviceKey, _this5.randomPassword, serverBValue, salt, function (errHkdf, hkdf) {
+	        authenticationHelper.getPasswordAuthenticationKey(_this6.deviceKey, _this6.randomPassword, serverBValue, salt, function (errHkdf, hkdf) {
 	          // getPasswordAuthenticationKey callback start
 	          if (errHkdf) {
 	            return callback.onFailure(errHkdf);
@@ -4027,35 +4101,35 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	          var dateNow = dateHelper.getNowString();
 
-	          var signatureString = createHmac('sha256', hkdf).update(_buffer.Buffer.concat([_buffer.Buffer.from(_this5.deviceGroupKey, 'utf8'), _buffer.Buffer.from(_this5.deviceKey, 'utf8'), _buffer.Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'), _buffer.Buffer.from(dateNow, 'utf8')])).digest('base64');
+	          var signatureString = createHmac('sha256', hkdf).update(_buffer.Buffer.concat([_buffer.Buffer.from(_this6.deviceGroupKey, 'utf8'), _buffer.Buffer.from(_this6.deviceKey, 'utf8'), _buffer.Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'), _buffer.Buffer.from(dateNow, 'utf8')])).digest('base64');
 
 	          var challengeResponses = {};
 
-	          challengeResponses.USERNAME = _this5.username;
+	          challengeResponses.USERNAME = _this6.username;
 	          challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK = challengeParameters.SECRET_BLOCK;
 	          challengeResponses.TIMESTAMP = dateNow;
 	          challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
-	          challengeResponses.DEVICE_KEY = _this5.deviceKey;
+	          challengeResponses.DEVICE_KEY = _this6.deviceKey;
 
 	          var jsonReqResp = {
 	            ChallengeName: 'DEVICE_PASSWORD_VERIFIER',
-	            ClientId: _this5.pool.getClientId(),
+	            ClientId: _this6.pool.getClientId(),
 	            ChallengeResponses: challengeResponses,
 	            Session: data.Session
 	          };
-	          if (_this5.getUserContextData()) {
-	            jsonReqResp.UserContextData = _this5.getUserContextData();
+	          if (_this6.getUserContextData()) {
+	            jsonReqResp.UserContextData = _this6.getUserContextData();
 	          }
 
-	          _this5.client.request('RespondToAuthChallenge', jsonReqResp, function (errAuthenticate, dataAuthenticate) {
+	          _this6.client.request('RespondToAuthChallenge', jsonReqResp, function (errAuthenticate, dataAuthenticate) {
 	            if (errAuthenticate) {
 	              return callback.onFailure(errAuthenticate);
 	            }
 
-	            _this5.signInUserSession = _this5.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
-	            _this5.cacheTokens();
+	            _this6.signInUserSession = _this6.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
+	            _this6.cacheTokens();
 
-	            return callback.onSuccess(_this5.signInUserSession);
+	            return callback.onSuccess(_this6.signInUserSession);
 	          });
 	          return undefined;
 	          // getPasswordAuthenticationKey callback end
@@ -4106,11 +4180,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.sendCustomChallengeAnswer = function sendCustomChallengeAnswer(answerChallenge, callback) {
-	    var _this6 = this;
+	    var _this7 = this;
 
 	    var challengeResponses = {};
 	    challengeResponses.USERNAME = this.username;
 	    challengeResponses.ANSWER = answerChallenge;
+
+	    var authenticationHelper = new _AuthenticationHelper2.default(this.pool.getUserPoolId().split('_')[1]);
+	    this.getCachedDeviceKeyAndPassword();
+	    if (this.deviceKey != null) {
+	      challengeResponses.DEVICE_KEY = this.deviceKey;
+	    }
+
 	    var jsonReq = {
 	      ChallengeName: 'CUSTOM_CHALLENGE',
 	      ChallengeResponses: challengeResponses,
@@ -4125,16 +4206,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return callback.onFailure(err);
 	      }
 
-	      var challengeName = data.ChallengeName;
-
-	      if (challengeName === 'CUSTOM_CHALLENGE') {
-	        _this6.Session = data.Session;
-	        return callback.customChallenge(data.ChallengeParameters);
-	      }
-
-	      _this6.signInUserSession = _this6.getCognitoUserSession(data.AuthenticationResult);
-	      _this6.cacheTokens();
-	      return callback.onSuccess(_this6.signInUserSession);
+	      return _this7.authenticateUserInternal(data, authenticationHelper, callback);
 	    });
 	  };
 
@@ -4150,7 +4222,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.sendMFACode = function sendMFACode(confirmationCode, callback, mfaType) {
-	    var _this7 = this;
+	    var _this8 = this;
 
 	    var challengeResponses = {};
 	    challengeResponses.USERNAME = this.username;
@@ -4182,18 +4254,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var challengeName = dataAuthenticate.ChallengeName;
 
 	      if (challengeName === 'DEVICE_SRP_AUTH') {
-	        _this7.getDeviceResponse(callback);
+	        _this8.getDeviceResponse(callback);
 	        return undefined;
 	      }
 
-	      _this7.signInUserSession = _this7.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
-	      _this7.cacheTokens();
+	      _this8.signInUserSession = _this8.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
+	      _this8.cacheTokens();
 
 	      if (dataAuthenticate.AuthenticationResult.NewDeviceMetadata == null) {
-	        return callback.onSuccess(_this7.signInUserSession);
+	        return callback.onSuccess(_this8.signInUserSession);
 	      }
 
-	      var authenticationHelper = new _AuthenticationHelper2.default(_this7.pool.getUserPoolId().split('_')[1]);
+	      var authenticationHelper = new _AuthenticationHelper2.default(_this8.pool.getUserPoolId().split('_')[1]);
 	      authenticationHelper.generateHashDevice(dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey, dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey, function (errGenHash) {
 	        if (errGenHash) {
 	          return callback.onFailure(errGenHash);
@@ -4204,13 +4276,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	          PasswordVerifier: _buffer.Buffer.from(authenticationHelper.getVerifierDevices(), 'hex').toString('base64')
 	        };
 
-	        _this7.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
-	        _this7.deviceGroupKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey;
-	        _this7.randomPassword = authenticationHelper.getRandomPassword();
+	        _this8.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
+	        _this8.deviceGroupKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey;
+	        _this8.randomPassword = authenticationHelper.getRandomPassword();
 
-	        _this7.client.request('ConfirmDevice', {
+	        _this8.client.request('ConfirmDevice', {
 	          DeviceKey: dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey,
-	          AccessToken: _this7.signInUserSession.getAccessToken().getJwtToken(),
+	          AccessToken: _this8.signInUserSession.getAccessToken().getJwtToken(),
 	          DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
 	          DeviceName: navigator.userAgent
 	        }, function (errConfirm, dataConfirm) {
@@ -4218,12 +4290,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return callback.onFailure(errConfirm);
 	          }
 
-	          _this7.deviceKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey;
-	          _this7.cacheDeviceKeyAndPassword();
+	          _this8.deviceKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey;
+	          _this8.cacheDeviceKeyAndPassword();
 	          if (dataConfirm.UserConfirmationNecessary === true) {
-	            return callback.onSuccess(_this7.signInUserSession, dataConfirm.UserConfirmationNecessary);
+	            return callback.onSuccess(_this8.signInUserSession, dataConfirm.UserConfirmationNecessary);
 	          }
-	          return callback.onSuccess(_this7.signInUserSession);
+	          return callback.onSuccess(_this8.signInUserSession);
 	        });
 	        return undefined;
 	      });
@@ -4350,7 +4422,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.deleteUser = function deleteUser(callback) {
-	    var _this8 = this;
+	    var _this9 = this;
 
 	    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 	      return callback(new Error('User is not authenticated'), null);
@@ -4362,7 +4434,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (err) {
 	        return callback(err, null);
 	      }
-	      _this8.clearCachedTokens();
+	      _this9.clearCachedTokens();
 	      return callback(null, 'SUCCESS');
 	    });
 	    return undefined;
@@ -4570,7 +4642,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.refreshSession = function refreshSession(refreshToken, callback) {
-	    var _this9 = this;
+	    var _this10 = this;
 
 	    var authParameters = {};
 	    authParameters.REFRESH_TOKEN = refreshToken.getToken();
@@ -4595,7 +4667,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.client.request('InitiateAuth', jsonReq, function (err, authResult) {
 	      if (err) {
 	        if (err.code === 'NotAuthorizedException') {
-	          _this9.clearCachedTokens();
+	          _this10.clearCachedTokens();
 	        }
 	        return callback(err, null);
 	      }
@@ -4604,9 +4676,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!Object.prototype.hasOwnProperty.call(authenticationResult, 'RefreshToken')) {
 	          authenticationResult.RefreshToken = refreshToken.getToken();
 	        }
-	        _this9.signInUserSession = _this9.getCognitoUserSession(authenticationResult);
-	        _this9.cacheTokens();
-	        return callback(null, _this9.signInUserSession);
+	        _this10.signInUserSession = _this10.getCognitoUserSession(authenticationResult);
+	        _this10.cacheTokens();
+	        return callback(null, _this10.signInUserSession);
 	      }
 	      return undefined;
 	    });
@@ -4908,15 +4980,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.forgetDevice = function forgetDevice(callback) {
-	    var _this10 = this;
+	    var _this11 = this;
 
 	    this.forgetSpecificDevice(this.deviceKey, {
 	      onFailure: callback.onFailure,
 	      onSuccess: function onSuccess(result) {
-	        _this10.deviceKey = null;
-	        _this10.deviceGroupKey = null;
-	        _this10.randomPassword = null;
-	        _this10.clearCachedDeviceKeyAndPassword();
+	        _this11.deviceKey = null;
+	        _this11.deviceGroupKey = null;
+	        _this11.randomPassword = null;
+	        _this11.clearCachedDeviceKeyAndPassword();
 	        return callback.onSuccess(result);
 	      }
 	    });
@@ -5016,7 +5088,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.globalSignOut = function globalSignOut(callback) {
-	    var _this11 = this;
+	    var _this12 = this;
 
 	    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 	      return callback.onFailure(new Error('User is not authenticated'));
@@ -5028,7 +5100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (err) {
 	        return callback.onFailure(err);
 	      }
-	      _this11.clearCachedTokens();
+	      _this12.clearCachedTokens();
 	      return callback.onSuccess('SUCCESS');
 	    });
 	    return undefined;
@@ -5054,7 +5126,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.sendMFASelectionAnswer = function sendMFASelectionAnswer(answerChallenge, callback) {
-	    var _this12 = this;
+	    var _this13 = this;
 
 	    var challengeResponses = {};
 	    challengeResponses.USERNAME = this.username;
@@ -5073,7 +5145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (err) {
 	        return callback.onFailure(err);
 	      }
-	      _this12.Session = data.Session;
+	      _this13.Session = data.Session;
 	      if (answerChallenge === 'SMS_MFA') {
 	        return callback.mfaRequired(data.challengeName, data.challengeParameters);
 	      }
@@ -5103,7 +5175,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.associateSoftwareToken = function associateSoftwareToken(callback) {
-	    var _this13 = this;
+	    var _this14 = this;
 
 	    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 	      this.client.request('AssociateSoftwareToken', {
@@ -5112,7 +5184,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (err) {
 	          return callback.onFailure(err);
 	        }
-	        _this13.Session = data.Session;
+	        _this14.Session = data.Session;
 	        return callback.associateSecretCode(data.SecretCode);
 	      });
 	    } else {
@@ -5128,7 +5200,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  /**
-	   * This is used by an authenticated or a user trying to authenticate to associate a TOTP MFA
+	   * This is used by an authenticated or a user trying to authenticate to verify a TOTP MFA
 	   * @param {string} totpCode The MFA code entered by the user.
 	   * @param {string} friendlyDeviceName The device name we are assigning to the device.
 	   * @param {nodeCallback<string>} callback Called on success or error.
@@ -5137,7 +5209,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  CognitoUser.prototype.verifySoftwareToken = function verifySoftwareToken(totpCode, friendlyDeviceName, callback) {
-	    var _this14 = this;
+	    var _this15 = this;
 
 	    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 	      this.client.request('VerifySoftwareToken', {
@@ -5148,25 +5220,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (err) {
 	          return callback.onFailure(err);
 	        }
-	        _this14.Session = data.Session;
+	        _this15.Session = data.Session;
 	        var challengeResponses = {};
-	        challengeResponses.USERNAME = _this14.username;
+	        challengeResponses.USERNAME = _this15.username;
 	        var jsonReq = {
 	          ChallengeName: 'MFA_SETUP',
-	          ClientId: _this14.pool.getClientId(),
+	          ClientId: _this15.pool.getClientId(),
 	          ChallengeResponses: challengeResponses,
-	          Session: _this14.Session
+	          Session: _this15.Session
 	        };
-	        if (_this14.getUserContextData()) {
-	          jsonReq.UserContextData = _this14.getUserContextData();
+	        if (_this15.getUserContextData()) {
+	          jsonReq.UserContextData = _this15.getUserContextData();
 	        }
-	        _this14.client.request('RespondToAuthChallenge', jsonReq, function (errRespond, dataRespond) {
+	        _this15.client.request('RespondToAuthChallenge', jsonReq, function (errRespond, dataRespond) {
 	          if (errRespond) {
 	            return callback.onFailure(errRespond);
 	          }
-	          _this14.signInUserSession = _this14.getCognitoUserSession(dataRespond.AuthenticationResult);
-	          _this14.cacheTokens();
-	          return callback.onSuccess(_this14.signInUserSession);
+	          _this15.signInUserSession = _this15.getCognitoUserSession(dataRespond.AuthenticationResult);
+	          _this15.cacheTokens();
+	          return callback.onSuccess(_this15.signInUserSession);
 	        });
 	        return undefined;
 	      });
@@ -5179,7 +5251,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (err) {
 	          return callback.onFailure(err);
 	        }
-	        return callback(null, data);
+	        return callback.onSuccess(data);
 	      });
 	    }
 	  };
