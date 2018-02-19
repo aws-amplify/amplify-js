@@ -391,6 +391,7 @@ export default class AuthClass {
         if (Platform.isReactNative) {
             const that = this;
             return this.getSyncedUser().then(user => {
+                if (!user) { return Promise.reject('No current user in userPool'); }
                 return new Promise((resolve, reject) => {
                     user.getSession(function(err, session) {
                         if (err) { reject(err); } else { resolve(user); }
