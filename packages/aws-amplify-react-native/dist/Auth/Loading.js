@@ -11,18 +11,28 @@
  * and limitations under the License.
  */
 
+import React from 'react';
+import { View, Text } from 'react-native';
 import { I18n } from 'aws-amplify';
+import AuthPiece from './AuthPiece';
+import { Header } from '../AmplifyUI';
 
-import dict from './AmplifyI18n';
+export default class Loading extends AuthPiece {
+    constructor(props) {
+        super(props);
 
-export * from './AmplifyUI';
-export * from './Auth';
-export * from './Analytics';
-export * from './Storage';
-export * from './Widget';
+        this._validAuthStates = ['loading'];
+    }
 
-export { default as AmplifyTheme } from './AmplifyTheme';
-export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
-export { transparent1X1, white1X1 } from './AmplifyUI';
-
-I18n.putVocabularies(dict);
+    showComponent(theme) {
+        return React.createElement(
+            View,
+            { style: theme.section },
+            React.createElement(
+                Header,
+                { theme: theme },
+                I18n.get('Loading...')
+            )
+        );
+    }
+}

@@ -11,30 +11,24 @@
  * and limitations under the License.
  */
 
-/**
-* Parameters for user sign up
-*/
-export interface SignUpParams {
-    username: string;
-    password: string;
-    SignupAttributes?: Object;
-}
+import React from 'react';
+import { View, Text } from 'react-native';
+import { I18n } from 'aws-amplify';
+import AuthPiece from './AuthPiece';
+import { Header } from '../AmplifyUI';
 
-/**
-* Auth instance options
-*/
-export interface AuthOptions {
-    userPoolId: string,
-    userPoolWebClientId: string,
-    identityPoolId: string,
-    region?: string,
-    mandatorySignIn: boolean
-}
+export default class Loading extends AuthPiece {
+    constructor(props) {
+        super(props);
 
-/**
-* Details for multi-factor authentication
-*/
-export interface MfaRequiredDetails {
-    challengeName: any,
-    challengeParameters: any
+        this._validAuthStates = ['loading'];
+    }
+
+    showComponent(theme) {
+        return (
+            <View style={theme.section}>
+                <Header theme={theme}>{I18n.get('Loading...')}</Header>
+            </View>
+        );
+    }
 }

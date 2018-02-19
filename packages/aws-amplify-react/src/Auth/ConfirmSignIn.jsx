@@ -32,6 +32,7 @@ export default class ConfirmSignIn extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['confirmSignIn'];
         this.confirm = this.confirm.bind(this);
     }
 
@@ -43,12 +44,8 @@ export default class ConfirmSignIn extends AuthPiece {
             .catch(err => this.error(err));
     }
 
-    render() {
-        const { authState, hide } = this.props;
-        if (authState !== 'confirmSignIn') { return null; }
-
-        const theme = this.props.theme || AmplifyTheme;
-
+    showComponent(theme) {
+        const { hide } = this.props;
         if (hide && hide.includes(ConfirmSignIn)) { return null; }
 
         return (

@@ -215,7 +215,7 @@ var RestClient = /** @class */ (function () {
     };
     /** private methods **/
     RestClient.prototype._signed = function (params, credentials) {
-        var endpoint_region = this._region || 'us-east-1';
+        var endpoint_region = this._region || this._options.region;
         var creds = {
             'secret_key': credentials.secretAccessKey,
             'access_key': credentials.accessKeyId,

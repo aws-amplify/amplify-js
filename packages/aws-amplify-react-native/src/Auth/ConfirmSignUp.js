@@ -79,9 +79,9 @@ export default class ConfirmSignUp extends AuthPiece {
             .catch(err => this.error(err));
     }
 
-    componentWillMount() {
-        const username = this.props.authData;
-        if (username && !this.state.username) { this.setState({ username: username }); }
+    componentWillReceiveProps(nextProps) {
+        const username = nextProps.authData;
+        if (username && !this.state.username) { this.setState({ username }); }
     }
 
     showComponent(theme) {
