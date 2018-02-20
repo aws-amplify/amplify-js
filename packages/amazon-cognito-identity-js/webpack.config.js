@@ -25,15 +25,14 @@ var config = {
     library: 'AmazonCognitoIdentity'
   },
   plugins: [
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.BannerPlugin(banner, { raw: true })
+    new webpack.BannerPlugin({banner: banner, raw: true })
   ],
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel',
+        loader: 'babel-loader',
         query: {
           cacheDirectory: './node_modules/.cache/babel'
         }
@@ -46,9 +45,7 @@ if (process.env.NODE_ENV === 'production') {
   config.devtool = 'source-map';
   config.plugins.push(
     new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
+      sourceMap: true
     })
   );
 }

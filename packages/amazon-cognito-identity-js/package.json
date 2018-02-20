@@ -86,6 +86,6 @@
     "react": "^16.0.0",
     "react-native": "^0.44.0",
     "rimraf": "^2.5.4",
-    "webpack": "^1.13.1"
+    "webpack": "^2.6.1"
   }
 }
