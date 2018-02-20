@@ -63,6 +63,8 @@ declare module "amazon-cognito-identity-js" {
         public setDeviceStatusNotRemembered(callbacks: { onSuccess: (success: string) => void, onFailure: (err: any) => void }): void;
         public getDevice(callbacks: {onSuccess: (success: string) => void, onFailure: (err: Error) => void}): any;
         public sendMFACode(confirmationCode: string, callbacks: { onSuccess: (session: CognitoUserSession) => void, onFailure: (err: any) => void }, mfaType: string): void;
+        public forgetDevice(callbacks: {onSuccess: (success: string) => void, onFailure: (err: Error) => void}): void;
+        public forgetSpecificDevice(deviceKey: string, callbacks: {onSuccess: (success: string) => void, onFailure: (err: Error) => void}): void;
         public listDevices(limit: number, paginationToken: string, callbacks: {onSuccess: (data: any) => void, onFailure: (err: Error) => void}): void;
         public completeNewPasswordChallenge(newPassword: string,
                                             requiredAttributeData: any,
