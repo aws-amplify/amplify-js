@@ -122,7 +122,7 @@ var RestClient = /** @class */ (function () {
                     };
                 }
                 extraParams = Object.assign({}, init);
-                isAllResponse = init.response;
+                isAllResponse = init ? init.response : null;
                 if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
                     params.data = JSON.stringify(extraParams.body);
