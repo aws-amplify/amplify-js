@@ -79,6 +79,7 @@ var RestClient = /** @class */ (function () {
     * @param {RestClientOptions} [options] - Instance options
     */
     function RestClient(options) {
+        this._region = null;
         var endpoints = options.endpoints;
         this._options = options;
         logger.debug('API Options', this._options);
@@ -101,7 +102,7 @@ var RestClient = /** @class */ (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders, userAgent, extraParams;
+            var parsed_url, params, libraryHeaders, userAgent, extraParams, isAllResponse;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -121,6 +122,7 @@ var RestClient = /** @class */ (function () {
                     };
                 }
                 extraParams = Object.assign({}, init);
+                isAllResponse = init ? init.response : null;
                 if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
                     params.data = JSON.stringify(extraParams.body);
@@ -129,10 +131,10 @@ var RestClient = /** @class */ (function () {
                 // Do not sign the request if client has added 'Authorization' header,
                 // which means custom authorizer.
                 if (params.headers['Authorization']) {
-                    return [2 /*return*/, this._request(params)];
+                    return [2 /*return*/, this._request(params, isAllResponse)];
                 }
                 return [2 /*return*/, Auth_1.default.currentCredentials()
-                        .then(function (credentials) { return _this._signed(params, credentials); })];
+                        .then(function (credentials) { return _this._signed(params, credentials, isAllResponse); })];
             });
         });
     };
@@ -196,37 +198,50 @@ var RestClient = /** @class */ (function () {
     * @return {string} - The endpoint of the api
     */
     RestClient.prototype.endpoint = function (apiName) {
+        var _this = this;
         var cloud_logic_array = this._options.endpoints;
         var response = '';
         cloud_logic_array.forEach(function (v) {
             if (v.name === apiName) {
                 response = v.endpoint;
+                if (typeof v.region === 'string') {
+                    _this._region = v.region;
+                }
+                else if (typeof _this._options.region === 'string') {
+                    _this._region = _this._options.region;
+                }
             }
         });
         return response;
     };
     /** private methods **/
-    RestClient.prototype._signed = function (params, credentials) {
-        var signed_params = Signer_1.default.sign(params, {
-            secret_key: credentials.secretAccessKey,
-            access_key: credentials.accessKeyId,
-            session_token: credentials.sessionToken
-        });
+    RestClient.prototype._signed = function (params, credentials, isAllResponse) {
+        var endpoint_region = this._region || this._options.region;
+        var creds = {
+            'secret_key': credentials.secretAccessKey,
+            'access_key': credentials.accessKeyId,
+            'session_token': credentials.sessionToken
+        };
+        var service_info = {
+            'service': 'execute-api',
+            'region': endpoint_region
+        };
+        var signed_params = Signer_1.default.sign(params, creds, service_info);
         if (signed_params.data) {
             signed_params.body = signed_params.data;
         }
-        logger.debug(signed_params);
+        logger.debug('Signed Request: ', signed_params);
         delete signed_params.headers['host'];
         return axios_1.default(signed_params)
-            .then(function (response) { return response.data; })
+            .then(function (response) { return isAllResponse ? response : response.data; })
             .catch(function (error) {
             logger.debug(error);
             throw error;
         });
     };
-    RestClient.prototype._request = function (params) {
+    RestClient.prototype._request = function (params, isAllResponse) {
         return axios_1.default(params)
-            .then(function (response) { return response.data; })
+            .then(function (response) { return isAllResponse ? response : response.data; })
             .catch(function (error) {
             logger.debug(error);
             throw error;
