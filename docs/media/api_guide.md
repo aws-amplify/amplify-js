@@ -70,6 +70,12 @@ Amplify.configure({
             {
                 name: "ApiName2",
                 endpoint: "https://api.my-custom-domain.com"
+            },
+            {
+                name: "MyCustomApi",
+                endpoint: "https://api.my-custom-domain.com",
+                service: "lambda",
+                region: "us-west-2"
             }
         ]
     }
