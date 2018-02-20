@@ -36,7 +36,8 @@ restClient.get('...')
 */
 export class RestClient {
     private _options;
-    private _region:string = null;
+    private _region:string = 'us-east-1'; // this will be updated by config
+    private _service:string = 'execute-api'; // this can be updated by config
 
     /**
     * @param {RestClientOptions} [options] - Instance options
@@ -177,6 +178,8 @@ export class RestClient {
                     this._region = v.region;
                 } else if (typeof this._options.region === 'string') {
                     this._region = this._options.region;
+                } else if (typeof this._options.service === 'string') {
+                    this._service = this._options.service || 'execute-api';
                 }
             }
         });
@@ -187,13 +190,14 @@ export class RestClient {
 
     private _signed(params, credentials, isAllResponse) {
         const endpoint_region:string = this._region || this._options.region;
+        const endpoint_service:string = this._service || this._options.service;
         const creds = {
             'secret_key': credentials.secretAccessKey,
             'access_key': credentials.accessKeyId,
             'session_token': credentials.sessionToken 
         };
         const service_info = {
-            'service': 'execute-api',
+            'service': endpoint_service,
             'region': endpoint_region
         };
         const signed_params = Signer.sign(params,creds,service_info);
