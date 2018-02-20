@@ -94,6 +94,8 @@ https://lambda.us-east-1.amazonaws.com
 This post explains more in depth how to setup the Amazon Cloudfront distribution:
 https://forum.serverless.com/t/directly-proxying-lambda-via-cloudfront-without-api-gateway/3808
 
+ NOTE: In order to call these service endpoints you will need to be sure your Amazon Cognito role is configured with appropriate access to that service. See [here](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) for more details.
+
 ## Integration
 
 First note the name of the API that you want to invoke. If you manually configured the API, you most likely already know the API name. If you use Automated Setup or configure your API on AWS Mobile Hub you can check the API name in the Mobile Hub console by clicking Cloud Logic tile. 
