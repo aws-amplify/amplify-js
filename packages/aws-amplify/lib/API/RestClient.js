@@ -102,7 +102,7 @@ var RestClient = /** @class */ (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders, userAgent, extraParams;
+            var parsed_url, params, libraryHeaders, userAgent, extraParams, isAllResponse;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -122,6 +122,7 @@ var RestClient = /** @class */ (function () {
                     };
                 }
                 extraParams = Object.assign({}, init);
+                isAllResponse = init.response;
                 if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
                     params.data = JSON.stringify(extraParams.body);
@@ -130,10 +131,10 @@ var RestClient = /** @class */ (function () {
                 // Do not sign the request if client has added 'Authorization' header,
                 // which means custom authorizer.
                 if (params.headers['Authorization']) {
-                    return [2 /*return*/, this._request(params)];
+                    return [2 /*return*/, this._request(params, isAllResponse)];
                 }
                 return [2 /*return*/, Auth_1.default.currentCredentials()
-                        .then(function (credentials) { return _this._signed(params, credentials); })];
+                        .then(function (credentials) { return _this._signed(params, credentials, isAllResponse); })];
             });
         });
     };
@@ -214,7 +215,7 @@ var RestClient = /** @class */ (function () {
         return response;
     };
     /** private methods **/
-    RestClient.prototype._signed = function (params, credentials) {
+    RestClient.prototype._signed = function (params, credentials, isAllResponse) {
         var endpoint_region = this._region || this._options.region;
         var creds = {
             'secret_key': credentials.secretAccessKey,
@@ -232,15 +233,15 @@ var RestClient = /** @class */ (function () {
         logger.debug('Signed Request: ', signed_params);
         delete signed_params.headers['host'];
         return axios_1.default(signed_params)
-            .then(function (response) { return response.data; })
+            .then(function (response) { return isAllResponse ? response : response.data; })
             .catch(function (error) {
             logger.debug(error);
             throw error;
         });
     };
-    RestClient.prototype._request = function (params) {
+    RestClient.prototype._request = function (params, isAllResponse) {
         return axios_1.default(params)
-            .then(function (response) { return response.data; })
+            .then(function (response) { return isAllResponse ? response : response.data; })
             .catch(function (error) {
             logger.debug(error);
             throw error;

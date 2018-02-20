@@ -172,9 +172,14 @@ export default class AnalyticsClass {
      * @return - A promise ehich resolves to be true if current credential exists
      */
     async restart() {
+        const ret = await this._initClients();
+        if (!ret) {
+            logger.debug('restart failed');
+            return;
+        }
         this.stopSession().then((data) => {
                 logger.debug('restarting clients');
-                return this._initClients();
+                return;
             }).catch(e => {
                 logger.debug('restart error', e);
             });
