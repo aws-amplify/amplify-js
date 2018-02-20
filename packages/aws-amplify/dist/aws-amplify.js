@@ -33980,15 +33980,24 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.restart = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
+            var ret;
             return __generator(this, function (_a) {
-                this.stopSession().then(function (data) {
-                    logger.debug('restarting clients');
-                    return _this._initClients();
-                }).catch(function (e) {
-                    logger.debug('restart error', e);
-                });
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._initClients()];
+                    case 1:
+                        ret = _a.sent();
+                        if (!ret) {
+                            logger.debug('restart failed');
+                            return [2 /*return*/];
+                        }
+                        this.stopSession().then(function (data) {
+                            logger.debug('restarting clients');
+                            return;
+                        }).catch(function (e) {
+                            logger.debug('restart error', e);
+                        });
+                        return [2 /*return*/];
+                }
             });
         });
     };
