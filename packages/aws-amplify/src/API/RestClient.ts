@@ -178,8 +178,9 @@ export class RestClient {
                     this._region = v.region;
                 } else if (typeof this._options.region === 'string') {
                     this._region = this._options.region;
-                } else if (typeof this._options.service === 'string') {
-                    this._service = this._options.service || 'execute-api';
+                }
+                if (typeof v.service === 'string') {
+                    this._service = v.service || 'execute-api';
                 }
             }
         });
