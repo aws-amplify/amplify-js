@@ -81,8 +81,8 @@ export default class API {
 
     /**
      * Make a GET request
-     * @param {String} apiName  - The api name of the request
-     * @param {JSON} path - The path of the request'
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -107,8 +107,8 @@ export default class API {
     
     /**
      * Make a POST request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -133,8 +133,8 @@ export default class API {
 
     /**
      * Make a PUT request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -158,9 +158,35 @@ export default class API {
     }
 
     /**
+     * Make a PATCH request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
+     * @param {json} [init] - Request extra params
+     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+     */
+    async patch(apiName, path, init) {
+        if (!this._api) {
+            try {
+                await this.createInstance();
+            } catch(error) {
+                return Promise.reject(error);
+            }
+        }
+
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.reject('No credentials'); }
+
+        const endpoint = this._api.endpoint(apiName);
+        if (endpoint.length === 0) {
+            return Promise.reject('Api ' + apiName + ' does not exist');
+        }
+        return this._api.patch(endpoint + path, init);
+    }
+
+    /**
      * Make a DEL request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -185,8 +211,8 @@ export default class API {
 
     /**
      * Make a HEAD request
-     * @param {String} apiName  - The api name of the request
-     * @param {String} path - The path of the request
+     * @param {string} apiName  - The api name of the request
+     * @param {string} path - The path of the request
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
@@ -211,8 +237,8 @@ export default class API {
 
     /**
     * Getting endpoint for API
-    * @param {String} apiName - The name of the api
-    * @return {String} - The endpoint of the api
+    * @param {string} apiName - The name of the api
+    * @return {string} - The endpoint of the api
     */
     async endpoint(apiName) {
         if (!this._api) {
@@ -231,6 +257,7 @@ export default class API {
     _ensureCredentials() {
         return Auth.currentCredentials()
             .then(credentials => {
+                if (!credentials) return false;
                 const cred = Auth.essentialCredentials(credentials);
                 logger.debug('set credentials for api', cred);
 

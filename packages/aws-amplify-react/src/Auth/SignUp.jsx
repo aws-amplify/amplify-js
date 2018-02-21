@@ -31,6 +31,7 @@ export default class SignUp extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['signUp'];
         this.signUp = this.signUp.bind(this);
     }
 
@@ -41,11 +42,8 @@ export default class SignUp extends AuthPiece {
             .catch(err => this.error(err));
     }
 
-    render() {
-        const { authState, hide } = this.props;
-        const theme = this.props.theme || AmplifyTheme;
-        if (authState !== 'signUp') { return null; }
-
+    showComponent(theme) {
+        const { hide } = this.props;
         if (hide && hide.includes(SignUp)) { return null; }
 
         return (

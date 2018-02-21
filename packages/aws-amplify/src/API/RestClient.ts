@@ -17,6 +17,8 @@ import { ConsoleLogger as Logger } from '../Common';
 import Auth from '../Auth';
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
+import Platform from '../Common/Platform';
+
 const logger = new Logger('RestClient');
 
 /**
@@ -34,6 +36,8 @@ restClient.get('...')
 */
 export class RestClient {
     private _options;
+    private _region:string = 'us-east-1'; // this will be updated by config
+    private _service:string = 'execute-api'; // this can be updated by config
 
     /**
     * @param {RestClientOptions} [options] - Instance options
@@ -73,10 +77,17 @@ export class RestClient {
             data: null
         };
 
-        const libraryHeaders = {};
+        let libraryHeaders = {};
+
+        if (Platform.isReactNative) {
+        const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
+            libraryHeaders = {
+                'User-Agent': userAgent
+            };
+        }
 
         const extraParams = Object.assign({}, init);
-
+        const isAllResponse = init? init.response : null;
         if (extraParams.body) {
             libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
             params.data = JSON.stringify(extraParams.body);
@@ -86,10 +97,10 @@ export class RestClient {
 
         // Do not sign the request if client has added 'Authorization' header,
         // which means custom authorizer.
-        if (params.headers['Authorization']) { return this._request(params); }
+        if (params.headers['Authorization']) { return this._request(params, isAllResponse); }
 
         return Auth.currentCredentials()
-            .then(credentials => this._signed(params, credentials));
+            .then(credentials => this._signed(params, credentials, isAllResponse));
     }
 
     /**
@@ -104,8 +115,8 @@ export class RestClient {
 
     /**
     * PUT HTTP request
-    * @param {String} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     put(url: string, init) {
@@ -113,9 +124,19 @@ export class RestClient {
     }
 
     /**
+    * PATCH HTTP request
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
+    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+    */
+    patch(url: string, init) {
+        return this.ajax(url, 'PATCH', init);
+    }
+
+    /**
     * POST HTTP request
-    * @param {String} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {string} url - Full request URL
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     post(url: string, init) {
@@ -125,7 +146,7 @@ export class RestClient {
     /**
     * DELETE HTTP request
     * @param {string} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     del(url: string, init) {
@@ -135,7 +156,7 @@ export class RestClient {
     /**
     * HEAD HTTP request
     * @param {string} url - Full request URL
-    * @param {JSON} init - Request extra params
+    * @param {json} init - Request extra params
     * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
     */
     head(url: string, init) {
@@ -153,6 +174,14 @@ export class RestClient {
         cloud_logic_array.forEach((v) => {
             if (v.name === apiName) {
                 response = v.endpoint;
+                if (typeof v.region === 'string') {
+                    this._region = v.region;
+                } else if (typeof this._options.region === 'string') {
+                    this._region = this._options.region;
+                }
+                if (typeof v.service === 'string') {
+                    this._service = v.service || 'execute-api';
+                }
             }
         });
         return response;
@@ -160,32 +189,38 @@ export class RestClient {
 
     /** private methods **/
 
-    private _signed(params, credentials) {
-
-        const signed_params = Signer.sign(params, {
-            secret_key: credentials.secretAccessKey,
-            access_key: credentials.accessKeyId,
-            session_token: credentials.sessionToken
-        });
+    private _signed(params, credentials, isAllResponse) {
+        const endpoint_region:string = this._region || this._options.region;
+        const endpoint_service:string = this._service || this._options.service;
+        const creds = {
+            'secret_key': credentials.secretAccessKey,
+            'access_key': credentials.accessKeyId,
+            'session_token': credentials.sessionToken 
+        };
+        const service_info = {
+            'service': endpoint_service,
+            'region': endpoint_region
+        };
+        const signed_params = Signer.sign(params,creds,service_info);
         if (signed_params.data) {
             signed_params.body = signed_params.data;
         }
 
-        logger.debug(signed_params);
+        logger.debug('Signed Request: ', signed_params);
 
         delete signed_params.headers['host'];
 
         return axios(signed_params)
-            .then(response => response.data)
+            .then(response => isAllResponse? response : response.data)
             .catch((error) => {
                 logger.debug(error);
                 throw error;
             });
     }
 
-    private _request(params) {
+    private _request(params, isAllResponse) {
         return axios(params)
-            .then(response => response.data)
+            .then(response => isAllResponse? response : response.data)
             .catch((error) => {
                 logger.debug(error);
                 throw error;

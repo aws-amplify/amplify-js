@@ -19,9 +19,11 @@ Download aws-exports.js
 
 In your app start point, normally index.js, or App.js, add these lines:
 
-```
+```js
 import Amplify from 'aws-amplify';
-import aws_exports from './aws-exports.js'; // suppose you downloaded the file into the same path
+// Provided by awsmobile-cli or downloaded from the console,
+// this assumes your aws-exports.js is in the same directory.
+import aws_exports from './aws-exports';
 
 Amplify.configure(aws_exports);
 ```

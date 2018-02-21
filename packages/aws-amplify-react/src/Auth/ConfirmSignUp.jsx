@@ -35,6 +35,7 @@ export default class ConfirmSignUp extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['confirmSignUp'];
         this.confirm = this.confirm.bind(this);
         this.resend = this.resend.bind(this);
     }
@@ -54,13 +55,9 @@ export default class ConfirmSignUp extends AuthPiece {
             .catch(err => this.error(err));
     }
 
-    render() {
-        const { authState, hide } = this.props;
-        if (authState !== 'confirmSignUp') { return null; }
-
+    showComponent(theme) {
+        const { hide } = this.props;
         const username = this.usernameFromAuthData();
-
-        const theme = this.props.theme || AmplifyTheme;
 
         if (hide && hide.includes(ConfirmSignUp)) { return null; }
 

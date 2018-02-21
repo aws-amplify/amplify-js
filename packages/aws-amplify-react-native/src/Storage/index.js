@@ -11,40 +11,5 @@
  * and limitations under the License.
  */
 
-import StorageClass from './Storage';
-
-import Hub from '../Common/Hub';
-import { ConsoleLogger as Logger } from '../Common';
-
-const logger = new Logger('Storage');
-
-let _instance = null;
-
-if (!_instance) {
-    logger.debug('Create Storage Instance');
-    _instance = new StorageClass();
-    _instance.vault = new StorageClass({ level: 'private' });
-
-    const _old_configure = _instance.configure;
-    _instance.configure = (options) => {
-        logger.debug('configure called');
-        _old_configure.call(_instance, options);
-
-        const vault_options = Object.assign({}, options, { level: 'private' });
-        _instance.vault.configure(vault_options);
-    }
-}
-
-export default Storage = _instance;
-
-Storage.onHubCapsule = (capsule) => {
-    const { channel, payload, source } = capsule;
-    logger.debug('on hub capsule channel ' + channel);
-
-    if (channel === 'credentials') {
-        // TODO: update credentials
-    }
-}
-
-
-Hub.listen('credentials', Storage);
+export { default as S3Image } from './S3Image';
+export { default as S3Album } from './S3Album';

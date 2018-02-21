@@ -67,7 +67,8 @@ var S3Album = function (_Component) {
         var theme = _this.props.theme || _AmplifyTheme2['default'];
         _this.state = {
             theme: theme,
-            items: []
+            items: [],
+            ts: new Date().getTime()
         };
 
         _awsAmplify.Hub.listen('window', _this, 'S3Album');
@@ -155,6 +156,7 @@ var S3Album = function (_Component) {
                         onError(err);
                     }
                 });
+                this.setState({ ts: new Date().getTime() });
             }
 
             return handlePick;
@@ -340,8 +342,11 @@ var S3Album = function (_Component) {
 
                 var _props4 = this.props,
                     picker = _props4.picker,
-                    translateItem = _props4.translateItem;
-                var items = this.state.items;
+                    translateItem = _props4.translateItem,
+                    level = _props4.level;
+                var _state = this.state,
+                    items = _state.items,
+                    ts = _state.ts;
 
 
                 var pickerTitle = this.props.pickerTitle || 'Pick';
@@ -357,6 +362,7 @@ var S3Album = function (_Component) {
                         style: theme.albumText,
                         selected: item.selected,
                         translate: translateItem,
+                        level: level,
                         onClick: function () {
                             function onClick() {
                                 return _this5.handleClick(item);
@@ -371,6 +377,7 @@ var S3Album = function (_Component) {
                         style: theme.albumPhoto,
                         selected: item.selected,
                         translate: translateItem,
+                        level: level,
                         onClick: function () {
                             function onClick() {
                                 return _this5.handleClick(item);
@@ -389,7 +396,7 @@ var S3Album = function (_Component) {
                         list
                     ),
                     picker ? _react2['default'].createElement(_Widget.Picker, {
-                        key: 'picker',
+                        key: ts,
                         title: pickerTitle,
                         accept: 'image/*, text/*',
                         onPick: this.handlePick,

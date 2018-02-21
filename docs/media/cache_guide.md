@@ -4,30 +4,24 @@ The Amplify Cache module provides a generic [LRU](https://en.wikipedia.org/wiki/
 
 * [Installation](#installation)
 * [Integration](#integration)
-  - [Integrate into Web application](#1-integrate-into-web-application)
-  - [Integrate into React Native](#2-integrate-into-react-native)
 * [Configuration](#configuration)
 
 
 ## Installation
 
-For Web development, install `aws-amplify`
-```
+For both Web and React Native development, install `aws-amplify`
+```bash
 npm install aws-amplify
 ```
 
-For React Native development, install `aws-amplify-react-native`
-```
-npm install aws-amplify-react-native
-```
 
 ## Integration
 
-### Integrate into Web application
+### Integrate into Web and React Native applications
 
 First import the library:
-```
-import { Cache } from ‘aws-amplify’;
+```js
+import { Cache } from 'aws-amplify';
 ```
 
 After importing you can invoke the appropriate methods from your application.
@@ -36,9 +30,9 @@ After importing you can invoke the appropriate methods from your application.
 
   You can set number, string, boolean or object into the cache. You can also specify options along with the call such as the priority or expiration time.
 
-```
+```js
 Cache.setItem(key, value[, options]);
-    
+
 // Standard case
 Cache.setItem('key', 'value');
 
@@ -52,7 +46,7 @@ Cache.setItem('key', 'value', { expires: expiration.getTime() });
 
 When using the `priority` setting the lower number will be evicted last. For example:
 
-```
+```js
 Cache.setItem('mothersBirthday', 'July 18th', { priority: 1 });
 Cache.setItem('breakfastFoodOrder', 'Pancakes', { priority: 3 });
 ```
@@ -63,14 +57,14 @@ In the example above once the cache fills, the key of `breakfastFoodOrder` will 
 
   Retrieve an item from the cache. It will return null if the item doesn’t exist or it has expired.
 
-```
+```js
 Cache.getItem(key[, options]);
 
 // Standard case
 Cache.getItem('key');
 
-// Get item with callback function. 
-// The callback function will be called if the item is not in the cache. 
+// Get item with callback function.
+// The callback function will be called if the item is not in the cache.
 // After the callback function returns, the value will be set into cache.
 Cache.getItem('key', { callback: callback });
 ```
@@ -79,7 +73,7 @@ Cache.getItem('key', { callback: callback });
 
   Remove item from cache.
 
-```
+```js
 Cache.removeItem(key);
 ```
 
@@ -87,7 +81,7 @@ Cache.removeItem(key);
 
 Clears all of the items in the cache.
 
-```
+```js
 Cache.clear();
 ```
 
@@ -95,7 +89,7 @@ Cache.clear();
 
   Returns all of the keys in the cache.
 
-```
+```js
 Cache.getAllKeys();
 ```
 
@@ -103,7 +97,7 @@ Cache.getAllKeys();
 
   Returns the current size of the cache.
 
-```
+```js
 const size = Cache.getCacheCurSize();
 ```
 
@@ -111,7 +105,7 @@ const size = Cache.getCacheCurSize();
 
   Configure Cache such as default settings for `setItem` functionality. You can see all the options in the [Configuration](#configuration) section.
 
-```
+```js
 const config = {
   itemMaxSize: 3000, // 3000 bytes
   defaultPriority: 4
@@ -127,115 +121,10 @@ const myCacheConfig = Cache.configure(config);
 
   Create a new instance of Cache with customized configuration
 
-```
+```js
 const config = {
   itemMaxSize: 3000, // 3000 bytes
   storage: window.sessionStorage // switch to sessionStorage
-  // ...
-};
-const myCache = Cache.createInstance(config);
-// Please provide a new keyPrefix which is the identifier of Cache.
-```
-
-### Integrate into React Native
-
-First Import
-```
-import { Cache } from ‘aws-amplify-react-native’;
-```
-Then call the methods
-
-- **setItem()**
-
-  You can set number, string, boolean or object into the cache. You can also specify options along with the call such as the priority or expiration time.
-
-```
-Cache.setItem(key, value[, options]);
-    
-// Standard case
-Cache.setItem('key', 'value');
-
-// Set item with priority. Priority should be between 1 and 5.
-Cache.setItem('key', 'value', { priority: 3 });
-
-// Set item with an expiration time
-const expiration = new Date(2018, 1, 1);
-Cache.setItem('key', 'value', { expires: expiration.getTime() });
-```
-
-- **getItem()**
-
-  Retrieve an item from the cache. It will return null if the item doesn’t exist or it has expired.
-
-```
-Cache.getItem(key[, options]);
-
-// Standard case
-Cache.getItem('key');
-
-// Get item with callback function. 
-// The callback function will be called if the item is not in the cache. 
-// After the callback function returns, the value will be set into cache.
-Cache.getItem('key', { callback: callback });
-```
-
-- **removeItem()**
-
-  Remove item from cache.
-
-```
-Cache.removeItem('key');
-```
-
-
-- **clear()**
-
-  Clear all items in the cache.
-
-```
-Cache.clear();
-```
-
-- **getAllKeys()**
-
-  Return all the keys in the cache.
-
-```
-Cache.getAllKeys().then(keys => {...});
-```
-
- - **getCacheCurSize()**
-
-  Return the current size of the cache.
-
-```
-const size = Cache.getCacheCurSize().then(size => {...});
-```
-
-- **configure()**
-
-Configure Cache with customized configuration and return the configuration. You can see all the options in the [Configuration](#configuration) section.
-
-```
-const config = {
-  itemMaxSize: 3000, // 3000 bytes
-  defaultPriority: 4
-  // ...
-};
-const myCacheConfig = Cache.configure(config);
-
-// You can modify parameters such as cache size, item default ttl and etc.
-// But don't modify keyPrefix which is the identifier of Cache.
-```
-
-- **createInstance()**
-
-Create a new instance of Cache with customized configuration
-
-```
-const config = {
-  itemMaxSize: 3000, // 3000 bytes
-  defaultPriority: 4
   // ...
 };
 const myCache = Cache.createInstance(config);

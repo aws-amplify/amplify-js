@@ -90,7 +90,11 @@ export default class AnalyticsClass {
      * Record Session start
      * @return - A promise which resolves if event record successfully
      */
-    public startSession() {
+    public async startSession() {
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.resolve(false); }
+
+
         logger.debug('record session start');
         const sessionId = this.generateRandomString();
         this._sessionId = sessionId;
@@ -127,7 +131,10 @@ export default class AnalyticsClass {
      * Record Session stop
      * @return - A promise which resolves if event record successfully
      */
-    public stopSession() {
+    public async stopSession() {
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.resolve(false); }
+
         logger.debug('record session stop');
         
         const sessionId = this._sessionId ? this._sessionId : this.generateRandomString();
@@ -165,9 +172,14 @@ export default class AnalyticsClass {
      * @return - A promise ehich resolves to be true if current credential exists
      */
     async restart() {
+        const ret = await this._initClients();
+        if (!ret) {
+            logger.debug('restart failed');
+            return;
+        }
         this.stopSession().then((data) => {
                 logger.debug('restarting clients');
-                return this._initClients();
+                return;
             }).catch(e => {
                 logger.debug('restart error', e);
             });
@@ -180,11 +192,14 @@ export default class AnalyticsClass {
     * @param {Object} [metrics] - Event metrics
     * @return - A promise which resolves if event record successfully
     */
-    public record(name: string, attributes?: EventAttributes, metrics?: EventMetrics) {
+    public async record(name: string, attributes?: EventAttributes, metrics?: EventMetrics) {
         logger.debug(`record event: { name: ${name}, attributes: ${attributes}, metrics: ${metrics}`);
         
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.resolve(false); }
+
         // if mobile analytics client not ready, buffer it
-        if (!this.mobileAnalytics) {
+        if (!this.mobileAnalytics ) {
             logger.debug('mobileAnalytics not ready, put in buffer');
             this._buffer.push({
                 name,
@@ -219,6 +234,13 @@ export default class AnalyticsClass {
             });
         });
     }
+
+    /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+   public onHubCapsule(capsule: any): void {}
+
 /*
     _putEventsCallback() {
         return (err, data, res, rej) => {
@@ -305,6 +327,7 @@ export default class AnalyticsClass {
 
         return Auth.currentCredentials()
             .then(credentials => {
+                if (!credentials) return false;
                 const cred = Auth.essentialCredentials(credentials);
                 
                 conf.credentials = cred;

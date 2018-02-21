@@ -156,7 +156,7 @@ export default class S3Text extends Component {
 
         return (
             <div style={textStyle}>
-                { this.textEl(text, theme) }
+                { textStyle? this.textEl(text, theme) : null }
                 { picker? <div>
                               <TextPicker
                                   key="picker"

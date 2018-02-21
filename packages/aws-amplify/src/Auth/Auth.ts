@@ -20,6 +20,7 @@ import {
     Constants,
     Hub
 } from '../Common';
+import Platform from '../Common/Platform';
 import Cache from '../Cache';
 
 const logger = new Logger('AuthClass');
@@ -44,6 +45,7 @@ const dispatchAuthEvent = (event, data) => {
 */
 export default class AuthClass {
     private _config: AuthOptions;
+    private _userPoolStorageSync: Promise<any>;
     private userPool = null;
 
     private credentials = null;
@@ -65,58 +67,73 @@ export default class AuthClass {
 
     configure(config) {
         logger.debug('configure Auth');
-
         let conf = config? config.Auth || config : {};
         if (conf['aws_cognito_identity_pool_id']) {
             conf = {
                 userPoolId: conf['aws_user_pools_id'],
                 userPoolWebClientId: conf['aws_user_pools_web_client_id'],
                 region: conf['aws_cognito_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id']
+                identityPoolId: conf['aws_cognito_identity_pool_id'],
+                mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable'? true: false
             };
         }
         this._config = Object.assign({}, this._config, conf);
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
-
         const { userPoolId, userPoolWebClientId } = this._config;
         if (userPoolId) {
             this.userPool = new CognitoUserPool({
                 UserPoolId: userPoolId,
                 ClientId: userPoolWebClientId
             });
-            this.pickupCredentials();
+            if (Platform.isReactNative) {
+                const that = this;
+                this._userPoolStorageSync = new Promise((resolve, reject) => {
+                    this.userPool.storage.sync((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
+                });
+            } else {
+                this.pickupCredentials();
+            }
         }
-
         return this._config;
     }
 
     /**
      * Sign up with username, password and other attrbutes like phone, email
-     * @param {String | object} attrs - The user attirbutes used for signin
+     * @param {String | object} params - The user attirbutes used for signin
      * @param {String[]} restOfAttrs - for the backward compatability 
      * @return - A promise resolves callback data if success
      */
-    public signUp(attrs: string | object, ...restOfAttrs: string[]): Promise<any> {
+    public signUp(params: string | object, ...restOfAttrs: string[]): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
 
         let username : string = null;
         let password : string = null;
         const attributes : object[] = [];
-        if (attrs && typeof attrs === 'string') {
-            username = attrs;
+        let validationData: object[] = null;
+        if (params && typeof params === 'string') {
+            username = params;
             password = restOfAttrs? restOfAttrs[0] : null;
             const email : string = restOfAttrs? restOfAttrs[1] : null;
             const phone_number : string = restOfAttrs? restOfAttrs[2] : null;
             if (email) attributes.push({Name: 'email', Value: email});
             if (phone_number) attributes.push({Name: 'phone_number', Value: phone_number}); 
-        } else if (attrs && typeof attrs === 'object') {
-            username = attrs['username'];
-            password = attrs['password'];
-            Object.keys(attrs).map(key => {
-                if (key === 'username' || key === 'password') return;
-                const ele : object = { Name: key, Value: attrs[key] };
-                attributes.push(ele);
-            });
+        } else if (params && typeof params === 'object') {
+            username = params['username'];
+            password = params['password'];
+            const attrs = params['attributes'];
+            if (attrs) {
+                Object.keys(attrs).map(key => {
+                    const ele : object = { Name: key, Value: attrs[key] };
+                    attributes.push(ele);
+                });
+            }
+            validationData = params['validationData'] || null;
         } else {
             return Promise.reject('The first parameter should either be non-null string or object');
         }
@@ -124,11 +141,11 @@ export default class AuthClass {
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }     
         
-        logger.debug('signUp attrs:');
-        logger.debug(attributes);
+        logger.debug('signUp attrs:', attributes);
+        logger.debug('signUp validation data:', validationData);
         
         return new Promise((resolve, reject) => {
-            this.userPool.signUp(username, password, attributes, null, function(err, data) {
+            this.userPool.signUp(username, password, attributes, validationData, function(err, data) {
                 if (err) {
                     dispatchAuthEvent('signUp_failure', err);
                     reject(err);
@@ -293,6 +310,34 @@ export default class AuthClass {
     }
 
     /**
+     * Update an authenticated users' attributes
+     * @param {CognitoUser} - The currently logged in user object
+     * @return {Promise} 
+     **/
+    public updateUserAttributes(user, attributes:object): Promise<any> {
+        let attr:object = {};
+        const attributeList:Array<object> = [];
+        return this.userSession(user)
+            .then(session => {
+                return new Promise((resolve, reject) => {
+                    for (const key in attributes) {
+                        if ( key !== 'sub' &&
+                            key.indexOf('_verified') < 0 && 
+                            attributes[key] ) {
+                            attr = {
+                                'Name': key,
+                                'Value': attributes[key]
+                            };
+                            attributeList.push(attr);
+                        }
+                    }
+                    user.updateAttributes(attributeList, (err,result) => {
+                        if (err) { reject(err); } else { resolve(result); }
+                    });
+                });
+            }); 
+    }
+    /**
      * Return user attributes
      * @param {Object} user - The CognitoUser object
      * @return - A promise resolves to user attributes if success
@@ -342,15 +387,40 @@ export default class AuthClass {
      */
     public currentUserPoolUser(): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
-
-        const user = this.userPool.getCurrentUser();
-        if (!user) { return Promise.reject('No current user in userPool'); }
-
-        logger.debug(user);
-        return new Promise((resolve, reject) => {
-            user.getSession(function(err, session) {
-                if (err) { reject(err); } else { resolve(user); }
+        let user = null;
+        if (Platform.isReactNative) {
+            const that = this;
+            return this.getSyncedUser().then(user => {
+                if (!user) { return Promise.reject('No current user in userPool'); }
+                return new Promise((resolve, reject) => {
+                    user.getSession(function(err, session) {
+                        if (err) { reject(err); } else { resolve(user); }
+                    });
+                });
             });
+        } else {
+            user = this.userPool.getCurrentUser();
+            if (!user) { return Promise.reject('No current user in userPool'); }
+            return new Promise((resolve, reject) => {
+                user.getSession(function(err, session) {
+                    if (err) { reject(err); } else { resolve(user); }
+                });
+            });
+        }
+    }
+
+    /**
+     * Return the current user after synchornizing AsyncStorage
+     * @return - A promise with the current authenticated user
+     **/
+    private getSyncedUser(): Promise<any> {
+        const that = this;
+        return (this._userPoolStorageSync || Promise.resolve()).then(result => {
+            if (!that.userPool) {
+                return Promise.reject('No userPool');
+            }
+            that.credentials_source = 'userPool';
+            return that.userPool.getCurrentUser();
         });
     }
 
@@ -364,11 +434,9 @@ export default class AuthClass {
         if (!source || source === 'aws' || source === 'userPool') {
             return this.currentUserPoolUser();
         }
-
         if (source === 'federated') {
             return Promise.resolve(this.user);
         }
-
         return Promise.reject('not authenticated');
     }
 
@@ -377,11 +445,19 @@ export default class AuthClass {
      * @return - A promise resolves to session object if success 
      */
     public currentSession() : Promise<any> {
+        let user:any;
+        const that = this;
         if (!this.userPool) { return Promise.reject('No userPool'); }
-
-        const user = this.userPool.getCurrentUser();
-        if (!user) { return Promise.reject('No current user'); }
-        return this.userSession(user);
+        if (Platform.isReactNative) {
+            return this.getSyncedUser().then(user => {
+                if (!user) { return Promise.reject('No current user'); }
+                return that.userSession(user);
+            });
+        } else {
+            user = this.userPool.getCurrentUser();
+            if (!user) { return Promise.reject('No current user'); }
+            return this.userSession(user);
+        }
     }
 
     /**
@@ -403,17 +479,41 @@ export default class AuthClass {
      * @return - A promise resolves to be current user's credentials
      */
     public currentUserCredentials() : Promise<any> {
-        // first to check whether there is federation info in the local storage
-        const federatedInfo = Cache.getItem('federatedInfo');
-        if (federatedInfo) {
-            const { provider, token, user} = federatedInfo;
-            return new Promise((resolve, reject) => {
-                this.setCredentialsFromFederation(provider, token, user);
-                resolve();
-            });
+        if (Platform.isReactNative) {
+            // asyncstorage
+            const that = this;
+            return Cache.getItem('federatedInfo')
+                .then((federatedInfo) => {
+                    if (federatedInfo) {
+                        const { provider, token, user} = federatedInfo;
+                        return new Promise((resolve, reject) => {
+                            that.setCredentialsFromFederation(provider, token, user);
+                            resolve();
+                        });
+                    } else {
+                        return that.currentSession()
+                            .then(session => that.setCredentialsFromSession(session))
+                            .catch((error) => that.setCredentialsForGuest());
+                    }
+                }).catch((error) => {
+                    return new Promise((resolve, reject) => {
+                        reject(error);
+                    });
+                });
         } else {
-            return this.currentSession()
-                .then(session => this.setCredentialsFromSession(session));
+            // first to check whether there is federation info in the local storage
+            const federatedInfo = Cache.getItem('federatedInfo');
+            if (federatedInfo) {
+                const { provider, token, user} = federatedInfo;
+                return new Promise((resolve, reject) => {
+                    this.setCredentialsFromFederation(provider, token, user);
+                    resolve();
+                });
+            } else {
+                return this.currentSession()
+                    .then(session => this.setCredentialsFromSession(session))
+                    .catch((error) => this.setCredentialsForGuest());
+            }
         }
     }
 
@@ -475,7 +575,9 @@ export default class AuthClass {
      * Sign out method
      * @return - A promise resolved if success
      */
-    public signOut(): Promise<any> {
+    public async signOut(): Promise<any> {
+        await this.currentUserCredentials();
+
         const source = this.credentials_source;
 
         // clean out the cached stuff
@@ -571,19 +673,21 @@ export default class AuthClass {
                 .catch(err => logger.debug(err));
             if (!user) { return null; }
 
-            const attributes = await this.userAttributes(user)
-                .catch(err => {
-                    logger.debug('currentUserInfo error', err);
-                    return {};
-                });
-
-            const info = {
-                username: user.username,
-                id: credentials.identityId,
-                email: attributes.email,
-                phone_number: attributes.phone_number
-            };
-            return info;
+            try {
+                const attributes = await this.userAttributes(user);
+                const userAttrs:object = this.attributesToObject(attributes);
+            
+                const info = {
+                    'id': credentials.identityId,
+                    'username': user.username,
+                    'attributes': userAttrs
+                };
+                return info;
+            } catch(err) {
+                console.warn(err);
+                logger.debug('currentUserInfo error', err);
+                return {};
+            }
         }
 
         if (source === 'federated') {
@@ -626,9 +730,19 @@ export default class AuthClass {
 
     private attributesToObject(attributes) {
         const obj = {};
-        attributes.map(attribute => {
-            obj[attribute.Name] = (attribute.Value === 'false')? false : attribute.Value;
-        });
+        if (attributes) {
+            attributes.map(attribute => {
+                if (attribute.Name === 'sub') return;
+
+                if (attribute.Value === 'true') {
+                    obj[attribute.Name] = true;
+                } else if (attribute.Value === 'false') {
+                    obj[attribute.Name] = false;
+                } else {
+                    obj[attribute.Name] = attribute.Value;
+                }
+            });
+        }
         return obj;
     }
 
@@ -667,18 +781,23 @@ export default class AuthClass {
     }
 
     private pickupCredentials() {
+        const that = this;
         if (this.credentials) {
             return this.keepAlive();
         } else if (this.setCredentialsFromAWS()) {
             return this.keepAlive();
         } else {
-            logger.debug('pickup from userPool');
             return this.currentUserCredentials()
-                .then(() => this.keepAlive())
+                .then(() => {
+                    if (that.credentials_source === 'no credentials') {
+                        return Promise.resolve(null);
+                    }
+                    return that.keepAlive();
+                })
                 .catch(err => {
                     logger.debug('error when pickup', err);
-                    this.setCredentialsForGuest();
-                    return this.keepAlive();
+                    that.setCredentialsForGuest();
+                    return that.keepAlive();
                 });
         }
     }
@@ -689,12 +808,17 @@ export default class AuthClass {
             this.credentials_source = 'aws';
             return true;
         }
-
         return false;
     }
 
     private setCredentialsForGuest() {
-        const { identityPoolId, region } = this._config;
+        const { identityPoolId, region, mandatorySignIn } = this._config;
+        if (mandatorySignIn) {
+            this.credentials = null;
+            this.credentials_source = 'no credentials';
+            return;
+        }
+
         const credentials = new CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId
@@ -730,21 +854,28 @@ export default class AuthClass {
 
         const ts = new Date().getTime();
         const delta = 10 * 60 * 1000; // 10 minutes
-        const credentials = this.credentials;
+        let credentials = this.credentials;
         const { expired, expireTime } = credentials;
         if (!expired && expireTime > ts + delta) {
             return Promise.resolve(credentials);
         }
 
+        const that = this;
         return new Promise((resolve, reject) => {
-            credentials.refresh(err => {
-                if (err) {
-                    logger.debug('refresh credentials error', err);
-                    resolve(null);
-                } else {
-                    resolve(credentials);
-                }
-            });
+            that.currentUserCredentials()
+                .then(() => {
+                    credentials = that.credentials;
+                    credentials.refresh(err => {
+                        logger.debug('changed from previous');
+                        if (err) {
+                            logger.debug('refresh credentials error', err);
+                            resolve(null);
+                        } else {
+                            resolve(credentials);
+                        }
+                    });
+                })
+                .catch(() => resolve(null));
         });
     }
 }

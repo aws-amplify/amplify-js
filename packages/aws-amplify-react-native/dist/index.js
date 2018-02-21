@@ -11,45 +11,25 @@
  * and limitations under the License.
  */
 
-import Auth from './Auth';
-import Analytics, { Notification } from './Analytics';
-import API from './API';
-import Cache from './Cache';
-import Storage from './Storage';
+import { default as AmplifyCore, I18n } from 'aws-amplify';
+import dict from './AmplifyI18n';
 
-import I18n from './I18n';
-import { ConsoleLogger as Logger } from './Common';
+export { default as AmplifyTheme } from './AmplifyTheme';
+export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
+export * from './AmplifyUI';
+export * from './Auth';
+export * from './Storage';
 
-import * as Components from './components';
-import { Authenticator, withAuthenticator, S3Album, S3Image } from './components';
+const configure = function (config) {
+  const msg = ['', '\x1b[33mWarning: Amplify.configure() is deprecated from aws-amplify-react-native.', '        Please import aws-amplify package to configure AWS Amplify\x1b[0m', '', '        Example:', '', '        \x1b[36mimport Amplify from \'aws-amplify\';', '        import aws_exports from \'./aws-exports\';', '', '        Amplify.configure(aws_exports)\x1b[0m', ''].join('\n');
+  console.log(msg);
+  AmplifyCore.configure(config);
+};
 
-const logger = new Logger('Amplify');
+const Amplify = {
+  configure: configure
+};
 
-export default class Amplify {
-    static configure(config) {
-        logger.info('configure Amplify');
+export default Amplify;
 
-        Auth.configure(config);
-        Analytics.configure(config);
-        I18n.configure(config);
-        Storage.configure(config);
-
-        API.configure(config);
-        API.createInstance();
-        Cache.configure(config);
-    }
-}
-
-Amplify.Auth = Auth;
-Amplify.Analytics = Analytics;
-Amplify.API = API;
-Amplify.Cache = Cache;
-Amplify.Storage = Storage;
-
-Amplify.I18n = I18n;
-Amplify.Logger = Logger;
-
-Amplify.Components = Components;
-Amplify.withAuthenticator = withAuthenticator;
-
-export { Auth, Authenticator, Analytics, API, Cache, Storage, I18n, Logger, Components, withAuthenticator, S3Album, S3Image, Notification };
+I18n.putVocabularies(dict);
