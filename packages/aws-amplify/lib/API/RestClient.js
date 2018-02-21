@@ -79,7 +79,8 @@ var RestClient = /** @class */ (function () {
     * @param {RestClientOptions} [options] - Instance options
     */
     function RestClient(options) {
-        this._region = null;
+        this._region = 'us-east-1'; // this will be updated by config
+        this._service = 'execute-api'; // this can be updated by config
         var endpoints = options.endpoints;
         this._options = options;
         logger.debug('API Options', this._options);
@@ -122,7 +123,7 @@ var RestClient = /** @class */ (function () {
                     };
                 }
                 extraParams = Object.assign({}, init);
-                isAllResponse = init.response;
+                isAllResponse = init ? init.response : null;
                 if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
                     params.data = JSON.stringify(extraParams.body);
@@ -210,6 +211,9 @@ var RestClient = /** @class */ (function () {
                 else if (typeof _this._options.region === 'string') {
                     _this._region = _this._options.region;
                 }
+                if (typeof v.service === 'string') {
+                    _this._service = v.service || 'execute-api';
+                }
             }
         });
         return response;
@@ -217,13 +221,14 @@ var RestClient = /** @class */ (function () {
     /** private methods **/
     RestClient.prototype._signed = function (params, credentials, isAllResponse) {
         var endpoint_region = this._region || this._options.region;
+        var endpoint_service = this._service || this._options.service;
         var creds = {
             'secret_key': credentials.secretAccessKey,
             'access_key': credentials.accessKeyId,
             'session_token': credentials.sessionToken
         };
         var service_info = {
-            'service': 'execute-api',
+            'service': endpoint_service,
             'region': endpoint_region
         };
         var signed_params = Signer_1.default.sign(params, creds, service_info);

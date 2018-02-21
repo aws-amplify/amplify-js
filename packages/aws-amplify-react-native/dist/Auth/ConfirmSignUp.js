@@ -61,10 +61,10 @@ export default class ConfirmSignUp extends AuthPiece {
         Auth.resendSignUp(username).then(() => logger.debug('code sent')).catch(err => this.error(err));
     }
 
-    componentWillMount() {
-        const username = this.props.authData;
+    componentWillReceiveProps(nextProps) {
+        const username = nextProps.authData;
         if (username && !this.state.username) {
-            this.setState({ username: username });
+            this.setState({ username });
         }
     }
 
