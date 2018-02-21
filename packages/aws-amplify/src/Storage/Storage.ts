@@ -84,14 +84,14 @@ export default class StorageClass {
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, level, download, track } = opt;
+        const { bucket, region, credentials, level, download, track, expires } = opt;
 
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
         const s3 = this._createS3(opt);
         logger.debug('get ' + key + ' from ' + final_key);
 
-        const params = {
+        const params: any = {
             Bucket: bucket,
             Key: final_key
         };
@@ -115,6 +115,8 @@ export default class StorageClass {
                 });
             });
         }
+
+        if (expires) { params.Expires = expires; }
 
         return new Promise<string>((res, rej) => {
             try {
