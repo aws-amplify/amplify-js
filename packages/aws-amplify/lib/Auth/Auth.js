@@ -298,15 +298,25 @@ var AuthClass = /** @class */ (function () {
                 },
                 mfaSetup: function (challengeName, challengeParam) {
                     logger.debug('signIn mfa setup', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
                 },
-                associateSecretCode: function (secretCode) {
-                    logger.debug('signIn asscoiateSecretCode', secretCode);
-                },
-                totpRequired: function (secretCode) {
-                    logger.debug('signIn totpRequired', secretCode);
+                // associateSecretCode: (secretCode) => {
+                //     logger.debug('signIn asscoiateSecretCode', secretCode);
+                //     resolve(user);
+                // },
+                totpRequired: function (challengeName, challengeParam) {
+                    logger.debug('signIn totpRequired');
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
                 },
                 selectMFAType: function (challengeName, challengeParam) {
                     logger.debug('signIn selectMFAType', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
                 }
             });
         });
@@ -338,11 +348,45 @@ var AuthClass = /** @class */ (function () {
         });
     };
     /**
+     * Setup TOTP
+     */
+    AuthClass.prototype.setupMFA = function (user) {
+        return new Promise(function (res, rej) {
+            user.associateSoftwareToken({
+                onFailure: function (err) {
+                    logger.debug('associateSoftwareToken failed', err);
+                    rej(err);
+                },
+                associateSecretCode: function (secretCode) {
+                    logger.debug('associateSoftwareToken sucess', secretCode);
+                    res(secretCode);
+                }
+            });
+        });
+    };
+    /**
+     * verify TOTP setup
+     */
+    AuthClass.prototype.verifyTotpToken = function (user, challengeAnswer) {
+        return new Promise(function (res, rej) {
+            user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
+                onFailure: function (err) {
+                    logger.debug('verifyTotpToken failed', err);
+                    rej(err);
+                },
+                onSuccess: function (data) {
+                    logger.debug('verifyTotpToken success', data);
+                    res(data);
+                }
+            });
+        });
+    };
+    /**
      * Send MFA code to confirm sign in
      * @param {Object} user - The CognitoUser object
      * @param {String} code - The confirmation code
      */
-    AuthClass.prototype.confirmSignIn = function (user, code) {
+    AuthClass.prototype.confirmSignIn = function (user, code, mfaType) {
         if (!code) {
             return Promise.reject('Code cannot be empty');
         }
@@ -356,21 +400,15 @@ var AuthClass = /** @class */ (function () {
                     dispatchAuthEvent('signIn', user);
                     // delete it!!!!
                     // that.setPreferedMFA(user, 'TOTP').catch((err) => logger.debug(err));
-                    user.associateSoftwareToken({
-                        onFailure: function (err) {
-                            logger.debug('associateSoftwareToken failed', err);
-                        },
-                        associateSecretCode: function (secretCode) {
-                            logger.debug('associateSoftwareToken sucess', secretCode);
-                        }
-                    });
+                    // that.mfaSetup(user);
+                    // ....
                     resolve(user);
                 },
                 onFailure: function (err) {
                     logger.debug('confirm signIn failure', err);
                     reject(err);
                 }
-            });
+            }, mfaType);
         });
     };
     AuthClass.prototype.completeNewPassword = function (user, password, requiredAttributes) {

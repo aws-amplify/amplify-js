@@ -44,11 +44,19 @@ export default class AuthClass {
     signIn(username: string, password: string): Promise<any>;
     setPreferedMFA(user: any, mfaMethod: any): Promise<any>;
     /**
+     * Setup TOTP
+     */
+    setupMFA(user: any): Promise<{}>;
+    /**
+     * verify TOTP setup
+     */
+    verifyTotpToken(user: any, challengeAnswer: any): Promise<{}>;
+    /**
      * Send MFA code to confirm sign in
      * @param {Object} user - The CognitoUser object
      * @param {String} code - The confirmation code
      */
-    confirmSignIn(user: any, code: string): Promise<any>;
+    confirmSignIn(user: any, code: string, mfaType: string | null): Promise<any>;
     completeNewPassword(user: any, password: string, requiredAttributes: any): Promise<any>;
     /**
      * Update an authenticated users' attributes

@@ -45,7 +45,7 @@ export default class MFASetup extends AuthPiece {
 
     showComponent(theme) {
         const { hide } = this.props;
-        if (hide && hide.includes(ConfirmSignIn)) { return null; }
+        if (hide && hide.includes(MFASetup)) { return null; }
 
         return (
             <FormSection theme={theme}>

@@ -253,15 +253,25 @@ export default class AuthClass {
                 },
                 mfaSetup: (challengeName, challengeParam) => {
                     logger.debug('signIn mfa setup', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
                 },
-                associateSecretCode: (secretCode) => {
-                    logger.debug('signIn asscoiateSecretCode', secretCode);
-                },
-                totpRequired: (secretCode) => {
-                    logger.debug('signIn totpRequired', secretCode);
+                // associateSecretCode: (secretCode) => {
+                //     logger.debug('signIn asscoiateSecretCode', secretCode);
+                //     resolve(user);
+                // },
+                totpRequired: (challengeName, challengeParam) => {
+                    logger.debug('signIn totpRequired');
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
                 },
                 selectMFAType: (challengeName, challengeParam) => {
                     logger.debug('signIn selectMFAType', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
                 }
             });
         });
@@ -294,14 +304,48 @@ export default class AuthClass {
         });
     }
 
-   
+    /**
+     * Setup TOTP
+     */
+    public setupMFA(user) {
+        return new Promise((res, rej) => {
+            user.associateSoftwareToken({
+                onFailure: (err) => {
+                    logger.debug('associateSoftwareToken failed', err);
+                    rej(err);
+                },
+                associateSecretCode: (secretCode) => {
+                    logger.debug('associateSoftwareToken sucess', secretCode);
+                    res(secretCode);
+                }
+            });
+        })
+    }
+
+    /**
+     * verify TOTP setup
+     */
+    public verifyTotpToken(user, challengeAnswer) {
+        return new Promise((res, rej) => {
+            user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
+                onFailure: (err) => {
+                    logger.debug('verifyTotpToken failed', err);
+                    rej(err);
+                },
+                onSuccess: (data) => {
+                    logger.debug('verifyTotpToken success', data);
+                    res(data);
+                }
+            })
+        });
+    }
 
     /**
      * Send MFA code to confirm sign in
      * @param {Object} user - The CognitoUser object
      * @param {String} code - The confirmation code
      */
-    public confirmSignIn(user: any, code: string): Promise<any> {
+    public confirmSignIn(user: any, code: string, mfaType: string | null): Promise<any> {
         if (!code) { return Promise.reject('Code cannot be empty'); }
 
         const that = this;
@@ -314,15 +358,7 @@ export default class AuthClass {
                     dispatchAuthEvent('signIn', user);
                     // delete it!!!!
                     // that.setPreferedMFA(user, 'TOTP').catch((err) => logger.debug(err));
-                    user.associateSoftwareToken({
-                        onFailure: (err) => {
-                            logger.debug('associateSoftwareToken failed', err);
-                        },
-                        associateSecretCode: (secretCode) => {
-                            logger.debug('associateSoftwareToken sucess', secretCode);
-                        }
-                    });
-
+                    // that.mfaSetup(user);
                     // ....
                     resolve(user);
                 },
@@ -330,7 +366,7 @@ export default class AuthClass {
                     logger.debug('confirm signIn failure', err);
                     reject(err);
                 }
-            });
+            }, mfaType);
         });
     }
 

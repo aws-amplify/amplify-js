@@ -57,7 +57,8 @@ export default class SignIn extends AuthPiece {
         Auth.signIn(username, password)
             .then(user => {
                 logger.debug(user);
-                if (user.challengeName === 'SMS_MFA') {
+                if (user.challengeName === 'SMS_MFA' || user.challengeName === 'SOFTWARE_TOKEN_MFA') {
+                    logger.debug('confirm user with ' + user.challengeName);
                     this.changeState('confirmSignIn', user);
                 } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
                     logger.debug('require new password', user.challengeParam);

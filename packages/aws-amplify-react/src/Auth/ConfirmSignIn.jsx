@@ -39,7 +39,8 @@ export default class ConfirmSignIn extends AuthPiece {
     confirm() {
         const user = this.props.authData;
         const { code } = this.inputs;
-        Auth.confirmSignIn(user, code)
+        const mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
+        Auth.confirmSignIn(user, code, mfaType)
             .then(() => this.changeState('signedIn'))
             .catch(err => this.error(err));
     }

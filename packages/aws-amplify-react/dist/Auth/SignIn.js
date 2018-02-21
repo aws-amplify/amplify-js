@@ -91,7 +91,8 @@ var SignIn = function (_AuthPiece) {
 
                 _awsAmplify.Auth.signIn(username, password).then(function (user) {
                     logger.debug(user);
-                    if (user.challengeName === 'SMS_MFA') {
+                    if (user.challengeName === 'SMS_MFA' || user.challengeName === 'SOFTWARE_TOKEN_MFA') {
+                        logger.debug('confirm user with ' + user.challengeName);
                         _this3.changeState('confirmSignIn', user);
                     } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
                         logger.debug('require new password', user.challengeParam);
