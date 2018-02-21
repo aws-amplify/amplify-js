@@ -196,6 +196,13 @@ Storage.get('test.txt', {level: 'private'})
     .catch(err => console.log(err));
 ```
 
+Returns the pre-signed URL that expires in 60 seconds
+```js
+Storage.get('test.txt', {expires: 60})
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
+```
+
 #### 3. Remove
 Delete data stored with key specified.
 
