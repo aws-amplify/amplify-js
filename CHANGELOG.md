@@ -1,6 +1,28 @@
 # Changelog for AWS Amplify
-<!--LATEST=0.1.36-->
+<!--LATEST=0.2.7-->
 <!--ENTRYINSERT-->
+
+## 02/19/2018
+* amazon-cognito-identity-js - v2.0.1
+    * Enhancement: Fix incorrect RNAWSCognito podspec file extension #278
+    * Enhancement: Adds missing 'listDevices' function to CognitoUser class for TypeScript type safety #276
+    * Enhancement: Add and update MFA typescript interface for CognitoUser #279
+* aws-amplify - v0.2.7
+    * Bug Fix: Force the guest credentials to return null when mandatory sign in enabled #295
+    * Bug Fix: Fix the Typescript definitions for API, Analytics, Auth and Storage #263
+    * Enhancement: Docs/update quick start #274
+    * Enhancement: Support centralized tracking #199
+    * Enhancement: Support passing and signing of custom domains in API RestClient #310
+    * Enhancement: Return full response of api if you set response in the init object to true #300
+* aws-amplify-react - v0.1.33
+    * Bug Fix:  Check if SMS enabled for RequireNewPassword #296
+    * Enhancement: Hide image or text if ```hidden``` props set #291
+    * Enhancement: Make `withAuthenticator` HOC configurable #110
+* aws-amplify-react-naitve - v0.2.4
+    * Bug Fix: Check if SMS enabled for RequireNewPassword #296
+    * Enhancement: Add Loading page for React Native authenticator #233
+    * Enhancement: Make `withAuthenticator` HOC configurable #110
+    * Enhancement: Use ```componentWillReceiveProps``` instead of ```componentWillMount``` to set username in ```confirmSignUp``` #306
 
 ## 02/12/2018
 * aws-amplify - v0.2.6

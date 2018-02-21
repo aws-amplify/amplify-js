@@ -64,18 +64,37 @@ Amplify.configure({
     API: {
         endpoints: [
             {
-                name: "ApiName1",
+                name: "MyAPIGatewayAPI",
                 endpoint: "https://1234567890-abcdefgh.amazonaws.com"
             },
             {
-                name: "ApiName2",
-                endpoint: "https://api.my-custom-domain.com"
+                name: "MyCustomCloudFrontApi",
+                endpoint: "https://api.my-custom-cloudfront-domain.com",
+
+            },
+            {
+                name: "MyCustomLambdaApi",
+                endpoint: "https://lambda.us-east-1.amazonaws.com/2015-03-31/functions/yourFuncName/invocations",
+                service: "lambda",
+                region: "us-east-1"
             }
         ]
     }
 });
 
 ```
+
+### Service Endpoints
+
+While it is best practice to utilize something like Amazon API Gateway for Rest APIs for both security, scalability and management, you can also utilize most AWS APIs by passing in the service information to the configuration for an endpoint. For a list of service endpoints see [here](https://docs.aws.amazon.com/general/latest/gr/rande.html). For more details related to API Gateway Invoke specifically, see [here](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html).
+
+For example, you can utilize a custom domain directly with a Lambda function by setting up an Amazon Cloudfront origin pointing to (change the region to your relevent region): 
+https://lambda.us-east-1.amazonaws.com
+
+This post explains more in depth how to setup the Amazon Cloudfront distribution:
+https://forum.serverless.com/t/directly-proxying-lambda-via-cloudfront-without-api-gateway/3808
+
+ NOTE: In order to call these service endpoints you will need to be sure your Amazon Cognito role is configured with appropriate access to that service. See [here](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) for more details.
 
 ## Integration
 
