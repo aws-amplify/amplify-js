@@ -15,6 +15,7 @@ restClient.get('...')
 export declare class RestClient {
     private _options;
     private _region;
+    private _service;
     /**
     * @param {RestClientOptions} [options] - Instance options
     */
