@@ -1326,10 +1326,6 @@ describe('auth unit test', () => {
                 Pool: userPool
             });
             auth['credentials_source'] = 'aws';
-            auth['credentials'] = new CognitoIdentityCredentials({
-                IdentityPoolId: 'identityPoolId',
-                IdentityId: 'identityId'
-            });
 
             const spyon = jest.spyOn(Auth.prototype, 'currentUserPoolUser')
                 .mockImplementationOnce(() => {
@@ -1342,6 +1338,11 @@ describe('auth unit test', () => {
 
             const spyon2 = jest.spyOn(Auth.prototype, 'userAttributes')
                 .mockImplementationOnce(() => {
+                    auth['credentials'] = new CognitoIdentityCredentials({
+                        IdentityPoolId: 'identityPoolId',
+                        IdentityId: 'identityId'
+                    });
+                    auth['credentials']['identityId'] = 'identityId';
                     return new Promise((res, rej)=> {
                         res([
                             {Name: 'email', Value: 'email'},
