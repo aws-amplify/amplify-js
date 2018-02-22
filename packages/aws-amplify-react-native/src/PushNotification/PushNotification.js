@@ -1,5 +1,5 @@
 import { NativeModules, DeviceEventEmitter } from 'react-native';
-import { Logger } from 'aws-amplify';
+import { Logger, Analytics } from 'aws-amplify';
 
 const logger = new Logger('Notification');
 
@@ -49,7 +49,21 @@ export default class PushNotification {
 
     initialize() {
         const { appId, region, identityPoolId } = this._config;
+        this.addEventListener(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
         PinpointSNS.initialize(appId, region, identityPoolId);
+        
+    }
+
+    updateEndpoint(data) {
+        const dataObj = data.dataJSON? JSON.parse(data.dataJSON) : {};
+        console.log('update endpoint in push notification', dataObj);
+        const token = dataObj ? dataObj.refreshToken : null;
+        const config = {
+            Address: token,
+            OptOut: 'NONE'
+        }
+
+        Analytics.configure({Analytics: config});
     }
 
     addEventListener(event, handler) {

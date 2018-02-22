@@ -84,6 +84,7 @@ var AnalyticsClass = /** @class */ (function () {
             conf = {
                 appId: conf['aws_mobile_analytics_app_id'],
                 region: conf['aws_project_region'],
+                cognitoIdentityPoolId: conf['aws_cognito_identity_pool_id'],
                 platform: 'other'
             };
         }
@@ -474,10 +475,14 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype._endpointRequest = function () {
         var client_info = Common_1.ClientDevice.clientInfo();
-        var credentials = this._config.credentials;
+        var _a = this._config, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, cognitoIdentityPoolId = _a.cognitoIdentityPoolId, endpointId = _a.endpointId;
         var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
+        var ChannelType = Address ? ((client_info.platform === 'android') ? 'GCM' : 'APNS') : null;
         logger.debug('demographic user id: ', user_id);
+        var OptOut = this._config.OptOut ? this._config.OptOut : 'NONE';
         return {
+            Address: Address,
+            ChannelType: ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || client_info.appVersion,
                 Make: client_info.make,
@@ -485,7 +490,15 @@ var AnalyticsClass = /** @class */ (function () {
                 ModelVersion: client_info.version,
                 Platform: client_info.platform
             },
-            User: { UserId: user_id }
+            OptOut: OptOut,
+            RequestId: RequestId,
+            EffectiveDate: new Date().toISOString(),
+            User: {
+                UserId: endpointId,
+                UserAttributes: {
+                    CognitoIdentityPool: [cognitoIdentityPoolId]
+                }
+            }
         };
     };
     return AnalyticsClass;

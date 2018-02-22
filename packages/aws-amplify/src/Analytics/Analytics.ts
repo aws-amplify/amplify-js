@@ -70,6 +70,7 @@ export default class AnalyticsClass {
             conf = {
                 appId: conf['aws_mobile_analytics_app_id'],
                 region: conf['aws_project_region'],
+                cognitoIdentityPoolId: conf['aws_cognito_identity_pool_id'],
                 platform: 'other'
             };
         }
@@ -425,10 +426,14 @@ export default class AnalyticsClass {
      */
     _endpointRequest() {
         const client_info: any = ClientDevice.clientInfo();
-        const credentials = this._config.credentials;
+        const { credentials, Address, RequestId, cognitoIdentityPoolId, endpointId } = this._config;
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
+        const ChannelType = Address? ((client_info.platform === 'android') ? 'GCM' : 'APNS') : null;
         logger.debug('demographic user id: ', user_id);
+        const OptOut = this._config.OptOut? this._config.OptOut: 'NONE';
         return {
+            Address,
+            ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || client_info.appVersion,
                 Make: client_info.make,
@@ -436,7 +441,15 @@ export default class AnalyticsClass {
                 ModelVersion: client_info.version,
                 Platform: client_info.platform
             },
-            User: { UserId: user_id }
+            OptOut,
+            RequestId,
+            EffectiveDate: new Date().toISOString(),
+            User: { 
+                UserId: endpointId,
+                UserAttributes: {
+                    CognitoIdentityPool: [ cognitoIdentityPoolId ]
+                }
+            }
         };
     }
 }
