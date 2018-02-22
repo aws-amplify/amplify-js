@@ -485,12 +485,14 @@ export default class AuthClass {
             return Cache.getItem('federatedInfo')
                 .then((federatedInfo) => {
                     if (federatedInfo) {
+                        console.log('the federated thing came where it really shouldnt have you know:', federatedInfo);
                         const { provider, token, user} = federatedInfo;
                         return new Promise((resolve, reject) => {
                             that.setCredentialsFromFederation(provider, token, user);
                             resolve();
                         });
                     } else {
+                        console.log('No user with fed found, going to catch here');
                         return that.currentSession()
                             .then(session => that.setCredentialsFromSession(session))
                             .catch((error) => that.setCredentialsForGuest());
@@ -816,9 +818,10 @@ export default class AuthClass {
         if (mandatorySignIn) {
             this.credentials = null;
             this.credentials_source = 'no credentials';
+            console.log('hmm set creds is returning');
             return;
         }
-
+        console.log('hmm set creds is NOT returning');
         const credentials = new CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId

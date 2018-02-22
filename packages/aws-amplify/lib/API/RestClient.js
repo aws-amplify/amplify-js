@@ -74,7 +74,7 @@ restClient.get('...')
     .catch(err => console.log(err));
 </pre>
 */
-var RestClient = /** @class */ (function () {
+var RestClient = (function () {
     /**
     * @param {RestClientOptions} [options] - Instance options
     */

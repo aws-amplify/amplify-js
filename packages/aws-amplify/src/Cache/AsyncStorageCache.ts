@@ -317,22 +317,27 @@ class AsyncStorageCache extends StorageCache implements ICache {
       logger.warn(`Invalid key: should not be empty or 'CurSize'`);
       return null;
     }
-
+    console.log(`1`);
     try {
       ret = await AsyncStorage.getItem(prefixedKey);
+      console.log(`there was some cache val: `, ret);
       if (ret != null) {
         if (await this._isExpired(prefixedKey)) {
+          console.log(`2`);
           // if expired, remove that item and return null
           await this._removeItem(prefixedKey, JSON.parse(ret).byteSize);
         } else {
           // if not expired, great, return the value and refresh it
+          console.log(`3`);
           let item = JSON.parse(ret);
           item = await this._refreshItem(item, prefixedKey);
           return JSON.parse(item.data);
         }
+        console.log(`4 umm`);
       }
-
+      console.log(`5: returned val is null as expected: `, ret);
       if (options && options.callback !== undefined ) {
+        console.log(`6`);
         const val = options.callback();
         if (val !== null) {
           this.setItem(key, val, options);
@@ -341,7 +346,7 @@ class AsyncStorageCache extends StorageCache implements ICache {
       }
       return null;
     } catch (e) {
-      logger.warn(`getItem failed! ${e}`);
+      logger.warn(`getItem failed for ${key}! ${e}`);
       return null;
     }
   }

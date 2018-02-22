@@ -158,8 +158,9 @@ Now your app is guarded by complete Auth flow. Only signed in user can access th
 
 You can enable federated Identity login by specifying federated option.
 
+For React App, follow the instructions below:
 ```js
-const AppWithAuth = withAuthenticator(App);
+const AppWithAuth = withAuthenticator(App, true);
 
 const federated = {
     google_client_id: '',
@@ -170,7 +171,19 @@ const federated = {
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
 
- NOTE: Federated Identity HOCs are not yet available on React Native
+For React Native app, add the following code to your App:
+
+```js
+const AppWithAuth = withAuthenticator(App);
+
+const federated = {
+    google_android_client_id: '',
+    google_ios_client_id: '',
+    facebook_app_id: ''
+};
+
+const FederatedApp = () => { return <AppWithAuth federated = {federated}/>}
+``` 
 
 #### Sign Out Button
 

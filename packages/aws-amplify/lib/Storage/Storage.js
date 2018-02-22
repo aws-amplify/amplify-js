@@ -58,7 +58,7 @@ var dispatchStorageEvent = function (track, attrs, metrics) {
 /**
  * Provide storage methods to use AWS S3
  */
-var StorageClass = /** @class */ (function () {
+var StorageClass = (function () {
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage

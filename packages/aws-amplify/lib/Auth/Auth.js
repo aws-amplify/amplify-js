@@ -59,7 +59,7 @@ var dispatchAuthEvent = function (event, data) {
 /**
 * Provide authentication steps
 */
-var AuthClass = /** @class */ (function () {
+var AuthClass = (function () {
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -563,6 +563,7 @@ var AuthClass = /** @class */ (function () {
             return Cache_1.default.getItem('federatedInfo')
                 .then(function (federatedInfo) {
                 if (federatedInfo) {
+                    console.log('the federated thing came where it really shouldnt have you know:', federatedInfo);
                     var provider_1 = federatedInfo.provider, token_1 = federatedInfo.token, user_1 = federatedInfo.user;
                     return new Promise(function (resolve, reject) {
                         that_1.setCredentialsFromFederation(provider_1, token_1, user_1);
@@ -570,6 +571,7 @@ var AuthClass = /** @class */ (function () {
                     });
                 }
                 else {
+                    console.log('No user with fed found, going to catch here');
                     return that_1.currentSession()
                         .then(function (session) { return that_1.setCredentialsFromSession(session); })
                         .catch(function (error) { return that_1.setCredentialsForGuest(); });
@@ -908,8 +910,10 @@ var AuthClass = /** @class */ (function () {
         if (mandatorySignIn) {
             this.credentials = null;
             this.credentials_source = 'no credentials';
+            console.log('hmm set creds is returning');
             return;
         }
+        console.log('hmm set creds is NOT returning');
         var credentials = new CognitoIdentityCredentials({
             IdentityPoolId: identityPoolId
         }, {

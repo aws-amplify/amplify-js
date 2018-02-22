@@ -66,7 +66,7 @@ var logger = new Common_1.ConsoleLogger('AsyncStorageCache');
 /*
  * Customized cache which based on the AsyncStorage with LRU implemented
  */
-var AsyncStorageCache = /** @class */ (function (_super) {
+var AsyncStorageCache = (function (_super) {
     __extends(AsyncStorageCache, _super);
     /**
      * initialize the cache
@@ -527,16 +527,19 @@ var AsyncStorageCache = /** @class */ (function (_super) {
                             logger.warn("Invalid key: should not be empty or 'CurSize'");
                             return [2 /*return*/, null];
                         }
+                        console.log("1");
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, 8, , 9]);
+                        _a.trys.push([1, 9, , 10]);
                         return [4 /*yield*/, react_native_1.AsyncStorage.getItem(prefixedKey)];
                     case 2:
                         ret = _a.sent();
-                        if (!(ret != null)) return [3 /*break*/, 7];
+                        console.log("there was some cache val: ", ret);
+                        if (!(ret != null)) return [3 /*break*/, 8];
                         return [4 /*yield*/, this._isExpired(prefixedKey)];
                     case 3:
                         if (!_a.sent()) return [3 /*break*/, 5];
+                        console.log("2");
                         // if expired, remove that item and return null
                         return [4 /*yield*/, this._removeItem(prefixedKey, JSON.parse(ret).byteSize)];
                     case 4:
@@ -544,13 +547,20 @@ var AsyncStorageCache = /** @class */ (function (_super) {
                         _a.sent();
                         return [3 /*break*/, 7];
                     case 5:
+                        // if not expired, great, return the value and refresh it
+                        console.log("3");
                         item = JSON.parse(ret);
                         return [4 /*yield*/, this._refreshItem(item, prefixedKey)];
                     case 6:
                         item = _a.sent();
                         return [2 /*return*/, JSON.parse(item.data)];
                     case 7:
+                        console.log("4 umm");
+                        _a.label = 8;
+                    case 8:
+                        console.log("5: returned val is null as expected: ", ret);
                         if (options && options.callback !== undefined) {
+                            console.log("6");
                             val = options.callback();
                             if (val !== null) {
                                 this.setItem(key, val, options);
@@ -558,11 +568,11 @@ var AsyncStorageCache = /** @class */ (function (_super) {
                             return [2 /*return*/, val];
                         }
                         return [2 /*return*/, null];
-                    case 8:
+                    case 9:
                         e_2 = _a.sent();
-                        logger.warn("getItem failed! " + e_2);
+                        logger.warn("getItem failed for " + key + "! " + e_2);
                         return [2 /*return*/, null];
-                    case 9: return [2 /*return*/];
+                    case 10: return [2 /*return*/];
                 }
             });
         });
