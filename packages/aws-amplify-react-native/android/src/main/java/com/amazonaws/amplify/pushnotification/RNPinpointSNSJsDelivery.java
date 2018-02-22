@@ -26,8 +26,16 @@ public class RNPinpointSNSJsDelivery {
 
         WritableMap params = Arguments.createMap();
         params.putString("dataJSON", bundleString);
-        Log.e("emit", "notification emit");
+        Log.v("emit", "notification emit");
         sendEvent("remoteNotificationReceived", params);
+    }
+
+    public void emitTokenReceived(Bundle bundle) {
+        String bundleString = convertJSON(bundle);
+        WritableMap params = Arguments.createMap();
+        params.putString("dataJSON", bundleString);
+        Log.v("emit", "token registration");
+        sendEvent("remoteTokenReceived", params);
     }
 
     private String convertJSON(Bundle bundle) {

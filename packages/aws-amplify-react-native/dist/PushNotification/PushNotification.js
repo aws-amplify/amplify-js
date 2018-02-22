@@ -5,6 +5,7 @@ const logger = new Logger('Notification');
 
 const PinpointSNS = NativeModules.PinpointSNS;
 const REMOTE_NOTIFICATION_RECEIVED = 'remoteNotificationReceived';
+const REMOTE_TOKEN_RECEIVED = 'remoteTokenReceived';
 
 export default class PushNotification {
     constructor(config) {
@@ -36,6 +37,12 @@ export default class PushNotification {
     onNotification(handler) {
         if (typeof handler === 'function') {
             this.addEventListener(REMOTE_NOTIFICATION_RECEIVED, handler);
+        }
+    }
+
+    onRegister(handler) {
+        if (typeof handler === 'function') {
+            this.addEventListener(REMOTE_TOKEN_RECEIVED, handler);
         }
     }
 

@@ -25,6 +25,12 @@ import com.amazonaws.regions.Regions;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.amazonaws.mobile.client.AWSMobileClient;
+import android.os.Bundle;
+
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 
 
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
@@ -41,7 +47,14 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.e(TAG, "Refreshed token: " + refreshedToken);
+        Log.v(TAG, "Refreshed token: " + refreshedToken);
+
+        ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
+        ReactContext context = mReactInstanceManager.getCurrentReactContext();
+
+        RNPinpointSNSJsDelivery jsDelivery = new RNPinpointSNSJsDelivery((ReactApplicationContext) context);
+        Bundle bundle = convertMessageToBundle(refreshedToken);
+        jsDelivery.emitTokenReceived(bundle);
 
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
@@ -60,8 +73,14 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app serve.
-        //AWSMobileClient.InitializeBuilder().getPinpointManager().getNotificationClient().registerGCMDeviceToken(token);\
-        Log.e(TAG, "send token to pinpoint");
-        PinpointSNSModule.getPinpointManager().getNotificationClient().registerGCMDeviceToken(token);
+        // AWSMobileClient.InitializeBuilder().getPinpointManager().getNotificationClient().registerGCMDeviceToken(token);\
+        // Log.e(TAG, "send token to pinpoint");
+        // PinpointSNSModule.getPinpointManager().getNotificationClient().registerGCMDeviceToken(token);
+    }
+
+    private Bundle convertMessageToBundle(String token) {
+        Bundle bundle = new Bundle();
+        bundle.putString("refreshToken", token);
+        return bundle;
     }
 }

@@ -16,6 +16,11 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.pinpoint.model.ChannelType;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import android.os.Bundle;
+
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
+
 public class PinpointSNSModule extends ReactContextBaseJavaModule {
     private static final String LOG_TAG = PinpointSNSModule.class.getSimpleName();
     private static PinpointManager pinpointManager = null;
@@ -35,33 +40,43 @@ public class PinpointSNSModule extends ReactContextBaseJavaModule {
         Log.e(LOG_TAG, "initialize pinpoint manager");
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
-        Regions pinpointRegion = null;
-        switch (region) {
-            case "us-east-1":
-                pinpointRegion = Regions.US_EAST_1;
-                break;
-            default:
-                break;
-        }
+        RNPinpointSNSJsDelivery jsDelivery = new RNPinpointSNSJsDelivery(context);
+        Bundle bundle = convertMessageToBundle(refreshedToken);
+        jsDelivery.emitTokenReceived(bundle);
 
-        final ChannelType pinpointChannelType = ChannelType.GCM;
+        // Regions pinpointRegion = null;
+        // switch (region) {
+        //     case "us-east-1":
+        //         pinpointRegion = Regions.US_EAST_1;
+        //         break;
+        //     default:
+        //         break;
+        // }
 
-        CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider = new CognitoCachingCredentialsProvider(context, identityPoolID, pinpointRegion);
+        // final ChannelType pinpointChannelType = ChannelType.GCM;
 
-        try {
-            final PinpointConfiguration config =
-                    new PinpointConfiguration(context, appId, pinpointRegion, pinpointChannelType, cognitoCachingCredentialsProvider);
+        // CognitoCachingCredentialsProvider cognitoCachingCredentialsProvider = new CognitoCachingCredentialsProvider(context, identityPoolID, pinpointRegion);
 
-            PinpointSNSModule.pinpointManager = new PinpointManager(config);
-            Log.e(LOG_TAG, "token: " + refreshedToken);
-            PinpointSNSModule.getPinpointManager().getNotificationClient().registerGCMDeviceToken(refreshedToken);
+        // try {
+        //     final PinpointConfiguration config =
+        //             new PinpointConfiguration(context, appId, pinpointRegion, pinpointChannelType, cognitoCachingCredentialsProvider);
 
-        } catch (final AmazonClientException ex) {
-            Log.e(LOG_TAG, "Unable to initialize PinpointManager. " + ex.getMessage(), ex);
-        }
+        //     PinpointSNSModule.pinpointManager = new PinpointManager(config);
+        //     Log.e(LOG_TAG, "token: " + refreshedToken);
+        //     PinpointSNSModule.getPinpointManager().getNotificationClient().registerGCMDeviceToken(refreshedToken);
+
+        // } catch (final AmazonClientException ex) {
+        //     Log.e(LOG_TAG, "Unable to initialize PinpointManager. " + ex.getMessage(), ex);
+        // }
     }
 
     public static PinpointManager getPinpointManager() {
         return pinpointManager;
+    }
+
+    private Bundle convertMessageToBundle(String token) {
+        Bundle bundle = new Bundle();
+        bundle.putString("refreshToken", token);
+        return bundle;
     }
 }
