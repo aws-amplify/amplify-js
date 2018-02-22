@@ -140,7 +140,7 @@ Auth.currentCredentials()
   })
 ```
 
-Full API Documentation is available [here](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html).
+Full API Documentation is available <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html" target="_blank">here</a>.
 
 ## React Native Development
 
