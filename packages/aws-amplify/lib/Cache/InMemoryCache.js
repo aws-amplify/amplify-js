@@ -29,7 +29,7 @@ var logger = new Common_1.ConsoleLogger('InMemoryCache');
 /**
  * provide an object as the in-memory cache
  */
-var CacheObject = /** @class */ (function () {
+var CacheObject = (function () {
     function CacheObject() {
         this.store = {};
         logger.debug('Using InMemoryCache');
@@ -66,7 +66,7 @@ var CacheObject = /** @class */ (function () {
  * @member maxPriority - max of the priority
  * @member cacheSizeLimit - the limit of cache size
  */
-var InMemoryCache = /** @class */ (function (_super) {
+var InMemoryCache = (function (_super) {
     __extends(InMemoryCache, _super);
     /**
      * initialize the cache

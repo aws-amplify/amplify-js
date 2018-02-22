@@ -14,7 +14,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Logger_1 = require("./Logger");
 var logger = new Logger_1.ConsoleLogger('Hub');
-var HubClass = /** @class */ (function () {
+var HubClass = (function () {
     function HubClass(name) {
         this.bus = [];
         this.listeners = {};

@@ -14,9 +14,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
  */
 
 import React from 'react';
-import { View, Text, TextInput, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, TouchableHighlight, Button } from 'react-native';
 
-import { I18n } from 'aws-amplify';
+import { I18n, JS } from 'aws-amplify';
 
 export const Username = props => {
     const theme = props.theme || AmplifyTheme;
@@ -107,5 +107,64 @@ export const ErrorRow = props => {
             { style: theme.erroRowText },
             props.children
         )
+    );
+};
+
+export const ActionRow = props => {
+    const theme = props.theme || AmplifyTheme;
+    const style = propStyle(props, theme.actionRow);
+    const p = JS.objectLessAttributes(props, 'theme');
+    return React.createElement(
+        View,
+        _extends({}, p, { style: style }),
+        props.children
+    );
+};
+
+export const propStyle = (props, themeStyle) => {
+    const { id, style } = props;
+    const styl = Object.assign({}, style, themeStyle);
+    if (!id) {
+        return styl;
+    }
+
+    const selector = '#' + id;
+    Object.assign(styl, styl[selector]);
+    return styl;
+};
+
+export const beforeAfter = el => {
+    const style = el.props.style || {};
+    const { before, after } = style;
+    if (!before && !after) {
+        return el;
+    }
+
+    return React.createElement(
+        'span',
+        { style: { position: 'relative' } },
+        before ? React.createElement(
+            'span',
+            { style: before },
+            before.content
+        ) : null,
+        el,
+        after ? React.createElement(
+            'span',
+            { style: after },
+            after.content
+        ) : null
+    );
+};
+
+export const SignInButton = props => {
+    const theme = props.theme || AmplifyTheme;
+    const style = propStyle(props, theme.signInButton);
+    const p = JS.objectLessAttributes(props, 'theme');
+
+    return React.createElement(
+        Button,
+        _extends({}, p, { style: style }),
+        props.children
     );
 };
