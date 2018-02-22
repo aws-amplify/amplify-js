@@ -1,0 +1,22 @@
+# ------
+# Common
+# ------
+*~
+.DS_Store
+.svn
+.cvs
+*.bak
+*.swp
+Thumbs.db
+
+# -----------------------
+# Local Development Tools
+# -----------------------
+/node_modules
+/npm-debug.log
+
+# ---------------
+# Compiled assets
+# ---------------
+.sass-cache
+_site

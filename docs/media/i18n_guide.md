@@ -1,3 +1,5 @@
+--- 
+---
 # I18n
 
 AWS Amplify I18n module is a lightweight internationalization solution.

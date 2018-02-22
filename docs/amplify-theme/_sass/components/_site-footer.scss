@@ -1,0 +1,37 @@
+/**
+ * Site footer (components/_site-footer.scss)
+ */
+
+/* ----- General ----- */
+.site-footer {
+	background-color: $color-footer-bg;
+	padding: 3.75rem 0 (3.75rem - 1.25rem) 0;
+
+	hr {
+		width: 5.625rem;
+	}
+}
+
+/* ----- Logo ----- */
+.site-footer__logo {
+	@include link-reset;
+	display: inline-block;
+	color: $color-footer-copyright;
+	font-family: $font-family-secondary;
+	font-size: small;
+	vertical-align: top;
+	margin: 0 0 1.25rem 0;
+
+	img {
+		display: block;
+		width: rem;
+		margin-top:5px;
+	}
+}
+
+/* ----- Copyright ----- */
+.site-footer__copyright {
+	color: $color-footer-copyright;
+	font-size: .875em;
+	line-height: $line-height-base;
+}

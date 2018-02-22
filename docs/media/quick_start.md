@@ -1,3 +1,8 @@
+---
+# Page settings
+layout: default
+---
+
 # Quick Start
 AWS Amplify is not limited to AWS or React. The library is designed to support different contributions across categories for alternative implementations, both on the Cloud interactions as well as the JavaScript framework components. However, there are React & React Native specific extensions that can be leveraged. Additionally, we showcase the usage with AWS resources to streamline getting started.
 

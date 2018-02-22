@@ -1,3 +1,8 @@
+---
+# Page settings
+layout: default
+---
+
 # Authentication
 
 The AWS Amplify Auth module provides Authentication APIs and building blocks to developers wishing to use pre-build components or scaffold out custom UX. Depending on needs, Auth can be integrated at different levels.

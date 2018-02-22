@@ -1,0 +1,10 @@
+/**
+ * Content (objects/_content.scss)
+ */
+
+/* ----- Headings ----- */
+.content {
+	> :first-child {
+		margin-top: 50;
+	}
+}

@@ -1,3 +1,4 @@
+---
 # Analytics
 
 AWS Amplify Analytics module helps you quickly collect analytics for user sessions, custom attributes or metrics.

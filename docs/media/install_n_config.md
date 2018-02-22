@@ -1,3 +1,8 @@
+---
+# Page settings
+layout: default
+---
+
 # Installation and Configuration
 
 * [Installation](#installation)

@@ -1,0 +1,44 @@
+{% if site.amplify.footer.content.logo.image or site.amplify.footer.content.logo.text or site.amplify.footer.content.copyright or site.amplify.footer.social_list %}
+	<footer class="site-footer">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-6">
+					{% if site.amplify.footer.content.logo.text %}
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-footer__logo">
+							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo-footer.png">
+						</a>
+					{% endif %}
+					
+					{% if site.amplify.footer.content.copyright %}
+						<hr>
+						<p class="site-footer__copyright">
+							{{ site.amplify.footer.content.logo.text }} </br>
+							{{ site.amplify.footer.content.copyright }}
+						</p>
+					{% endif %}
+				</div><!-- /.col -->
+				{% if site.amplify.footer.social_list %}
+					<div class="col-sm-6 align-right">
+						<ul class="social-list">
+							{% for item in site.amplify.footer.social_list %}
+								<li>
+									<a href="{{ item.profile_url }}" target="_blank" class="social-list__item social-list__item--{{ item.network_name }}">
+										<i class="icon icon--{{ item.network_name }}"></i>
+									</a>
+								</li>
+							{% endfor %}
+						</ul><!-- /.social-list -->
+					</div><!-- /.col -->
+				{% endif %}
+			</div><!-- /.row -->
+		</div><!-- /.container -->
+	</footer><!-- /.site-footer -->
+{% endif %}
+
+<script src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/jquery.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/bootstrap/affix.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/bootstrap/scrollspy.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/matchHeight.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/scripts.js"></script>
+
+{% include google-analytics.html %}

@@ -1,3 +1,5 @@
+---
+---
 # Hub
 
 AWS Amplify has a lightweight Pub-Sub system called Hub. It is used to share events between modules and components.
