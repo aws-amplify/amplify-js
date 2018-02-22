@@ -1,22 +1,23 @@
 import { NativeModules, DeviceEventEmitter } from 'react-native';
-import { consoleLogger as Logger } from '../Common';
+import { Logger } from 'aws-amplify';
 
 const logger = new Logger('Notification');
 
 const PinpointSNS = NativeModules.PinpointSNS;
 const REMOTE_NOTIFICATION_RECEIVED = 'remoteNotificationReceived';
 
-export default class Notification {
+export default class PushNotification {
     constructor(config) {
         if (config) {
             this.configure(config);
         } else {
             this._config = {};
         }
+        this.handlers = [];
     }
 
     configure(config) {
-        let conf = config ? config.Notification || config : {};
+        let conf = config ? config.PushNotification || config : {};
 
         if (conf['aws_mobile_analytics_app_id']) {
             conf = {
@@ -30,17 +31,23 @@ export default class Notification {
         this._config = Object.assign({}, this._config, conf);
 
         this.initialize();
-        this.addEventListener(REMOTE_NOTIFICATION_RECEIVED);
+    }
+
+    onNotification(handler) {
+        if (typeof handler === 'function') {
+            this.addEventListener(REMOTE_NOTIFICATION_RECEIVED, handler);
+        }
     }
 
     initialize() {
-        const conf = this._config;
-        PinpointSNS.initialize(conf.appId, conf.region, conf.identityPoolId);
+        const { appId, region, identityPoolId } = this._config;
+        PinpointSNS.initialize(appId, region, identityPoolId);
     }
 
-    addEventListener(event) {
+    addEventListener(event, handler) {
         listener = DeviceEventEmitter.addListener(event, function (data) {
             console.log(data);
+            handler(data);
         });
     }
 }
