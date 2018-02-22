@@ -36,7 +36,8 @@ restClient.get('...')
 */
 export class RestClient {
     private _options;
-    private _region:string = null;
+    private _region:string = 'us-east-1'; // this will be updated by config
+    private _service:string = 'execute-api'; // this can be updated by config
 
     /**
     * @param {RestClientOptions} [options] - Instance options
@@ -86,7 +87,7 @@ export class RestClient {
         }
 
         const extraParams = Object.assign({}, init);
-
+        const isAllResponse = init? init.response : null;
         if (extraParams.body) {
             libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
             params.data = JSON.stringify(extraParams.body);
@@ -96,10 +97,10 @@ export class RestClient {
 
         // Do not sign the request if client has added 'Authorization' header,
         // which means custom authorizer.
-        if (params.headers['Authorization']) { return this._request(params); }
+        if (params.headers['Authorization']) { return this._request(params, isAllResponse); }
 
         return Auth.currentCredentials()
-            .then(credentials => this._signed(params, credentials));
+            .then(credentials => this._signed(params, credentials, isAllResponse));
     }
 
     /**
@@ -178,6 +179,9 @@ export class RestClient {
                 } else if (typeof this._options.region === 'string') {
                     this._region = this._options.region;
                 }
+                if (typeof v.service === 'string') {
+                    this._service = v.service || 'execute-api';
+                }
             }
         });
         return response;
@@ -185,15 +189,16 @@ export class RestClient {
 
     /** private methods **/
 
-    private _signed(params, credentials) {
+    private _signed(params, credentials, isAllResponse) {
         const endpoint_region:string = this._region || this._options.region;
+        const endpoint_service:string = this._service || this._options.service;
         const creds = {
             'secret_key': credentials.secretAccessKey,
             'access_key': credentials.accessKeyId,
             'session_token': credentials.sessionToken 
         };
         const service_info = {
-            'service': 'execute-api',
+            'service': endpoint_service,
             'region': endpoint_region
         };
         const signed_params = Signer.sign(params,creds,service_info);
@@ -206,16 +211,16 @@ export class RestClient {
         delete signed_params.headers['host'];
 
         return axios(signed_params)
-            .then(response => response.data)
+            .then(response => isAllResponse? response : response.data)
             .catch((error) => {
                 logger.debug(error);
                 throw error;
             });
     }
 
-    private _request(params) {
+    private _request(params, isAllResponse) {
         return axios(params)
-            .then(response => response.data)
+            .then(response => isAllResponse? response : response.data)
             .catch((error) => {
                 logger.debug(error);
                 throw error;

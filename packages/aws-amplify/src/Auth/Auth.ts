@@ -666,11 +666,9 @@ export default class AuthClass {
      * @return {Object }- current User's information
      */
     public async currentUserInfo() {
-        const credentials = this.credentials;
         const source = this.credentials_source;
-        if (!source) { return null; }
 
-        if (source === 'aws' || source === 'userPool') {
+        if (!source || source === 'aws' || source === 'userPool') {
             const user = await this.currentUserPoolUser()
                 .catch(err => logger.debug(err));
             if (!user) { return null; }
@@ -680,13 +678,12 @@ export default class AuthClass {
                 const userAttrs:object = this.attributesToObject(attributes);
             
                 const info = {
-                    'id': credentials.identityId,
+                    'id': this.credentials.identityId,
                     'username': user.username,
                     'attributes': userAttrs
                 };
                 return info;
             } catch(err) {
-                console.warn(err);
                 logger.debug('currentUserInfo error', err);
                 return {};
             }
