@@ -16,8 +16,12 @@
 
 package com.amazonaws.amplify.pushnotification;
 
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
@@ -26,8 +30,15 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
+
 import java.util.Map;
+import java.util.List;
+import java.util.Random;
+
+
+import org.json.JSONObject;
+import org.json.JSONException;
+
 
 import com.amazonaws.mobileconnectors.pinpoint.targeting.notification.NotificationClient;
 import com.firebase.jobdispatcher.Constraint;
@@ -71,19 +82,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // [START_EXCLUDE]
-        // There are two types of messages data messages and notification messages. Data messages are handled
-        // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
-        // traditionally used with GCM. Notification messages are only received here in onMessageReceived when the app
-        // is in the foreground. When the app is in the background an automatically generated notification is displayed.
-        // When the user taps on the notification they are returned to the app. Messages containing both notification
-        // and data payloads are treated as notification messages. The Firebase console always sends notification
-        // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
-        // [END_EXCLUDE]
-
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.v(TAG, "From: " + remoteMessage.getFrom());
+        Log.e(TAG, "From: " + remoteMessage.getFrom());
         
         ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
         ReactContext context = mReactInstanceManager.getCurrentReactContext();
@@ -92,36 +91,104 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Bundle bundle = convertMessageToBundle(remoteMessage);
         jsDelivery.emitNotificationReceived(bundle);
 
-        final NotificationClient notificationClient = PinpointSNSModule.getPinpointManager().getNotificationClient();
-       // final Map<String, String> data = remoteMessage.getData();
-        NotificationClient.CampaignPushResult pushResult =
-                notificationClient.handleFCMCampaignPush(remoteMessage.getFrom(), remoteMessage.getData());
+        // Check if message contains a data payload.
+        if (remoteMessage.getData().size() > 0) {
+            Log.e(TAG, "Message data payload: " + remoteMessage.getData());
+            sendNotification((ReactApplicationContext) context, bundle);
+        }
 
-        if (!NotificationClient.CampaignPushResult.NOT_HANDLED.equals(pushResult)) {
-            // The push message was due to a Dartboard campaign.
-            // If the app was in the background, a local notification was added in the notification center.
-            // If the app was in the foreground, an event was recorded indicating the app was in the foreground,
-            // for the demo, we will broadcast the notification to let the main activity display it in a dialog.
-            if (NotificationClient.CampaignPushResult.APP_IN_FOREGROUND.equals(pushResult)) {
-                // Create a message that will display the raw data of the campaign push in a dialog.
-                //data.putString("message", String.format("Received Campaign Push:\n%s", data.toString()));
+        return;
+    //     final NotificationClient notificationClient = PinpointSNSModule.getPinpointManager().getNotificationClient();
+    //    // final Map<String, String> data = remoteMessage.getData();
+    //     NotificationClient.CampaignPushResult pushResult =
+    //             notificationClient.handleFCMCampaignPush(remoteMessage.getFrom(), remoteMessage.getData());
 
-                broadcast(remoteMessage.getFrom(), remoteMessage.getData());
+    //     if (!NotificationClient.CampaignPushResult.NOT_HANDLED.equals(pushResult)) {
+    //         // The push message was due to a Dartboard campaign.
+    //         // If the app was in the background, a local notification was added in the notification center.
+    //         // If the app was in the foreground, an event was recorded indicating the app was in the foreground,
+    //         // for the demo, we will broadcast the notification to let the main activity display it in a dialog.
+    //         if (NotificationClient.CampaignPushResult.APP_IN_FOREGROUND.equals(pushResult)) {
+    //             // Create a message that will display the raw data of the campaign push in a dialog.
+    //             //data.putString("message", String.format("Received Campaign Push:\n%s", data.toString()));
+
+    //             broadcast(remoteMessage.getFrom(), remoteMessage.getData());
+    //         }
+    //         return;
+    //     }
+    }
+
+    private void sendNotification(ReactApplicationContext context, Bundle bundle) {
+        Boolean isForeground = isApplicationInForeground();
+        try {
+            JSONObject data = RNPushNotificationCommon.convertJSONObject(bundle);
+            if (data != null) {
+                if (!bundle.containsKey("message")) {
+                    bundle.putString("message", data.optString("alert", "Notification received"));
+                }
+                if (!bundle.containsKey("title")) {
+                    bundle.putString("title", data.optString("title", null));
+                }
+                if (!bundle.containsKey("sound")) {
+                    bundle.putString("soundName", data.optString("sound", null));
+                }
+                if (!bundle.containsKey("color")) {
+                    bundle.putString("color", data.optString("color", null));
+                }
             }
+
+            // If notification ID is not provided by the user for push notification, generate one at random
+            if (bundle.getString("id") == null) {
+                Random randomNumberGenerator = new Random(System.currentTimeMillis());
+                bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
+            }
+
+
+            bundle.putBoolean("foreground", isForeground);
+            bundle.putBoolean("userInteraction", false);
+
+            Log.e(TAG, "sendNotification: " + bundle);
+
+            if (!isForeground) {
+                Application applicationContext = (Application) context.getApplicationContext();
+                RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
+                pushNotificationHelper.sendToNotificationCentre(bundle);
+            }
+        } catch (JSONException e) {
             return;
         }
     }
 
+    private boolean isApplicationInForeground() {
+        ActivityManager activityManager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+        List<RunningAppProcessInfo> processInfos = activityManager.getRunningAppProcesses();
+        if (processInfos != null) {
+            for (RunningAppProcessInfo processInfo : processInfos) {
+                if (processInfo.processName.equals(getApplication().getPackageName())) {
+                    if (processInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                        for (String d : processInfo.pkgList) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    
+
     private Bundle convertMessageToBundle(RemoteMessage message) {
         Bundle bundle = new Bundle();
         bundle.putString("collapseKey", message.getCollapseKey());
-        bundle.putBundle("data", convertDataToBundle(message));
         bundle.putString("sender", message.getFrom());
         bundle.putString("messageId", message.getMessageId());
         bundle.putString("messageType", message.getMessageType());
         bundle.putLong("sentTime", message.getSentTime());
         bundle.putString("destination", message.getTo());
         bundle.putInt("ttl", message.getTtl());
+        bundle.putBundle("data", convertDataToBundle(message));
+
         return bundle;
     }
     

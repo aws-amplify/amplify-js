@@ -22,7 +22,7 @@ public class RNPinpointSNSJsDelivery {
     }
 
     public void emitNotificationReceived(Bundle bundle) {
-        String bundleString = convertJSON(bundle);
+        String bundleString = RNPushNotificationCommon.convertJSON(bundle);
 
         WritableMap params = Arguments.createMap();
         params.putString("dataJSON", bundleString);
@@ -31,36 +31,12 @@ public class RNPinpointSNSJsDelivery {
     }
 
     public void emitTokenReceived(Bundle bundle) {
-        String bundleString = convertJSON(bundle);
+        String bundleString = RNPushNotificationCommon.convertJSON(bundle);
+        
         WritableMap params = Arguments.createMap();
         params.putString("dataJSON", bundleString);
         Log.v("emit", "token registration");
         sendEvent("remoteTokenReceived", params);
-    }
-
-    private String convertJSON(Bundle bundle) {
-        try {
-            JSONObject json = convertJSONObject(bundle);
-            return json.toString();
-        } catch (JSONException e) {
-            return null;
-        }
-    }
-
-    private JSONObject convertJSONObject(Bundle bundle) throws JSONException {
-        JSONObject json = new JSONObject();
-        Set<String> keys = bundle.keySet();
-        for (String key : keys) {
-            Object value = bundle.get(key);
-            if (value instanceof Bundle) {
-                json.put(key, convertJSONObject((Bundle)value));
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                json.put(key, JSONObject.wrap(value));
-            } else {
-                json.put(key, value);
-            }
-        }
-        return json;
     }
 
     private void sendEvent(String eventName, Object params) {

@@ -1,4 +1,4 @@
-import { NativeModules, DeviceEventEmitter } from 'react-native';
+import { NativeModules, DeviceEventEmitter, AsyncStorage } from 'react-native';
 import { Logger, Analytics } from 'aws-amplify';
 
 const logger = new Logger('Notification');
@@ -56,14 +56,20 @@ export default class PushNotification {
 
     updateEndpoint(data) {
         const dataObj = data.dataJSON? JSON.parse(data.dataJSON) : {};
-        console.log('update endpoint in push notification', dataObj);
         const token = dataObj ? dataObj.refreshToken : null;
-        const config = {
-            Address: token,
-            OptOut: 'NONE'
-        }
-
-        Analytics.configure({Analytics: config});
+        console.log('update endpoint in push notification', dataObj);
+        AsyncStorage.getItem('fcm_token').then((lastToken) => {
+            if (!lastToken || lastToken !== token) {
+                AsyncStorage.setItem('fcm_token', token);
+                const config = {
+                    Address: token,
+                    OptOut: 'NONE'
+                }
+                Analytics.configure({Analytics: config});
+            }
+        }).catch(e => {
+            logger.debug('set device token in cache failed', e);
+        });
     }
 
     addEventListener(event, handler) {
