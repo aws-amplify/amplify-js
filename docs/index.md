@@ -12,7 +12,6 @@ buttons:
       url: 'media/quick_start'
       external_url: false
 
-
 # Grid navigation
 marketing_grid:
     - title: Declarative
