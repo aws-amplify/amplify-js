@@ -1,4 +1,4 @@
-package com.amazonaws.amplify.pushnotification;
+package com.amazonaws.amplify.pushnotification.modules;
 
 
 import android.app.AlarmManager;

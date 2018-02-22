@@ -1,4 +1,4 @@
-package com.amazonaws.amplify.pushnotification;
+package com.amazonaws.amplify.pushnotification.modules;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class RNPushNotificationPublisher extends BroadcastReceiver {
     final static String NOTIFICATION_ID = "notificationId";
-       private static final String LOG_TAG = "RNPushNotificationPublisher";
+    private static final String LOG_TAG = "RNPushNotificationPublisher";
 
     @Override
     public void onReceive(Context context, Intent intent) {

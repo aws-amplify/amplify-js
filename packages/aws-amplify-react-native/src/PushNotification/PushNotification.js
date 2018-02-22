@@ -3,7 +3,7 @@ import { Logger, Analytics } from 'aws-amplify';
 
 const logger = new Logger('Notification');
 
-const PinpointSNS = NativeModules.PinpointSNS;
+const RNPushNotification = NativeModules.RNPushNotification;
 const REMOTE_NOTIFICATION_RECEIVED = 'remoteNotificationReceived';
 const REMOTE_TOKEN_RECEIVED = 'remoteTokenReceived';
 
@@ -48,9 +48,8 @@ export default class PushNotification {
     }
 
     initialize() {
-        const { appId, region, identityPoolId } = this._config;
         this.addEventListener(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
-        PinpointSNS.initialize(appId, region, identityPoolId);
+        RNPushNotification.initialize();
         
     }
 

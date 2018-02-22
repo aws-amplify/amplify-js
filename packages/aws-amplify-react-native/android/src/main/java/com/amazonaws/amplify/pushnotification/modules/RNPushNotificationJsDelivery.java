@@ -1,4 +1,4 @@
-package com.amazonaws.amplify.pushnotification;
+package com.amazonaws.amplify.pushnotification.modules;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -7,17 +7,17 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Set;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import java.util.Set;
-
-public class RNPinpointSNSJsDelivery {
+public class RNPushNotificationJsDelivery {
     private ReactApplicationContext context;
 
-    public RNPinpointSNSJsDelivery(ReactApplicationContext reactContext) {
+    public RNPushNotificationJsDelivery(ReactApplicationContext reactContext) {
         context = reactContext;
     }
 
@@ -26,7 +26,7 @@ public class RNPinpointSNSJsDelivery {
 
         WritableMap params = Arguments.createMap();
         params.putString("dataJSON", bundleString);
-        Log.v("emit", "notification emit");
+        Log.i("emit", "notification emit");
         sendEvent("remoteNotificationReceived", params);
     }
 
@@ -35,7 +35,7 @@ public class RNPinpointSNSJsDelivery {
         
         WritableMap params = Arguments.createMap();
         params.putString("dataJSON", bundleString);
-        Log.v("emit", "token registration");
+        Log.i("emit", "token registration");
         sendEvent("remoteTokenReceived", params);
     }
 
