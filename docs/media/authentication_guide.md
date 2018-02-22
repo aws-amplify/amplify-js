@@ -445,8 +445,6 @@ You may notice in `AmplifyMessageMap.js` it also handles internationalization. T
 
 ### AWS Services
 
-## AWS Services
-
 You can call methods on any AWS Service by passing in your credentials from auth to the service call constructor:
 
 ```js
