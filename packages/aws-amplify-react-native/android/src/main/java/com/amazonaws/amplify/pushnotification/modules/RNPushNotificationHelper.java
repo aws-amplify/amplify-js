@@ -228,7 +228,8 @@ public class RNPushNotificationHelper {
             String bigText = bundle.getString("bigText");
 
             if (bigText == null) {
-                bigText = title;
+                // bigText = title;
+                bigText = msg;
             }
 
             notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));

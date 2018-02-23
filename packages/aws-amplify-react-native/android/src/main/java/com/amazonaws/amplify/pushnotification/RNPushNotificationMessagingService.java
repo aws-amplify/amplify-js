@@ -56,7 +56,7 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.i(LOG_TAG, "Message data payload: " + remoteMessage.getData());
-            sendNotification((ReactApplicationContext) context, bundle);
+            sendNotification((ReactApplicationContext) context, bundle.getBundle("data"));
         }
 
         return;
@@ -65,43 +65,24 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
     // send out the notification bubble
     private void sendNotification(ReactApplicationContext context, Bundle bundle) {
         Boolean isForeground = isApplicationInForeground();
-        try {
-            JSONObject data = RNPushNotificationCommon.convertJSONObject(bundle);
-            if (data != null) {
-                if (!bundle.containsKey("message")) {
-                    bundle.putString("message", data.optString("alert", "Notification received"));
-                }
-                if (!bundle.containsKey("title")) {
-                    bundle.putString("title", data.optString("title", null));
-                }
-                if (!bundle.containsKey("sound")) {
-                    bundle.putString("soundName", data.optString("sound", null));
-                }
-                if (!bundle.containsKey("color")) {
-                    bundle.putString("color", data.optString("color", null));
-                }
-            }
 
-            // If notification ID is not provided by the user for push notification, generate one at random
-            if (bundle.getString("id") == null) {
-                Random randomNumberGenerator = new Random(System.currentTimeMillis());
-                bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
-            }
-
-
-            bundle.putBoolean("foreground", isForeground);
-            bundle.putBoolean("userInteraction", false);
-
-            Log.i(LOG_TAG, "sendNotification: " + bundle);
-
-            if (!isForeground) {
-                Application applicationContext = (Application) context.getApplicationContext();
-                RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
-                pushNotificationHelper.sendToNotificationCentre(bundle);
-            }
-        } catch (JSONException e) {
-            return;
+        // If notification ID is not provided by the user for push notification, generate one at random
+        if (bundle.getString("id") == null) {
+            Random randomNumberGenerator = new Random(System.currentTimeMillis());
+            bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
         }
+
+        bundle.putBoolean("foreground", isForeground);
+        bundle.putBoolean("userInteraction", false);
+
+        Log.i(LOG_TAG, "sendNotification: " + bundle);
+
+        if (!isForeground) {
+            Application applicationContext = (Application) context.getApplicationContext();
+            RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
+            pushNotificationHelper.sendToNotificationCentre(bundle);
+        }
+        
     }
 
     // whether the app is in foreground

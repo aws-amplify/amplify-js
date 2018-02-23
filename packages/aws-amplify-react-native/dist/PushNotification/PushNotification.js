@@ -92,7 +92,7 @@ export default class PushNotification {
 
         const { appId } = this._config;
         const cacheKey = 'fcm_token' + appId;
-        logger.debug('update endpoint in push notification', dataObj);
+        logger.debug('update endpoint in push notification', data);
         AsyncStorage.getItem(cacheKey).then(lastToken => {
             if (!lastToken || lastToken !== token) {
                 logger.debug('refresh the device token with', token);
