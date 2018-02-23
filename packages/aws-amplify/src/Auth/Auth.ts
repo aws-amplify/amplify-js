@@ -603,6 +603,29 @@ export default class AuthClass {
     }
 
     /**
+     * Change a password for an authenticated user
+     * @param {Object} user - The CognitoUser object
+     * @param {String} oldPassword - the current password
+     * @param {String} newPassword - the requested new password
+     * @return - A promise resolves if success
+     */
+    public changePassword(user: any, oldPassword: string, newPassword: string): Promise<any> {
+        return this.userSession(user)
+            .then(session => {
+                return new Promise((resolve, reject) => {
+                    user.changePassword(oldPassword, newPassword, (err, data) => {
+                        if (err) {
+                            logger.debug('change password failure', err);
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
+                });
+            });
+    }
+
+    /**
      * Initiate a forgot password request
      * @param {String} username - the username to change password
      * @return - A promise resolves if success
