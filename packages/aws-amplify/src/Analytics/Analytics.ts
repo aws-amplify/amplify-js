@@ -326,6 +326,7 @@ export default class AnalyticsClass {
         // will cause bug if another user logged in without refreshing page
         // if (conf.credentials) { return Promise.resolve(true); }
 
+        const that = this;
         return Auth.currentCredentials()
             .then(credentials => {
                 if (!credentials) return false;
@@ -333,7 +334,9 @@ export default class AnalyticsClass {
                 
                 conf.credentials = cred;
                 conf.endpointId = conf.credentials.identityId;
-
+                if (!conf.endpointId) {
+                    conf.endpointId = that.generateRandomString();
+                }
                 logger.debug('set endpointId for analytics', conf.endpointId);
                 logger.debug('set credentials for analytics', conf.credentials);
 
@@ -392,7 +395,10 @@ export default class AnalyticsClass {
      * Init Pinpoint with configuration and update pinpoint client endpoint
      * @return - A promise resolves if endpoint updated successfully
      */
-    _initPinpoint() {
+    async _initPinpoint() {
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.resolve(false); }
+
         const { region, appId, endpointId, credentials } = this._config;
         this.pinpointClient = new Pinpoint({
             region,
@@ -407,8 +413,36 @@ export default class AnalyticsClass {
         };
         logger.debug('updateEndpoint with params: ', update_params);
 
+        const that = this;
         return new Promise((res, rej) => {
-            this.pinpointClient.updateEndpoint(update_params, function(err, data) {
+            that.pinpointClient.updateEndpoint(update_params, function(err, data) {
+                if (err) {
+                    logger.debug('Pinpoint ERROR', err);
+                    rej(err);
+                } else {
+                    logger.debug('Pinpoint SUCCESS', data);
+                    res(data);
+                }
+            });
+        });
+    }
+
+    updateEndpoint(config) {
+        let conf = config? config.Analytics || config : {};
+        this._config = Object.assign({}, this._config, conf);
+
+        const { appId, endpointId } = this._config;
+
+        const request = this._endpointRequest();
+        const update_params = {
+            ApplicationId: appId,
+            EndpointId: endpointId,
+            EndpointRequest: request
+        };
+
+        const that = this;
+        return new Promise((res, rej) => {
+            that.pinpointClient.updateEndpoint(update_params, function(err, data) {
                 if (err) {
                     logger.debug('Pinpoint ERROR', err);
                     rej(err);
@@ -428,9 +462,10 @@ export default class AnalyticsClass {
         const client_info: any = ClientDevice.clientInfo();
         const { credentials, Address, RequestId, cognitoIdentityPoolId, endpointId } = this._config;
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
-        const ChannelType = Address? ((client_info.platform === 'android') ? 'GCM' : 'APNS') : null;
+        const ChannelType = Address? ((client_info.platform === 'android') ? 'GCM' : 'APNS') : undefined;
+
         logger.debug('demographic user id: ', user_id);
-        const OptOut = this._config.OptOut? this._config.OptOut: 'NONE';
+        const OptOut = this._config.OptOut? this._config.OptOut: undefined;
         return {
             Address,
             ChannelType,
@@ -443,7 +478,7 @@ export default class AnalyticsClass {
             },
             OptOut,
             RequestId,
-            EffectiveDate: new Date().toISOString(),
+            EffectiveDate: Address? new Date().toISOString() : undefined,
             User: { 
                 UserId: endpointId,
                 UserAttributes: {
