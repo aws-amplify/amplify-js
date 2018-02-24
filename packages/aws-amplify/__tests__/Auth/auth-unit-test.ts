@@ -102,6 +102,10 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
         callback(null, 'result');
     }
 
+    CognitoUser.prototype.changePassword = (oldPassword, newPassword, callback) => {
+        callback(null, 'SUCCESS');
+    }
+
     CognitoUser.prototype.forgotPassword = (callback) => {
         callback.onSuccess();
     }
@@ -1167,6 +1171,21 @@ describe('auth unit test', () => {
 
             spyonAuth.mockClear();
             spyon.mockClear();
+        });
+    });
+
+    describe('changePassword', () => {
+        test('happy case', async () => {
+            const auth = new Auth(authOptions);
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool
+            });
+            const oldPassword = 'oldPassword1';
+            const newPassword = 'newPassword1.';
+
+            expect.assertions(1);
+            expect(await auth.changePassword(user, oldPassword, newPassword)).toBe('SUCCESS');
         });
     });
 
