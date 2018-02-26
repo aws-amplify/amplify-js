@@ -1,3 +1,5 @@
+
+
 ### Setup Up Android Push Notifications
 
 1. [Set up Android push notifications](https://docs.aws.amazon.com/pinpoint/latest/developerguide/mobile-push-android.html)
@@ -71,6 +73,7 @@ add into ```application```
 8. following the [link](https://firebase.google.com/docs/cloud-messaging/android/client?authuser=0) to integrate this app with Google Firebase
 
 ### Add code into your app
+
 
 
 ```

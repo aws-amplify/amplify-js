@@ -17,6 +17,7 @@ const PushNotification = _instance;
 
 export default PushNotification;
 
+// a hook for app state change
 PushNotification.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;
     logger.debug('on hub capsule ' + channel, payload);

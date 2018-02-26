@@ -1,3 +1,16 @@
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
 import { NativeModules, DeviceEventEmitter, AsyncStorage, PushNotificationIOS, Platform } from 'react-native';
 import { Logger, Analytics } from 'aws-amplify';
 
@@ -41,29 +54,27 @@ export default class PushNotification {
         if (typeof handler === 'function') {
             //check platform
             if ( Platform.OS === 'ios' ) {
-                PushNotificationIOS.addEventListener('notification', handler);
+                this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, handler);
             } else {
-                this.addEventListener(REMOTE_NOTIFICATION_RECEIVED, handler);   
+                this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, handler);   
             }
         }
-
     }
 
     onRegister(handler) {
         if (typeof handler === 'function') {
             //check platform
             if ( Platform.OS === 'ios' ) {
-                PushNotificationIOS.addEventListener('register', handler);
-
+                this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, handler);
             } else {
-                this.addEventListener(REMOTE_TOKEN_RECEIVED, handler);   
+                this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, handler);   
             }
         }
     }
 
     initializeAndroid() {
-        this.addEventListener(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
-        this.addEventListener(REMOTE_NOTIFICATION_RECEIVED, this.handleFCMCampaignPush);
+        this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
+        this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, this.handleFCMCampaignPush);
         RNPushNotification.initialize();
     }
 
@@ -73,23 +84,23 @@ export default class PushNotification {
             badge: true,
             sound: true
         });
-        PushNotificationIOS.addEventListener('register', this.updateEndpoint);
+        this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
+        this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this.handleFCMCampaignPush);
     }
 
     handleFCMCampaignPush(message) {
-        if (!message) {
+        const campaign = message && message.data && message.data.pinpoint ? message.data.pinpoint.campaign: null;
+
+        if (!campaign) {
             logger.debug('no message received for campaign push');
             return;
         }
 
-        logger.debug('message is', message);
-        const campaignData = message.data;
-        logger.debug('campaignData is', campaignData);
         const attributes = {
-            campaign_activity_id: campaignData['pinpoint.campaign.campaign_activity_id'],
+            campaign_activity_id: campaign['campaign_activity_id'],
             isAppInForeground: message.foreground? 'true' : 'false',
-            treatment_id: campaignData['pinpoint.campaign.treatment_id'],
-            campaign_id: campaignData['pinpoint.campaign.campaign_id']
+            treatment_id: campaign['treatment_id'],
+            campaign_id: campaign['campaign_id']
         }
 
         const eventType = (message.foreground)?'_campaign.received_foreground':'_campaign.received_background';
@@ -97,15 +108,7 @@ export default class PushNotification {
         Analytics.record(eventType, attributes);
     }
 
-    updateEndpoint(data) {
-        let token = null;
-        if (Platform.OS === 'android') {
-            token = data? data.refreshToken: null;
-            logger.debug('refresh token for android is', token);
-        } else {
-            token = data;
-        }
-
+    updateEndpoint(token) {
         if (!token) {
             logger.debug('no device token recieved on register');
             return;
@@ -113,7 +116,7 @@ export default class PushNotification {
 
         const { appId } = this._config;
         const cacheKey = 'fcm_token' + appId;
-        logger.debug('update endpoint in push notification', data);
+        logger.debug('update endpoint in push notification', token);
         AsyncStorage.getItem(cacheKey).then((lastToken) => {
             if (!lastToken || lastToken !== token) {
                 logger.debug('refresh the device token with', token);
@@ -134,19 +137,79 @@ export default class PushNotification {
     }
 
     // only for android
-    addEventListener(event, handler) {
+    addEventListenerForAndroid(event, handler) {
+        const that = this;
         listener = DeviceEventEmitter.addListener(event, function (data) {
             // for on notification
             if (event === REMOTE_NOTIFICATION_RECEIVED) {
-                const dataObj = data.dataJSON? JSON.parse(data.dataJSON) : {};
-                handler(dataObj);
+                handler(that.parseMessagefromAndroid(data));
                 return;
             }
             if (event === REMOTE_TOKEN_RECEIVED) {
                 const dataObj = data.dataJSON? JSON.parse(data.dataJSON) : {};
-                handler(dataObj);
+                handler(dataObj.refreshToken);
                 return;
             }
         });
+    }
+
+    addEventListenerForIOS(event, handler) {
+        const that = this;
+        if (event === REMOTE_TOKEN_RECEIVED) {
+            PushNotificationIOS.addEventListener('register', function (data) {
+                handler(that.parseMessageFromIOS(data));
+            });
+        }
+        if (event === REMOTE_NOTIFICATION_RECEIVED) {
+            PushNotificationIOS.addEventListener('notification', function (data) {
+                handler(data);
+            });
+        }
+    }
+
+    parseMessagefromAndroid(message) {
+        const dataObj = message.dataJSON? JSON.parse(message.dataJSON) : null;
+        if (!dataObj) {
+            logger.debug('no notification payload received');
+            return dataObj;
+        }
+
+        let ret = null;
+        const dataPayload = dataObj.data;
+        if (dataPayload['pinpoint.campaign.campaign_id']) {
+            const campaign = {
+                campaign_id: dataPayload['pinpoint.campaign.campaign_id'],
+                campaign_activity_id: dataPayload['pinpoint.campaign.campaign_activity_id'],
+                treatment_id: dataPayload['pinpoint.campaign.treatment_id']
+            };
+            const pinpoint = {
+                campaign
+            };
+            ret = {
+                title: dataPayload['pinpoint.notification.title'],
+                body: dataPayload['pinpoint.notification.body'],
+                data: {
+                    pinpoint
+                },
+                foreground: dataObj.foreground
+            }
+        }
+        return ret;
+    }
+
+    parseMessageFromIOS(message) {
+        const _data = message && message._data? message._data : null;
+        const _alert = message && message._alert? message._alert: {};
+
+        const data = _data.data;
+        const title = _alert.title;
+        const body = _alert.body;
+        let ret = null;
+        ret = {
+            title,
+            body,
+            data
+        }
+        return ret;
     }
 }
