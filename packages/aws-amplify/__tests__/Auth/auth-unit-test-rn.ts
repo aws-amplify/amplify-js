@@ -186,7 +186,7 @@ describe('for react native', () => {
                         });
                 });
             });
-                
+            // assert
                 
             expect.assertions(1);
             expect(await auth.currentUserCredentials()).toBeUndefined();
