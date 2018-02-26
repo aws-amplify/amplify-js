@@ -16,6 +16,7 @@ export default class PushNotification {
         }
         this.handlers = [];
         this.updateEndpoint = this.updateEndpoint.bind(this);
+        this.handleFCMCampaignPush = this.handleFCMCampaignPush.bind(this)
     }
 
     configure(config) {
@@ -32,8 +33,8 @@ export default class PushNotification {
         conf.region = 'us-east-1';
         this._config = Object.assign({}, this._config, conf);
 
-        this.initializeAndroid();
-        this.initializeIOS();
+        if (Platform.OS === 'android') this.initializeAndroid();
+        else if (Platform.OS === 'ios') this.initializeIOS();
     }
 
     onNotification(handler) {
@@ -62,28 +63,45 @@ export default class PushNotification {
 
     initializeAndroid() {
         this.addEventListener(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
-        if (Platform.OS === 'android') {
-            RNPushNotification.initialize();
-        }
-        
+        this.addEventListener(REMOTE_NOTIFICATION_RECEIVED, this.handleFCMCampaignPush);
+        RNPushNotification.initialize();
     }
 
     initializeIOS() {
-        if (Platform.OS === 'ios') {
-            PushNotificationIOS.requestPermissions({
-                alert: true,
-                badge: true,
-                sound: true
-            });
-            PushNotificationIOS.addEventListener('register', this.updateEndpoint);
+        PushNotificationIOS.requestPermissions({
+            alert: true,
+            badge: true,
+            sound: true
+        });
+        PushNotificationIOS.addEventListener('register', this.updateEndpoint);
+    }
+
+    handleFCMCampaignPush(message) {
+        if (!message) {
+            logger.debug('no message received for campaign push');
+            return;
         }
+
+        logger.debug('message is', message);
+        const campaignData = message.data;
+        logger.debug('campaignData is', campaignData);
+        const attributes = {
+            campaign_activity_id: campaignData['pinpoint.campaign.campaign_activity_id'],
+            isAppInForeground: message.foreground? 'true' : 'false',
+            treatment_id: campaignData['pinpoint.campaign.treatment_id'],
+            campaign_id: campaignData['pinpoint.campaign.campaign_id']
+        }
+
+        const eventType = (message.foreground)?'_campaign.received_foreground':'_campaign.received_background';
+
+        Analytics.record(eventType, attributes);
     }
 
     updateEndpoint(data) {
         let token = null;
         if (Platform.OS === 'android') {
-            const dataObj = data.dataJSON? JSON.parse(data.dataJSON) : {};
-            token = dataObj ? dataObj.refreshToken : null;
+            token = data? data.refreshToken: null;
+            logger.debug('refresh token for android is', token);
         } else {
             token = data;
         }
@@ -115,6 +133,7 @@ export default class PushNotification {
         });
     }
 
+    // only for android
     addEventListener(event, handler) {
         listener = DeviceEventEmitter.addListener(event, function (data) {
             // for on notification

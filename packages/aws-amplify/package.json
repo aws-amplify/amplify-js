@@ -16,7 +16,8 @@
   },
   "react-native": {
     "./lib/Cache": "./lib/Cache/reactnative.js",
-    "./lib/Common/ClientDevice": "./lib/Common/ClientDevice/reactnative.js"
+    "./lib/Common/ClientDevice": "./lib/Common/ClientDevice/reactnative.js",
+    "./lib/Common/RNComponents": "./lib/Common/RNComponents/reactnative.js"
   },
   "repository": {
     "type": "git",

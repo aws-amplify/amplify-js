@@ -38,6 +38,7 @@ public class RNPushNotificationHelper {
     private static final long ONE_HOUR = 60 * ONE_MINUTE;
     private static final long ONE_DAY = 24 * ONE_HOUR;
     private static final String LOG_TAG = "RNPushNotificationHelper";
+    private static final String NOTIFICATION_OPENED = "com.amazonaws.amplify.pushnotification.NOTIFICATION_OPENED";
 
     public RNPushNotificationHelper(Application context) {
         this.context = context;
@@ -238,6 +239,7 @@ public class RNPushNotificationHelper {
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             bundle.putBoolean("userInteraction", true);
             intent.putExtra("notification", bundle);
+            intent.setAction(NOTIFICATION_OPENED);
 
             if (!bundle.containsKey("playSound") || bundle.getBoolean("playSound")) {
                 Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -278,8 +280,11 @@ public class RNPushNotificationHelper {
 
             int notificationID = Integer.parseInt(notificationIdString);
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+            // PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
+            //         PendingIntent.FLAG_UPDATE_CURRENT);
+            // broadcast event
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
+                    PendingIntent.FLAG_ONE_SHOT);
 
             NotificationManager notificationManager = notificationManager();
 
@@ -427,4 +432,24 @@ public class RNPushNotificationHelper {
             editor.apply();
         }
     }
+
+    public void handleNotificationOpen() {
+       // openApp();
+       return;
+    }
+
+    private boolean openApp() {
+        Class intentClass = getMainActivityClass();
+        final Intent launchIntent = new Intent(context, intentClass);
+
+        if (launchIntent == null) {
+            Log.e(LOG_TAG, "Couldn't get app launch intent for campaign notification.");
+            return false;
+        }
+        launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        launchIntent.setPackage(null);
+        context.startActivity(launchIntent);
+        return true;
+    }
+
 }

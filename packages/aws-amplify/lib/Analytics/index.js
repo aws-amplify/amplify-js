@@ -14,6 +14,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Analytics_1 = require("./Analytics");
 var Common_1 = require("../Common");
+var Platform_1 = require("../Common/Platform");
 var logger = new Common_1.ConsoleLogger('Analytics');
 var _instance = null;
 if (!_instance) {
@@ -22,6 +23,18 @@ if (!_instance) {
 }
 var Analytics = _instance;
 exports.default = Analytics;
+// listen on app state change
+var dispatchAppStateEvent = function (event, data) {
+    Common_1.Hub.dispatch('appState', { event: event, data: data }, 'AppState');
+};
+if (Platform_1.default.isReactNative) {
+    Common_1.AppState.addEventListener('change', function (nextAppState) {
+        switch (nextAppState) {
+            case 'active':
+                dispatchAppStateEvent('active', {});
+        }
+    });
+}
 Analytics.onHubCapsule = function (capsule) {
     var channel = capsule.channel, payload = capsule.payload, source = capsule.source;
     logger.debug('on hub capsule ' + channel, payload);

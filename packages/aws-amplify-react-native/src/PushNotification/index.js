@@ -16,3 +16,13 @@ const _instance = new NotificationClass(null);
 const PushNotification = _instance;
 
 export default PushNotification;
+
+PushNotification.onHubCapsule = (capsule) => {
+    const { channel, payload, source } = capsule;
+    logger.debug('on hub capsule ' + channel, payload);
+
+    switch(channel) {
+        case 'appState':
+            break;
+    };
+}

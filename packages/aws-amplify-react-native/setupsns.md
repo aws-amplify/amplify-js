@@ -1,4 +1,4 @@
-### Setup Up Android Push Ntofications
+### Setup Up Android Push Notifications
 
 1. [Set up Android push notifications](https://docs.aws.amazon.com/pinpoint/latest/developerguide/mobile-push-android.html)
 
@@ -8,7 +8,7 @@
 
 1. run ```create-react-native-app myapp```
 
-2. run ```npm run eject```
+2. ```cd myapp``` and run ```react-native eject```
 
 3. install aws-amplify-react-native
 
@@ -58,6 +58,13 @@ add into ```application```
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
+        <receiver
+            android:name="com.amazonaws.amplify.pushnotification.RNPushNotificationBroadcastReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.amazonaws.amplify.pushnotification.NOTIFICATION_OPENED"/>
+            </intent-filter>
+        </receiver>
     </application>
 ```
 

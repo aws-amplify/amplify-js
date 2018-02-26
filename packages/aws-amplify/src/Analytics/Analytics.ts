@@ -18,7 +18,7 @@ import {
     missingConfig,
     MobileAnalytics
 } from '../Common';
-
+import Platform from '../Common/Platform';
 import Auth from '../Auth';
 
 import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from './types';
@@ -56,7 +56,7 @@ export default class AnalyticsClass {
 
         this._buffer = [];
     }
-
+    
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
@@ -95,8 +95,6 @@ export default class AnalyticsClass {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.resolve(false); }
 
-
-        logger.debug('record session start');
         const sessionId = this.generateRandomString();
         this._sessionId = sessionId;
 
@@ -114,6 +112,9 @@ export default class AnalyticsClass {
                 }
             ]
         };
+
+        logger.debug('record session start with params', params);
+
         return new Promise<any>((res, rej) => {
             this.mobileAnalytics.putEvents(params, (err, data) => {
                 if (err) {
@@ -136,7 +137,6 @@ export default class AnalyticsClass {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.resolve(false); }
 
-        logger.debug('record session stop');
         
         const sessionId = this._sessionId ? this._sessionId : this.generateRandomString();
         const clientContext = this._generateClientContext();
@@ -153,6 +153,8 @@ export default class AnalyticsClass {
                 }
             ]
         };
+
+        logger.debug('record session stop with params', params);
         return new Promise<any>((res, rej) => {
             this.mobileAnalytics.putEvents(params, (err, data) => {
                 if (err) {
@@ -222,6 +224,8 @@ export default class AnalyticsClass {
                 }
             ]
         };
+
+        logger.debug('record event with params', params);
         return new Promise<any>((res, rej) => {
             this.mobileAnalytics.putEvents(params, (err, data) => {
                 if (err) {
@@ -321,7 +325,6 @@ export default class AnalyticsClass {
      * check if current crednetials exists
      */
     _ensureCredentials() {
-        const conf = this._config;
         // commented
         // will cause bug if another user logged in without refreshing page
         // if (conf.credentials) { return Promise.resolve(true); }
@@ -332,13 +335,13 @@ export default class AnalyticsClass {
                 if (!credentials) return false;
                 const cred = Auth.essentialCredentials(credentials);
                 
-                conf.credentials = cred;
-                conf.endpointId = conf.credentials.identityId;
-                if (!conf.endpointId) {
-                    conf.endpointId = that.generateRandomString();
+                that._config.credentials = cred;
+                that._config.endpointId = cred.identityId;
+                if (!that._config.endpointId) {
+                    that._config.endpointId = that.generateRandomString();
                 }
-                logger.debug('set endpointId for analytics', conf.endpointId);
-                logger.debug('set credentials for analytics', conf.credentials);
+                logger.debug('set endpointId for analytics', that._config.endpointId);
+                logger.debug('set credentials for analytics', that._config.credentials);
 
                 return true;
             })
@@ -428,10 +431,10 @@ export default class AnalyticsClass {
     }
 
     updateEndpoint(config) {
-        let conf = config? config.Analytics || config : {};
+        const conf = config? config.Analytics || config : {};
         this._config = Object.assign({}, this._config, conf);
 
-        const { appId, endpointId } = this._config;
+        const { appId, endpointId, credentials, region } = this._config;
 
         const request = this._endpointRequest();
         const update_params = {
@@ -440,7 +443,15 @@ export default class AnalyticsClass {
             EndpointRequest: request
         };
 
+        if (!this.pinpointClient) {
+            this.pinpointClient = new Pinpoint({
+                region,
+                credentials
+            });
+        }
+
         const that = this;
+        logger.debug('updateEndpoint with params: ', update_params);
         return new Promise((res, rej) => {
             that.pinpointClient.updateEndpoint(update_params, function(err, data) {
                 if (err) {

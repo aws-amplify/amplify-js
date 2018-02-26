@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -45,34 +47,57 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.i(LOG_TAG, "Message From: " + remoteMessage.getFrom());
         
-        ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
-        ReactContext context = mReactInstanceManager.getCurrentReactContext();
+        final Boolean isForeground = isApplicationInForeground();
+        final Bundle bundle = convertMessageToBundle(remoteMessage);
+        final Boolean hasData = remoteMessage.getData().size() > 0 ? true: false;
+        // We need to run this on the main thread, as the React code assumes that is true.
+        // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
+        // "Can't create handler inside thread that has not called Looper.prepare()"
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            public void run() {
+                // Construct and load our normal React JS code bundle
+                ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
+                ReactContext context = mReactInstanceManager.getCurrentReactContext();
+                // If it's constructed, send a notification
+                if (context != null) {
+                    handleFCMMessagePush((ReactApplicationContext) context, bundle, isForeground, hasData);
+                } else {
+                    // Otherwise wait for construction, then send the notification
+                    mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
+                        public void onReactContextInitialized(ReactContext context) {
+                            handleFCMMessagePush((ReactApplicationContext) context, bundle, isForeground, hasData);
+                        }
+                    });
+                    if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
+                        // Construct it in the background
+                        mReactInstanceManager.createReactContextInBackground();
+                    }
+                }
+            }
+        });
+    }
 
+    private void handleFCMMessagePush(ReactApplicationContext context, Bundle bundle, Boolean isForeground, Boolean hasData) {
         // send the message to device emitter
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) context);
-        Bundle bundle = convertMessageToBundle(remoteMessage);
+        bundle.putBoolean("foreground", isForeground);
         jsDelivery.emitNotificationReceived(bundle);
 
-        // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
-            Log.i(LOG_TAG, "Message data payload: " + remoteMessage.getData());
-            sendNotification((ReactApplicationContext) context, bundle.getBundle("data"));
+         // Check if message contains a data payload.
+        if (hasData) {
+            sendNotification((ReactApplicationContext) context, bundle.getBundle("data"), isForeground);
         }
-
-        return;
     }
 
     // send out the notification bubble
-    private void sendNotification(ReactApplicationContext context, Bundle bundle) {
-        Boolean isForeground = isApplicationInForeground();
-
+    private void sendNotification(ReactApplicationContext context, Bundle bundle, Boolean isForeground) {
         // If notification ID is not provided by the user for push notification, generate one at random
         if (bundle.getString("id") == null) {
             Random randomNumberGenerator = new Random(System.currentTimeMillis());
             bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
         }
 
-        bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
 
         Log.i(LOG_TAG, "sendNotification: " + bundle);
