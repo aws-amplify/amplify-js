@@ -120,7 +120,15 @@ See [here](https://aws.github.io/aws-amplify/media/analytics_guide.html) for the
 
 <img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
 
-Take a fresh React app created by `create-react-app` as an example and edit the `App.js` file:
+Take a fresh React app created by `create-react-app` as an example.   
+First initialize the project with awsmobile-cli, and add the user-signin feature to the backend awsmobile project
+```js
+$ cd your-project
+$ awsmobile init    
+$ awsmobile user-signin enable
+$ awsmobile push
+```
+Then edit the `App.js` file:
 
 ```jsx
 import React, { Component } from 'react';
