@@ -269,7 +269,7 @@ var S3Text = function (_Component) {
                 return _react2['default'].createElement(
                     'div',
                     { style: textStyle },
-                    this.textEl(text, theme),
+                    textStyle ? this.textEl(text, theme) : null,
                     picker ? _react2['default'].createElement(
                         'div',
                         null,

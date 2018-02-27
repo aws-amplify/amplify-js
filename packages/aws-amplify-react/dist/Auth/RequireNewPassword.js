@@ -68,7 +68,11 @@ var RequireNewPassword = function (_AuthPiece) {
 
                 _awsAmplify.Auth.completeNewPassword(user, password, requiredAttributes).then(function (user) {
                     logger.debug('complete new password', user);
-                    _this2.changeState('signedIn');
+                    if (user.challengeName === 'SMS_MFA') {
+                        _this2.changeState('confirmSignIn', user);
+                    } else {
+                        _this2.changeState('signedIn');
+                    }
                 })['catch'](function (err) {
                     return _this2.error(err);
                 });

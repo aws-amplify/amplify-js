@@ -21,6 +21,7 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
 * [Extension](#extension)
   - [UI Theme](#ui-theme)
   - [Error Message](#error-message)
+  - [AWS Services](#aws-services)
 
 ## Installation and Configuration
 
@@ -56,11 +57,13 @@ Amplify.configure({
     // REQUIRED - Amazon Cognito Identity Pool ID
         identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
     // REQUIRED - Amazon Cognito Region
-        region: 'XX-XXXX-X', 
+        region: 'XX-XXXX-X',
     // OPTIONAL - Amazon Cognito User Pool ID
         userPoolId: 'XX-XXXX-X_abcd1234',
     // OPTIONAL - Amazon Cognito Web Client ID
         userPoolWebClientId: 'XX-XXXX-X_abcd1234',
+    // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
+        mandatorySignIn: false
     }
 });
 ```
@@ -114,6 +117,18 @@ Auth.confirmSignUp(username, code)
 import { Auth } from 'aws-amplify';
 
 Auth.signOut()
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+```
+
+#### Change password
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.currentAuthenticatedUser()
+    .then(user => {
+        return Auth.changePassword(user, 'oldPassword', 'newPassword');
+    })
     .then(data => console.log(data))
     .catch(err => console.log(err));
 ```
@@ -444,3 +459,24 @@ const map = (message) => {
 ```
 
 You may notice in `AmplifyMessageMap.js` it also handles internationalization. The topic is covered in [I18n Guide](i18n_guide.md)
+
+### AWS Services
+
+You can call methods on any AWS Service by passing in your credentials from auth to the service call constructor:
+
+```js
+Auth.currentCredentials()
+  .then(credentials => {
+    const route53 = new Route53({
+      apiVersion: '2013-04-01',
+      credentials: Auth.essentialCredentials(credentials)
+    });
+
+    // more code working with route53 object
+    // route53.changeResourceRecordSets();
+  })
+```
+
+Note: your Amazon Cognito users' [IAM role](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) must have the appropriate permissions to call the requested services.
+
+Full API Documentation is available <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html" target="_blank">here</a>.

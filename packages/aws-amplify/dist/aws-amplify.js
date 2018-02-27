@@ -3397,7 +3397,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 8 */
@@ -3606,6 +3606,33 @@ process.umask = function() { return 0; };
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsNative = __webpack_require__(124),
@@ -3628,7 +3655,7 @@ module.exports = getNative;
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {var util = __webpack_require__(1);
@@ -3663,33 +3690,6 @@ if (typeof process === 'undefined') {
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
 
 /***/ }),
 /* 13 */
@@ -4910,7 +4910,7 @@ module.exports = assocIndexOf;
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10);
+var getNative = __webpack_require__(11);
 
 /* Built-in method references that are verified to be native. */
 var nativeCreate = getNative(Object, 'create');
@@ -5041,7 +5041,7 @@ module.exports = exports = {
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -5354,10 +5354,13 @@ var reIsUint = /^(?:0|[1-9]\d*)$/;
  * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
  */
 function isIndex(value, length) {
+  var type = typeof value;
   length = length == null ? MAX_SAFE_INTEGER : length;
+
   return !!length &&
-    (typeof value == 'number' || reIsUint.test(value)) &&
-    (value > -1 && value % 1 == 0 && value < length);
+    (type == 'number' ||
+      (type != 'symbol' && reIsUint.test(value))) &&
+        (value > -1 && value % 1 == 0 && value < length);
 }
 
 module.exports = isIndex;
@@ -5539,7 +5542,7 @@ module.exports = isTypedArray;
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(11),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -7972,7 +7975,7 @@ module.exports = baseAssignValue;
 /* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10);
+var getNative = __webpack_require__(11);
 
 var defineProperty = (function() {
   try {
@@ -7994,7 +7997,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 module.exports = freeGlobal;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 62 */
@@ -10411,7 +10414,7 @@ if (!rng) {
 
 module.exports = rng;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 91 */
@@ -15891,7 +15894,8 @@ var AuthClass = /** @class */ (function () {
                 userPoolId: conf['aws_user_pools_id'],
                 userPoolWebClientId: conf['aws_user_pools_web_client_id'],
                 region: conf['aws_cognito_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id']
+                identityPoolId: conf['aws_cognito_identity_pool_id'],
+                mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable' ? true : false
             };
         }
         this._config = Object.assign({}, this._config, conf);
@@ -16250,6 +16254,9 @@ var AuthClass = /** @class */ (function () {
         if (Platform_1.default.isReactNative) {
             var that = this;
             return this.getSyncedUser().then(function (user) {
+                if (!user) {
+                    return Promise.reject('No current user in userPool');
+                }
                 return new Promise(function (resolve, reject) {
                     user.getSession(function (err, session) {
                         if (err) {
@@ -16674,7 +16681,7 @@ var AuthClass = /** @class */ (function () {
         }
     };
     AuthClass.prototype.pickupCredentials = function () {
-        var _this = this;
+        var that = this;
         if (this.credentials) {
             return this.keepAlive();
         }
@@ -16683,11 +16690,16 @@ var AuthClass = /** @class */ (function () {
         }
         else {
             return this.currentUserCredentials()
-                .then(function () { return _this.keepAlive(); })
+                .then(function () {
+                if (that.credentials_source === 'no credentials') {
+                    return Promise.resolve(null);
+                }
+                return that.keepAlive();
+            })
                 .catch(function (err) {
                 logger.debug('error when pickup', err);
-                _this.setCredentialsForGuest();
-                return _this.keepAlive();
+                that.setCredentialsForGuest();
+                return that.keepAlive();
             });
         }
     };
@@ -16700,7 +16712,12 @@ var AuthClass = /** @class */ (function () {
         return false;
     };
     AuthClass.prototype.setCredentialsForGuest = function () {
-        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
+        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
+        if (mandatorySignIn) {
+            this.credentials = null;
+            this.credentials_source = 'no credentials';
+            return;
+        }
         var credentials = new CognitoIdentityCredentials({
             IdentityPoolId: identityPoolId
         }, {
@@ -16766,7 +16783,7 @@ exports.default = AuthClass;
 /* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -16792,7 +16809,7 @@ module.exports = AWS.S3;
 /* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var apply = Function.prototype.apply;
+/* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
 
 // DOM APIs, for completeness
 
@@ -16843,9 +16860,17 @@ exports._unrefActive = exports.active = function(item) {
 
 // setimmediate attaches itself to the global object
 __webpack_require__(119);
-exports.setImmediate = setImmediate;
-exports.clearImmediate = clearImmediate;
+// On some exotic environments, it's not clear which object `setimmeidate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
 
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 119 */
@@ -17038,7 +17063,7 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(9)))
 
 /***/ }),
 /* 120 */
@@ -18425,7 +18450,7 @@ module.exports = isEmpty;
 /* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(11),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -18438,7 +18463,7 @@ module.exports = DataView;
 /* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(11),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -18451,7 +18476,7 @@ module.exports = Promise;
 /* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(11),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -18464,7 +18489,7 @@ module.exports = Set;
 /* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(11),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -20214,8 +20239,7 @@ module.exports = get;
 var memoizeCapped = __webpack_require__(210);
 
 /** Used to match property names within property paths. */
-var reLeadingDot = /^\./,
-    rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
 
 /** Used to match backslashes in property paths. */
 var reEscapeChar = /\\(\\)?/g;
@@ -20229,11 +20253,11 @@ var reEscapeChar = /\\(\\)?/g;
  */
 var stringToPath = memoizeCapped(function(string) {
   var result = [];
-  if (reLeadingDot.test(string)) {
+  if (string.charCodeAt(0) === 46 /* . */) {
     result.push('');
   }
-  string.replace(rePropName, function(match, number, quote, string) {
-    result.push(quote ? string.replace(reEscapeChar, '$1') : (number || match));
+  string.replace(rePropName, function(match, number, quote, subString) {
+    result.push(quote ? subString.replace(reEscapeChar, '$1') : (number || match));
   });
   return result;
 });
@@ -23502,7 +23526,7 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(9)))
 
 /***/ }),
 /* 235 */
@@ -27349,7 +27373,7 @@ Sha256.prototype.hashBuffer = function () {
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41)(module), __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41)(module), __webpack_require__(10)))
 
 /***/ }),
 /* 261 */
@@ -28251,7 +28275,7 @@ AWS.CognitoIdentityCredentials = AWS.util.inherit(AWS.Credentials, {
 /* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -30856,7 +30880,7 @@ module.exports = {"version":2,"waiters":{"BucketExists":{"delay":5,"operation":"
 /* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 
 var AWS = __webpack_require__(0);
 if (typeof window !== 'undefined') window.AWS = AWS;
@@ -32098,7 +32122,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 /* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -32127,7 +32151,7 @@ module.exports = {"metadata":{"apiVersion":"2016-12-01","endpointPrefix":"pinpoi
 /* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -33857,33 +33881,46 @@ var AnalyticsClass = /** @class */ (function () {
      * @return - A promise which resolves if event record successfully
      */
     AnalyticsClass.prototype.startSession = function () {
-        var _this = this;
-        logger.debug('record session start');
-        var sessionId = this.generateRandomString();
-        this._sessionId = sessionId;
-        var clientContext = this._generateClientContext();
-        var params = {
-            clientContext: clientContext,
-            events: [
-                {
-                    eventType: '_session.start',
-                    timestamp: new Date().toISOString(),
-                    'session': {
-                        'id': sessionId,
-                        'startTimestamp': new Date().toISOString()
-                    }
-                }
-            ]
-        };
-        return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ', data);
-                    res(data);
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var credentialsOK, sessionId, clientContext, params;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        logger.debug('record session start');
+                        sessionId = this.generateRandomString();
+                        this._sessionId = sessionId;
+                        clientContext = this._generateClientContext();
+                        params = {
+                            clientContext: clientContext,
+                            events: [
+                                {
+                                    eventType: '_session.start',
+                                    timestamp: new Date().toISOString(),
+                                    'session': {
+                                        'id': sessionId,
+                                        'startTimestamp': new Date().toISOString()
+                                    }
+                                }
+                            ]
+                        };
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this.mobileAnalytics.putEvents(params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('record event failed. ', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('record event success. ', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
                 }
             });
         });
@@ -33893,32 +33930,45 @@ var AnalyticsClass = /** @class */ (function () {
      * @return - A promise which resolves if event record successfully
      */
     AnalyticsClass.prototype.stopSession = function () {
-        var _this = this;
-        logger.debug('record session stop');
-        var sessionId = this._sessionId ? this._sessionId : this.generateRandomString();
-        var clientContext = this._generateClientContext();
-        var params = {
-            clientContext: clientContext,
-            events: [
-                {
-                    eventType: '_session.stop',
-                    timestamp: new Date().toISOString(),
-                    'session': {
-                        'id': sessionId,
-                        'startTimestamp': new Date().toISOString()
-                    }
-                }
-            ]
-        };
-        return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ', data);
-                    res(data);
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var credentialsOK, sessionId, clientContext, params;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        logger.debug('record session stop');
+                        sessionId = this._sessionId ? this._sessionId : this.generateRandomString();
+                        clientContext = this._generateClientContext();
+                        params = {
+                            clientContext: clientContext,
+                            events: [
+                                {
+                                    eventType: '_session.stop',
+                                    timestamp: new Date().toISOString(),
+                                    'session': {
+                                        'id': sessionId,
+                                        'startTimestamp': new Date().toISOString()
+                                    }
+                                }
+                            ]
+                        };
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this.mobileAnalytics.putEvents(params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('record event failed. ', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('record event success. ', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
                 }
             });
         });
@@ -33930,15 +33980,24 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.restart = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
+            var ret;
             return __generator(this, function (_a) {
-                this.stopSession().then(function (data) {
-                    logger.debug('restarting clients');
-                    return _this._initClients();
-                }).catch(function (e) {
-                    logger.debug('restart error', e);
-                });
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._initClients()];
+                    case 1:
+                        ret = _a.sent();
+                        if (!ret) {
+                            logger.debug('restart failed');
+                            return [2 /*return*/];
+                        }
+                        this.stopSession().then(function (data) {
+                            logger.debug('restarting clients');
+                            return;
+                        }).catch(function (e) {
+                            logger.debug('restart error', e);
+                        });
+                        return [2 /*return*/];
+                }
             });
         });
     };
@@ -33950,43 +34009,62 @@ var AnalyticsClass = /** @class */ (function () {
     * @return - A promise which resolves if event record successfully
     */
     AnalyticsClass.prototype.record = function (name, attributes, metrics) {
-        var _this = this;
-        logger.debug("record event: { name: " + name + ", attributes: " + attributes + ", metrics: " + metrics);
-        // if mobile analytics client not ready, buffer it
-        if (!this.mobileAnalytics) {
-            logger.debug('mobileAnalytics not ready, put in buffer');
-            this._buffer.push({
-                name: name,
-                attributes: attributes,
-                metrics: metrics
-            });
-            return;
-        }
-        var clientContext = this._generateClientContext();
-        var params = {
-            clientContext: clientContext,
-            events: [
-                {
-                    eventType: name,
-                    timestamp: new Date().toISOString(),
-                    attributes: attributes,
-                    metrics: metrics
-                }
-            ]
-        };
-        return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ', data);
-                    res(data);
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var credentialsOK, clientContext, params;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        logger.debug("record event: { name: " + name + ", attributes: " + attributes + ", metrics: " + metrics);
+                        return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        // if mobile analytics client not ready, buffer it
+                        if (!this.mobileAnalytics) {
+                            logger.debug('mobileAnalytics not ready, put in buffer');
+                            this._buffer.push({
+                                name: name,
+                                attributes: attributes,
+                                metrics: metrics
+                            });
+                            return [2 /*return*/];
+                        }
+                        clientContext = this._generateClientContext();
+                        params = {
+                            clientContext: clientContext,
+                            events: [
+                                {
+                                    eventType: name,
+                                    timestamp: new Date().toISOString(),
+                                    attributes: attributes,
+                                    metrics: metrics
+                                }
+                            ]
+                        };
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this.mobileAnalytics.putEvents(params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('record event failed. ', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('record event success. ', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
                 }
             });
         });
     };
+    /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+    AnalyticsClass.prototype.onHubCapsule = function (capsule) { };
     /*
         _putEventsCallback() {
             return (err, data, res, rej) => {
@@ -34067,6 +34145,8 @@ var AnalyticsClass = /** @class */ (function () {
         // if (conf.credentials) { return Promise.resolve(true); }
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
+            if (!credentials)
+                return false;
             var cred = Auth_1.default.essentialCredentials(credentials);
             conf.credentials = cred;
             conf.endpointId = conf.credentials.identityId;
@@ -34548,6 +34628,8 @@ var StorageClass = /** @class */ (function () {
         var _this = this;
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
+            if (!credentials)
+                return false;
             var cred = Auth_1.default.essentialCredentials(credentials);
             logger.debug('set credentials for storage', cred);
             _this._options.credentials = cred;
@@ -34998,6 +35080,8 @@ var API = /** @class */ (function () {
     API.prototype._ensureCredentials = function () {
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
+            if (!credentials)
+                return false;
             var cred = Auth_1.default.essentialCredentials(credentials);
             logger.debug('set credentials for api', cred);
             return true;
@@ -35098,6 +35182,7 @@ var RestClient = /** @class */ (function () {
     * @param {RestClientOptions} [options] - Instance options
     */
     function RestClient(options) {
+        this._region = null;
         var endpoints = options.endpoints;
         this._options = options;
         logger.debug('API Options', this._options);
@@ -35120,7 +35205,7 @@ var RestClient = /** @class */ (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders, userAgent, extraParams;
+            var parsed_url, params, libraryHeaders, userAgent, extraParams, isAllResponse;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -35140,6 +35225,7 @@ var RestClient = /** @class */ (function () {
                     };
                 }
                 extraParams = Object.assign({}, init);
+                isAllResponse = init ? init.response : null;
                 if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
                     params.data = JSON.stringify(extraParams.body);
@@ -35148,10 +35234,10 @@ var RestClient = /** @class */ (function () {
                 // Do not sign the request if client has added 'Authorization' header,
                 // which means custom authorizer.
                 if (params.headers['Authorization']) {
-                    return [2 /*return*/, this._request(params)];
+                    return [2 /*return*/, this._request(params, isAllResponse)];
                 }
                 return [2 /*return*/, Auth_1.default.currentCredentials()
-                        .then(function (credentials) { return _this._signed(params, credentials); })];
+                        .then(function (credentials) { return _this._signed(params, credentials, isAllResponse); })];
             });
         });
     };
@@ -35215,37 +35301,50 @@ var RestClient = /** @class */ (function () {
     * @return {string} - The endpoint of the api
     */
     RestClient.prototype.endpoint = function (apiName) {
+        var _this = this;
         var cloud_logic_array = this._options.endpoints;
         var response = '';
         cloud_logic_array.forEach(function (v) {
             if (v.name === apiName) {
                 response = v.endpoint;
+                if (typeof v.region === 'string') {
+                    _this._region = v.region;
+                }
+                else if (typeof _this._options.region === 'string') {
+                    _this._region = _this._options.region;
+                }
             }
         });
         return response;
     };
     /** private methods **/
-    RestClient.prototype._signed = function (params, credentials) {
-        var signed_params = Signer_1.default.sign(params, {
-            secret_key: credentials.secretAccessKey,
-            access_key: credentials.accessKeyId,
-            session_token: credentials.sessionToken
-        });
+    RestClient.prototype._signed = function (params, credentials, isAllResponse) {
+        var endpoint_region = this._region || this._options.region;
+        var creds = {
+            'secret_key': credentials.secretAccessKey,
+            'access_key': credentials.accessKeyId,
+            'session_token': credentials.sessionToken
+        };
+        var service_info = {
+            'service': 'execute-api',
+            'region': endpoint_region
+        };
+        var signed_params = Signer_1.default.sign(params, creds, service_info);
         if (signed_params.data) {
             signed_params.body = signed_params.data;
         }
-        logger.debug(signed_params);
+        logger.debug('Signed Request: ', signed_params);
         delete signed_params.headers['host'];
         return axios_1.default(signed_params)
-            .then(function (response) { return response.data; })
+            .then(function (response) { return isAllResponse ? response : response.data; })
             .catch(function (error) {
             logger.debug(error);
             throw error;
         });
     };
-    RestClient.prototype._request = function (params) {
+    RestClient.prototype._request = function (params, isAllResponse) {
         return axios_1.default(params)
-            .then(function (response) { return response.data; })
+            .then(function (response) { return isAllResponse ? response : response.data; })
             .catch(function (error) {
             logger.debug(error);
             throw error;

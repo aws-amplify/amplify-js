@@ -18,7 +18,7 @@ import {
     missingConfig,
     MobileAnalytics
 } from '../Common';
-
+import Platform from '../Common/Platform';
 import Auth from '../Auth';
 
 import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from './types';
@@ -56,7 +56,7 @@ export default class AnalyticsClass {
 
         this._buffer = [];
     }
-
+    
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
@@ -70,6 +70,7 @@ export default class AnalyticsClass {
             conf = {
                 appId: conf['aws_mobile_analytics_app_id'],
                 region: conf['aws_project_region'],
+                cognitoIdentityPoolId: conf['aws_cognito_identity_pool_id'],
                 platform: 'other'
             };
         }
@@ -90,8 +91,10 @@ export default class AnalyticsClass {
      * Record Session start
      * @return - A promise which resolves if event record successfully
      */
-    public startSession() {
-        logger.debug('record session start');
+    public async startSession() {
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.resolve(false); }
+
         const sessionId = this.generateRandomString();
         this._sessionId = sessionId;
 
@@ -109,6 +112,9 @@ export default class AnalyticsClass {
                 }
             ]
         };
+
+        logger.debug('record session start with params', params);
+
         return new Promise<any>((res, rej) => {
             this.mobileAnalytics.putEvents(params, (err, data) => {
                 if (err) {
@@ -127,8 +133,10 @@ export default class AnalyticsClass {
      * Record Session stop
      * @return - A promise which resolves if event record successfully
      */
-    public stopSession() {
-        logger.debug('record session stop');
+    public async stopSession() {
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.resolve(false); }
+
         
         const sessionId = this._sessionId ? this._sessionId : this.generateRandomString();
         const clientContext = this._generateClientContext();
@@ -145,6 +153,8 @@ export default class AnalyticsClass {
                 }
             ]
         };
+
+        logger.debug('record session stop with params', params);
         return new Promise<any>((res, rej) => {
             this.mobileAnalytics.putEvents(params, (err, data) => {
                 if (err) {
@@ -165,9 +175,14 @@ export default class AnalyticsClass {
      * @return - A promise ehich resolves to be true if current credential exists
      */
     async restart() {
+        const ret = await this._initClients();
+        if (!ret) {
+            logger.debug('restart failed');
+            return;
+        }
         this.stopSession().then((data) => {
                 logger.debug('restarting clients');
-                return this._initClients();
+                return;
             }).catch(e => {
                 logger.debug('restart error', e);
             });
@@ -180,11 +195,14 @@ export default class AnalyticsClass {
     * @param {Object} [metrics] - Event metrics
     * @return - A promise which resolves if event record successfully
     */
-    public record(name: string, attributes?: EventAttributes, metrics?: EventMetrics) {
+    public async record(name: string, attributes?: EventAttributes, metrics?: EventMetrics) {
         logger.debug(`record event: { name: ${name}, attributes: ${attributes}, metrics: ${metrics}`);
         
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.resolve(false); }
+
         // if mobile analytics client not ready, buffer it
-        if (!this.mobileAnalytics) {
+        if (!this.mobileAnalytics ) {
             logger.debug('mobileAnalytics not ready, put in buffer');
             this._buffer.push({
                 name,
@@ -206,6 +224,8 @@ export default class AnalyticsClass {
                 }
             ]
         };
+
+        logger.debug('record event with params', params);
         return new Promise<any>((res, rej) => {
             this.mobileAnalytics.putEvents(params, (err, data) => {
                 if (err) {
@@ -305,20 +325,23 @@ export default class AnalyticsClass {
      * check if current crednetials exists
      */
     _ensureCredentials() {
-        const conf = this._config;
         // commented
         // will cause bug if another user logged in without refreshing page
         // if (conf.credentials) { return Promise.resolve(true); }
 
+        const that = this;
         return Auth.currentCredentials()
             .then(credentials => {
+                if (!credentials) return false;
                 const cred = Auth.essentialCredentials(credentials);
                 
-                conf.credentials = cred;
-                conf.endpointId = conf.credentials.identityId;
-
-                logger.debug('set endpointId for analytics', conf.endpointId);
-                logger.debug('set credentials for analytics', conf.credentials);
+                that._config.credentials = cred;
+                that._config.endpointId = cred.identityId;
+                if (!that._config.endpointId) {
+                    that._config.endpointId = that.generateRandomString();
+                }
+                logger.debug('set endpointId for analytics', that._config.endpointId);
+                logger.debug('set credentials for analytics', that._config.credentials);
 
                 return true;
             })
@@ -375,7 +398,10 @@ export default class AnalyticsClass {
      * Init Pinpoint with configuration and update pinpoint client endpoint
      * @return - A promise resolves if endpoint updated successfully
      */
-    _initPinpoint() {
+    async _initPinpoint() {
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.resolve(false); }
+
         const { region, appId, endpointId, credentials } = this._config;
         this.pinpointClient = new Pinpoint({
             region,
@@ -390,8 +416,44 @@ export default class AnalyticsClass {
         };
         logger.debug('updateEndpoint with params: ', update_params);
 
+        const that = this;
         return new Promise((res, rej) => {
-            this.pinpointClient.updateEndpoint(update_params, function(err, data) {
+            that.pinpointClient.updateEndpoint(update_params, function(err, data) {
+                if (err) {
+                    logger.debug('Pinpoint ERROR', err);
+                    rej(err);
+                } else {
+                    logger.debug('Pinpoint SUCCESS', data);
+                    res(data);
+                }
+            });
+        });
+    }
+
+    updateEndpoint(config) {
+        const conf = config? config.Analytics || config : {};
+        this._config = Object.assign({}, this._config, conf);
+
+        const { appId, endpointId, credentials, region } = this._config;
+
+        const request = this._endpointRequest();
+        const update_params = {
+            ApplicationId: appId,
+            EndpointId: endpointId,
+            EndpointRequest: request
+        };
+
+        if (!this.pinpointClient) {
+            this.pinpointClient = new Pinpoint({
+                region,
+                credentials
+            });
+        }
+
+        const that = this;
+        logger.debug('updateEndpoint with params: ', update_params);
+        return new Promise((res, rej) => {
+            that.pinpointClient.updateEndpoint(update_params, function(err, data) {
                 if (err) {
                     logger.debug('Pinpoint ERROR', err);
                     rej(err);
@@ -409,10 +471,15 @@ export default class AnalyticsClass {
      */
     _endpointRequest() {
         const client_info: any = ClientDevice.clientInfo();
-        const credentials = this._config.credentials;
+        const { credentials, Address, RequestId, cognitoIdentityPoolId, endpointId } = this._config;
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
+        const ChannelType = Address? ((client_info.platform === 'android') ? 'GCM' : 'APNS') : undefined;
+
         logger.debug('demographic user id: ', user_id);
+        const OptOut = this._config.OptOut? this._config.OptOut: undefined;
         return {
+            Address,
+            ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || client_info.appVersion,
                 Make: client_info.make,
@@ -420,7 +487,15 @@ export default class AnalyticsClass {
                 ModelVersion: client_info.version,
                 Platform: client_info.platform
             },
-            User: { UserId: user_id }
+            OptOut,
+            RequestId,
+            EffectiveDate: Address? new Date().toISOString() : undefined,
+            User: { 
+                UserId: endpointId,
+                UserAttributes: {
+                    CognitoIdentityPool: [ cognitoIdentityPoolId ]
+                }
+            }
         };
     }
 }

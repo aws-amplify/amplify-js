@@ -80,5 +80,5 @@ export default class API {
     /**
      * @private
      */
-    _ensureCredentials(): any;
+    _ensureCredentials(): Promise<boolean>;
 }

@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -16,7 +16,8 @@
   },
   "react-native": {
     "./lib/Cache": "./lib/Cache/reactnative.js",
-    "./lib/Common/ClientDevice": "./lib/Common/ClientDevice/reactnative.js"
+    "./lib/Common/ClientDevice": "./lib/Common/ClientDevice/reactnative.js",
+    "./lib/Common/RNComponents": "./lib/Common/RNComponents/reactnative.js"
   },
   "repository": {
     "type": "git",
@@ -55,7 +56,7 @@
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^2.0.0",
-    "aws-sdk": "2.193.0",
+    "aws-sdk": "2.198.0",
     "axios": "^0.17.0"
   },
   "jest": {

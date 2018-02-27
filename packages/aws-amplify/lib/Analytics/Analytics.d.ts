@@ -44,6 +44,11 @@ export default class AnalyticsClass {
     */
     record(name: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<any>;
     /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+    onHubCapsule(capsule: any): void;
+    /**
     * Record one analytic event
     * @param {String} name - Event name
     * @param {Object} [attributes] - Attributes of the event
@@ -67,7 +72,7 @@ export default class AnalyticsClass {
      * @private
      * check if current crednetials exists
      */
-    _ensureCredentials(): any;
+    _ensureCredentials(): Promise<boolean>;
     /**
      * @private
      * @async
@@ -86,11 +91,14 @@ export default class AnalyticsClass {
      * @return - A promise resolves if endpoint updated successfully
      */
     _initPinpoint(): Promise<{}>;
+    updateEndpoint(config: any): Promise<{}>;
     /**
      * EndPoint request
      * @return {Object} - The request of updating endpoint
      */
     _endpointRequest(): {
+        Address: any;
+        ChannelType: string;
         Demographic: {
             AppVersion: any;
             Make: any;
@@ -98,8 +106,14 @@ export default class AnalyticsClass {
             ModelVersion: any;
             Platform: any;
         };
+        OptOut: any;
+        RequestId: any;
+        EffectiveDate: string;
         User: {
             UserId: any;
+            UserAttributes: {
+                CognitoIdentityPool: any[];
+            };
         };
     };
 }
