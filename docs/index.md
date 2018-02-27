@@ -9,7 +9,7 @@ description: A JavaScript library for application development using cloud servic
 buttons:
     - content: Let's Rock!
       icon: arrow-right
-      url: 'media/quick_start'
+      url: 'media/quick_start/index.html'
       external_url: false
 
 # Grid navigation
@@ -37,13 +37,13 @@ grid_navigation:
     - title: Installation
       excerpt:  Install and configurate AWS Amplify to start working with cloud services.
       cta: Read more
-      url: '/media/install_n_config'
+      url: '/media/install_n_config/index.html'
     - title: Developer Guide
       excerpt: Discover our building blocks for frontend and mobile developers.
       cta: Read more
-      url: '/media/developer_guide'
+      url: '/media/developer_guide/index.html'
     - title: API Referance
       excerpt: API Referance for the library.
       cta: Read more
-      url: '/api'      
+      url: '/api/index.html'      
 ---

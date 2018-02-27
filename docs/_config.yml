@@ -60,9 +60,9 @@ amplify:
             image: true
         nav:
             - item_name: Quick Start
-              item_url: '/media/quick_start'
+              item_url: '/media/quick_start/index.html'
             - item_name: Developer Guide
-              item_url: '/media/developer_guide'
+              item_url: '/media/developer_guide/index.html'
             - item_name: Community
               item_url: 'https://gitter.im/AWS-Amplify/Lobby/'
             - item_name: Blog

@@ -19,7 +19,7 @@ category_list:
           excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
           cta: Read more
           class: aws-icon-ps-60-pie-bar-charts 
-          url: '/media/analytics_guide'
+          url: '/media/analytics_guide/index.html'
           services:
             - title: AWS Pinpoint,
               url: https://aws.amazon.com/cognito/
@@ -39,7 +39,7 @@ category_list:
           excerpt:  Authentication APIs with pre-built UI components for your app.  
           cta: Read more
           class: aws-icon-ps-60-shield-circle
-          url: '/media/authentication_guide'
+          url: '/media/authentication_guide/index.html'
           services:
             - title: AWS Cognito ,
               url: https://aws.amazon.com/cognito
@@ -51,7 +51,7 @@ category_list:
           excerpt: A simple mechanism for managing user content in public or private storage.
           cta: Read more
           class: aws-icon-ps-60-file-box
-          url: '/media/storage_guide'   
+          url: '/media/storage_guide/index.html'   
           services:
               - title: AWS S3
                 url: https://aws.amazon.com/s3
@@ -61,19 +61,19 @@ category_list:
         - title: Cache 
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
           cta: Read more
-          url: '/media/cache_guide'  
+          url: '/media/cache_guide/index.html'  
         - title: Hub  
           excerpt: A lightweight Pub-Sub system.
           cta: Read more
-          url: '/media/hub_guide' 
+          url: '/media/hub_guide/index.html' 
         - title: I18n  
           excerpt: A lightweight internationalization solution.
           cta: Read more
-          url: '/media/i18n_guide'  
+          url: '/media/i18n_guide/index.html'  
         - title: Logger  
           excerpt: Console logging utility.
           cta: Read more
-          url: '/media/logger_guide'  
+          url: '/media/logger_guide/index.html'  
 
 ---
 
