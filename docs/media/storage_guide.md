@@ -36,7 +36,8 @@ Amplify.configure(
     Storage: {
         bucket: '', //REQUIRED -  Amazon S3 bucket
         region: 'XX-XXXX-X', //OPTIONAL -  Amazon service region
-    });
+    }
+);
 
 ```
 ### Automated Setup
@@ -52,7 +53,7 @@ $ awsmobile enable user-files
 
 In your project i.e. App.js:
 
-```
+```js
 import Amplify, { Storage } from 'aws-amplify';
 import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
@@ -84,11 +85,11 @@ To make calls to your S3 bucket from your App, make sure CORS is turned on:
 </CORSConfiguration>
 ```
 
-Note: You can restrict the access to your bucket by updating AllowedOrigin to be more domain specific. 
+Note: You can restrict the access to your bucket by updating AllowedOrigin to be more domain specific.
 
 ## Access Level
 
-Storage has two access levels: `public` and `private`. 
+Storage has two access levels: `public` and `private`.
 
 Files with public access level can be accessed by all users who are using the app. In S3, they are stored under the `public/` path in your S3 bucket.
 
@@ -131,7 +132,7 @@ Track all the storage apis:
 
 ```js
 Storage.configure({ track: true })
-``` 
+```
 
 Track specified storage api:
 
@@ -151,11 +152,11 @@ import { Storage } from 'aws-amplify';
 
 If use `aws-exports.js` file, Storage is already configured. To configure Storage separately,
 ```js
-    Storage.configure({
-        bucket: //Your bucket ARN;
-        region: //Specify the region your bucket was created in;
-        identityPoolId: //Specify your identityPoolId for Auth and Unauth access to your bucket;
-    });
+Storage.configure({
+    bucket: //Your bucket ARN;
+    region: //Specify the region your bucket was created in;
+    identityPoolId: //Specify your identityPoolId for Auth and Unauth access to your bucket;
+});
 ```
 
 #### 1. Put
@@ -163,19 +164,19 @@ Put data into Amazon S3.
 
 Public
 ```js
-    Storage.put('test.txt', 'Hello')
-        .then (result => console.log(result))
-        .catch(err => console.log(err));
+Storage.put('test.txt', 'Hello')
+    .then (result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 Private
 ```js
-    Storage.put('test.txt', 'Private Content', {
-        level: 'private',
-        contentType: 'text/plain'
-    })
-    .then (result => console.log(result))
-    .catch(err => console.log(err));
+Storage.put('test.txt', 'Private Content', {
+    level: 'private',
+    contentType: 'text/plain'
+})
+.then (result => console.log(result))
+.catch(err => console.log(err));
 ```
 
 #### 2. Get
@@ -183,16 +184,23 @@ Get a public accessible URL for data stored.
 
 Public
 ```js
-    Storage.get('test.txt')
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+Storage.get('test.txt')
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 Private
 ```js
-    Storage.get('test.txt', {level: 'private'})
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+Storage.get('test.txt', {level: 'private'})
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
+```
+
+Returns the pre-signed URL that expires in 60 seconds
+```js
+Storage.get('test.txt', {expires: 60})
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 #### 3. Remove
@@ -200,16 +208,16 @@ Delete data stored with key specified.
 
 Public
 ```js
-    Storage.remove('test.txt')
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+Storage.remove('test.txt')
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 Private
 ```js
-    Storage.remove('test.txt', {level: 'private'})
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+Storage.remove('test.txt', {level: 'private'})
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 #### 4. List
@@ -217,16 +225,16 @@ List keys under path specified.
 
 Public
 ```js
-    Storage.list('photos/')
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+Storage.list('photos/')
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 Private
 ```js
-    Storage.list('photos/', {level: 'private'})
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+Storage.list('photos/', {level: 'private'})
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 ## React Development
@@ -244,20 +252,20 @@ Listen to `PhotoPicker` onPick event:
 import { PhotoPicker } from 'aws-amplify-react';
 
     render() {
-        <PhotoPicker onPick={data => console.log(data)}/>
+        <PhotoPicker onPick={data => console.log(data)} />
     }
 ```
 
 To have a preview
 
 ```jsx
-    <PhotoPicker preview onLoad={dataURL => console.log(dataURL)} />
+<PhotoPicker preview onLoad={dataURL => console.log(dataURL)} />
 ```
 
 `onLoad` gives dataURL of the image. With that, you may not need the built-in preview. Then just hide it
 
 ```jsx
-    <PhotoPicker preview="hidden" onLoad={dataURL => console.log(dataURL)} />
+<PhotoPicker preview="hidden" onLoad={dataURL => console.log(dataURL)} />
 ```
 
 ### S3Image
@@ -275,7 +283,7 @@ import { S3Image } from 'aws-amplify-react';
 For private image, supply the `level` property:
 
 ```jsx
-        return <S3Image level="private" imgKey={key} />
+return <S3Image level="private" imgKey={key} />
 ```
 
 To upload, set the body property to S3Image:
@@ -303,7 +311,7 @@ import { S3Image } from 'aws-amplify-react';
 `S3Image` converts path to actual URL. To get the URL, listen to the `onLoad` event:
 
 ```jsx
-    <S3Imag imgKey={key} onLoad={url => console.log(url)}
+<S3Image imgKey={key} onLoad={url => console.log(url)} />
 ```
 
 **Photo Picker**
@@ -311,13 +319,13 @@ import { S3Image } from 'aws-amplify-react';
 Set `picker` property to true on `S3Image`. A `PhotoPicker` let user pick photos on his/her device.
 
 ```jsx
-    <S3Image imgKey={key} picker />
+<S3Image imgKey={key} picker />
 ```
 
 After pick, the image will be uploaded to `imgKey`. You may just provide `path`, path plus image file name will be the upload key.
 
 ```jsx
-    <S3Image path={path} picker />
+<S3Image path={path} picker />
 ```
 
 To have custom key you can provide a callback:
@@ -329,7 +337,7 @@ function fileToKey(data) {
 }
 
 ...
-    <S3Image path={path} picker fileToKey={fileToKey}/>
+<S3Image path={path} picker fileToKey={fileToKey} />
 ```
 
 `S3Image` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
@@ -354,17 +362,19 @@ import { S3Album } from 'aws-amplify-react';
 For private album, supply the `level` property:
 
 ```jsx
-        return <S3Album level="private" path={path} />
+return <S3Album level="private" path={path} />
 ```
 
 You might have files under the path not in album. In this case you can provide a `filter` prop:
 
 ```jsx
-        return <S3Album
-                    level="private"
-                    path={path}
-                    filter={(item) => /jpg/i.test(item.path)}
-                />
+return (
+    <S3Album
+        level="private"
+        path={path}
+        filter={(item) => /jpg/i.test(item.path)}
+    />
+);
 ```
 
 **Picker**
@@ -372,7 +382,7 @@ You might have files under the path not in album. In this case you can provide a
 Set `picker` property to true on `S3Album`. A `Picker` let user pick photos or text files on his/her device.
 
 ```jsx
-    <S3Album path={path} picker />
+<S3Album path={path} picker />
 ```
 
 By default photo picker saves photo on S3 with filename as key. To have custom key you can provide a callback:
@@ -384,7 +394,7 @@ function fileToKey(data) {
 }
 
 ...
-    <S3Album path={path} picker fileToKey={fileToKey}/>
+    <S3Album path={path} picker fileToKey={fileToKey} />
 ```
 
 `S3Album` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
@@ -394,7 +404,7 @@ function fileToKey(data) {
 You can automatically track ```Storage``` operations on the following React components: ```S3Album```, ```S3Text```, ```S3Image``` by providing a ```track``` prop:
 
 ```jsx
-return <S3Album track/>
+return <S3Album track />
 ```
 
 Enabling this will automatically send 'Storage' events to Amazon Pinpoint and you will be able to see them within the AWS Pinpoint console under Custom Events. The event name will be 'Storage' and within the attributes will be details about the operations that occurred. For example Storage -> method -> put etc.

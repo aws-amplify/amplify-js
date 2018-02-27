@@ -106,7 +106,7 @@ export default class AuthClass {
     /**
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String | object} params - The user attirbutes used for signin
-     * @param {String[]} restOfAttrs - for the backward compatability 
+     * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
     public signUp(params: string | object, ...restOfAttrs: string[]): Promise<any> {
@@ -122,7 +122,7 @@ export default class AuthClass {
             const email : string = restOfAttrs? restOfAttrs[1] : null;
             const phone_number : string = restOfAttrs? restOfAttrs[2] : null;
             if (email) attributes.push({Name: 'email', Value: email});
-            if (phone_number) attributes.push({Name: 'phone_number', Value: phone_number}); 
+            if (phone_number) attributes.push({Name: 'phone_number', Value: phone_number});
         } else if (params && typeof params === 'object') {
             username = params['username'];
             password = params['password'];
@@ -139,11 +139,11 @@ export default class AuthClass {
         }
 
         if (!username) { return Promise.reject('Username cannot be empty'); }
-        if (!password) { return Promise.reject('Password cannot be empty'); }     
-        
+        if (!password) { return Promise.reject('Password cannot be empty'); }
+
         logger.debug('signUp attrs:', attributes);
         logger.debug('signUp validation data:', validationData);
-        
+
         return new Promise((resolve, reject) => {
             this.userPool.signUp(username, password, attributes, validationData, function(err, data) {
                 if (err) {
@@ -178,7 +178,7 @@ export default class AuthClass {
             });
         });
     }
-    
+
     /**
      * Resend the verification code
      * @param {String} username - The username to be confirmed
@@ -201,7 +201,7 @@ export default class AuthClass {
 
     /**
      * Sign in
-     * @param {String} username - The username to be signed in 
+     * @param {String} username - The username to be signed in
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser object if success or mfa required
      */
@@ -312,7 +312,7 @@ export default class AuthClass {
     /**
      * Update an authenticated users' attributes
      * @param {CognitoUser} - The currently logged in user object
-     * @return {Promise} 
+     * @return {Promise}
      **/
     public updateUserAttributes(user, attributes:object): Promise<any> {
         let attr:object = {};
@@ -322,7 +322,7 @@ export default class AuthClass {
                 return new Promise((resolve, reject) => {
                     for (const key in attributes) {
                         if ( key !== 'sub' &&
-                            key.indexOf('_verified') < 0 && 
+                            key.indexOf('_verified') < 0 &&
                             attributes[key] ) {
                             attr = {
                                 'Name': key,
@@ -335,7 +335,7 @@ export default class AuthClass {
                         if (err) { reject(err); } else { resolve(result); }
                     });
                 });
-            }); 
+            });
     }
     /**
      * Return user attributes
@@ -442,7 +442,7 @@ export default class AuthClass {
 
     /**
      * Get current user's session
-     * @return - A promise resolves to session object if success 
+     * @return - A promise resolves to session object if success
      */
     public currentSession() : Promise<any> {
         let user:any;
@@ -603,9 +603,32 @@ export default class AuthClass {
     }
 
     /**
+     * Change a password for an authenticated user
+     * @param {Object} user - The CognitoUser object
+     * @param {String} oldPassword - the current password
+     * @param {String} newPassword - the requested new password
+     * @return - A promise resolves if success
+     */
+    public changePassword(user: any, oldPassword: string, newPassword: string): Promise<any> {
+        return this.userSession(user)
+            .then(session => {
+                return new Promise((resolve, reject) => {
+                    user.changePassword(oldPassword, newPassword, (err, data) => {
+                        if (err) {
+                            logger.debug('change password failure', err);
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
+                });
+            });
+    }
+
+    /**
      * Initiate a forgot password request
      * @param {String} username - the username to change password
-     * @return - A promise resolves if success 
+     * @return - A promise resolves if success
      */
     public forgotPassword(username: string): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
@@ -631,7 +654,7 @@ export default class AuthClass {
 
     /**
      * Confirm a new password using a confirmation Code
-     * @param {String} username - The username 
+     * @param {String} username - The username
      * @param {String} code - The confirmation code
      * @param {String} password - The new password
      * @return - A promise that resolves if success
@@ -664,11 +687,9 @@ export default class AuthClass {
      * @return {Object }- current User's information
      */
     public async currentUserInfo() {
-        const credentials = this.credentials;
         const source = this.credentials_source;
-        if (!source) { return null; }
 
-        if (source === 'aws' || source === 'userPool') {
+        if (!source || source === 'aws' || source === 'userPool') {
             const user = await this.currentUserPoolUser()
                 .catch(err => logger.debug(err));
             if (!user) { return null; }
@@ -676,15 +697,14 @@ export default class AuthClass {
             try {
                 const attributes = await this.userAttributes(user);
                 const userAttrs:object = this.attributesToObject(attributes);
-            
+
                 const info = {
-                    'id': credentials.identityId,
+                    'id': this.credentials.identityId,
                     'username': user.username,
                     'attributes': userAttrs
                 };
                 return info;
             } catch(err) {
-                console.warn(err);
                 logger.debug('currentUserInfo error', err);
                 return {};
             }
@@ -700,7 +720,7 @@ export default class AuthClass {
      * For federated login
      * @param {String} provider - federation login provider
      * @param {Object} response - response including access_token
-     * @param {String} user - user info 
+     * @param {String} user - user info
      */
     public federatedSignIn(provider, response, user) {
         const { token, expires_at } = response;
@@ -776,7 +796,7 @@ export default class AuthClass {
             { id: this.credentials.identityId },
             user
         );
-        
+
         if (AWS && AWS.config) { AWS.config.credentials = this.credentials; }
     }
 
@@ -830,7 +850,7 @@ export default class AuthClass {
         this.credentials.authenticated = false;
         this.credentials_source = 'guest';
     }
-    
+
     private setCredentialsFromSession(session) {
         logger.debug('set credentials from session');
         const idToken = session.getIdToken().getJwtToken();
