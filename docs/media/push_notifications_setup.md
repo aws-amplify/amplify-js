@@ -176,6 +176,7 @@ PushNotification.configure({
 ```
 
 2. Get the registration token and notification data by using:
+
 ```js
 // get the notification data
 PushNotification.onNotification((notification) => {
@@ -191,3 +192,4 @@ PushNotification.onRegister((token) => {
   console.log('in app registration', token);
 });
 ```
+
