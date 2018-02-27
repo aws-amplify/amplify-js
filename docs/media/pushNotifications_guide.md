@@ -19,11 +19,11 @@ This instructions will be splited for [Android](android) and [iOS](ios) that cou
 
 2. [Add your API key and Sender ID to AWS Pinpoint](https://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started-android-mobilehub.html)
 
-3. Run ```create-react-native-app myapp```
+3. ```react-native init myapp```
 
-4. ```cd myapp``` and run ```yarn run eject``` or ```npm run eject```
+4. ```cd myapp```
 
-5. Install aws-amplify-react-native
+5. ```npm install aws-amplify-react-native```
 
 6. Run ```react-native link aws-amplify-react-native```
 
@@ -147,6 +147,7 @@ This instructions will be splited for [Android](android) and [iOS](ios) that cou
  - On Xcode select your device and run by first using as Executable appName.app and this install the App on your device but it won't run (is ok, trust me)
  - On Product>Schema>Edit Schema on Run>Info tab on Executable section select Ask on Launch.
  - Click run button and select your app from the list.
+  - In case it fails to build, try clean the project shift + command + k
   ![alt text](./runningApp.gif "")
 
 ## Integration
@@ -176,19 +177,12 @@ PushNotification.configure({
 2. Get the registration token and notification data by using:
 ```js
 // get the notification data
-PushNotification.onNotification((data) => {
-  console.log('in app notification', data);
-  // the notification data payload looks like:
-  // { title: 'title',
-  //   body: 'message',
-  //   data: 
-  //       { pinpoint: 
-  //           { campaign: 
-  //                { campaign_id: '6ebd708598294c41a415329e723ce37a',
-  //                  campaign_activity_id: '93ce66e35d7b411c8cf505d5f4ef4f92',
-  //                  treatment_id: '0' 
-  //         } } },
-  //  foreground: false }
+PushNotification.onNotification((notification) => {
+  // Note that the notification object structure is different from Android and IOS
+  console.log('in app notification', notification);
+
+  // required on iOS only (see fetchCompletionHandler docs: https://facebook.github.io/react-native/docs/pushnotificationios.html)
+  notification.finish(PushNotificationIOS.FetchResult.NoData);
 });
 
 // get the registration token

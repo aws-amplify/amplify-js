@@ -29,7 +29,7 @@ export default class PushNotification {
         }
         this.handlers = [];
         this.updateEndpoint = this.updateEndpoint.bind(this);
-        this.handleFCMCampaignPush = this.handleFCMCampaignPush.bind(this);
+        this.handleCampaignPush = this.handleCampaignPush.bind(this);
     }
 
     configure(config) {
@@ -73,7 +73,7 @@ export default class PushNotification {
 
     initializeAndroid() {
         this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
-        this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, this.handleFCMCampaignPush);
+        this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
         RNPushNotification.initialize();
     }
 
@@ -84,10 +84,13 @@ export default class PushNotification {
             sound: true
         });
         this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
-        this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this.handleFCMCampaignPush);
+        this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
     }
 
-    handleFCMCampaignPush(message) {
+    handleCampaignPush(message) {
+        if (Platform.OS === 'ios') {
+            message = this.parseMessageFromIOS(message);
+        }
         const campaign = message && message.data && message.data.pinpoint ? message.data.pinpoint.campaign : null;
 
         if (!campaign) {
@@ -114,7 +117,7 @@ export default class PushNotification {
         }
 
         const { appId } = this._config;
-        const cacheKey = 'fcm_token' + appId;
+        const cacheKey = 'push_token' + appId;
         logger.debug('update endpoint in push notification', token);
         AsyncStorage.getItem(cacheKey).then(lastToken => {
             if (!lastToken || lastToken !== token) {
@@ -156,13 +159,11 @@ export default class PushNotification {
         const that = this;
         if (event === REMOTE_TOKEN_RECEIVED) {
             PushNotificationIOS.addEventListener('register', function (data) {
-                handler(that.parseMessageFromIOS(data));
+                handler(data);
             });
         }
         if (event === REMOTE_NOTIFICATION_RECEIVED) {
-            PushNotificationIOS.addEventListener('notification', function (data) {
-                handler(data);
-            });
+            PushNotificationIOS.addEventListener('notification', handler);
         }
     }
 
@@ -200,6 +201,10 @@ export default class PushNotification {
         const _data = message && message._data ? message._data : null;
         const _alert = message && message._alert ? message._alert : {};
 
+        if (!_data && !_alert) {
+            logger.debug('no notification payload received');
+            return {};
+        }
         const data = _data.data;
         const title = _alert.title;
         const body = _alert.body;
