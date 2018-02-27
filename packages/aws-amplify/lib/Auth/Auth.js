@@ -753,16 +753,12 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.currentUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var credentials, source, user, attributes, userAttrs, info, err_1, user;
+            var source, user, attributes, userAttrs, info, err_1, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        credentials = this.credentials;
                         source = this.credentials_source;
-                        if (!source) {
-                            return [2 /*return*/, null];
-                        }
-                        if (!(source === 'aws' || source === 'userPool')) return [3 /*break*/, 5];
+                        if (!(!source || source === 'aws' || source === 'userPool')) return [3 /*break*/, 5];
                         return [4 /*yield*/, this.currentUserPoolUser()
                                 .catch(function (err) { return logger.debug(err); })];
                     case 1:
@@ -778,14 +774,13 @@ var AuthClass = /** @class */ (function () {
                         attributes = _a.sent();
                         userAttrs = this.attributesToObject(attributes);
                         info = {
-                            'id': credentials.identityId,
+                            'id': this.credentials.identityId,
                             'username': user.username,
                             'attributes': userAttrs
                         };
                         return [2 /*return*/, info];
                     case 4:
                         err_1 = _a.sent();
-                        console.warn(err_1);
                         logger.debug('currentUserInfo error', err_1);
                         return [2 /*return*/, {}];
                     case 5:

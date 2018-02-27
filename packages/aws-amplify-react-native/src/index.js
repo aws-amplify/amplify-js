@@ -14,11 +14,13 @@
 import { default as AmplifyCore, I18n } from 'aws-amplify';
 import dict from './AmplifyI18n';
 
+
 export { default as AmplifyTheme } from './AmplifyTheme';
 export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
 export * from './AmplifyUI';
 export * from './Auth';
 export * from './Storage';
+export { default as PushNotification } from './PushNotification'
 
 const configure = function(config) {
   const msg = [
