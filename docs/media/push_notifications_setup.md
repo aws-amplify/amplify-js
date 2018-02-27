@@ -89,7 +89,6 @@ $ react-native link aws-amplify-react-native
 2. [Add p12 certificate to Amazon Pinpoint](https://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started-ios-mobilehub.html)
 
 3. Create and link a React Native app:
-
 ```js
 $ react-native init myapp
 $ cd myapp
@@ -139,20 +138,23 @@ $ react-native link aws-amplify-react-native
 
 8. Update General App settings
  - Make sure you have logged in with your Apple Developer account on Xcode
-  - Set bundle identifier (with the one you create on your Apple Developer Account)
-  - Unselect Automatically manage signing 
-  - On Signing (Debug, Release) set the provisioning profile (created on your Apple Developer Account)
-  ![alt text](./identifiers.gif "")
+ - Set bundle identifier (with the one you create on your Apple Developer Account)
+ - Unselect Automatically manage signing 
+ - On Signing (Debug, Release) set the provisioning profile (created on your Apple Developer Account)
+  
+![alt text](./identifiers.gif "")
 
 9. Setup capabilities on your App and enable Push Notifications and Background Modes. On Background Modes select Remote notifications.
- ![alt text](./capabilities.gif "")
+ 
+![alt text](./capabilities.gif "")
 
 10. Run your app
  - On Xcode select your device and run by first using as Executable appName.app and this install the App on your device but it won't run (is ok, trust me)
  - On Product>Schema>Edit Schema on Run>Info tab on Executable section select Ask on Launch.
  - Click run button and select your app from the list.
-  - In case it fails to build, try clean the project shift + command + k
-  ![alt text](./runningApp.gif "")
+ - In case it fails to build, try clean the project shift + command + k
+
+![alt text](./runningApp.gif "")
 
 ## Integration
 
