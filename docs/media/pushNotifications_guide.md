@@ -155,6 +155,7 @@ This instructions will be splited for [Android](android) and [iOS](ios) that cou
 1. Import the ```PushNotification``` module and configure it. Make sure that you have configured the ```Analytics``` module before.
 
 ```js
+import { PushNotificationIOS } from 'react-native';
 import Amplify from 'aws-amplify';
 import { PushNotification } from 'aws-amplify-react-native';
 
