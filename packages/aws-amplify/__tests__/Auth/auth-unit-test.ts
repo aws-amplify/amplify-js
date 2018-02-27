@@ -102,6 +102,10 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
         callback(null, 'result');
     }
 
+    CognitoUser.prototype.changePassword = (oldPassword, newPassword, callback) => {
+        callback(null, 'SUCCESS');
+    }
+
     CognitoUser.prototype.forgotPassword = (callback) => {
         callback.onSuccess();
     }
@@ -439,10 +443,10 @@ describe('auth unit test', () => {
                 Pool: userPool
             });
             const userAfterSignedIn = Object.assign(
-                {}, 
-                user, 
+                {},
+                user,
                 {
-                    "challengeName": "challengeName", 
+                    "challengeName": "challengeName",
                     "challengeParam": "challengeParam"
                 });
 
@@ -451,7 +455,7 @@ describe('auth unit test', () => {
 
             spyon.mockClear();
         });
-        
+
         test('newPasswordRequired', async () => {
             const spyon = jest.spyOn(CognitoUser.prototype, "authenticateUser")
                 .mockImplementationOnce((authenticationDetails, callback) => {
@@ -463,12 +467,12 @@ describe('auth unit test', () => {
                 Pool: userPool
             });
             const userAfterSignedIn = Object.assign(
-                {}, 
-                user, 
+                {},
+                user,
                 {
-                    "challengeName": "NEW_PASSWORD_REQUIRED", 
+                    "challengeName": "NEW_PASSWORD_REQUIRED",
                     "challengeParam": {
-                        "requiredAttributes": "requiredAttributes", 
+                        "requiredAttributes": "requiredAttributes",
                         "userAttributes": "userAttributes"
                     }
                 });
@@ -481,7 +485,7 @@ describe('auth unit test', () => {
 
         test('no userPool', async () => {
             const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser');
-            
+
             const auth = new Auth(authOptionsWithNoUserPoolId);
 
             expect.assertions(1);
@@ -575,7 +579,7 @@ describe('auth unit test', () => {
             } catch (e) {
                 expect(e).not.toBeNull();
             }
-        
+
             spyon.mockClear();
         });
     });
@@ -592,7 +596,7 @@ describe('auth unit test', () => {
                 Username: 'username',
                 Pool: userPool
             });
-            
+
             expect.assertions(1);
             expect(await auth.completeNewPassword(user, 'password', {})).toEqual(user);
 
@@ -663,15 +667,15 @@ describe('auth unit test', () => {
                         res('session');
                     });
                 });
-                
+
             const spyon2 = jest.spyOn(CognitoUser.prototype, 'getUserAttributes');
-            
+
             const auth = new Auth(authOptions);
             const user = new CognitoUser({
                 Username: 'username',
                 Pool: userPool
             });
-            
+
             expect.assertions(1);
             expect(await auth.userAttributes(user)).toBe('attributes');
 
@@ -686,18 +690,18 @@ describe('auth unit test', () => {
                         res('session');
                     });
                 });
-                
+
             const spyon2 = jest.spyOn(CognitoUser.prototype, 'getUserAttributes')
                 .mockImplementationOnce((callback) => {
                     callback('err');
                 });
-            
+
             const auth = new Auth(authOptions);
             const user = new CognitoUser({
                 Username: 'username',
                 Pool: userPool
             });
-            
+
             expect.assertions(1);
             try {
                 await auth.userAttributes(user);
@@ -706,7 +710,7 @@ describe('auth unit test', () => {
             }
 
             spyon.mockClear();
-            spyon2.mockClear();     
+            spyon2.mockClear();
         });
     });
 
@@ -786,7 +790,7 @@ describe('auth unit test', () => {
 
             expect.assertions(1);
             expect(await auth.currentAuthenticatedUser()).toEqual(user);
-            
+
             spyon.mockClear();
             spyon2.mockClear();
         });
@@ -847,7 +851,7 @@ describe('auth unit test', () => {
     describe('currentUserCredentials test', () => {
         test('with federated info', async () => {
             const auth = new Auth(authOptions);
-            
+
             const spyon = jest.spyOn(Cache, 'getItem')
                 .mockImplementationOnce(() => {
                     return {
@@ -856,7 +860,7 @@ describe('auth unit test', () => {
                         user: {name: 'user'}
                     }
                 });
-                
+
             expect.assertions(1);
             expect(await auth.currentUserCredentials()).toBeUndefined();
 
@@ -887,7 +891,7 @@ describe('auth unit test', () => {
                     callback(null);
                 });
 
-            
+
 
             expect.assertions(1);
             expect(await auth.currentCredentials()).toEqual(cred);
@@ -933,7 +937,7 @@ describe('auth unit test', () => {
             } catch (e) {
                 expect(e).toBe("err");
             }
-        
+
             spyon.mockClear();
         });
     });
@@ -972,7 +976,7 @@ describe('auth unit test', () => {
             } catch (e) {
                 expect(e).toBe("err");
             }
-        
+
             spyon.mockClear();
         });
 
@@ -1013,7 +1017,7 @@ describe('auth unit test', () => {
                         res();
                     });
                 });
-            
+
             await auth.verifyCurrentUserAttribute('attr');
 
             expect.assertions(2);
@@ -1046,7 +1050,7 @@ describe('auth unit test', () => {
                         res();
                     });
                 });
-            
+
             await auth.verifyCurrentUserAttributeSubmit('attr', 'code');
 
             expect.assertions(2);
@@ -1123,7 +1127,7 @@ describe('auth unit test', () => {
             spyon.mockClear();
             spyon2.mockClear();
         });
-        
+
         test('no UserPool', async () => {
             const auth = new Auth(authOptionsWithNoUserPoolId);
             auth['credentials_source'] = 'aws';
@@ -1160,13 +1164,28 @@ describe('auth unit test', () => {
                 .mockImplementationOnce(() => {
                     return null;
                 });
-            
+
 
             expect.assertions(1);
             expect(await auth.signOut()).toBeUndefined();
 
             spyonAuth.mockClear();
             spyon.mockClear();
+        });
+    });
+
+    describe('changePassword', () => {
+        test('happy case', async () => {
+            const auth = new Auth(authOptions);
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool
+            });
+            const oldPassword = 'oldPassword1';
+            const newPassword = 'newPassword1.';
+
+            expect.assertions(1);
+            expect(await auth.changePassword(user, oldPassword, newPassword)).toBe('SUCCESS');
         });
     });
 
@@ -1333,7 +1352,7 @@ describe('auth unit test', () => {
                         res({
                             username: 'username'
                         });
-                    }); 
+                    });
                 });
 
             const spyon2 = jest.spyOn(Auth.prototype, 'userAttributes')
@@ -1388,7 +1407,7 @@ describe('auth unit test', () => {
                         res({
                             username: 'username'
                         });
-                    }); 
+                    });
                 });
 
             const spyon2 = jest.spyOn(Auth.prototype, 'userAttributes')
@@ -1412,7 +1431,7 @@ describe('auth unit test', () => {
                 Pool: userPool
             });
             auth['credentials_source'] = null;
-            
+
 
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toBeNull();
@@ -1430,7 +1449,7 @@ describe('auth unit test', () => {
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res(null);
-                    }); 
+                    });
                 });
 
             expect.assertions(1);
@@ -1447,7 +1466,7 @@ describe('auth unit test', () => {
             });
             auth['credentials_source'] = 'federated';
             auth['user'] = 'federated_user';
-       
+
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toBe('federated_user');
         });
@@ -1515,7 +1534,7 @@ describe('auth unit test', () => {
             });
 
             expect(await auth.verifiedContact(user)).toEqual({
-                "unverified": {"email": "email@amazon.com", "phone_number": "+12345678901"}, 
+                "unverified": {"email": "email@amazon.com", "phone_number": "+12345678901"},
                 "verified": {}
             });
 
@@ -1552,7 +1571,7 @@ describe('auth unit test', () => {
             });
 
             expect(await auth.verifiedContact(user)).toEqual({
-                "unverified": {}, 
+                "unverified": {},
                 "verified": {"email": "email@amazon.com", "phone_number": "+12345678901"}
             });
 
@@ -1576,7 +1595,7 @@ describe('auth unit test', () => {
                 .mockImplementation((callback) => {
                     return callback(null, 'session');
                 });
-            
+
             expect.assertions(1);
             auth.currentUserPoolUser()
                 .then((user) => {
@@ -1602,7 +1621,7 @@ describe('auth unit test', () => {
                 .mockImplementation(() => {
                     return null;
                 });
-            
+
             expect.assertions(1);
             try {
                 await auth.currentUserPoolUser()
@@ -1619,7 +1638,7 @@ describe('auth unit test', () => {
                 Username: 'username',
                 Pool: userPool
             });
-            
+
             expect.assertions(1);
             try {
                 await auth.currentUserPoolUser()
@@ -1643,7 +1662,7 @@ describe('auth unit test', () => {
                 .mockImplementation((callback) => {
                     return callback('err', null);
                 });
-            
+
             expect.assertions(1);
             try {
                 await auth.currentUserPoolUser()
