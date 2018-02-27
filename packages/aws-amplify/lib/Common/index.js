@@ -28,8 +28,10 @@ var JS_1 = require("./JS");
 exports.JS = JS_1.default;
 var Signer_1 = require("./Signer");
 exports.Signer = Signer_1.default;
+__export(require("./RNComponents"));
+var Platform_1 = require("./Platform");
 exports.Constants = {
-    userAgent: 'aws-amplify/0.1.22 js'
+    'userAgent': Platform_1.default.userAgent
 };
 var logger = new Logger_1.ConsoleLogger('Common');
 if (Facet_1.AWS['util']) {
@@ -38,7 +40,7 @@ if (Facet_1.AWS['util']) {
     };
 }
 else if (Facet_1.AWS.config) {
-    Facet_1.AWS.config.update({ customUserAgent: exports.Constants.userAgent });
+    Facet_1.AWS.config.update({ 'customUserAgent': exports.Constants.userAgent });
 }
 else {
     logger.warn('No AWS.config');

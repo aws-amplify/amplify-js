@@ -1,54 +1,72 @@
 # Storage
 
-AWS-Amplify Storage enables you to configure your App with Amazon S3 for easy management of your App's user data files. 
+AWS Amplify Storage module gives a simple mechanism for managing user content in public or private storage.
 
-* [Installation](#installation)
-* [Configuration](#configuration)
-  * [Manual Setup](#manual-setup)
-  * [Amazon S3 Bucket CORS Policy](#amazon-s3-bucket-cors-policy)
-  * [Automated Setup](#automated-setup)
+* [Installation and Configuration](#installation-and-configuration)
+  - [Manual Setup](#manual-setup)
+  - [Automated Setup](#automated-setup)
+* [Amazon S3 Bucket CORS Policy](#amazon-s3-bucket-cors-policy)
 * [Access Level](#access-level)
-* [Integration](#integration)
-  - [Call APIs](#call-apis)
-  - [React Components](#react-components)
+* [Call APIs](#call-apis)
+* [React Development](#react-development)
+  - [Picker](#picker)
+  - [S3Image](#s3image)
+  - [S3Text](#s3text)
+  - [S3Album](#s3album)
+  - [Analytics for S3 components](#analytics-for-s3-components)
 
+## Installation and Configuration
 
-## Installation
+Please refer to this [Guide](install_n_config.md) for general setup. Here are Analytics specific setup.
 
-For Web development, regardless of framework, `aws-amplify` provides core Auth APIs
-```
-npm install aws-amplify
-```
-
-On React app, we have provided some helpful components in `aws-amplify-react`
-```
-npm install aws-amplify-react
-```
-
-In React Native development, we package core APIs and components into one `aws-amplify-react-native`
-```
-npm install aws-amplify-react-native
-```
-
-## Configuration
-
-You are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. AWS Amplify also require the AWS S3 bucket. Amazon Cognito Identity Pool requires to have access to Amazon S3 using Amazon IAM. You can configure it by yourself or let [AWS Mobile Hub do it for you](#automated-setup)!
+The default implementation of the Storage module leverages Amazon S3.
 
 ### Manual Setup
-[Amazon Cognito Identity](http://docs.aws.amazon.com/cognito/latest/developerguide/getting-started-with-identity-pools.html)
 
-[Amazon S3](http://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html)
+```js
+import Amplify from 'aws-amplify';
 
-[Amazon IAM](http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started.html)
+Amplify.configure(
+    Auth: {
+        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
+        region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
+        userPoolId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito User Pool ID
+        userPoolWebClientId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito Web Client ID
+    },
+    Storage: {
+        bucket: '', //REQUIRED -  Amazon S3 bucket
+        region: 'XX-XXXX-X', //OPTIONAL -  Amazon service region
+    }
+);
 
-### Amazon S3 Bucket CORS Policy
+```
+### Automated Setup
+
+To create a project fully functioning with the Storage category.
+
+```
+$ npm install -g awsmobile-cli
+$ cd my-app
+$ awsmobile init
+$ awsmobile enable user-files
+```
+
+In your project i.e. App.js:
+
+```js
+import Amplify, { Storage } from 'aws-amplify';
+import aws_exports from './aws-exports';
+Amplify.configure(aws_exports);
+```
+
+## Amazon S3 Bucket CORS Policy
 
 To make calls to your S3 bucket from your App, make sure CORS is turned on:
 
 1. Go to [AWS S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's userfiles bucket.
 2. Click on the **Permissions** tab for your bucket, and then click on **CORS configuration** tile.
 3. Update your bucket's CORS Policy to look like:
- ```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
 <CORSRule>
@@ -67,252 +85,326 @@ To make calls to your S3 bucket from your App, make sure CORS is turned on:
 </CORSConfiguration>
 ```
 
-Note: You can restrict the access to your bucket by updating AllowedOrigin to be more domain specific. 
-
-### Automated Setup
-
-AWS Mobile Hub streamlines the steps above for you. Simply click the button:
-
-<p align="center">
-  <a target="_blank" href="https://console.aws.amazon.com/mobilehub/home?#/?config=https://github.com/aws/aws-amplify/blob/master/media/backend/import_mobilehub/user-files.zip">
-    <span>
-        <img height="100%" src="https://s3.amazonaws.com/deploytomh/button-deploy-aws-mh.png"/>
-    </span>
-  </a>
-</p>
-
-This will create a project that works with Analytics category fully functioning. After the project is created in the Mobile Hub console download aws-exports.js by clicking the **Hosting and Streaming** tile then **Download aws-exports.js**.
-
-![Mobile Hub](mobile_hub_1.png)
-
-Download aws-exports.js
-
-Then copy the file to `/src` folder of the project
-![Download](mobile_hub_2.png)
-
-Now you can simply import the file and pass it as the configuration to the Amplify library:
+Note: You can restrict the access to your bucket by updating AllowedOrigin to be more domain specific.
 
 ## Access Level
 
-If you used Automated Setup or use AWS Mobile Hub to create your resources, Storage has two access levels: `public` and `private`. 
+Storage has two access levels: `public` and `private`.
 
-Files with public access level can be accessed by all users who is using app. In S3, they are stored under `public/` path of your S3 bucket.
+Files with public access level can be accessed by all users who are using the app. In S3, they are stored under the `public/` path in your S3 bucket.
 
-Files with private access level is only accessible by the specific authenticated user alone. In S3, they are stored under `private/{user_identity_id}/`
+Files with private access level are only accessible by the specific authenticated user alone. In S3, they are stored under `private/{user_identity_id}/` where the ID corresponds to a unique Amazon Cognito Identity ID, generated for that user.
 
-Access level can be configured at Storage object, affects globally. Or at individual function call. By default the access level is `public`
+The access level can be configured on the Storage object globally. Alternatively it can be set on an individual function call. By default the access level is `public`.
 
-On Storage
-```
+Configuration on the Storage object
+
+```js
 Storage.configure({ level: 'private' });
 
 Storage.get('welcome.png'); // Gets the welcome.png belongs to current user
 ```
 
-When calling API
-```
+Configuration when calling the API
+
+```js
 Storage.get('welcome.png', { level: 'public' }); // Gets welcome.png in public space
 ```
 
-By default, the access level is `public`
-```
+The default access level is `public`:
+```js
 Storage.get('welcome.png'); // Get welcome.png in public space
 ```
 
-There is a shortcut `vault`, which is merely a Storage instance with `private` level set.
-```
+There is also a shortcut `vault`, which is merely a Storage instance with `private` level set:
+
+```js
 Storage.vault.get('welcome.png'); // Get the welcome.png belonging to current user
 ```
 
-## Integration
+## Tracking
 
-1. Import Storage from the aws-amplify library into your App file as follows:
+You can enable automatic tracking of events by setting ```track``` to ```true``` when calling the API. (Note: this option is currently only supported in aws-amplify). Enabling this will automatically send 'Storage' events to Amazon Pinpoint and you will be able to see them within the AWS Pinpoint console under Custom Events. The event name will be 'Storage' and within the attributes will be details about the operations that occurred. For example Storage -> method -> put etc.
+
+For example:
+
+Track all the storage apis:
+
+```js
+Storage.configure({ track: true })
 ```
+
+Track specified storage api:
+
+```js
+Storage.get('welcome.png', { track: true });
+```
+
+You can also use the track property directly on [React components](#analytics-for-s3-components).
+
+
+## Call APIs
+
+Import Storage from the aws-amplify library:
+```js
 import { Storage } from 'aws-amplify';
 ```
 
-2. Configure Storage with your AWS resources as follows : 
-
-    a. Use aws-exports object (here named awsmobile) to configure Storage (for details on object structure, refer: [Need to add link here]:
-    ```
-        Storage.configure(awsmobile);
-    ``` 
-
-    b. Use your resource values to configure Storage as: 
-    ```
-    Storage.configure({
-        bucket: //Your bucket ARN;
-        region: //Specify the region your bucket was created in;
-        identityPoolId: //Specify your identityPoolId for Auth and Unauth access to your bucket;
-    });
-    ```
-
-### Call APIs
-
-* 'public': Objects can be read or written by everyone who uses App.
-* 'private': Objects can only be read or written by the current user.
+If use `aws-exports.js` file, Storage is already configured. To configure Storage separately,
+```js
+Storage.configure({
+    bucket: //Your bucket ARN;
+    region: //Specify the region your bucket was created in;
+    identityPoolId: //Specify your identityPoolId for Auth and Unauth access to your bucket;
+});
+```
 
 #### 1. Put
 Put data into Amazon S3.
 
 Public
-```
-    const key = 'xyz.ext';
-    const fileObj = 'abc'
-    Storage.put(key, fileObj)
-        .then (result => console.log(result))
-        .catch(err => console.log(err));
+```js
+Storage.put('test.txt', 'Hello')
+    .then (result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 Private
-``` 
-    Storage.put(key, fileObj, {level: 'private'})
-        .then (result => console.log(result))
-        .catch(err => console.log(err));
-        
-    // Stores data with specifying its MIME type
-    Storage.put(key, fileObj, {
-        level: 'private',
-        contentType: 'text/plain'
-    })
-    .then (result => console.log(result))
-    .catch(err => console.log(err));
+```js
+Storage.put('test.txt', 'Private Content', {
+    level: 'private',
+    contentType: 'text/plain'
+})
+.then (result => console.log(result))
+.catch(err => console.log(err));
 ```
 
 #### 2. Get
 Get a public accessible URL for data stored.
 
 Public
-``` 
-    const key = “abc”
-    Storage.get(key)
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+```js
+Storage.get('test.txt')
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 Private
-```  
-    Storage.get(key, {level: 'private'})
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+```js
+Storage.get('test.txt', {level: 'private'})
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
+```
+
+Returns the pre-signed URL that expires in 60 seconds
+```js
+Storage.get('test.txt', {expires: 60})
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 #### 3. Remove
 Delete data stored with key specified.
 
 Public
-```
-    const key = “abc”
-    Storage.remove(key)
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+```js
+Storage.remove('test.txt')
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 Private
-```   
-    Storage.remove(key, {level: 'private'})
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+```js
+Storage.remove('test.txt', {level: 'private'})
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 #### 4. List
 List keys under path specified.
 
 Public
-```
-    const path = ‘my path’;
-    Storage.list(path)
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+```js
+Storage.list('photos/')
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
 Private
-```
-    Storage.list(path, {level: 'private'})
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+```js
+Storage.list('photos/', {level: 'private'})
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
 ```
 
-### React Components
+## React Development
 
 `aws-amplify-react` package provides the following components:
 
-#### S3Image
+### Picker
 
-`S3Image` component renders Amazon S3 key to image
+`Picker` is used to pick file from local device. `PhotoPicker` and `TextPicker` are specific to photo and text file picking.
 
-```
-import { S3Image } from 'aws-amplify-react';
+<img src="photo_picker_and_code.png" width="320px"/>
+
+Listen to `PhotoPicker` onPick event:
+```jsx
+import { PhotoPicker } from 'aws-amplify-react';
 
     render() {
-        const path = // path of the image;
-        return <S3Image path={path} />
+        <PhotoPicker onPick={data => console.log(data)} />
     }
 ```
 
-For private image, supply `level` property
-```
-        return <S3Image level="private" path={path} />
+To have a preview
+
+```jsx
+<PhotoPicker preview onLoad={dataURL => console.log(dataURL)} />
 ```
 
-To upload, set the body property to S3Image
+`onLoad` gives dataURL of the image. With that, you may not need the built-in preview. Then just hide it
+
+```jsx
+<PhotoPicker preview="hidden" onLoad={dataURL => console.log(dataURL)} />
 ```
+
+### S3Image
+
+`S3Image` component renders Amazon S3 key as an image:
+
+```jsx
 import { S3Image } from 'aws-amplify-react';
 
     render() {
-        const path = // path of the image;
-        return <S3Image path={path} body={this.state.image_body} />
+        return <S3Image imgKey={key} />
+    }
+```
+
+For private image, supply the `level` property:
+
+```jsx
+return <S3Image level="private" imgKey={key} />
+```
+
+To upload, set the body property to S3Image:
+
+```jsx
+import { S3Image } from 'aws-amplify-react';
+
+    render() {
+        return <S3Image imgKey={key} body={this.state.image_body} />
+    }
+```
+
+To hide the image shown in the S3Image, set ```hidden```
+
+```jsx
+import { S3Image } from 'aws-amplify-react';
+
+    render() {
+        return <S3Image hidden imgKey={key} />
     }
 ```
 
 **Image URL**
-`S3Image` converts path to actual URL. To get the URL, listen to `onReady` event
-```
-    <S3Image path={path} onReady={url => console.log(url)}
-```
 
-#### S3Album
+`S3Image` converts path to actual URL. To get the URL, listen to the `onLoad` event:
 
-`S3Album` holds a list of S3Image
-```
-import { S3Album } from 'aws-amplify-react';
-
-    render() {
-        const path = // path of the list;
-        return <S3Album path={path} />
-```
-
-For private album, supply `level` property
-```
-        return <S3Album level="private" path={path} />
-```
-
-Might have non-image files in album, use `filter`
-```
-        return <S3Album
-                    level="private"
-                    path={path}
-                    filter={(item) => /jpg/i.test(item.path)}
-                />
+```jsx
+<S3Image imgKey={key} onLoad={url => console.log(url)} />
 ```
 
 **Photo Picker**
 
-Set `picker` property to true on `S3Album`. A `PhotoPicker` let user pick photos on his/her device.
-```
-    <S3Album path={path} picker />
+Set `picker` property to true on `S3Image`. A `PhotoPicker` let user pick photos on his/her device.
+
+```jsx
+<S3Image imgKey={key} picker />
 ```
 
-By default the photo picker saves photo on S3 with filename as key. To have custom key, add a callback
+After pick, the image will be uploaded to `imgKey`. You may just provide `path`, path plus image file name will be the upload key.
+
+```jsx
+<S3Image path={path} picker />
 ```
+
+To have custom key you can provide a callback:
+
+```jsx
 function fileToKey(data) {
     const { name, size, type } = data;
     return 'test_' + name;
 }
 
 ...
-
-    <S3Album path={path} picker fileToKey={fileToKey}/>
+<S3Image path={path} picker fileToKey={fileToKey} />
 ```
 
-`S3Album` will escape all spaces in key to underscore. So 'a b' becomes 'a_b'
+`S3Image` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
+
+### S3Text
+
+`S3Text` has similar behaviors as `S3Image`, only this is for text contents.
+
+### S3Album
+
+`S3Album` holds a list of `S3Image` and `S3Text` objects:
+
+<img src="S3Album_and_code.png" width="320px"/>
+
+```jsx
+import { S3Album } from 'aws-amplify-react';
+
+    render() {
+        return <S3Album path={path} />
+```
+
+For private album, supply the `level` property:
+
+```jsx
+return <S3Album level="private" path={path} />
+```
+
+You might have files under the path not in album. In this case you can provide a `filter` prop:
+
+```jsx
+return (
+    <S3Album
+        level="private"
+        path={path}
+        filter={(item) => /jpg/i.test(item.path)}
+    />
+);
+```
+
+**Picker**
+
+Set `picker` property to true on `S3Album`. A `Picker` let user pick photos or text files on his/her device.
+
+```jsx
+<S3Album path={path} picker />
+```
+
+By default photo picker saves photo on S3 with filename as key. To have custom key you can provide a callback:
+
+```jsx
+function fileToKey(data) {
+    const { name, size, type } = data;
+    return 'test_' + name;
+}
+
+...
+    <S3Album path={path} picker fileToKey={fileToKey} />
+```
+
+`S3Album` will escape all spaces in key to underscore. For example, 'a b' becomes 'a_b'.
+
+### Analytics for S3 components
+
+You can automatically track ```Storage``` operations on the following React components: ```S3Album```, ```S3Text```, ```S3Image``` by providing a ```track``` prop:
+
+```jsx
+return <S3Album track />
+```
+
+Enabling this will automatically send 'Storage' events to Amazon Pinpoint and you will be able to see them within the AWS Pinpoint console under Custom Events. The event name will be 'Storage' and within the attributes will be details about the operations that occurred. For example Storage -> method -> put etc.

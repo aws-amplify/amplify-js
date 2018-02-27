@@ -95,7 +95,11 @@ export default class S3Text extends Component {
         const { textKey, level, fileToKey, track } = this.props;
         const { file, name, size, type } = data;
         const key = textKey || (path + calcKey(data, fileToKey));
-        Storage.put(key, file, { contentType: type, track })
+        Storage.put(key, file, {
+            level: level? level: 'public',
+            contentType: type,
+            track
+        })
             .then(data => {
                 logger.debug('handle pick data', data);
                 that.getText(key, level, track);
@@ -152,7 +156,7 @@ export default class S3Text extends Component {
 
         return (
             <div style={textStyle}>
-                { this.textEl(text, theme) }
+                { textStyle? this.textEl(text, theme) : null }
                 { picker? <div>
                               <TextPicker
                                   key="picker"

@@ -11,17 +11,108 @@
  * and limitations under the License.
  */
 
-import AuthClass from './Auth';
+import React from 'react';
+import { View } from 'react-native';
+import { Logger } from 'aws-amplify';
+import Authenticator from './Authenticator';
+import AuthPiece from './AuthPiece';
+import Loading from './Loading';
+import SignIn from './SignIn';
+import ConfirmSignIn from './ConfirmSignIn';
+import SignUp from './SignUp';
+import ConfirmSignUp from './ConfirmSignUp';
+import ForgotPassword from './ForgotPassword';
+import RequireNewPassword from './RequireNewPassword';
+import VerifyContact from './VerifyContact';
+import Greetings from './Greetings';
 
-import { ConsoleLogger as Logger } from '../Common';
+const logger = new Logger('auth components');
 
-const logger = new Logger('Auth');
+export {
+    Authenticator,
+    AuthPiece,
+    SignIn,
+    ConfirmSignIn,
+    SignUp,
+    ConfirmSignUp,
+    ForgotPassword,
+    Loading,
+    RequireNewPassword,
+    VerifyContact,
+    Greetings
+};
 
-let _instance = null;
+export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = []) {
+    class Wrapper extends React.Component {
+        constructor(props) {
+            super(props);
 
-if (!_instance) {
-    logger.debug('Create Auth Instance');
-    _instance = new AuthClass();
+            this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
+
+            this.state = { authState: props.authState };
+        }
+
+        handleAuthStateChange(state, data) {
+            this.setState({ authState: state, authData: data });
+            if (this.props.onStateChange) { this.props.onStateChange(state, data); }
+        }
+
+        render() {
+            const { authState, authData } = this.state;
+            const signedIn = (authState === 'signedIn');
+            if (signedIn) {
+                if (!includeGreetings) {
+                    return (
+                        <Comp
+                            {...this.props}
+                            authState={authState}
+                            authData={authData}
+                            onStateChange={this.handleAuthStateChange}
+                        />
+                    )
+                }
+
+                return (
+                    <View>
+                        <Greetings
+                            authState={authState}
+                            authData={authData}
+                            onStateChange={this.handleAuthStateChange}
+                        />
+                        <Comp
+                            {...this.props}
+                            authState={authState}
+                            authData={authData}
+                            onStateChange={this.handleAuthStateChange}
+                        />
+                    </View>
+                )
+            }
+
+            return <Authenticator
+                {...this.props}
+                hideDefault={authenticatorComponents.length > 0}
+                onStateChange={this.handleAuthStateChange}
+                children={authenticatorComponents}
+            />
+        }
+    }
+
+    Object.keys(Comp).forEach(key => {
+        // Copy static properties in order to be as close to Comp as possible.
+        // One particular case is navigationOptions
+        try {
+            const excludes = [
+                'displayName',
+                'childContextTypes'
+            ];
+            if (excludes.includes(key)) { return; }
+
+            Wrapper[key] = Comp[key];
+        } catch(err) {
+            logger.warn('not able to assign ' + key, err);
+        }
+    });
+
+    return Wrapper;
 }
-
-export default Auth = _instance;

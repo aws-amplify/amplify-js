@@ -15,12 +15,15 @@ import AnalyticsClass from './Analytics';
 
 import {
     ConsoleLogger as Logger,
-    Hub
+    Hub,
+    Linking,
+    AppState
 } from '../Common';
+import Platform from '../Common/Platform';
 
 const logger = new Logger('Analytics');
 
-let _instance = null;
+let _instance: AnalyticsClass = null;
 
 if (!_instance) {
     logger.debug('Create Analytics Instance');
@@ -29,6 +32,21 @@ if (!_instance) {
 
 const Analytics = _instance;
 export default Analytics;
+
+// listen on app state change
+const dispatchAppStateEvent = (event, data) => {
+    Hub.dispatch('appState', { event, data }, 'AppState');
+};
+
+if (Platform.isReactNative) {
+    AppState.addEventListener('change', (nextAppState) => {
+        switch(nextAppState) {
+            case 'active':
+                dispatchAppStateEvent('active', {});
+        }
+    });
+}
+
 
 Analytics.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;
@@ -48,8 +66,6 @@ const storageEvent = (payload) => {
     const { attrs, metrics } = payload;
     if (!attrs) return;
 
-    logger.debug('record storage events');
-    logger.debug(payload);
     Analytics.record('Storage', attrs, metrics);
 };
 

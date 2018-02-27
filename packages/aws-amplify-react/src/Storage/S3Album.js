@@ -41,7 +41,8 @@ export default class S3Album extends Component {
         const theme = this.props.theme || AmplifyTheme;
         this.state = {
             theme: theme,
-            items: []
+            items: [],
+            ts: new Date().getTime()
         };
 
         Hub.listen('window', this, 'S3Album');
@@ -72,14 +73,18 @@ export default class S3Album extends Component {
 
     handlePick(data) {
         const that = this;
-        const { onPick, onLoad, onError, track } = this.props;
+        const { onPick, onLoad, onError, track, level } = this.props;
 
         if (onPick) { onPick(data); }
 
         const path = this.props.path || '';
         const { file, name, size, type } = data;
         const key = path + this.getKey(data);
-        Storage.put(key, file, { contentType: type, track })
+        Storage.put(key, file, {
+            level: level? level: 'public',
+            contentType: type,
+            track
+        })
             .then(data => {
                 logger.debug('handle pick data', data);
                 const { items } = this.state;
@@ -95,6 +100,7 @@ export default class S3Album extends Component {
                 logger.debug('handle pick error', err);
                 if (onError) { onError(err); }
             });
+        this.setState({ ts: new Date().getTime() });
     }
 
     handleClick(item) {
@@ -201,8 +207,8 @@ export default class S3Album extends Component {
     }
 
     render() {
-        const { picker, translateItem } = this.props;
-        const { items } = this.state;
+        const { picker, translateItem, level } = this.props;
+        const { items, ts } = this.state;
 
         const pickerTitle = this.props.pickerTitle || 'Pick';
 
@@ -217,6 +223,7 @@ export default class S3Album extends Component {
                              style={theme.albumText}
                              selected={item.selected}
                              translate={translateItem}
+                             level={level}
                              onClick={() => this.handleClick(item)}
                            />
                          : <S3Image
@@ -226,6 +233,7 @@ export default class S3Album extends Component {
                              style={theme.albumPhoto}
                              selected={item.selected}
                              translate={translateItem}
+                             level={level}
                              onClick={() => this.handleClick(item)}
                            />
         });
@@ -235,7 +243,7 @@ export default class S3Album extends Component {
                     {list}
                 </div>
                 { picker? <Picker
-                            key="picker"
+                            key={ts}
                             title={pickerTitle}
                             accept="image/*, text/*"
                             onPick={this.handlePick}

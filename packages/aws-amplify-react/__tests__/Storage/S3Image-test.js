@@ -177,7 +177,7 @@ describe('S3Image', () => {
             await s3Image.handlePick(data);
 
             expect.assertions(2);
-            expect(spyon).toBeCalledWith('imgKey', 'file', {contentType: 'type'});
+            expect(spyon).toBeCalledWith('imgKey', 'file', {"contentType": "type", "level": "level", "track": undefined});
             expect(spyon2).toBeCalled();
 
             spyon.mockClear();
@@ -307,6 +307,42 @@ describe('S3Image', () => {
             const wrapper = mount(<S3Image/>);
 
             expect(spyon).toBeCalled();
+            spyon.mockClear();
+        });
+    });
+
+    describe('getImageSource test', () => {
+        test('happy case', () => {
+            const wrapper = shallow(<S3Image/>);
+            const s3Image = wrapper.instance();
+
+            const spyon = jest.spyOn(Storage, 'get').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('url');
+                });
+            });
+
+            s3Image.getImageSource('key', 'level', false);
+            expect(spyon).toBeCalledWith('key', {level: 'level', track: false});
+            spyon.mockClear();
+        });
+
+        test('error case', () => {
+            const wrapper = shallow(<S3Image/>);
+            const s3Image = wrapper.instance();
+
+            const spyon = jest.spyOn(Storage, 'get').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                });
+            });
+
+            try {
+                s3Image.getImageSource('key', 'level', false);
+            } catch (e) {
+                expect(e).not.toBeNull();
+            }
+    
             spyon.mockClear();
         });
     });

@@ -163,7 +163,11 @@ var S3Image = function (_Component) {
                     type = data.type;
 
                 var key = imgKey || path + (0, _Common.calcKey)(data, fileToKey);
-                _awsAmplify.Storage.put(key, file, { contentType: type, track: track }).then(function (data) {
+                _awsAmplify.Storage.put(key, file, {
+                    level: level ? level : 'public',
+                    contentType: type,
+                    track: track
+                }).then(function (data) {
                     logger.debug('handle pick data', data);
                     that.getImageSource(key, level, track);
                 })['catch'](function (err) {
@@ -262,7 +266,7 @@ var S3Image = function (_Component) {
                 return _react2['default'].createElement(
                     'div',
                     { style: photoStyle },
-                    this.imageEl(src, theme),
+                    photoStyle ? this.imageEl(src, theme) : null,
                     picker ? _react2['default'].createElement(
                         'div',
                         null,

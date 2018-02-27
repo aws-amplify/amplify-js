@@ -90,7 +90,11 @@ export default class S3Image extends Component {
         const { imgKey, level, fileToKey, track } = this.props;
         const { file, name, size, type } = data;
         const key = imgKey || (path + calcKey(data, fileToKey));
-        Storage.put(key, file, { contentType: type, track })
+        Storage.put(key, file, { 
+            level: level? level: 'public',
+            contentType: type, 
+            track 
+        })
             .then(data => {
                 logger.debug('handle pick data', data);
                 that.getImageSource(key, level, track);
@@ -152,7 +156,7 @@ export default class S3Image extends Component {
 
         return (
             <div style={photoStyle}>
-                { this.imageEl(src, theme) }
+                { photoStyle? this.imageEl(src, theme): null }
                 { picker? <div>
                               <PhotoPicker
                                   key="picker"

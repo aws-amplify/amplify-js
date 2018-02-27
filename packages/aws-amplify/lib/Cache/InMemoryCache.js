@@ -32,6 +32,7 @@ var logger = new Common_1.ConsoleLogger('InMemoryCache');
 var CacheObject = /** @class */ (function () {
     function CacheObject() {
         this.store = {};
+        logger.debug('Using InMemoryCache');
     }
     CacheObject.prototype.clear = function () {
         this.store = {};

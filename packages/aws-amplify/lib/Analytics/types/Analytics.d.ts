@@ -1,3 +1,4 @@
+import { AWS } from '../../Common';
 /**
 * Analytics instance options
 */

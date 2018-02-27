@@ -1241,7 +1241,7 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
     <FederatedButtons
       authState="signIn"
       federated={true}
-      onStateChange={[Function]}
+      onStateChange={[MockFunction]}
       theme={
         Object {
           "a": Object {

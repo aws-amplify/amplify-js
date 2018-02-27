@@ -28,6 +28,7 @@ export interface AuthOptions {
     userPoolWebClientId: string,
     identityPoolId: string,
     region?: string,
+    mandatorySignIn: boolean
 }
 
 /**
