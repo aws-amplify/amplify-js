@@ -152,7 +152,7 @@ This instructions will be splited for [Android](android) and [iOS](ios) that cou
 
 ## Integration
 
-1. Import the ```PushNotification``` module and configure it. Make sure that you have configured the ```Analytics``` module before.
+ 1. Import the ```PushNotification``` module and configure it. Make sure that you have configured the ```Analytics``` module before.
 
 ```js
 import { PushNotificationIOS } from 'react-native';
@@ -175,7 +175,7 @@ PushNotification.configure({
 });
 ```
 
-2. Get the registration token and notification data by using:
+ 2. Get the registration token and notification data by using:
 
 ```js
 // get the notification data
