@@ -78,9 +78,7 @@ $ react-native link aws-amplify-react-native
     </application>
 ```
 
-7. Follow this [link](https://firebase.google.com/docs/cloud-messaging/android/client?authuser=0) to setup your app with Google Firebase for Push Notifications on Android.
-
-8. Run your app with ```yarn/npm run android``` or appropriate run command.
+7. Run your app with ```yarn/npm run android``` or appropriate run command.
 
 ### Setup for IOS device
 
