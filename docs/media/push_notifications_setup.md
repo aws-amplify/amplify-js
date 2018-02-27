@@ -69,7 +69,7 @@ $ react-native link aws-amplify-react-native
             </intent-filter>
         </service>
         <receiver
-            android:name="com.amazonaws.amplify.pushnotification.RNPushNotificationBroadcastReceiver"
+            android:name="com.amazonaws.amplify.pushnotification.modules.RNPushNotificationBroadcastReceiver"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.amazonaws.amplify.pushnotification.NOTIFICATION_OPENED"/>
