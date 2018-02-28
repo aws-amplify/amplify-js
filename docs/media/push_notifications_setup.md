@@ -101,6 +101,7 @@ $ react-native link aws-amplify-react-native
 ```js
 $ react-native init myapp
 $ cd myapp
+$ npm install
 $ npm install aws-amplify --save
 $ npm install aws-amplify-react-native --save
 $ react-native link aws-amplify-react-native
@@ -108,7 +109,7 @@ $ react-native link aws-amplify-react-native
 
 4. open ```ios/myapp.xcodeproj```:
 
-5. [Manually link the PushNotificationIOS library](https://facebook.github.io/react-native/docs/linking-libraries-ios.html#manual-linking)
+5. [Manually link the PushNotificationIOS library](https://facebook.github.io/react-native/docs/linking-libraries-ios.html#manual-linking) Manual link steps 1 and 2. (Step 3 not required)
 
 6. Add the following code at the top on the file ```AppDelegate.m```
 ```c
@@ -157,7 +158,9 @@ $ react-native link aws-amplify-react-native
  
 <img src="./capabilities.gif" style="display: block;height: auto;width: 100%;"/>
 
-10. Run your app
+10. [Integrate with JavaScript](#integration) into your React Native app code.
+
+11. Run your app
  - On Xcode select your device and run by first using as Executable appName.app and this install the App on your device but it won't run (is ok, trust me)
  - On Product>Schema>Edit Schema on Run>Info tab on Executable section select Ask on Launch.
  - Click run button and select your app from the list.
@@ -189,6 +192,21 @@ PushNotification.configure({
     // ...
 });
 ```
+
+You can also call configure by using aws-exports.js file
+
+```js
+import { PushNotificationIOS } from 'react-native';
+import Amplify from 'aws-amplify';
+import { PushNotification } from 'aws-amplify-react-native';
+import aws_exports from './aws_exports';
+
+// PushNotification need to work with Analytics
+Amplify.configure(aws_exports);
+
+PushNotification.configure(aws_exports);
+```
+
 
 Retrieve the registration token and notification data by using:
 
