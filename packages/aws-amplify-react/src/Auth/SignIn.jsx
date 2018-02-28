@@ -65,7 +65,7 @@ export default class SignIn extends AuthPiece {
                     this.changeState('requireNewPassword', user);
                 } else if (user.challengeName === 'MFA_SETUP') {
                     logger.debug('mfa setup', user.challengeParam);
-                    this.changeState('mfaSetup');
+                    this.changeState('mfaSetup', user);
                 }
                 else {
                     this.checkContact(user);

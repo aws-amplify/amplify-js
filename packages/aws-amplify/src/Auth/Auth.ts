@@ -277,6 +277,20 @@ export default class AuthClass {
         });
     }
 
+    public getMFAOptions(user) {
+        return new Promise((res, rej) => {
+            user.getMFAOptions((err, mfaOptions) => {
+                if (err) {
+                    logger.debug('get MFA Options failed', err);
+                    rej(err);
+                }
+                logger.debug('get MFA options success', mfaOptions)
+                res(mfaOptions);
+            });
+        });
+    }
+    
+
     public setPreferedMFA(user, mfaMethod): Promise<any> {
         let smsMfaSettings = null;
         let totpMfaSettings = null;
@@ -326,6 +340,7 @@ export default class AuthClass {
      * verify TOTP setup
      */
     public verifyTotpToken(user, challengeAnswer) {
+        logger.debug('verfication totp token', user, challengeAnswer);
         return new Promise((res, rej) => {
             user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
                 onFailure: (err) => {

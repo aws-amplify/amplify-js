@@ -99,7 +99,7 @@ var SignIn = function (_AuthPiece) {
                         _this3.changeState('requireNewPassword', user);
                     } else if (user.challengeName === 'MFA_SETUP') {
                         logger.debug('mfa setup', user.challengeParam);
-                        _this3.changeState('mfaSetup');
+                        _this3.changeState('mfaSetup', user);
                     } else {
                         _this3.checkContact(user);
                     }

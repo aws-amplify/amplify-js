@@ -26,6 +26,8 @@ import {
     Link
 } from '../AmplifyUI';
 
+import QRCode from 'qrcode.react';
+
 const logger = new Logger('mfaSetup');
 
 export default class MFASetup extends AuthPiece {
@@ -34,33 +36,64 @@ export default class MFASetup extends AuthPiece {
 
         this._validAuthStates = ['mfaSetup'];
         this.setup = this.setup.bind(this);
+        this.showSecretCode = this.showSecretCode.bind(this);
+        this.verifyTotpToken= this.verifyTotpToken.bind(this);
+
+        this.state = {
+            code: null
+        }
     }
 
     setup() {
         const user = this.props.authData;
-        Auth.mfaSetup(user).then((data) => {
-            logger.debug(data);
+        Auth.setupMFA(user).then((data) => {
+            logger.debug('secret key', data);
+            const code = "otpauth://totp/AWSCognito:"+ user.username + "?secret=" + data + "&issuer=AWSCognito";
+            this.setState({code});
+
         }).catch((err) => logger.debug('mfa setup failed', err));
+    }
+
+    verifyTotpToken() {
+        const user = this.props.authData;
+        const { totpCode } = this.inputs;
+        Auth.verifyTotpToken(user, totpCode)
+            .then(() => this.changeState('signedIn', user))
+            .catch(err => this.error(err));
+    }
+
+    showSecretCode(code) {
+        if (!code) return null;
+        return (
+            <div>
+                <QRCode value={code}/>
+            </div>
+        )
     }
 
     showComponent(theme) {
         const { hide } = this.props;
         if (hide && hide.includes(MFASetup)) { return null; }
+        let code = this.state.code;
 
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Confirm Code')}</SectionHeader>
+                <SectionHeader theme={theme}>{I18n.get('MFA Setup')}</SectionHeader>
                 <SectionBody theme={theme}>
+                    {this.showSecretCode(code)}
+                    <ButtonRow theme={theme} onClick={this.setup}>
+                        {I18n.get('Get secret key')}
+                    </ButtonRow>
                     <InputRow
                         autoFocus
-                        placeholder={I18n.get('Code')}
+                        placeholder={I18n.get('totp verification token')}
                         theme={theme}
-                        key="code"
-                        name="code"
+                        key="totpCode"
+                        name="totpCode"
                         onChange={this.handleInputChange}
                     />
-                    <ButtonRow theme={theme} onClick={this.setup}>
-                        {I18n.get('get secret key')}
+                    <ButtonRow theme={theme} onClick={this.verifyTotpToken}>
+                        {I18n.get('Verify')}
                     </ButtonRow>
                 </SectionBody>
                 <SectionFooter theme={theme}>

@@ -321,6 +321,18 @@ var AuthClass = /** @class */ (function () {
             });
         });
     };
+    AuthClass.prototype.getMFAOptions = function (user) {
+        return new Promise(function (res, rej) {
+            user.getMFAOptions(function (err, mfaOptions) {
+                if (err) {
+                    logger.debug('get MFA Options failed', err);
+                    rej(err);
+                }
+                logger.debug('get MFA options success', mfaOptions);
+                res(mfaOptions);
+            });
+        });
+    };
     AuthClass.prototype.setPreferedMFA = function (user, mfaMethod) {
         var smsMfaSettings = null;
         var totpMfaSettings = null;
@@ -368,6 +380,7 @@ var AuthClass = /** @class */ (function () {
      * verify TOTP setup
      */
     AuthClass.prototype.verifyTotpToken = function (user, challengeAnswer) {
+        logger.debug('verfication totp token', user, challengeAnswer);
         return new Promise(function (res, rej) {
             user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
                 onFailure: function (err) {
