@@ -87,7 +87,9 @@ $ react-native link aws-amplify-react-native
  - Add your package name i.e. com.myProjectName
  - Download the `google-services.json` file to `android/app`
  
-8. Run your app with ```yarn/npm run android``` or appropriate run command.
+8. [Integrate with JavaScript](#integration) into your React Native app code.
+ 
+9. Run your app with ```yarn/npm run android``` or appropriate run command.
 
 ### Setup for IOS device
 
