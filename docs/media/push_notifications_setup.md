@@ -15,8 +15,10 @@ The instructions are split for [Android](android) and [iOS](ios) and can be used
 
 ### Setup for Android device
 
-1. [Set up Android push notifications](https://docs.aws.amazon.com/pinpoint/latest/developerguide/mobile-push-android.html)
+First, make sure you have a [Firebase](https://console.firebase.google.com) project and app setup. 
 
+1. [Set up Android push notifications](https://docs.aws.amazon.com/pinpoint/latest/developerguide/mobile-push-android.html)
+    
 2. [Add your API key and Sender ID to AWS Pinpoint](https://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started-android-mobilehub.html)
 
 3. Create and link a React Native app:
@@ -78,7 +80,14 @@ $ react-native link aws-amplify-react-native
     </application>
 ```
 
-7. Run your app with ```yarn/npm run android``` or appropriate run command.
+7. Add your firebase app to your firebase project:
+ - Visit the [Firebase](https://console.firebase.google.com) console and click the Gear icon next to "Project Overview" and click "Project Settings"
+ - Click "Add App"
+ - Choose "Add Firebase to your Android App"
+ - Add your package name i.e. com.myProjectName
+ - Download the `google-services.json` file to `android/app`
+ 
+8. Run your app with ```yarn/npm run android``` or appropriate run command.
 
 ### Setup for IOS device
 
