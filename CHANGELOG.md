@@ -3,6 +3,10 @@
 <!--ENTRYINSERT-->
 
 ## 02/27/2018
+* aws-amplify - v0.2.9
+    * Bug Fix: Fix for missing endpoint in config #373
+    
+## 02/27/2018
 * aws-amplify - v0.2.8
     * Enhancement: Allow service info config for API #312
     * Enhancement: Add expires key to s3.get() #327
