@@ -34316,32 +34316,45 @@ var AnalyticsClass = /** @class */ (function () {
         });
     };
     AnalyticsClass.prototype.updateEndpoint = function (config) {
-        var conf = config ? config.Analytics || config : {};
-        this._config = Object.assign({}, this._config, conf);
-        var _a = this._config, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials, region = _a.region;
-        var request = this._endpointRequest();
-        var update_params = {
-            ApplicationId: appId,
-            EndpointId: endpointId,
-            EndpointRequest: request
-        };
-        if (!this.pinpointClient) {
-            this.pinpointClient = new Common_1.Pinpoint({
-                region: region,
-                credentials: credentials
-            });
-        }
-        var that = this;
-        logger.debug('updateEndpoint with params: ', update_params);
-        return new Promise(function (res, rej) {
-            that.pinpointClient.updateEndpoint(update_params, function (err, data) {
-                if (err) {
-                    logger.debug('Pinpoint ERROR', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('Pinpoint SUCCESS', data);
-                    res(data);
+        return __awaiter(this, void 0, void 0, function () {
+            var credentialsOK, conf, _a, appId, endpointId, credentials, region, request, update_params, that;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _b.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        conf = config ? config.Analytics || config : {};
+                        this._config = Object.assign({}, this._config, conf);
+                        _a = this._config, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials, region = _a.region;
+                        request = this._endpointRequest();
+                        update_params = {
+                            ApplicationId: appId,
+                            EndpointId: endpointId,
+                            EndpointRequest: request
+                        };
+                        if (!this.pinpointClient) {
+                            this.pinpointClient = new Common_1.Pinpoint({
+                                region: region,
+                                credentials: credentials
+                            });
+                        }
+                        that = this;
+                        logger.debug('updateEndpoint with params: ', update_params);
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                that.pinpointClient.updateEndpoint(update_params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('Pinpoint ERROR', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('Pinpoint SUCCESS', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
                 }
             });
         });
