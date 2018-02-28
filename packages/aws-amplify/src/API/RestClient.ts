@@ -81,7 +81,7 @@ export class RestClient {
         let libraryHeaders = {};
 
         if (Platform.isReactNative) {
-            const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
+        const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
             libraryHeaders = {
                 'User-Agent': userAgent
             };
@@ -199,7 +199,7 @@ export class RestClient {
         const creds = {
             'secret_key': credentials.secretAccessKey,
             'access_key': credentials.accessKeyId,
-            'session_token': credentials.sessionToken
+            'session_token': credentials.sessionToken 
         };
         const service_info = {
             'service': endpoint_service,

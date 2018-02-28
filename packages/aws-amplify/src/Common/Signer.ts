@@ -109,7 +109,7 @@ const fixed_encodeURIComponent = function(str) {
 *
 <pre>
 CanonicalRequest =
-    HTTPRequestMethod + '\n' + 
+    HTTPRequestMethod + '\n' +
     CanonicalURI + '\n' +
     CanonicalQueryString + '\n' +
     CanonicalHeaders + '\n' +
