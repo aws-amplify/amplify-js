@@ -36,3 +36,4 @@ if (!_instance) {
 
 const Storage = _instance;
 export default Storage;
+export { StorageClass };

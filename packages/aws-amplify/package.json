@@ -6,8 +6,8 @@
   "typings": "./lib/index.d.ts",
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
-    "build-with-test": "npm run clean && npm test && tsc && webpack",
-    "build": "npm run clean && tsc && webpack",
+    "build-with-test": "npm run clean && npm test && tsc -d && webpack",
+    "build": "npm run clean && tsc -d && webpack",
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'",
