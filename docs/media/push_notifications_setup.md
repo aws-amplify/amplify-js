@@ -10,6 +10,7 @@ The instructions are split for [Android](android) and [iOS](ios) and can be used
     - [Setup for Android device](#setup-for-android-device)
     - [Setup for IOS device](#setup-for-ios-device)
 * [React Native Integration](#integration)
+* [Test your app notifications with Amazon Pinpoint](#test-your-app)
 
 ## Installation and Configuration
 
@@ -226,3 +227,5 @@ PushNotification.onRegister((token) => {
 });
 ```
 
+## Test your app
+Now you can send campaign notifications to your app, [just follow these instructions](https://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started-sampletest.html)
