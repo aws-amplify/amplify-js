@@ -916,6 +916,9 @@ img { max-width: 100%; }
 					<a href="authclass.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="authclass.html#changepassword" class="tsd-kind-icon">change<wbr>Password</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="authclass.html#completenewpassword" class="tsd-kind-icon">complete<wbr>New<wbr>Password</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -1027,6 +1030,7 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#changepassword" class="tsd-kind-icon">change<wbr>Password</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#completenewpassword" class="tsd-kind-icon">complete<wbr>New<wbr>Password</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#configure" class="tsd-kind-icon">configure</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="authclass.html#confirmsignin" class="tsd-kind-icon">confirm<wbr>Sign<wbr>In</a></li>
@@ -1070,7 +1074,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L53">Auth/Auth.ts:53</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L53">Auth/Auth.ts:53</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1097,6 +1101,52 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="changepassword" class="tsd-anchor"></a>
+				<h3>change<wbr>Password</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">change<wbr>Password<span class="tsd-signature-symbol">(</span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, oldPassword<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, newPassword<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L612">Auth/Auth.ts:612</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Change a password for an authenticated user</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>user: <span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The CognitoUser object</p>
+								</div>
+							</li>
+							<li>
+								<h5>oldPassword: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>the current password</p>
+								</div>
+							</li>
+							<li>
+								<h5>newPassword: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>the requested new password</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<ul>
+							<li>A promise resolves if success</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="completenewpassword" class="tsd-anchor"></a>
 				<h3>complete<wbr>New<wbr>Password</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1106,7 +1156,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L280">Auth/Auth.ts:280</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L281">Auth/Auth.ts:281</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1135,7 +1185,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L68">Auth/Auth.ts:68</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L68">Auth/Auth.ts:68</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1158,7 +1208,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L259">Auth/Auth.ts:259</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L260">Auth/Auth.ts:260</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1195,7 +1245,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L165">Auth/Auth.ts:165</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L166">Auth/Auth.ts:166</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1235,7 +1285,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L429">Auth/Auth.ts:429</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L431">Auth/Auth.ts:431</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1260,7 +1310,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L518">Auth/Auth.ts:518</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L520">Auth/Auth.ts:520</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1277,7 +1327,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L445">Auth/Auth.ts:445</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L447">Auth/Auth.ts:447</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1302,7 +1352,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L479">Auth/Auth.ts:479</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L481">Auth/Auth.ts:481</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1327,7 +1377,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L664">Auth/Auth.ts:664</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L689">Auth/Auth.ts:689</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1356,7 +1406,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L387">Auth/Auth.ts:387</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L388">Auth/Auth.ts:388</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1381,7 +1431,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L719">Auth/Auth.ts:719</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L741">Auth/Auth.ts:741</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1429,7 +1479,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L703">Auth/Auth.ts:703</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L725">Auth/Auth.ts:725</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1472,7 +1522,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L608">Auth/Auth.ts:608</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L633">Auth/Auth.ts:633</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1506,7 +1556,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L637">Auth/Auth.ts:637</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L662">Auth/Auth.ts:662</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1552,7 +1602,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L186">Auth/Auth.ts:186</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L187">Auth/Auth.ts:187</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1586,7 +1636,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L207">Auth/Auth.ts:207</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L208">Auth/Auth.ts:208</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1626,7 +1676,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L576">Auth/Auth.ts:576</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L578">Auth/Auth.ts:578</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1651,7 +1701,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L111">Auth/Auth.ts:111</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L112">Auth/Auth.ts:112</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1691,7 +1741,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L316">Auth/Auth.ts:316</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L317">Auth/Auth.ts:317</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1722,7 +1772,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L344">Auth/Auth.ts:344</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L345">Auth/Auth.ts:345</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1756,7 +1806,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L466">Auth/Auth.ts:466</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L468">Auth/Auth.ts:468</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1790,7 +1840,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L355">Auth/Auth.ts:355</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L356">Auth/Auth.ts:356</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1813,7 +1863,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L555">Auth/Auth.ts:555</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L557">Auth/Auth.ts:557</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1836,7 +1886,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L567">Auth/Auth.ts:567</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L569">Auth/Auth.ts:569</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1876,7 +1926,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L528">Auth/Auth.ts:528</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L530">Auth/Auth.ts:530</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1916,7 +1966,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/mlabieniec/aws-amplify/blob/bd8cd5d/packages/aws-amplify/src/Auth/Auth.ts#L544">Auth/Auth.ts:544</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L546">Auth/Auth.ts:546</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">

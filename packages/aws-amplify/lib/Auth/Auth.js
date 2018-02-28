@@ -687,6 +687,29 @@ var AuthClass = /** @class */ (function () {
         });
     };
     /**
+     * Change a password for an authenticated user
+     * @param {Object} user - The CognitoUser object
+     * @param {String} oldPassword - the current password
+     * @param {String} newPassword - the requested new password
+     * @return - A promise resolves if success
+     */
+    AuthClass.prototype.changePassword = function (user, oldPassword, newPassword) {
+        return this.userSession(user)
+            .then(function (session) {
+            return new Promise(function (resolve, reject) {
+                user.changePassword(oldPassword, newPassword, function (err, data) {
+                    if (err) {
+                        logger.debug('change password failure', err);
+                        reject(err);
+                    }
+                    else {
+                        resolve(data);
+                    }
+                });
+            });
+        });
+    };
+    /**
      * Initiate a forgot password request
      * @param {String} username - the username to change password
      * @return - A promise resolves if success
