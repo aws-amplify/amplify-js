@@ -494,7 +494,7 @@ exports[`S3Album test render test render correctly if has images and texts 1`] =
   </div>
   <Picker
     accept="image/*, text/*"
-    key="1518649082227"
+    key="1519772216673"
     onPick={[Function]}
     theme={
       Object {
