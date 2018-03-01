@@ -100,11 +100,11 @@ declare module "amazon-cognito-identity-js" {
     }
 
     export interface UserData {
-        MFAOptions: MFAOption[],
-        PreferredMfaSetting: string,
-        UserAttributes: ICognitoUserAttributeData[],
-        UserMFASettingList: string[],
-        Username: string
+        MFAOptions: MFAOption[];
+        PreferredMfaSetting: string;
+        UserAttributes: ICognitoUserAttributeData[];
+        UserMFASettingList: string[];
+        Username: string;
     }
 
     export interface ICognitoUserAttributeData {
