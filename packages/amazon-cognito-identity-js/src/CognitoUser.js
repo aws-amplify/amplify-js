@@ -1043,7 +1043,7 @@ export default class CognitoUser {
 
   /**
    * This is used by an authenticated users to get the userData
-   * @param {nodeCallback<MFAOptions>} callback Called on success or error.
+   * @param {nodeCallback<UserData>} callback Called on success or error.
    * @returns {void}
    */
   getUserData(callback) {
