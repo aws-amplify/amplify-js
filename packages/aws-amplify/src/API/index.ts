@@ -26,3 +26,4 @@ if (!_instance) {
 
 const API = _instance;
 export default API;
+export { APIClass };
