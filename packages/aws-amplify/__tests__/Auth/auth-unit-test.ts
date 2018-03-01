@@ -1119,6 +1119,11 @@ describe('auth unit test', () => {
                 return user;
             });
             const spyon2 = jest.spyOn(CognitoUser.prototype, "signOut");
+            // @ts-ignore
+            const spyon3 = jest.spyOn(Auth.prototype, "setCredentialsFromSession")
+            .mockImplementationOnce(() => {
+                return;
+            });
 
             await auth.signOut();
 
@@ -1128,6 +1133,7 @@ describe('auth unit test', () => {
             spyonAuth.mockClear();
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
 
         test('no UserPool', async () => {
