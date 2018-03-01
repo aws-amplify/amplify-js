@@ -3,7 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+<<<<<<< HEAD
 exports.AuthenticatorWrapper = exports.MFASetup = exports.FederatedButtons = exports.FederatedSignIn = exports.Greetings = exports.ForgotPassword = exports.ConfirmSignUp = exports.SignUp = exports.RequireNewPassword = exports.ConfirmSignIn = exports.SignIn = exports.AuthPiece = exports.Authenticator = undefined;
+=======
+exports.AuthenticatorWrapper = exports.FederatedButtons = exports.FederatedSignIn = exports.Greetings = exports.ForgotPassword = exports.VerifyContact = exports.ConfirmSignUp = exports.SignUp = exports.RequireNewPassword = exports.ConfirmSignIn = exports.SignIn = exports.AuthPiece = exports.Authenticator = undefined;
+>>>>>>> upstream/master
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -94,6 +98,19 @@ Object.defineProperty(exports, 'ConfirmSignUp', {
     get: function () {
         function get() {
             return _interopRequireDefault(_ConfirmSignUp)['default'];
+        }
+
+        return get;
+    }()
+});
+
+var _VerifyContact = require('./VerifyContact');
+
+Object.defineProperty(exports, 'VerifyContact', {
+    enumerable: true,
+    get: function () {
+        function get() {
+            return _interopRequireDefault(_VerifyContact)['default'];
         }
 
         return get;

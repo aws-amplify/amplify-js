@@ -36,6 +36,22 @@ describe('StorageCache', () => {
             expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
             config.capacityInBytes = tmp;
         });
+        
+        test('set to default if config capacityInBytes is not integer', () => {
+            const tmp = config.capacityInBytes;
+            config.capacityInBytes = 1048576;
+            const storage: StorageCache = new StorageCache(config);
+            expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
+            config.capacityInBytes = tmp;
+        });
+
+        test('set to default if config capacityInBytes is not integer', () => {
+            const tmp = config.capacityInBytes;
+            config.capacityInBytes = 1048576;
+            const storage: StorageCache = new StorageCache(config);
+            expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
+            config.capacityInBytes = tmp;
+        });
 
         test('set to default if config itemMaxSize is not integer', () => {
             const tmp = config.itemMaxSize;

@@ -56,69 +56,40 @@ export default class SelectMFAType extends AuthPiece {
             .catch(err => this.error(err));
     }
 
-    submit() {
-        const attr = this.state.verifyAttr;
-        const { code } = this.inputs;
-        Auth.verifyCurrentUserAttributeSubmit(attr, code)
-            .then(data => {
-                logger.debug(data);
-                this.changeState('signedIn', this.props.authData);
-                this.setState({ verifyAttr: null });
-            })
-            .catch(err => this.error(err));
-    }
-
-    verifyView() {
-        const user = this.props.authData;
-        if (!user) {
-            logger.debug('no user for verify');
-            return null;
-        }
-        const { unverified } = user;
-        if (!unverified) {
-            logger.debug('no unverified on user');
-            return null;
-        }
-        const { email, phone_number } = unverified;
-        const theme = this.props.theme || AmplifyTheme;
+    selectView() {
+        const { MFATypes } = this.props;
+        const { SMS, TOTP, NONE } = MFATypes;
         return (
             <div>
-                { email? <RadioRow
-                            placeholder={I18n.get('Email')}
+                { SMS? <RadioRow
+                            placeholder={I18n.get('SMS')}
                             theme={theme}
-                            key="email"
-                            name="contact"
-                            value="email"
+                            key="sms"
+                            name="MFATypes"
+                            value="sms"
                             onChange={this.handleInputChange}
                          /> : null
                 }
-                { phone_number? <RadioRow
-                                    placeholder={I18n.get('Phone Number')}
-                                    theme={theme}
-                                    key="phone_number"
-                                    name="contact"
-                                    value="phone_number"
-                                    onChange={this.handleInputChange}
-                                /> : null
+                { TOTP? <RadioRow
+                            placeholder={I18n.get('TOTP')}
+                            theme={theme}
+                            key="totp"
+                            name="MFATypes"
+                            value="totp"
+                            onChange={this.handleInputChange}
+                         /> : null
+                }
+                { NONE? <RadioRow
+                            placeholder={I18n.get('No MFA')}
+                            theme={theme}
+                            key="noMFA"
+                            name="MFATypes"
+                            value="noMFA"
+                            onChange={this.handleInputChange}
+                         /> : null
                 }
                 <ButtonRow theme={theme} onClick={this.verify}>{I18n.get('Verify')}</ButtonRow>
-            </div>
-        )
-    }
-
-    submitView() {
-        const theme = this.props.theme || AmplifyTheme;
-        return (
-            <div>
-                <InputRow
-                    placeholder={I18n.get('Code')}
-                    theme={theme}
-                    key="code"
-                    name="code"
-                    onChange={this.handleInputChange}
-                />
-                <ButtonRow theme={theme} onClick={this.submit}>{I18n.get('Submit')}</ButtonRow>
-            </div>
+            </div> 
         )
     }
 

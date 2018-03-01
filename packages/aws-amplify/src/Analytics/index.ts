@@ -15,8 +15,11 @@ import AnalyticsClass from './Analytics';
 
 import {
     ConsoleLogger as Logger,
-    Hub
+    Hub,
+    Linking,
+    AppState
 } from '../Common';
+import Platform from '../Common/Platform';
 
 const logger = new Logger('Analytics');
 
@@ -29,6 +32,22 @@ if (!_instance) {
 
 const Analytics = _instance;
 export default Analytics;
+export { AnalyticsClass };
+
+// listen on app state change
+const dispatchAppStateEvent = (event, data) => {
+    Hub.dispatch('appState', { event, data }, 'AppState');
+};
+
+if (Platform.isReactNative) {
+    AppState.addEventListener('change', (nextAppState) => {
+        switch(nextAppState) {
+            case 'active':
+                dispatchAppStateEvent('active', {});
+        }
+    });
+}
+
 
 Analytics.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;

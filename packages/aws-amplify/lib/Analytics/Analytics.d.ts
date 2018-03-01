@@ -91,11 +91,14 @@ export default class AnalyticsClass {
      * @return - A promise resolves if endpoint updated successfully
      */
     _initPinpoint(): Promise<{}>;
+    updateEndpoint(config: any): Promise<{}>;
     /**
      * EndPoint request
      * @return {Object} - The request of updating endpoint
      */
     _endpointRequest(): {
+        Address: any;
+        ChannelType: string;
         Demographic: {
             AppVersion: any;
             Make: any;
@@ -103,8 +106,14 @@ export default class AnalyticsClass {
             ModelVersion: any;
             Platform: any;
         };
+        OptOut: any;
+        RequestId: any;
+        EffectiveDate: string;
         User: {
             UserId: any;
+            UserAttributes: {
+                CognitoIdentityPool: any[];
+            };
         };
     };
 }
