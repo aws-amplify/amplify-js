@@ -28,7 +28,7 @@ import {
 
 import QRCode from 'qrcode.react';
 
-const logger = new Logger('mfaSetup');
+const logger = new Logger('MFASetup');
 
 export default class MFASetup extends AuthPiece {
     constructor(props) {
