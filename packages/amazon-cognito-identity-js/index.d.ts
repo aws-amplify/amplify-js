@@ -85,6 +85,7 @@ declare module "amazon-cognito-identity-js" {
         public enableMFA(callback: NodeCallback<Error, string>): void;
         public disableMFA(callback: NodeCallback<Error, string>): void;
         public getMFAOptions(callback: NodeCallback<Error, MFAOption[]>): void;
+        public getUserData(callback: NodeCallback<Error, UserData>): void;
         public associateSoftwareToken(
             callbacks: {
                 associateSecretCode: (secretCode: string) => void,
@@ -98,6 +99,14 @@ declare module "amazon-cognito-identity-js" {
         AttributeName: string;
     }
 
+    export interface UserData {
+        MFAOptions: MFAOption[];
+        PreferredMfaSetting: string;
+        UserAttributes: ICognitoUserAttributeData[];
+        UserMFASettingList: string[];
+        Username: string;
+    }
+    
     export interface ICognitoUserAttributeData {
         Name: string;
         Value: string;
