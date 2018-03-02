@@ -14,7 +14,6 @@
 import React, { Component } from 'react';
 import { Auth, I18n, Logger } from 'aws-amplify';
 
-import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
@@ -28,20 +27,27 @@ import {
 
 import QRCode from 'qrcode.react';
 
-const logger = new Logger('MFASetup');
+const logger = new Logger('MFASetupComp');
 
-export default class MFASetup extends AuthPiece {
+export default class MFASetupComp extends Component {
     constructor(props) {
         super(props);
 
-        this._validAuthStates = ['mfaSetup'];
         this.setup = this.setup.bind(this);
         this.showSecretCode = this.showSecretCode.bind(this);
         this.verifyTotpToken= this.verifyTotpToken.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
 
         this.state = {
             code: null
         }
+    }
+
+    handleInputChange(evt) {
+        this.inputs = {};
+        const { name, value, type, checked } = evt.target;
+        const check_type = ['radio', 'checkbox'].includes(type);
+        this.inputs[name] = check_type? checked : value;
     }
 
     setup() {
@@ -58,8 +64,8 @@ export default class MFASetup extends AuthPiece {
         const user = this.props.authData;
         const { totpCode } = this.inputs;
         Auth.verifyTotpToken(user, totpCode)
-            .then(() => this.changeState('signedIn', user))
-            .catch(err => this.error(err));
+            .then(() => logger.debug('set up totp success!'))
+            .catch(err => logger.error(err));
     }
 
     showSecretCode(code) {
@@ -71,9 +77,8 @@ export default class MFASetup extends AuthPiece {
         )
     }
 
-    showComponent(theme) {
-        const { hide } = this.props;
-        if (hide && hide.includes(MFASetup)) { return null; }
+    render() {
+        const theme = this.props.theme ? this.props.theme: AmplifyTheme;
         let code = this.state.code;
 
         return (
@@ -96,11 +101,6 @@ export default class MFASetup extends AuthPiece {
                         {I18n.get('Verify')}
                     </ButtonRow>
                 </SectionBody>
-                <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                        {I18n.get('Back to Sign In')}
-                    </Link>
-                </SectionFooter>
             </FormSection>
         )
     }

@@ -22,10 +22,6 @@ var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../AmplifyUI');
 
-var _qrcode = require('qrcode.react');
-
-var _qrcode2 = _interopRequireDefault(_qrcode);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -45,135 +41,39 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * and limitations under the License.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var logger = new _awsAmplify.Logger('MFASetup');
+var logger = new _awsAmplify.Logger('UserProfile');
 
-var MFASetup = function (_AuthPiece) {
-    _inherits(MFASetup, _AuthPiece);
+var UserProfile = function (_AuthPiece) {
+    _inherits(UserProfile, _AuthPiece);
 
-    function MFASetup(props) {
-        _classCallCheck(this, MFASetup);
+    function UserProfile(props) {
+        _classCallCheck(this, UserProfile);
 
-        var _this = _possibleConstructorReturn(this, (MFASetup.__proto__ || Object.getPrototypeOf(MFASetup)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (UserProfile.__proto__ || Object.getPrototypeOf(UserProfile)).call(this, props));
 
-        _this._validAuthStates = ['mfaSetup'];
-        _this.setup = _this.setup.bind(_this);
-        _this.showSecretCode = _this.showSecretCode.bind(_this);
-        _this.verifyTotpToken = _this.verifyTotpToken.bind(_this);
-
-        _this.state = {
-            code: null
-        };
+        _this._validAuthStates = ['signedIn_userProfile'];
         return _this;
     }
 
-    _createClass(MFASetup, [{
-        key: 'setup',
-        value: function () {
-            function setup() {
-                var _this2 = this;
-
-                var user = this.props.authData;
-                _awsAmplify.Auth.setupTOTP(user).then(function (data) {
-                    logger.debug('secret key', data);
-                    var code = "otpauth://totp/AWSCognito:" + user.username + "?secret=" + data + "&issuer=AWSCognito";
-                    _this2.setState({ code: code });
-                })['catch'](function (err) {
-                    return logger.debug('mfa setup failed', err);
-                });
-            }
-
-            return setup;
-        }()
-    }, {
-        key: 'verifyTotpToken',
-        value: function () {
-            function verifyTotpToken() {
-                var _this3 = this;
-
-                var user = this.props.authData;
-                var totpCode = this.inputs.totpCode;
-
-                _awsAmplify.Auth.verifyTotpToken(user, totpCode).then(function () {
-                    return _this3.changeState('signedIn', user);
-                })['catch'](function (err) {
-                    return _this3.error(err);
-                });
-            }
-
-            return verifyTotpToken;
-        }()
-    }, {
-        key: 'showSecretCode',
-        value: function () {
-            function showSecretCode(code) {
-                if (!code) return null;
-                return _react2['default'].createElement(
-                    'div',
-                    null,
-                    _react2['default'].createElement(_qrcode2['default'], { value: code })
-                );
-            }
-
-            return showSecretCode;
-        }()
-    }, {
+    _createClass(UserProfile, [{
         key: 'showComponent',
         value: function () {
             function showComponent(theme) {
-                var _this4 = this;
+                var _props = this.props,
+                    authData = _props.authData,
+                    hide = _props.hide;
 
-                var hide = this.props.hide;
-
-                if (hide && hide.includes(MFASetup)) {
+                if (hide && hide.includes(UserProfile)) {
                     return null;
                 }
-                var code = this.state.code;
 
                 return _react2['default'].createElement(
-                    _AmplifyUI.FormSection,
-                    { theme: theme },
+                    'div',
+                    null,
                     _react2['default'].createElement(
-                        _AmplifyUI.SectionHeader,
-                        { theme: theme },
-                        _awsAmplify.I18n.get('MFA Setup')
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionBody,
-                        { theme: theme },
-                        this.showSecretCode(code),
-                        _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.setup },
-                            _awsAmplify.I18n.get('Get secret key')
-                        ),
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            autoFocus: true,
-                            placeholder: _awsAmplify.I18n.get('totp verification token'),
-                            theme: theme,
-                            key: 'totpCode',
-                            name: 'totpCode',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.verifyTotpToken },
-                            _awsAmplify.I18n.get('Verify')
-                        )
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionFooter,
-                        { theme: theme },
-                        _react2['default'].createElement(
-                            _AmplifyUI.Link,
-                            { theme: theme, onClick: function () {
-                                    function onClick() {
-                                        return _this4.changeState('signIn');
-                                    }
-
-                                    return onClick;
-                                }() },
-                            _awsAmplify.I18n.get('Back to Sign In')
-                        )
+                        'a',
+                        null,
+                        'userProfile'
                     )
                 );
             }
@@ -182,7 +82,7 @@ var MFASetup = function (_AuthPiece) {
         }()
     }]);
 
-    return MFASetup;
+    return UserProfile;
 }(_AuthPiece3['default']);
 
-exports['default'] = MFASetup;
+exports['default'] = UserProfile;

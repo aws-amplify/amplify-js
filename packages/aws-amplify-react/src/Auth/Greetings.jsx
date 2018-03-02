@@ -25,7 +25,6 @@ export default class Greetings extends AuthPiece {
         super(props);
 
         this.signOut = this.signOut.bind(this);
-        this.selectMFAType = this.selectMFAType.bind(this);
         this.checkUser = this.checkUser.bind(this);
         this.onHubCapsule = this.onHubCapsule.bind(this);
 
@@ -50,12 +49,6 @@ export default class Greetings extends AuthPiece {
         Auth.signOut()
             .then(() => this.changeState('signedOut'))
             .catch(err => { logger.error(err); this.error(err); });
-    }
-
-    selectMFAType() {
-        return (
-            <div></div>
-        )
     }
 
     checkUser() {
@@ -97,11 +90,6 @@ export default class Greetings extends AuthPiece {
         return (
             <span>
                 <NavItem theme={theme}>{message}</NavItem>
-                <NavButton
-                    theme={theme}
-                    onClick={this.selectMFAType}
-                >{I18n.get('Select MFA Type')}
-                </NavButton>
                 <NavButton
                     theme={theme}
                     onClick={this.signOut}

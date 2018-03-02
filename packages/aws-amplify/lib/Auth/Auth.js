@@ -334,35 +334,73 @@ var AuthClass = /** @class */ (function () {
         });
     };
     AuthClass.prototype.setPreferedMFA = function (user, mfaMethod) {
-        var smsMfaSettings = null;
-        var totpMfaSettings = null;
-        if (mfaMethod === 'TOTP') {
-            totpMfaSettings = {
-                PreferredMfa: true,
-                Enabled: true
-            };
+        var smsMfaSettings = {
+            PreferredMfa: false,
+            Enabled: false
+        };
+        var totpMfaSettings = {
+            PreferredMfa: false,
+            Enabled: false
+        };
+        switch (mfaMethod) {
+            case 'TOTP':
+                totpMfaSettings = {
+                    PreferredMfa: true,
+                    Enabled: true
+                };
+                break;
+            case 'SMS':
+                smsMfaSettings = {
+                    PreferredMfa: true,
+                    Enabled: true
+                };
+                break;
+            case 'NOMFA':
+                break;
+            default:
+                logger.debug('no validmfa method provided');
+                return Promise.reject('no validmfa method provided');
         }
-        else {
-            smsMfaSettings = {
-                PreferredMfa: true,
-                Enabled: true
-            };
-        }
+        var that = this;
         return new Promise(function (res, rej) {
             user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, function (err, result) {
                 if (err) {
-                    logger.debug('Set user mfa preference error', err);
-                    rej(err);
+                    // if totp not setup and user want to disable mfa, just disable sms
+                    if (err.message === 'User has not set up software token mfa' && mfaMethod === 'NOMFA') {
+                        that.disableSMS(user).then(function (data) {
+                            logger.debug('Set user mfa success', data);
+                            res(data);
+                        }).catch(function (err) {
+                            logger.debug('Set user mfa preference error', err);
+                            rej(err);
+                        });
+                    }
+                    else {
+                        logger.debug('Set user mfa preference error', err);
+                        rej(err);
+                    }
                 }
                 logger.debug('Set user mfa success', result);
                 res(result);
             });
         });
     };
+    AuthClass.prototype.disableSMS = function (user) {
+        return new Promise(function (res, rej) {
+            user.disableMFA(function (err, data) {
+                if (err) {
+                    logger.debug('disable mfa failed', err);
+                    rej(err);
+                }
+                logger.debug('disable mfa succeed', data);
+                res(data);
+            });
+        });
+    };
     /**
      * Setup TOTP
      */
-    AuthClass.prototype.setupMFA = function (user) {
+    AuthClass.prototype.setupTOTP = function (user) {
         return new Promise(function (res, rej) {
             user.associateSoftwareToken({
                 onFailure: function (err) {

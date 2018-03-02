@@ -22,10 +22,6 @@ var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../AmplifyUI');
 
-var _qrcode = require('qrcode.react');
-
-var _qrcode2 = _interopRequireDefault(_qrcode);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -45,89 +41,102 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * and limitations under the License.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var logger = new _awsAmplify.Logger('MFASetup');
+var logger = new _awsAmplify.Logger('SelectMFAType');
 
-var MFASetup = function (_AuthPiece) {
-    _inherits(MFASetup, _AuthPiece);
+var SelectMFAType = function (_AuthPiece) {
+    _inherits(SelectMFAType, _AuthPiece);
 
-    function MFASetup(props) {
-        _classCallCheck(this, MFASetup);
+    function SelectMFAType(props) {
+        _classCallCheck(this, SelectMFAType);
 
-        var _this = _possibleConstructorReturn(this, (MFASetup.__proto__ || Object.getPrototypeOf(MFASetup)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (SelectMFAType.__proto__ || Object.getPrototypeOf(SelectMFAType)).call(this, props));
 
-        _this._validAuthStates = ['mfaSetup'];
-        _this.setup = _this.setup.bind(_this);
-        _this.showSecretCode = _this.showSecretCode.bind(_this);
-        _this.verifyTotpToken = _this.verifyTotpToken.bind(_this);
-
-        _this.state = {
-            code: null
-        };
+        _this._validAuthStates = ['selectMFAType'];
+        _this.verify = _this.verify.bind(_this);
         return _this;
     }
 
-    _createClass(MFASetup, [{
-        key: 'setup',
+    _createClass(SelectMFAType, [{
+        key: 'verify',
         value: function () {
-            function setup() {
+            function verify() {
                 var _this2 = this;
 
-                var user = this.props.authData;
-                _awsAmplify.Auth.setupTOTP(user).then(function (data) {
-                    logger.debug('secret key', data);
-                    var code = "otpauth://totp/AWSCognito:" + user.username + "?secret=" + data + "&issuer=AWSCognito";
-                    _this2.setState({ code: code });
+                var MFAType = this.inputs.MFAType;
+
+                if (!MFAType) {
+                    this.error('No mfa type selected');
+                    return;
+                }
+
+                _awsAmplify.Auth.verifyCurrentUserAttribute(contact).then(function (data) {
+                    logger.debug(data);
                 })['catch'](function (err) {
-                    return logger.debug('mfa setup failed', err);
+                    return _this2.error(err);
                 });
             }
 
-            return setup;
+            return verify;
         }()
     }, {
-        key: 'verifyTotpToken',
+        key: 'selectView',
         value: function () {
-            function verifyTotpToken() {
-                var _this3 = this;
+            function selectView() {
+                var MFATypes = this.props.MFATypes;
+                var SMS = MFATypes.SMS,
+                    TOTP = MFATypes.TOTP,
+                    NONE = MFATypes.NONE;
 
-                var user = this.props.authData;
-                var totpCode = this.inputs.totpCode;
-
-                _awsAmplify.Auth.verifyTotpToken(user, totpCode).then(function () {
-                    return _this3.changeState('signedIn', user);
-                })['catch'](function (err) {
-                    return _this3.error(err);
-                });
-            }
-
-            return verifyTotpToken;
-        }()
-    }, {
-        key: 'showSecretCode',
-        value: function () {
-            function showSecretCode(code) {
-                if (!code) return null;
                 return _react2['default'].createElement(
                     'div',
                     null,
-                    _react2['default'].createElement(_qrcode2['default'], { value: code })
+                    SMS ? _react2['default'].createElement(_AmplifyUI.RadioRow, {
+                        placeholder: _awsAmplify.I18n.get('SMS'),
+                        theme: theme,
+                        key: 'sms',
+                        name: 'MFAType',
+                        value: 'sms',
+                        onChange: this.handleInputChange
+                    }) : null,
+                    TOTP ? _react2['default'].createElement(_AmplifyUI.RadioRow, {
+                        placeholder: _awsAmplify.I18n.get('TOTP'),
+                        theme: theme,
+                        key: 'totp',
+                        name: 'MFAType',
+                        value: 'totp',
+                        onChange: this.handleInputChange
+                    }) : null,
+                    NONE ? _react2['default'].createElement(_AmplifyUI.RadioRow, {
+                        placeholder: _awsAmplify.I18n.get('No MFA'),
+                        theme: theme,
+                        key: 'noMFA',
+                        name: 'MFAType',
+                        value: 'noMFA',
+                        onChange: this.handleInputChange
+                    }) : null,
+                    _react2['default'].createElement(
+                        _AmplifyUI.ButtonRow,
+                        { theme: theme, onClick: this.verify },
+                        _awsAmplify.I18n.get('Verify')
+                    )
                 );
             }
 
-            return showSecretCode;
+            return selectView;
         }()
     }, {
         key: 'showComponent',
         value: function () {
             function showComponent(theme) {
-                var _this4 = this;
+                var _this3 = this;
 
-                var hide = this.props.hide;
+                var _props = this.props,
+                    authData = _props.authData,
+                    hide = _props.hide;
 
-                if (hide && hide.includes(MFASetup)) {
+                if (hide && hide.includes(SelectMFAType)) {
                     return null;
                 }
-                var code = this.state.code;
 
                 return _react2['default'].createElement(
                     _AmplifyUI.FormSection,
@@ -135,30 +144,17 @@ var MFASetup = function (_AuthPiece) {
                     _react2['default'].createElement(
                         _AmplifyUI.SectionHeader,
                         { theme: theme },
-                        _awsAmplify.I18n.get('MFA Setup')
+                        _awsAmplify.I18n.get('Select MFA Type')
                     ),
                     _react2['default'].createElement(
                         _AmplifyUI.SectionBody,
                         { theme: theme },
-                        this.showSecretCode(code),
                         _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.setup },
-                            _awsAmplify.I18n.get('Get secret key')
+                            _AmplifyUI.MessageRow,
+                            { theme: theme },
+                            _awsAmplify.I18n.get('Select your preferred MFA Type')
                         ),
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            autoFocus: true,
-                            placeholder: _awsAmplify.I18n.get('totp verification token'),
-                            theme: theme,
-                            key: 'totpCode',
-                            name: 'totpCode',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.verifyTotpToken },
-                            _awsAmplify.I18n.get('Verify')
-                        )
+                        this.selectView()
                     ),
                     _react2['default'].createElement(
                         _AmplifyUI.SectionFooter,
@@ -167,12 +163,12 @@ var MFASetup = function (_AuthPiece) {
                             _AmplifyUI.Link,
                             { theme: theme, onClick: function () {
                                     function onClick() {
-                                        return _this4.changeState('signIn');
+                                        return _this3.changeState('signedIn');
                                     }
 
                                     return onClick;
                                 }() },
-                            _awsAmplify.I18n.get('Back to Sign In')
+                            _awsAmplify.I18n.get('Go back')
                         )
                     )
                 );
@@ -182,7 +178,7 @@ var MFASetup = function (_AuthPiece) {
         }()
     }]);
 
-    return MFASetup;
+    return SelectMFAType;
 }(_AuthPiece3['default']);
 
-exports['default'] = MFASetup;
+exports['default'] = SelectMFAType;

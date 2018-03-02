@@ -12,10 +12,6 @@ var _react2 = _interopRequireDefault(_react);
 
 var _awsAmplify = require('aws-amplify');
 
-var _AuthPiece2 = require('./AuthPiece');
-
-var _AuthPiece3 = _interopRequireDefault(_AuthPiece2);
-
 var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
@@ -47,18 +43,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var logger = new _awsAmplify.Logger('MFASetup');
 
-var MFASetup = function (_AuthPiece) {
-    _inherits(MFASetup, _AuthPiece);
+var MFASetup = function (_Component) {
+    _inherits(MFASetup, _Component);
 
     function MFASetup(props) {
         _classCallCheck(this, MFASetup);
 
         var _this = _possibleConstructorReturn(this, (MFASetup.__proto__ || Object.getPrototypeOf(MFASetup)).call(this, props));
 
-        _this._validAuthStates = ['mfaSetup'];
         _this.setup = _this.setup.bind(_this);
         _this.showSecretCode = _this.showSecretCode.bind(_this);
         _this.verifyTotpToken = _this.verifyTotpToken.bind(_this);
+        _this.handleInputChange = _this.handleInputChange.bind(_this);
 
         _this.state = {
             code: null
@@ -67,13 +63,30 @@ var MFASetup = function (_AuthPiece) {
     }
 
     _createClass(MFASetup, [{
+        key: 'handleInputChange',
+        value: function () {
+            function handleInputChange(evt) {
+                this.inputs = {};
+                var _evt$target = evt.target,
+                    name = _evt$target.name,
+                    value = _evt$target.value,
+                    type = _evt$target.type,
+                    checked = _evt$target.checked;
+
+                var check_type = ['radio', 'checkbox'].includes(type);
+                this.inputs[name] = check_type ? checked : value;
+            }
+
+            return handleInputChange;
+        }()
+    }, {
         key: 'setup',
         value: function () {
             function setup() {
                 var _this2 = this;
 
                 var user = this.props.authData;
-                _awsAmplify.Auth.setupTOTP(user).then(function (data) {
+                _awsAmplify.Auth.setupMFA(user).then(function (data) {
                     logger.debug('secret key', data);
                     var code = "otpauth://totp/AWSCognito:" + user.username + "?secret=" + data + "&issuer=AWSCognito";
                     _this2.setState({ code: code });
@@ -88,15 +101,13 @@ var MFASetup = function (_AuthPiece) {
         key: 'verifyTotpToken',
         value: function () {
             function verifyTotpToken() {
-                var _this3 = this;
-
                 var user = this.props.authData;
                 var totpCode = this.inputs.totpCode;
 
                 _awsAmplify.Auth.verifyTotpToken(user, totpCode).then(function () {
-                    return _this3.changeState('signedIn', user);
+                    return logger.debug('set up totp success!');
                 })['catch'](function (err) {
-                    return _this3.error(err);
+                    return logger.error(err);
                 });
             }
 
@@ -117,16 +128,10 @@ var MFASetup = function (_AuthPiece) {
             return showSecretCode;
         }()
     }, {
-        key: 'showComponent',
+        key: 'render',
         value: function () {
-            function showComponent(theme) {
-                var _this4 = this;
-
-                var hide = this.props.hide;
-
-                if (hide && hide.includes(MFASetup)) {
-                    return null;
-                }
+            function render() {
+                var theme = this.props.theme ? this.props.theme : _AmplifyTheme2['default'];
                 var code = this.state.code;
 
                 return _react2['default'].createElement(
@@ -159,30 +164,15 @@ var MFASetup = function (_AuthPiece) {
                             { theme: theme, onClick: this.verifyTotpToken },
                             _awsAmplify.I18n.get('Verify')
                         )
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionFooter,
-                        { theme: theme },
-                        _react2['default'].createElement(
-                            _AmplifyUI.Link,
-                            { theme: theme, onClick: function () {
-                                    function onClick() {
-                                        return _this4.changeState('signIn');
-                                    }
-
-                                    return onClick;
-                                }() },
-                            _awsAmplify.I18n.get('Back to Sign In')
-                        )
                     )
                 );
             }
 
-            return showComponent;
+            return render;
         }()
     }]);
 
     return MFASetup;
-}(_AuthPiece3['default']);
+}(_react.Component);
 
 exports['default'] = MFASetup;

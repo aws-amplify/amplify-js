@@ -292,25 +292,53 @@ export default class AuthClass {
     
 
     public setPreferedMFA(user, mfaMethod): Promise<any> {
-        let smsMfaSettings = null;
-        let totpMfaSettings = null;
-        if (mfaMethod === 'TOTP') {
-            totpMfaSettings = {
-                PreferredMfa : true,
-                Enabled : true
-            }
-        } else {
-            smsMfaSettings = {
-                PreferredMfa : true,
-                Enabled : true
-            }
+        let smsMfaSettings = {
+            PreferredMfa : false,
+            Enabled : false
+        }
+        let totpMfaSettings = {
+            PreferredMfa : false,
+            Enabled : false
         }
 
+        switch(mfaMethod) {
+            case 'TOTP':
+                totpMfaSettings = {
+                    PreferredMfa : true,
+                    Enabled : true
+                };
+                break;
+            case 'SMS':
+                smsMfaSettings = {
+                    PreferredMfa : true,
+                    Enabled : true
+                };
+                break;
+            case 'NOMFA':
+                break;
+            default:
+                logger.debug('no validmfa method provided');
+                return Promise.reject('no validmfa method provided');
+        }
+
+        const that = this;
         return new Promise((res, rej) => {
             user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, (err, result) => {
                 if (err) {
-                    logger.debug('Set user mfa preference error', err);
-                    rej(err);
+                    // if totp not setup and user want to disable mfa, just disable sms
+                    if (err.message === 'User has not set up software token mfa' && mfaMethod === 'NOMFA') {
+                        that.disableSMS(user).then((data) => {
+                            logger.debug('Set user mfa success', data);
+                            res(data);
+                        }).catch(err => {
+                            logger.debug('Set user mfa preference error', err);
+                            rej(err);
+                        });
+                    }
+                    else {
+                        logger.debug('Set user mfa preference error', err);
+                        rej(err);
+                    }
                 }
                 logger.debug('Set user mfa success', result);
                 res(result);
@@ -318,10 +346,23 @@ export default class AuthClass {
         });
     }
 
+    public disableSMS(user) {
+        return new Promise((res, rej) => {
+            user.disableMFA((err, data) => {
+                if (err) {
+                    logger.debug('disable mfa failed', err);
+                    rej(err);
+                }
+                logger.debug('disable mfa succeed', data);
+                res(data);
+            });
+        });
+    }
+
     /**
      * Setup TOTP
      */
-    public setupMFA(user) {
+    public setupTOTP(user) {
         return new Promise((res, rej) => {
             user.associateSoftwareToken({
                 onFailure: (err) => {

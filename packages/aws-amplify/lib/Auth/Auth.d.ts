@@ -44,10 +44,11 @@ export default class AuthClass {
     signIn(username: string, password: string): Promise<any>;
     getMFAOptions(user: any): Promise<{}>;
     setPreferedMFA(user: any, mfaMethod: any): Promise<any>;
+    disableSMS(user: any): Promise<{}>;
     /**
      * Setup TOTP
      */
-    setupMFA(user: any): Promise<{}>;
+    setupTOTP(user: any): Promise<{}>;
     /**
      * verify TOTP setup
      */
