@@ -37,13 +37,15 @@
 			border-left: 1px solid #eee;
 			transition: border .2s;
 			border-left-color:white;
+			line-height: 20px;
+			padding-left:17px;
 
 			&.active {
 				border-left-color: $color-dark-blue;
 			}
 
 			&.has-submenu {
-				padding-right: 1.25rem;
+				//padding-right: 1.25rem;
 
 				&::after {
 					@extend .icon;
@@ -80,6 +82,7 @@
 			a {
 				@include link-reset;
 				font-size:0.9rem;
+				//margin-left: 13px;
 			}
 		}
 	}

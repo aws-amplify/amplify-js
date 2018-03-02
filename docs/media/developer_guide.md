@@ -22,7 +22,7 @@ category_list:
           url: '/media/analytics_guide/index.html'
           services:
             - title: AWS Pinpoint,
-              url: https://aws.amazon.com/cognito/
+              url: https://aws.amazon.com/pinpoint/
             - title: AWS Kinesis,
               url: https://aws.amazon.com/kinesis/
             - title: Custom Plugin
@@ -42,9 +42,9 @@ category_list:
           url: '/media/authentication_guide/index.html'
           services:
             - title: AWS Cognito ,
-              url: https://aws.amazon.com/cognito
+              url: https://aws.amazon.com/cognito/
             - title: OAuth 2.0 ,
-              url: https://aws.amazon.com/cognito
+              url: https://aws.amazon.com/cognito/
             - title: Custom Plugin
               url:   
         - title: Storage 
@@ -54,7 +54,15 @@ category_list:
           url: '/media/storage_guide/index.html'   
           services:
               - title: AWS S3
-                url: https://aws.amazon.com/s3
+                url: https://aws.amazon.com/s3/
+        - title: Push Notifications 
+          excerpt: Push notifications with campaign analytics and targeting.
+          cta: Read more
+          class: aws-icon-ps-60-bubble-gear
+          url: '/media/push_notifications_setup/index.html'   
+          services:
+              - title: AWS Pinpoint
+                url: https://aws.amazon.com/pinpoint/
     -  category: Utilities
        title: Utilities
        subs:
@@ -76,18 +84,3 @@ category_list:
           url: '/media/logger_guide/index.html'  
 
 ---
-
-
-# Developer Guide
-
-AWS Amplify is a library with building blocks for frontend and mobile developers to interact with the Cloud. You can mix and match the categories below as needed.
-
-* [Authentication](authentication_guide.md)
-* [Analytics](analytics_guide.md)
-* [API](api_guide.md)
-* [Storage](storage_guide.md)
-* [Cache](cache_guide.md)
-* Utilities
-  - [I18n](i18n_guide.md)
-  - [Logger](logger_guide.md)
-  - [Hub](hub_guide.md)

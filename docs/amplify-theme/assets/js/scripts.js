@@ -251,5 +251,39 @@
 	$( '.offcanvas-toggle' ).on( 'click', function() {
 		$( 'body' ).toggleClass( 'offcanvas-expanded' );
 	} );
+
+
+	// Tabs
+	$('ul.tabs li').click(function(){
+
+		var parent_tab_class='.' + $(this).parent().parent().attr('data-group');
+		var tab_id = $(this).attr('data-tab');
+
+		$(parent_tab_class + ' ul.tabs li').removeClass('current');
+		$(parent_tab_class +' .tab-content').removeClass('current');
+
+		$(this).addClass('current');
+		$(parent_tab_class + " #"+tab_id).addClass('current');
+
+	});
+
+	$.urlParam = function(name){
+		var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+		return results[1] || 0;
+	}
+
+	// Open tabs with the query params 
+	if ($.urlParam('platform')) {
+
+		var platform = $.urlParam('platform');
+		if (platform) {
+			$('li.tab-link.'+ platform ).trigger('click');
+		}
+
+	}
+
+
+
+
 }( jQuery ) );
 

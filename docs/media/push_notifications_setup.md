@@ -1,3 +1,6 @@
+---
+---
+
 # Push Notifications
 
 AWS Amplify Push Notifications module allows you to utilize push notifications and supports Amazon Pinpoint campaigns and targeting.
@@ -142,11 +145,11 @@ $ react-native link aws-amplify-react-native
  - Unselect Automatically manage signing 
  - On Signing (Debug, Release) set the provisioning profile (created on your Apple Developer Account)
  
-<img src="./identifiers.gif" style="display: block;height: auto;width: 100%;"/>
+<img src="../identifiers.gif" style="display: block;height: auto;width: 100%;"/>
 
 9. Setup capabilities on your App and enable Push Notifications and Background Modes. On Background Modes select Remote notifications.
  
-<img src="./capabilities.gif" style="display: block;height: auto;width: 100%;"/>
+<img src="../capabilities.gif" style="display: block;height: auto;width: 100%;"/>
 
 10. Run your app
  - On Xcode select your device and run by first using as Executable appName.app and this install the App on your device but it won't run (is ok, trust me)
@@ -154,7 +157,7 @@ $ react-native link aws-amplify-react-native
  - Click run button and select your app from the list.
  - In case it fails to build, try clean the project shift + command + k
 
-<img src="./runningApp.gif" style="display: block;height: auto;width: 100%;"/>
+<img src="../runningApp.gif" style="display: block;height: auto;width: 100%;"/>
 
 ## Integration
 

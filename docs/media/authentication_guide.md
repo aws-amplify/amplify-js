@@ -7,6 +7,7 @@ layout: default
 
 The AWS Amplify Auth module provides Authentication APIs and building blocks to developers wishing to use pre-build components or scaffold out custom UX. Depending on needs, Auth can be integrated at different levels.
 
+
 * [Installation and Configuration](#installation-and-configuratoin)
   - [Automated Setup](#automated-setup)
   - [Manual Setup](#manual-setup)
@@ -320,9 +321,17 @@ render() {
 
 ### 6. Federated Identity
 
-Note: Our federated identity components so far only support Google, Facebook and Amazon, only available for React. Building is in progress.
 
-Setup guide is [here](federated_identity_setup.md).
+<div class="callout callout--info">
+    <strong>Availibility Note</strong>
+    <p> 
+        Our federated identity components so far only support Google, Facebook and Amazon, only available for React. 
+        Building is in progress.
+        Please see the <a href='/media/federated_identity_setup/index.html'> Setup guide for federated identities. </a>
+    </p>
+</div>
+
+
 
 After setup. Just add `Google client_id`, `Facebook app_id` and/or `Amazon client_id` to `Authenticator`
 ```jsx

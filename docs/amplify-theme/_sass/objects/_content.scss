@@ -8,3 +8,37 @@
 		margin-top: 50;
 	}
 }
+
+.language-terminal {
+	font-size:13px;
+	line-height: 15px;
+}
+
+.next-link, .tab-link.current {
+	&:before {
+		font-family: 'icons' !important;
+		content: '\e91f';
+		font-size: 15px;
+		font-weight: bold;
+		color: #212834;
+		margin-left:-4px;
+	}
+}
+ 
+.github-edit-link {
+	position: absolute;
+    margin-top: 50px;
+	right: 100px;
+	font-size:12px;
+	a {
+		border:none;
+	}
+	border-style: solid;
+	border-color:lightgrey;
+	color:gray;
+	border-width: 1px;
+	border-radius: 5px;
+	padding-left:5px;
+	padding-right: 5px;
+	
+}

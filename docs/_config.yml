@@ -46,6 +46,8 @@ exclude:
 
 # Build settings
 markdown: kramdown
+kramdown:
+  parse_block_html: true
 plugins:
   - jekyll-feed
 
@@ -88,7 +90,7 @@ amplify:
     google_analytics:
         tracking_code: # Add your Google Analytics tracking code to activate Google Analytics
     comments:
-        disqus_forum_shortname: # Add your disqus forum shortname to activate comments
+        disqus_forum_shortname: 'aws-amplify' # Add your disqus forum shortname to activate comments
 
 # SASS settings
 sass:
