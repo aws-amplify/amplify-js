@@ -22,6 +22,7 @@ import {
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
+import { CookieStorage, ICognitoUserPoolData, ICognitoUserData } from 'amazon-cognito-identity-js';
 
 const logger = new Logger('AuthClass');
 
@@ -79,12 +80,16 @@ export default class AuthClass {
         }
         this._config = Object.assign({}, this._config, conf);
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
-        const { userPoolId, userPoolWebClientId } = this._config;
+        const { userPoolId, userPoolWebClientId, cookieStorage } = this._config;
         if (userPoolId) {
-            this.userPool = new CognitoUserPool({
+            const userPoolData: ICognitoUserPoolData = {
                 UserPoolId: userPoolId,
-                ClientId: userPoolWebClientId
-            });
+                ClientId: userPoolWebClientId,
+            };
+            if (cookieStorage) {
+                userPoolData.Storage = new CookieStorage(cookieStorage);
+            }
+            this.userPool = new CognitoUserPool(userPoolData);
             if (Platform.isReactNative) {
                 const that = this;
                 this._userPoolStorageSync = new Promise((resolve, reject) => {
@@ -168,10 +173,7 @@ export default class AuthClass {
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!code) { return Promise.reject('Code cannot be empty'); }
 
-        const user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
             user.confirmRegistration(code, true, function(err, data) {
                 if (err) { reject(err); } else { resolve(data); }
@@ -188,10 +190,7 @@ export default class AuthClass {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
 
-        const user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
             user.resendConfirmationCode(function(err, data) {
                 if (err) { reject(err); } else { resolve(data); }
@@ -210,10 +209,7 @@ export default class AuthClass {
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
-        const user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        const user = this.createCognitoUser(username);
         const authDetails = new AuthenticationDetails({
             Username: username,
             Password: password
@@ -634,10 +630,7 @@ export default class AuthClass {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
 
-        const user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
             user.forgotPassword({
                 onSuccess: () => { resolve(); },
@@ -669,10 +662,7 @@ export default class AuthClass {
         if (!code) { return Promise.reject('Code cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
-        const user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
             user.confirmPassword(code, password, {
                 onSuccess: () => { resolve(); },
@@ -897,5 +887,19 @@ export default class AuthClass {
                 })
                 .catch(() => resolve(null));
         });
+    }
+
+    private createCognitoUser(username: string): Cognito.CognitoUser {
+        const userData: ICognitoUserData = {
+            Username: username,
+            Pool: this.userPool,
+        };
+
+        const { cookieStorage } = this._config;
+        if (cookieStorage) {
+            userData.Storage = new CookieStorage(cookieStorage);
+        }
+
+        return new CognitoUser(userData);
     }
 }
