@@ -1042,6 +1042,30 @@ var CognitoUser = function () {
   };
 
   /**
+   * This is used by an authenticated users to get the userData
+   * @param {nodeCallback<UserData>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.getUserData = function getUserData(callback) {
+    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('GetUser', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err, userData) {
+      if (err) {
+        return callback(err, null);
+      }
+
+      return callback(null, userData);
+    });
+    return undefined;
+  };
+
+  /**
    * This is used by an authenticated user to delete a list of attributes
    * @param {string[]} attributeList Names of the attributes to delete.
    * @param {nodeCallback<string>} callback Called on success or error.

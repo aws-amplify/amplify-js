@@ -69,7 +69,7 @@ To make calls to your S3 bucket from your App, make sure CORS is turned on:
 1. Go to [AWS S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's userfiles bucket.
 2. Click on the **Permissions** tab for your bucket, and then click on **CORS configuration** tile.
 3. Update your bucket's CORS Policy to look like:
-```xml
+```
 <?xml version="1.0" encoding="UTF-8"?>
 <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
 <CORSRule>

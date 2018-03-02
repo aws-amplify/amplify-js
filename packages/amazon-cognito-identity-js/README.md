@@ -771,7 +771,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
             },
 
             selectMFAType : function(challengeName, challengeParameters) {
-                var mfaType = prompt('Please select the MFA method.', '');
+                var mfaType = prompt('Please select the MFA method.', ''); // valid values for mfaType is "SMS_MFA", "SOFTWARE_TOKEN_MFA" 
                 cognitoUser.sendMFASelectionAnswer(mfaType, this);
             },
 

@@ -430,7 +430,10 @@ export default class AnalyticsClass {
         });
     }
 
-    updateEndpoint(config) {
+    async updateEndpoint(config) {
+        const credentialsOK = await this._ensureCredentials();
+        if (!credentialsOK) { return Promise.resolve(false); }
+
         const conf = config? config.Analytics || config : {};
         this._config = Object.assign({}, this._config, conf);
 

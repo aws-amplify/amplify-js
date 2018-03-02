@@ -32,6 +32,7 @@ if (!_instance) {
 
 const Analytics = _instance;
 export default Analytics;
+export { AnalyticsClass };
 
 // listen on app state change
 const dispatchAppStateEvent = (event, data) => {
