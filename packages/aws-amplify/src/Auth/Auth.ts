@@ -22,7 +22,7 @@ import {
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
-import { CookieStorage, ICognitoUserPoolData, ICognitoUserData } from 'amazon-cognito-identity-js';
+import { ICognitoUserPoolData, ICognitoUserData } from 'amazon-cognito-identity-js';
 
 const logger = new Logger('AuthClass');
 
@@ -31,6 +31,7 @@ const {
 } = AWS;
 
 const {
+    CookieStorage,
     CognitoUserPool,
     CognitoUserAttribute,
     CognitoUser,

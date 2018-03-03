@@ -1,5 +1,3 @@
-import { CookieStorage } from "amazon-cognito-identity-js";
-
 jest.mock('aws-sdk/clients/pinpoint', () => {
     const Pinpoint = () => {
         var pinpoint = null;
@@ -140,7 +138,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 import { AuthOptions, SignUpParams } from '../../src/Auth/types';
 import Auth from '../../src/Auth/Auth';
 import Cache from '../../src/Cache';
-import { CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
+import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authOptions: AuthOptions = {
