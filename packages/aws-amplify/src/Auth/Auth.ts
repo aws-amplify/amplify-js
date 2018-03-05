@@ -278,9 +278,9 @@ export default class AuthClass {
     }
 
     /**
-     * get user current prefered mfa option
+     * get user current preferred mfa option
      * @param {CognitoUser} user - the current user
-     * @return - A promise resolves the current prefered mfa option if success
+     * @return - A promise resolves the current preferred mfa option if success
      */
     public getMFAOptions(user : any) : Promise<any> {
         return new Promise((res, rej) => {
@@ -296,12 +296,12 @@ export default class AuthClass {
     }
     
     /**
-     * set prefered MFA method
+     * set preferred MFA method
      * @param {CognitoUser} user - the current Cognito user
-     * @param {string} mfaMethod - prefered mfa method
+     * @param {string} mfaMethod - preferred mfa method
      * @return - A promise resolves if success
      */
-    public setPreferedMFA(user : any, mfaMethod : string): Promise<any> {
+    public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
         let smsMfaSettings = {
             PreferredMfa : false,
             Enabled : false
@@ -467,10 +467,6 @@ export default class AuthClass {
                         that.setCredentialsFromSession(session);
                         that.user = user;
                         dispatchAuthEvent('signIn', user);
-                        // delete it!!!!
-                        // that.setPreferedMFA(user, 'TOTP').catch((err) => logger.debug(err));
-                        // that.mfaSetup(user);
-                        // ....
                         resolve(user);
                     },
                     onFailure: (err) => {

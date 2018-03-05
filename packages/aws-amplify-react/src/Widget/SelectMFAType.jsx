@@ -74,8 +74,8 @@ export default class SelectMFAType extends Component {
 
         const user = this.props.authData;
 
-        Auth.setPreferedMFA(user, mfaMethod).then((data) => {
-            logger.debug('set prefered mfa success', data);
+        Auth.setPreferredMFA(user, mfaMethod).then((data) => {
+            logger.debug('set preferred mfa success', data);
             this.setState({selectMessage: 'Successful! Now you have changed to MFA Type: ' + mfaMethod});
  
         }).catch(err => {
@@ -85,7 +85,7 @@ export default class SelectMFAType extends Component {
                 this.setState({selectMessage: 'You need to setup TOTP'})
             }
             else {
-                logger.debug('set prefered mfa failed', err);
+                logger.debug('set preferred mfa failed', err);
                 this.setState({selectMessage: 'Failed! You cannot select MFA Type for now!'})
             }
         });

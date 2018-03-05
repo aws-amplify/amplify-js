@@ -109,7 +109,7 @@ describe('SelectMFAType test', () => {
             }
             instance.handleInputChange(evt);
 
-            const spyon = jest.spyOn(Auth, 'setPreferedMFA').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('data');
                 });
@@ -135,7 +135,7 @@ describe('SelectMFAType test', () => {
             }
             instance.handleInputChange(evt);
 
-            const spyon = jest.spyOn(Auth, 'setPreferedMFA').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('data');
                 });
@@ -151,7 +151,7 @@ describe('SelectMFAType test', () => {
             const wrapper = shallow(<SelectMFAType/>);
             const instance = wrapper.instance();
 
-            const spyon = jest.spyOn(Auth, 'setPreferedMFA').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('data');
                 });
@@ -177,7 +177,7 @@ describe('SelectMFAType test', () => {
             }
             instance.handleInputChange(evt);
 
-            const spyon = jest.spyOn(Auth, 'setPreferedMFA').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej({
                         message: 'User has not set up software token mfa'
@@ -205,7 +205,7 @@ describe('SelectMFAType test', () => {
             }
             instance.handleInputChange(evt);
 
-            const spyon = jest.spyOn(Auth, 'setPreferedMFA').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
                 });

@@ -128,7 +128,7 @@ describe('TOTPSetupComp test', () => {
                     res();
                 });
             });
-            const spyon2 = jest.spyOn(Auth, 'setPreferedMFA').mockImplementationOnce(() => {
+            const spyon2 = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
                 return;
             });
             const spyon3 = jest.spyOn(instance, 'triggerTOTPEvent');
@@ -178,7 +178,7 @@ describe('TOTPSetupComp test', () => {
                     rej();
                 });
             });
-            const spyon2 = jest.spyOn(Auth, 'setPreferedMFA').mockImplementationOnce(() => {
+            const spyon2 = jest.spyOn(Auth, 'setPreferredMFA').mockImplementationOnce(() => {
                 return;
             });
             const spyon3 = jest.spyOn(instance, 'triggerTOTPEvent');

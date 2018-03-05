@@ -334,12 +334,12 @@ describe('auth unit test', () => {
         });
     });
 
-    describe('setPreferedMFA test', () => {
+    describe('setPreferredMFA test', () => {
         test('happy case', async () => {
             const auth = new Auth(authOptions);
 
             const spyon = jest.spyOn(CognitoUser.prototype, "setUserMfaPreference");
-            expect(await auth.setPreferedMFA(user, 'TOTP')).toBe('Success');
+            expect(await auth.setPreferredMFA(user, 'TOTP')).toBe('Success');
             expect(spyon).toBeCalled();
 
             spyon.mockClear();
@@ -362,8 +362,7 @@ describe('auth unit test', () => {
                 });
             });
 
-            await auth.setPreferedMFA(user, 'NOMFA');
-          //   expect(await auth.setPreferedMFA(user, 'NOMFA')).toBe('Success');
+            await auth.setPreferredMFA(user, 'NOMFA');
             expect(spyon).toBeCalled();
             expect(spyon2).toBeCalled();
 
@@ -386,8 +385,7 @@ describe('auth unit test', () => {
                 });
             });
 
-            await auth.setPreferedMFA(user, 'SMS');
-          //   expect(await auth.setPreferedMFA(user, 'NOMFA')).toBe('Success');
+            await auth.setPreferredMFA(user, 'SMS');
             expect(spyon).toBeCalled();
             expect(spyon2).toBeCalled();
 
@@ -406,11 +404,10 @@ describe('auth unit test', () => {
             });
 
             try {
-                await auth.setPreferedMFA(user, 'TOTP');
+                await auth.setPreferredMFA(user, 'TOTP');
             } catch (e) {
                 expect(e).not.toBeNull();
             }
-          //   expect(await auth.setPreferedMFA(user, 'NOMFA')).toBe('Success');
             expect(spyon).toBeCalled();
    
             spyon.mockClear();
@@ -427,11 +424,11 @@ describe('auth unit test', () => {
             });
 
             try {
-                await auth.setPreferedMFA(user, 'TOTP');
+                await auth.setPreferredMFA(user, 'TOTP');
             } catch (e) {
                 expect(e).not.toBeNull();
             }
-          //   expect(await auth.setPreferedMFA(user, 'NOMFA')).toBe('Success');
+        
             expect(spyon).toBeCalled();
    
             spyon.mockClear();
@@ -440,7 +437,7 @@ describe('auth unit test', () => {
         test('incorrect mfa type', async () => {
             const auth = new Auth(authOptions);
             try {
-                await auth.setPreferedMFA(user, 'incorrect mfa type');
+                await auth.setPreferredMFA(user, 'incorrect mfa type');
             } catch (e) {
                 expect(e).not.toBeNull();
             }
