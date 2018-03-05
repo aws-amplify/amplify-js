@@ -27,7 +27,7 @@ import {
     Link
 } from '../AmplifyUI';
 
-import TOTPSetup from './TOTPSetupComp';
+import TOTPSetupComp from './TOTPSetupComp';
 
 const logger = new Logger('SelectMFAType');
 
@@ -58,6 +58,10 @@ export default class SelectMFAType extends Component {
 
     verify() {
         logger.debug('mfatypes inputs', this.inputs);
+        if (!this.inputs) {
+            logger.debug('No mfa type selected');
+            return;
+        }
         const { TOTP, SMS, NOMFA } = this.inputs;
         let mfaMethod = null;
         if (TOTP) {
@@ -68,10 +72,6 @@ export default class SelectMFAType extends Component {
             mfaMethod = 'NOMFA';
         }
 
-        if (!this.inputs) {
-            logger.debug('No mfa type selected');
-            return;
-        }
         const user = this.props.authData;
 
         Auth.setPreferedMFA(user, mfaMethod).then((data) => {
@@ -157,7 +157,7 @@ export default class SelectMFAType extends Component {
             <div>
             {this.selectView(theme)}
             { this.state.TOTPSetup?
-                <TOTPSetup {...this.props}/> : null
+                <TOTPSetupComp {...this.props}/> : null
             }</div>
         )
     }

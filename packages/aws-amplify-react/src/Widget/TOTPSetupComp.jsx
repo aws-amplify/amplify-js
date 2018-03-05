@@ -71,6 +71,10 @@ export default class TOTPSetupComp extends Component {
     }
 
     verifyTotpToken() {
+        if (!this.inputs) {
+            logger.debug('no input');
+            return;
+        }
         const user = this.props.authData;
         const { totpCode } = this.inputs;
         Auth.verifyTotpToken(user, totpCode)
