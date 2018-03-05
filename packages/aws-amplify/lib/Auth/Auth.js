@@ -365,19 +365,32 @@ var AuthClass = /** @class */ (function () {
         return new Promise(function (res, rej) {
             user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, function (err, result) {
                 if (err) {
-                    // if totp not setup and user want to disable mfa, just disable sms
-                    if (err.message === 'User has not set up software token mfa' && mfaMethod === 'NOMFA') {
-                        that.disableSMS(user).then(function (data) {
-                            logger.debug('Set user mfa success', data);
-                            res(data);
-                        }).catch(function (err) {
-                            logger.debug('Set user mfa preference error', err);
-                            rej(err);
-                        });
-                    }
-                    else {
+                    // if totp not setup and user want to set, then return the error
+                    if (err.message === 'User has not set up software token mfa' && mfaMethod === 'TOTP') {
                         logger.debug('Set user mfa preference error', err);
                         rej(err);
+                    }
+                    else {
+                        // if want to enable sms
+                        if (mfaMethod === 'SMS') {
+                            that.enableSMS(user).then(function (data) {
+                                logger.debug('Set user mfa success', data);
+                                res(data);
+                            }).catch(function (err) {
+                                logger.debug('Set user mfa preference error', err);
+                                rej(err);
+                            });
+                        }
+                        else {
+                            // diable sms
+                            that.disableSMS(user).then(function (data) {
+                                logger.debug('Set user mfa success', data);
+                                res(data);
+                            }).catch(function (err) {
+                                logger.debug('Set user mfa preference error', err);
+                                rej(err);
+                            });
+                        }
                     }
                 }
                 logger.debug('Set user mfa success', result);
@@ -388,6 +401,18 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.disableSMS = function (user) {
         return new Promise(function (res, rej) {
             user.disableMFA(function (err, data) {
+                if (err) {
+                    logger.debug('disable mfa failed', err);
+                    rej(err);
+                }
+                logger.debug('disable mfa succeed', data);
+                res(data);
+            });
+        });
+    };
+    AuthClass.prototype.enableSMS = function (user) {
+        return new Promise(function (res, rej) {
+            user.enableMFA(function (err, data) {
                 if (err) {
                     logger.debug('disable mfa failed', err);
                     rej(err);

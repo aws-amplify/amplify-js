@@ -18,9 +18,9 @@ var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../AmplifyUI');
 
-var _MFASetupComp = require('./MFASetupComp');
+var _TOTPSetupComp = require('./TOTPSetupComp');
 
-var _MFASetupComp2 = _interopRequireDefault(_MFASetupComp);
+var _TOTPSetupComp2 = _interopRequireDefault(_TOTPSetupComp);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -55,7 +55,8 @@ var SelectMFAType = function (_Component) {
         _this.handleInputChange = _this.handleInputChange.bind(_this);
 
         _this.state = {
-            mfaSetup: false
+            TOTPSetup: false,
+            selectMessage: null
         };
         return _this;
     }
@@ -64,6 +65,11 @@ var SelectMFAType = function (_Component) {
         key: 'handleInputChange',
         value: function () {
             function handleInputChange(evt) {
+                // clear current state
+                this.setState({
+                    TOTPSetup: false,
+                    selectMessage: null
+                });
                 this.inputs = {};
                 var _evt$target = evt.target,
                     name = _evt$target.name,
@@ -106,13 +112,17 @@ var SelectMFAType = function (_Component) {
 
                 _awsAmplify.Auth.setPreferedMFA(user, mfaMethod).then(function (data) {
                     logger.debug('set prefered mfa success', data);
+                    _this2.setState({ selectMessage: 'Successful! Now you have changed to MFA Type: ' + mfaMethod });
                 })['catch'](function (err) {
                     var message = err.message;
 
                     if (message === 'User has not set up software token mfa') {
-                        _this2.setState({ mfaSetup: true });
+                        _this2.setState({ TOTPSetup: true });
+                        _this2.setState({ selectMessage: 'You need to setup TOTP' });
+                    } else {
+                        logger.debug('set prefered mfa failed', err);
+                        _this2.setState({ selectMessage: 'Failed! You cannot select MFA Type for now!' });
                     }
-                    logger.debug('set prefered mfa failed', err);
                 });
             }
 
@@ -138,7 +148,7 @@ var SelectMFAType = function (_Component) {
                 }
                 var SMS = MFATypes.SMS,
                     TOTP = MFATypes.TOTP,
-                    NONE = MFATypes.NONE;
+                    Optional = MFATypes.Optional;
 
                 return _react2['default'].createElement(
                     _AmplifyUI.FormSection,
@@ -175,7 +185,7 @@ var SelectMFAType = function (_Component) {
                                 value: 'TOTP',
                                 onChange: this.handleInputChange
                             }) : null,
-                            NONE ? _react2['default'].createElement(_AmplifyUI.RadioRow, {
+                            Optional ? _react2['default'].createElement(_AmplifyUI.RadioRow, {
                                 placeholder: _awsAmplify.I18n.get('No MFA'),
                                 theme: theme,
                                 key: 'noMFA',
@@ -188,7 +198,12 @@ var SelectMFAType = function (_Component) {
                                 { theme: theme, onClick: this.verify },
                                 _awsAmplify.I18n.get('Verify')
                             )
-                        )
+                        ),
+                        this.state.selectMessage ? _react2['default'].createElement(
+                            _AmplifyUI.MessageRow,
+                            { theme: theme },
+                            _awsAmplify.I18n.get(this.state.selectMessage)
+                        ) : null
                     )
                 );
             }
@@ -204,7 +219,7 @@ var SelectMFAType = function (_Component) {
                     'div',
                     null,
                     this.selectView(theme),
-                    this.state.mfaSetup ? _react2['default'].createElement(_MFASetupComp2['default'], this.props) : null
+                    this.state.TOTPSetup ? _react2['default'].createElement(_TOTPSetupComp2['default'], this.props) : null
                 );
             }
 

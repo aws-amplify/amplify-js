@@ -22,7 +22,7 @@ import SignUp from './SignUp';
 import ConfirmSignUp from './ConfirmSignUp';
 import VerifyContact from './VerifyContact';
 import ForgotPassword from './ForgotPassword';
-import MFASetup from './MFASetup';
+import TOTPSetup from './TOTPSetup';
 
 import AmplifyTheme from '../AmplifyTheme';
 import { Container, ErrorSection, SectionBody } from '../AmplifyUI';
@@ -90,7 +90,8 @@ export default class Authenticator extends Component {
                 SignUp,
                 ConfirmSignUp,
                 VerifyContact,
-                ForgotPassword
+                ForgotPassword,
+                TOTPSetup
             ]);
         }
         const props_children = this.props.children || [];
@@ -103,7 +104,7 @@ export default class Authenticator extends Component {
             <ConfirmSignUp/>,
             <VerifyContact/>,
             <ForgotPassword/>,
-            <MFASetup/>
+            <TOTPSetup/>
         ];
 
         const children = default_children.concat(props_children);

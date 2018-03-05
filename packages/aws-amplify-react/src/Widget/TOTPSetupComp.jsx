@@ -22,14 +22,15 @@ import {
     SectionFooter,
     InputRow,
     ButtonRow,
+    MessageRow,
     Link
 } from '../AmplifyUI';
 
 import QRCode from 'qrcode.react';
 
-const logger = new Logger('MFASetupComp');
+const logger = new Logger('TOTPSetupComp');
 
-export default class MFASetupComp extends Component {
+export default class TOTPSetupComp extends Component {
     constructor(props) {
         super(props);
 
@@ -37,13 +38,22 @@ export default class MFASetupComp extends Component {
         this.showSecretCode = this.showSecretCode.bind(this);
         this.verifyTotpToken= this.verifyTotpToken.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.triggerTOTPEvent = this.triggerTOTPEvent.bind(this);
 
         this.state = {
-            code: null
+            code: null,
+            setupMessage: null
         }
     }
 
+    triggerTOTPEvent(event, data, user) {
+        if (this.props.onTOTPEvent) {
+            this.props.onTOTPEvent(event, data, user);
+        }
+    }
+    
     handleInputChange(evt) {
+        this.setState({setupMessage: null});
         this.inputs = {};
         const { name, value, type, checked } = evt.target;
         const check_type = ['radio', 'checkbox'].includes(type);
@@ -51,28 +61,48 @@ export default class MFASetupComp extends Component {
     }
 
     setup() {
+        this.setState({setupMessage: null});
         const user = this.props.authData;
         Auth.setupTOTP(user).then((data) => {
             logger.debug('secret key', data);
             const code = "otpauth://totp/AWSCognito:"+ user.username + "?secret=" + data + "&issuer=AWSCognito";
             this.setState({code});
-
-        }).catch((err) => logger.debug('mfa setup failed', err));
+        }).catch((err) => logger.debug('totp setup failed', err));
     }
 
     verifyTotpToken() {
         const user = this.props.authData;
         const { totpCode } = this.inputs;
         Auth.verifyTotpToken(user, totpCode)
-            .then(() => logger.debug('set up totp success!'))
-            .catch(err => logger.error(err));
+            .then(() => {
+                // set it to prefered mfa
+                Auth.setPreferedMFA(user, 'TOTP');
+                this.setState({setupMessage: 'Setup TOTP successfully!'});
+                logger.debug('set up totp success!');
+                this.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
+            })
+            .catch(err => {
+                this.setState({setupMessage: 'Setup TOTP failed!'});
+                logger.error(err);
+            });
     }
 
-    showSecretCode(code) {
+    showSecretCode(code, theme) {
         if (!code) return null;
         return (
             <div>
                 <QRCode value={code}/>
+                <InputRow
+                    autoFocus
+                    placeholder={I18n.get('totp verification token')}
+                    theme={theme}
+                    key="totpCode"
+                    name="totpCode"
+                    onChange={this.handleInputChange}
+                />
+                <ButtonRow theme={theme} onClick={this.verifyTotpToken}>
+                    {I18n.get('Verify')}
+                </ButtonRow>
             </div>
         )
     }
@@ -83,23 +113,15 @@ export default class MFASetupComp extends Component {
 
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('MFA Setup')}</SectionHeader>
+                <SectionHeader theme={theme}>{I18n.get('TOTP Setup')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    {this.showSecretCode(code)}
                     <ButtonRow theme={theme} onClick={this.setup}>
                         {I18n.get('Get secret key')}
                     </ButtonRow>
-                    <InputRow
-                        autoFocus
-                        placeholder={I18n.get('totp verification token')}
-                        theme={theme}
-                        key="totpCode"
-                        name="totpCode"
-                        onChange={this.handleInputChange}
-                    />
-                    <ButtonRow theme={theme} onClick={this.verifyTotpToken}>
-                        {I18n.get('Verify')}
-                    </ButtonRow>
+                    {this.showSecretCode(code, theme)}
+                    {this.state.setupMessage? <MessageRow theme={theme}>
+                        {I18n.get(this.state.setupMessage)}
+                    </MessageRow> : null }   
                 </SectionBody>
             </FormSection>
         )

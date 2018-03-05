@@ -69,13 +69,13 @@ Object.defineProperty(exports, 'SelectMFAType', {
   }()
 });
 
-var _MFASetupComp = require('./MFASetupComp');
+var _TOTPSetupComp = require('./TOTPSetupComp');
 
-Object.defineProperty(exports, 'MFASetupComp', {
+Object.defineProperty(exports, 'TOTPSetupComp', {
   enumerable: true,
   get: function () {
     function get() {
-      return _interopRequireDefault(_MFASetupComp)['default'];
+      return _interopRequireDefault(_TOTPSetupComp)['default'];
     }
 
     return get;

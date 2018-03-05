@@ -45,6 +45,7 @@ export default class AuthClass {
     getMFAOptions(user: any): Promise<{}>;
     setPreferedMFA(user: any, mfaMethod: any): Promise<any>;
     disableSMS(user: any): Promise<{}>;
+    enableSMS(user: any): Promise<{}>;
     /**
      * Setup TOTP
      */

@@ -205,7 +205,7 @@ export default class AuthClass {
      * Sign in
      * @param {String} username - The username to be signed in
      * @param {String} password - The password of the username
-     * @return - A promise resolves the CognitoUser object if success or mfa required
+     * @return - A promise resolves the CognitoUser
      */
     public signIn(username: string, password: string): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
@@ -277,29 +277,39 @@ export default class AuthClass {
         });
     }
 
-    public getMFAOptions(user) {
+    /**
+     * get user current prefered mfa option
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves the current prefered mfa option if success
+     */
+    public getMFAOptions(user : any) : Promise<any> {
         return new Promise((res, rej) => {
             user.getMFAOptions((err, mfaOptions) => {
                 if (err) {
                     logger.debug('get MFA Options failed', err);
                     rej(err);
                 }
-                logger.debug('get MFA options success', mfaOptions)
+                logger.debug('get MFA options success', mfaOptions);
                 res(mfaOptions);
             });
         });
     }
     
-
-    public setPreferedMFA(user, mfaMethod): Promise<any> {
+    /**
+     * set prefered MFA method
+     * @param {CognitoUser} user - the current Cognito user
+     * @param {string} mfaMethod - prefered mfa method
+     * @return - A promise resolves if success
+     */
+    public setPreferedMFA(user : any, mfaMethod : string): Promise<any> {
         let smsMfaSettings = {
             PreferredMfa : false,
             Enabled : false
-        }
+        };
         let totpMfaSettings = {
             PreferredMfa : false,
             Enabled : false
-        }
+        };
 
         switch(mfaMethod) {
             case 'TOTP':
@@ -322,20 +332,36 @@ export default class AuthClass {
         }
 
         const that = this;
+        const TOTP_NOT_VERIFED = 'User has not verified software token mfa';
+        const TOTP_NOT_SETUPED = 'User has not set up software token mfa';
         return new Promise((res, rej) => {
             user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, (err, result) => {
                 if (err) {
-                    // if totp not setup and user want to disable mfa, just disable sms
-                    if (err.message === 'User has not set up software token mfa' && mfaMethod === 'NOMFA') {
-                        that.disableSMS(user).then((data) => {
-                            logger.debug('Set user mfa success', data);
-                            res(data);
-                        }).catch(err => {
+                    // if totp not setup or verified and user want to set it, return error
+                    // otherwise igonre it
+                    if (err.message === TOTP_NOT_SETUPED || err.message === TOTP_NOT_VERIFED) {
+                        if (mfaMethod === 'SMS') {
+                            that.enableSMS(user).then((data) => {
+                                logger.debug('Set user mfa success', data);
+                                res(data);
+                            }).catch(err => {
+                                logger.debug('Set user mfa preference error', err);
+                                rej(err);
+                            });
+                        } else if (mfaMethod === 'NOMFA') {
+                            // diable sms
+                            that.disableSMS(user).then((data) => {
+                                logger.debug('Set user mfa success', data);
+                                res(data);
+                            }).catch(err => {
+                                logger.debug('Set user mfa preference error', err);
+                                rej(err);
+                            });
+                        } else {
                             logger.debug('Set user mfa preference error', err);
                             rej(err);
-                        });
-                    }
-                    else {
+                        }
+                    } else {
                         logger.debug('Set user mfa preference error', err);
                         rej(err);
                     }
@@ -346,7 +372,12 @@ export default class AuthClass {
         });
     }
 
-    public disableSMS(user) {
+    /**
+     * diable SMS
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves is success
+     */
+    public disableSMS(user : any) : Promise<any> {
         return new Promise((res, rej) => {
             user.disableMFA((err, data) => {
                 if (err) {
@@ -360,7 +391,27 @@ export default class AuthClass {
     }
 
     /**
+     * enable SMS
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves is success
+     */
+    public enableSMS(user) {
+        return new Promise((res, rej) => {
+            user.enableMFA((err, data) => {
+                if (err) {
+                    logger.debug('enable mfa failed', err);
+                    rej(err);
+                }
+                logger.debug('enable mfa succeed', data);
+                res(data);
+            });
+        });
+    }
+
+    /**
      * Setup TOTP
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves with the secret code if success
      */
     public setupTOTP(user) {
         return new Promise((res, rej) => {
@@ -374,11 +425,14 @@ export default class AuthClass {
                     res(secretCode);
                 }
             });
-        })
+        });
     }
 
     /**
      * verify TOTP setup
+     * @param {CognitoUser} user - the current user
+     * @param {string} challengeAnswer - challenge answer
+     * @return - A promise resolves is success
      */
     public verifyTotpToken(user, challengeAnswer) {
         logger.debug('verfication totp token', user, challengeAnswer);
@@ -392,7 +446,7 @@ export default class AuthClass {
                     logger.debug('verifyTotpToken success', data);
                     res(data);
                 }
-            })
+            });
         });
     }
 
@@ -406,23 +460,25 @@ export default class AuthClass {
 
         const that = this;
         return new Promise((resolve, reject) => {
-            user.sendMFACode(code, {
-                onSuccess: (session) => {
-                    logger.debug(session);
-                    that.setCredentialsFromSession(session);
-                    that.user = user;
-                    dispatchAuthEvent('signIn', user);
-                    // delete it!!!!
-                    // that.setPreferedMFA(user, 'TOTP').catch((err) => logger.debug(err));
-                    // that.mfaSetup(user);
-                    // ....
-                    resolve(user);
-                },
-                onFailure: (err) => {
-                    logger.debug('confirm signIn failure', err);
-                    reject(err);
-                }
-            }, mfaType);
+            user.sendMFACode(
+                code, {
+                    onSuccess: (session) => {
+                        logger.debug(session);
+                        that.setCredentialsFromSession(session);
+                        that.user = user;
+                        dispatchAuthEvent('signIn', user);
+                        // delete it!!!!
+                        // that.setPreferedMFA(user, 'TOTP').catch((err) => logger.debug(err));
+                        // that.mfaSetup(user);
+                        // ....
+                        resolve(user);
+                    },
+                    onFailure: (err) => {
+                        logger.debug('confirm signIn failure', err);
+                        reject(err);
+                    }
+                }, 
+                mfaType);
         });
     }
 

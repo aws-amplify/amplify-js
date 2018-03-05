@@ -98,8 +98,8 @@ var SignIn = function (_AuthPiece) {
                         logger.debug('require new password', user.challengeParam);
                         _this3.changeState('requireNewPassword', user);
                     } else if (user.challengeName === 'MFA_SETUP') {
-                        logger.debug('mfa setup', user.challengeParam);
-                        _this3.changeState('mfaSetup', user);
+                        logger.debug('TOTP setup', user.challengeParam);
+                        _this3.changeState('TOTPSetup', user);
                     } else {
                         _this3.checkContact(user);
                     }

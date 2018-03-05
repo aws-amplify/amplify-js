@@ -27,7 +27,7 @@ import {
     Link
 } from '../AmplifyUI';
 
-import MFASetup from './MFASetupComp';
+import TOTPSetup from './TOTPSetupComp';
 
 const logger = new Logger('SelectMFAType');
 
@@ -39,11 +39,17 @@ export default class SelectMFAType extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
 
         this.state = {
-            mfaSetup: false
+            TOTPSetup: false,
+            selectMessage: null
         }
     }
 
     handleInputChange(evt) {
+        // clear current state
+        this.setState({
+            TOTPSetup: false,
+            selectMessage: null
+        });
         this.inputs = {};
         const { name, value, type, checked } = evt.target;
         const check_type = ['radio', 'checkbox'].includes(type);
@@ -70,12 +76,18 @@ export default class SelectMFAType extends Component {
 
         Auth.setPreferedMFA(user, mfaMethod).then((data) => {
             logger.debug('set prefered mfa success', data);
+            this.setState({selectMessage: 'Successful! Now you have changed to MFA Type: ' + mfaMethod});
+ 
         }).catch(err => {
             const { message } = err;
             if (message === 'User has not set up software token mfa') {
-                this.setState({mfaSetup: true});
+                this.setState({TOTPSetup: true});
+                this.setState({selectMessage: 'You need to setup TOTP'})
             }
-            logger.debug('set prefered mfa failed', err);
+            else {
+                logger.debug('set prefered mfa failed', err);
+                this.setState({selectMessage: 'Failed! You cannot select MFA Type for now!'})
+            }
         });
     }
 
@@ -89,7 +101,7 @@ export default class SelectMFAType extends Component {
                 </div>
             )
         }
-        const { SMS, TOTP, NONE } = MFATypes;
+        const { SMS, TOTP, Optional } = MFATypes;
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Select MFA Type')}</SectionHeader>
@@ -116,7 +128,7 @@ export default class SelectMFAType extends Component {
                                     onChange={this.handleInputChange}
                                 /> : null
                         }
-                        { NONE? <RadioRow
+                        { Optional? <RadioRow
                                     placeholder={I18n.get('No MFA')}
                                     theme={theme}
                                     key="noMFA"
@@ -126,7 +138,12 @@ export default class SelectMFAType extends Component {
                                 /> : null
                         }
                         <ButtonRow theme={theme} onClick={this.verify}>{I18n.get('Verify')}</ButtonRow>
-                    </div> 
+                    </div>
+                    { this.state.selectMessage? 
+                    <MessageRow theme={theme}>
+                        {I18n.get(this.state.selectMessage)}
+                    </MessageRow> 
+                    : null}
                 </SectionBody>
             </FormSection>
         )
@@ -139,8 +156,8 @@ export default class SelectMFAType extends Component {
         return (
             <div>
             {this.selectView(theme)}
-            { this.state.mfaSetup?
-                <MFASetup {...this.props}/> : null
+            { this.state.TOTPSetup?
+                <TOTPSetup {...this.props}/> : null
             }</div>
         )
     }

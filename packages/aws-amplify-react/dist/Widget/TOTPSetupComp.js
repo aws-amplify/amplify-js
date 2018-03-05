@@ -41,20 +41,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * and limitations under the License.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var logger = new _awsAmplify.Logger('MFASetupComp');
+var logger = new _awsAmplify.Logger('TOTPSetupComp');
 
-var MFASetupComp = function (_Component) {
-    _inherits(MFASetupComp, _Component);
+var TOTPSetupComp = function (_Component) {
+    _inherits(TOTPSetupComp, _Component);
 
-    function MFASetupComp(props) {
-        _classCallCheck(this, MFASetupComp);
+    function TOTPSetupComp(props) {
+        _classCallCheck(this, TOTPSetupComp);
 
-        var _this = _possibleConstructorReturn(this, (MFASetupComp.__proto__ || Object.getPrototypeOf(MFASetupComp)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (TOTPSetupComp.__proto__ || Object.getPrototypeOf(TOTPSetupComp)).call(this, props));
 
         _this.setup = _this.setup.bind(_this);
         _this.showSecretCode = _this.showSecretCode.bind(_this);
         _this.verifyTotpToken = _this.verifyTotpToken.bind(_this);
         _this.handleInputChange = _this.handleInputChange.bind(_this);
+        _this.triggerTOTPEvent = _this.triggerTOTPEvent.bind(_this);
 
         _this.state = {
             code: null,
@@ -63,7 +64,18 @@ var MFASetupComp = function (_Component) {
         return _this;
     }
 
-    _createClass(MFASetupComp, [{
+    _createClass(TOTPSetupComp, [{
+        key: 'triggerTOTPEvent',
+        value: function () {
+            function triggerTOTPEvent(event, data, user) {
+                if (this.props.onTOTPEvent) {
+                    this.props.onTOTPEvent(event, data, user);
+                }
+            }
+
+            return triggerTOTPEvent;
+        }()
+    }, {
         key: 'handleInputChange',
         value: function () {
             function handleInputChange(evt) {
@@ -94,7 +106,7 @@ var MFASetupComp = function (_Component) {
                     var code = "otpauth://totp/AWSCognito:" + user.username + "?secret=" + data + "&issuer=AWSCognito";
                     _this2.setState({ code: code });
                 })['catch'](function (err) {
-                    return logger.debug('mfa setup failed', err);
+                    return logger.debug('totp setup failed', err);
                 });
             }
 
@@ -114,6 +126,7 @@ var MFASetupComp = function (_Component) {
                     _awsAmplify.Auth.setPreferedMFA(user, 'TOTP');
                     _this3.setState({ setupMessage: 'Setup TOTP successfully!' });
                     logger.debug('set up totp success!');
+                    _this3.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
                 })['catch'](function (err) {
                     _this3.setState({ setupMessage: 'Setup TOTP failed!' });
                     logger.error(err);
@@ -162,7 +175,7 @@ var MFASetupComp = function (_Component) {
                     _react2['default'].createElement(
                         _AmplifyUI.SectionHeader,
                         { theme: theme },
-                        _awsAmplify.I18n.get('MFA Setup')
+                        _awsAmplify.I18n.get('TOTP Setup')
                     ),
                     _react2['default'].createElement(
                         _AmplifyUI.SectionBody,
@@ -186,7 +199,7 @@ var MFASetupComp = function (_Component) {
         }()
     }]);
 
-    return MFASetupComp;
+    return TOTPSetupComp;
 }(_react.Component);
 
-exports['default'] = MFASetupComp;
+exports['default'] = TOTPSetupComp;

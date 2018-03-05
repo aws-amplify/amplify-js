@@ -27,7 +27,7 @@ export { default as VerifyContact } from './VerifyContact';
 export { default as ForgotPassword } from './ForgotPassword';
 export { default as Greetings } from './Greetings';
 export { default as FederatedSignIn, FederatedButtons } from './FederatedSignIn';
-export { default as MFASetup } from './MFASetup';
+export { default as TOTPSetup } from './TOTPSetup';
 
 export * from './Provider';
 
