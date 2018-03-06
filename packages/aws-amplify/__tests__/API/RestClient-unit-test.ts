@@ -88,6 +88,33 @@ describe('RestClient test', () => {
             expect(await restClient.ajax('url', 'method', {})).toEqual('data');
         });
 
+        test('fetch with signed request', async () => {
+            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
+                return new Promise((res, rej) => {
+                    res({
+                        status: '200',
+                        json: () => {
+                            return signed_params.data;
+                        }
+                    });
+                });
+            });
+
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+
+            const restClient = new RestClient(apiOptions);
+
+            expect(await restClient.ajax('url', 'method', {})).toEqual('data');
+        });
+
         test('ajax with no credentials', async () => {
             window.fetch = jest.fn().mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
@@ -405,12 +432,40 @@ describe('RestClient test', () => {
                     accessKeyId: 'accessKeyId',
                     secretAccessKey: 'secretAccessKey',
                     sessionToken: 'sessionToken'
-                }
+                },
+                region: 'myregion'
             };
 
             const restClient = new RestClient(apiOptions);
 
             expect(restClient.endpoint('myApi')).toBe('endpoint of myApi');
+        });
+
+        test('custom endpoint', () => {
+            const apiOptions = {
+                headers: {},
+                endpoints: [
+                {
+                    name: 'myApi',
+                    endpoint: 'endpoint of myApi'
+                },
+                {
+                    name: 'otherApi',
+                    endpoint: 'endpoint of otherApi',
+                    region: 'myregion',
+                    service: 'myservice'
+                }
+                ],
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
+
+            const restClient = new RestClient(apiOptions);
+
+            expect(restClient.endpoint('otherApi')).toBe('endpoint of otherApi');
         });
     });
 });

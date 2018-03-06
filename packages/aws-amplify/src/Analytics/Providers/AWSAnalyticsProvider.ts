@@ -270,16 +270,58 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         });
     }
 
+    //  async updateEndpoint(config) {
+    //     const credentialsOK = await this._ensureCredentials();
+    //     if (!credentialsOK) { return Promise.resolve(false); }
+
+    //     const conf = config? config.Analytics || config : {};
+    //     this._config = Object.assign({}, this._config, conf);
+
+    //     const { appId, endpointId, credentials, region } = this._config;
+
+    //     const request = this._endpointRequest();
+    //     const update_params = {
+    //         ApplicationId: appId,
+    //         EndpointId: endpointId,
+    //         EndpointRequest: request
+    //     };
+
+    //     if (!this.pinpointClient) {
+    //         this.pinpointClient = new Pinpoint({
+    //             region,
+    //             credentials
+    //         });
+    //     }
+
+    //     const that = this;
+    //     logger.debug('updateEndpoint with params: ', update_params);
+    //     return new Promise((res, rej) => {
+    //         that.pinpointClient.updateEndpoint(update_params, function(err, data) {
+    //             if (err) {
+    //                 logger.debug('Pinpoint ERROR', err);
+    //                 rej(err);
+    //             } else {
+    //                 logger.debug('Pinpoint SUCCESS', data);
+    //                 res(data);
+    //             }
+    //         });
+    //     });
+    // }
+
     /**
      * EndPoint request
      * @return {Object} - The request of updating endpoint
      */
-    private _endpointRequest() {
-        const { clientInfo, credentials } = this._config;
+    _endpointRequest() {
+        const { clientInfo, credentials, Address, RequestId, cognitoIdentityPoolId, endpointId } = this._config;
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
-        logger.debug('config', this._config);
+        const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
+
         logger.debug('demographic user id: ', user_id);
+        const OptOut = this._config.OptOut? this._config.OptOut: undefined;
         return {
+            Address,
+            ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || clientInfo.appVersion,
                 Make: clientInfo.make,
@@ -287,7 +329,15 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
                 ModelVersion: clientInfo.version,
                 Platform: clientInfo.platform
             },
-            User: { UserId: user_id }
+            OptOut,
+            RequestId,
+            EffectiveDate: Address? new Date().toISOString() : undefined,
+            User: { 
+                UserId: endpointId,
+                UserAttributes: {
+                    CognitoIdentityPool: [ cognitoIdentityPoolId ]
+                }
+            }
         };
     }
 
@@ -309,4 +359,5 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         };
         return JSON.stringify(clientContext);
     }
+
 }

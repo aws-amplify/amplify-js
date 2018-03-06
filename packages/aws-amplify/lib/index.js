@@ -14,12 +14,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Auth_1 = require("./Auth");
 exports.Auth = Auth_1.default;
+exports.AuthClass = Auth_1.AuthClass;
 var Analytics_1 = require("./Analytics");
 exports.Analytics = Analytics_1.default;
+exports.AnalyticsClass = Analytics_1.AnalyticsClass;
 var Storage_1 = require("./Storage");
 exports.Storage = Storage_1.default;
+exports.StorageClass = Storage_1.StorageClass;
 var API_1 = require("./API");
 exports.API = API_1.default;
+exports.APIClass = API_1.APIClass;
 var I18n_1 = require("./I18n");
 exports.I18n = I18n_1.default;
 var Cache_1 = require("./Cache");

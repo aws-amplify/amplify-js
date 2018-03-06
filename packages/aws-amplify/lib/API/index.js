@@ -13,6 +13,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var API_1 = require("./API");
+exports.APIClass = API_1.default;
 var Common_1 = require("../Common");
 var logger = new Common_1.ConsoleLogger('API');
 var _instance = null;

@@ -54,12 +54,12 @@ var logger = new Logger_1.ConsoleLogger('API');
 /**
  * Export Cloud Logic APIs
  */
-var API = /** @class */ (function () {
+var APIClass = /** @class */ (function () {
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
      */
-    function API(options) {
+    function APIClass(options) {
         this._api = null;
         this._options = options;
         logger.debug('API Options', this._options);
@@ -69,7 +69,7 @@ var API = /** @class */ (function () {
      * @param {Object} config - Configuration of the API
      * @return {Object} - The current configuration
      */
-    API.prototype.configure = function (options) {
+    APIClass.prototype.configure = function (options) {
         logger.debug('configure API');
         var opt = options ? options.API || options : {};
         if (opt['aws_project_region']) {
@@ -91,7 +91,7 @@ var API = /** @class */ (function () {
      * Create an instance of API for the library
      * @return - A promise of true if Success
      */
-    API.prototype.createInstance = function () {
+    APIClass.prototype.createInstance = function () {
         logger.debug('create API instance');
         if (this._options) {
             this._api = new RestClient_1.RestClient(this._options);
@@ -108,7 +108,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.get = function (apiName, path, init) {
+    APIClass.prototype.get = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_1, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -147,7 +147,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.post = function (apiName, path, init) {
+    APIClass.prototype.post = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_2, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -186,7 +186,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.put = function (apiName, path, init) {
+    APIClass.prototype.put = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_3, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -225,7 +225,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.patch = function (apiName, path, init) {
+    APIClass.prototype.patch = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_4, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -264,7 +264,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.del = function (apiName, path, init) {
+    APIClass.prototype.del = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_5, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -303,7 +303,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.head = function (apiName, path, init) {
+    APIClass.prototype.head = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_6, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -340,7 +340,7 @@ var API = /** @class */ (function () {
     * @param {string} apiName - The name of the api
     * @return {string} - The endpoint of the api
     */
-    API.prototype.endpoint = function (apiName) {
+    APIClass.prototype.endpoint = function (apiName) {
         return __awaiter(this, void 0, void 0, function () {
             var error_7;
             return __generator(this, function (_a) {
@@ -365,9 +365,11 @@ var API = /** @class */ (function () {
     /**
      * @private
      */
-    API.prototype._ensureCredentials = function () {
+    APIClass.prototype._ensureCredentials = function () {
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
+            if (!credentials)
+                return false;
             var cred = Auth_1.default.essentialCredentials(credentials);
             logger.debug('set credentials for api', cred);
             return true;
@@ -377,7 +379,7 @@ var API = /** @class */ (function () {
             return false;
         });
     };
-    return API;
+    return APIClass;
 }());
-exports.default = API;
+exports.default = APIClass;
 //# sourceMappingURL=API.js.map

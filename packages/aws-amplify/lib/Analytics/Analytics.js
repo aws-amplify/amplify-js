@@ -87,6 +87,7 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.configure = function (config) {
         logger.debug('configure Analytics');
+<<<<<<< HEAD
         var conf = Object.assign({}, this._config, Common_1.Parser.parseMobilehubConfig(config).Analytics);
         var clientInfo = Common_1.ClientDevice.clientInfo();
         conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
@@ -104,6 +105,24 @@ var AnalyticsClass = /** @class */ (function () {
         if (pluggable) {
             this._pluggables.push(pluggable);
             pluggable.configure(this._config);
+=======
+        var conf = config ? config.Analytics || config : {};
+        // using app_id from aws-exports if provided
+        if (conf['aws_mobile_analytics_app_id']) {
+            conf = {
+                appId: conf['aws_mobile_analytics_app_id'],
+                region: conf['aws_project_region'],
+                cognitoIdentityPoolId: conf['aws_cognito_identity_pool_id'],
+                platform: 'other'
+            };
+        }
+        // hard code region
+        conf.region = 'us-east-1';
+        this._config = Object.assign({}, this._config, conf);
+        // no app id provided
+        if (!this._config.appId) {
+            logger.debug('Do not have appId yet.');
+>>>>>>> upstream/master
         }
     };
     /**
@@ -112,6 +131,7 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.startSession = function () {
         return __awaiter(this, void 0, void 0, function () {
+<<<<<<< HEAD
             var ensureCredentails, timestamp, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -123,6 +143,47 @@ var AnalyticsClass = /** @class */ (function () {
                         timestamp = new Date().getTime();
                         params = { eventName: '_session_start', timestamp: timestamp, config: this._config };
                         return [2 /*return*/, this._putToBuffer(params)];
+=======
+            var _this = this;
+            var credentialsOK, sessionId, clientContext, params;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        sessionId = this.generateRandomString();
+                        this._sessionId = sessionId;
+                        clientContext = this._generateClientContext();
+                        params = {
+                            clientContext: clientContext,
+                            events: [
+                                {
+                                    eventType: '_session.start',
+                                    timestamp: new Date().toISOString(),
+                                    'session': {
+                                        'id': sessionId,
+                                        'startTimestamp': new Date().toISOString()
+                                    }
+                                }
+                            ]
+                        };
+                        logger.debug('record session start with params', params);
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this.mobileAnalytics.putEvents(params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('record event failed. ', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('record event success. ', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
+>>>>>>> upstream/master
                 }
             });
         });
@@ -138,6 +199,7 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.stopSession = function () {
         return __awaiter(this, void 0, void 0, function () {
+<<<<<<< HEAD
             var ensureCredentails, timestamp, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -149,6 +211,46 @@ var AnalyticsClass = /** @class */ (function () {
                         timestamp = new Date().getTime();
                         params = { eventName: '_session_stop', timestamp: timestamp, config: this._config };
                         return [2 /*return*/, this._putToBuffer(params)];
+=======
+            var _this = this;
+            var credentialsOK, sessionId, clientContext, params;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        sessionId = this._sessionId ? this._sessionId : this.generateRandomString();
+                        clientContext = this._generateClientContext();
+                        params = {
+                            clientContext: clientContext,
+                            events: [
+                                {
+                                    eventType: '_session.stop',
+                                    timestamp: new Date().toISOString(),
+                                    'session': {
+                                        'id': sessionId,
+                                        'startTimestamp': new Date().toISOString()
+                                    }
+                                }
+                            ]
+                        };
+                        logger.debug('record session stop with params', params);
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this.mobileAnalytics.putEvents(params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('record event failed. ', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('record event success. ', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
+>>>>>>> upstream/master
                 }
             });
         });
@@ -162,6 +264,7 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.record = function (eventName, attributes, metrics) {
         return __awaiter(this, void 0, void 0, function () {
+<<<<<<< HEAD
             var ensureCredentails, timestamp, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -173,10 +276,130 @@ var AnalyticsClass = /** @class */ (function () {
                         timestamp = new Date().getTime();
                         params = { eventName: eventName, attributes: attributes, metrics: metrics, timestamp: timestamp, config: this._config };
                         return [2 /*return*/, this._putToBuffer(params)];
+=======
+            var ret;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._initClients()];
+                    case 1:
+                        ret = _a.sent();
+                        if (!ret) {
+                            logger.debug('restart failed');
+                            return [2 /*return*/];
+                        }
+                        this.stopSession().then(function (data) {
+                            logger.debug('restarting clients');
+                            return;
+                        }).catch(function (e) {
+                            logger.debug('restart error', e);
+                        });
+                        return [2 /*return*/];
                 }
             });
         });
     };
+    /**
+    * Record one analytic event and send it to Pinpoint
+    * @param {String} name - The name of the event
+    * @param {Object} [attributs] - Attributes of the event
+    * @param {Object} [metrics] - Event metrics
+    * @return - A promise which resolves if event record successfully
+    */
+    AnalyticsClass.prototype.record = function (name, attributes, metrics) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var credentialsOK, clientContext, params;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        logger.debug("record event: { name: " + name + ", attributes: " + attributes + ", metrics: " + metrics);
+                        return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        // if mobile analytics client not ready, buffer it
+                        if (!this.mobileAnalytics) {
+                            logger.debug('mobileAnalytics not ready, put in buffer');
+                            this._buffer.push({
+                                name: name,
+                                attributes: attributes,
+                                metrics: metrics
+                            });
+                            return [2 /*return*/];
+                        }
+                        clientContext = this._generateClientContext();
+                        params = {
+                            clientContext: clientContext,
+                            events: [
+                                {
+                                    eventType: name,
+                                    timestamp: new Date().toISOString(),
+                                    attributes: attributes,
+                                    metrics: metrics
+                                }
+                            ]
+                        };
+                        logger.debug('record event with params', params);
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this.mobileAnalytics.putEvents(params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('record event failed. ', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('record event success. ', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
+>>>>>>> upstream/master
+                }
+            });
+        });
+    };
+<<<<<<< HEAD
+=======
+    /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+    AnalyticsClass.prototype.onHubCapsule = function (capsule) { };
+    /*
+        _putEventsCallback() {
+            return (err, data, res, rej) => {
+                if (err) {
+                    logger.debug('record event failed. ' + err);
+                    if (err.statusCode === undefined || err.statusCode === 400){
+                        if (err.code === 'ThrottlingException') {
+                            // todo
+                            // cache events
+                            logger.debug('get throttled, caching events');
+                        }
+                    }
+                    rej(err);
+                }
+                else {
+                    logger.debug('record event success. ' + data);
+                    // try to clean cached events if exist
+    
+    
+                    res(data);
+                }
+            };
+        }
+    */
+    /**
+    * Record one analytic event
+    * @param {String} name - Event name
+    * @param {Object} [attributes] - Attributes of the event
+    * @param {Object} [metrics] - Event metrics
+    */
+    // async recordMonetization(name, attributes?: EventAttributes, metrics?: EventMetrics) {
+    //     this.amaClient.recordMonetizationEvent(name, attributes, metrics);
+    // }
+>>>>>>> upstream/master
     /**
      * @private
      * @param {Object} params - params for the event recording
@@ -210,13 +433,28 @@ var AnalyticsClass = /** @class */ (function () {
      * @private
      * check if current crednetials exists
      */
+<<<<<<< HEAD
     AnalyticsClass.prototype._getCredentials = function () {
+=======
+    AnalyticsClass.prototype._ensureCredentials = function () {
+        // commented
+        // will cause bug if another user logged in without refreshing page
+        // if (conf.credentials) { return Promise.resolve(true); }
+>>>>>>> upstream/master
         var that = this;
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
+            if (!credentials)
+                return false;
             var cred = Auth_1.default.essentialCredentials(credentials);
             that._config.credentials = cred;
             that._config.endpointId = cred.identityId;
+<<<<<<< HEAD
+=======
+            if (!that._config.endpointId) {
+                that._config.endpointId = that.generateRandomString();
+            }
+>>>>>>> upstream/master
             logger.debug('set endpointId for analytics', that._config.endpointId);
             logger.debug('set credentials for analytics', that._config.credentials);
             return true;
@@ -226,6 +464,185 @@ var AnalyticsClass = /** @class */ (function () {
             return false;
         });
     };
+<<<<<<< HEAD
+=======
+    /**
+     * @private
+     * @async
+     * init clients for Anlytics including mobile analytics and pinpoint
+     * @return - True if initilization succeeds
+     */
+    AnalyticsClass.prototype._initClients = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var credentialsOK, e_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this._checkConfig()) {
+                            return [2 /*return*/, false];
+                        }
+                        return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _a.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, false];
+                        }
+                        this._initMobileAnalytics();
+                        _a.label = 2;
+                    case 2:
+                        _a.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this._initPinpoint()];
+                    case 3:
+                        _a.sent();
+                        this.startSession();
+                        return [3 /*break*/, 5];
+                    case 4:
+                        e_1 = _a.sent();
+                        return [2 /*return*/, false];
+                    case 5: return [2 /*return*/, true];
+                }
+            });
+        });
+    };
+    /**
+     * @private
+     * Init mobile analytics and clear buffer
+     */
+    AnalyticsClass.prototype._initMobileAnalytics = function () {
+        var _this = this;
+        var _a = this._config, credentials = _a.credentials, region = _a.region;
+        this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });
+        if (this._buffer.length > 0) {
+            logger.debug('something in buffer, flush it');
+            var buffer = this._buffer;
+            this._buffer = [];
+            buffer.forEach(function (event) {
+                _this.record(event.name, event.attributes, event.metrics);
+            });
+        }
+    };
+    /**
+     * @private
+     * Init Pinpoint with configuration and update pinpoint client endpoint
+     * @return - A promise resolves if endpoint updated successfully
+     */
+    AnalyticsClass.prototype._initPinpoint = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var credentialsOK, _a, region, appId, endpointId, credentials, request, update_params, that;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _b.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        _a = this._config, region = _a.region, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials;
+                        this.pinpointClient = new Common_1.Pinpoint({
+                            region: region,
+                            credentials: credentials,
+                        });
+                        request = this._endpointRequest();
+                        update_params = {
+                            ApplicationId: appId,
+                            EndpointId: endpointId,
+                            EndpointRequest: request
+                        };
+                        logger.debug('updateEndpoint with params: ', update_params);
+                        that = this;
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                that.pinpointClient.updateEndpoint(update_params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('Pinpoint ERROR', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('Pinpoint SUCCESS', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
+                }
+            });
+        });
+    };
+    AnalyticsClass.prototype.updateEndpoint = function (config) {
+        return __awaiter(this, void 0, void 0, function () {
+            var credentialsOK, conf, _a, appId, endpointId, credentials, region, request, update_params, that;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _b.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        conf = config ? config.Analytics || config : {};
+                        this._config = Object.assign({}, this._config, conf);
+                        _a = this._config, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials, region = _a.region;
+                        request = this._endpointRequest();
+                        update_params = {
+                            ApplicationId: appId,
+                            EndpointId: endpointId,
+                            EndpointRequest: request
+                        };
+                        if (!this.pinpointClient) {
+                            this.pinpointClient = new Common_1.Pinpoint({
+                                region: region,
+                                credentials: credentials
+                            });
+                        }
+                        that = this;
+                        logger.debug('updateEndpoint with params: ', update_params);
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                that.pinpointClient.updateEndpoint(update_params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('Pinpoint ERROR', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('Pinpoint SUCCESS', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
+                }
+            });
+        });
+    };
+    /**
+     * EndPoint request
+     * @return {Object} - The request of updating endpoint
+     */
+    AnalyticsClass.prototype._endpointRequest = function () {
+        var client_info = Common_1.ClientDevice.clientInfo();
+        var _a = this._config, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, cognitoIdentityPoolId = _a.cognitoIdentityPoolId, endpointId = _a.endpointId;
+        var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
+        var ChannelType = Address ? ((client_info.platform === 'android') ? 'GCM' : 'APNS') : undefined;
+        logger.debug('demographic user id: ', user_id);
+        var OptOut = this._config.OptOut ? this._config.OptOut : undefined;
+        return {
+            Address: Address,
+            ChannelType: ChannelType,
+            Demographic: {
+                AppVersion: this._config.appVersion || client_info.appVersion,
+                Make: client_info.make,
+                Model: client_info.model,
+                ModelVersion: client_info.version,
+                Platform: client_info.platform
+            },
+            OptOut: OptOut,
+            RequestId: RequestId,
+            EffectiveDate: Address ? new Date().toISOString() : undefined,
+            User: {
+                UserId: endpointId,
+                UserAttributes: {
+                    CognitoIdentityPool: [cognitoIdentityPoolId]
+                }
+            }
+        };
+    };
+>>>>>>> upstream/master
     return AnalyticsClass;
 }());
 exports.default = AnalyticsClass;

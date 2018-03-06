@@ -49,6 +49,7 @@ var SignUp = function (_AuthPiece) {
 
         var _this = _possibleConstructorReturn(this, (SignUp.__proto__ || Object.getPrototypeOf(SignUp)).call(this, props));
 
+        _this._validAuthStates = ['signUp'];
         _this.signUp = _this.signUp.bind(_this);
         return _this;
     }
@@ -75,19 +76,12 @@ var SignUp = function (_AuthPiece) {
             return signUp;
         }()
     }, {
-        key: 'render',
+        key: 'showComponent',
         value: function () {
-            function render() {
+            function showComponent(theme) {
                 var _this3 = this;
 
-                var _props = this.props,
-                    authState = _props.authState,
-                    hide = _props.hide;
-
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                if (authState !== 'signUp') {
-                    return null;
-                }
+                var hide = this.props.hide;
 
                 if (hide && hide.includes(SignUp)) {
                     return null;
@@ -177,7 +171,7 @@ var SignUp = function (_AuthPiece) {
                 );
             }
 
-            return render;
+            return showComponent;
         }()
     }]);
 

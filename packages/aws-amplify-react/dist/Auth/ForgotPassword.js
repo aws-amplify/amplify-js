@@ -54,6 +54,7 @@ var ForgotPassword = function (_AuthPiece) {
         _this.send = _this.send.bind(_this);
         _this.submit = _this.submit.bind(_this);
 
+        _this._validAuthStates = ['forgotPassword'];
         _this.state = { delivery: null };
         return _this;
     }
@@ -158,20 +159,14 @@ var ForgotPassword = function (_AuthPiece) {
             return submitView;
         }()
     }, {
-        key: 'render',
+        key: 'showComponent',
         value: function () {
-            function render() {
+            function showComponent(theme) {
                 var _this4 = this;
 
                 var _props = this.props,
                     authState = _props.authState,
                     hide = _props.hide;
-
-                if (authState !== 'forgotPassword') {
-                    return null;
-                }
-
-                var theme = this.props.theme || _AmplifyTheme2['default'];
 
                 if (hide && hide.includes(ForgotPassword)) {
                     return null;
@@ -208,7 +203,7 @@ var ForgotPassword = function (_AuthPiece) {
                 );
             }
 
-            return render;
+            return showComponent;
         }()
     }]);
 

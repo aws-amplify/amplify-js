@@ -26,3 +26,4 @@ if (!_instance) {
 
 const Auth = _instance;
 export default Auth;
+export { AuthClass };

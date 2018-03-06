@@ -4,6 +4,7 @@ AWS Amplify is not limited to AWS or React. The library is designed to support d
 * [Installation & Configuration](#installation)
 * [Analytics](#analytics)
 * [Authentication](#authentication)
+* [AWS Services](#aws-services)
 * [React Native Development](#react-native-development)
 
 You can begin with an existing React application. Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app).
@@ -121,6 +122,27 @@ This will gate the entire application inside an Authentication UI. Only signed i
 <img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
 
 For more about Authenticator, click [here](authentication_guide.md)
+
+## AWS Services
+
+You can call methods on any AWS Service by passing in your credentials from auth to the service call constructor:
+
+```js
+Auth.currentCredentials()
+  .then(credentials => {
+    const route53 = new Route53({
+      apiVersion: '2013-04-01',
+      credentials: Auth.essentialCredentials(credentials)
+    });
+
+    // more code working with route53 object
+    // route53.changeResourceRecordSets();
+  })
+```
+
+Note: your Amazon Cognito users' [IAM role](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) must have the appropriate permissions to call the requested services.
+
+Full API Documentation is available <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html" target="_blank">here</a>.
 
 ## React Native Development
 

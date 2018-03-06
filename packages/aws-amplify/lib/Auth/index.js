@@ -13,6 +13,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Auth_1 = require("./Auth");
+exports.AuthClass = Auth_1.default;
 var Common_1 = require("../Common");
 var logger = new Common_1.ConsoleLogger('Auth');
 var _instance = null;

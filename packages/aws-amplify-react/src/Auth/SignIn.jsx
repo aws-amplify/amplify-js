@@ -36,6 +36,7 @@ export default class SignIn extends AuthPiece {
         this.checkContact = this.checkContact.bind(this);
         this.signIn = this.signIn.bind(this);
 
+        this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
         this.state = {};
     }
 
@@ -70,12 +71,10 @@ export default class SignIn extends AuthPiece {
             });
     }
 
-    render() {
+    showComponent(theme) {
         const { authState, hide, federated, onStateChange } = this.props;
-        if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
         if (hide && hide.includes(SignIn)) { return null; }
 
-        const theme = this.props.theme || AmplifyTheme;
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Sign In Account')}</SectionHeader>

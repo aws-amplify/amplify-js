@@ -48,7 +48,7 @@ jest.mock('aws-sdk/clients/s3', () => {
                 return;
             }
     };
-    
+
     return S3;
 });
 
@@ -212,6 +212,25 @@ describe('Storage', () => {
             curCredSpyOn.mockClear();
         });
 
+        test('get object with expires option', async () => {
+            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res({});
+                    });
+                });
+
+            const storage = new Storage(options);
+            const spyon = jest.spyOn(S3.prototype, 'getSignedUrl');
+
+            expect.assertions(2);
+            expect(await storage.get('key', { expires: 1200 })).toBe('url');
+            expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "public/key", "Expires": 1200});
+
+            spyon.mockClear();
+            curCredSpyOn.mockClear();
+        });
+
         test('credentials not ok', async () => {
             const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
                 .mockImplementationOnce(() => {
@@ -244,7 +263,7 @@ describe('Storage', () => {
                         });
                     });
                 });
-            
+
             await storage.get('key', { downloaded: false });
 
             const curCredSpyOn2 = jest.spyOn(Auth.prototype, 'currentCredentials')
@@ -255,7 +274,7 @@ describe('Storage', () => {
                         });
                     });
                 });
-                
+
             await storage.get('key', { downloaded: false });
 
             expect(curCredSpyOn.mock.calls.length).toBe(2);
@@ -263,7 +282,7 @@ describe('Storage', () => {
             curCredSpyOn.mockClear();
         });
     });
-    
+
     describe('put test', () => {
         test('put object succefully', async () => {
             const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
@@ -279,9 +298,9 @@ describe('Storage', () => {
             expect.assertions(2);
             expect(await storage.put('key', 'obejct', {})).toEqual({"key": "path/itemsKey"});
             expect(spyon.mock.calls[0][0]).toEqual({
-                "Body": "obejct", 
-                "Bucket": "bucket", 
-                "ContentType": "binary/octet-stream", 
+                "Body": "obejct",
+                "Bucket": "bucket",
+                "ContentType": "binary/octet-stream",
                 "Key": "public/key"
             });
             spyon.mockClear();
@@ -303,9 +322,9 @@ describe('Storage', () => {
             expect.assertions(3);
             expect(await storage.put('key', 'obejct', {track: true})).toEqual({"key": "path/itemsKey"});
             expect(spyon.mock.calls[0][0]).toEqual({
-                "Body": "obejct", 
-                "Bucket": "bucket", 
-                "ContentType": "binary/octet-stream", 
+                "Body": "obejct",
+                "Bucket": "bucket",
+                "ContentType": "binary/octet-stream",
                 "Key": "public/key"
             });
             expect(spyon2).toBeCalledWith('storage', {attrs: {"method": "put", "result": "success"}, metrics: null}, 'Storage');
@@ -333,7 +352,7 @@ describe('Storage', () => {
             try{
                 await storage.put('key', 'obejct', {});
             } catch (e) {
-                expect(e).toBe('err'); 
+                expect(e).toBe('err');
             }
 
             spyon.mockClear();
@@ -356,9 +375,9 @@ describe('Storage', () => {
             expect.assertions(2);
             expect(await storage.put('key', 'obejct', {level: 'private', contentType: 'text/plain'})).toEqual({"key": "/itemsKey"});
             expect(spyon.mock.calls[0][0]).toEqual({
-                "Body": "obejct", 
-                "Bucket": "bucket", 
-                "ContentType": "text/plain", 
+                "Body": "obejct",
+                "Bucket": "bucket",
+                "ContentType": "text/plain",
                 "Key": "private/id/key"
             });
             spyon.mockClear();
@@ -446,7 +465,7 @@ describe('Storage', () => {
             try{
                 await storage.remove('key', {});
             } catch (e) {
-                expect(e).toBe('err'); 
+                expect(e).toBe('err');
             }
 
             spyon.mockClear();
@@ -541,7 +560,7 @@ describe('Storage', () => {
                 }]);
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": 'bucket', "Prefix": "public/path"});
             expect(spyon2).toBeCalledWith(
-                'storage', 
+                'storage',
                 {attrs: {"method": "list", "result": "success"}, metrics: null}, 'Storage');
 
             spyon.mockClear();

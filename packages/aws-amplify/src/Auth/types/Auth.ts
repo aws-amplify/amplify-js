@@ -11,6 +11,8 @@
  * and limitations under the License.
  */
 
+ import { ICookieStorageData } from "amazon-cognito-identity-js";
+
 /**
 * Parameters for user sign up
 */
@@ -28,6 +30,8 @@ export interface AuthOptions {
     userPoolWebClientId: string,
     identityPoolId: string,
     region?: string,
+    mandatorySignIn: boolean
+    cookieStorage?: ICookieStorageData,
 }
 
 /**

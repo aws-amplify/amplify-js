@@ -49,7 +49,7 @@ export default class AuthPiece extends React.Component {
         }
 
         const map = this.props.errorMessage || AmplifyMessageMap;
-        msg = typeof map === 'string' ? msp : map(msg);
+        msg = typeof map === 'string' ? map : map(msg);
         this.setState({ error: msg });
     }
 

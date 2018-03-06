@@ -18,6 +18,7 @@ import {
     Parser
 } from '../Common';
 import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
+import Platform from '../Common/Platform';
 import Auth from '../Auth';
 
 import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
@@ -62,7 +63,7 @@ export default class AnalyticsClass {
             }, 
             interval);
     }
-
+    
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
@@ -179,10 +180,14 @@ export default class AnalyticsClass {
         const that = this;
         return Auth.currentCredentials()
             .then(credentials => {
+                if (!credentials) return false;
                 const cred = Auth.essentialCredentials(credentials);
-
+                
                 that._config.credentials = cred;
                 that._config.endpointId = cred.identityId;
+                if (!that._config.endpointId) {
+                    that._config.endpointId = that.generateRandomString();
+                }
                 logger.debug('set endpointId for analytics', that._config.endpointId);
                 logger.debug('set credentials for analytics', that._config.credentials);
                 return true;

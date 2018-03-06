@@ -28,8 +28,12 @@ var JS_1 = require("./JS");
 exports.JS = JS_1.default;
 var Signer_1 = require("./Signer");
 exports.Signer = Signer_1.default;
+<<<<<<< HEAD
 var Parser_1 = require("./Parser");
 exports.Parser = Parser_1.default;
+=======
+__export(require("./RNComponents"));
+>>>>>>> upstream/master
 var Platform_1 = require("./Platform");
 exports.Constants = {
     'userAgent': Platform_1.default.userAgent
