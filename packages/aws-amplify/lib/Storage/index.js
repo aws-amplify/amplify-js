@@ -13,6 +13,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Storage_1 = require("./Storage");
+exports.StorageClass = Storage_1.default;
 var Common_1 = require("../Common");
 var logger = new Common_1.ConsoleLogger('Storage');
 var _instance = null;
