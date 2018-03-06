@@ -183,9 +183,21 @@ var Authenticator = function (_Component) {
                 var props_children = this.props.children || [];
                 var default_children = [_react2['default'].createElement(_Greetings2['default'], null), _react2['default'].createElement(_SignIn2['default'], { federated: federated }), _react2['default'].createElement(_ConfirmSignIn2['default'], null), _react2['default'].createElement(_RequireNewPassword2['default'], null), _react2['default'].createElement(_SignUp2['default'], null), _react2['default'].createElement(_ConfirmSignUp2['default'], null), _react2['default'].createElement(_VerifyContact2['default'], null), _react2['default'].createElement(_ForgotPassword2['default'], null)];
 
-                var children = default_children.concat(props_children);
-                var render_children = _react2['default'].Children.map(children, function (child) {
+                var render_props_children = _react2['default'].Children.map(props_children, function (child, index) {
                     return _react2['default'].cloneElement(child, {
+                        key: 'aws-amplify-authenticator-props-children-' + index,
+                        theme: theme,
+                        messageMap: messageMap,
+                        authState: auth,
+                        authData: authData,
+                        onStateChange: _this2.handleStateChange,
+                        onAuthEvent: _this2.handleAuthEvent
+                    });
+                });
+
+                var render_default_children = _react2['default'].Children.map(default_children, function (child, index) {
+                    return _react2['default'].cloneElement(child, {
+                        key: 'aws-amplify-authenticator-default-children-' + index,
                         theme: theme,
                         messageMap: messageMap,
                         authState: auth,
@@ -195,6 +207,8 @@ var Authenticator = function (_Component) {
                         hide: hide
                     });
                 });
+
+                var render_children = render_default_children.concat(render_props_children);
 
                 var errorRenderer = this.props.errorRenderer || this.errorRenderer;
                 var error = this.state.error;

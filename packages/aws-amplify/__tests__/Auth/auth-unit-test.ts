@@ -138,7 +138,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 import { AuthOptions, SignUpParams } from '../../src/Auth/types';
 import Auth from '../../src/Auth/Auth';
 import Cache from '../../src/Cache';
-import { CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
+import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authOptions: AuthOptions = {
@@ -408,6 +408,25 @@ describe('auth unit test', () => {
             const user = new CognitoUser({
                 Username: 'username',
                 Pool: userPool
+            });
+
+            expect.assertions(1);
+            expect(await auth.signIn('username', 'password')).toEqual(user);
+
+            spyon.mockClear();
+        });
+
+        test('happy case using cookie storage', async () => {
+            const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser')
+                .mockImplementationOnce((authenticationDetails, callback) => {
+                    callback.onSuccess(session);
+                });
+
+            const auth = new Auth({ ...authOptions, cookieStorage: { domain: ".example.com" } });
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool,
+                Storage: new CookieStorage({domain: ".yourdomain.com"})
             });
 
             expect.assertions(1);
