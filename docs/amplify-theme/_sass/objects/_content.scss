@@ -30,15 +30,14 @@
     margin-top: 50px;
 	right: 100px;
 	font-size:12px;
-	a {
-		border:none;
+}
+
+.sections-list-wrapper {
+	.dev-guide {
+
 	}
-	border-style: solid;
-	border-color:lightgrey;
-	color:gray;
-	border-width: 1px;
-	border-radius: 5px;
-	padding-left:5px;
-	padding-right: 5px;
-	
+	.section-header {
+		padding-left: 0px;
+		font-weight: bold;
+	}
 }

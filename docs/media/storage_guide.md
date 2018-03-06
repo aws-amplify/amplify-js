@@ -3,26 +3,33 @@
 
 # Storage
 
-AWS Amplify Storage module gives a simple mechanism for managing user content in public or private storage.
-
-* [Installation and Configuration](#installation-and-configuration)
-  - [Manual Setup](#manual-setup)
-  - [Automated Setup](#automated-setup)
-* [Amazon S3 Bucket CORS Policy](#amazon-s3-bucket-cors-policy)
-* [Access Level](#access-level)
-* [Call APIs](#call-apis)
-* [React Development](#react-development)
-  - [Picker](#picker)
-  - [S3Image](#s3image)
-  - [S3Text](#s3text)
-  - [S3Album](#s3album)
-  - [Analytics for S3 components](#analytics-for-s3-components)
+AWS Amplify Storage module gives a simple mechanism for managing user content in public or private storage buckets.
 
 ## Installation and Configuration
 
-Please refer to this [Guide](install_n_config.md) for general setup. Here are Analytics specific setup.
+Please refer to [AWS Amplify Installation Guide](/media/install_n_config/index.html) for general setup. Here is how you can enable Storage category for your app.
 
-The default implementation of the Storage module leverages Amazon S3.
+The default implementation of the Storage module leverages [Amazon S3](https://aws.amazon.com/s3).
+{: .callout .callout--info}
+
+### Automated Setup
+
+To create a project fully functioning with the Storage category.
+
+```bash
+$ npm install -g awsmobile-cli
+$ cd my-app #Change to your project's root folder
+$ awsmobile init
+$ awsmobile enable user-files
+```
+
+In your project i.e. App.js:
+
+```js
+import Amplify, { Storage } from 'aws-amplify';
+import aws_exports from './aws-exports';
+Amplify.configure(aws_exports);
+```
 
 ### Manual Setup
 
@@ -42,24 +49,6 @@ Amplify.configure(
     }
 );
 
-```
-### Automated Setup
-
-To create a project fully functioning with the Storage category.
-
-```
-$ npm install -g awsmobile-cli
-$ cd my-app
-$ awsmobile init
-$ awsmobile enable user-files
-```
-
-In your project i.e. App.js:
-
-```js
-import Amplify, { Storage } from 'aws-amplify';
-import aws_exports from './aws-exports';
-Amplify.configure(aws_exports);
 ```
 
 ## Amazon S3 Bucket CORS Policy
@@ -411,3 +400,7 @@ return <S3Album track />
 ```
 
 Enabling this will automatically send 'Storage' events to Amazon Pinpoint and you will be able to see them within the AWS Pinpoint console under Custom Events. The event name will be 'Storage' and within the attributes will be details about the operations that occurred. For example Storage -> method -> put etc.
+
+
+For the complete API documentation for Storage module, visit our [API Reference](/api/classes/storageclass.html)
+{: .callout .callout--info}

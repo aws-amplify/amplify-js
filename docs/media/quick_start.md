@@ -69,7 +69,7 @@ AWS Amplify is available as an npm package. Run the following commands at the ro
 npm install aws-amplify
 ```
 ```bash
-# not required but contains higher order components
+# not required but contains Higher Order Components
 npm install aws-amplify-react
 ```
 </div>
@@ -120,7 +120,7 @@ If prompted for credentials, follow the steps provided by the CLI. For more info
 
 You have two alternatives to setup your backend, depending on if your want to utilize your existing AWS resources. 
 
-### Working with existing AWS Resources
+### Working with existing AWS Resources (Manual Setup)
 
 If you want to use your existing AWS resources (S3 Buckets, Cognito User Pools, etc.) with your app, you need to **manually configure** your app with your existing credentials in your code:
 
@@ -151,7 +151,7 @@ To see the configuration parameters for existing AWS resources, see the *Manual 
 [Amazon API Gateway](/media/api_guide/#manual-setup)
 {: .callout .callout--info}
 
-### Working with new AWS resources
+### Working with AWS Mobile Hub for new AWS resources (Automatic Setup)
 
 If you are willing to create new AWS resources and use those resources in your app, you can set up your backend with `awsmobile-cli` or directly from [AWS Mobile Hub](https://aws.amazon.com/mobile/) console.
 
@@ -310,6 +310,11 @@ AWS Amplify provides a declerative API to work with Amazon Cognito, Amazon API G
 You can call methods on any AWS Service interface object by passing your credentials from `Auth` to the service call constructor:
 
 ```js
+
+import Route53 from 'aws-sdk/clients/route53';
+
+...
+
 Auth.currentCredentials()
   .then(credentials => {
     const route53 = new Route53({

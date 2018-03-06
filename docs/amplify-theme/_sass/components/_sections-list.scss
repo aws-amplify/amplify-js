@@ -38,14 +38,32 @@
 			transition: border .2s;
 			border-left-color:white;
 			line-height: 20px;
-			padding-left:17px;
+			padding-left:0px;
 
 			&.active {
 				border-left-color: $color-dark-blue;
 			}
 
+			&.section-link {
+				a {
+					padding-left:0px;
+				}
+			}
+
 			&.has-submenu {
 				//padding-right: 1.25rem;
+				//font-weight: bold;
+				.level-3{
+					a {
+						padding-left:20px;
+					}
+				}
+
+				.level-4 {
+					a {
+						padding-left:30px;
+					}
+				}
 
 				&::after {
 					@extend .icon;
@@ -64,6 +82,7 @@
 				}
 
 				&.active {
+
 					&::after {
 						color: $color-dark-blue;
 						
@@ -73,6 +92,8 @@
 						display: block;
 					}
 				}
+
+
 			}
 
 			&::before {
@@ -82,7 +103,10 @@
 			a {
 				@include link-reset;
 				font-size:0.9rem;
-				//margin-left: 13px;
+				padding-left: 10px;
+				&:hover {
+					text-decoration: underline;
+				}
 			}
 		}
 	}

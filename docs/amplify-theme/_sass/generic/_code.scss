@@ -29,7 +29,8 @@ pre {
 
 /* ----- Highlight ----- */
 .highlight .hll { background-color: #49483e }
-pre.highlight { background: #212733; color: $color-pre; padding: 1.5625rem; border-radius: 5px;}
+pre.highlight { background: #212733; color: $color-pre; padding: 1.5625rem; border-radius: 5px;line-height: 19px;
+    font-size: 15px;}
 .highlight .c { color: #75715e } /* Comment */
 .highlight .err { color: #960050; background-color: #1e0010 } /* Error */
 .highlight .k { color: #66d9ef } /* Keyword */

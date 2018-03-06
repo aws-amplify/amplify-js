@@ -33,15 +33,13 @@
 		</div><!-- /.section -->
 		{% endif %}
 
-		{% if page.category_list %}
-		 
+		{% if site.category_list %}
 			<div class="section section--darker-theme-color-bg">
 				<div class="container">
-					
 						<div class="row">
 							<div class="col-md-12">
 								<div class="nav-grid nav-grid--out">
-									{% for category in page.category_list %}
+									{% for category in site.category_list %}
 									<h3> {{ category.title}} </h3>
 										<div class="row">
 											{% for item in category.subs %}

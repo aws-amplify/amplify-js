@@ -21,6 +21,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   Google search results) and in your feed.xml site description.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com 
+github_docs_repo_url: https://github.com/aws/aws-amplify/edit/master/docs/
 
 show_downloads: "true"
 include: 
@@ -65,6 +66,8 @@ amplify:
               item_url: '/media/quick_start/index.html'
             - item_name: Developer Guide
               item_url: '/media/developer_guide/index.html'
+            - item_name: API
+              item_url: '/api/index.html'
             - item_name: Community
               item_url: 'https://gitter.im/AWS-Amplify/Lobby/'
             - item_name: Blog
@@ -103,6 +106,77 @@ includes_dir: ./amplify-theme/_includes
 exclude: [ 'README.md', 'CHANGELOG.md' ]
 permalink: /:title/
 
+category_list:
+    - category: Modules
+      title: Modules
+      subs:
+        - title: Analytics 
+          excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
+          cta: Read more
+          class: aws-icon-ps-60-pie-bar-charts 
+          url: '/media/analytics_guide/index.html'
+          services:
+            - title: AWS Pinpoint,
+              url: https://aws.amazon.com/pinpoint/
+            - title: AWS Kinesis,
+              url: https://aws.amazon.com/kinesis/
+            - title: Custom Plugin
+              url: 
+        - title: API 
+          excerpt: A simple and secure solution for making HTTP requests.
+          cta: Read more
+          class: aws-icon-ps-60-database-server
+          url: '/media/api_guide/index.html'    
+          services:
+            - title: AWS API Gateway
+              url: https://aws.amazon.com/api-gateway
+        - title: Authentication
+          excerpt:  Authentication APIs with pre-built UI components for your app.  
+          cta: Read more
+          class: aws-icon-ps-60-shield-circle
+          url: '/media/authentication_guide/index.html'
+          services:
+            - title: AWS Cognito ,
+              url: https://aws.amazon.com/cognito/
+            - title: OAuth 2.0 ,
+              url: https://aws.amazon.com/cognito/
+            - title: Custom Plugin
+              url:   
+        - title: Storage 
+          excerpt: A simple mechanism for managing user content in public or private storage.
+          cta: Read more
+          class: aws-icon-ps-60-file-box
+          url: '/media/storage_guide/index.html'   
+          services:
+              - title: AWS S3
+                url: https://aws.amazon.com/s3/
+        - title: Push Notifications 
+          excerpt: Push notifications with campaign analytics and targeting.
+          cta: Read more
+          class: aws-icon-ps-60-bubble-gear
+          url: '/media/push_notifications_setup/index.html'   
+          services:
+              - title: AWS Pinpoint
+                url: https://aws.amazon.com/pinpoint/
+    -  category: Utilities
+       title: Utilities
+       subs:
+        - title: Cache 
+          excerpt: A generic LRU cache for storing data with priority and expiration settings. 
+          cta: Read more
+          url: '/media/cache_guide/index.html'  
+        - title: Hub  
+          excerpt: A lightweight Pub-Sub system.
+          cta: Read more
+          url: '/media/hub_guide/index.html' 
+        - title: I18n  
+          excerpt: A lightweight internationalization solution.
+          cta: Read more
+          url: '/media/i18n_guide/index.html'  
+        - title: Logger  
+          excerpt: Console logging utility.
+          cta: Read more
+          url: '/media/logger_guide/index.html'  
 
 defaults:
   -
