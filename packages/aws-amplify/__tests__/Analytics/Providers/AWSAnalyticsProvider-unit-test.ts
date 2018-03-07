@@ -93,8 +93,7 @@ describe("AnalyticsProvider test", () => {
     describe('startsession test', () => {
         test('happy case', async () => {
             const analytics = new AnalyticsProvider();
-            analytics.configure({endpointId: null});
-            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementation((params, callback) => {
+            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
                 callback(null, 'data');
             });
 
@@ -108,30 +107,14 @@ describe("AnalyticsProvider test", () => {
 
         test('session start error', async () => {
             const analytics = new AnalyticsProvider();
-            analytics.configure({endpointId: null});
-            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementation((params, callback) => {
+            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
                 callback('err', null);
             });
 
-            try {
-                const params = {eventName: '_session_start', config: options, timestamp};
-                await analytics.record(params);
-            } catch (e) {
-                expect(e).toBe('err');
-            }
-
-            spyon.mockClear();
-        });
-
-        test('init clients error', async () => {
-            const analytics = new AnalyticsProvider();
-            analytics.configure({endpointId: null});
-            const spyon = jest.spyOn(Pinpoint.prototype, 'updateEndpoint').mockImplementationOnce((params, callback) => {
-                callback('err', null);
-            });
-
+        
             const params = {eventName: '_session_start', config: options, timestamp};
-            expect(await analytics.record(params)).toBe(false);
+            expect(await analytics.record(params)).toBe(false);;
+
 
             spyon.mockClear();
         });
@@ -139,8 +122,7 @@ describe("AnalyticsProvider test", () => {
     describe('stopSession test', () => {
         test('happy case', async () => {
             const analytics = new AnalyticsProvider();
-            analytics.configure({endpointId: null});
-            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementation((params, callback) => {
+            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
                 callback(null, 'data');
             });
 
@@ -155,38 +137,23 @@ describe("AnalyticsProvider test", () => {
         test('session stop error', async () => {
             const analytics = new AnalyticsProvider();
             analytics.configure({endpointId: null});
-            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementation((params, callback) => {
+            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
                 callback('err', null);
             });
 
-            try {
-                const params = {eventName: '_session_start', config: options, timestamp};
-                await analytics.record(params);
-            } catch (e) {
-                expect(e).toBe('err');
-            }
-
-            spyon.mockClear();
-        });
-
-        test('init clients error', async () => {
-            const analytics = new AnalyticsProvider();
-            analytics.configure({endpointId: null});
-            const spyon = jest.spyOn(Pinpoint.prototype, 'updateEndpoint').mockImplementationOnce((params, callback) => {
-                callback('err', null);
-            });
-
-            const params = {eventName: '_session_start', config: options, timestamp};
+            const params = {eventName: '_session_stop', config: options, timestamp};
             expect(await analytics.record(params)).toBe(false);
 
             spyon.mockClear();
         });
     });
+
+
+
     describe('record test', () => {
         test('custom events', async () => {
             const analytics = new AnalyticsProvider();
-            analytics.configure({endpointId: null});
-            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementation((params, callback) => {
+            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
                 callback(null, 'data');
             });
 
@@ -200,25 +167,20 @@ describe("AnalyticsProvider test", () => {
         });
 
         test('custom event error', async () => {
-            const analytics = new AnalyticsProvider();
-            analytics.configure({endpointId: null});
-            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementation((params, callback) => {
+            const analytics = new AnalyticsProvider(); 
+            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
                 callback('err', null);
             });
 
-            try {
-                const params = {eventName: 'custom event', config: options, timestamp};
-                await analytics.record(params);
-            } catch (e) {
-                expect(e).toBe('err');
-            }
+            const params = {eventName: 'custom event', config: options, timestamp};
+            expect(await analytics.record(params)).toBe(false);
+   
 
             spyon.mockClear();
         });
 
         test('init clients error', async () => {
             const analytics = new AnalyticsProvider();
-            analytics.configure({endpointId: null});
             const spyon = jest.spyOn(Pinpoint.prototype, 'updateEndpoint').mockImplementationOnce((params, callback) => {
                 callback('err', null);
             });
@@ -231,10 +193,36 @@ describe("AnalyticsProvider test", () => {
 
         test('no credentials', async () => {
             const analytics = new AnalyticsProvider();
-            analytics.configure({endpointId: null});
 
             const params = {eventName: 'custom event', config: {}, timestamp};
             expect(await analytics.record(params)).toBe(false);
+        });
+    });
+
+    describe('updateEndpoint test', () => {
+        test('happy case', async () => {
+            const analytics = new AnalyticsProvider();
+            const spyon = jest.spyOn(Pinpoint.prototype, 'updateEndpoint').mockImplementationOnce((params, callback) => {
+                callback(null, 'data');
+            });
+
+            const params = {eventName: '_update_endpoint', config: options, timestamp};
+            await analytics.record(params);
+            expect(spyon).toBeCalled();
+
+            spyon.mockClear();
+        });
+
+        test('error case', async () => {
+            const analytics = new AnalyticsProvider();
+            const spyon = jest.spyOn(Pinpoint.prototype, 'updateEndpoint').mockImplementationOnce((params, callback) => {
+                callback('err', null);
+            });
+
+            const params = {eventName: '_update_endpoint', config: options, timestamp};
+            expect(await analytics.record(params)).toBe(false);
+
+            spyon.mockClear();
         });
     });
 });

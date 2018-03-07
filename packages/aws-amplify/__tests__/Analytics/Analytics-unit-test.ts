@@ -269,6 +269,57 @@ describe("Analytics test", () => {
         });
     });
 
+        describe('updateEndpoint test', () => {
+        test('happy case', async () => {
+            const provider = {
+                configure: jest.fn(),
+                record: jest.fn(),
+                getCategory: jest.fn(),
+                getProviderName: jest.fn()
+            }
+            
+            const analytics = new Analytics();
+
+            analytics.addPluggable(provider);
+
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(credentials);
+                })
+            });
+
+            await analytics.updateEndpoint({Analytics: {Address: 'Address'}});
+
+            spyon.mockClear();
+        });
+
+        test('get credentials error', async () => {
+            const provider = {
+                configure: jest.fn(),
+                record: jest.fn(),
+                getCategory: jest.fn(),
+                getProviderName: jest.fn()
+            }
+            
+            const analytics = new Analytics();
+
+            analytics.addPluggable(provider);
+
+            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                })
+            });
+
+            // const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'record').mockImplementationOnce(() => { return; });
+
+            await analytics.updateEndpoint({Analytics: {Address: 'Address'}});
+
+            spyon.mockClear();
+            // spyon2.mockClear();
+        });
+    });
+
     describe('addPluggable test', () => {
         test('happy case', async () => {
             const provider = {

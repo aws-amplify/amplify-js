@@ -184,7 +184,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             that.pinpointClient.updateEndpoint(update_params, (err, data) => {
                 if (err) {
                     logger.debug('Pinpoint ERROR', err);
-                    rej(false);
+                    res(false);
                 } else {
                     logger.debug('Pinpoint SUCCESS', data);
                     res(true);

@@ -224,7 +224,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                                 that.pinpointClient.updateEndpoint(update_params, function (err, data) {
                                     if (err) {
                                         logger.debug('Pinpoint ERROR', err);
-                                        rej(false);
+                                        res(false);
                                     }
                                     else {
                                         logger.debug('Pinpoint SUCCESS', data);
