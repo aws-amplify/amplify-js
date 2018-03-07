@@ -14,7 +14,7 @@ export default class Amplify {
     static Cache: any;
     static Logger: any;
     static configure(config: any): any;
-    static usePluggable(pluggable: any): void;
+    static addPluggable(pluggable: any): void;
 }
 export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
 export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider };

@@ -50,7 +50,7 @@ var Amplify = /** @class */ (function () {
         Cache_1.default.configure(config);
         return config;
     };
-    Amplify.usePluggable = function (pluggable) {
+    Amplify.addPluggable = function (pluggable) {
         if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
             var category = pluggable.getCategory();
             switch (category) {

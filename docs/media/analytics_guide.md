@@ -124,5 +124,5 @@ You can now add your own Analytics plugin now by using:
 // send configuration into Amplify
 Amplify.configure({Analytics: { my_analytics_provider_configuration }});
 // use the plugin
-Amplify.usePluggable(new MyAnalyticsProvider());
+Amplify.addPluggable(new MyAnalyticsProvider());
 ```

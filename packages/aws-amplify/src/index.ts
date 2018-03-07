@@ -49,7 +49,7 @@ export default class Amplify {
         return config;
     }
 
-    static usePluggable(pluggable) {
+    static addPluggable(pluggable) {
         if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
             const category = pluggable.getCategory();
             switch(category) {
