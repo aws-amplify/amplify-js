@@ -324,7 +324,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @return {Object} - The request of updating endpoint
      */
     _endpointRequest() {
-        const { clientInfo, credentials, Address, RequestId, cognitoIdentityPoolId, endpointId } = this._config;
+        const { clientInfo, credentials, Address, RequestId, endpointId } = this._config;
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
 
@@ -344,10 +344,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             RequestId,
             EffectiveDate: Address? new Date().toISOString() : undefined,
             User: { 
-                UserId: endpointId,
-                UserAttributes: {
-                    CognitoIdentityPool: [ cognitoIdentityPoolId ]
-                }
+                UserId: credentials.identityId
             }
         };
     }

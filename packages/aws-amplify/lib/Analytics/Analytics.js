@@ -206,7 +206,7 @@ var AnalyticsClass = /** @class */ (function () {
                         timestamp = new Date().getTime();
                         conf = Object.assign(this._config, config);
                         params = { eventName: '_update_endpoint', timestamp: timestamp, config: conf };
-                        return [2 /*return*/];
+                        return [2 /*return*/, this._putToBuffer(params)];
                 }
             });
         });

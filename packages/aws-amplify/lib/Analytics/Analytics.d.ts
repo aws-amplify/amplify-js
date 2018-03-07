@@ -45,7 +45,7 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if buffer doesn't overflow
      */
     record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<boolean | void>;
-    updateEndpoint(config: any): Promise<boolean>;
+    updateEndpoint(config: any): Promise<boolean | void>;
     /**
      * @private
      * @param {Object} params - params for the event recording
