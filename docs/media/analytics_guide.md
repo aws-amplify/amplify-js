@@ -103,7 +103,7 @@ You can write your own plugin by using the interface ```AnalyticsProvider```:
 ```js
 import { AnalyticsProvider } from 'aws-amplify';
 
-export default class MyAnalyticsProvider implements AnalyticsProvider {
+export default class MyAnalyticsProvider implements AnalyticsProvider {
     // you need to implement those four methods
     // configure your provider
     configure(config: object): object;
