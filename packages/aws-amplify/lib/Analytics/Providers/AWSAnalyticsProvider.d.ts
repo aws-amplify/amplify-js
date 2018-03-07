@@ -76,9 +76,6 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         EffectiveDate: string;
         User: {
             UserId: any;
-            UserAttributes: {
-                CognitoIdentityPool: any[];
-            };
         };
     };
     /**

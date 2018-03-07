@@ -387,7 +387,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @return {Object} - The request of updating endpoint
      */
     AWSAnalyticsProvider.prototype._endpointRequest = function () {
-        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, cognitoIdentityPoolId = _a.cognitoIdentityPoolId, endpointId = _a.endpointId;
+        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, endpointId = _a.endpointId;
         var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         var ChannelType = Address ? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         logger.debug('demographic user id: ', user_id);
@@ -406,10 +406,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             RequestId: RequestId,
             EffectiveDate: Address ? new Date().toISOString() : undefined,
             User: {
-                UserId: endpointId,
-                UserAttributes: {
-                    CognitoIdentityPool: [cognitoIdentityPoolId]
-                }
+                UserId: credentials.identityId
             }
         };
     };
