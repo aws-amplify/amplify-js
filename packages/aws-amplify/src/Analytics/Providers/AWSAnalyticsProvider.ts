@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger, Pinpoint, MobileAnalytics} from '../../Common';
+import Cache from '../../Cache';
 import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
 
@@ -46,7 +47,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @param {Object} config - configuration
      */
     public configure(config): object {
-        logger.debug('configure Analytics');
+        logger.debug('configure Analytics', config);
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
         return this._config;
@@ -63,6 +64,8 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
                 return this._startSession(params);
             case '_session_stop':
                 return this._stopSession(params);
+            case '_update_endpoint':
+                return this._updateEndpoint(params);
             default:
                 return this._recordCustomEvent(params);
         }
@@ -73,13 +76,12 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @param params 
      */
     private async _startSession(params) {
-        console.log(params);
         // credentials updated
         const { timestamp, config } = params;
-        if (this._config.endpointId !== config.endpointId) {
-            const initClients = await this._init(config);
-            if (!initClients) return false;
-        }
+
+        const initClients = await this._init(config);
+        if (!initClients) return false;
+        
 
         logger.debug('record session start');
         this._sessionId = uuid();
@@ -104,7 +106,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             this.mobileAnalytics.putEvents(eventParams, (err, data) => {
                 if (err) {
                     logger.debug('record event failed. ', err);
-                    res(this._checkErrCode(err.code));
+                    res(false);
                 }
                 else {
                     logger.debug('record event success. ', data);
@@ -121,10 +123,9 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private async _stopSession(params) {
         // credentials updated
         const { timestamp, config } = params;
-        if (this._config.endpointId !== config.endpointId) {
-            const initClients = await this._init(config);
-            if (!initClients) return false;
-        }
+
+        const initClients = await this._init(config);
+        if (!initClients) return false;
 
         logger.debug('record session stop');
     
@@ -147,10 +148,45 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             this.mobileAnalytics.putEvents(eventParams, (err, data) => {
                 if (err) {
                     logger.debug('record event failed. ', err);
-                    res(this._checkErrCode(err.code));
+                    res(false);
                 }
                 else {
                     logger.debug('record event success. ', data);
+                    res(true);
+                }
+            });
+        });
+    }
+
+    private async _updateEndpoint(params) : Promise<boolean> {
+        // credentials updated
+        const { timestamp, config } = params;
+
+        const initClients = await this._init(config);
+        if (!initClients) return false;
+
+        this._config = Object.assign(this._config, config);
+
+        const { appId, region, credentials } = this._config;
+        const cacheKey = this.getProviderName() + '_' + appId;
+        const endpointId = await this._getEndpointId(cacheKey);
+
+        const request = this._endpointRequest();
+        const update_params = {
+            ApplicationId: appId,
+            EndpointId: endpointId,
+            EndpointRequest: request
+        };
+
+        const that = this;
+        logger.debug('updateEndpoint with params: ', update_params);
+        return new Promise<boolean>((res, rej) => {
+            that.pinpointClient.updateEndpoint(update_params, (err, data) => {
+                if (err) {
+                    logger.debug('Pinpoint ERROR', err);
+                    rej(false);
+                } else {
+                    logger.debug('Pinpoint SUCCESS', data);
                     res(true);
                 }
             });
@@ -164,11 +200,10 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private async _recordCustomEvent(params) {
         // credentials updated
         const { eventName, attributes, metrics, timestamp, config } = params;
-        if (this._config.endpointId !== config.endpointId) {
-            const initClients = await this._init(config);
-            if (!initClients) return false;
-        }
 
+        const initClients = await this._init(config);
+        if (!initClients) return false;
+        
         const clientContext = this._generateClientContext();
         const eventParams = {
             clientContext,
@@ -187,7 +222,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             this.mobileAnalytics.putEvents(eventParams, (err, data) => {
                 if (err) {
                     logger.debug('record event failed. ', err);
-                    res(this._checkErrCode(err.code));
+                    res(false);
                 }
                 else {
                     logger.debug('record event success. ', data);
@@ -199,25 +234,28 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
 
     /**
      * @private
-     * @param code 
-     * Check if the error is retryable
-     */
-    private _checkErrCode(code) {
-        for (let i = 0; i < NON_RETRYABLE_EXCEPTIONS.length; i++) {
-            if (code === NON_RETRYABLE_EXCEPTIONS[i]) return true;
-        }
-        return false;
-    }
-
-    /**
-     * @private
      * @param config 
      * Init the clients
      */
     private async _init(config) {
         logger.debug('init clients');
+        if (!config.credentials) {
+            logger.debug('no credentials provided by config, abort this init');
+            return false;
+        }
+        if (this.mobileAnalytics 
+            && this._config.credentials 
+            && this._config.credentials.sessionToken === config.credentials.sessionToken
+            && this._config.credentials.identityId === config.credentials.identityId) {
+            logger.debug('no change for analytics config, directly return from init');
+            return true;
+        }
 
-        this._config = Object.assign(this._config, config);
+        const { appId } = config;
+        const cacheKey = this.getProviderName() + '_' + appId;
+        const endpointId = await this._getEndpointId(cacheKey);
+
+        this._config = Object.assign(this._config, { endpointId }, config);
         this._initMobileAnalytics();
         return new Promise((res, rej) => {
             this._initPinpoint().then((data) => {
@@ -226,6 +264,17 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
                 res(false);
             });
         });
+    }
+
+    private async _getEndpointId(cacheKey) {
+        // try to get from cache
+        let endpointId = await Cache.getItem(cacheKey);
+        logger.debug('endpointId from cache', endpointId, 'type', typeof endpointId);
+        if (!endpointId) {
+            endpointId = uuid();
+            Cache.setItem(cacheKey, endpointId);
+        }
+        return endpointId;
     }
 
     /**
@@ -269,44 +318,6 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             });
         });
     }
-
-    //  async updateEndpoint(config) {
-    //     const credentialsOK = await this._ensureCredentials();
-    //     if (!credentialsOK) { return Promise.resolve(false); }
-
-    //     const conf = config? config.Analytics || config : {};
-    //     this._config = Object.assign({}, this._config, conf);
-
-    //     const { appId, endpointId, credentials, region } = this._config;
-
-    //     const request = this._endpointRequest();
-    //     const update_params = {
-    //         ApplicationId: appId,
-    //         EndpointId: endpointId,
-    //         EndpointRequest: request
-    //     };
-
-    //     if (!this.pinpointClient) {
-    //         this.pinpointClient = new Pinpoint({
-    //             region,
-    //             credentials
-    //         });
-    //     }
-
-    //     const that = this;
-    //     logger.debug('updateEndpoint with params: ', update_params);
-    //     return new Promise((res, rej) => {
-    //         that.pinpointClient.updateEndpoint(update_params, function(err, data) {
-    //             if (err) {
-    //                 logger.debug('Pinpoint ERROR', err);
-    //                 rej(err);
-    //             } else {
-    //                 logger.debug('Pinpoint SUCCESS', data);
-    //                 res(data);
-    //             }
-    //         });
-    //     });
-    // }
 
     /**
      * EndPoint request

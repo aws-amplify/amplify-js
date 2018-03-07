@@ -48,6 +48,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * and limitations under the License.
  */
 var Common_1 = require("../../Common");
+var Cache_1 = require("../../Cache");
 var uuid_1 = require("uuid");
 var logger = new Common_1.ConsoleLogger('AWSAnalyticsProvider');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
@@ -72,7 +73,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @param {Object} config - configuration
      */
     AWSAnalyticsProvider.prototype.configure = function (config) {
-        logger.debug('configure Analytics');
+        logger.debug('configure Analytics', config);
         var conf = config ? config : {};
         this._config = Object.assign({}, this._config, conf);
         return this._config;
@@ -88,6 +89,8 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                 return this._startSession(params);
             case '_session_stop':
                 return this._stopSession(params);
+            case '_update_endpoint':
+                return this._updateEndpoint(params);
             default:
                 return this._recordCustomEvent(params);
         }
@@ -103,16 +106,12 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log(params);
                         timestamp = params.timestamp, config = params.config;
-                        if (!(this._config.endpointId !== config.endpointId)) return [3 /*break*/, 2];
                         return [4 /*yield*/, this._init(config)];
                     case 1:
                         initClients = _a.sent();
                         if (!initClients)
                             return [2 /*return*/, false];
-                        _a.label = 2;
-                    case 2:
                         logger.debug('record session start');
                         this._sessionId = uuid_1.v1();
                         sessionId = this._sessionId;
@@ -134,7 +133,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                                 _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
                                     if (err) {
                                         logger.debug('record event failed. ', err);
-                                        res(_this._checkErrCode(err.code));
+                                        res(false);
                                     }
                                     else {
                                         logger.debug('record event success. ', data);
@@ -158,14 +157,11 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         timestamp = params.timestamp, config = params.config;
-                        if (!(this._config.endpointId !== config.endpointId)) return [3 /*break*/, 2];
                         return [4 /*yield*/, this._init(config)];
                     case 1:
                         initClients = _a.sent();
                         if (!initClients)
                             return [2 /*return*/, false];
-                        _a.label = 2;
-                    case 2:
                         logger.debug('record session stop');
                         sessionId = this._sessionId ? this._sessionId : uuid_1.v1();
                         clientContext = this._generateClientContext();
@@ -186,10 +182,52 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                                 _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
                                     if (err) {
                                         logger.debug('record event failed. ', err);
-                                        res(_this._checkErrCode(err.code));
+                                        res(false);
                                     }
                                     else {
                                         logger.debug('record event success. ', data);
+                                        res(true);
+                                    }
+                                });
+                            })];
+                }
+            });
+        });
+    };
+    AWSAnalyticsProvider.prototype._updateEndpoint = function (params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var timestamp, config, initClients, _a, appId, region, credentials, cacheKey, endpointId, request, update_params, that;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        timestamp = params.timestamp, config = params.config;
+                        return [4 /*yield*/, this._init(config)];
+                    case 1:
+                        initClients = _b.sent();
+                        if (!initClients)
+                            return [2 /*return*/, false];
+                        this._config = Object.assign(this._config, config);
+                        _a = this._config, appId = _a.appId, region = _a.region, credentials = _a.credentials;
+                        cacheKey = this.getProviderName() + '_' + appId;
+                        return [4 /*yield*/, this._getEndpointId(cacheKey)];
+                    case 2:
+                        endpointId = _b.sent();
+                        request = this._endpointRequest();
+                        update_params = {
+                            ApplicationId: appId,
+                            EndpointId: endpointId,
+                            EndpointRequest: request
+                        };
+                        that = this;
+                        logger.debug('updateEndpoint with params: ', update_params);
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                that.pinpointClient.updateEndpoint(update_params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('Pinpoint ERROR', err);
+                                        rej(false);
+                                    }
+                                    else {
+                                        logger.debug('Pinpoint SUCCESS', data);
                                         res(true);
                                     }
                                 });
@@ -210,14 +248,11 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         eventName = params.eventName, attributes = params.attributes, metrics = params.metrics, timestamp = params.timestamp, config = params.config;
-                        if (!(this._config.endpointId !== config.endpointId)) return [3 /*break*/, 2];
                         return [4 /*yield*/, this._init(config)];
                     case 1:
                         initClients = _a.sent();
                         if (!initClients)
                             return [2 /*return*/, false];
-                        _a.label = 2;
-                    case 2:
                         clientContext = this._generateClientContext();
                         eventParams = {
                             clientContext: clientContext,
@@ -235,7 +270,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                                 _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
                                     if (err) {
                                         logger.debug('record event failed. ', err);
-                                        res(_this._checkErrCode(err.code));
+                                        res(false);
                                     }
                                     else {
                                         logger.debug('record event success. ', data);
@@ -249,35 +284,61 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     };
     /**
      * @private
-     * @param code
-     * Check if the error is retryable
-     */
-    AWSAnalyticsProvider.prototype._checkErrCode = function (code) {
-        for (var i = 0; i < NON_RETRYABLE_EXCEPTIONS.length; i++) {
-            if (code === NON_RETRYABLE_EXCEPTIONS[i])
-                return true;
-        }
-        return false;
-    };
-    /**
-     * @private
      * @param config
      * Init the clients
      */
     AWSAnalyticsProvider.prototype._init = function (config) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
+            var appId, cacheKey, endpointId;
             return __generator(this, function (_a) {
-                logger.debug('init clients');
-                this._config = Object.assign(this._config, config);
-                this._initMobileAnalytics();
-                return [2 /*return*/, new Promise(function (res, rej) {
-                        _this._initPinpoint().then(function (data) {
-                            res(true);
-                        }).catch(function (err) {
-                            res(false);
-                        });
-                    })];
+                switch (_a.label) {
+                    case 0:
+                        logger.debug('init clients');
+                        if (!config.credentials) {
+                            logger.debug('no credentials provided by config, abort this init');
+                            return [2 /*return*/, false];
+                        }
+                        if (this.mobileAnalytics
+                            && this._config.credentials
+                            && this._config.credentials.sessionToken === config.credentials.sessionToken
+                            && this._config.credentials.identityId === config.credentials.identityId) {
+                            logger.debug('no change for analytics config, directly return from init');
+                            return [2 /*return*/, true];
+                        }
+                        appId = config.appId;
+                        cacheKey = this.getProviderName() + '_' + appId;
+                        return [4 /*yield*/, this._getEndpointId(cacheKey)];
+                    case 1:
+                        endpointId = _a.sent();
+                        this._config = Object.assign(this._config, { endpointId: endpointId }, config);
+                        this._initMobileAnalytics();
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this._initPinpoint().then(function (data) {
+                                    res(true);
+                                }).catch(function (err) {
+                                    res(false);
+                                });
+                            })];
+                }
+            });
+        });
+    };
+    AWSAnalyticsProvider.prototype._getEndpointId = function (cacheKey) {
+        return __awaiter(this, void 0, void 0, function () {
+            var endpointId;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, Cache_1.default.getItem(cacheKey)];
+                    case 1:
+                        endpointId = _a.sent();
+                        logger.debug('endpointId from cache', endpointId, 'type', typeof endpointId);
+                        if (!endpointId) {
+                            endpointId = uuid_1.v1();
+                            Cache_1.default.setItem(cacheKey, endpointId);
+                        }
+                        return [2 /*return*/, endpointId];
+                }
             });
         });
     };
@@ -326,11 +387,14 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @return {Object} - The request of updating endpoint
      */
     AWSAnalyticsProvider.prototype._endpointRequest = function () {
-        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials;
+        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, cognitoIdentityPoolId = _a.cognitoIdentityPoolId, endpointId = _a.endpointId;
         var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
-        logger.debug('config', this._config);
+        var ChannelType = Address ? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         logger.debug('demographic user id: ', user_id);
+        var OptOut = this._config.OptOut ? this._config.OptOut : undefined;
         return {
+            Address: Address,
+            ChannelType: ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || clientInfo.appVersion,
                 Make: clientInfo.make,
@@ -338,7 +402,15 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                 ModelVersion: clientInfo.version,
                 Platform: clientInfo.platform
             },
-            User: { UserId: user_id }
+            OptOut: OptOut,
+            RequestId: RequestId,
+            EffectiveDate: Address ? new Date().toISOString() : undefined,
+            User: {
+                UserId: endpointId,
+                UserAttributes: {
+                    CognitoIdentityPool: [cognitoIdentityPoolId]
+                }
+            }
         };
     };
     /**

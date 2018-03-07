@@ -33,6 +33,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @param params
      */
     private _stopSession(params);
+    private _updateEndpoint(params);
     /**
      * @private
      * @param params
@@ -40,16 +41,11 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private _recordCustomEvent(params);
     /**
      * @private
-     * @param code
-     * Check if the error is retryable
-     */
-    private _checkErrCode(code);
-    /**
-     * @private
      * @param config
      * Init the clients
      */
     private _init(config);
+    private _getEndpointId(cacheKey);
     /**
      * @private
      * Init the MobileAnalytics client
@@ -65,7 +61,26 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * EndPoint request
      * @return {Object} - The request of updating endpoint
      */
-    private _endpointRequest();
+    _endpointRequest(): {
+        Address: any;
+        ChannelType: string;
+        Demographic: {
+            AppVersion: any;
+            Make: any;
+            Model: any;
+            ModelVersion: any;
+            Platform: any;
+        };
+        OptOut: any;
+        RequestId: any;
+        EffectiveDate: string;
+        User: {
+            UserId: any;
+            UserAttributes: {
+                CognitoIdentityPool: any[];
+            };
+        };
+    };
     /**
      * @private
      * generate client context with endpoint Id and app Id provided

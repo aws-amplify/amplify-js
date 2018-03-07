@@ -47,8 +47,7 @@ export default class AnalyticsClass {
         this._config = {};
         this._pluggables = [];
         // default one
-        this.addPluggable(new AWSAnalyticsProvider());
-
+        
         // events batch
         const that = this;
 
@@ -80,6 +79,11 @@ export default class AnalyticsClass {
         this._pluggables.map((pluggable) => {
             pluggable.configure(conf);
         });
+
+        if (this._pluggables.length === 0) {
+            this.addPluggable(new AWSAnalyticsProvider());
+        }
+
         return conf;
     }
 
@@ -87,10 +91,15 @@ export default class AnalyticsClass {
      * add plugin into Analytics category
      * @param {Object} pluggable - an instance of the plugin 
      */
-    public addPluggable(pluggable: AnalyticsProvider) {
+    public async addPluggable(pluggable: AnalyticsProvider) {
+        const ensureCredentails = await this._getCredentials();
+        if (!ensureCredentails) return Promise.resolve(false);
+
         if (pluggable) {
             this._pluggables.push(pluggable);
-            pluggable.configure(this._config);
+            // pluggable.configure(this._config);
+            const config = pluggable.configure(this._config);
+            return Promise.resolve(config);
         }
     }
 
@@ -142,6 +151,15 @@ export default class AnalyticsClass {
         return this._putToBuffer(params);
     }
 
+    public async updateEndpoint(config) {
+        const ensureCredentails = await this._getCredentials();
+        if (!ensureCredentails) return Promise.resolve(false);
+
+        const timestamp = new Date().getTime();
+        const conf = Object.assign(this._config, config);
+        const params = {eventName: '_update_endpoint', timestamp, config: conf};
+    }
+
     /**
      * @private
      * @param {Object} params - params for the event recording
@@ -184,11 +202,8 @@ export default class AnalyticsClass {
                 const cred = Auth.essentialCredentials(credentials);
                 
                 that._config.credentials = cred;
-                that._config.endpointId = cred.identityId;
-                if (!that._config.endpointId) {
-                    that._config.endpointId = that.generateRandomString();
-                }
-                logger.debug('set endpointId for analytics', that._config.endpointId);
+                // that._config.endpointId = cred.identityId;
+                // logger.debug('set endpointId for analytics', that._config.endpointId);
                 logger.debug('set credentials for analytics', that._config.credentials);
                 return true;
             })

@@ -195,6 +195,7 @@ describe("AnalyticsProvider test", () => {
             expect(spyon).toBeCalled();
             expect(spyon.mock.calls[0][0].events[0].eventType).toBe('custom event');
 
+            await analytics.record(params);
             spyon.mockClear();
         });
 
@@ -226,6 +227,14 @@ describe("AnalyticsProvider test", () => {
             expect(await analytics.record(params)).toBe(false);
 
             spyon.mockClear();
+        });
+
+        test('no credentials', async () => {
+            const analytics = new AnalyticsProvider();
+            analytics.configure({endpointId: null});
+
+            const params = {eventName: 'custom event', config: {}, timestamp};
+            expect(await analytics.record(params)).toBe(false);
         });
     });
 });

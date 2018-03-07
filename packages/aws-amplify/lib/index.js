@@ -12,12 +12,12 @@
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Auth_1 = require("./Auth");
-exports.Auth = Auth_1.default;
-exports.AuthClass = Auth_1.AuthClass;
 var Analytics_1 = require("./Analytics");
 exports.Analytics = Analytics_1.default;
 exports.AnalyticsClass = Analytics_1.AnalyticsClass;
+var Auth_1 = require("./Auth");
+exports.Auth = Auth_1.default;
+exports.AuthClass = Auth_1.AuthClass;
 var Storage_1 = require("./Storage");
 exports.Storage = Storage_1.default;
 exports.StorageClass = Storage_1.StorageClass;
