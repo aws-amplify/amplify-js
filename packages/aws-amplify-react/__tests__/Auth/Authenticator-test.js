@@ -18,6 +18,23 @@ describe('Authenticator', () => {
             expect(wrapper).toMatchSnapshot();
         });
 
+        test('render with hidedefault', () => {
+            const wrapper = shallow(<Authenticator hidedefault/>);
+            wrapper.setProps({
+                authState: 'signIn',
+                theme: AmplifyTheme
+            });
+            expect(wrapper).toMatchSnapshot();
+        });
+
+        test('render if no error with children', () => {
+            const wrapper = shallow(<Authenticator><div></div></Authenticator>);
+            wrapper.setProps({
+                authState: 'signIn',
+                theme: AmplifyTheme
+            });
+            expect(wrapper).toMatchSnapshot();
+        });
     });
 
     describe('handleStateChange test', () => {
