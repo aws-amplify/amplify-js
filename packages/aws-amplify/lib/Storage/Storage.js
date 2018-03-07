@@ -155,6 +155,7 @@ var StorageClass = /** @class */ (function () {
      * @return - promise resolves to object on success
      */
     StorageClass.prototype.put = function (key, object, options) {
+        if (options === void 0) { options = {}; }
         return __awaiter(this, void 0, void 0, function () {
             var credentialsOK, opt, bucket, region, credentials, level, track, contentType, cacheControl, expires, metadata, type, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
