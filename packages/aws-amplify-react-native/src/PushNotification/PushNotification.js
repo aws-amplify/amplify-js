@@ -127,7 +127,7 @@ export default class PushNotification {
                     Address: token,
                     OptOut: 'NONE'
                 }
-                Analytics.updateEndpoint({Analytics: config}).then((data) => {
+                Analytics.updateEndpoint(config).then((data) => {
                     logger.debug('update endpoint success, setting token into cache')
                     AsyncStorage.setItem(cacheKey, token);
                 }).catch(e => {
