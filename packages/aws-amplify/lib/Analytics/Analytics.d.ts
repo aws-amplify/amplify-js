@@ -51,11 +51,7 @@ export default class AnalyticsClass {
      * @param {Object} params - params for the event recording
      * Send events from buffer
      */
-<<<<<<< HEAD
-    _ensureCredentials(): Promise<boolean>;
-=======
     private _sendFromBuffer(params);
->>>>>>> upstream/master
     /**
      * @private
      * @param params - params for the event recording

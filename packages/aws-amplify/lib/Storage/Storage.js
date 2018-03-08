@@ -315,13 +315,9 @@ var StorageClass = /** @class */ (function () {
         var _this = this;
         return Credentials_1.default.getCredentials()
             .then(function (credentials) {
-<<<<<<< HEAD
             var cred = Credentials_1.default.essentialCredentials({ credentials: credentials });
-=======
             if (!credentials)
                 return false;
-            var cred = Auth_1.default.essentialCredentials(credentials);
->>>>>>> upstream/master
             logger.debug('set credentials for storage', cred);
             _this._options.credentials = cred;
             return true;

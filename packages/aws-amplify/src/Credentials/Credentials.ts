@@ -1,6 +1,7 @@
 import CognitoCredentials from './CognitoCredentials';
 import {
-    ConsoleLogger as Logger
+    ConsoleLogger as Logger,
+    Parser
 } from '../Common';
 
 const logger = new Logger('Auth');
@@ -12,34 +13,31 @@ export default class Credentials{
     constructor() {
         this._config = {};
         this._pluggables = [];
-
-        this._pluggables.push(new CognitoCredentials());
     }
 
     configure(config) {
         logger.debug('configure Credentials');
-        // will be moved into Parser
-        const amplifyConfig = {};
-        if (config['aws_cognito_identity_pool_id']) {
-            const credConfig = {};
-            credConfig['cognitoIdentityPoolId'] = config['aws_cognito_identity_pool_id'];
-            credConfig['cognitoRegion'] = config['aws_cognito_region'];
-            credConfig['cognitoUserPoolId'] = config['aws_user_pools_id'];
-            amplifyConfig['Credentials'] = credConfig;
-        }
-        amplifyConfig['Credentials'] = Object.assign({}, amplifyConfig['Credentials'], config.Credentials);
+        const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Credentials);
 
-        const conf = Object.assign({}, this._config, amplifyConfig['Credentials']);
         this._config = conf;
+        logger.debug('credentials config', this._config);
         this._pluggables.map((pluggable) => {
             pluggable.configure(conf);
-        })
+        });
+
+        if (this._pluggables.length === 0) {
+            this.addPluggable(new CognitoCredentials());
+        }
 
         return this._config;
     }
 
     public addPluggable(pluggable) {
-
+        if (pluggable) {
+            this._pluggables.push(pluggable);
+            const config = pluggable.configure(this._config);
+            return config;
+        }
     }
 
     public setCredentials(config?) {

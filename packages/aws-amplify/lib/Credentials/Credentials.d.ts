@@ -3,7 +3,7 @@ export default class Credentials {
     private _pluggables;
     constructor();
     configure(config: any): any;
-    addPluggable(pluggable: any): void;
+    addPluggable(pluggable: any): any;
     setCredentials(config?: any): Promise<{}>;
     removeCredentials(config?: any): void;
     essentialCredentials(params: any): any;

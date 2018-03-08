@@ -48,12 +48,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
-<<<<<<< HEAD
 var Credentials_1 = require("../Credentials");
-=======
 var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
-var Auth_1 = require("../Auth");
->>>>>>> upstream/master
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 // events buffer
 var BUFFER_SIZE = 1000;
@@ -135,7 +131,9 @@ var AnalyticsClass = /** @class */ (function () {
             var ensureCredentails, timestamp, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
+                    case 0:
+                        logger.debug('start Session');
+                        return [4 /*yield*/, this._getCredentials()];
                     case 1:
                         ensureCredentails = _a.sent();
                         if (!ensureCredentails)
@@ -221,6 +219,7 @@ var AnalyticsClass = /** @class */ (function () {
      * Send events from buffer
      */
     AnalyticsClass.prototype._sendFromBuffer = function (params) {
+        logger.debug('flush the buffer');
         var that = this;
         this._pluggables.map(function (pluggable) {
             pluggable.record(params)
@@ -248,32 +247,17 @@ var AnalyticsClass = /** @class */ (function () {
      * @private
      * check if current crednetials exists
      */
-<<<<<<< HEAD
-    AnalyticsClass.prototype._ensureCredentials = function () {
-        var conf = this._config;
-        // commented
-        // will cause bug if another user logged in without refreshing page
-        // if (conf.credentials) { return Promise.resolve(true); }
-        return Credentials_1.default.getCredentials()
-            .then(function (credentials) {
-            var cred = Credentials_1.default.essentialCredentials({ credentials: credentials });
-            conf.credentials = cred;
-            conf.endpointId = conf.credentials.identityId;
-            logger.debug('set endpointId for analytics', conf.endpointId);
-            logger.debug('set credentials for analytics', conf.credentials);
-=======
     AnalyticsClass.prototype._getCredentials = function () {
         var that = this;
-        return Auth_1.default.currentCredentials()
+        return Credentials_1.default.getCredentials()
             .then(function (credentials) {
             if (!credentials)
                 return false;
-            var cred = Auth_1.default.essentialCredentials(credentials);
+            var cred = Credentials_1.default.essentialCredentials({ credentials: credentials });
             that._config.credentials = cred;
             // that._config.endpointId = cred.identityId;
             // logger.debug('set endpointId for analytics', that._config.endpointId);
             logger.debug('set credentials for analytics', that._config.credentials);
->>>>>>> upstream/master
             return true;
         })
             .catch(function (err) {

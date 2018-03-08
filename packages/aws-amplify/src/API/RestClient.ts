@@ -18,6 +18,7 @@ import Auth from '../Auth';
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
 import Platform from '../Common/Platform';
+import Credentials from '../Credentials';
 
 const logger = new Logger('RestClient');
 
@@ -99,7 +100,7 @@ export class RestClient {
         // which means custom authorizer.
         if (params.headers['Authorization']) { return this._request(params, isAllResponse); }
 
-        return Auth.currentCredentials()
+        return Credentials.getCredentials()
             .then(credentials => this._signed(params, credentials, isAllResponse));
     }
 

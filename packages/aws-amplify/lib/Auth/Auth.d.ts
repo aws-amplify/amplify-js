@@ -91,6 +91,10 @@ export default class AuthClass {
      */
     userSession(user: any): Promise<any>;
     /**
+    //  * Get authenticated credentials of current user.
+    //  * @return - A promise resolves to be current user's credentials
+    //  */
+    /**
      * Initiate an attribute confirmation request
      * @param {Object} user - The CognitoUser
      * @param {Object} attr - The attributes to be verified
@@ -153,29 +157,6 @@ export default class AuthClass {
      * @param {Object} response - response including access_token
      * @param {String} user - user info
      */
-<<<<<<< HEAD
     federatedSignIn(provider: any, response: any, user: any): Promise<{}>;
-=======
-    federatedSignIn(provider: any, response: any, user: any): Promise<any>;
-    /**
-     * Compact version of credentials
-     * @param {Object} credentials
-     * @return {Object} - Credentials
-     */
-    essentialCredentials(credentials: any): {
-        accessKeyId: any;
-        sessionToken: any;
-        secretAccessKey: any;
-        identityId: any;
-        authenticated: any;
-    };
-    private attributesToObject(attributes);
-    private setCredentialsFromFederation(provider, token, user);
-    private pickupCredentials();
-    private setCredentialsFromAWS();
-    private setCredentialsForGuest();
-    private setCredentialsFromSession(session);
-    private keepAlive();
     private createCognitoUser(username);
->>>>>>> upstream/master
 }

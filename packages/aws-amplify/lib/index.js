@@ -29,6 +29,7 @@ exports.I18n = I18n_1.default;
 var Cache_1 = require("./Cache");
 exports.Cache = Cache_1.default;
 var Credentials_1 = require("./Credentials");
+exports.Credentials = Credentials_1.default;
 var Common_1 = require("./Common");
 exports.Logger = Common_1.ConsoleLogger;
 exports.Hub = Common_1.Hub;
@@ -43,15 +44,13 @@ var Amplify = /** @class */ (function () {
         if (!config) {
             return;
         }
+        Credentials_1.default.configure(config);
         Auth_1.default.configure(config);
         I18n_1.default.configure(config);
         Analytics_1.default.configure(config);
         API_1.default.configure(config);
         Storage_1.default.configure(config);
         Cache_1.default.configure(config);
-<<<<<<< HEAD
-        Credentials_1.default.configure(config);
-=======
         return config;
     };
     Amplify.addPluggable = function (pluggable) {
@@ -73,7 +72,6 @@ var Amplify = /** @class */ (function () {
                     break;
             }
         }
->>>>>>> upstream/master
     };
     Amplify.Auth = null;
     Amplify.Analytics = null;

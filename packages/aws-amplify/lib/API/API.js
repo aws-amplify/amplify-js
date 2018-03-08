@@ -365,19 +365,10 @@ var APIClass = /** @class */ (function () {
     /**
      * @private
      */
-<<<<<<< HEAD
-    API.prototype._ensureCredentials = function () {
+    APIClass.prototype._ensureCredentials = function () {
         return Credentials_1.default.getCredentials()
             .then(function (credentials) {
             var cred = Credentials_1.default.essentialCredentials({ credentials: credentials });
-=======
-    APIClass.prototype._ensureCredentials = function () {
-        return Auth_1.default.currentCredentials()
-            .then(function (credentials) {
-            if (!credentials)
-                return false;
-            var cred = Auth_1.default.essentialCredentials(credentials);
->>>>>>> upstream/master
             logger.debug('set credentials for api', cred);
             return true;
         })

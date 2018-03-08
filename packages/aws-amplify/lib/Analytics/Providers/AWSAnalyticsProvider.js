@@ -83,6 +83,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @param {Object} params - the params of an event
      */
     AWSAnalyticsProvider.prototype.record = function (params) {
+        logger.debug('record with params', params);
         var eventName = params.eventName;
         switch (eventName) {
             case '_session_start':
@@ -294,14 +295,13 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        logger.debug('init clients');
+                        logger.debug('init clients with config', config);
                         if (!config.credentials) {
                             logger.debug('no credentials provided by config, abort this init');
                             return [2 /*return*/, false];
                         }
                         if (this.mobileAnalytics
                             && this._config.credentials
-                            && this._config.credentials.sessionToken === config.credentials.sessionToken
                             && this._config.credentials.identityId === config.credentials.identityId) {
                             logger.debug('no change for analytics config, directly return from init');
                             return [2 /*return*/, true];

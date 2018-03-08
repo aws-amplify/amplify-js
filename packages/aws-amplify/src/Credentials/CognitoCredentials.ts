@@ -25,7 +25,7 @@ export default class CognitoCredentials {
     }
 
     configure(config) {
-        logger.debug('configure CognitoCredentials');
+        logger.debug('configure CognitoCredentials with config', config);
         const conf= config? config: {};
         this._config = Object.assign({}, this._config, conf);
         return this._config;
@@ -59,6 +59,7 @@ export default class CognitoCredentials {
     }
 
     refreshCredentials(credentials): Promise<any> {
+        logger.debug('try to refresh credentials', credentials);
         const cred = credentials || this._credentials;
         if (!cred) {
             return Promise.reject(new Error('no credentials provided for refreshing!'));
@@ -80,6 +81,7 @@ export default class CognitoCredentials {
             logger.debug('no credentials for expiration check')
             return true;
         }
+        logger.debug('is this credentials expired?', credentials);
         const ts = new Date().getTime();
         const delta = 10 * 60 * 1000; // 10 minutes
         const { expired, expireTime } = credentials;
@@ -95,6 +97,7 @@ export default class CognitoCredentials {
      */
     public async retrieveCredentialsFromAuth() : Promise<any> {
         try {
+            logger.debug('getting credentials from cognito auth');
             const federatedInfo = await Cache.getItem('federatedInfo');
             if (federatedInfo) {
                 const { provider, token, user} = federatedInfo;
@@ -114,8 +117,10 @@ export default class CognitoCredentials {
     }
 
     public getCredentials(config?): Promise<any> {
+        logger.debug('getting credentials with config', config);
         if (this._credentials && !this.isExpired(this._credentials)) {
-            return this.refreshCredentials(this._credentials);
+            logger.debug('credentails exists and not expired');
+            return Promise.resolve(this._credentials);
         } else {
             const that = this;
             return this.retrieveCredentialsFromAuth()
@@ -135,6 +140,7 @@ export default class CognitoCredentials {
      * @return {Object} - Credentials
      */
     public essentialCredentials(params) {
+        logger.debug('essential credentials');
         const { credentials } = params;
         return {
             accessKeyId: credentials.accessKeyId,
@@ -146,6 +152,7 @@ export default class CognitoCredentials {
     }
 
     private setCredentialsForGuest() {
+        logger.debug('set credentials from guest with config', this._config);
         const { cognitoIdentityPoolId, cognitoRegion } = this._config;
         const credentials = new CognitoIdentityCredentials(
             {
@@ -182,6 +189,7 @@ export default class CognitoCredentials {
     }
 
     private setCredentialsFromFederation(federated) {
+        logger.debug('set credentials from federation');
         const { provider, token, user } = federated;
         const domains = {
             'google': 'accounts.google.com',

@@ -40,13 +40,13 @@ export default class Amplify {
 
     static configure(config) {
         if (!config) { return; }
+        Credentials.configure(config);
         Auth.configure(config);
         I18n.configure(config);
         Analytics.configure(config);
         API.configure(config);
         Storage.configure(config);
         Cache.configure(config);
-        Credentials.configure(config);
 
         return config;
     }
@@ -82,5 +82,5 @@ Amplify.Cache = Cache;
 
 Amplify.Logger = Logger;
 
-export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
+export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer, Credentials };
 export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider };

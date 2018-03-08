@@ -7,28 +7,26 @@ var Credentials = /** @class */ (function () {
     function Credentials() {
         this._config = {};
         this._pluggables = [];
-        this._pluggables.push(new CognitoCredentials_1.default());
     }
     Credentials.prototype.configure = function (config) {
         logger.debug('configure Credentials');
-        // will be moved into Parser
-        var amplifyConfig = {};
-        if (config['aws_cognito_identity_pool_id']) {
-            var credConfig = {};
-            credConfig['cognitoIdentityPoolId'] = config['aws_cognito_identity_pool_id'];
-            credConfig['cognitoRegion'] = config['aws_cognito_region'];
-            credConfig['cognitoUserPoolId'] = config['aws_user_pools_id'];
-            amplifyConfig['Credentials'] = credConfig;
-        }
-        amplifyConfig['Credentials'] = Object.assign({}, amplifyConfig['Credentials'], config.Credentials);
-        var conf = Object.assign({}, this._config, amplifyConfig['Credentials']);
+        var conf = Object.assign({}, this._config, Common_1.Parser.parseMobilehubConfig(config).Credentials);
         this._config = conf;
+        logger.debug('credentials config', this._config);
         this._pluggables.map(function (pluggable) {
             pluggable.configure(conf);
         });
+        if (this._pluggables.length === 0) {
+            this.addPluggable(new CognitoCredentials_1.default());
+        }
         return this._config;
     };
     Credentials.prototype.addPluggable = function (pluggable) {
+        if (pluggable) {
+            this._pluggables.push(pluggable);
+            var config = pluggable.configure(this._config);
+            return config;
+        }
     };
     Credentials.prototype.setCredentials = function (config) {
         var _this = this;

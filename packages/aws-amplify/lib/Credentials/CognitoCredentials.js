@@ -47,7 +47,7 @@ var CognitoCredentials = /** @class */ (function () {
         this._credentials = null;
     }
     CognitoCredentials.prototype.configure = function (config) {
-        logger.debug('configure CognitoCredentials');
+        logger.debug('configure CognitoCredentials with config', config);
         var conf = config ? config : {};
         this._config = Object.assign({}, this._config, conf);
         return this._config;
@@ -77,6 +77,7 @@ var CognitoCredentials = /** @class */ (function () {
         this.credentials_source = '';
     };
     CognitoCredentials.prototype.refreshCredentials = function (credentials) {
+        logger.debug('try to refresh credentials', credentials);
         var cred = credentials || this._credentials;
         if (!cred) {
             return Promise.reject(new Error('no credentials provided for refreshing!'));
@@ -98,6 +99,7 @@ var CognitoCredentials = /** @class */ (function () {
             logger.debug('no credentials for expiration check');
             return true;
         }
+        logger.debug('is this credentials expired?', credentials);
         var ts = new Date().getTime();
         var delta = 10 * 60 * 1000; // 10 minutes
         var expired = credentials.expired, expireTime = credentials.expireTime;
@@ -118,6 +120,7 @@ var CognitoCredentials = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
+                        logger.debug('getting credentials from cognito auth');
                         return [4 /*yield*/, Cache_1.default.getItem('federatedInfo')];
                     case 1:
                         federatedInfo = _a.sent();
@@ -144,8 +147,10 @@ var CognitoCredentials = /** @class */ (function () {
         });
     };
     CognitoCredentials.prototype.getCredentials = function (config) {
+        logger.debug('getting credentials with config', config);
         if (this._credentials && !this.isExpired(this._credentials)) {
-            return this.refreshCredentials(this._credentials);
+            logger.debug('credentails exists and not expired');
+            return Promise.resolve(this._credentials);
         }
         else {
             var that_2 = this;
@@ -165,6 +170,7 @@ var CognitoCredentials = /** @class */ (function () {
      * @return {Object} - Credentials
      */
     CognitoCredentials.prototype.essentialCredentials = function (params) {
+        logger.debug('essential credentials');
         var credentials = params.credentials;
         return {
             accessKeyId: credentials.accessKeyId,
@@ -175,6 +181,7 @@ var CognitoCredentials = /** @class */ (function () {
         };
     };
     CognitoCredentials.prototype.setCredentialsForGuest = function () {
+        logger.debug('set credentials from guest with config', this._config);
         var _a = this._config, cognitoIdentityPoolId = _a.cognitoIdentityPoolId, cognitoRegion = _a.cognitoRegion;
         var credentials = new CognitoIdentityCredentials({
             IdentityPoolId: cognitoIdentityPoolId
@@ -205,6 +212,7 @@ var CognitoCredentials = /** @class */ (function () {
         return Promise.resolve(this._credentials);
     };
     CognitoCredentials.prototype.setCredentialsFromFederation = function (federated) {
+        logger.debug('set credentials from federation');
         var provider = federated.provider, token = federated.token, user = federated.user;
         var domains = {
             'google': 'accounts.google.com',

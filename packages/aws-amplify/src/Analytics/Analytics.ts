@@ -98,7 +98,6 @@ export default class AnalyticsClass {
 
         if (pluggable) {
             this._pluggables.push(pluggable);
-            // pluggable.configure(this._config);
             const config = pluggable.configure(this._config);
             return Promise.resolve(config);
         }
@@ -109,6 +108,7 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async startSession() {
+        logger.debug('start Session');
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
@@ -168,6 +168,7 @@ export default class AnalyticsClass {
      * Send events from buffer
      */
     private _sendFromBuffer(params) {
+        logger.debug('flush the buffer');
         const that = this;
         this._pluggables.map((pluggable) => {
             pluggable.record(params)
@@ -201,7 +202,7 @@ export default class AnalyticsClass {
         return Credentials.getCredentials()
             .then(credentials => {
                 if (!credentials) return false;
-                const cred = Credentials.essentialCredentials(credentials);
+                const cred = Credentials.essentialCredentials({credentials});
                 
                 that._config.credentials = cred;
                 // that._config.endpointId = cred.identityId;
