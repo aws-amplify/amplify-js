@@ -108,4 +108,16 @@ export default class JS {
                 'application/xml' === type ||
                 'application/sh' === type);
     }
+
+    /**
+     * generate random string
+     */
+    static generateRandomString() {
+        let result = '';
+        const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    	for (let i = 32; i > 0; i -= 1) {
+            result += chars[Math.floor(Math.random() * chars.length)];
+        }
+    	return result;
+    }
 }

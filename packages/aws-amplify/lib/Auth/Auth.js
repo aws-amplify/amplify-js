@@ -52,7 +52,7 @@ var Platform_1 = require("../Common/Platform");
 var Cache_1 = require("../Cache");
 var logger = new Common_1.ConsoleLogger('AuthClass');
 var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
-var CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
+var CookieStorage = Common_1.Cognito.CookieStorage, CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
 var dispatchAuthEvent = function (event, data) {
     Common_1.Hub.dispatch('auth', { event: event, data: data }, 'Auth');
 };
@@ -94,12 +94,16 @@ var AuthClass = /** @class */ (function () {
         if (!this._config.identityPoolId) {
             logger.debug('Do not have identityPoolId yet.');
         }
-        var _a = this._config, userPoolId = _a.userPoolId, userPoolWebClientId = _a.userPoolWebClientId;
+        var _a = this._config, userPoolId = _a.userPoolId, userPoolWebClientId = _a.userPoolWebClientId, cookieStorage = _a.cookieStorage;
         if (userPoolId) {
-            this.userPool = new CognitoUserPool({
+            var userPoolData = {
                 UserPoolId: userPoolId,
-                ClientId: userPoolWebClientId
-            });
+                ClientId: userPoolWebClientId,
+            };
+            if (cookieStorage) {
+                userPoolData.Storage = new CookieStorage(cookieStorage);
+            }
+            this.userPool = new CognitoUserPool(userPoolData);
             if (Platform_1.default.isReactNative) {
                 var that = this;
                 this._userPoolStorageSync = new Promise(function (resolve, reject) {
@@ -200,10 +204,7 @@ var AuthClass = /** @class */ (function () {
         if (!code) {
             return Promise.reject('Code cannot be empty');
         }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        var user = this.createCognitoUser(username);
         return new Promise(function (resolve, reject) {
             user.confirmRegistration(code, true, function (err, data) {
                 if (err) {
@@ -227,10 +228,7 @@ var AuthClass = /** @class */ (function () {
         if (!username) {
             return Promise.reject('Username cannot be empty');
         }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        var user = this.createCognitoUser(username);
         return new Promise(function (resolve, reject) {
             user.resendConfirmationCode(function (err, data) {
                 if (err) {
@@ -258,10 +256,7 @@ var AuthClass = /** @class */ (function () {
         if (!password) {
             return Promise.reject('Password cannot be empty');
         }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        var user = this.createCognitoUser(username);
         var authDetails = new AuthenticationDetails({
             Username: username,
             Password: password
@@ -883,10 +878,7 @@ var AuthClass = /** @class */ (function () {
         if (!username) {
             return Promise.reject('Username cannot be empty');
         }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        var user = this.createCognitoUser(username);
         return new Promise(function (resolve, reject) {
             user.forgotPassword({
                 onSuccess: function () { resolve(); },
@@ -920,10 +912,7 @@ var AuthClass = /** @class */ (function () {
         if (!password) {
             return Promise.reject('Password cannot be empty');
         }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        var user = this.createCognitoUser(username);
         return new Promise(function (resolve, reject) {
             user.confirmPassword(code, password, {
                 onSuccess: function () { resolve(); },
@@ -1145,6 +1134,17 @@ var AuthClass = /** @class */ (function () {
             })
                 .catch(function () { return resolve(null); });
         });
+    };
+    AuthClass.prototype.createCognitoUser = function (username) {
+        var userData = {
+            Username: username,
+            Pool: this.userPool,
+        };
+        var cookieStorage = this._config.cookieStorage;
+        if (cookieStorage) {
+            userData.Storage = new CookieStorage(cookieStorage);
+        }
+        return new CognitoUser(userData);
     };
     return AuthClass;
 }());

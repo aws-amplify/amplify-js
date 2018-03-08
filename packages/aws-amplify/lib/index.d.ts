@@ -1,5 +1,5 @@
+import Analytics, { AnalyticsClass, AnalyticsProvider } from './Analytics';
 import Auth, { AuthClass } from './Auth';
-import Analytics, { AnalyticsClass } from './Analytics';
 import Storage, { StorageClass } from './Storage';
 import API, { APIClass } from './API';
 import I18n from './I18n';
@@ -13,7 +13,8 @@ export default class Amplify {
     static I18n: any;
     static Cache: any;
     static Logger: any;
-    static configure(config: any): void;
+    static configure(config: any): any;
+    static addPluggable(pluggable: any): void;
 }
 export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
-export { AuthClass, AnalyticsClass, APIClass, StorageClass };
+export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider };

@@ -191,4 +191,5 @@ export default class AuthClass {
     private setCredentialsForGuest();
     private setCredentialsFromSession(session);
     private keepAlive();
+    private createCognitoUser(username);
 }
