@@ -11,6 +11,12 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
+jest.mock('../../src/Common/Builder', () => {
+    return {
+        default: null
+    };
+});
+
 import { CacheConfig } from '../../src/Cache/types/Cache';
 import StorageCache from '../../src/Cache/StorageCache';
 import { defaultConfig } from '../../src/Cache/Utils';
@@ -29,6 +35,22 @@ const config: CacheConfig = {
 
 describe('StorageCache', () => {
     describe('constructor', () => {
+        test('set to default if config capacityInBytes is not integer', () => {
+            const tmp = config.capacityInBytes;
+            config.capacityInBytes = 1048576;
+            const storage: StorageCache = new StorageCache(config);
+            expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
+            config.capacityInBytes = tmp;
+        });
+        
+        test('set to default if config capacityInBytes is not integer', () => {
+            const tmp = config.capacityInBytes;
+            config.capacityInBytes = 1048576;
+            const storage: StorageCache = new StorageCache(config);
+            expect(storage.configure().capacityInBytes).toBe(defaultConfig.capacityInBytes);
+            config.capacityInBytes = tmp;
+        });
+
         test('set to default if config capacityInBytes is not integer', () => {
             const tmp = config.capacityInBytes;
             config.capacityInBytes = 1048576;

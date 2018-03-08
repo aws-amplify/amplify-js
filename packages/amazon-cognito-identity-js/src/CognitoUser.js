@@ -180,7 +180,7 @@ export default class CognitoUser {
   }
 
   /**
-   * This is used for authenticating the user. it calls the AuthenticationHelper for SRP related
+   * This is used for authenticating the user.
    * stuff
    * @param {AuthenticationDetails} authDetails Contains the authentication data
    * @param {object} callback Result callback map.
@@ -195,6 +195,30 @@ export default class CognitoUser {
    * @returns {void}
    */
   authenticateUser(authDetails, callback) {
+    if (this.authenticationFlowType === 'USER_PASSWORD_AUTH') {
+      return this.authenticateUserPlainUsernamePassword(authDetails, callback);
+    } else if (this.authenticationFlowType === 'USER_SRP_AUTH') {
+      return this.authenticateUserDefaultAuth(authDetails, callback);
+    }
+    return callback.onFailure(new Error('Authentication flow type is invalid.'));
+  }
+
+  /**
+   * This is used for authenticating the user. it calls the AuthenticationHelper for SRP related
+   * stuff
+   * @param {AuthenticationDetails} authDetails Contains the authentication data
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {newPasswordRequired} callback.newPasswordRequired new
+   *        password and any required attributes are required to continue
+   * @param {mfaRequired} callback.mfaRequired MFA code
+   *        required to continue.
+   * @param {customChallenge} callback.customChallenge Custom challenge
+   *        response required to continue.
+   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+   * @returns {void}
+   */
+  authenticateUserDefaultAuth(authDetails, callback) {
     const authenticationHelper = new AuthenticationHelper(
       this.pool.getUserPoolId().split('_')[1]);
     const dateHelper = new DateHelper();
@@ -341,6 +365,51 @@ export default class CognitoUser {
         return undefined;
       });
       // getLargeAValue callback end
+    });
+  }
+
+  /**
+   * PRIVATE ONLY: This is an internal only method and should not
+   * be directly called by the consumers.
+   * @param {AuthenticationDetails} authDetails Contains the authentication data.
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {mfaRequired} callback.mfaRequired MFA code
+   *        required to continue.
+   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+   * @returns {void}
+   */
+  authenticateUserPlainUsernamePassword(authDetails, callback) {
+    const authParameters = {};
+    authParameters.USERNAME = this.username;
+    authParameters.PASSWORD = authDetails.getPassword();
+    if (!authParameters.PASSWORD) {
+      callback.onFailure(new Error('PASSWORD parameter is required'));
+      return;
+    }
+    const authenticationHelper = new AuthenticationHelper(
+      this.pool.getUserPoolId().split('_')[1]);
+    this.getCachedDeviceKeyAndPassword();
+    if (this.deviceKey != null) {
+      authParameters.DEVICE_KEY = this.deviceKey;
+    }
+
+    const jsonReq = {
+      AuthFlow: 'USER_PASSWORD_AUTH',
+      ClientId: this.pool.getClientId(),
+      AuthParameters: authParameters,
+      ClientMetadata: authDetails.getValidationData(),
+    };
+    if (this.getUserContextData(this.username)) {
+      jsonReq.UserContextData = this.getUserContextData(this.username);
+    }
+    // USER_PASSWORD_AUTH happens in a single round-trip: client sends userName and password,
+    // Cognito UserPools verifies password and returns tokens.
+    this.client.request('InitiateAuth', jsonReq, (err, authResult) => {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      return this.authenticateUserInternal(authResult, authenticationHelper, callback);
     });
   }
 
@@ -973,6 +1042,28 @@ export default class CognitoUser {
   }
 
   /**
+   * This is used by an authenticated users to get the userData
+   * @param {nodeCallback<UserData>} callback Called on success or error.
+   * @returns {void}
+   */
+  getUserData(callback) {
+    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('GetUser', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+    }, (err, userData) => {
+      if (err) {
+        return callback(err, null);
+      }
+
+      return callback(null, userData);
+    });
+    return undefined;
+  }
+
+  /**
    * This is used by an authenticated user to delete a list of attributes
    * @param {string[]} attributeList Names of the attributes to delete.
    * @param {nodeCallback<string>} callback Called on success or error.
@@ -1586,7 +1677,7 @@ export default class CognitoUser {
   }
 
   /**
-   * This is used by an authenticated or a user trying to authenticate to associate a TOTP MFA
+   * This is used by an authenticated or a user trying to authenticate to verify a TOTP MFA
    * @param {string} totpCode The MFA code entered by the user.
    * @param {string} friendlyDeviceName The device name we are assigning to the device.
    * @param {nodeCallback<string>} callback Called on success or error.

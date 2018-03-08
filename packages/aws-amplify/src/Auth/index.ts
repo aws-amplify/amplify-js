@@ -17,7 +17,7 @@ import { ConsoleLogger as Logger } from '../Common';
 
 const logger = new Logger('Auth');
 
-let _instance = null;
+let _instance: AuthClass = null;
 
 if (!_instance) {
     logger.debug('Create Auth Instance');
@@ -26,3 +26,4 @@ if (!_instance) {
 
 const Auth = _instance;
 export default Auth;
+export { AuthClass };

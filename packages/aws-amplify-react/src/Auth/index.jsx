@@ -23,6 +23,7 @@ export { default as ConfirmSignIn } from './ConfirmSignIn';
 export { default as RequireNewPassword } from './RequireNewPassword';
 export { default as SignUp } from './SignUp';
 export { default as ConfirmSignUp } from './ConfirmSignUp';
+export { default as VerifyContact } from './VerifyContact';
 export { default as ForgotPassword } from './ForgotPassword';
 export { default as Greetings } from './Greetings';
 export { default as FederatedSignIn, FederatedButtons } from './FederatedSignIn';
@@ -30,7 +31,7 @@ export * from './Provider';
 
 import Greetings from './Greetings';
 
-export function withAuthenticator(Comp, includeGreetings=false) {
+export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = []) {
     return class extends Component {
         constructor(props) {
             super(props);
@@ -74,7 +75,9 @@ export function withAuthenticator(Comp, includeGreetings=false) {
 
             return <Authenticator
                 {...this.props}
+                hideDefault={authenticatorComponents.length > 0}
                 onStateChange={this.handleAuthStateChange}
+                children={authenticatorComponents}
             />
         }
     }

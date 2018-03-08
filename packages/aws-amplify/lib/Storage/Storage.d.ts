@@ -8,6 +8,10 @@ export default class StorageClass {
      */
     private _options;
     /**
+     * @public
+     */
+    vault: StorageClass;
+    /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
      */
@@ -32,7 +36,7 @@ export default class StorageClass {
      * @param {Object} [options] - { level : private|public, contentType: MIME Types }
      * @return - promise resolves to object on success
      */
-    put(key: string, object: any, options: any): Promise<Object>;
+    put(key: string, object: any, options?: {}): Promise<Object>;
     /**
      * Remove the object for specified key
      * @param {String} key - key of the object

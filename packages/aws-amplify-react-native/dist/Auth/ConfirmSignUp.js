@@ -38,6 +38,7 @@ export default class ConfirmSignUp extends AuthPiece {
     constructor(props) {
         super(props);
 
+        this._validAuthStates = ['confirmSignUp'];
         this.state = {
             username: null,
             code: null,
@@ -60,19 +61,14 @@ export default class ConfirmSignUp extends AuthPiece {
         Auth.resendSignUp(username).then(() => logger.debug('code sent')).catch(err => this.error(err));
     }
 
-    componentWillMount() {
-        const username = this.props.authData;
+    componentWillReceiveProps(nextProps) {
+        const username = nextProps.authData;
         if (username && !this.state.username) {
-            this.setState({ username: username });
+            this.setState({ username });
         }
     }
 
-    render() {
-        if (!['confirmSignUp'].includes(this.props.authState)) {
-            return null;
-        }
-
-        const theme = this.props.theme || AmplifyTheme;
+    showComponent(theme) {
         return React.createElement(
             View,
             { style: theme.section },

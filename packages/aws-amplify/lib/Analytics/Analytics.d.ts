@@ -1,105 +1,70 @@
-import { AnalyticsOptions, EventAttributes, EventMetrics } from './types';
+import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 /**
 * Provide mobile analytics client functions
 */
 export default class AnalyticsClass {
     private _config;
-    private amaClient;
-    private pinpointClient;
     private _buffer;
-    private mobileAnalytics;
-    private _sessionId;
+    private _provider;
+    private _pluggables;
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
      */
-    constructor(config: AnalyticsOptions);
+    constructor();
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
      */
     configure(config: any): any;
     /**
-     * Record Session start
-     * @return - A promise which resolves if event record successfully
+     * add plugin into Analytics category
+     * @param {Object} pluggable - an instance of the plugin
      */
-    startSession(): Promise<any>;
+    addPluggable(pluggable: AnalyticsProvider): Promise<boolean | object>;
+    /**
+     * Record Session start
+     * @return - A promise which resolves if buffer doesn't overflow
+     */
+    startSession(): Promise<boolean | void>;
+    /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+    onHubCapsule(capsule: any): void;
     /**
      * Record Session stop
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
-    stopSession(): Promise<any>;
+    stopSession(): Promise<boolean | void>;
     /**
-     * @async
-     * Restart Analytics client and record session stop
-     * @return - A promise ehich resolves to be true if current credential exists
+     * Record one analytic event and send it to Pinpoint
+     * @param {String} name - The name of the event
+     * @param {Object} [attributs] - Attributes of the event
+     * @param {Object} [metrics] - Event metrics
+     * @return - A promise which resolves if buffer doesn't overflow
      */
-    restart(): Promise<void>;
-    /**
-    * Record one analytic event and send it to Pinpoint
-    * @param {String} name - The name of the event
-    * @param {Object} [attributs] - Attributes of the event
-    * @param {Object} [metrics] - Event metrics
-    * @return - A promise which resolves if event record successfully
-    */
-    record(name: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<any>;
-    /**
-    * Record one analytic event
-    * @param {String} name - Event name
-    * @param {Object} [attributes] - Attributes of the event
-    * @param {Object} [metrics] - Event metrics
-    */
+    record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<boolean | void>;
+    updateEndpoint(config: any): Promise<boolean | void>;
     /**
      * @private
-     * generate client context with endpoint Id and app Id provided
+     * @param {Object} params - params for the event recording
+     * Send events from buffer
      */
-    _generateClientContext(): string;
-    /**
-     * generate random string
-     */
-    generateRandomString(): string;
+<<<<<<< HEAD
+    _ensureCredentials(): Promise<boolean>;
+=======
+    private _sendFromBuffer(params);
+>>>>>>> upstream/master
     /**
      * @private
-     * check if app Id exists
+     * @param params - params for the event recording
+     * Put events into buffer
      */
-    _checkConfig(): boolean;
+    private _putToBuffer(params);
     /**
      * @private
      * check if current crednetials exists
      */
-    _ensureCredentials(): Promise<boolean>;
-    /**
-     * @private
-     * @async
-     * init clients for Anlytics including mobile analytics and pinpoint
-     * @return - True if initilization succeeds
-     */
-    _initClients(): Promise<boolean>;
-    /**
-     * @private
-     * Init mobile analytics and clear buffer
-     */
-    _initMobileAnalytics(): void;
-    /**
-     * @private
-     * Init Pinpoint with configuration and update pinpoint client endpoint
-     * @return - A promise resolves if endpoint updated successfully
-     */
-    _initPinpoint(): Promise<{}>;
-    /**
-     * EndPoint request
-     * @return {Object} - The request of updating endpoint
-     */
-    _endpointRequest(): {
-        Demographic: {
-            AppVersion: any;
-            Make: any;
-            Model: any;
-            ModelVersion: any;
-            Platform: any;
-        };
-        User: {
-            UserId: any;
-        };
-    };
+    private _getCredentials();
 }

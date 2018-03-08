@@ -34,7 +34,7 @@ depending on your project setup and experience with modern JavaScript build tool
 This method is simpler and does not require additional tools, but may have worse performance due to
 the browser having to download multiple files.
 
-Download the JavaScript [library file](https://raw.githubusercontent.com/aws/amazon-cognito-identity-js/master/dist/amazon-cognito-identity.min.js) and place it in your project.
+Download the JavaScript [library file](https://raw.githubusercontent.com/aws/aws-amplify/master/packages/amazon-cognito-identity-js/dist/amazon-cognito-identity.min.js) and place it in your project.
 
 Optionally, to use other AWS services, include a build of the [AWS SDK for JavaScript](http://aws.amazon.com/sdk-for-browser/).
 
@@ -101,7 +101,7 @@ migration.
       loaders: [
         {
           test: /\.json$/,
-          loader: 'json'
+          loader: 'json-loader'
         }
       ]
     }
@@ -771,7 +771,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
             },
 
             selectMFAType : function(challengeName, challengeParameters) {
-                var mfaType = prompt('Please select the MFA method.', '');
+                var mfaType = prompt('Please select the MFA method.', ''); // valid values for mfaType is "SMS_MFA", "SOFTWARE_TOKEN_MFA" 
                 cognitoUser.sendMFASelectionAnswer(mfaType, this);
             },
 
@@ -816,6 +816,38 @@ The CookieStorage object receives a map (data) in its constructor that may have 
             console.log('call result ' + result)
         });
   ```
+  
+**Use case 30.** Authenticating a user with a user password auth flow. 
+
+  ```js
+	     cognitoUser.setAuthenticationFlowType('USER_PASSWORD_AUTH');
+	
+	     cognitoUser.initiateAuth(authenticationDetails, {
+	        onSuccess: function(result) {
+	            // User authentication was successful
+	        },
+	        onFailure: function(err) {
+	            // User authentication was not successful
+	        },
+	        mfaRequired: function (codeDeliveryDetails) {
+	            // MFA is required to complete user authentication.  
+	            // Get the code from user and call
+	            cognitoUser.sendMFACode(verificationCode, this);
+	        }
+	     });
+  ```
+  
+**Use case 31.** Retrieve the user data for an authenticated user. 
+
+  ```js
+	    cognitoUser.getUserData(function(err, userData) {
+	        if (err) {
+	            alert(err);
+	            return;
+	        }
+	        console.log('User data for user ' + userData);
+	    });
+  ```
 
 ## Network Configuration
 The Amazon Cognito Identity JavaScript SDK will make requests to the following endpoints
@@ -830,6 +862,18 @@ In order to authenticate with the Amazon Cognito Identity Service, the client ne
 
 ## Change Log
 
+**v1.32.0:**
+* What has changed
+  * Added migration lambda trigger support. 
+
+**v1.31.0:**
+* What has changed
+  * Added lib folder.
+
+**v1.30.0:**
+* What has changed
+  * Temporary fix to lock down the AWS SDK version to a compatible one.
+  
 **v1.29.0:**
 * What has changed
   * Fixing verify software token call to work with access token.

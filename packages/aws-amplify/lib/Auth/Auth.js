@@ -53,7 +53,7 @@ var Credentials_1 = require("../Credentials");
 var Cache_1 = require("../Cache");
 var logger = new Common_1.ConsoleLogger('AuthClass');
 var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
-var CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
+var CookieStorage = Common_1.Cognito.CookieStorage, CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
 var dispatchAuthEvent = function (event, data) {
     Common_1.Hub.dispatch('auth', { event: event, data: data }, 'Auth');
 };
@@ -86,19 +86,24 @@ var AuthClass = /** @class */ (function () {
                 userPoolId: conf['aws_user_pools_id'],
                 userPoolWebClientId: conf['aws_user_pools_web_client_id'],
                 region: conf['aws_cognito_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id']
+                identityPoolId: conf['aws_cognito_identity_pool_id'],
+                mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable' ? true : false
             };
         }
         this._config = Object.assign({}, this._config, conf);
         if (!this._config.identityPoolId) {
             logger.debug('Do not have identityPoolId yet.');
         }
-        var _a = this._config, userPoolId = _a.userPoolId, userPoolWebClientId = _a.userPoolWebClientId;
+        var _a = this._config, userPoolId = _a.userPoolId, userPoolWebClientId = _a.userPoolWebClientId, cookieStorage = _a.cookieStorage;
         if (userPoolId) {
-            this.userPool = new CognitoUserPool({
+            var userPoolData = {
                 UserPoolId: userPoolId,
-                ClientId: userPoolWebClientId
-            });
+                ClientId: userPoolWebClientId,
+            };
+            if (cookieStorage) {
+                userPoolData.Storage = new CookieStorage(cookieStorage);
+            }
+            this.userPool = new CognitoUserPool(userPoolData);
             if (Platform_1.default.isReactNative) {
                 var that = this;
                 this._userPoolStorageSync = new Promise(function (resolve, reject) {
@@ -196,10 +201,7 @@ var AuthClass = /** @class */ (function () {
         if (!code) {
             return Promise.reject('Code cannot be empty');
         }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        var user = this.createCognitoUser(username);
         return new Promise(function (resolve, reject) {
             user.confirmRegistration(code, true, function (err, data) {
                 if (err) {
@@ -223,10 +225,7 @@ var AuthClass = /** @class */ (function () {
         if (!username) {
             return Promise.reject('Username cannot be empty');
         }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        var user = this.createCognitoUser(username);
         return new Promise(function (resolve, reject) {
             user.resendConfirmationCode(function (err, data) {
                 if (err) {
@@ -254,10 +253,7 @@ var AuthClass = /** @class */ (function () {
         if (!password) {
             return Promise.reject('Password cannot be empty');
         }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        var user = this.createCognitoUser(username);
         var authDetails = new AuthenticationDetails({
             Username: username,
             Password: password
@@ -445,6 +441,9 @@ var AuthClass = /** @class */ (function () {
         if (Platform_1.default.isReactNative) {
             var that = this;
             return this.getSyncedUser().then(function (user) {
+                if (!user) {
+                    return Promise.reject('No current user in userPool');
+                }
                 return new Promise(function (resolve, reject) {
                     user.getSession(function (err, session) {
                         if (err) {
@@ -633,6 +632,29 @@ var AuthClass = /** @class */ (function () {
         });
     };
     /**
+     * Change a password for an authenticated user
+     * @param {Object} user - The CognitoUser object
+     * @param {String} oldPassword - the current password
+     * @param {String} newPassword - the requested new password
+     * @return - A promise resolves if success
+     */
+    AuthClass.prototype.changePassword = function (user, oldPassword, newPassword) {
+        return this.userSession(user)
+            .then(function (session) {
+            return new Promise(function (resolve, reject) {
+                user.changePassword(oldPassword, newPassword, function (err, data) {
+                    if (err) {
+                        logger.debug('change password failure', err);
+                        reject(err);
+                    }
+                    else {
+                        resolve(data);
+                    }
+                });
+            });
+        });
+    };
+    /**
      * Initiate a forgot password request
      * @param {String} username - the username to change password
      * @return - A promise resolves if success
@@ -644,10 +666,7 @@ var AuthClass = /** @class */ (function () {
         if (!username) {
             return Promise.reject('Username cannot be empty');
         }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        var user = this.createCognitoUser(username);
         return new Promise(function (resolve, reject) {
             user.forgotPassword({
                 onSuccess: function () { resolve(); },
@@ -681,10 +700,7 @@ var AuthClass = /** @class */ (function () {
         if (!password) {
             return Promise.reject('Password cannot be empty');
         }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
+        var user = this.createCognitoUser(username);
         return new Promise(function (resolve, reject) {
             user.confirmPassword(code, password, {
                 onSuccess: function () { resolve(); },
@@ -699,6 +715,7 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.currentUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
+<<<<<<< HEAD
             var source, credentials, user_1, user, attributes, userAttrs, info, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -711,6 +728,14 @@ var AuthClass = /** @class */ (function () {
                             user_1 = Object.assign(this.user, { 'id': credentials ? credentials['identityId'] : null });
                             return [2 /*return*/, user_1 ? user_1 : {}];
                         }
+=======
+            var source, user, attributes, userAttrs, info, err_1, user;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        source = this.credentials_source;
+                        if (!(!source || source === 'aws' || source === 'userPool')) return [3 /*break*/, 5];
+>>>>>>> upstream/master
                         return [4 /*yield*/, this.currentUserPoolUser()
                                 .catch(function (err) { return logger.debug(err); })];
                     case 2:
@@ -726,14 +751,17 @@ var AuthClass = /** @class */ (function () {
                         attributes = _a.sent();
                         userAttrs = this.attributesToObject(attributes);
                         info = {
+<<<<<<< HEAD
                             'id': credentials ? credentials['identityId'] : null,
+=======
+                            'id': this.credentials.identityId,
+>>>>>>> upstream/master
                             'username': user.username,
                             'attributes': userAttrs
                         };
                         return [2 /*return*/, info];
                     case 5:
                         err_1 = _a.sent();
-                        console.warn(err_1);
                         logger.debug('currentUserInfo error', err_1);
                         return [2 /*return*/, {}];
                     case 6: return [2 /*return*/];
@@ -760,6 +788,7 @@ var AuthClass = /** @class */ (function () {
         }
         return obj;
     };
+<<<<<<< HEAD
     /**
      * For federated login
      * @param {String} provider - federation login provider
@@ -774,6 +803,138 @@ var AuthClass = /** @class */ (function () {
         // store it into localstorage
         dispatchAuthEvent('signIn', this.user);
         return Credentials_1.default.setCredentials({ federated: { provider: provider, token: token, user: user }, providerName: 'AWSCognito' });
+=======
+    AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
+        var domains = {
+            'google': 'accounts.google.com',
+            'facebook': 'graph.facebook.com',
+            'amazon': 'www.amazon.com'
+        };
+        var domain = domains[provider];
+        if (!domain) {
+            return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
+        }
+        var logins = {};
+        logins[domain] = token;
+        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
+        this.credentials = new Common_1.AWS.CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId,
+            Logins: logins
+        }, {
+            region: region
+        });
+        this.credentials.authenticated = true;
+        this.credentials_source = 'federated';
+        this.user = Object.assign({ id: this.credentials.identityId }, user);
+        if (Common_1.AWS && Common_1.AWS.config) {
+            Common_1.AWS.config.credentials = this.credentials;
+        }
+    };
+    AuthClass.prototype.pickupCredentials = function () {
+        var that = this;
+        if (this.credentials) {
+            return this.keepAlive();
+        }
+        else if (this.setCredentialsFromAWS()) {
+            return this.keepAlive();
+        }
+        else {
+            return this.currentUserCredentials()
+                .then(function () {
+                if (that.credentials_source === 'no credentials') {
+                    return Promise.resolve(null);
+                }
+                return that.keepAlive();
+            })
+                .catch(function (err) {
+                logger.debug('error when pickup', err);
+                that.setCredentialsForGuest();
+                return that.keepAlive();
+            });
+        }
+    };
+    AuthClass.prototype.setCredentialsFromAWS = function () {
+        if (Common_1.AWS.config && Common_1.AWS.config.credentials) {
+            this.credentials = Common_1.AWS.config.credentials;
+            this.credentials_source = 'aws';
+            return true;
+        }
+        return false;
+    };
+    AuthClass.prototype.setCredentialsForGuest = function () {
+        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
+        if (mandatorySignIn) {
+            this.credentials = null;
+            this.credentials_source = 'no credentials';
+            return;
+        }
+        var credentials = new CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId
+        }, {
+            region: region
+        });
+        credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
+        this.credentials = credentials;
+        this.credentials.authenticated = false;
+        this.credentials_source = 'guest';
+    };
+    AuthClass.prototype.setCredentialsFromSession = function (session) {
+        logger.debug('set credentials from session');
+        var idToken = session.getIdToken().getJwtToken();
+        var _a = this._config, region = _a.region, userPoolId = _a.userPoolId, identityPoolId = _a.identityPoolId;
+        var key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
+        var logins = {};
+        logins[key] = idToken;
+        this.credentials = new CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId,
+            Logins: logins
+        }, {
+            region: region
+        });
+        this.credentials.authenticated = true;
+        this.credentials_source = 'userPool';
+    };
+    AuthClass.prototype.keepAlive = function () {
+        if (!this.credentials) {
+            this.setCredentialsForGuest();
+        }
+        var ts = new Date().getTime();
+        var delta = 10 * 60 * 1000; // 10 minutes
+        var credentials = this.credentials;
+        var expired = credentials.expired, expireTime = credentials.expireTime;
+        if (!expired && expireTime > ts + delta) {
+            return Promise.resolve(credentials);
+        }
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            that.currentUserCredentials()
+                .then(function () {
+                credentials = that.credentials;
+                credentials.refresh(function (err) {
+                    logger.debug('changed from previous');
+                    if (err) {
+                        logger.debug('refresh credentials error', err);
+                        resolve(null);
+                    }
+                    else {
+                        resolve(credentials);
+                    }
+                });
+            })
+                .catch(function () { return resolve(null); });
+        });
+>>>>>>> upstream/master
+    };
+    AuthClass.prototype.createCognitoUser = function (username) {
+        var userData = {
+            Username: username,
+            Pool: this.userPool,
+        };
+        var cookieStorage = this._config.cookieStorage;
+        if (cookieStorage) {
+            userData.Storage = new CookieStorage(cookieStorage);
+        }
+        return new CognitoUser(userData);
     };
     return AuthClass;
 }());

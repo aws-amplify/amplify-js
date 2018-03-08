@@ -21,7 +21,7 @@ const logger = new Logger('API');
 /**
  * Export Cloud Logic APIs
  */
-export default class API {
+export default class APIClass {
     /**
      * @private
      */

@@ -16,6 +16,7 @@ import { View } from 'react-native';
 import { Logger } from 'aws-amplify';
 import Authenticator from './Authenticator';
 import AuthPiece from './AuthPiece';
+import Loading from './Loading';
 import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
 import SignUp from './SignUp';
@@ -35,12 +36,13 @@ export {
     SignUp,
     ConfirmSignUp,
     ForgotPassword,
+    Loading,
     RequireNewPassword,
     VerifyContact,
     Greetings
 };
 
-export function withAuthenticator(Comp, includeGreetings=false) {
+export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = []) {
     class Wrapper extends React.Component {
         constructor(props) {
             super(props);
@@ -89,7 +91,9 @@ export function withAuthenticator(Comp, includeGreetings=false) {
 
             return <Authenticator
                 {...this.props}
+                hideDefault={authenticatorComponents.length > 0}
                 onStateChange={this.handleAuthStateChange}
+                children={authenticatorComponents}
             />
         }
     }

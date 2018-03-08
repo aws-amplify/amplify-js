@@ -3,8 +3,8 @@
 The AWS Amplify Auth module provides Authentication APIs and building blocks to developers wishing to use pre-build components or scaffold out custom UX. Depending on needs, Auth can be integrated at different levels.
 
 * [Installation and Configuration](#installation-and-configuratoin)
-  - [Manual Setup](#manual-setup)
   - [Automated Setup](#automated-setup)
+  - [Manual Setup](#manual-setup)
 * [Integration](#integration)
   - [1. Call APIs](#1-call-apis)
   - [2. withAuthenticator HOC](#2-withauthenticator-hoc)
@@ -16,25 +16,11 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
 * [Extension](#extension)
   - [UI Theme](#ui-theme)
   - [Error Message](#error-message)
+  - [AWS Services](#aws-services)
 
 ## Installation and Configuration
 
 Please refer to this [Guide](install_n_config.md) for general setup. Here are Authentication specific setup.
-
-### Manual Setup
-
-```js
-import Amplify from 'aws-amplify';
-
-Amplify.configure({
-    Auth: {
-        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
-        region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
-        userPoolId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito User Pool ID
-        userPoolWebClientId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito Web Client ID
-    }
-});
-```
 
 ### Automated Setup
 
@@ -45,6 +31,7 @@ $ npm install -g awsmobile-cli
 $ cd my-app
 $ awsmobile init
 $ awsmobile enable user-signin
+$ awsmobile push
 ```
 
 In your project i.e. App.js:
@@ -53,6 +40,38 @@ In your project i.e. App.js:
 import Amplify, { Auth } from 'aws-amplify';
 import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
+```
+
+### Manual Setup
+
+```js
+import Amplify from 'aws-amplify';
+
+Amplify.configure({
+    Auth: {
+    // REQUIRED - Amazon Cognito Identity Pool ID
+        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
+    // REQUIRED - Amazon Cognito Region
+        region: 'XX-XXXX-X',
+    // OPTIONAL - Amazon Cognito User Pool ID
+        userPoolId: 'XX-XXXX-X_abcd1234',
+    // OPTIONAL - Amazon Cognito Web Client ID
+        userPoolWebClientId: 'XX-XXXX-X_abcd1234',
+    // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
+        mandatorySignIn: false,
+    // OPTIONAL - Configuration for cookie storage
+        cookieStorage: {
+        // REQUIRED - Cookie domain (only required if cookieStorage is provided)
+            domain: '.yourdomain.com',
+        // OPTIONAL - Cookie path
+            path: '/',
+        // OPTIONAL - Cookie expiration in days
+            expires: 365,
+        // OPTIONAL - Cookie secure flag
+            secure: true
+        }
+    }
+});
 ```
 
 ## Integration
@@ -81,15 +100,14 @@ Auth.confirmSignIn(user, code)
 import { Auth } from 'aws-amplify';
 
 Auth.signUp({
-    username,
-    password,
-    attributes: {
-        email, // optional
-        phone, // optional
-        // other custom attributes if has been set in Cognito
-        // myAttr: ...
-    },
-    validationData: [] //optional
+        username,
+        password,
+        attributes: {
+            email,          // optional
+            phone_number,   // optional - E.164 number convention
+            // other custom attributes
+        },
+        validationData: []  //optional
     })
     .then(data => console.log(data))
     .catch(err => console.log(err));
@@ -109,6 +127,18 @@ Auth.signOut()
     .catch(err => console.log(err));
 ```
 
+#### Change password
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.currentAuthenticatedUser()
+    .then(user => {
+        return Auth.changePassword(user, 'oldPassword', 'newPassword');
+    })
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+```
+
 #### Forgot Password
 ```js
 import { Auth } from 'aws-amplify';
@@ -123,14 +153,23 @@ Auth.forgotPasswordSubmit(username, code, new_password)
     .catch(err => console.log(err));
 ```
 
+#### Current Session
+Return a `CognitoUserSession` which contains JWT `accessToken`, `idToken`, and `refreshToken`.
+```js
+let session = Auth.currentSession();
+// CognitoUserSession => { idToken, refreshToken, accessToken }
+```
+
 ### 2. withAuthenticator HOC
 
-For React apps, the simplest way to add Auth flows into your app is to use `withAuthenticator`.
+<img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
+
+For React and React Native apps, the simplest way to add Auth flows into your app is to use `withAuthenticator`.
 
 Just add these two lines to your `App.js`:
 
 ```js
-import { withAuthenticator } from 'aws-amplify-react';
+import { withAuthenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
 
 ...
 
@@ -155,6 +194,8 @@ const federated = {
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
 
+ NOTE: Federated Identity HOCs are not yet available on React Native
+
 #### Sign Out Button
 
 The default `withAuthenticator` renders just the App component after a user is signed in, preventing interference with your app. Then question comes, how does the user sign out?
@@ -173,7 +214,7 @@ The `withAuthenticator` HOC essentially just wraps `Authenticator` component. Yo
 
 App.js
 ```js
-import { Authenticator } from 'aws-amplify-react';
+import { Authenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native'
 
 ...
 
@@ -196,18 +237,26 @@ export default AppWithAuth;
 
 In the above example you'll see the App rendered even before the user is signed in. This is easy to change.
 
-When inside `Authenticator`, the App component will get a few properties.
+When inside `Authenticator`, the App component will receive a few properties.
 
-* authState - current authentication state, signIn | signUp | confirmSignIn | confirmSignUp | forgotPassword | verifyContact | signedIn
-* authData - additional data to the authState, when signedIn it is an user object
-* onStateChange - callback function, for what's inside `Authenticator` to notify authState changes.
+**authState** is the current authentication state (a string):
+ - `signIn`
+ - `signUp`
+ - `confirmSignIn`
+ - `confirmSignUp`
+ - `forgotPassword`
+ - `verifyContact`
+ - `signedIn`
 
-With that, to control when to render App component, simply add the following line to the `render()` method of the `App` component:
+**authData** - additional data within authState, when `signedIn`, it is a `user` object
+
+With that, to control when to render App component, simply add
+
 ```js
-    render() {
-        if (this.props.authState !== 'signedIn') { return null; }
-    ...
+    this._validAuthStates = ['signedIn'];
 ```
+to the component's constructor, then implement `showComponent(theme) {}` in lieu of the typical
+`render() {}` method.
 
 ### 4. Compose Authenticator
 
@@ -247,7 +296,7 @@ You may write your own Auth UI. To do this your component will leverage the foll
 This example creates an `AlwaysOn` Auth UI, which shows the current auth state.
 
 ```jsx
-import { Authenticator, SignIn, SignUp, ConfirmSignUp, Greetings } from 'aws-amplify-react’;
+import { Authenticator, SignIn, SignUp, ConfirmSignUp, Greetings } from 'aws-amplify-react';
 
 const AlwaysOn = (props) => {
     return (
@@ -295,7 +344,7 @@ After setup. Just add `Google client_id`, `Facebook app_id` and/or `Amazon clien
 ```
 #### Custom federated identity UI
 
-Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle`, `withFacebook`, `withAmazon` if just need a single provider.
+Every app may have a slightly different UI. Use `withFederated`. There is also `withGoogle`, `withFacebook`, `withAmazon` if you just need a single provider.
 
 ```jsx
 import { withFederated } from 'aws-amplify-react';
@@ -340,7 +389,7 @@ Auth.signUp({
     'password': 'mysecurerandompassword#123',
     'attributes': {
         'email': 'me@domain.com',
-        'phone_number': '+12128601234',
+        'phone_number': '+12128601234', // E.164 number convention
         'first_name': 'Jane',
         'last_name': 'Doe',
         'nick_name': 'Jane'
@@ -416,3 +465,24 @@ const map = (message) => {
 ```
 
 You may notice in `AmplifyMessageMap.js` it also handles internationalization. The topic is covered in [I18n Guide](i18n_guide.md)
+
+### AWS Services
+
+You can call methods on any AWS Service by passing in your credentials from auth to the service call constructor:
+
+```js
+Auth.currentCredentials()
+  .then(credentials => {
+    const route53 = new Route53({
+      apiVersion: '2013-04-01',
+      credentials: Auth.essentialCredentials(credentials)
+    });
+
+    // more code working with route53 object
+    // route53.changeResourceRecordSets();
+  })
+```
+
+Note: your Amazon Cognito users' [IAM role](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) must have the appropriate permissions to call the requested services.
+
+Full API Documentation is available <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html" target="_blank">here</a>.

@@ -119,6 +119,14 @@ export default class AuthClass {
      */
     signOut(): Promise<any>;
     /**
+     * Change a password for an authenticated user
+     * @param {Object} user - The CognitoUser object
+     * @param {String} oldPassword - the current password
+     * @param {String} newPassword - the requested new password
+     * @return - A promise resolves if success
+     */
+    changePassword(user: any, oldPassword: string, newPassword: string): Promise<any>;
+    /**
      * Initiate a forgot password request
      * @param {String} username - the username to change password
      * @return - A promise resolves if success
@@ -145,5 +153,29 @@ export default class AuthClass {
      * @param {Object} response - response including access_token
      * @param {String} user - user info
      */
+<<<<<<< HEAD
     federatedSignIn(provider: any, response: any, user: any): Promise<{}>;
+=======
+    federatedSignIn(provider: any, response: any, user: any): Promise<any>;
+    /**
+     * Compact version of credentials
+     * @param {Object} credentials
+     * @return {Object} - Credentials
+     */
+    essentialCredentials(credentials: any): {
+        accessKeyId: any;
+        sessionToken: any;
+        secretAccessKey: any;
+        identityId: any;
+        authenticated: any;
+    };
+    private attributesToObject(attributes);
+    private setCredentialsFromFederation(provider, token, user);
+    private pickupCredentials();
+    private setCredentialsFromAWS();
+    private setCredentialsForGuest();
+    private setCredentialsFromSession(session);
+    private keepAlive();
+    private createCognitoUser(username);
+>>>>>>> upstream/master
 }
