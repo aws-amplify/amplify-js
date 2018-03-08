@@ -47,6 +47,8 @@ Amplify.configure(
         appId: 'XXXXXXXXXXabcdefghij1234567890ab',
     // OPTIONAL -  Amazon service region
         region: 'XX-XXXX-X',
+    // OPTIONAL -  Customized endpoint Id
+        endpointId: 'XXXXXXXXXXX'
     } 
 );
 
@@ -122,7 +124,11 @@ export default class MyAnalyticsProvider implements AnalyticsProvider {
 You can now add your own Analytics plugin now by using:
 ```js
 // send configuration into Amplify
-Amplify.configure({Analytics: { my_analytics_provider_configuration }});
+Amplify.configure({
+    Analytics: { 
+        // my_analytics_provider_configuration 
+    }
+});
 // use the plugin
 Amplify.addPluggable(new MyAnalyticsProvider());
 ```
