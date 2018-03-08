@@ -253,7 +253,8 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
 
         const { appId } = config;
         const cacheKey = this.getProviderName() + '_' + appId;
-        const endpointId = await this._getEndpointId(cacheKey);
+        const endpointId = config.endpointId ? config.endpointId :
+            (this._config.endpointId ? this._config.endpointId : await this._getEndpointId(cacheKey));
 
         this._config = Object.assign(this._config, { endpointId }, config);
         this._initMobileAnalytics();
