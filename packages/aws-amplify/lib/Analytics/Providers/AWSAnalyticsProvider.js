@@ -290,9 +290,9 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     AWSAnalyticsProvider.prototype._init = function (config) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var appId, cacheKey, endpointId;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var appId, cacheKey, endpointId, _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         logger.debug('init clients');
                         if (!config.credentials) {
@@ -308,9 +308,22 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                         }
                         appId = config.appId;
                         cacheKey = this.getProviderName() + '_' + appId;
-                        return [4 /*yield*/, this._getEndpointId(cacheKey)];
+                        if (!config.endpointId) return [3 /*break*/, 1];
+                        _a = config.endpointId;
+                        return [3 /*break*/, 5];
                     case 1:
-                        endpointId = _a.sent();
+                        if (!this._config.endpointId) return [3 /*break*/, 2];
+                        _b = this._config.endpointId;
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, this._getEndpointId(cacheKey)];
+                    case 3:
+                        _b = _c.sent();
+                        _c.label = 4;
+                    case 4:
+                        _a = (_b);
+                        _c.label = 5;
+                    case 5:
+                        endpointId = _a;
                         this._config = Object.assign(this._config, { endpointId: endpointId }, config);
                         this._initMobileAnalytics();
                         return [2 /*return*/, new Promise(function (res, rej) {

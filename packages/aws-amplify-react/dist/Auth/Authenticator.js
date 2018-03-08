@@ -46,6 +46,10 @@ var _ForgotPassword = require('./ForgotPassword');
 
 var _ForgotPassword2 = _interopRequireDefault(_ForgotPassword);
 
+var _TOTPSetup = require('./TOTPSetup');
+
+var _TOTPSetup2 = _interopRequireDefault(_TOTPSetup);
+
 var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
@@ -178,10 +182,10 @@ var Authenticator = function (_Component) {
                     hide = [];
                 }
                 if (hideDefault) {
-                    hide = hide.concat([_Greetings2['default'], _SignIn2['default'], _ConfirmSignIn2['default'], _RequireNewPassword2['default'], _SignUp2['default'], _ConfirmSignUp2['default'], _VerifyContact2['default'], _ForgotPassword2['default']]);
+                    hide = hide.concat([_Greetings2['default'], _SignIn2['default'], _ConfirmSignIn2['default'], _RequireNewPassword2['default'], _SignUp2['default'], _ConfirmSignUp2['default'], _VerifyContact2['default'], _ForgotPassword2['default'], _TOTPSetup2['default']]);
                 }
                 var props_children = this.props.children || [];
-                var default_children = [_react2['default'].createElement(_Greetings2['default'], null), _react2['default'].createElement(_SignIn2['default'], { federated: federated }), _react2['default'].createElement(_ConfirmSignIn2['default'], null), _react2['default'].createElement(_RequireNewPassword2['default'], null), _react2['default'].createElement(_SignUp2['default'], null), _react2['default'].createElement(_ConfirmSignUp2['default'], null), _react2['default'].createElement(_VerifyContact2['default'], null), _react2['default'].createElement(_ForgotPassword2['default'], null)];
+                var default_children = [_react2['default'].createElement(_Greetings2['default'], null), _react2['default'].createElement(_SignIn2['default'], { federated: federated }), _react2['default'].createElement(_ConfirmSignIn2['default'], null), _react2['default'].createElement(_RequireNewPassword2['default'], null), _react2['default'].createElement(_SignUp2['default'], null), _react2['default'].createElement(_ConfirmSignUp2['default'], null), _react2['default'].createElement(_VerifyContact2['default'], null), _react2['default'].createElement(_ForgotPassword2['default'], null), _react2['default'].createElement(_TOTPSetup2['default'], null)];
 
                 var render_props_children = _react2['default'].Children.map(props_children, function (child, index) {
                     return _react2['default'].cloneElement(child, {
