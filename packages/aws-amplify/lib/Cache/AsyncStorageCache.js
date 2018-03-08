@@ -548,7 +548,7 @@ var AsyncStorageCache = /** @class */ (function (_super) {
                         return [4 /*yield*/, this._refreshItem(item, prefixedKey)];
                     case 6:
                         item = _a.sent();
-                        return [2 /*return*/, JSON.parse(item.data)];
+                        return [2 /*return*/, item.data];
                     case 7:
                         if (options && options.callback !== undefined) {
                             val = options.callback();

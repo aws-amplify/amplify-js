@@ -105,6 +105,17 @@ var JS = /** @class */ (function () {
             'application/xml' === type ||
             'application/sh' === type);
     };
+    /**
+     * generate random string
+     */
+    JS.generateRandomString = function () {
+        var result = '';
+        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (var i = 32; i > 0; i -= 1) {
+            result += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return result;
+    };
     return JS;
 }());
 exports.default = JS;
