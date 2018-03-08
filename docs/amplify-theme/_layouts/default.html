@@ -14,6 +14,18 @@
 						<span class="">Edit this page</span> 
 					</a>				
 				</div>
+
+				{% if site.category_list %}
+						{% for category in site.category_list %}
+							{% for item in category.subs %}
+								{% assign url = page.url | append: "index.html" %}
+								{% if url == item.url  %}
+									{% assign isPageInCategories = true %}	
+								{% endif %}	
+							{% endfor %}
+						{% endfor %}
+				{% endif %}
+
 				<div class="row">
 					<div class="col-md-7">
 						<div class="content">
@@ -24,17 +36,15 @@
 						<div class="sections-list-wrapper">
 							<div class="sections-list js-affix js-scrollspy hidden-xs hidden-sm">
 								<div class="dev-guide">
-									{% if site.category_list %}
+									{% if site.category_list and isPageInCategories %}
 										<ul class="level-1 nav">
 											{% for category in site.category_list %}
 												{% for item in category.subs %}
 													{% assign url = page.url | append: "index.html" %}
 													{% if url == item.url  %}
-														<div class='in-this-page js-sections'>
-															<div class='section-header'>{{ item.title }}</div>
-														</div>	
+														<div class='in-this-page js-sections'></div>
 													{% else %}
-														<li class="section-link" >
+														<li class="section-link">
 															<a href="{{ item.url }}">{{ item.title }}</a>
 														</li>
 													{% endif %}	
@@ -42,6 +52,10 @@
 											{% endfor %}
 										</ul>
 									{% endif %}
+									{% if isPageInCategories != true  %}
+										<small>In this page</small>
+										<div class='in-this-page js-sections'></div>
+									{% endif %}	
 								</div>						
 							</div><!-- /.sections-list -->
 							<div class='list-all'></div>

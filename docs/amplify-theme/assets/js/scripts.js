@@ -1,15 +1,13 @@
 ( function( $ ) {
 	'use strict';
 
-
-
 (function(document, history, location) {
 
 	var HISTORY_SUPPORT = !!(history && history.pushState);
   
 	var anchorScrolls = {
 	  ANCHOR_REGEX: /^#[^ ]+$/,
-	  OFFSET_HEIGHT_PX: 100,
+	  OFFSET_HEIGHT_PX: 70,
   
 	  /**
 	   * Establish events, and fix initial scroll position if a hash is provided.
@@ -182,14 +180,21 @@
 		$ul.addClass( 'level-' + list[ 0 ].level );
 
 		if ( true === isFirstLevel ) {
-			$ul.addClass( 'nav' );
+			$ul.addClass( 'nav first-level' );
 		}
 
 		var i, $li;
+		var aClass='';
+
 		for ( i = 0; i < list.length; i += 1 ) {
 			$li = $( '<li></li>' );
+
+			if (true === isFirstLevel && i == 0 ) {
+				aClass='section-head';
+			}
+
 			$li.append(
-				'<a href="#' + list[ i ].$el.attr( 'id' ) + '">' +
+				'<a class="' + aClass +'" href="#' + list[ i ].$el.attr( 'id' ) + '">' +
 					list[ i ].$el.text().replace( /^#\ /, '' ) +
 				'</a>'
 			);
@@ -252,10 +257,8 @@
 		$( 'body' ).toggleClass( 'offcanvas-expanded' );
 	} );
 
-
-	// Tabs
-	$('ul.tabs li').click(function(){
-
+	// Handle click on tabs
+	$('ul.tabs li').click(function(event, stopPropogation){
 		var parent_tab_class='.' + $(this).parent().parent().attr('data-group');
 		var tab_id = $(this).attr('data-tab');
 
@@ -265,6 +268,14 @@
 		$(this).addClass('current');
 		$(parent_tab_class + " #"+tab_id).addClass('current');
 
+		// Prevent circular trigger actions
+		if (stopPropogation == true)
+			return;
+
+		// Find other tab classes in page and trigger click respectively
+		// Without propogating
+		$('li.tab-link.' + tab_id).not ('.current').trigger('click',[true]);
+
 	});
 
 	$.urlParam = function(name){
@@ -272,18 +283,13 @@
 		return results[1] || 0;
 	}
 
-	// Open tabs with the query params 
+	// Open tabs when the page is launched with the query params 
 	if ($.urlParam('platform')) {
-
 		var platform = $.urlParam('platform');
 		if (platform) {
 			$('li.tab-link.'+ platform ).trigger('click');
 		}
-
 	}
-
-
-
 
 }( jQuery ) );
 

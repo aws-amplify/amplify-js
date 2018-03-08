@@ -26,11 +26,16 @@ In your project's *root folder*, run following command to configure and update y
 ```bash
 $ cd my-app #Change to your project's root folder
 $ awsmobile init
-$ awsmobile enable analytics
-$ awsmobile push
+$ awsmobile push #Update your backend 
 ```
 
-In your app's entry point i.e. App.js, import and load the configuration.
+*awsmobile init* will enable Analytics module by default for your backend. In case you want to enable/disable it manually, you can use:
+
+```bash
+$ awsmobile analytics enable 
+```
+
+In your app's entry point i.e. App.js, import and load the configuration file which has been created and replaced into `/src` folder in the previous step.
 
 ```js
 import Amplify, { Analytics } from 'aws-amplify';
@@ -67,13 +72,13 @@ $ awsmobile console
 
 On the AWS Mobile Hub console, click **Messaging and Analytics** option under 'Backend' section.
 
-## Integration
+## Working with the API
 
-### 1. Collect Session Data
+### Collect Session Data
 
 Once configured, the Analytics module will start collecting user session data without any additional code. 
 
-### 2. Recording a Custom Tracking Event
+### Recording a Custom Tracking Event
 
 To record a custom tracking event, call the `record` method:
 
@@ -83,7 +88,7 @@ import { Analytics } from 'aws-amplify';
 Analytics.record('albumVisit');
 ```
 
-### 3. Record Custom Tracking Event with Attributes
+### Record Custom Tracking Event with Attributes
 
 The `record` method lets you add additional attributes to an event. For example, in order to record *artist* information with an *albumVisit* event:
 
@@ -93,7 +98,7 @@ import { Analytics } from 'aws-amplify';
 Analytics.record('albumVisit', { genre: '', artist: '' });
 ```
 
-### 4. Record Engagement Metrics
+### Record Engagement Metrics
 
 Metrics data can also be added to an event:
 
@@ -103,6 +108,7 @@ import { Analytics } from 'aws-amplify';
 Analytics.record('albumVisit', {}, { minutesListened: 30 });
 ```
 
+### API Reference
 
 For the complete API documentation for Analytics module, visit our [API Reference](/api/classes/analyticsclass.html)
 {: .callout .callout--info}

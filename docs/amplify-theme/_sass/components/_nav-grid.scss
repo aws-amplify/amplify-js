@@ -19,7 +19,7 @@
 .nav-grid__item {
 	@include link-reset;
 	display: block;
-	background-color: $color-theme-blue;
+	background-color: white;
 	border: 1px solid rgba($color-dark-blue, .2);
 	border-radius: 3px;
 	margin-bottom: .9375rem;
@@ -32,11 +32,10 @@
 	&:hover,
 	&:active,
 	&:focus {
-		border-color: $color-dark-blue;
+		border-color: orange;
 
 		.nav-grid__btn {
-			border-color: $color-dark-blue;
-
+			border-color: orange;
 			.icon {
 				@include translate(.625rem, 0);
 			}

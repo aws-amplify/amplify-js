@@ -24,8 +24,8 @@ To create a fully functioning project with the API category, run following comma
 $ npm install -g awsmobile-cli
 $ cd my-app #Change to your project's root folder
 $ awsmobile init
-$ awsmobile enable cloud-api
-$ awsmobile push
+$ awsmobile cloud-api enable
+$ awsmobile push #Update your backend 
 ```
 
 In your project's entry point, i.e. App.js:
@@ -104,7 +104,7 @@ For more information about working with AWS Lambda without Amazon API Gateway, s
  **NOTE** In order to call regional service endpoints, your Amazon Cognito role needs to be configured with appropriate access for the related service. See [AWS Cognito Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) for more details.
  {: .callout .callout--warning}
 
-## Integration
+## Working with the API
 
 To invoke an API, you will need the name for the related endpoint. If you manually configure the API, you already have a name for the endpoint. If you use Automated Setup or configure your API on AWS Mobile Hub, you can check the API name in the Mobile Hub console by clicking **Cloud Logic** tile. 
 
@@ -144,18 +144,6 @@ async function getData() {
 
 getData();
 ```
-### Using Custom HTTP Request Headers
-
-To use custom headers on your HTTP request, you need to add these to Amazon API Gateway first. For more info about configuring headers, please visit [Amazon API Gateway Developer Guide](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html)
-
-If you have used *awsmobile* CLI or *AWS Mobile Hub* to create your API, you can enable custom headers by following above steps:  
-
-1. Visit [Amazon API Gateway console](https://aws.amazon.com/api-gateway/).
-3. On Amazon API Gateway console, click on the path you want to configure (e.g. /{proxy+})
-4. Then click the *Actions* dropdown menu and select **Enable CORS**
-5. Add your custom header (e.g. my-custom-header) on the text field Access-Control-Allow-Headers, separated by commas, like: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,my-custom-header'.
-6. Click on 'Enable CORS and replace existing CORS headers' and confirm.
-7. Finally, similar to step 3, click the Actions dropdown menu and then select **Deploy API**. Select **Development** on deployment stage and then **Deploy**. (Deployment could take a couple of minutes).
 
 ### **POST**
 
@@ -280,5 +268,23 @@ async function head() {
 head();
 ```
 
+### API Reference
+
 For the complete API documentation for API module, visit our [API Reference](/api/classes/api.html)
 {: .callout .callout--info}
+
+
+## Customization
+
+### Using Custom HTTP Request Headers
+
+To use custom headers on your HTTP request, you need to add these to Amazon API Gateway first. For more info about configuring headers, please visit [Amazon API Gateway Developer Guide](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html)
+
+If you have used *awsmobile* CLI or *AWS Mobile Hub* to create your API, you can enable custom headers by following above steps:  
+
+1. Visit [Amazon API Gateway console](https://aws.amazon.com/api-gateway/).
+3. On Amazon API Gateway console, click on the path you want to configure (e.g. /{proxy+})
+4. Then click the *Actions* dropdown menu and select **Enable CORS**
+5. Add your custom header (e.g. my-custom-header) on the text field Access-Control-Allow-Headers, separated by commas, like: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,my-custom-header'.
+6. Click on 'Enable CORS and replace existing CORS headers' and confirm.
+7. Finally, similar to step 3, click the Actions dropdown menu and then select **Deploy API**. Select **Development** on deployment stage and then **Deploy**. (Deployment could take a couple of minutes).

@@ -21,11 +21,11 @@ To create a project fully functioning with the Auth category.
 $ npm install -g awsmobile-cli
 $ cd my-app #Change to your project's root folder
 $ awsmobile init
-$ awsmobile enable user-signin
-$ awsmobile push
+$ awsmobile user-signin enable
+$ awsmobile push #Update your backend 
 ```
 
-Import the automatically generated configuration file `aws-exports.js` in your app:
+In your app's entry point i.e. App.js, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.
 
 ```js
 import Amplify, { Auth } from 'aws-amplify';
@@ -67,7 +67,7 @@ Amplify.configure({
 });
 ```
 
-## Integration
+## Working with the API
 
 ### Common Use Cases
 
@@ -429,7 +429,16 @@ If you change the email address, the user you will receive a confirmation code. 
 let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
 ```
 
-## Customizations
+### Subscribing Events
+
+You can take specific actions when users sign-in or sign-out by subscribing authentication events in your app. Please see our [Hub Module Developer Guide](/media/hub_guide/index.html#listening-authentication-events) for more information.
+
+### API Reference
+
+For the complete API documentation for Authentication module, visit our [API Reference](/api/classes/authclass.html)
+{: .callout .callout--info}
+
+## Customization
 
 ### UI Theme
 
@@ -501,6 +510,3 @@ Full API Documentation for Service Interface Objects is available [here](https:/
 
 Note: In order to work with Service Interface Objects, your Amazon Cognito users' [IAM role](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) must have the appropriate permissions to call the requested services.
 {: .callout .callout--warning}
-
-For the complete API documentation for Authentication module, visit our [API Reference](/api/classes/authclass.html)
-{: .callout .callout--info}

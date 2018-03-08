@@ -11,17 +11,17 @@ Installing AWS Amplify involves installing our client libraries from `npm`, and 
 
 <div class="nav-tab install" data-group="install">
 <ul class="tabs">
-    <li class="tab-link javascript current" data-tab="tab-1">JavaScript</li>
-    <li class="tab-link react" data-tab="tab-2">React</li>
-    <li class="tab-link react-native" data-tab="tab-3">React Native</li>
+    <li class="tab-link javascript current" data-tab="javascript">JavaScript</li>
+    <li class="tab-link react" data-tab="react">React</li>
+    <li class="tab-link react-native" data-tab="react-native">React Native</li>
 </ul>
-<div id="tab-1" class="tab-content current">
+<div id="javascript" class="tab-content current">
 For JavaScript web development, regardless of the frontend framework used, `aws-amplify` package provides core APIs
 ```bash
 npm install aws-amplify
 ```
 </div>
-<div id="tab-2" class="tab-content">
+<div id="react" class="tab-content">
 On a React app, in addition to `aws-amplify`, we provide helpers and higher order components that are packaged in `aws-amplify-react`
 ```bash
 npm install aws-amplify
@@ -30,7 +30,7 @@ npm install aws-amplify
 npm install aws-amplify-react
 ```
 </div>
-<div id="tab-3" class="tab-content">
+<div id="react-native" class="tab-content">
 For React Native, in addition to `aws-amplify`, we provide React Native specific components with `aws-amplify-react-native` package
 ```bash
 npm install aws-amplify

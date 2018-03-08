@@ -13,7 +13,7 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: AWS-Amplify Developer Documentation
+title: AWS Amplify Developer Documentation
 email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
   Write an awesome description for your new site here. You can edit this
@@ -59,20 +59,20 @@ amplify:
     color_theme:  # Available themes: blue (default), green, purple, red and yellow
     header:
         logo:
-            text: AWS-Amplify
+            text: AWS Amplify
             image: true
         nav:
             - item_name: Quick Start
               item_url: '/media/quick_start/index.html'
-            - item_name: Developer Guide
+            - item_name: Docs
               item_url: '/media/developer_guide/index.html'
             - item_name: API
               item_url: '/api/index.html'
             - item_name: Community
               item_url: 'https://gitter.im/AWS-Amplify/Lobby/'
             - item_name: Blog
-              item_url: '#sdf'
-            - item_name: Github
+              item_url: '/blog'
+            - item_name: 
               item_icon: github
               item_url: 'https://github.com/aws/aws-amplify'
     footer:
@@ -177,6 +177,13 @@ category_list:
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide/index.html'  
+    -  category: CLI
+       title: CLI
+       subs:
+        - title: AWS Mobile CLI
+          excerpt: A CLI to create and manage your app's backend. 
+          cta: Read more
+          url: '/media/cli_guide/index.html'       
 
 defaults:
   -

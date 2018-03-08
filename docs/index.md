@@ -4,7 +4,7 @@ layout: homepage
 keywords:
 
 # Hero section
-title: AWS-Amplify
+title: AWS Amplify
 description: A JavaScript library for application development using cloud services.
 buttons:
     - content: Let's Rock!
@@ -42,8 +42,8 @@ grid_navigation:
       excerpt: Discover our building blocks for frontend and mobile developers.
       cta: Read more
       url: '/media/developer_guide/index.html'
-    - title: API Referance
-      excerpt: API Referance for the library.
+    - title: API Reference
+      excerpt: API Reference for the library.
       cta: Read more
       url: '/api/index.html'      
 ---

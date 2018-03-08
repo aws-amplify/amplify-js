@@ -10,11 +10,12 @@
 					{% endif %}
 					
 					{% if site.amplify.footer.content.copyright %}
-						<hr>
+				 
 						<p class="site-footer__copyright">
 							{{ site.amplify.footer.content.logo.text }} </br>
 							{{ site.amplify.footer.content.copyright }}
 						</p>
+						
 					{% endif %}
 				</div><!-- /.col -->
 				{% if site.amplify.footer.social_list %}
@@ -42,3 +43,13 @@
 <script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/scripts.js"></script>
 
 {% include google-analytics.html %}
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script> 
+<script type="text/javascript"> docsearch({ 
+ apiKey: '0d52a3ea92602545de13731e81c3c7f8', 
+ indexName: 'aws_amplify', 
+ inputSelector: '#search-input', 
+//  algoliaOptions: {"facetFilters":["tags:current"],"hitsPerPage":5},      
+ debug: false // Set debug to true if you want to inspect the dropdown 
+}); 
+</script> 
