@@ -45,11 +45,11 @@
     "prettier": "^1.7.4",
     "rimraf": "^2.6.2",
     "source-map-loader": "^0.2.1",
-    "ts-jest": "^20.0.10",
+    "ts-jest": "^22.0.0",
     "tslint": "^5.7.0",
     "tslint-config-airbnb": "^5.3.0",
     "typedoc-dep-update": "^0.9.0",
-    "typescript": "^2.4.2",
+    "typescript": "2.6.2",
     "typescript-formatter": "^6.0.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.5.5"
@@ -57,7 +57,8 @@
   "dependencies": {
     "amazon-cognito-identity-js": "^2.0.0",
     "aws-sdk": "2.198.0",
-    "axios": "^0.17.0"
+    "axios": "^0.17.0",
+    "uuid": "^3.2.1"
   },
   "jest": {
     "transform": {
@@ -84,6 +85,9 @@
         "lines": 80,
         "statements": 80
       }
-    }
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
