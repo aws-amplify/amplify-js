@@ -69,7 +69,8 @@ export default class AnalyticsClass {
      */
     public configure(config) {
         logger.debug('configure Analytics');
-        const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Analytics);
+        const amplifyConfig = Parser.parseMobilehubConfig(config);
+        const conf = Object.assign({}, this._config, amplifyConfig.Analytics);
 
         const clientInfo:any = ClientDevice.clientInfo();
         conf['clientInfo'] = conf['client_info']? conf['client_info'] : clientInfo;
