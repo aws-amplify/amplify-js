@@ -153,7 +153,14 @@ export default class CognitoCredentials {
 
     private setCredentialsForGuest() {
         logger.debug('set credentials from guest with config', this._config);
-        const { cognitoIdentityPoolId, cognitoRegion } = this._config;
+        const { cognitoIdentityPoolId, cognitoRegion, mandatorySignIn } = this._config;
+        if (mandatorySignIn) {
+            logger.debug('mandatory sign in, no guest credentials provided');
+            this._credentials = null;
+            this.credentials_source = 'no credentials';
+            return;
+        }
+
         const credentials = new CognitoIdentityCredentials(
             {
             IdentityPoolId: cognitoIdentityPoolId

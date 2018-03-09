@@ -201,7 +201,10 @@ export default class AnalyticsClass {
         const that = this;
         return Credentials.getCredentials()
             .then(credentials => {
-                if (!credentials) return false;
+                if (!credentials) {
+                    logger.debug('no credentials available');
+                    return false;
+                }
                 const cred = Credentials.essentialCredentials({credentials});
                 
                 that._config.credentials = cred;

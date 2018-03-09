@@ -139,11 +139,6 @@ jest.mock('../../src/Credentials', () => {
         }
     };
 
-    // Credentials.getCredentials = () => {
-    //    // throw 3;
-    //     return 2;
-    // }
-
     return {
         default: Credentials        
     }

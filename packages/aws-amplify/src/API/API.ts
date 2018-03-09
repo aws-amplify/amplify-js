@@ -257,8 +257,11 @@ export default class APIClass {
     _ensureCredentials() {
         return Credentials.getCredentials()
             .then(credentials => {
+                if (!credentials) {
+                    logger.debug('no credentials available');
+                    return false;
+                }
                 const cred = Credentials.essentialCredentials({credentials});
-
                 logger.debug('set credentials for api', cred);
 
                 return true;

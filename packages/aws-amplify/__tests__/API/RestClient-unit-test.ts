@@ -46,22 +46,38 @@ jest.mock('../../src/Common/Builder', () => {
 import { RestClient } from '../../src/API/RestClient';
 import * as AWS from 'aws-sdk';
 import Signer from '../../src/Common/Signer';
-import Auth from '../../src/Auth';
 import axios from 'axios';
 
-const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementation(() => {
-    return new Promise((res, rej) => {
-        res({
-            secretAccessKey: 'secretAccessKey',
-            accessKeyId: 'accessKeyId',
-            sessionToken: 'sessionToken' 
-        });
-    })
+jest.mock('../../src/Credentials', () => {
+    const Credentials = {
+        getCredentials(params) {
+            return new Promise((res, rej) => {
+                res({
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                });
+            });
+        },
+        setCredentials(params) {
+            return null;
+        },
+        removeCredentials(params) {
+            return null;
+        },
+        essentialCredentials(params) {
+            return 'cred';
+        }
+    };
+
+    return {
+        default: Credentials        
+    }
 });
 
 describe('RestClient test', () => {
     describe('ajax', () => {
-        test('fetch with signed request', async () => {
+        test.only('fetch with signed request', async () => {
             window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
                 return new Promise((res, rej) => {
                     res({

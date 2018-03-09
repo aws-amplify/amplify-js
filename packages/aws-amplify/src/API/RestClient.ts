@@ -101,7 +101,16 @@ export class RestClient {
         if (params.headers['Authorization']) { return this._request(params, isAllResponse); }
 
         return Credentials.getCredentials()
-            .then(credentials => this._signed(params, credentials, isAllResponse));
+            .then(credentials => {
+                if (!credentials) {
+                    logger.debug('no credentials available');
+                    return;
+                }
+                this._signed(params, credentials, isAllResponse);
+            })
+            .catch(e => {
+                logger.debug('get credentials error', e);
+            });
     }
 
     /**

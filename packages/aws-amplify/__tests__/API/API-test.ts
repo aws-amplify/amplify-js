@@ -17,8 +17,32 @@ jest.mock('../../src/Common/Builder', () => {
     };
 });
 
+jest.mock('../../src/Credentials', () => {
+    const Credentials = {
+        getCredentials(params) {
+            return new Promise((res, rej) => {
+                res('cred');
+            });
+        },
+        setCredentials(params) {
+            return null;
+        },
+        removeCredentials(params) {
+            return null;
+        },
+        essentialCredentials(params) {
+            return 'cred';
+        }
+    };
+
+    return {
+        default: Credentials        
+    }
+});
+
 import API from '../../src/API/API';
 import Auth from '../../src/Auth';
+import Credentials from '../../src/Credentials';
 import { RestClient } from '../../src/API/RestClient';
 
 const config = {
@@ -69,11 +93,6 @@ describe('API test', () => {
     describe('get test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
             const spyon2 = jest.spyOn(RestClient.prototype, 'get').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -85,18 +104,13 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
         test('endpoint length 0', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
+    
             const spyon2 = jest.spyOn(RestClient.prototype, 'get').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -111,16 +125,16 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    rej('err');
+                    res(null);
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'get').mockImplementationOnce(() => {
@@ -137,7 +151,6 @@ describe('API test', () => {
                 expect(e).toBe('No credentials');
             }
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
@@ -162,11 +175,6 @@ describe('API test', () => {
     describe('post test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
             const spyon2 = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -178,7 +186,6 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
@@ -211,9 +218,9 @@ describe('API test', () => {
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+             const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    rej('err');
+                    res(null);
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce(() => {
@@ -255,11 +262,6 @@ describe('API test', () => {
     describe('put test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
             const spyon2 = jest.spyOn(RestClient.prototype, 'put').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -271,18 +273,13 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
         test.skip('endpoint length 0', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
+
             const spyon2 = jest.spyOn(RestClient.prototype, 'put').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -297,16 +294,15 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    rej('err');
+                    res(null);
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'put').mockImplementationOnce(() => {
@@ -348,11 +344,6 @@ describe('API test', () => {
     describe('patch test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
             const spyon2 = jest.spyOn(RestClient.prototype, 'patch').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -363,19 +354,12 @@ describe('API test', () => {
             await api.patch('apiName', 'path', 'init');
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
-
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
         test.skip('endpoint length 0', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
             const spyon2 = jest.spyOn(RestClient.prototype, 'patch').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -390,16 +374,15 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    rej('err');
+                    res(null);
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'patch').mockImplementationOnce(() => {
@@ -441,11 +424,6 @@ describe('API test', () => {
     describe('del test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
             const spyon2 = jest.spyOn(RestClient.prototype, 'del').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -457,18 +435,13 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
         test.skip('endpoint length 0', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
+            
             const spyon2 = jest.spyOn(RestClient.prototype, 'del').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -483,16 +456,15 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    rej('err');
+                    res(null);
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'del').mockImplementationOnce(() => {
@@ -534,11 +506,7 @@ describe('API test', () => {
     describe('head test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
+
             const spyon2 = jest.spyOn(RestClient.prototype, 'head').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -550,18 +518,12 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
         test.skip('endpoint length 0', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('cred');
-                });
-            });
             const spyon2 = jest.spyOn(RestClient.prototype, 'head').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
@@ -576,16 +538,15 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    rej('err');
+                    res(null);
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'head').mockImplementationOnce(() => {
