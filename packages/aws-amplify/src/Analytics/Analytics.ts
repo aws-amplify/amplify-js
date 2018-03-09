@@ -47,7 +47,7 @@ export default class AnalyticsClass {
         this._config = {};
         this._pluggables = [];
         // default one
-        
+
         // events batch
         const that = this;
 
@@ -59,10 +59,10 @@ export default class AnalyticsClass {
                     const params = this._buffer.shift();
                     that._sendFromBuffer(params);
                 }
-            }, 
+            },
             interval);
     }
-    
+
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
@@ -90,7 +90,7 @@ export default class AnalyticsClass {
 
     /**
      * add plugin into Analytics category
-     * @param {Object} pluggable - an instance of the plugin 
+     * @param {Object} pluggable - an instance of the plugin
      */
     public async addPluggable(pluggable: AnalyticsProvider) {
         const ensureCredentails = await this._getCredentials();
@@ -194,7 +194,7 @@ export default class AnalyticsClass {
 
     /**
      * @private
-     * check if current crednetials exists
+     * check if current credentials exists
      */
     private _getCredentials() {
         const that = this;
@@ -202,7 +202,7 @@ export default class AnalyticsClass {
             .then(credentials => {
                 if (!credentials) return false;
                 const cred = Auth.essentialCredentials(credentials);
-                
+
                 that._config.credentials = cred;
                 // that._config.endpointId = cred.identityId;
                 // logger.debug('set endpointId for analytics', that._config.endpointId);
