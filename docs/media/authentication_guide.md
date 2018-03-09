@@ -466,7 +466,11 @@ let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
 You can directly use the ```SelectMFType``` UI Component provided by ```aws-amplify-react```.
 
 ```js
+import Amplify from 'aws-amplify';
+import awsmobile from './aws-exports';
 import { SelectMFAType } from 'aws-amplify-react';
+
+Amplify.configure(awsmobile);
 
 // Please have at least TWO types
 // Please make sure you set it properly accroding to your Cognito Userpool
@@ -476,12 +480,17 @@ const MFATypes = {
     Optional: true, // if MFA is set to optional in your user pool
 }
 
-render() {
-    return (
-        // ...
-        <SelectMFAType authData={this.props.authData} MFATypes={MFATypes}>
-    )
+class App extends Component {
+    // ...
+    render() {
+        return (
+            // ...
+            <SelectMFAType authData={this.props.authData} MFATypes={MFATypes}>
+        )
+    }
 }
+
+export default withAuthenticator(App, true);
 ```
 
 ## Extensions
