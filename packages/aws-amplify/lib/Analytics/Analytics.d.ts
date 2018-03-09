@@ -60,7 +60,7 @@ export default class AnalyticsClass {
     private _putToBuffer(params);
     /**
      * @private
-     * check if current crednetials exists
+     * check if current credentials exists
      */
     private _getCredentials();
 }

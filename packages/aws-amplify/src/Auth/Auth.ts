@@ -960,12 +960,13 @@ export default class AuthClass {
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
-            'amazon': 'www.amazon.com'
+            'amazon': 'www.amazon.com',
+            'developer': 'cognito-identity.amazonaws.com'
         };
 
         const domain = domains[provider];
         if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
+            return Promise.reject(provider + ' is not supported: [google, facebook, amazon, developer]');
         }
 
         const logins = {};
