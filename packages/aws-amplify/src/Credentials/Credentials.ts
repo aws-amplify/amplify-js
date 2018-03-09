@@ -13,6 +13,7 @@ export default class Credentials{
     constructor() {
         this._config = {};
         this._pluggables = [];
+        this.addPluggable(new CognitoCredentials());
     }
 
     configure(config) {
@@ -25,9 +26,9 @@ export default class Credentials{
             pluggable.configure(conf);
         });
 
-        if (this._pluggables.length === 0) {
-            this.addPluggable(new CognitoCredentials());
-        }
+        // if (this._pluggables.length === 0) {
+            
+        // }
 
         return this._config;
     }

@@ -7,6 +7,7 @@ var Credentials = /** @class */ (function () {
     function Credentials() {
         this._config = {};
         this._pluggables = [];
+        this.addPluggable(new CognitoCredentials_1.default());
     }
     Credentials.prototype.configure = function (config) {
         logger.debug('configure Credentials');
@@ -16,9 +17,8 @@ var Credentials = /** @class */ (function () {
         this._pluggables.map(function (pluggable) {
             pluggable.configure(conf);
         });
-        if (this._pluggables.length === 0) {
-            this.addPluggable(new CognitoCredentials_1.default());
-        }
+        // if (this._pluggables.length === 0) {
+        // }
         return this._config;
     };
     Credentials.prototype.addPluggable = function (pluggable) {

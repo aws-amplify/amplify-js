@@ -78,7 +78,7 @@ export default class CognitoCredentials {
 
     isExpired(credentials): boolean {
         if (!credentials) {
-            logger.debug('no credentials for expiration check')
+            logger.debug('no credentials for expiration check');
             return true;
         }
         logger.debug('is this credentials expired?', credentials);

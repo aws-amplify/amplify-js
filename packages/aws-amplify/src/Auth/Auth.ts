@@ -589,7 +589,7 @@ export default class AuthClass {
         if (user) user.signOut();
         
         return new Promise((resolve, reject) => {
-            Credentials.setCredentials({providerName: 'AWSCognito', guest: true})
+            Credentials.setCredentials({providerName: 'AWSCognito', guest: true});
             dispatchAuthEvent('signOut', this.user);
             this.user = null;
             this.user_source = null;
@@ -734,7 +734,7 @@ export default class AuthClass {
         const { token, expires_at } = response;
 
         this.user = user;
-        this.user_source = 'federated'
+        this.user_source = 'federated';
         Cache.setItem('federatedUser', { user }, { priority: 1 });
         // store it into localstorage
         dispatchAuthEvent('signIn', this.user);

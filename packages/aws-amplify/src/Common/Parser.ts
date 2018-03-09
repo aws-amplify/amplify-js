@@ -20,7 +20,7 @@ export default class Parser {
             Credentials['cognitoIdentityPoolId'] = config['aws_cognito_identity_pool_id'];
             Credentials['cognitoRegion'] = config['aws_cognito_region'];
             Credentials['cognitoUserPoolId'] = config['aws_user_pools_id'];
-            amplifyConfig.Credentials = Credentials
+            amplifyConfig.Credentials = Credentials;
         }
 
 
