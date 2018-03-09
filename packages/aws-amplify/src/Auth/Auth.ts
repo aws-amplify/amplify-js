@@ -718,7 +718,7 @@ export default class AuthClass {
         this.setCredentialsFromFederation(provider, token, user);
 
         // store it into localstorage
-        Cache.setItem('federatedInfo', { provider, token, user }, { priority: 1 });
+        Cache.setItem('federatedInfo', JSON.stringify({ provider, token, user }), { priority: 1 });
         dispatchAuthEvent('signIn', this.user);
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();

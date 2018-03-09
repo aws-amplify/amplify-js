@@ -815,7 +815,7 @@ var AuthClass = /** @class */ (function () {
         var token = response.token, expires_at = response.expires_at;
         this.setCredentialsFromFederation(provider, token, user);
         // store it into localstorage
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1 });
+        Cache_1.default.setItem('federatedInfo', JSON.stringify({ provider: provider, token: token, user: user }), { priority: 1 });
         dispatchAuthEvent('signIn', this.user);
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();
