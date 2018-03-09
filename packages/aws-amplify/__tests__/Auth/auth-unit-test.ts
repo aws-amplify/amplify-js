@@ -1530,11 +1530,11 @@ describe('auth unit test', () => {
 
             auth.federatedSignIn('google', {token: 'token', expires_at: 'expires_at'}, 'user');
 
-            expect(spyon).toBeCalledWith('federatedInfo', {
+            expect(spyon).toBeCalledWith('federatedInfo', JSON.stringify({
                 provider: 'google',
                 token: 'token',
                 user: 'user'
-            },
+            }),
             {
                 priority: 1
             });
