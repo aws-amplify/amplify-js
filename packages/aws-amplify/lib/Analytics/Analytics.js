@@ -242,7 +242,7 @@ var AnalyticsClass = /** @class */ (function () {
     };
     /**
      * @private
-     * check if current crednetials exists
+     * check if current credentials exists
      */
     AnalyticsClass.prototype._getCredentials = function () {
         var that = this;

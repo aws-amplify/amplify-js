@@ -34,7 +34,7 @@ export default function withGoogle(Comp) {
 
             const { onStateChange } = this.props;
             return Auth.federatedSignIn('google', { token: id_token, expires_at }, user)
-                .then(crednetials => {
+                .then(credentials => {
                     if (onStateChange) {
                         onStateChange('signedIn');
                     }
