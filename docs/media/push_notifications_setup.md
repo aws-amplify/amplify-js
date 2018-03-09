@@ -27,12 +27,21 @@ First, make sure you have a [Firebase](https://console.firebase.google.com) proj
 ```js
 $ react-native init myapp
 $ cd myapp
-$ npm install aws-amplify --save
-$ npm install aws-amplify-react-native --save
+$ npm install aws-amplify --save && npm install aws-amplify-react-native --save
 $ react-native link aws-amplify-react-native
+$ react-native link amazon-cognito-identity-js //if you did not link it
 ```
 
-4. Open ```android/build.gradle```
+4. Add your firebase app to your firebase project:
+ - Visit the [Firebase](https://console.firebase.google.com) console and click the Gear icon next to "Project Overview" and click "Project Settings"
+ - Click "Add App"
+ - Choose "Add Firebase to your Android App"
+ - Add your package name i.e. com.myProjectName
+ - Download the `google-services.json` file to `android/app`
+
+ Note: Please make sure you have this file in place or you won't pass the build process.
+
+5. Open ```android/build.gradle```
     - Add ```classpath 'com.google.gms:google-services:3.1.1'``` in the ```dependencies``` under ```buildscript```:
         ```gradle
         dependencies {
@@ -43,16 +52,26 @@ $ react-native link aws-amplify-react-native
             }
         ```
 
-    - Add the following code  into ```repositories``` under ```allprojects```
+    - revise the ```allprojects``` to
         ```gradle
-        maven {
-                url 'https://maven.google.com'
+        allprojects {
+            repositories {
+                mavenLocal()
+                jcenter()
+                maven {
+                    // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+                    url "$rootDir/../node_modules/react-native/android"
+                }
+                maven {
+                    url 'https://maven.google.com'
+                }
             }
+        }
         ```
 
-5. Open ```android/app/build.gradle``` and add ```apply plugin: 'com.google.gms.google-services'``` to the bottom of the file.
+6. Open ```android/app/build.gradle``` and add ```apply plugin: 'com.google.gms.google-services'``` to the bottom of the file.
 
-6. Open ```android/app/src/main/AndroidManifest.xml``` and add the following into ```application```
+7. Open ```android/app/src/main/AndroidManifest.xml``` and add the following into ```application```
 ```xml
     <application ...>
     <!-- Add the following>
@@ -80,13 +99,6 @@ $ react-native link aws-amplify-react-native
         </receiver>
     </application>
 ```
-
-7. Add your firebase app to your firebase project:
- - Visit the [Firebase](https://console.firebase.google.com) console and click the Gear icon next to "Project Overview" and click "Project Settings"
- - Click "Add App"
- - Choose "Add Firebase to your Android App"
- - Add your package name i.e. com.myProjectName
- - Download the `google-services.json` file to `android/app`
  
 8. [Integrate with JavaScript](#integration) into your React Native app code.
  

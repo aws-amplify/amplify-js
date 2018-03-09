@@ -1,3 +1,9 @@
+jest.mock('../../src/Common/Builder', () => {
+    return {
+        default: null
+    };
+});
+
 jest.mock('aws-sdk/clients/pinpoint', () => {
     const Pinpoint = () => {
         var pinpoint = null;
