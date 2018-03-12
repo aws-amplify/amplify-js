@@ -772,6 +772,8 @@ export default class AuthClass {
             domain = 'accounts.google.com';
         } else if(provider === 'facebook'){
             domain = 'graph.facebook.com';
+        } else if(provider === 'developer'){
+            domain = 'cognito-identity.amazonaws.com';
         }
 
         if (!domain) {
