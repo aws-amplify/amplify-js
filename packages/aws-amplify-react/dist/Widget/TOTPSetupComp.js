@@ -118,12 +118,16 @@ var TOTPSetupComp = function (_Component) {
             function verifyTotpToken() {
                 var _this3 = this;
 
+                if (!this.inputs) {
+                    logger.debug('no input');
+                    return;
+                }
                 var user = this.props.authData;
                 var totpCode = this.inputs.totpCode;
 
                 _awsAmplify.Auth.verifyTotpToken(user, totpCode).then(function () {
-                    // set it to prefered mfa
-                    _awsAmplify.Auth.setPreferedMFA(user, 'TOTP');
+                    // set it to preferred mfa
+                    _awsAmplify.Auth.setPreferredMFA(user, 'TOTP');
                     _this3.setState({ setupMessage: 'Setup TOTP successfully!' });
                     logger.debug('set up totp success!');
                     _this3.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);

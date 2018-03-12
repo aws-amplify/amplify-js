@@ -90,6 +90,10 @@ var SelectMFAType = function (_Component) {
                 var _this2 = this;
 
                 logger.debug('mfatypes inputs', this.inputs);
+                if (!this.inputs) {
+                    logger.debug('No mfa type selected');
+                    return;
+                }
                 var _inputs = this.inputs,
                     TOTP = _inputs.TOTP,
                     SMS = _inputs.SMS,
@@ -104,14 +108,10 @@ var SelectMFAType = function (_Component) {
                     mfaMethod = 'NOMFA';
                 }
 
-                if (!this.inputs) {
-                    logger.debug('No mfa type selected');
-                    return;
-                }
                 var user = this.props.authData;
 
-                _awsAmplify.Auth.setPreferedMFA(user, mfaMethod).then(function (data) {
-                    logger.debug('set prefered mfa success', data);
+                _awsAmplify.Auth.setPreferredMFA(user, mfaMethod).then(function (data) {
+                    logger.debug('set preferred mfa success', data);
                     _this2.setState({ selectMessage: 'Successful! Now you have changed to MFA Type: ' + mfaMethod });
                 })['catch'](function (err) {
                     var message = err.message;
@@ -120,7 +120,7 @@ var SelectMFAType = function (_Component) {
                         _this2.setState({ TOTPSetup: true });
                         _this2.setState({ selectMessage: 'You need to setup TOTP' });
                     } else {
-                        logger.debug('set prefered mfa failed', err);
+                        logger.debug('set preferred mfa failed', err);
                         _this2.setState({ selectMessage: 'Failed! You cannot select MFA Type for now!' });
                     }
                 });

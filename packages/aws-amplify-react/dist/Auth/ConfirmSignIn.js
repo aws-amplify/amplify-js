@@ -53,6 +53,9 @@ var ConfirmSignIn = function (_AuthPiece) {
 
         _this._validAuthStates = ['confirmSignIn'];
         _this.confirm = _this.confirm.bind(_this);
+        _this.state = {
+            mfaType: 'SMS'
+        };
         return _this;
     }
 
@@ -76,12 +79,26 @@ var ConfirmSignIn = function (_AuthPiece) {
             return confirm;
         }()
     }, {
+        key: 'componentDidUpdate',
+        value: function () {
+            function componentDidUpdate() {
+                //logger.debug('component did update with props', this.props);
+                var user = this.props.authData;
+                var mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'TOTP' : 'SMS';
+                if (this.state.mfaType !== mfaType) this.setState({ mfaType: mfaType });
+            }
+
+            return componentDidUpdate;
+        }()
+    }, {
         key: 'showComponent',
         value: function () {
             function showComponent(theme) {
                 var _this3 = this;
 
-                var hide = this.props.hide;
+                var _props = this.props,
+                    hide = _props.hide,
+                    authData = _props.authData;
 
                 if (hide && hide.includes(ConfirmSignIn)) {
                     return null;
@@ -93,7 +110,7 @@ var ConfirmSignIn = function (_AuthPiece) {
                     _react2['default'].createElement(
                         _AmplifyUI.SectionHeader,
                         { theme: theme },
-                        _awsAmplify.I18n.get('Confirm Code')
+                        _awsAmplify.I18n.get('Confirm ' + this.state.mfaType + ' Code')
                     ),
                     _react2['default'].createElement(
                         _AmplifyUI.SectionBody,

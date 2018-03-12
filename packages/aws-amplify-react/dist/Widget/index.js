@@ -43,19 +43,6 @@ Object.defineProperty(exports, 'TextPicker', {
   }()
 });
 
-var _UserProfile = require('./UserProfile');
-
-Object.defineProperty(exports, 'UserProfile', {
-  enumerable: true,
-  get: function () {
-    function get() {
-      return _interopRequireDefault(_UserProfile)['default'];
-    }
-
-    return get;
-  }()
-});
-
 var _SelectMFAType = require('./SelectMFAType');
 
 Object.defineProperty(exports, 'SelectMFAType', {
