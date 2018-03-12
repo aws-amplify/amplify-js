@@ -291,7 +291,7 @@ export default class AuthClass {
      * set preferred MFA method
      * @param {CognitoUser} user - the current Cognito user
      * @param {string} mfaMethod - preferred mfa method
-     * @return - A promise resolves if success
+     * @return - A promise resolve if success
      */
     public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
         let smsMfaSettings = {
