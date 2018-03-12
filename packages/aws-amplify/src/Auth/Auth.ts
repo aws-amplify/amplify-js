@@ -451,20 +451,23 @@ export default class AuthClass {
 
         const that = this;
         return new Promise((resolve, reject) => {
-            user.sendMFACode(code, {
-                onSuccess: (session) => {
-                    logger.debug(session);
-                    Credentials.setCredentials({session, providerName: 'AWSCognito'});
-                    that.user = user;
-                    that.user_source = 'userpool';
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
-                },
-                onFailure: (err) => {
-                    logger.debug('confirm signIn failure', err);
-                    reject(err);
-                }
-            }, mfaType);
+            user.sendMFACode(
+                code, 
+                { 
+                    onSuccess: (session) => {
+                        logger.debug(session);
+                        Credentials.setCredentials({session, providerName: 'AWSCognito'});
+                        that.user = user;
+                        that.user_source = 'userpool';
+                        dispatchAuthEvent('signIn', user);
+                        resolve(user);
+                    },
+                    onFailure: (err) => {
+                        logger.debug('confirm signIn failure', err);
+                        reject(err);
+                    }
+                }, 
+                mfaType);
         });
     }
 

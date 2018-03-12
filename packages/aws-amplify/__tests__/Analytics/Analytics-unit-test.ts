@@ -4,12 +4,40 @@ jest.mock('../../src/Common/Builder', () => {
     };
 });
 
+jest.mock('../../src/Credentials', () => {
+    const Credentials = {
+        getCredentials(params) {
+            return new Promise((res, rej) => {
+                res({
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                });
+            });
+        },
+        setCredentials(params) {
+            return null;
+        },
+        removeCredentials(params) {
+            return null;
+        },
+        essentialCredentials(params) {
+            return 'cred';
+        }
+    };
+
+    return {
+        default: Credentials        
+    }
+});
+
 import { AWS, ClientDevice, Parser } from '../../src/Common';
 import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from '../../src/Analytics/types';
 import { default as Analytics } from "../../src/Analytics/Analytics";
 import { ConsoleLogger as Logger } from '../../src/Common/Logger';
 import Auth from '../../src/Auth/Auth';
 import AWSAnalyticsProvider from '../../src/Analytics/Providers/AWSAnalyticsProvider';
+import Credentials from '../../src/Credentials';
 
 const options: AnalyticsOptions = {
     appId: 'appId',
@@ -31,12 +59,6 @@ jest.useFakeTimers();
 describe('setInterval test', () => {
     test('record failed', async () => {
         const analytics = new Analytics();
-        
-        const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res(credentials);
-                })
-            });
 
         const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'record').mockImplementationOnce(() => {
             return Promise.resolve(false);
@@ -46,8 +68,6 @@ describe('setInterval test', () => {
 
         jest.advanceTimersByTime(6000);
 
-        // expect(spyon2).toBeCalled();
-        spyon.mockClear();
         spyon2.mockClear();
     });
 
@@ -59,11 +79,6 @@ describe('setInterval test', () => {
                 appId: 'appId'
             }
         });
-        const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res(credentials);
-                })
-            });
 
         const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'record').mockImplementationOnce(() => {
             return Promise.resolve(true);
@@ -74,7 +89,6 @@ describe('setInterval test', () => {
         jest.advanceTimersByTime(6000);
 
         // expect(spyon2).toBeCalled();
-        spyon.mockClear();
         spyon2.mockClear();
     });
 });
@@ -114,20 +128,12 @@ describe("Analytics test", () => {
 
             analytics.addPluggable(provider);
 
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res(credentials);
-                })
-            });
 
             // const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'startSession').mockImplementationOnce(() => { return; });
 
             await analytics.startSession();
 
             // expect(provider.startSession).toBeCalled();
-
-            spyon.mockClear();
-            // spyon2.mockClear();
         });
 
         test('get credentials error', async () => {
@@ -142,7 +148,7 @@ describe("Analytics test", () => {
 
             analytics.addPluggable(provider);
 
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
                 })
@@ -170,20 +176,9 @@ describe("Analytics test", () => {
 
             analytics.addPluggable(provider);
 
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res(credentials);
-                })
-            });
-
             // const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'stopSession').mockImplementationOnce(() => { return; });
 
             await analytics.stopSession();
-
-            // expect(provider.stopSession).toBeCalled();
-
-            spyon.mockClear();
-            // spyon2.mockClear();
         });
 
         test('get credentials error', async () => {
@@ -198,7 +193,7 @@ describe("Analytics test", () => {
 
             analytics.addPluggable(provider);
 
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
                 })
@@ -225,21 +220,9 @@ describe("Analytics test", () => {
             const analytics = new Analytics();
 
             analytics.addPluggable(provider);
-
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res(credentials);
-                })
-            });
-
             // const spyon2 = jest.spyOn(AWSAnalyticsProvider.prototype, 'record').mockImplementationOnce(() => { return; });
 
             await analytics.record('myevent')
-
-            // expect(provider.record).toBeCalled();
-
-            spyon.mockClear();
-           //  spyon2.mockClear();
         });
 
         test('get credentials error', async () => {
@@ -254,7 +237,7 @@ describe("Analytics test", () => {
 
             analytics.addPluggable(provider);
 
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
                 })
@@ -282,15 +265,7 @@ describe("Analytics test", () => {
 
             analytics.addPluggable(provider);
 
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res(credentials);
-                })
-            });
-
             await analytics.updateEndpoint({Analytics: {Address: 'Address'}});
-
-            spyon.mockClear();
         });
 
         test('get credentials error', async () => {
@@ -305,7 +280,7 @@ describe("Analytics test", () => {
 
             analytics.addPluggable(provider);
 
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
                 })
@@ -316,7 +291,6 @@ describe("Analytics test", () => {
             await analytics.updateEndpoint({Analytics: {Address: 'Address'}});
 
             spyon.mockClear();
-            // spyon2.mockClear();
         });
     });
 
@@ -330,12 +304,6 @@ describe("Analytics test", () => {
             }
         
             const analytics = new Analytics();
-
-            const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res(credentials);
-                })
-            });
 
             await analytics.addPluggable(provider);
         });

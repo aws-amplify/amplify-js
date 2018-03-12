@@ -100,13 +100,14 @@ export class RestClient {
         // which means custom authorizer.
         if (params.headers['Authorization']) { return this._request(params, isAllResponse); }
 
+        const that = this;
         return Credentials.getCredentials()
             .then(credentials => {
                 if (!credentials) {
                     logger.debug('no credentials available');
                     return;
                 }
-                this._signed(params, credentials, isAllResponse);
+                that._signed(params, credentials, isAllResponse);
             })
             .catch(e => {
                 logger.debug('get credentials error', e);

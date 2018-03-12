@@ -158,6 +158,24 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
     return CognitoUser;
 });
 
+jest.mock('../../src/Credentials', () => {
+    const Credentials = {
+        getCredentials(params) {
+            return null;
+        },
+        setCredentials(params) {
+            return null;
+        },
+        removeCredentials(params) {
+            return null;
+        }
+    };
+
+    return {
+        default: Credentials        
+    }
+});
+
 
 
 import { AuthOptions, SignUpParams } from '../../src/Auth/types';
