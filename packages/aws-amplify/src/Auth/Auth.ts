@@ -766,38 +766,51 @@ export default class AuthClass {
         return obj;
     }
 
-    private setCredentialsFromFederation(provider, token, user) {
+    private setCredentialsFromFederation(provider, token: string, user) {
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
             'amazon': 'www.amazon.com'
         };
 
-        const domain = domains[provider];
+        let domain:string;
+        if(provider === 'amazon') {
+            domain = 'www.amazon.com';
+        } else if (provider === 'google') {
+            domain = 'accounts.google.com';
+        } else if(provider === 'facebook'){
+            domain = 'graph.facebook.com';
+        }
+
         if (!domain) {
             return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
         }
 
-        const logins = {};
-        logins[domain] = token;
+        const Logins = {};
+        Logins[domain] = token;
 
+        logger.debug('Logins map:', JSON.stringify(Logins));
         const { identityPoolId, region } = this._config;
-        this.credentials = new AWS.CognitoIdentityCredentials(
-            {
-            IdentityPoolId: identityPoolId,
-            Logins: logins
-        },  {
-            region
+        const creds = new AWS.CognitoIdentityCredentials({
+            Logins,
+            IdentityPoolId: identityPoolId
         });
-        this.credentials.authenticated = true;
-        this.credentials_source = 'federated';
-
-        this.user = Object.assign(
-            { id: this.credentials.identityId },
-            user
-        );
-
-        if (AWS && AWS.config) { AWS.config.credentials = this.credentials; }
+        AWS.config.update({
+            region,
+            credentials : creds
+        });
+        
+        creds.getPromise().then(() => {
+            this.credentials = creds;
+            this.credentials.authenticated = true;
+            this.credentials_source = 'federated';
+    
+            this.user = Object.assign(
+                { id: this.credentials.identityId },
+                user
+            );
+         });
+        
     }
 
     private pickupCredentials() {
