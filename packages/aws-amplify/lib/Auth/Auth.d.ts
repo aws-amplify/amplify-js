@@ -126,6 +126,14 @@ export default class AuthClass {
      */
     signOut(): Promise<any>;
     /**
+     * Change a password for an authenticated user
+     * @param {Object} user - The CognitoUser object
+     * @param {String} oldPassword - the current password
+     * @param {String} newPassword - the requested new password
+     * @return - A promise resolves if success
+     */
+    changePassword(user: any, oldPassword: string, newPassword: string): Promise<any>;
+    /**
      * Initiate a forgot password request
      * @param {String} username - the username to change password
      * @return - A promise resolves if success
@@ -171,4 +179,5 @@ export default class AuthClass {
     private setCredentialsForGuest();
     private setCredentialsFromSession(session);
     private keepAlive();
+    private createCognitoUser(username);
 }

@@ -34,7 +34,7 @@ depending on your project setup and experience with modern JavaScript build tool
 This method is simpler and does not require additional tools, but may have worse performance due to
 the browser having to download multiple files.
 
-Download the JavaScript [library file](https://raw.githubusercontent.com/aws/amazon-cognito-identity-js/master/dist/amazon-cognito-identity.min.js) and place it in your project.
+Download the JavaScript [library file](https://raw.githubusercontent.com/aws/aws-amplify/master/packages/amazon-cognito-identity-js/dist/amazon-cognito-identity.min.js) and place it in your project.
 
 Optionally, to use other AWS services, include a build of the [AWS SDK for JavaScript](http://aws.amazon.com/sdk-for-browser/).
 
@@ -771,7 +771,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
             },
 
             selectMFAType : function(challengeName, challengeParameters) {
-                var mfaType = prompt('Please select the MFA method.', '');
+                var mfaType = prompt('Please select the MFA method.', ''); // valid values for mfaType is "SMS_MFA", "SOFTWARE_TOKEN_MFA" 
                 cognitoUser.sendMFASelectionAnswer(mfaType, this);
             },
 
@@ -822,7 +822,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
   ```js
 	     cognitoUser.setAuthenticationFlowType('USER_PASSWORD_AUTH');
 	
-	     cognitoUser.initiateAuth(authenticationDetails, {
+	     cognitoUser.authenticateUser(authenticationDetails, {
 	        onSuccess: function(result) {
 	            // User authentication was successful
 	        },
@@ -836,17 +836,29 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 	        }
 	     });
   ```
+  
+**Use case 31.** Retrieve the user data for an authenticated user. 
+
+  ```js
+	    cognitoUser.getUserData(function(err, userData) {
+	        if (err) {
+	            alert(err);
+	            return;
+	        }
+	        console.log('User data for user ' + userData);
+	    });
+  ```
 
 ## Network Configuration
 The Amazon Cognito Identity JavaScript SDK will make requests to the following endpoints
-* For Amazon Cognito Identity request handling: "https://cognito-idp.us-east-1.amazonaws.com"
-  * This endpoint may change based on which region your Identity Pool was created in.
+* For Amazon Cognito User Pool service request handling: "https://cognito-idp.us-east-1.amazonaws.com"
+  * This endpoint may change based on which region your Cognito User Pool was created in.
 
 For most frameworks you can whitelist the domain by whitelisting all AWS endpoints with "*.amazonaws.com".
 
 ## Random numbers
 
-In order to authenticate with the Amazon Cognito Identity Service, the client needs to generate a random number as part of the SRP protocol. The AWS SDK is only compatible with modern browsers, and these include [support for cryptographically strong random values](https://caniuse.com/#feat=cryptography). If you do need to support older browsers then you should include a strong polyfill for `window.crypto.getRandomValues()` before including this library.
+In order to authenticate with the Amazon Cognito User Pool Service, the client needs to generate a random number as part of the SRP protocol. The AWS SDK is only compatible with modern browsers, and these include [support for cryptographically strong random values](https://caniuse.com/#feat=cryptography). If you do need to support older browsers then you should include a strong polyfill for `window.crypto.getRandomValues()` before including this library.
 
 ## Change Log
 

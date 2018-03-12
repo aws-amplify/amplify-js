@@ -96,7 +96,7 @@ AWS.util.update(AWS, {
   /**
    * @constant
    */
-  VERSION: '2.193.0',
+  VERSION: '2.198.0',
 
   /**
    * @api private
@@ -107,7 +107,7 @@ AWS.util.update(AWS, {
    * @api private
    */
   Protocol: {
-    Json: __webpack_require__(32),
+    Json: __webpack_require__(33),
     Query: __webpack_require__(54),
     Rest: __webpack_require__(21),
     RestJson: __webpack_require__(56),
@@ -126,8 +126,8 @@ AWS.util.update(AWS, {
    * @api private
    */
   JSON: {
-    Builder: __webpack_require__(33),
-    Parser: __webpack_require__(34)
+    Builder: __webpack_require__(34),
+    Parser: __webpack_require__(35)
   },
 
   /**
@@ -277,7 +277,7 @@ var util = {
 
   readFileSync: function readFileSync(path) {
     if (util.isBrowser()) return null;
-    return __webpack_require__(48).readFileSync(path, 'utf-8');
+    return __webpack_require__(49).readFileSync(path, 'utf-8');
   },
 
   base64: {
@@ -357,7 +357,7 @@ var util = {
       } else if (typeof string.size === 'number') {
         return string.size;
       } else if (typeof string.path === 'string') {
-        return __webpack_require__(48).lstatSync(string.path).size;
+        return __webpack_require__(49).lstatSync(string.path).size;
       } else {
         throw util.error(new Error('Cannot determine length of ' + string),
           { object: string });
@@ -885,7 +885,7 @@ var util = {
   computeSha256: function computeSha256(body, done) {
     if (util.isNode()) {
       var Stream = util.stream.Stream;
-      var fs = __webpack_require__(48);
+      var fs = __webpack_require__(49);
       if (body instanceof Stream) {
         if (typeof body.path === 'string') { // assume file object
           var settings = {};
@@ -1156,7 +1156,8 @@ var JS_1 = __webpack_require__(303);
 exports.JS = JS_1.default;
 var Signer_1 = __webpack_require__(107);
 exports.Signer = Signer_1.default;
-var Platform_1 = __webpack_require__(50);
+__export(__webpack_require__(304));
+var Platform_1 = __webpack_require__(32);
 exports.Constants = {
     'userAgent': Platform_1.default.userAgent
 };
@@ -1231,7 +1232,7 @@ module.exports = create;
 
 
 var bind = __webpack_require__(110);
-var isBuffer = __webpack_require__(317);
+var isBuffer = __webpack_require__(318);
 
 /*global toString:true*/
 
@@ -3397,7 +3398,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
 /***/ }),
 /* 8 */
@@ -3606,33 +3607,6 @@ process.umask = function() { return 0; };
 
 /***/ }),
 /* 10 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsNative = __webpack_require__(124),
@@ -3655,7 +3629,7 @@ module.exports = getNative;
 
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {var util = __webpack_require__(1);
@@ -3690,6 +3664,33 @@ if (typeof process === 'undefined') {
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
 
 /***/ }),
 /* 13 */
@@ -4482,7 +4483,7 @@ module.exports = baseGetTag;
 /***/ (function(module, exports, __webpack_require__) {
 
 var isFunction = __webpack_require__(22),
-    isLength = __webpack_require__(36);
+    isLength = __webpack_require__(37);
 
 /**
  * Checks if `value` is array-like. A value is considered array-like if it's
@@ -4910,7 +4911,7 @@ module.exports = assocIndexOf;
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(11);
+var getNative = __webpack_require__(10);
 
 /* Built-in method references that are verified to be native. */
 var nativeCreate = getNative(Object, 'create');
@@ -4946,7 +4947,7 @@ module.exports = getMapData;
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isSymbol = __webpack_require__(46);
+var isSymbol = __webpack_require__(47);
 
 /** Used as references for various `Number` constants. */
 var INFINITY = 1 / 0;
@@ -5041,7 +5042,7 @@ module.exports = exports = {
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(12);
+__webpack_require__(11);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -5066,9 +5067,51 @@ module.exports = AWS.STS;
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Platform = {
+    'userAgent': 'aws-amplify/0.1.x js',
+    'product': '',
+    'navigator': null,
+    'isReactNative': false
+};
+if (typeof navigator !== 'undefined' && navigator.product) {
+    Platform.product = navigator.product || '';
+    Platform.navigator = navigator || null;
+    switch (navigator.product) {
+        case 'ReactNative':
+            Platform.userAgent = 'aws-amplify/0.1.x react-native';
+            Platform.isReactNative = true;
+            break;
+        default:
+            Platform.userAgent = 'aws-amplify/0.1.x js';
+            Platform.isReactNative = false;
+            break;
+    }
+}
+exports.default = Platform;
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var util = __webpack_require__(1);
-var JsonBuilder = __webpack_require__(33);
-var JsonParser = __webpack_require__(34);
+var JsonBuilder = __webpack_require__(34);
+var JsonParser = __webpack_require__(35);
 
 function buildRequest(req) {
   var httpRequest = req.httpRequest;
@@ -5136,7 +5179,7 @@ module.exports = {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
@@ -5198,7 +5241,7 @@ module.exports = JsonBuilder;
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
@@ -5268,7 +5311,7 @@ module.exports = JsonParser;
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports) {
 
 /**
@@ -5295,7 +5338,7 @@ module.exports = identity;
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports) {
 
 /** Used as references for various `Number` constants. */
@@ -5336,7 +5379,7 @@ module.exports = isLength;
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports) {
 
 /** Used as references for various `Number` constants. */
@@ -5354,20 +5397,17 @@ var reIsUint = /^(?:0|[1-9]\d*)$/;
  * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
  */
 function isIndex(value, length) {
-  var type = typeof value;
   length = length == null ? MAX_SAFE_INTEGER : length;
-
   return !!length &&
-    (type == 'number' ||
-      (type != 'symbol' && reIsUint.test(value))) &&
-        (value > -1 && value % 1 == 0 && value < length);
+    (typeof value == 'number' || reIsUint.test(value)) &&
+    (value > -1 && value % 1 == 0 && value < length);
 }
 
 module.exports = isIndex;
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -5391,7 +5431,7 @@ module.exports = isPrototype;
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsArguments = __webpack_require__(140),
@@ -5433,7 +5473,7 @@ module.exports = isArguments;
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(8),
@@ -5475,10 +5515,10 @@ var isBuffer = nativeIsBuffer || stubFalse;
 
 module.exports = isBuffer;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module)))
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -5506,7 +5546,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsTypedArray = __webpack_require__(142),
@@ -5539,10 +5579,10 @@ module.exports = isTypedArray;
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(11),
+var getNative = __webpack_require__(10),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -5552,7 +5592,7 @@ module.exports = Map;
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var mapCacheClear = __webpack_require__(177),
@@ -5590,11 +5630,11 @@ module.exports = MapCache;
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isArray = __webpack_require__(6),
-    isSymbol = __webpack_require__(46);
+    isSymbol = __webpack_require__(47);
 
 /** Used to match property names within property paths. */
 var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
@@ -5625,7 +5665,7 @@ module.exports = isKey;
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGetTag = __webpack_require__(17),
@@ -5660,7 +5700,7 @@ module.exports = isSymbol;
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function(exports) {
@@ -7333,13 +7373,13 @@ module.exports = isSymbol;
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(7).Buffer;
@@ -7380,48 +7420,6 @@ module.exports = { hash: hash };
 
 
 /***/ }),
-/* 50 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Platform = {
-    'userAgent': 'aws-amplify/0.1.x js',
-    'product': '',
-    'navigator': null,
-    'isReactNative': false
-};
-if (typeof navigator !== 'undefined' && navigator.product) {
-    Platform.product = navigator.product || '';
-    Platform.navigator = navigator || null;
-    switch (navigator.product) {
-        case 'ReactNative':
-            Platform.userAgent = 'aws-amplify/0.1.x react-native';
-            Platform.isReactNative = true;
-            break;
-        default:
-            Platform.userAgent = 'aws-amplify/0.1.x js';
-            Platform.isReactNative = false;
-            break;
-    }
-}
-exports.default = Platform;
-
-
-/***/ }),
 /* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7443,8 +7441,8 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(305));
-var CacheList_1 = __webpack_require__(306);
+__export(__webpack_require__(306));
+var CacheList_1 = __webpack_require__(307);
 exports.CacheList = CacheList_1.default;
 
 
@@ -7456,7 +7454,7 @@ exports.CacheList = CacheList_1.default;
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var normalizeHeaderName = __webpack_require__(319);
+var normalizeHeaderName = __webpack_require__(320);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -7722,9 +7720,9 @@ module.exports = Collection;
 
 var util = __webpack_require__(1);
 var Rest = __webpack_require__(21);
-var Json = __webpack_require__(32);
-var JsonBuilder = __webpack_require__(33);
-var JsonParser = __webpack_require__(34);
+var Json = __webpack_require__(33);
+var JsonBuilder = __webpack_require__(34);
+var JsonParser = __webpack_require__(35);
 
 function populateBody(req) {
   var builder = new JsonBuilder();
@@ -7975,7 +7973,7 @@ module.exports = baseAssignValue;
 /* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(11);
+var getNative = __webpack_require__(10);
 
 var defineProperty = (function() {
   try {
@@ -7997,7 +7995,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 module.exports = freeGlobal;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
 /***/ }),
 /* 62 */
@@ -8083,7 +8081,7 @@ module.exports = copyObject;
 
 var eq = __webpack_require__(24),
     isArrayLike = __webpack_require__(18),
-    isIndex = __webpack_require__(37),
+    isIndex = __webpack_require__(38),
     isObject = __webpack_require__(5);
 
 /**
@@ -8117,7 +8115,7 @@ module.exports = isIterateeCall;
 /* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isPrototype = __webpack_require__(38),
+var isPrototype = __webpack_require__(39),
     nativeKeys = __webpack_require__(145);
 
 /** Used for built-in method references. */
@@ -8225,7 +8223,7 @@ module.exports = baseKeys;
 /***/ (function(module, exports, __webpack_require__) {
 
 var DataView = __webpack_require__(152),
-    Map = __webpack_require__(43),
+    Map = __webpack_require__(44),
     Promise = __webpack_require__(153),
     Set = __webpack_require__(154),
     WeakMap = __webpack_require__(155),
@@ -8740,7 +8738,7 @@ module.exports = baseGet;
 /***/ (function(module, exports, __webpack_require__) {
 
 var isArray = __webpack_require__(6),
-    isKey = __webpack_require__(45),
+    isKey = __webpack_require__(46),
     stringToPath = __webpack_require__(209),
     toString = __webpack_require__(212);
 
@@ -10414,7 +10412,7 @@ if (!rng) {
 
 module.exports = rng;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
 /***/ }),
 /* 91 */
@@ -11600,7 +11598,7 @@ function hash(alg, key) {
   return {
     update: function (data) {
       if(!Buffer.isBuffer(data)) data = new Buffer(data)
-        
+
       bufs.push(data)
       length += data.length
       return this
@@ -15336,9 +15334,9 @@ exports.default = Signer;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var BrowserStorageCache_1 = __webpack_require__(304);
+var BrowserStorageCache_1 = __webpack_require__(305);
 exports.BrowserStorageCache = BrowserStorageCache_1.default;
-var InMemoryCache_1 = __webpack_require__(307);
+var InMemoryCache_1 = __webpack_require__(308);
 exports.InMemoryCache = InMemoryCache_1.default;
 exports.default = BrowserStorageCache_1.default;
 
@@ -15487,12 +15485,12 @@ module.exports = function bind(fn, thisArg) {
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var settle = __webpack_require__(320);
-var buildURL = __webpack_require__(322);
-var parseHeaders = __webpack_require__(323);
-var isURLSameOrigin = __webpack_require__(324);
+var settle = __webpack_require__(321);
+var buildURL = __webpack_require__(323);
+var parseHeaders = __webpack_require__(324);
+var isURLSameOrigin = __webpack_require__(325);
 var createError = __webpack_require__(112);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(325);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(326);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -15589,7 +15587,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(326);
+      var cookies = __webpack_require__(327);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -15674,7 +15672,7 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(321);
+var enhanceError = __webpack_require__(322);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -15751,13 +15749,13 @@ module.exports = Cancel;
 Object.defineProperty(exports, "__esModule", { value: true });
 var Auth_1 = __webpack_require__(15);
 exports.Auth = Auth_1.default;
-var Analytics_1 = __webpack_require__(308);
+var Analytics_1 = __webpack_require__(309);
 exports.Analytics = Analytics_1.default;
-var Storage_1 = __webpack_require__(310);
+var Storage_1 = __webpack_require__(311);
 exports.Storage = Storage_1.default;
-var API_1 = __webpack_require__(312);
+var API_1 = __webpack_require__(313);
 exports.API = API_1.default;
-var I18n_1 = __webpack_require__(334);
+var I18n_1 = __webpack_require__(335);
 exports.I18n = I18n_1.default;
 var Cache_1 = __webpack_require__(108);
 exports.Cache = Cache_1.default;
@@ -15856,7 +15854,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
-var Platform_1 = __webpack_require__(50);
+var Platform_1 = __webpack_require__(32);
 var Cache_1 = __webpack_require__(108);
 var logger = new Common_1.ConsoleLogger('AuthClass');
 var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
@@ -16495,6 +16493,29 @@ var AuthClass = /** @class */ (function () {
         });
     };
     /**
+     * Change a password for an authenticated user
+     * @param {Object} user - The CognitoUser object
+     * @param {String} oldPassword - the current password
+     * @param {String} newPassword - the requested new password
+     * @return - A promise resolves if success
+     */
+    AuthClass.prototype.changePassword = function (user, oldPassword, newPassword) {
+        return this.userSession(user)
+            .then(function (session) {
+            return new Promise(function (resolve, reject) {
+                user.changePassword(oldPassword, newPassword, function (err, data) {
+                    if (err) {
+                        logger.debug('change password failure', err);
+                        reject(err);
+                    }
+                    else {
+                        resolve(data);
+                    }
+                });
+            });
+        });
+    };
+    /**
      * Initiate a forgot password request
      * @param {String} username - the username to change password
      * @return - A promise resolves if success
@@ -16561,16 +16582,12 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.currentUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var credentials, source, user, attributes, userAttrs, info, err_1, user;
+            var source, user, attributes, userAttrs, info, err_1, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        credentials = this.credentials;
                         source = this.credentials_source;
-                        if (!source) {
-                            return [2 /*return*/, null];
-                        }
-                        if (!(source === 'aws' || source === 'userPool')) return [3 /*break*/, 5];
+                        if (!(!source || source === 'aws' || source === 'userPool')) return [3 /*break*/, 5];
                         return [4 /*yield*/, this.currentUserPoolUser()
                                 .catch(function (err) { return logger.debug(err); })];
                     case 1:
@@ -16586,14 +16603,13 @@ var AuthClass = /** @class */ (function () {
                         attributes = _a.sent();
                         userAttrs = this.attributesToObject(attributes);
                         info = {
-                            'id': credentials.identityId,
+                            'id': this.credentials.identityId,
                             'username': user.username,
                             'attributes': userAttrs
                         };
                         return [2 /*return*/, info];
                     case 4:
                         err_1 = _a.sent();
-                        console.warn(err_1);
                         logger.debug('currentUserInfo error', err_1);
                         return [2 /*return*/, {}];
                     case 5:
@@ -16783,7 +16799,7 @@ exports.default = AuthClass;
 /* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(12);
+__webpack_require__(11);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -16809,7 +16825,7 @@ module.exports = AWS.S3;
 /* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
+var apply = Function.prototype.apply;
 
 // DOM APIs, for completeness
 
@@ -16860,17 +16876,9 @@ exports._unrefActive = exports.active = function(item) {
 
 // setimmediate attaches itself to the global object
 __webpack_require__(119);
-// On some exotic environments, it's not clear which object `setimmeidate` was
-// able to install onto.  Search each possibility in the same order as the
-// `setimmediate` library.
-exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-                       (typeof global !== "undefined" && global.setImmediate) ||
-                       (this && this.setImmediate);
-exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-                         (typeof global !== "undefined" && global.clearImmediate) ||
-                         (this && this.clearImmediate);
+exports.setImmediate = setImmediate;
+exports.clearImmediate = clearImmediate;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 119 */
@@ -17063,7 +17071,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(9)))
 
 /***/ }),
 /* 120 */
@@ -17272,7 +17280,7 @@ var assignValue = __webpack_require__(58),
     copyObject = __webpack_require__(63),
     createAssigner = __webpack_require__(130),
     isArrayLike = __webpack_require__(18),
-    isPrototype = __webpack_require__(38),
+    isPrototype = __webpack_require__(39),
     keys = __webpack_require__(19);
 
 /** Used for built-in method references. */
@@ -17565,7 +17573,7 @@ module.exports = createAssigner;
 /* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var identity = __webpack_require__(35),
+var identity = __webpack_require__(36),
     overRest = __webpack_require__(132),
     setToString = __webpack_require__(134);
 
@@ -17679,7 +17687,7 @@ module.exports = setToString;
 
 var constant = __webpack_require__(136),
     defineProperty = __webpack_require__(60),
-    identity = __webpack_require__(35);
+    identity = __webpack_require__(36);
 
 /**
  * The base implementation of `setToString` without support for hot loop shorting.
@@ -17781,11 +17789,11 @@ module.exports = shortOut;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseTimes = __webpack_require__(139),
-    isArguments = __webpack_require__(39),
+    isArguments = __webpack_require__(40),
     isArray = __webpack_require__(6),
-    isBuffer = __webpack_require__(40),
-    isIndex = __webpack_require__(37),
-    isTypedArray = __webpack_require__(42);
+    isBuffer = __webpack_require__(41),
+    isIndex = __webpack_require__(38),
+    isTypedArray = __webpack_require__(43);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -17910,7 +17918,7 @@ module.exports = stubFalse;
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGetTag = __webpack_require__(17),
-    isLength = __webpack_require__(36),
+    isLength = __webpack_require__(37),
     isObjectLike = __webpack_require__(20);
 
 /** `Object#toString` result references. */
@@ -18018,7 +18026,7 @@ var nodeUtil = (function() {
 
 module.exports = nodeUtil;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module)))
 
 /***/ }),
 /* 145 */
@@ -18369,12 +18377,12 @@ module.exports = baseCreate;
 
 var baseKeys = __webpack_require__(65),
     getTag = __webpack_require__(67),
-    isArguments = __webpack_require__(39),
+    isArguments = __webpack_require__(40),
     isArray = __webpack_require__(6),
     isArrayLike = __webpack_require__(18),
-    isBuffer = __webpack_require__(40),
-    isPrototype = __webpack_require__(38),
-    isTypedArray = __webpack_require__(42);
+    isBuffer = __webpack_require__(41),
+    isPrototype = __webpack_require__(39),
+    isTypedArray = __webpack_require__(43);
 
 /** `Object#toString` result references. */
 var mapTag = '[object Map]',
@@ -18450,7 +18458,7 @@ module.exports = isEmpty;
 /* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(11),
+var getNative = __webpack_require__(10),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -18463,7 +18471,7 @@ module.exports = DataView;
 /* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(11),
+var getNative = __webpack_require__(10),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -18476,7 +18484,7 @@ module.exports = Promise;
 /* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(11),
+var getNative = __webpack_require__(10),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -18489,7 +18497,7 @@ module.exports = Set;
 /* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(11),
+var getNative = __webpack_require__(10),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -18755,7 +18763,7 @@ module.exports = createBaseEach;
 
 var baseMatches = __webpack_require__(165),
     baseMatchesProperty = __webpack_require__(207),
-    identity = __webpack_require__(35),
+    identity = __webpack_require__(36),
     isArray = __webpack_require__(6),
     property = __webpack_require__(218);
 
@@ -19111,8 +19119,8 @@ module.exports = stackHas;
 /***/ (function(module, exports, __webpack_require__) {
 
 var ListCache = __webpack_require__(25),
-    Map = __webpack_require__(43),
-    MapCache = __webpack_require__(44);
+    Map = __webpack_require__(44),
+    MapCache = __webpack_require__(45);
 
 /** Used as the size to enable large array optimizations. */
 var LARGE_ARRAY_SIZE = 200;
@@ -19152,7 +19160,7 @@ module.exports = stackSet;
 
 var Hash = __webpack_require__(178),
     ListCache = __webpack_require__(25),
-    Map = __webpack_require__(43);
+    Map = __webpack_require__(44);
 
 /**
  * Removes all key-value entries from the map.
@@ -19476,8 +19484,8 @@ var Stack = __webpack_require__(69),
     equalObjects = __webpack_require__(199),
     getTag = __webpack_require__(67),
     isArray = __webpack_require__(6),
-    isBuffer = __webpack_require__(40),
-    isTypedArray = __webpack_require__(42);
+    isBuffer = __webpack_require__(41),
+    isTypedArray = __webpack_require__(43);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1;
@@ -19559,7 +19567,7 @@ module.exports = baseIsEqualDeep;
 /* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MapCache = __webpack_require__(44),
+var MapCache = __webpack_require__(45),
     setCacheAdd = __webpack_require__(191),
     setCacheHas = __webpack_require__(192);
 
@@ -20161,7 +20169,7 @@ module.exports = getMatchData;
 var baseIsEqual = __webpack_require__(70),
     get = __webpack_require__(208),
     hasIn = __webpack_require__(215),
-    isKey = __webpack_require__(45),
+    isKey = __webpack_require__(46),
     isStrictComparable = __webpack_require__(72),
     matchesStrictComparable = __webpack_require__(73),
     toKey = __webpack_require__(29);
@@ -20239,7 +20247,8 @@ module.exports = get;
 var memoizeCapped = __webpack_require__(210);
 
 /** Used to match property names within property paths. */
-var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+var reLeadingDot = /^\./,
+    rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
 
 /** Used to match backslashes in property paths. */
 var reEscapeChar = /\\(\\)?/g;
@@ -20253,11 +20262,11 @@ var reEscapeChar = /\\(\\)?/g;
  */
 var stringToPath = memoizeCapped(function(string) {
   var result = [];
-  if (string.charCodeAt(0) === 46 /* . */) {
+  if (reLeadingDot.test(string)) {
     result.push('');
   }
-  string.replace(rePropName, function(match, number, quote, subString) {
-    result.push(quote ? subString.replace(reEscapeChar, '$1') : (number || match));
+  string.replace(rePropName, function(match, number, quote, string) {
+    result.push(quote ? string.replace(reEscapeChar, '$1') : (number || match));
   });
   return result;
 });
@@ -20301,7 +20310,7 @@ module.exports = memoizeCapped;
 /* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MapCache = __webpack_require__(44);
+var MapCache = __webpack_require__(45);
 
 /** Error message constants. */
 var FUNC_ERROR_TEXT = 'Expected a function';
@@ -20417,7 +20426,7 @@ module.exports = toString;
 var Symbol = __webpack_require__(23),
     arrayMap = __webpack_require__(214),
     isArray = __webpack_require__(6),
-    isSymbol = __webpack_require__(46);
+    isSymbol = __webpack_require__(47);
 
 /** Used as references for various `Number` constants. */
 var INFINITY = 1 / 0;
@@ -20544,10 +20553,10 @@ module.exports = baseHasIn;
 /***/ (function(module, exports, __webpack_require__) {
 
 var castPath = __webpack_require__(75),
-    isArguments = __webpack_require__(39),
+    isArguments = __webpack_require__(40),
     isArray = __webpack_require__(6),
-    isIndex = __webpack_require__(37),
-    isLength = __webpack_require__(36),
+    isIndex = __webpack_require__(38),
+    isLength = __webpack_require__(37),
     toKey = __webpack_require__(29);
 
 /**
@@ -20590,7 +20599,7 @@ module.exports = hasPath;
 
 var baseProperty = __webpack_require__(219),
     basePropertyDeep = __webpack_require__(220),
-    isKey = __webpack_require__(45),
+    isKey = __webpack_require__(46),
     toKey = __webpack_require__(29);
 
 /**
@@ -22899,7 +22908,7 @@ AWS.EventListeners = {
   }),
 
   Json: new SequentialExecutor().addNamedListeners(function(add) {
-    var svc = __webpack_require__(32);
+    var svc = __webpack_require__(33);
     add('BUILD', 'build', svc.buildRequest);
     add('EXTRACT_DATA', 'extractData', svc.extractData);
     add('EXTRACT_ERROR', 'extractError', svc.extractError);
@@ -23526,7 +23535,7 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(9)))
 
 /***/ }),
 /* 235 */
@@ -23576,7 +23585,7 @@ if (typeof Object.create === 'function') {
 var AcceptorStateMachine = __webpack_require__(238);
 var inherit = AWS.util.inherit;
 var domain = AWS.util.domain;
-var jmespath = __webpack_require__(47);
+var jmespath = __webpack_require__(48);
 
 /**
  * @api private
@@ -24434,7 +24443,7 @@ module.exports = AcceptorStateMachine;
 
 var AWS = __webpack_require__(0);
 var inherit = AWS.util.inherit;
-var jmespath = __webpack_require__(47);
+var jmespath = __webpack_require__(48);
 
 /**
  * This class encapsulates the response information
@@ -24656,7 +24665,7 @@ AWS.Response = inherit({
 
 var AWS = __webpack_require__(0);
 var inherit = AWS.util.inherit;
-var jmespath = __webpack_require__(47);
+var jmespath = __webpack_require__(48);
 
 /**
  * @api private
@@ -27373,7 +27382,7 @@ Sha256.prototype.hashBuffer = function () {
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41)(module), __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module), __webpack_require__(12)))
 
 /***/ }),
 /* 261 */
@@ -28275,7 +28284,7 @@ AWS.CognitoIdentityCredentials = AWS.util.inherit(AWS.Credentials, {
 /* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(12);
+__webpack_require__(11);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -30880,7 +30889,7 @@ module.exports = {"version":2,"waiters":{"BucketExists":{"delay":5,"operation":"
 /* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(12);
+__webpack_require__(11);
 
 var AWS = __webpack_require__(0);
 if (typeof window !== 'undefined') window.AWS = AWS;
@@ -31107,7 +31116,7 @@ exports.default = AuthenticationDetails;
  * See http://pajhome.org.uk/crypt/md5 for details.
  */
 
-var helpers = __webpack_require__(49);
+var helpers = __webpack_require__(50);
 
 /*
  * Calculate the SHA-1 of an array of big-endian words, and a bit length
@@ -31214,7 +31223,7 @@ module.exports = function sha1(buf) {
  *
  */
 
-var helpers = __webpack_require__(49);
+var helpers = __webpack_require__(50);
 
 var safe_add = function(x, y) {
   var lsw = (x & 0xFFFF) + (y & 0xFFFF);
@@ -31336,7 +31345,7 @@ module.exports = function sha256(buf) {
  * See http://pajhome.org.uk/crypt/md5 for more info.
  */
 
-var helpers = __webpack_require__(49);
+var helpers = __webpack_require__(50);
 
 /*
  * Perform a simple self-test to see if the VM is working
@@ -32122,7 +32131,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 /* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(12);
+__webpack_require__(11);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -32151,7 +32160,7 @@ module.exports = {"metadata":{"apiVersion":"2016-12-01","endpointPrefix":"pinpoi
 /* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(12);
+__webpack_require__(11);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -32666,6 +32675,35 @@ exports.default = JS;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+var Linking = {};
+exports.Linking = Linking;
+var AppState = {
+    addEventListener: function (action, handler) {
+        return;
+    }
+};
+exports.AppState = AppState;
+
+
+/***/ }),
+/* 305 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 /*
  * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -33103,7 +33141,7 @@ exports.default = instance;
 
 
 /***/ }),
-/* 305 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33180,7 +33218,7 @@ function _isInteger(value) {
 
 
 /***/ }),
-/* 306 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33354,7 +33392,7 @@ exports.default = CacheList;
 
 
 /***/ }),
-/* 307 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33700,7 +33738,7 @@ exports.default = instance;
 
 
 /***/ }),
-/* 308 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33718,8 +33756,9 @@ exports.default = instance;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Analytics_1 = __webpack_require__(309);
+var Analytics_1 = __webpack_require__(310);
 var Common_1 = __webpack_require__(2);
+var Platform_1 = __webpack_require__(32);
 var logger = new Common_1.ConsoleLogger('Analytics');
 var _instance = null;
 if (!_instance) {
@@ -33728,6 +33767,18 @@ if (!_instance) {
 }
 var Analytics = _instance;
 exports.default = Analytics;
+// listen on app state change
+var dispatchAppStateEvent = function (event, data) {
+    Common_1.Hub.dispatch('appState', { event: event, data: data }, 'AppState');
+};
+if (Platform_1.default.isReactNative) {
+    Common_1.AppState.addEventListener('change', function (nextAppState) {
+        switch (nextAppState) {
+            case 'active':
+                dispatchAppStateEvent('active', {});
+        }
+    });
+}
 Analytics.onHubCapsule = function (capsule) {
     var channel = capsule.channel, payload = capsule.payload, source = capsule.source;
     logger.debug('on hub capsule ' + channel, payload);
@@ -33772,7 +33823,7 @@ Common_1.Hub.listen('storage', Analytics);
 
 
 /***/ }),
-/* 309 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33862,6 +33913,7 @@ var AnalyticsClass = /** @class */ (function () {
             conf = {
                 appId: conf['aws_mobile_analytics_app_id'],
                 region: conf['aws_project_region'],
+                cognitoIdentityPoolId: conf['aws_cognito_identity_pool_id'],
                 platform: 'other'
             };
         }
@@ -33892,7 +33944,6 @@ var AnalyticsClass = /** @class */ (function () {
                         if (!credentialsOK) {
                             return [2 /*return*/, Promise.resolve(false)];
                         }
-                        logger.debug('record session start');
                         sessionId = this.generateRandomString();
                         this._sessionId = sessionId;
                         clientContext = this._generateClientContext();
@@ -33909,6 +33960,7 @@ var AnalyticsClass = /** @class */ (function () {
                                 }
                             ]
                         };
+                        logger.debug('record session start with params', params);
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 _this.mobileAnalytics.putEvents(params, function (err, data) {
                                     if (err) {
@@ -33941,7 +33993,6 @@ var AnalyticsClass = /** @class */ (function () {
                         if (!credentialsOK) {
                             return [2 /*return*/, Promise.resolve(false)];
                         }
-                        logger.debug('record session stop');
                         sessionId = this._sessionId ? this._sessionId : this.generateRandomString();
                         clientContext = this._generateClientContext();
                         params = {
@@ -33957,6 +34008,7 @@ var AnalyticsClass = /** @class */ (function () {
                                 }
                             ]
                         };
+                        logger.debug('record session stop with params', params);
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 _this.mobileAnalytics.putEvents(params, function (err, data) {
                                     if (err) {
@@ -34044,6 +34096,7 @@ var AnalyticsClass = /** @class */ (function () {
                                 }
                             ]
                         };
+                        logger.debug('record event with params', params);
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 _this.mobileAnalytics.putEvents(params, function (err, data) {
                                     if (err) {
@@ -34082,8 +34135,8 @@ var AnalyticsClass = /** @class */ (function () {
                 else {
                     logger.debug('record event success. ' + data);
                     // try to clean cached events if exist
-    
-    
+
+
                     res(data);
                 }
             };
@@ -34136,22 +34189,25 @@ var AnalyticsClass = /** @class */ (function () {
     };
     /**
      * @private
-     * check if current crednetials exists
+     * check if current credentials exists
      */
     AnalyticsClass.prototype._ensureCredentials = function () {
-        var conf = this._config;
         // commented
         // will cause bug if another user logged in without refreshing page
         // if (conf.credentials) { return Promise.resolve(true); }
+        var that = this;
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
             if (!credentials)
                 return false;
             var cred = Auth_1.default.essentialCredentials(credentials);
-            conf.credentials = cred;
-            conf.endpointId = conf.credentials.identityId;
-            logger.debug('set endpointId for analytics', conf.endpointId);
-            logger.debug('set credentials for analytics', conf.credentials);
+            that._config.credentials = cred;
+            that._config.endpointId = cred.identityId;
+            if (!that._config.endpointId) {
+                that._config.endpointId = that.generateRandomString();
+            }
+            logger.debug('set endpointId for analytics', that._config.endpointId);
+            logger.debug('set credentials for analytics', that._config.credentials);
             return true;
         })
             .catch(function (err) {
@@ -34220,28 +34276,85 @@ var AnalyticsClass = /** @class */ (function () {
      * @return - A promise resolves if endpoint updated successfully
      */
     AnalyticsClass.prototype._initPinpoint = function () {
-        var _this = this;
-        var _a = this._config, region = _a.region, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials;
-        this.pinpointClient = new Common_1.Pinpoint({
-            region: region,
-            credentials: credentials,
-        });
-        var request = this._endpointRequest();
-        var update_params = {
-            ApplicationId: appId,
-            EndpointId: endpointId,
-            EndpointRequest: request
-        };
-        logger.debug('updateEndpoint with params: ', update_params);
-        return new Promise(function (res, rej) {
-            _this.pinpointClient.updateEndpoint(update_params, function (err, data) {
-                if (err) {
-                    logger.debug('Pinpoint ERROR', err);
-                    rej(err);
+        return __awaiter(this, void 0, void 0, function () {
+            var credentialsOK, _a, region, appId, endpointId, credentials, request, update_params, that;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _b.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        _a = this._config, region = _a.region, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials;
+                        this.pinpointClient = new Common_1.Pinpoint({
+                            region: region,
+                            credentials: credentials,
+                        });
+                        request = this._endpointRequest();
+                        update_params = {
+                            ApplicationId: appId,
+                            EndpointId: endpointId,
+                            EndpointRequest: request
+                        };
+                        logger.debug('updateEndpoint with params: ', update_params);
+                        that = this;
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                that.pinpointClient.updateEndpoint(update_params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('Pinpoint ERROR', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('Pinpoint SUCCESS', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
                 }
-                else {
-                    logger.debug('Pinpoint SUCCESS', data);
-                    res(data);
+            });
+        });
+    };
+    AnalyticsClass.prototype.updateEndpoint = function (config) {
+        return __awaiter(this, void 0, void 0, function () {
+            var credentialsOK, conf, _a, appId, endpointId, credentials, region, request, update_params, that;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this._ensureCredentials()];
+                    case 1:
+                        credentialsOK = _b.sent();
+                        if (!credentialsOK) {
+                            return [2 /*return*/, Promise.resolve(false)];
+                        }
+                        conf = config ? config.Analytics || config : {};
+                        this._config = Object.assign({}, this._config, conf);
+                        _a = this._config, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials, region = _a.region;
+                        request = this._endpointRequest();
+                        update_params = {
+                            ApplicationId: appId,
+                            EndpointId: endpointId,
+                            EndpointRequest: request
+                        };
+                        if (!this.pinpointClient) {
+                            this.pinpointClient = new Common_1.Pinpoint({
+                                region: region,
+                                credentials: credentials
+                            });
+                        }
+                        that = this;
+                        logger.debug('updateEndpoint with params: ', update_params);
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                that.pinpointClient.updateEndpoint(update_params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('Pinpoint ERROR', err);
+                                        rej(err);
+                                    }
+                                    else {
+                                        logger.debug('Pinpoint SUCCESS', data);
+                                        res(data);
+                                    }
+                                });
+                            })];
                 }
             });
         });
@@ -34252,10 +34365,14 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype._endpointRequest = function () {
         var client_info = Common_1.ClientDevice.clientInfo();
-        var credentials = this._config.credentials;
+        var _a = this._config, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, cognitoIdentityPoolId = _a.cognitoIdentityPoolId, endpointId = _a.endpointId;
         var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
+        var ChannelType = Address ? ((client_info.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         logger.debug('demographic user id: ', user_id);
+        var OptOut = this._config.OptOut ? this._config.OptOut : undefined;
         return {
+            Address: Address,
+            ChannelType: ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || client_info.appVersion,
                 Make: client_info.make,
@@ -34263,7 +34380,15 @@ var AnalyticsClass = /** @class */ (function () {
                 ModelVersion: client_info.version,
                 Platform: client_info.platform
             },
-            User: { UserId: user_id }
+            OptOut: OptOut,
+            RequestId: RequestId,
+            EffectiveDate: Address ? new Date().toISOString() : undefined,
+            User: {
+                UserId: endpointId,
+                UserAttributes: {
+                    CognitoIdentityPool: [cognitoIdentityPoolId]
+                }
+            }
         };
     };
     return AnalyticsClass;
@@ -34272,7 +34397,7 @@ exports.default = AnalyticsClass;
 
 
 /***/ }),
-/* 310 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34290,7 +34415,7 @@ exports.default = AnalyticsClass;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Storage_1 = __webpack_require__(311);
+var Storage_1 = __webpack_require__(312);
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('Storage');
 var _instance = null;
@@ -34311,7 +34436,7 @@ exports.default = Storage;
 
 
 /***/ }),
-/* 311 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34412,7 +34537,7 @@ var StorageClass = /** @class */ (function () {
     */
     StorageClass.prototype.get = function (key, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, opt, bucket, region, credentials, level, download, track, prefix, final_key, s3, params;
+            var credentialsOK, opt, bucket, region, credentials, level, download, track, expires, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._ensureCredentials()];
@@ -34422,7 +34547,7 @@ var StorageClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.reject('No credentials')];
                         }
                         opt = Object.assign({}, this._options, options);
-                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, download = opt.download, track = opt.track;
+                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, download = opt.download, track = opt.track, expires = opt.expires;
                         prefix = this._prefix(opt);
                         final_key = prefix + key;
                         s3 = this._createS3(opt);
@@ -34444,6 +34569,9 @@ var StorageClass = /** @class */ (function () {
                                         }
                                     });
                                 })];
+                        }
+                        if (expires) {
+                            params.Expires = expires;
                         }
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 try {
@@ -34675,7 +34803,7 @@ exports.default = StorageClass;
 
 
 /***/ }),
-/* 312 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34693,7 +34821,7 @@ exports.default = StorageClass;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var API_1 = __webpack_require__(313);
+var API_1 = __webpack_require__(314);
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('API');
 var _instance = null;
@@ -34706,7 +34834,7 @@ exports.default = API;
 
 
 /***/ }),
-/* 313 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34759,7 +34887,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var RestClient_1 = __webpack_require__(314);
+var RestClient_1 = __webpack_require__(315);
 var Auth_1 = __webpack_require__(15);
 var Logger_1 = __webpack_require__(14);
 var logger = new Logger_1.ConsoleLogger('API');
@@ -35097,7 +35225,7 @@ exports.default = API;
 
 
 /***/ }),
-/* 314 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35161,8 +35289,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Signer_1 = __webpack_require__(107);
 var Common_1 = __webpack_require__(2);
 var Auth_1 = __webpack_require__(15);
-var axios_1 = __webpack_require__(315);
-var Platform_1 = __webpack_require__(50);
+var axios_1 = __webpack_require__(316);
+var Platform_1 = __webpack_require__(32);
 var logger = new Common_1.ConsoleLogger('RestClient');
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -35182,7 +35310,8 @@ var RestClient = /** @class */ (function () {
     * @param {RestClientOptions} [options] - Instance options
     */
     function RestClient(options) {
-        this._region = null;
+        this._region = 'us-east-1'; // this will be updated by config
+        this._service = 'execute-api'; // this can be updated by config
         var endpoints = options.endpoints;
         this._options = options;
         logger.debug('API Options', this._options);
@@ -35313,6 +35442,9 @@ var RestClient = /** @class */ (function () {
                 else if (typeof _this._options.region === 'string') {
                     _this._region = _this._options.region;
                 }
+                if (typeof v.service === 'string') {
+                    _this._service = v.service || 'execute-api';
+                }
             }
         });
         return response;
@@ -35320,13 +35452,14 @@ var RestClient = /** @class */ (function () {
     /** private methods **/
     RestClient.prototype._signed = function (params, credentials, isAllResponse) {
         var endpoint_region = this._region || this._options.region;
+        var endpoint_service = this._service || this._options.service;
         var creds = {
             'secret_key': credentials.secretAccessKey,
             'access_key': credentials.accessKeyId,
             'session_token': credentials.sessionToken
         };
         var service_info = {
-            'service': 'execute-api',
+            'service': endpoint_service,
             'region': endpoint_region
         };
         var signed_params = Signer_1.default.sign(params, creds, service_info);
@@ -35363,13 +35496,13 @@ exports.RestClient = RestClient;
 
 
 /***/ }),
-/* 315 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(316);
+module.exports = __webpack_require__(317);
 
 /***/ }),
-/* 316 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35377,7 +35510,7 @@ module.exports = __webpack_require__(316);
 
 var utils = __webpack_require__(4);
 var bind = __webpack_require__(110);
-var Axios = __webpack_require__(318);
+var Axios = __webpack_require__(319);
 var defaults = __webpack_require__(52);
 
 /**
@@ -35412,14 +35545,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(114);
-axios.CancelToken = __webpack_require__(332);
+axios.CancelToken = __webpack_require__(333);
 axios.isCancel = __webpack_require__(113);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(333);
+axios.spread = __webpack_require__(334);
 
 module.exports = axios;
 
@@ -35428,7 +35561,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 317 */
+/* 318 */
 /***/ (function(module, exports) {
 
 /*!
@@ -35455,7 +35588,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 318 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35463,8 +35596,8 @@ function isSlowBuffer (obj) {
 
 var defaults = __webpack_require__(52);
 var utils = __webpack_require__(4);
-var InterceptorManager = __webpack_require__(327);
-var dispatchRequest = __webpack_require__(328);
+var InterceptorManager = __webpack_require__(328);
+var dispatchRequest = __webpack_require__(329);
 
 /**
  * Create a new instance of Axios
@@ -35541,7 +35674,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 319 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35560,7 +35693,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 320 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35593,7 +35726,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 321 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35621,7 +35754,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 322 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35696,7 +35829,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 323 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35756,7 +35889,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 324 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35831,7 +35964,7 @@ module.exports = (
 
 
 /***/ }),
-/* 325 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35874,7 +36007,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 326 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35934,7 +36067,7 @@ module.exports = (
 
 
 /***/ }),
-/* 327 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35993,18 +36126,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 328 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var transformData = __webpack_require__(329);
+var transformData = __webpack_require__(330);
 var isCancel = __webpack_require__(113);
 var defaults = __webpack_require__(52);
-var isAbsoluteURL = __webpack_require__(330);
-var combineURLs = __webpack_require__(331);
+var isAbsoluteURL = __webpack_require__(331);
+var combineURLs = __webpack_require__(332);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -36086,7 +36219,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 329 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36113,7 +36246,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 330 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36134,7 +36267,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 331 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36155,7 +36288,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 332 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36219,7 +36352,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 333 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36253,7 +36386,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 334 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36271,7 +36404,7 @@ module.exports = function spread(callback) {
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var I18n_1 = __webpack_require__(335);
+var I18n_1 = __webpack_require__(336);
 var Logger_1 = __webpack_require__(14);
 var logger = new Logger_1.ConsoleLogger('I18n');
 var _config = null;
@@ -36364,7 +36497,7 @@ exports.default = I18n;
 
 
 /***/ }),
-/* 335 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

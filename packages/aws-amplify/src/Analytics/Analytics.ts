@@ -12,232 +12,109 @@
  */
 
 import {
-    Pinpoint,
     ClientDevice,
     ConsoleLogger as Logger,
     missingConfig,
-    MobileAnalytics
+    Parser
 } from '../Common';
+import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
 import Platform from '../Common/Platform';
 import Auth from '../Auth';
 
-import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from './types';
+import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
-const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
+
+// events buffer
+const BUFFER_SIZE = 1000;
+const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
+const interval = 5*1000; // 5s
 /**
 * Provide mobile analytics client functions
 */
 export default class AnalyticsClass {
     private _config;
-
-    private amaClient: any;
-    private pinpointClient: any;
-
     private _buffer;
-
-    private mobileAnalytics;
-    private _sessionId;
-
+    private _provider;
+    private _pluggables: AnalyticsProvider[];
 
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
      */
-    constructor(config: AnalyticsOptions) {
-        if (config) {
-            this.configure(config);
-        } else {
-            this._config = {};
-        }
-        
-        const client_info:any = ClientDevice.clientInfo();
-        if (client_info.platform) { this._config.platform = client_info.platform; }
-
+    constructor() {
         this._buffer = [];
+        this._config = {};
+        this._pluggables = [];
+        // default one
+
+        // events batch
+        const that = this;
+
+        // flush event buffer
+        setInterval(
+            () => {
+                const size = this._buffer.length < MAX_SIZE_PER_FLUSH ? this._buffer.length : MAX_SIZE_PER_FLUSH;
+                for (let i = 0; i < size; i += 1) {
+                    const params = this._buffer.shift();
+                    that._sendFromBuffer(params);
+                }
+            },
+            interval);
     }
-    
+
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
      */
     public configure(config) {
         logger.debug('configure Analytics');
-        let conf = config? config.Analytics || config : {};
-        
-        // using app_id from aws-exports if provided
-        if (conf['aws_mobile_analytics_app_id']) {
-            conf = {
-                appId: conf['aws_mobile_analytics_app_id'],
-                region: conf['aws_project_region'],
-                cognitoIdentityPoolId: conf['aws_cognito_identity_pool_id'],
-                platform: 'other'
-            };
+        const amplifyConfig = Parser.parseMobilehubConfig(config);
+        const conf = Object.assign({}, this._config, amplifyConfig.Analytics);
+
+        const clientInfo:any = ClientDevice.clientInfo();
+        conf['clientInfo'] = conf['client_info']? conf['client_info'] : clientInfo;
+
+        this._config = conf;
+
+        this._pluggables.map((pluggable) => {
+            pluggable.configure(conf);
+        });
+
+        if (this._pluggables.length === 0) {
+            this.addPluggable(new AWSAnalyticsProvider());
         }
-        // hard code region
-        conf.region = 'us-east-1';
-        this._config = Object.assign({}, this._config, conf);
 
-        // no app id provided
-        if (!this._config.appId) { logger.debug('Do not have appId yet.'); }
+        return conf;
+    }
 
-        // async init clients
-        this._initClients();
+    /**
+     * add plugin into Analytics category
+     * @param {Object} pluggable - an instance of the plugin
+     */
+    public async addPluggable(pluggable: AnalyticsProvider) {
+        const ensureCredentails = await this._getCredentials();
+        if (!ensureCredentails) return Promise.resolve(false);
 
-        return this._config;
+        if (pluggable) {
+            this._pluggables.push(pluggable);
+            // pluggable.configure(this._config);
+            const config = pluggable.configure(this._config);
+            return Promise.resolve(config);
+        }
     }
 
     /**
      * Record Session start
-     * @return - A promise which resolves if event record successfully
+     * @return - A promise which resolves if buffer doesn't overflow
      */
     public async startSession() {
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.resolve(false); }
+        const ensureCredentails = await this._getCredentials();
+        if (!ensureCredentails) return Promise.resolve(false);
 
-        const sessionId = this.generateRandomString();
-        this._sessionId = sessionId;
-
-        const clientContext = this._generateClientContext();
-        const params = {
-            clientContext,
-            events: [
-                {
-                    eventType: '_session.start',
-                    timestamp: new Date().toISOString(),
-                    'session': {
-                        'id': sessionId,
-                        'startTimestamp': new Date().toISOString()
-                    }
-                }
-            ]
-        };
-
-        logger.debug('record session start with params', params);
-
-        return new Promise<any>((res, rej) => {
-            this.mobileAnalytics.putEvents(params, (err, data) => {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ', data);
-                    res(data);
-                }
-            });
-        });
-    }
-
-    /**
-     * Record Session stop
-     * @return - A promise which resolves if event record successfully
-     */
-    public async stopSession() {
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.resolve(false); }
-
-        
-        const sessionId = this._sessionId ? this._sessionId : this.generateRandomString();
-        const clientContext = this._generateClientContext();
-        const params = {
-            clientContext,
-            events: [
-                {
-                    eventType: '_session.stop',
-                    timestamp: new Date().toISOString(),
-                    'session': {
-                        'id': sessionId,
-                        'startTimestamp': new Date().toISOString()
-                    }
-                }
-            ]
-        };
-
-        logger.debug('record session stop with params', params);
-        return new Promise<any>((res, rej) => {
-            this.mobileAnalytics.putEvents(params, (err, data) => {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ', data);
-                    res(data);
-                }
-            });
-        });
-    }
-
-    /**
-     * @async
-     * Restart Analytics client and record session stop
-     * @return - A promise ehich resolves to be true if current credential exists
-     */
-    async restart() {
-        const ret = await this._initClients();
-        if (!ret) {
-            logger.debug('restart failed');
-            return;
-        }
-        this.stopSession().then((data) => {
-                logger.debug('restarting clients');
-                return;
-            }).catch(e => {
-                logger.debug('restart error', e);
-            });
-    }
-
-    /**
-    * Record one analytic event and send it to Pinpoint
-    * @param {String} name - The name of the event
-    * @param {Object} [attributs] - Attributes of the event
-    * @param {Object} [metrics] - Event metrics
-    * @return - A promise which resolves if event record successfully
-    */
-    public async record(name: string, attributes?: EventAttributes, metrics?: EventMetrics) {
-        logger.debug(`record event: { name: ${name}, attributes: ${attributes}, metrics: ${metrics}`);
-        
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.resolve(false); }
-
-        // if mobile analytics client not ready, buffer it
-        if (!this.mobileAnalytics ) {
-            logger.debug('mobileAnalytics not ready, put in buffer');
-            this._buffer.push({
-                name,
-                attributes,
-                metrics
-            });
-            return;
-        }
-
-        const clientContext = this._generateClientContext();
-        const params = {
-            clientContext,
-            events: [
-                {
-                    eventType: name,
-                    timestamp: new Date().toISOString(),
-                    attributes,
-                    metrics
-                }
-            ]
-        };
-
-        logger.debug('record event with params', params);
-        return new Promise<any>((res, rej) => {
-            this.mobileAnalytics.putEvents(params, (err, data) => {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ', data);
-                    res(data);
-                }
-            });
-        });
+        const timestamp = new Date().getTime();
+        const params = {eventName: '_session_start', timestamp, config: this._config};
+        return this._putToBuffer(params);
     }
 
     /**
@@ -246,256 +123,95 @@ export default class AnalyticsClass {
     */
    public onHubCapsule(capsule: any): void {}
 
-/*
-    _putEventsCallback() {
-        return (err, data, res, rej) => {
-            if (err) {
-                logger.debug('record event failed. ' + err);
-                if (err.statusCode === undefined || err.statusCode === 400){
-                    if (err.code === 'ThrottlingException') {
-                        // todo
-                        // cache events
-                        logger.debug('get throttled, caching events');
+    /**
+     * Record Session stop
+     * @return - A promise which resolves if buffer doesn't overflow
+     */
+    public async stopSession() {
+        const ensureCredentails = await this._getCredentials();
+        if (!ensureCredentails) return Promise.resolve(false);
+
+        const timestamp = new Date().getTime();
+        const params = {eventName: '_session_stop', timestamp, config: this._config};
+        return this._putToBuffer(params);
+    }
+
+    /**
+     * Record one analytic event and send it to Pinpoint
+     * @param {String} name - The name of the event
+     * @param {Object} [attributs] - Attributes of the event
+     * @param {Object} [metrics] - Event metrics
+     * @return - A promise which resolves if buffer doesn't overflow
+     */
+    public async record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics) {
+        const ensureCredentails = await this._getCredentials();
+        if (!ensureCredentails) return Promise.resolve(false);
+
+        const timestamp = new Date().getTime();
+        const params = {eventName, attributes, metrics, timestamp, config: this._config};
+        return this._putToBuffer(params);
+    }
+
+    public async updateEndpoint(config) {
+        const ensureCredentails = await this._getCredentials();
+        if (!ensureCredentails) return Promise.resolve(false);
+
+        const timestamp = new Date().getTime();
+        const conf = Object.assign(this._config, config);
+        const params = {eventName: '_update_endpoint', timestamp, config: conf};
+        return this._putToBuffer(params);
+    }
+
+    /**
+     * @private
+     * @param {Object} params - params for the event recording
+     * Send events from buffer
+     */
+    private _sendFromBuffer(params) {
+        const that = this;
+        this._pluggables.map((pluggable) => {
+            pluggable.record(params)
+                .then(success => {
+                    if (!success) {
+                        that._putToBuffer(params);
                     }
-                }
-                rej(err);
-            }
-            else {
-                logger.debug('record event success. ' + data);
-                // try to clean cached events if exist
-
-
-                res(data);
-            }
-        };
+                });
+        });
     }
-*/
-    /**
-    * Record one analytic event
-    * @param {String} name - Event name
-    * @param {Object} [attributes] - Attributes of the event
-    * @param {Object} [metrics] - Event metrics
-    */
-    // async recordMonetization(name, attributes?: EventAttributes, metrics?: EventMetrics) {
-    //     this.amaClient.recordMonetizationEvent(name, attributes, metrics);
-    // }
-
 
     /**
      * @private
-     * generate client context with endpoint Id and app Id provided
+     * @param params - params for the event recording
+     * Put events into buffer
      */
-    _generateClientContext() {
-        const { endpointId, appId } = this._config;
-        const clientContext = {
-            client: {
-                client_id: endpointId
-            },
-            services: {
-                mobile_analytics: {
-                    app_id: appId
-                }
-            }
-        };
-        return JSON.stringify(clientContext);
-    }
-
-    /**
-     * generate random string
-     */
-    generateRandomString() {
-        let result = '';
-        const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    	for (let i = 32; i > 0; i -= 1) {
-            result += chars[Math.floor(Math.random() * chars.length)];
+    private _putToBuffer(params) {
+        if (this._buffer.length < BUFFER_SIZE) {
+            this._buffer.push(params);
+            return Promise.resolve();
         }
-    	return result;
+        else return Promise.reject('exceed buffer size');
     }
 
     /**
      * @private
-     * check if app Id exists
+     * check if current credentials exists
      */
-    _checkConfig() {
-        return !!this._config.appId;
-    }
-
-    /**
-     * @private
-     * check if current crednetials exists
-     */
-    _ensureCredentials() {
-        // commented
-        // will cause bug if another user logged in without refreshing page
-        // if (conf.credentials) { return Promise.resolve(true); }
-
+    private _getCredentials() {
         const that = this;
         return Auth.currentCredentials()
             .then(credentials => {
                 if (!credentials) return false;
                 const cred = Auth.essentialCredentials(credentials);
-                
-                that._config.credentials = cred;
-                that._config.endpointId = cred.identityId;
-                if (!that._config.endpointId) {
-                    that._config.endpointId = that.generateRandomString();
-                }
-                logger.debug('set endpointId for analytics', that._config.endpointId);
-                logger.debug('set credentials for analytics', that._config.credentials);
 
+                that._config.credentials = cred;
+                // that._config.endpointId = cred.identityId;
+                // logger.debug('set endpointId for analytics', that._config.endpointId);
+                logger.debug('set credentials for analytics', that._config.credentials);
                 return true;
             })
             .catch(err => {
                 logger.debug('ensure credentials error', err);
                 return false;
             });
-    }
-
-    /**
-     * @private
-     * @async
-     * init clients for Anlytics including mobile analytics and pinpoint
-     * @return - True if initilization succeeds
-     */
-    async _initClients() {
-        if (!this._checkConfig()) { return false; }
-
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return false; }
-
-        this._initMobileAnalytics();
-        try {
-            await this._initPinpoint();
-            this.startSession();
-        } catch (e) {
-            return false;
-        }
-        
-        return true;
-    }
-
-    /**
-     * @private
-     * Init mobile analytics and clear buffer
-     */
-    _initMobileAnalytics() {
-        const { credentials, region } = this._config;
-        this.mobileAnalytics = new MobileAnalytics({ credentials, region });
-
-        if (this._buffer.length > 0) {
-            logger.debug('something in buffer, flush it');
-            const buffer = this._buffer;
-            this._buffer = [];
-            buffer.forEach(event => {
-                this.record(event.name, event.attributes, event.metrics);
-            });
-        }
-    }
-
-
-    /**
-     * @private
-     * Init Pinpoint with configuration and update pinpoint client endpoint
-     * @return - A promise resolves if endpoint updated successfully
-     */
-    async _initPinpoint() {
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.resolve(false); }
-
-        const { region, appId, endpointId, credentials } = this._config;
-        this.pinpointClient = new Pinpoint({
-            region,
-            credentials,
-        });
-
-        const request = this._endpointRequest();
-        const update_params = {
-            ApplicationId: appId,
-            EndpointId: endpointId,
-            EndpointRequest: request
-        };
-        logger.debug('updateEndpoint with params: ', update_params);
-
-        const that = this;
-        return new Promise((res, rej) => {
-            that.pinpointClient.updateEndpoint(update_params, function(err, data) {
-                if (err) {
-                    logger.debug('Pinpoint ERROR', err);
-                    rej(err);
-                } else {
-                    logger.debug('Pinpoint SUCCESS', data);
-                    res(data);
-                }
-            });
-        });
-    }
-
-    updateEndpoint(config) {
-        const conf = config? config.Analytics || config : {};
-        this._config = Object.assign({}, this._config, conf);
-
-        const { appId, endpointId, credentials, region } = this._config;
-
-        const request = this._endpointRequest();
-        const update_params = {
-            ApplicationId: appId,
-            EndpointId: endpointId,
-            EndpointRequest: request
-        };
-
-        if (!this.pinpointClient) {
-            this.pinpointClient = new Pinpoint({
-                region,
-                credentials
-            });
-        }
-
-        const that = this;
-        logger.debug('updateEndpoint with params: ', update_params);
-        return new Promise((res, rej) => {
-            that.pinpointClient.updateEndpoint(update_params, function(err, data) {
-                if (err) {
-                    logger.debug('Pinpoint ERROR', err);
-                    rej(err);
-                } else {
-                    logger.debug('Pinpoint SUCCESS', data);
-                    res(data);
-                }
-            });
-        });
-    }
-
-    /**
-     * EndPoint request
-     * @return {Object} - The request of updating endpoint
-     */
-    _endpointRequest() {
-        const client_info: any = ClientDevice.clientInfo();
-        const { credentials, Address, RequestId, cognitoIdentityPoolId, endpointId } = this._config;
-        const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
-        const ChannelType = Address? ((client_info.platform === 'android') ? 'GCM' : 'APNS') : undefined;
-
-        logger.debug('demographic user id: ', user_id);
-        const OptOut = this._config.OptOut? this._config.OptOut: undefined;
-        return {
-            Address,
-            ChannelType,
-            Demographic: {
-                AppVersion: this._config.appVersion || client_info.appVersion,
-                Make: client_info.make,
-                Model: client_info.model,
-                ModelVersion: client_info.version,
-                Platform: client_info.platform
-            },
-            OptOut,
-            RequestId,
-            EffectiveDate: Address? new Date().toISOString() : undefined,
-            User: { 
-                UserId: endpointId,
-                UserAttributes: {
-                    CognitoIdentityPool: [ cognitoIdentityPoolId ]
-                }
-            }
-        };
     }
 }

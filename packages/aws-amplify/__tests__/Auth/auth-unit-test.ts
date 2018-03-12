@@ -133,12 +133,16 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
     return CognitoUser;
 });
 
-
+jest.mock('../../src/Common/Builder', () => {
+    return {
+        default: null
+    };
+});
 
 import { AuthOptions, SignUpParams } from '../../src/Auth/types';
 import Auth from '../../src/Auth/Auth';
 import Cache from '../../src/Cache';
-import { CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
+import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authOptions: AuthOptions = {
@@ -408,6 +412,25 @@ describe('auth unit test', () => {
             const user = new CognitoUser({
                 Username: 'username',
                 Pool: userPool
+            });
+
+            expect.assertions(1);
+            expect(await auth.signIn('username', 'password')).toEqual(user);
+
+            spyon.mockClear();
+        });
+
+        test('happy case using cookie storage', async () => {
+            const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser')
+                .mockImplementationOnce((authenticationDetails, callback) => {
+                    callback.onSuccess(session);
+                });
+
+            const auth = new Auth({ ...authOptions, cookieStorage: { domain: ".example.com" } });
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool,
+                Storage: new CookieStorage({domain: ".yourdomain.com"})
             });
 
             expect.assertions(1);
@@ -1119,6 +1142,11 @@ describe('auth unit test', () => {
                 return user;
             });
             const spyon2 = jest.spyOn(CognitoUser.prototype, "signOut");
+            // @ts-ignore
+            const spyon3 = jest.spyOn(Auth.prototype, "setCredentialsFromSession")
+            .mockImplementationOnce(() => {
+                return;
+            });
 
             await auth.signOut();
 
@@ -1128,6 +1156,7 @@ describe('auth unit test', () => {
             spyonAuth.mockClear();
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
 
         test('no UserPool', async () => {
