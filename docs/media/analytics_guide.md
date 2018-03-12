@@ -49,6 +49,8 @@ Amplify.configure(
         region: 'XX-XXXX-X',
     // OPTIONAL -  Customized endpoint
         endpointId: 'XXXXXXXXXXXX'
+    // OPTIONAL -  Cusomized UserId
+        userId: 'XXXXXXXXXXX'
     } 
 );
 
