@@ -45,5 +45,8 @@
         "statements": 80
       }
     }
+  },
+  "dependencies": {
+    "qrcode.react": "^0.8.0"
   }
 }

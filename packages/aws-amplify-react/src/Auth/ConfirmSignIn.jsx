@@ -34,23 +34,35 @@ export default class ConfirmSignIn extends AuthPiece {
 
         this._validAuthStates = ['confirmSignIn'];
         this.confirm = this.confirm.bind(this);
+        this.state = {
+            mfaType: 'SMS'
+        }
     }
 
     confirm() {
         const user = this.props.authData;
         const { code } = this.inputs;
-        Auth.confirmSignIn(user, code)
+        const mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
+        Auth.confirmSignIn(user, code, mfaType)
             .then(() => this.changeState('signedIn'))
             .catch(err => this.error(err));
     }
 
+    componentDidUpdate() {
+        //logger.debug('component did update with props', this.props);
+        const user = this.props.authData;
+        const mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA'?
+            'TOTP' : 'SMS';
+        if (this.state.mfaType !== mfaType) this.setState({ mfaType });
+    }
+
     showComponent(theme) {
-        const { hide } = this.props;
+        const { hide, authData } = this.props;
         if (hide && hide.includes(ConfirmSignIn)) { return null; }
 
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Confirm Code')}</SectionHeader>
+                <SectionHeader theme={theme}>{I18n.get('Confirm ' + this.state.mfaType + ' Code')}</SectionHeader>
                 <SectionBody theme={theme}>
                     <InputRow
                         autoFocus
