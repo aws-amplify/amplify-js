@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -21,6 +23,12 @@ var _AmplifyTheme = require('../AmplifyTheme');
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../AmplifyUI');
+
+var _qrcode = require('qrcode.react');
+
+var _qrcode2 = _interopRequireDefault(_qrcode);
+
+var _Widget = require('../Widget');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -41,117 +49,54 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * and limitations under the License.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var logger = new _awsAmplify.Logger('ConfirmSignIn');
+var logger = new _awsAmplify.Logger('TOTPSetup');
 
-var ConfirmSignIn = function (_AuthPiece) {
-    _inherits(ConfirmSignIn, _AuthPiece);
+var TOTPSetup = function (_AuthPiece) {
+    _inherits(TOTPSetup, _AuthPiece);
 
-    function ConfirmSignIn(props) {
-        _classCallCheck(this, ConfirmSignIn);
+    function TOTPSetup(props) {
+        _classCallCheck(this, TOTPSetup);
 
-        var _this = _possibleConstructorReturn(this, (ConfirmSignIn.__proto__ || Object.getPrototypeOf(ConfirmSignIn)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (TOTPSetup.__proto__ || Object.getPrototypeOf(TOTPSetup)).call(this, props));
 
-        _this._validAuthStates = ['confirmSignIn'];
-        _this.confirm = _this.confirm.bind(_this);
-        _this.state = {
-            mfaType: 'SMS'
-        };
+        _this._validAuthStates = ['TOTPSetup'];
+        _this.onTOTPEvent = _this.onTOTPEvent.bind(_this);
         return _this;
     }
 
-    _createClass(ConfirmSignIn, [{
-        key: 'confirm',
+    _createClass(TOTPSetup, [{
+        key: 'onTOTPEvent',
         value: function () {
-            function confirm() {
-                var _this2 = this;
-
-                var user = this.props.authData;
-                var code = this.inputs.code;
-
-                var mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
-                _awsAmplify.Auth.confirmSignIn(user, code, mfaType).then(function () {
-                    return _this2.changeState('signedIn');
-                })['catch'](function (err) {
-                    return _this2.error(err);
-                });
+            function onTOTPEvent(event, data, user) {
+                logger.debug('on totp event', event, data);
+                //const user = this.props.authData;
+                if (event === 'Setup TOTP') {
+                    if (data === 'SUCCESS') {
+                        this.changeState('signedIn', user);
+                    }
+                }
             }
 
-            return confirm;
-        }()
-    }, {
-        key: 'componentDidUpdate',
-        value: function () {
-            function componentDidUpdate() {
-                //logger.debug('component did update with props', this.props);
-                var user = this.props.authData;
-                var mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'TOTP' : 'SMS';
-                if (this.state.mfaType !== mfaType) this.setState({ mfaType: mfaType });
-            }
-
-            return componentDidUpdate;
+            return onTOTPEvent;
         }()
     }, {
         key: 'showComponent',
         value: function () {
             function showComponent(theme) {
-                var _this3 = this;
+                var hide = this.props.hide;
 
-                var _props = this.props,
-                    hide = _props.hide,
-                    authData = _props.authData;
-
-                if (hide && hide.includes(ConfirmSignIn)) {
+                if (hide && hide.includes(TOTPSetup)) {
                     return null;
                 }
 
-                return _react2['default'].createElement(
-                    _AmplifyUI.FormSection,
-                    { theme: theme },
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionHeader,
-                        { theme: theme },
-                        _awsAmplify.I18n.get('Confirm ' + this.state.mfaType + ' Code')
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionBody,
-                        { theme: theme },
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            autoFocus: true,
-                            placeholder: _awsAmplify.I18n.get('Code'),
-                            theme: theme,
-                            key: 'code',
-                            name: 'code',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.confirm },
-                            _awsAmplify.I18n.get('Confirm')
-                        )
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionFooter,
-                        { theme: theme },
-                        _react2['default'].createElement(
-                            _AmplifyUI.Link,
-                            { theme: theme, onClick: function () {
-                                    function onClick() {
-                                        return _this3.changeState('signIn');
-                                    }
-
-                                    return onClick;
-                                }() },
-                            _awsAmplify.I18n.get('Back to Sign In')
-                        )
-                    )
-                );
+                return _react2['default'].createElement(_Widget.TOTPSetupComp, _extends({}, this.props, { onTOTPEvent: this.onTOTPEvent }));
             }
 
             return showComponent;
         }()
     }]);
 
-    return ConfirmSignIn;
+    return TOTPSetup;
 }(_AuthPiece3['default']);
 
-exports['default'] = ConfirmSignIn;
+exports['default'] = TOTPSetup;

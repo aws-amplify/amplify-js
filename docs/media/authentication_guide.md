@@ -13,6 +13,7 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
   - [5. Write Your Own Auth UI](#5-write-your-own-auth-ui)
   - [6. Federated Identity](#6-federated-identity)
   - [7. User Attributes](#7-user-attributes)
+  - [8. Select Preferred MFA](#8-select-preferred-mfa)
 * [Extension](#extension)
   - [UI Theme](#ui-theme)
   - [Error Message](#error-message)
@@ -158,6 +159,47 @@ Return a `CognitoUserSession` which contains JWT `accessToken`, `idToken`, and `
 ```js
 let session = Auth.currentSession();
 // CognitoUserSession => { idToken, refreshToken, accessToken }
+```
+
+#### Setup TOTP
+```js
+import { Auth } from 'aws-amplify';
+
+// To setup TOTP, first you need to get a secret code from AWS Cognito
+// user -> the current Authenticated user
+Auth.setupTOTP(user).then((code) => {
+    // directly output the code or transfer it into a QR code
+});
+
+// ...
+
+// Then you will have your TOTP account in your App (like Google Authenticator)
+// Use the password generated to verify the setup
+Auth.verifyTotpToken(user).then(() => {
+    // don't forget to set TOTP as the preferred MFA method
+    Auth.setPreferredMFA(user, 'TOTP');
+    // ...
+});
+```
+
+#### Select MFA Type
+```js
+import { Auth } from 'aws-amplify';
+
+// You can select preferred mfa type, for example:
+// Select TOTP as preferred
+Auth.setPreferredMFA(user, 'TOTP').then((data) => {
+    console.log(data);
+    // ...
+}).catch(e => {});
+
+// Select SMS as preferred
+Auth.setPreferredMFA(user, 'SMS');
+
+// Select no-mfa
+Auth.setPreferredMFA(user, 'NOMFA');
+
+// Please Note that this will only work
 ```
 
 ### 2. withAuthenticator HOC
@@ -417,6 +459,38 @@ If you change the email address you will receive a confirmation code to that ema
 
 ```js
 let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
+```
+
+### 8 Select Preferred MFA
+
+You can directly use the ```SelectMFType``` UI Component provided by ```aws-amplify-react```.
+
+```js
+import Amplify from 'aws-amplify';
+import awsmobile from './aws-exports';
+import { SelectMFAType } from 'aws-amplify-react';
+
+Amplify.configure(awsmobile);
+
+// Please have at least TWO types
+// Please make sure you set it properly accroding to your Cognito Userpool
+const MFATypes = {
+    SMS: true, // if SMS enabled in your user pool
+    TOTP: true, // if TOTP enabled in your user pool
+    Optional: true, // if MFA is set to optional in your user pool
+}
+
+class App extends Component {
+    // ...
+    render() {
+        return (
+            // ...
+            <SelectMFAType authData={this.props.authData} MFATypes={MFATypes}>
+        )
+    }
+}
+
+export default withAuthenticator(App, true);
 ```
 
 ## Extensions
