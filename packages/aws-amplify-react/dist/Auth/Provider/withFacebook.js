@@ -96,7 +96,7 @@ function withFacebook(Comp) {
                             name: response.name
                         };
 
-                        _awsAmplify.Auth.federatedSignIn('facebook', { token: accessToken, expires_at: expires_at }, user).then(function (crednetials) {
+                        _awsAmplify.Auth.federatedSignIn('facebook', { token: accessToken, expires_at: expires_at }, user).then(function (credentials) {
                             if (onStateChange) {
                                 onStateChange('signedIn');
                             }

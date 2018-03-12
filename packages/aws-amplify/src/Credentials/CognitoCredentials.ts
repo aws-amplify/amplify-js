@@ -201,7 +201,8 @@ export default class CognitoCredentials {
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
-            'amazon': 'www.amazon.com'
+            'amazon': 'www.amazon.com',
+            'developer': 'cognito-identity.amazonaws.com'
         };
 
         Cache.setItem('federatedInfo', { provider, token, user }, { priority: 1 });
@@ -224,6 +225,8 @@ export default class CognitoCredentials {
         });
         this._credentials.authenticated = true;
         this.credentials_source = 'federated';
+
+        if (AWS && AWS.config) { AWS.config.credentials = this._credentials; }
 
         return Promise.resolve(this._credentials);
     }

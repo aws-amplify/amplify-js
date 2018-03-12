@@ -241,7 +241,7 @@ var AuthClass = /** @class */ (function () {
      * Sign in
      * @param {String} username - The username to be signed in
      * @param {String} password - The password of the username
-     * @return - A promise resolves the CognitoUser object if success or mfa required
+     * @return - A promise resolves the CognitoUser
      */
     AuthClass.prototype.signIn = function (username, password) {
         if (!this.userPool) {
@@ -288,6 +288,196 @@ var AuthClass = /** @class */ (function () {
                         requiredAttributes: requiredAttributes
                     };
                     resolve(user);
+                },
+                mfaSetup: function (challengeName, challengeParam) {
+                    logger.debug('signIn mfa setup', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                },
+                // associateSecretCode: (secretCode) => {
+                //     logger.debug('signIn asscoiateSecretCode', secretCode);
+                //     resolve(user);
+                // },
+                totpRequired: function (challengeName, challengeParam) {
+                    logger.debug('signIn totpRequired');
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                },
+                selectMFAType: function (challengeName, challengeParam) {
+                    logger.debug('signIn selectMFAType', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                }
+            });
+        });
+    };
+    /**
+     * get user current preferred mfa option
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves the current preferred mfa option if success
+     */
+    AuthClass.prototype.getMFAOptions = function (user) {
+        return new Promise(function (res, rej) {
+            user.getMFAOptions(function (err, mfaOptions) {
+                if (err) {
+                    logger.debug('get MFA Options failed', err);
+                    rej(err);
+                }
+                logger.debug('get MFA options success', mfaOptions);
+                res(mfaOptions);
+            });
+        });
+    };
+    /**
+     * set preferred MFA method
+     * @param {CognitoUser} user - the current Cognito user
+     * @param {string} mfaMethod - preferred mfa method
+     * @return - A promise resolves if success
+     */
+    AuthClass.prototype.setPreferredMFA = function (user, mfaMethod) {
+        var smsMfaSettings = {
+            PreferredMfa: false,
+            Enabled: false
+        };
+        var totpMfaSettings = {
+            PreferredMfa: false,
+            Enabled: false
+        };
+        switch (mfaMethod) {
+            case 'TOTP':
+                totpMfaSettings = {
+                    PreferredMfa: true,
+                    Enabled: true
+                };
+                break;
+            case 'SMS':
+                smsMfaSettings = {
+                    PreferredMfa: true,
+                    Enabled: true
+                };
+                break;
+            case 'NOMFA':
+                break;
+            default:
+                logger.debug('no validmfa method provided');
+                return Promise.reject('no validmfa method provided');
+        }
+        var that = this;
+        var TOTP_NOT_VERIFED = 'User has not verified software token mfa';
+        var TOTP_NOT_SETUPED = 'User has not set up software token mfa';
+        return new Promise(function (res, rej) {
+            user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, function (err, result) {
+                if (err) {
+                    // if totp not setup or verified and user want to set it, return error
+                    // otherwise igonre it
+                    if (err.message === TOTP_NOT_SETUPED || err.message === TOTP_NOT_VERIFED) {
+                        if (mfaMethod === 'SMS') {
+                            that.enableSMS(user).then(function (data) {
+                                logger.debug('Set user mfa success', data);
+                                res(data);
+                            }).catch(function (err) {
+                                logger.debug('Set user mfa preference error', err);
+                                rej(err);
+                            });
+                        }
+                        else if (mfaMethod === 'NOMFA') {
+                            // diable sms
+                            that.disableSMS(user).then(function (data) {
+                                logger.debug('Set user mfa success', data);
+                                res(data);
+                            }).catch(function (err) {
+                                logger.debug('Set user mfa preference error', err);
+                                rej(err);
+                            });
+                        }
+                        else {
+                            logger.debug('Set user mfa preference error', err);
+                            rej(err);
+                        }
+                    }
+                    else {
+                        logger.debug('Set user mfa preference error', err);
+                        rej(err);
+                    }
+                }
+                logger.debug('Set user mfa success', result);
+                res(result);
+            });
+        });
+    };
+    /**
+     * diable SMS
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves is success
+     */
+    AuthClass.prototype.disableSMS = function (user) {
+        return new Promise(function (res, rej) {
+            user.disableMFA(function (err, data) {
+                if (err) {
+                    logger.debug('disable mfa failed', err);
+                    rej(err);
+                }
+                logger.debug('disable mfa succeed', data);
+                res(data);
+            });
+        });
+    };
+    /**
+     * enable SMS
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves is success
+     */
+    AuthClass.prototype.enableSMS = function (user) {
+        return new Promise(function (res, rej) {
+            user.enableMFA(function (err, data) {
+                if (err) {
+                    logger.debug('enable mfa failed', err);
+                    rej(err);
+                }
+                logger.debug('enable mfa succeed', data);
+                res(data);
+            });
+        });
+    };
+    /**
+     * Setup TOTP
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves with the secret code if success
+     */
+    AuthClass.prototype.setupTOTP = function (user) {
+        return new Promise(function (res, rej) {
+            user.associateSoftwareToken({
+                onFailure: function (err) {
+                    logger.debug('associateSoftwareToken failed', err);
+                    rej(err);
+                },
+                associateSecretCode: function (secretCode) {
+                    logger.debug('associateSoftwareToken sucess', secretCode);
+                    res(secretCode);
+                }
+            });
+        });
+    };
+    /**
+     * verify TOTP setup
+     * @param {CognitoUser} user - the current user
+     * @param {string} challengeAnswer - challenge answer
+     * @return - A promise resolves is success
+     */
+    AuthClass.prototype.verifyTotpToken = function (user, challengeAnswer) {
+        logger.debug('verfication totp token', user, challengeAnswer);
+        return new Promise(function (res, rej) {
+            user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
+                onFailure: function (err) {
+                    logger.debug('verifyTotpToken failed', err);
+                    rej(err);
+                },
+                onSuccess: function (data) {
+                    logger.debug('verifyTotpToken success', data);
+                    res(data);
                 }
             });
         });
@@ -297,7 +487,7 @@ var AuthClass = /** @class */ (function () {
      * @param {Object} user - The CognitoUser object
      * @param {String} code - The confirmation code
      */
-    AuthClass.prototype.confirmSignIn = function (user, code) {
+    AuthClass.prototype.confirmSignIn = function (user, code, mfaType) {
         if (!code) {
             return Promise.reject('Code cannot be empty');
         }
@@ -316,7 +506,7 @@ var AuthClass = /** @class */ (function () {
                     logger.debug('confirm signIn failure', err);
                     reject(err);
                 }
-            });
+            }, mfaType);
         });
     };
     AuthClass.prototype.completeNewPassword = function (user, password, requiredAttributes) {

@@ -171,6 +171,8 @@ declare module "amazon-cognito-identity-js" {
 
         public getJwtToken(): string;
         public getExpiration(): number;
+        public getIssuedAt(): number;
+        public decodePayload(): { [id: string]: any; }
     }
 
     export class CognitoIdToken {
@@ -178,6 +180,8 @@ declare module "amazon-cognito-identity-js" {
 
         public getJwtToken(): string;
         public getExpiration(): number;
+        public getIssuedAt(): number;
+        public decodePayload(): { [id: string]: any; }
     }
 
     export class CognitoRefreshToken {
