@@ -20,7 +20,7 @@ var logger = new Common_1.ConsoleLogger('Analytics');
 var _instance = null;
 if (!_instance) {
     logger.debug('Create Analytics Instance');
-    _instance = new Analytics_1.default(null);
+    _instance = new Analytics_1.default();
 }
 var Analytics = _instance;
 exports.default = Analytics;
@@ -46,6 +46,11 @@ Analytics.onHubCapsule = function (capsule) {
         case 'storage':
             storageEvent(payload);
             break;
+        case 'analytics':
+            analyticsEvent(payload);
+            break;
+        default:
+            break;
     }
 };
 var storageEvent = function (payload) {
@@ -61,20 +66,30 @@ var authEvent = function (payload) {
     }
     switch (event) {
         case 'signIn':
-            Analytics.restart();
             Analytics.record('_userauth.sign_in');
             break;
         case 'signUp':
             Analytics.record('_userauth.sign_up');
             break;
         case 'signOut':
-            Analytics.restart();
             break;
         case 'signIn_failure':
             Analytics.record('_userauth.auth_fail');
             break;
     }
 };
+var analyticsEvent = function (payload) {
+    var eventType = payload.eventType;
+    if (!eventType)
+        return;
+    switch (eventType) {
+        case 'session_start':
+            Analytics.startSession();
+            break;
+    }
+};
 Common_1.Hub.listen('auth', Analytics);
 Common_1.Hub.listen('storage', Analytics);
+Common_1.Hub.listen('analytics', Analytics);
+Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
 //# sourceMappingURL=index.js.map

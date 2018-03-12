@@ -11598,7 +11598,7 @@ function hash(alg, key) {
   return {
     update: function (data) {
       if(!Buffer.isBuffer(data)) data = new Buffer(data)
-        
+
       bufs.push(data)
       length += data.length
       return this
@@ -34135,8 +34135,8 @@ var AnalyticsClass = /** @class */ (function () {
                 else {
                     logger.debug('record event success. ' + data);
                     // try to clean cached events if exist
-    
-    
+
+
                     res(data);
                 }
             };
@@ -34189,7 +34189,7 @@ var AnalyticsClass = /** @class */ (function () {
     };
     /**
      * @private
-     * check if current crednetials exists
+     * check if current credentials exists
      */
     AnalyticsClass.prototype._ensureCredentials = function () {
         // commented

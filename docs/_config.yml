@@ -68,11 +68,9 @@ amplify:
               item_url: '/media/developer_guide/index.html'
             - item_name: API
               item_url: '/api/index.html'
-            - item_name: Community
-              item_url: 'https://gitter.im/AWS-Amplify/Lobby/'
             - item_name: Blog
               item_url: '/blog'
-            - item_name: 
+            - item_name: Github
               item_icon: github
               item_url: 'https://github.com/aws/aws-amplify'
     footer:
@@ -82,7 +80,7 @@ amplify:
                 image: true
             copyright: © 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
         social_list:
-            - network_name: chat
+            - network_name: gitter
               profile_url: 'https://gitter.im/AWS-Amplify/Lobby/'
             - network_name: twitter
               profile_url: 'https://twitter.com/search?q=%23awsamplify&src=typd'
@@ -90,6 +88,7 @@ amplify:
               profile_url: 'https://github.com/aws/aws-amplify'
             - network_name: youtube
               profile_url: 'https://www.youtube.com/watch?v=vAjf3lyjf8c'
+              
     google_analytics:
         tracking_code: # Add your Google Analytics tracking code to activate Google Analytics
     comments:

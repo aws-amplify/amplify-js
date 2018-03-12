@@ -5,6 +5,18 @@
 
 AWS Amplify Analytics module helps you to easily collect analytics data for you app. Analytics data includes user sessions and other custom events that you want to track in your app.
 
+<<<<<<< HEAD
+=======
+* [Installation and Configuration](#installation-and-configuration)
+  - [Automated Setup](#automated-setup)
+  - [Manual Setup](#manual-setup)
+* [Integration](#integration)
+  - [1. Collect Session Data](#1-collect-session-data)
+  - [2. Record Event](#2-record-event)
+  - [3. Record Event with Attributes](#3-record-event-with-attributes)
+  - [4. Record Event with Metrics](#4-record-event-with-metrics)
+* [Add your own plugin](#add-your-own-plugin)
+>>>>>>> 7682bbc4b07c817a2541968b7f1c81e9fbc9db87
 
 ## Installation and Configuration
 
@@ -57,6 +69,8 @@ Amplify.configure(
         appId: 'XXXXXXXXXXabcdefghij1234567890ab',
     // OPTIONAL -  Amazon service region
         region: 'XX-XXXX-X',
+    // OPTIONAL -  Customized endpoint
+        endpointId: 'XXXXXXXXXXXX'
     } 
 );
 
@@ -108,7 +122,42 @@ import { Analytics } from 'aws-amplify';
 Analytics.record('albumVisit', {}, { minutesListened: 30 });
 ```
 
+<<<<<<< HEAD
 ### API Reference
 
 For the complete API documentation for Analytics module, visit our [API Reference](/api/classes/analyticsclass.html)
 {: .callout .callout--info}
+=======
+## Add your own plugin
+You can write your own plugin by using the interface ```AnalyticsProvider```:
+```js
+import { AnalyticsProvider } from 'aws-amplify';
+
+export default class MyAnalyticsProvider implements AnalyticsProvider {
+    // you need to implement these four methods
+    // configure your provider
+    configure(config: object): object;
+
+    // record events and returns true if succeeds
+    record(params: object): Promise<boolean>;
+
+    // return 'Analytics';
+    getCategory(): string;
+
+    // return the name of you provider
+    getProviderName(): string;
+}
+```
+
+You can now add your own Analytics plugin now by using:
+```js
+// send configuration into Amplify
+Amplify.configure({
+    Analytics: { 
+        // My Analytics provider configuration 
+    }
+});
+// use the plugin
+Amplify.addPluggable(new MyAnalyticsProvider());
+```
+>>>>>>> 7682bbc4b07c817a2541968b7f1c81e9fbc9db87

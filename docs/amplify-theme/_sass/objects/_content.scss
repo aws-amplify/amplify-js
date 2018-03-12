@@ -80,9 +80,9 @@
 		border-style:solid;
 		border-color:#d8d8d8;
 		padding:4px;
-		font-size: 15px;
+		font-size: 16px;
 		padding-left:0px;
-		margin-top:-6px;
+		margin-top:-4px;
 		border: none;
 		outline: none;
 		cursor: pointer;
@@ -92,3 +92,16 @@
 }
 
  
+.gitter-chat-embed {
+	z-index:99999;
+}
+
+.gitter-open-chat-button {
+	background-color: orange;
+    height: 30px;
+	padding-top: 2px;
+	opacity: 0.8;
+	padding-left: 15px;
+	padding-right: 15px;
+	right: 20px;
+}

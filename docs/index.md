@@ -14,22 +14,24 @@ buttons:
 
 # Grid navigation
 marketing_grid:
-    - title: Declarative
+    - title: Declarative API
       excerpt: <p>AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations.</p>
                <p>
-                    See our <a href='/examples'>code examples</a> to learn how you can 'cloud-enable' your app in under 5 minutes.
+                    See our <a href='/media/examples/index.html'>code examples</a> to learn how you can 'cloud-enable' your app in under 5 minutes.
                 </p> 
     - title: Bring your own frontend 
       excerpt: <p>AWS Amplify goes well with any JavaScript based frontend worfklow, and React Native for mobile developers.</p> 
                <p>See our starter kits for  
-                  <a href='https://github.com/awslabs/aws-mobile-react-sample'>React JS</a>, 
-                  <a href='https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws'>Ionic</a>, and 
+                  <a href='https://github.com/awslabs/aws-mobile-react-sample'>React</a>, 
+                  <a href='https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws'>Ionic</a>,
+                  <a href='https://github.com/aws-samples/aws-amplify-vue'>Vue</a>,
+                   and 
                   <a href='https://github.com/awslabs/aws-mobile-react-native-starter'>React Native</a>.
-                   <u>Angular</u> and <u>Vue</u> are coming soon...   
+                   <u>Angular</u> is coming soon...   
 
                 </p>
-    - title: Ready to plug
-      excerpt: The default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backends or services.
+    - title: Extendible
+      excerpt: Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
 
       
 # Grid navigation

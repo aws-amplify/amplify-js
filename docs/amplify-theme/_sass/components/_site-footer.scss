@@ -10,6 +10,10 @@
 	hr {
 		width: 5.625rem;
 	}
+
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #dfe2e5;
 }
 
 /* ----- Logo ----- */
@@ -26,7 +30,8 @@
 		display: block;
 		width: 140px;
 		margin-top: 5px;
-		margin-left: -20px;
+		margin-left: -26px;
+		margin-top: -10px;
 	}
 }
 
