@@ -93,7 +93,9 @@ export default class Greetings extends AuthPiece {
                 <NavButton
                     theme={theme}
                     onClick={this.signOut}
-                >{I18n.get('Sign Out')}</NavButton>
+                >{I18n.get('Sign Out')}
+                </NavButton>
+
             </span>
         )
     }

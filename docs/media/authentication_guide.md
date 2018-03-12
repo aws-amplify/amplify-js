@@ -69,7 +69,7 @@ Amplify.configure({
 
 ## Working with the API
 
-### Common Use Cases
+### Common Authentication Use Cases
 
 AWS Amplify Authentication module exposes set of APIs to be used in any JavaScript framework. Please check [AWS Amplify API Reference](/api/classes/authclass.html) for full API list. 
 
@@ -157,7 +157,8 @@ let session = Auth.currentSession();
 // CognitoUserSession => { idToken, refreshToken, accessToken }
 ```
 
-### `withAuthenticator` HOC
+### Using withAuthenticator HOC
+
 
 For React and React Native apps, the simplest way to add authentication flows into your app is to use *withAuthenticator* High Order Component.
 
@@ -176,7 +177,7 @@ Now, your app will have complete flows for user sign-in and registration. Since 
 <img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
 
 
-#### Federated Identities
+#### Enabling Federated Identities
 
 You can enable federated Identity login by specifying *federated* option. Here is a configuration enabling social login with multiple providers:
 
@@ -195,7 +196,7 @@ ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('r
  NOTE: Federated Identity HOCs are not yet available on React Native.
  {: .callout .callout--info}
 
-#### Sign Out Button
+#### Rendering a Sign Out Button
 
 `withAuthenticator` component renders your App component after a successfull user signed in, and it prevents non sign-in uses to interact with your app. In this case, we need to display a *sign-out* button to trigger related process.
 
@@ -205,7 +206,7 @@ To display a sign-out button, set `includeGreetings = true` in the parameter obj
 export default withAuthenticator(App, { includeGreetings: true });
 ```
 
-### Authenticator Component
+### Using Authenticator Component
 
 The `withAuthenticator` HOC essentially just wraps `Authenticator` component. Using `Authenticator` directly gives you more customization options.
 
@@ -258,78 +259,7 @@ With that, to control the condition for *Authenticator* to render App component,
 in the component's constructor, then implement `showComponent(theme) {}` in lieu of the typical
 `render() {}` method.
 
-### Composing Your Own Authenticator
-
-`Authenticator` is designed as a container, which contains a number of Auth components. Each component does a single job, eg: SignIn, SignUp etc.
-
-You can compose your own Authenticator, but you must set `hideDefault={true}`.
-
-For example, the following Authenticator only renders Greetings component which has a *Sign Out* button:
-
-```jsx
-    <Authenticator hideDefault={true}>
-        <Greetings />
-    </Authenticator>
-```
-
-#### Customize Greeting message
-
-The *Greetings* component has two states: signedIn, and signedOut. To customize the greeting message, set properties `inGreeting` and `outGreeting` using a string or function.
-
-```jsx
-    <Authenticator hideDefault={true}>
-        <Greetings
-            inGreeting={(username) => 'Hello ' + username}
-            outGreeting="Please sign in..."
-        />
-    </Authenticator>
-```
-
-### Write Your Own Auth UI
-
-To customize the default auth experience even more, you can create your own auth UI. To do this, your component will leverage the following *Authenticator* properties:
-
-```
-- authState
-- authData
-- onStateChange
-```
-
-This example creates an 'Always On' Auth UI, which constantly shows the current auth state in your app.
-
-```jsx
-import { Authenticator, SignIn, SignUp, ConfirmSignUp, Greetings } from 'aws-amplify-react';
-
-const AlwaysOn = (props) => {
-    return (
-        <div>
-            <div>I am always here to show current auth state: {props.authState}</div>
-            <button onClick={() => props.onStateChange('signUp')}>Show Sign Up</button>
-        </div>
-    )
-}
-
-handleAuthStateChange(state) {
-    if (state === 'signedIn') { 
-        /* Do something when the user has signed-in */ 
-    }
-}
-
-render() {
-    return (
-        <Authenticator hideDefault={true} onStateChange={this.handleAuthStateChange}>
-            <SignIn/>
-            <SignUp/>
-            <ConfirmSignUp/>
-            <Greetings/>
-            <AlwaysOn/>
-        </Authenticator>
-    )
-}
-```
-
 ### Federated Identities (Social Sign-in)
-
 
 **Availibility Note**
 Currently, our federated identity components only support Google, Facebook and Amazon identities, and works with React. 
@@ -389,7 +319,97 @@ const federated = {
 
 There is also `withGoogle`, `withFacebook`, `withAmazon` components, in case you need to customize a single provider.
 
-### User Attributes
+### Enabling MFA (Multi-Factor Authentication)
+
+Multi-factor authentication (MFA) increases security for your app by adding an authentication method and not relying solely on username (or alias) and password. AWS Amplify uses Amazon Cognito to provide MFA. Please see [Amazon Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html) for more information about setting up MFA in Amazon Cognito. 
+
+Once you enable MFA on Amazon Cognito, you can configure your app to work with MFA.
+
+#### Enabling TOTP (Time-based One-time Password)
+
+With TOTP, your app user is challenged to complete authentication using a time-based one-time (TOTP) password after their username and password have been verified.
+
+You can setup TOTP for a user in your app:
+
+```js
+import { Auth } from 'aws-amplify';
+
+// To setup TOTP, first you need to get a `authorization code` from Amazon Cognito
+// `user` is the current Authenticated user
+Auth.setupTOTP(user).then((code) => {
+    // You can directly display the `code` to the user or convert it to a QR code to be scanned
+});
+
+// ...
+
+// Then you will have your TOTP account in your TOTP-generating app (like Google Authenticator)
+// Use the generated one-time password to verify the setup
+Auth.verifyTotpToken(user, challengeAnswer).then(() => {
+    
+    // don't forget to set TOTP as the preferred MFA method
+    Auth.setPreferredMFA(user, 'TOTP');
+    // ...
+}).catch( e => {
+    // Token is not verified
+});
+```
+
+#### Setup MFA Type
+
+There are multiple MFA types supported by Amazon Cognito. You can set the preffered method in your code:
+
+```js
+import { Auth } from 'aws-amplify';
+
+// You can select preferred mfa type, for example:
+// Select TOTP as preferred
+Auth.setPreferredMFA(user, 'TOTP').then((data) => {
+    console.log(data);
+    // ...
+}).catch(e => {});
+
+// Select SMS as preferred
+Auth.setPreferredMFA(user, 'SMS');
+
+// Select no-mfa
+Auth.setPreferredMFA(user, 'NOMFA');
+
+// Please Note that this will only work
+```
+
+#### Letting User Select MFA Type
+
+When working with multiple MFA Types, you can let the app user to select the approprieate authentication method. `SelectMFAType` UI Component, which is provided with `aws-amplify-react` package, renders a list of available MFA types.
+
+```js
+import Amplify from 'aws-amplify';
+import awsmobile from './aws-exports';
+import { SelectMFAType } from 'aws-amplify-react';
+
+Amplify.configure(awsmobile);
+
+// Please have at least TWO types
+// Please make sure you set it properly accroding to your Cognito Userpool
+const MFATypes = {
+    SMS: true, // if SMS enabled in your user pool
+    TOTP: true, // if TOTP enabled in your user pool
+    Optional: true, // if MFA is set to optional in your user pool
+}
+
+class App extends Component {
+    // ...
+    render() {
+        return (
+            // ...
+            <SelectMFAType authData={this.props.authData} MFATypes={MFATypes}>
+        )
+    }
+}
+
+export default withAuthenticator(App, true);
+```
+
+### Working with User Attributes
 
 You can pass user attributes during sign up:
 
@@ -433,58 +453,6 @@ let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
 
 You can take specific actions when users sign-in or sign-out by subscribing authentication events in your app. Please see our [Hub Module Developer Guide](/media/hub_guide/index.html#listening-authentication-events) for more information.
 
-### API Reference
-
-For the complete API documentation for Authentication module, visit our [API Reference](/api/classes/authclass.html)
-{: .callout .callout--info}
-
-## Customization
-
-### UI Theme
-
-AWS Amplify's default UI components are theme based. To see the default styling, check  `AmplifyTheme.js` for the related package in our repo.
-
-You can create create your own theme, and use it to render Amplify components:
-
-```jsx
-import MyTheme from './MyTheme';
-
-<Authenticator theme={MyTheme} />
-```
-
-Alternatively, you can import and override `AmplifyTheme` component in your code to apply style changes:
-
-```jsx
-import { AmplifyTheme } from 'aws-amplify-react';
-
-const MySectionHeader = Object.assign({}, AmplifyTheme.sectionHeader, { background: 'orange' });
-const MyTheme = Object.assign({}, AmplifyTheme, { sectionHeader: MySectionHeader });
-
-<Authenticator theme={MyTheme} />
-```
-
-A sample them can be found [here](https://github.com/richardzcode/a-theme-react).
-{: .callout .callout--info}
-
-### Error Messages
-
-During authentication flows, Amplify handles error messages returned from server. Amplify provides a simple way of customizing those error messages with a `messageMap` callback.
-
-The function simply takes the original message as arguments and then outputs the desired message. Check `AmplifyMessageMap.js` file to see how Amplify makes the map function.
-
-```jsx
-const map = (message) => {
-    if (/incorrect.*username.*password/i.test(message)) {
-        return 'Incorrect username or password';
-    }
-
-    return message;
-}
-
-<Authenticator errorMessage={map} />
-```
-
-You may notice in `AmplifyMessageMap.js` it also handles internationalization. This topic is covered in our [I18n Guide](/media/i18n_guide/index.html).
 
 ### Working with AWS Service Objects
 
@@ -510,3 +478,127 @@ Full API Documentation for Service Interface Objects is available [here](https:/
 
 Note: In order to work with Service Interface Objects, your Amazon Cognito users' [IAM role](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) must have the appropriate permissions to call the requested services.
 {: .callout .callout--warning}
+
+
+### API Reference
+
+For the complete API documentation for Authentication module, visit our [API Reference](/api/classes/authclass.html)
+{: .callout .callout--info}
+
+## Customization
+
+### Customize UI Theme
+
+AWS Amplify's default UI components are theme based. To see the default styling, check  `AmplifyTheme.js` for the related package in our repo.
+
+You can create create your own theme, and use it to render Amplify components:
+
+```jsx
+import MyTheme from './MyTheme';
+
+<Authenticator theme={MyTheme} />
+```
+
+Alternatively, you can import and override `AmplifyTheme` component in your code to apply style changes:
+
+```jsx
+import { AmplifyTheme } from 'aws-amplify-react';
+
+const MySectionHeader = Object.assign({}, AmplifyTheme.sectionHeader, { background: 'orange' });
+const MyTheme = Object.assign({}, AmplifyTheme, { sectionHeader: MySectionHeader });
+
+<Authenticator theme={MyTheme} />
+```
+
+A sample them can be found [here](https://github.com/richardzcode/a-theme-react).
+{: .callout .callout--info}
+
+### Create Your Own UI
+
+To customize the default auth experience even more, you can create your own auth UI. To do this, your component will leverage the following *Authenticator* properties:
+
+```
+- authState
+- authData
+- onStateChange
+```
+
+This example creates an 'Always On' Auth UI, which constantly shows the current auth state in your app.
+
+```jsx
+import { Authenticator, SignIn, SignUp, ConfirmSignUp, Greetings } from 'aws-amplify-react';
+
+const AlwaysOn = (props) => {
+    return (
+        <div>
+            <div>I am always here to show current auth state: {props.authState}</div>
+            <button onClick={() => props.onStateChange('signUp')}>Show Sign Up</button>
+        </div>
+    )
+}
+
+handleAuthStateChange(state) {
+    if (state === 'signedIn') { 
+        /* Do something when the user has signed-in */ 
+    }
+}
+
+render() {
+    return (
+        <Authenticator hideDefault={true} onStateChange={this.handleAuthStateChange}>
+            <SignIn/>
+            <SignUp/>
+            <ConfirmSignUp/>
+            <Greetings/>
+            <AlwaysOn/>
+        </Authenticator>
+    )
+}
+```
+
+### Composing Your Own Authenticator
+
+`Authenticator` is designed as a container, which contains a number of Auth components. Each component does a single job, eg: SignIn, SignUp etc.
+
+You can compose your own Authenticator, but you must set `hideDefault={true}`.
+
+For example, the following Authenticator only renders Greetings component which has a *Sign Out* button:
+
+```jsx
+    <Authenticator hideDefault={true}>
+        <Greetings />
+    </Authenticator>
+```
+
+#### Customize Greeting message
+
+The *Greetings* component has two states: signedIn, and signedOut. To customize the greeting message, set properties `inGreeting` and `outGreeting` using a string or function.
+
+```jsx
+    <Authenticator hideDefault={true}>
+        <Greetings
+            inGreeting={(username) => 'Hello ' + username}
+            outGreeting="Please sign in..."
+        />
+    </Authenticator>
+```
+
+### Customizing Error Messages
+
+During authentication flows, Amplify handles error messages returned from server. Amplify provides a simple way of customizing those error messages with a `messageMap` callback.
+
+The function simply takes the original message as arguments and then outputs the desired message. Check `AmplifyMessageMap.js` file to see how Amplify makes the map function.
+
+```jsx
+const map = (message) => {
+    if (/incorrect.*username.*password/i.test(message)) {
+        return 'Incorrect username or password';
+    }
+
+    return message;
+}
+
+<Authenticator errorMessage={map} />
+```
+
+You may notice in `AmplifyMessageMap.js` it also handles internationalization. This topic is covered in our [I18n Guide](/media/i18n_guide/index.html).
