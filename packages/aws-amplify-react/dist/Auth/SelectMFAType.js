@@ -41,54 +41,88 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * and limitations under the License.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var logger = new _awsAmplify.Logger('ConfirmSignIn');
+var logger = new _awsAmplify.Logger('SelectMFAType');
 
-var ConfirmSignIn = function (_AuthPiece) {
-    _inherits(ConfirmSignIn, _AuthPiece);
+var SelectMFAType = function (_AuthPiece) {
+    _inherits(SelectMFAType, _AuthPiece);
 
-    function ConfirmSignIn(props) {
-        _classCallCheck(this, ConfirmSignIn);
+    function SelectMFAType(props) {
+        _classCallCheck(this, SelectMFAType);
 
-        var _this = _possibleConstructorReturn(this, (ConfirmSignIn.__proto__ || Object.getPrototypeOf(ConfirmSignIn)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (SelectMFAType.__proto__ || Object.getPrototypeOf(SelectMFAType)).call(this, props));
 
-        _this._validAuthStates = ['confirmSignIn'];
-        _this.confirm = _this.confirm.bind(_this);
-        _this.state = {
-            mfaType: 'SMS'
-        };
+        _this._validAuthStates = ['selectMFAType'];
+        _this.verify = _this.verify.bind(_this);
         return _this;
     }
 
-    _createClass(ConfirmSignIn, [{
-        key: 'confirm',
+    _createClass(SelectMFAType, [{
+        key: 'verify',
         value: function () {
-            function confirm() {
+            function verify() {
                 var _this2 = this;
 
-                var user = this.props.authData;
-                var code = this.inputs.code;
+                var MFAType = this.inputs.MFAType;
 
-                var mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
-                _awsAmplify.Auth.confirmSignIn(user, code, mfaType).then(function () {
-                    return _this2.changeState('signedIn');
+                if (!MFAType) {
+                    this.error('No mfa type selected');
+                    return;
+                }
+
+                _awsAmplify.Auth.verifyCurrentUserAttribute(contact).then(function (data) {
+                    logger.debug(data);
                 })['catch'](function (err) {
                     return _this2.error(err);
                 });
             }
 
-            return confirm;
+            return verify;
         }()
     }, {
-        key: 'componentDidUpdate',
+        key: 'selectView',
         value: function () {
-            function componentDidUpdate() {
-                //logger.debug('component did update with props', this.props);
-                var user = this.props.authData;
-                var mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'TOTP' : 'SMS';
-                if (this.state.mfaType !== mfaType) this.setState({ mfaType: mfaType });
+            function selectView() {
+                var MFATypes = this.props.MFATypes;
+                var SMS = MFATypes.SMS,
+                    TOTP = MFATypes.TOTP,
+                    NONE = MFATypes.NONE;
+
+                return _react2['default'].createElement(
+                    'div',
+                    null,
+                    SMS ? _react2['default'].createElement(_AmplifyUI.RadioRow, {
+                        placeholder: _awsAmplify.I18n.get('SMS'),
+                        theme: theme,
+                        key: 'sms',
+                        name: 'MFAType',
+                        value: 'sms',
+                        onChange: this.handleInputChange
+                    }) : null,
+                    TOTP ? _react2['default'].createElement(_AmplifyUI.RadioRow, {
+                        placeholder: _awsAmplify.I18n.get('TOTP'),
+                        theme: theme,
+                        key: 'totp',
+                        name: 'MFAType',
+                        value: 'totp',
+                        onChange: this.handleInputChange
+                    }) : null,
+                    NONE ? _react2['default'].createElement(_AmplifyUI.RadioRow, {
+                        placeholder: _awsAmplify.I18n.get('No MFA'),
+                        theme: theme,
+                        key: 'noMFA',
+                        name: 'MFAType',
+                        value: 'noMFA',
+                        onChange: this.handleInputChange
+                    }) : null,
+                    _react2['default'].createElement(
+                        _AmplifyUI.ButtonRow,
+                        { theme: theme, onClick: this.verify },
+                        _awsAmplify.I18n.get('Verify')
+                    )
+                );
             }
 
-            return componentDidUpdate;
+            return selectView;
         }()
     }, {
         key: 'showComponent',
@@ -97,10 +131,10 @@ var ConfirmSignIn = function (_AuthPiece) {
                 var _this3 = this;
 
                 var _props = this.props,
-                    hide = _props.hide,
-                    authData = _props.authData;
+                    authData = _props.authData,
+                    hide = _props.hide;
 
-                if (hide && hide.includes(ConfirmSignIn)) {
+                if (hide && hide.includes(SelectMFAType)) {
                     return null;
                 }
 
@@ -110,24 +144,17 @@ var ConfirmSignIn = function (_AuthPiece) {
                     _react2['default'].createElement(
                         _AmplifyUI.SectionHeader,
                         { theme: theme },
-                        _awsAmplify.I18n.get('Confirm ' + this.state.mfaType + ' Code')
+                        _awsAmplify.I18n.get('Select MFA Type')
                     ),
                     _react2['default'].createElement(
                         _AmplifyUI.SectionBody,
                         { theme: theme },
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            autoFocus: true,
-                            placeholder: _awsAmplify.I18n.get('Code'),
-                            theme: theme,
-                            key: 'code',
-                            name: 'code',
-                            onChange: this.handleInputChange
-                        }),
                         _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.confirm },
-                            _awsAmplify.I18n.get('Confirm')
-                        )
+                            _AmplifyUI.MessageRow,
+                            { theme: theme },
+                            _awsAmplify.I18n.get('Select your preferred MFA Type')
+                        ),
+                        this.selectView()
                     ),
                     _react2['default'].createElement(
                         _AmplifyUI.SectionFooter,
@@ -136,12 +163,12 @@ var ConfirmSignIn = function (_AuthPiece) {
                             _AmplifyUI.Link,
                             { theme: theme, onClick: function () {
                                     function onClick() {
-                                        return _this3.changeState('signIn');
+                                        return _this3.changeState('signedIn');
                                     }
 
                                     return onClick;
                                 }() },
-                            _awsAmplify.I18n.get('Back to Sign In')
+                            _awsAmplify.I18n.get('Go back')
                         )
                     )
                 );
@@ -151,7 +178,7 @@ var ConfirmSignIn = function (_AuthPiece) {
         }()
     }]);
 
-    return ConfirmSignIn;
+    return SelectMFAType;
 }(_AuthPiece3['default']);
 
-exports['default'] = ConfirmSignIn;
+exports['default'] = SelectMFAType;

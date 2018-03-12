@@ -12,10 +12,6 @@ var _react2 = _interopRequireDefault(_react);
 
 var _awsAmplify = require('aws-amplify');
 
-var _AuthPiece2 = require('./AuthPiece');
-
-var _AuthPiece3 = _interopRequireDefault(_AuthPiece2);
-
 var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
@@ -41,117 +37,40 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * and limitations under the License.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var logger = new _awsAmplify.Logger('ConfirmSignIn');
+var logger = new _awsAmplify.Logger('UserProfile');
 
-var ConfirmSignIn = function (_AuthPiece) {
-    _inherits(ConfirmSignIn, _AuthPiece);
+var UserProfile = function (_Component) {
+    _inherits(UserProfile, _Component);
 
-    function ConfirmSignIn(props) {
-        _classCallCheck(this, ConfirmSignIn);
+    function UserProfile(props) {
+        _classCallCheck(this, UserProfile);
 
-        var _this = _possibleConstructorReturn(this, (ConfirmSignIn.__proto__ || Object.getPrototypeOf(ConfirmSignIn)).call(this, props));
-
-        _this._validAuthStates = ['confirmSignIn'];
-        _this.confirm = _this.confirm.bind(_this);
-        _this.state = {
-            mfaType: 'SMS'
-        };
-        return _this;
+        return _possibleConstructorReturn(this, (UserProfile.__proto__ || Object.getPrototypeOf(UserProfile)).call(this, props));
     }
 
-    _createClass(ConfirmSignIn, [{
-        key: 'confirm',
+    _createClass(UserProfile, [{
+        key: 'render',
         value: function () {
-            function confirm() {
-                var _this2 = this;
-
-                var user = this.props.authData;
-                var code = this.inputs.code;
-
-                var mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
-                _awsAmplify.Auth.confirmSignIn(user, code, mfaType).then(function () {
-                    return _this2.changeState('signedIn');
-                })['catch'](function (err) {
-                    return _this2.error(err);
-                });
-            }
-
-            return confirm;
-        }()
-    }, {
-        key: 'componentDidUpdate',
-        value: function () {
-            function componentDidUpdate() {
-                //logger.debug('component did update with props', this.props);
-                var user = this.props.authData;
-                var mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'TOTP' : 'SMS';
-                if (this.state.mfaType !== mfaType) this.setState({ mfaType: mfaType });
-            }
-
-            return componentDidUpdate;
-        }()
-    }, {
-        key: 'showComponent',
-        value: function () {
-            function showComponent(theme) {
-                var _this3 = this;
-
-                var _props = this.props,
-                    hide = _props.hide,
-                    authData = _props.authData;
-
-                if (hide && hide.includes(ConfirmSignIn)) {
-                    return null;
-                }
-
+            function render() {
                 return _react2['default'].createElement(
-                    _AmplifyUI.FormSection,
-                    { theme: theme },
+                    'div',
+                    null,
                     _react2['default'].createElement(
-                        _AmplifyUI.SectionHeader,
-                        { theme: theme },
-                        _awsAmplify.I18n.get('Confirm ' + this.state.mfaType + ' Code')
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionBody,
-                        { theme: theme },
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            autoFocus: true,
-                            placeholder: _awsAmplify.I18n.get('Code'),
-                            theme: theme,
-                            key: 'code',
-                            name: 'code',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.confirm },
-                            _awsAmplify.I18n.get('Confirm')
-                        )
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionFooter,
-                        { theme: theme },
-                        _react2['default'].createElement(
-                            _AmplifyUI.Link,
-                            { theme: theme, onClick: function () {
-                                    function onClick() {
-                                        return _this3.changeState('signIn');
-                                    }
-
-                                    return onClick;
-                                }() },
-                            _awsAmplify.I18n.get('Back to Sign In')
-                        )
+                        _AmplifyUI.NavButton,
+                        {
+                            theme: _AmplifyTheme2['default'],
+                            onClick: this.signOut
+                        },
+                        _awsAmplify.I18n.get('Sign Out')
                     )
                 );
             }
 
-            return showComponent;
+            return render;
         }()
     }]);
 
-    return ConfirmSignIn;
-}(_AuthPiece3['default']);
+    return UserProfile;
+}(_react.Component);
 
-exports['default'] = ConfirmSignIn;
+exports['default'] = UserProfile;
