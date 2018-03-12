@@ -2,6 +2,16 @@
 <!--LATEST=0.2.8-->
 <!--ENTRYINSERT-->
 
+## 03/12/2018
+* aws-amplify - v0.2.10@beta
+    * Enhancement: Analytics customize endpointId #421
+    * Enhancement: Auth TOTP #407
+    * Bug Fix: asyncStorageCache #412
+    * Enhancement: Generate declaration file #381
+* aws-amplify - v0.1.35@beta
+    * Enhancement: Make options parameter optional in Storage.put #406
+    * Bug Fix: Fix issue #357 for authenticator hidedefault #400
+
 ## 02/27/2018
 * aws-amplify - v0.2.9
     * Bug Fix: Fix for missing endpoint in config #373
