@@ -253,10 +253,6 @@ export default class AuthClass {
                     user['challengeParam'] = challengeParam;
                     resolve(user);
                 },
-                // associateSecretCode: (secretCode) => {
-                //     logger.debug('signIn asscoiateSecretCode', secretCode);
-                //     resolve(user);
-                // },
                 totpRequired: (challengeName, challengeParam) => {
                     logger.debug('signIn totpRequired');
                     user['challengeName'] = challengeName;
@@ -329,13 +325,13 @@ export default class AuthClass {
 
         const that = this;
         const TOTP_NOT_VERIFED = 'User has not verified software token mfa';
-        const TOTP_NOT_SETUPED = 'User has not set up software token mfa';
+        const TOTP_NOT_SETUP = 'User has not set up software token mfa';
         return new Promise((res, rej) => {
             user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, (err, result) => {
                 if (err) {
                     // if totp not setup or verified and user want to set it, return error
                     // otherwise igonre it
-                    if (err.message === TOTP_NOT_SETUPED || err.message === TOTP_NOT_VERIFED) {
+                    if (err.message === TOTP_NOT_SETUP || err.message === TOTP_NOT_VERIFED) {
                         if (mfaMethod === 'SMS') {
                             that.enableSMS(user).then((data) => {
                                 logger.debug('Set user mfa success', data);
