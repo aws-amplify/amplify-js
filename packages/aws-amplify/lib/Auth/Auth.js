@@ -857,11 +857,12 @@ var AuthClass = /** @class */ (function () {
         var domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
-            'amazon': 'www.amazon.com'
+            'amazon': 'www.amazon.com',
+            'developer': 'cognito-identity.amazonaws.com'
         };
         var domain = domains[provider];
         if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
+            return Promise.reject(provider + ' is not supported: [google, facebook, amazon, developer]');
         }
         var logins = {};
         logins[domain] = token;

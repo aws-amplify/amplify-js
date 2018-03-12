@@ -246,7 +246,9 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         if (this.mobileAnalytics 
             && this._config.credentials 
             && this._config.credentials.sessionToken === config.credentials.sessionToken
-            && this._config.credentials.identityId === config.credentials.identityId) {
+            && (config.userId? 
+                this._config.userId === config.userId :
+                this._config.credentials.identityId === config.credentials.identityId)) {
             logger.debug('no change for analytics config, directly return from init');
             return true;
         }
@@ -325,13 +327,13 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @return {Object} - The request of updating endpoint
      */
     _endpointRequest() {
-        const { clientInfo, credentials, Address, RequestId, endpointId } = this._config;
+        const { clientInfo, credentials, Address, RequestId, endpointId, userId } = this._config;
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
 
         logger.debug('demographic user id: ', user_id);
         const OptOut = this._config.OptOut? this._config.OptOut: undefined;
-        return {
+        const ret = {
             Address,
             ChannelType,
             Demographic: {
@@ -345,9 +347,10 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             RequestId,
             EffectiveDate: Address? new Date().toISOString() : undefined,
             User: { 
-                UserId: credentials.identityId
+                UserId: userId? userId: credentials.identityId
             }
         };
+        return ret;
     }
 
     /**
@@ -368,5 +371,4 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         };
         return JSON.stringify(clientContext);
     }
-
 }
