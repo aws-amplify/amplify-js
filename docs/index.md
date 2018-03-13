@@ -17,7 +17,7 @@ marketing_grid:
     - title: Declarative API
       excerpt: <p>AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations.</p>
                <p>
-                    See our <a href='/aws-amplify/media/examples/'>code examples</a> to learn how you can 'cloud-enable' your app in under 5 minutes.
+                    See our <a href='/aws-amplify/media/examples'>code examples</a> to learn how you can 'cloud-enable' your app in under 5 minutes.
                 </p> 
     - title: Bring your own frontend 
       excerpt: <p>AWS Amplify goes well with any JavaScript based frontend worfklow, and React Native for mobile developers.</p> 
@@ -39,11 +39,11 @@ grid_navigation:
     - title: Installation
       excerpt:  Install and configurate AWS Amplify to start working with cloud services.
       cta: Read more
-      url: '/media/install_n_config/'
+      url: '/media/install_n_config'
     - title: Developer Guide
       excerpt: Discover our building blocks for frontend and mobile developers.
       cta: Read more
-      url: '/media/developer_guide/'
+      url: '/media/developer_guide'
     - title: API Reference
       excerpt: API Reference for the library.
       cta: Read more

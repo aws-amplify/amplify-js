@@ -11,7 +11,7 @@ Depending on your needs, you can integrate Authentication module at different le
 
 ## Installation and Configuration
 
-Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config/) for general setup. Here is how you can enable Authentication category for your app.
+Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. Here is how you can enable Authentication category for your app.
 
 ### Automated Setup
 
@@ -263,7 +263,7 @@ in the component's constructor, then implement `showComponent(theme) {}` in lieu
 
 **Availibility Note**
 Currently, our federated identity components only support Google, Facebook and Amazon identities, and works with React. 
-Support for React Native is in progress. Please see our[ Setup Guide for Federated Identities]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/federated_identity_setup/). 
+Support for React Native is in progress. Please see our[ Setup Guide for Federated Identities]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/federated_identity_setup). 
 {: .callout .callout--info}
 
 
@@ -601,4 +601,4 @@ const map = (message) => {
 <Authenticator errorMessage={map} />
 ```
 
-You may notice in `AmplifyMessageMap.js` it also handles internationalization. This topic is covered in our [I18n Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/i18n_guide/).
+You may notice in `AmplifyMessageMap.js` it also handles internationalization. This topic is covered in our [I18n Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/i18n_guide).

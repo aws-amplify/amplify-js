@@ -276,7 +276,7 @@ import { Analytics } from 'aws-amplify';
 
 This will record an **appRender** event every time a user launches your app.
 
-You can easily add custom analytics events to suit your purposes. For more information about Analytics Category, see [AWS Amplify Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide/)
+You can easily add custom analytics events to suit your purposes. For more information about Analytics Category, see [AWS Amplify Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide)
 {: .callout .callout--info}
 
 ## Add User Authentication to Your App
@@ -326,7 +326,7 @@ Reload your application on the physical device or emulator/simulator:
 </div>
 </div>
 
-For more information about Authentication Category, see [AWS Amplify Authentication Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide/)
+For more information about Authentication Category, see [AWS Amplify Authentication Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide)
 {: .callout .callout--info}
 
 

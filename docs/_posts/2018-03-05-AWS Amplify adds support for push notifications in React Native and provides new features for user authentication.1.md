@@ -45,5 +45,5 @@ PushNotification.onRegister(data => {
 });
 ```
 
-Please see our [Authentication User Guide]({% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/push_notifications_setup/) for details.
+Please see our [Authentication User Guide]({% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/push_notifications_setup) for details.
 {: .callout .callout--info}

@@ -7,7 +7,7 @@ AWS Amplify Storage module gives a simple mechanism for managing user content in
 
 ## Installation and Configuration
 
-Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config/) for general setup. Here is how you can enable Storage category for your app.
+Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. Here is how you can enable Storage category for your app.
 
 The default implementation of the Storage module leverages [Amazon S3](https://aws.amazon.com/s3).
 {: .callout .callout--info}

@@ -17,7 +17,7 @@ Setup instructions are provided for Android and iOS, and configuration for both 
 ### Requirements
 1. In order to use Amazon Pinpoint you need to setup credentials (keys or certificates) for your targeted mobile platform; e.g.:Android and/or iOS.
 2. Testing Push Notifications requires a physical device, because simulators or emulators wont' be able to handle push notifications.
-3. Push Notification module is integrated with [AWS Amplify Analytics module]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide/) to be able to track notifications. Make sure that you have configured the Analytics module in your app before configuring Push Notification module.
+3. Push Notification module is integrated with [AWS Amplify Analytics module]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide) to be able to track notifications. Make sure that you have configured the Analytics module in your app before configuring Push Notification module.
 3. For setting up iOS push notifications, you need to download and install Xcode from [Apple Developer Center](https://developer.apple.com/xcode/).
 
 ### Setup for Android devices
@@ -194,7 +194,7 @@ $ react-native link aws-amplify-react-native
 
 Push Notification module is integrated with `Analytics` module to be able to track notifications. Make sure that you have configured the Analytics module in your app before configuring Push Notification module.  
 
-If you don't have Analytics already enabled, see our [Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide/) to add Analytics to your app.
+If you don't have Analytics already enabled, see our [Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide) to add Analytics to your app.
 {: .callout .callout--info}
 
 First, import `PushNotification` module and configure it with `PushNotification.configure()`.

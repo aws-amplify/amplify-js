@@ -18,8 +18,7 @@
 				{% if site.category_list %}
 					{% for category in site.category_list %}
 						{% for item in category.subs %}
-							{% assign urlHtml = page.url | append: ".html" %}
-							{% if page.url == item.url or urlHtml == item.url %}
+							{% if page.url contains item.url %}
 								{% assign isPageInCategories = true %}	
 							{% endif %}	
 						{% endfor %}
@@ -40,8 +39,7 @@
 										<ul class="level-1 nav">
 											{% for category in site.category_list %}
 												{% for item in category.subs %}
-													{% assign urlHtml = page.url | append: "index.html" %}
-													{% if page.url == item.url or urlHtml == item.url  %}
+													{% if page.url contains item.url %}
 														<div class='in-this-page js-sections'></div>
 													{% else %}
 														<li class="section-link">
