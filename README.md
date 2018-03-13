@@ -35,6 +35,7 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
   - [3. Override default authentication screens](#3-override-default-authentication-screens)
   - [4. Sign HTTP requests](#4-sign-http-requests)
   - [5. Upload and Download public or private content](#5-upload-and-download-public-or-private-content)
+* [Try Beta Version](#try-beta-version)
 * [Contributing](#contributing)
 
 ## Installation
@@ -239,6 +240,16 @@ With configurable settings, store content in an S3 bucket in public folders for 
     .then (result => console.log(result))
     .catch(err => console.log(err));
 ```
+
+## Try Beta Version
+
+Now you can play with our beta version by:  
+```
+npm install aws-amplify@beta
+npm install aws-amplify-react@beta
+npm install aws-amplify-react-native@beta
+```
+Check the [Change Log](https://github.com/aws/aws-amplify/blob/master/CHANGELOG.md), try out new features and give us feedback!
 
 ## Contributing
 

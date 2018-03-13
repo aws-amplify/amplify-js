@@ -41,7 +41,7 @@ Amplify.configure(aws_exports);
 ```js
 import Amplify from 'aws-amplify';
 
-Amplify.configure(
+Amplify.configure({
     Analytics: {
     // OPTIONAL -  Amazon Pinpoint App ID
         appId: 'XXXXXXXXXXabcdefghij1234567890ab',
@@ -50,7 +50,7 @@ Amplify.configure(
     // OPTIONAL -  Customized endpoint
         endpointId: 'XXXXXXXXXXXX'
     } 
-);
+});
 
 ```
 
