@@ -6,11 +6,16 @@
 * aws-amplify - v0.2.10@beta
     * Enhancement: Analytics customize endpointId #421
     * Enhancement: Auth TOTP #407
-    * Bug Fix: asyncStorageCache #412
+    * Enhancement: Add support for developer authenticated strategies #425
     * Enhancement: Generate declaration file #381
-* aws-amplify - v0.1.35@beta
+    * Enhancement: Cognito cookie storage #398
+    * Feature: Analytics plugin #236
+* aws-amplify-react - v0.1.35@beta
     * Enhancement: Make options parameter optional in Storage.put #406
+    * Enhancement: Auth TOTP #407
     * Bug Fix: Fix issue #357 for authenticator hidedefault #400
+* aws-amplify-react-native - v0.2.6@beta
+    * Bug Fix: asyncStorageCache #412
 
 ## 02/27/2018
 * aws-amplify - v0.2.9
