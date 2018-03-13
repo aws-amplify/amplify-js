@@ -4,10 +4,10 @@ import {
     ConsoleLogger as Logger,
     Constants,
     Hub
-} from '../Common';
+} from '../../Common';
 
-import Auth from '../Auth'; 
-import Cache from '../Cache';
+import Auth from '../../Auth'; 
+import Cache from '../../Cache';
 const {
     CognitoIdentityCredentials
 } = AWS;
@@ -24,109 +24,75 @@ export default class CognitoCredentials {
         this._credentials = null;
     }
 
-    configure(config) {
+    /**
+     * pass the configuration
+     * @param config 
+     */
+    public configure(config) {
         logger.debug('configure CognitoCredentials with config', config);
         const conf= config? config: {};
         this._config = Object.assign({}, this._config, conf);
         return this._config;
     }
 
-    getCategory() {
+    /**
+     * Get the category of this provider
+     */
+    public getCategory() {
         return 'Credentials';
     }
 
-    getProviderName() {
+    /**
+     * Get the name of this provider
+     */
+    public getProviderName() {
         return 'AWSCognito';
     }
 
-    setCredentials(config) {
+    /**
+     * Set the credentials with configuration
+     * @param config - the configuration to set the credentials
+     */
+    public setCredentials(config) {
         const { session, guest, federated } = config;
         
         if (session) {
-            return this.setCredentialsFromSession(session);
+            return this._setCredentialsFromSession(session);
         } else if (guest) {
-            return this.setCredentialsForGuest();
+            return this._setCredentialsForGuest();
         } else if (federated) {
-            return this.setCredentialsFromFederation(federated);
+            return this._setCredentialsFromFederation(federated);
+        } else {
+            logger.debug('incorrect configuration for credentials', config);
+            return Promise.reject('incorrect configuration for credentials');
         }
     }
 
-    removeCredentials() {
-        this._credentials.clearCachedId();
+    /**
+     * Remove the credential from library
+     */
+    public removeCredentials() {
+        if (this._credentials) this._credentials.clearCachedId();
         Cache.removeItem('federatedInfo');
         this._credentials = null;
         this.credentials_source = '';
-    }
-
-    refreshCredentials(credentials): Promise<any> {
-        logger.debug('try to refresh credentials', credentials);
-        const cred = credentials || this._credentials;
-        if (!cred) {
-            return Promise.reject(new Error('no credentials provided for refreshing!'));
-        }
-        return new Promise((resolve,reject) => {
-            cred.refresh(err => {
-                if (err) {
-                    logger.debug('refresh credentials error', err);
-                    resolve(null);
-                } else {
-                    resolve(cred);
-                }
-            });
-        });
-    }
-
-    isExpired(credentials): boolean {
-        if (!credentials) {
-            logger.debug('no credentials for expiration check');
-            return true;
-        }
-        logger.debug('is this credentials expired?', credentials);
-        const ts = new Date().getTime();
-        const delta = 10 * 60 * 1000; // 10 minutes
-        const { expired, expireTime } = credentials;
-        if (!expired && expireTime > ts + delta) {
-            return false;
-        }
-        return true;
     }
 
     /**
      * Get authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
-    public async retrieveCredentialsFromAuth() : Promise<any> {
-        try {
-            logger.debug('getting credentials from cognito auth');
-            const federatedInfo = await Cache.getItem('federatedInfo');
-            if (federatedInfo) {
-                const { provider, token, user} = federatedInfo;
-                return new Promise((resolve, reject) => {
-                    this.setCredentialsFromFederation({ provider, token, user });
-                    resolve();
-                });
-            } else {
-                const that = this;
-                return Auth.currentSession()
-                    .then(session => that.setCredentialsFromSession(session))
-                    .catch((error) => that.setCredentialsForGuest());
-            }
-        } catch (e) {
-            return Promise.reject(e);
-        }
-    }
-
     public getCredentials(config?): Promise<any> {
         logger.debug('getting credentials with config', config);
-        if (this._credentials && !this.isExpired(this._credentials)) {
+        if (this._credentials && !this._isExpired(this._credentials)) {
             logger.debug('credentails exists and not expired');
             return Promise.resolve(this._credentials);
         } else {
             const that = this;
-            return this.retrieveCredentialsFromAuth()
+            return this._retrieveCredentialsFromAuth()
                 .then(() => {
                     const credentials = that._credentials;
-                    return that.refreshCredentials(credentials);
+                    return that._refreshCredentials(credentials);
                 })
                 .catch(() => {
                     return Promise.resolve(null);
@@ -151,7 +117,61 @@ export default class CognitoCredentials {
         };
     }
 
-    private setCredentialsForGuest() {
+    private async _retrieveCredentialsFromAuth() : Promise<any> {
+        try {
+            logger.debug('getting credentials from cognito auth');
+            const federatedInfo = await Cache.getItem('federatedInfo');
+            if (federatedInfo) {
+                const { provider, token, user} = federatedInfo;
+                return new Promise((resolve, reject) => {
+                    this._setCredentialsFromFederation({ provider, token, user });
+                    resolve();
+                });
+            } else {
+                const that = this;
+                return Auth.currentSession()
+                    .then(session => that._setCredentialsFromSession(session))
+                    .catch((error) => that._setCredentialsForGuest());
+            }
+        } catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    private _isExpired(credentials): boolean {
+        if (!credentials) {
+            logger.debug('no credentials for expiration check');
+            return true;
+        }
+        logger.debug('is this credentials expired?', credentials);
+        const ts = new Date().getTime();
+        const delta = 10 * 60 * 1000; // 10 minutes
+        const { expired, expireTime } = credentials;
+        if (!expired && expireTime > ts + delta) {
+            return false;
+        }
+        return true;
+    }
+
+    private _refreshCredentials(credentials): Promise<any> {
+        logger.debug('try to refresh credentials', credentials);
+        const cred = credentials || this._credentials;
+        if (!cred) {
+            return Promise.reject(new Error('no credentials provided for refreshing!'));
+        }
+        return new Promise((resolve,reject) => {
+            cred.refresh(err => {
+                if (err) {
+                    logger.debug('refresh credentials error', err);
+                    resolve(null);
+                } else {
+                    resolve(cred);
+                }
+            });
+        });
+    }
+
+    private _setCredentialsForGuest() {
         logger.debug('set credentials from guest with config', this._config);
         const { cognitoIdentityPoolId, cognitoRegion, mandatorySignIn } = this._config;
         if (mandatorySignIn) {
@@ -175,7 +195,7 @@ export default class CognitoCredentials {
         return Promise.resolve(this._credentials);
     }
     
-    private setCredentialsFromSession(session) {
+    private _setCredentialsFromSession(session) {
         logger.debug('set credentials from session');
         const idToken = session.getIdToken().getJwtToken();
         const { cognitoRegion, cognitoUserPoolId, cognitoIdentityPoolId } = this._config;
@@ -195,7 +215,7 @@ export default class CognitoCredentials {
         return Promise.resolve(this._credentials);
     }
 
-    private setCredentialsFromFederation(federated) {
+    private _setCredentialsFromFederation(federated) {
         logger.debug('set credentials from federation');
         const { provider, token, user } = federated;
         const domains = {

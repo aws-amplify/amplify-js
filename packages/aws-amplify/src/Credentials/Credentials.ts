@@ -1,4 +1,4 @@
-import CognitoCredentials from './CognitoCredentials';
+import CognitoCredentials from './Providers/CognitoCredentials';
 import {
     ConsoleLogger as Logger,
     Parser
@@ -16,6 +16,10 @@ export default class Credentials{
         this.addPluggable(new CognitoCredentials());
     }
 
+    /**
+     * Configure
+     * @param {Object} config - the configuration
+     */
     configure(config) {
         logger.debug('configure Credentials');
         const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Credentials);
@@ -26,13 +30,13 @@ export default class Credentials{
             pluggable.configure(conf);
         });
 
-        // if (this._pluggables.length === 0) {
-            
-        // }
-
         return this._config;
     }
 
+    /**
+     * Add pluggables to Credentials category
+     * @param {Object} pluggable - plugin
+     */
     public addPluggable(pluggable) {
         if (pluggable) {
             this._pluggables.push(pluggable);
@@ -41,6 +45,10 @@ export default class Credentials{
         }
     }
 
+    /**
+     * Set credentials with configuration
+     * @param {Object} config - the configuration
+     */
     public setCredentials(config?) {
         let providerName = 'AWSCognito';
         if (config && config.providerName) providerName = config.providerName;
@@ -54,11 +62,18 @@ export default class Credentials{
                         }).catch(e => {
                             rej('set credentials failed: ' + e);
                         });
+                } else {
+                    logger.debug('no provider found');
+                    res(null);
                 }
             });
         });
     }
 
+    /**
+     * Remove credentials with configuration
+     * @param {Object} config - the configuraiton
+     */
     public removeCredentials(config?) {
         let providerName = 'AWSCognito';
         if (config && config.providerName) providerName = config.providerName;
@@ -70,6 +85,10 @@ export default class Credentials{
         });
     }
 
+    /**
+     * cut credentials to compact version
+     * @param params 
+     */
     public essentialCredentials(params) {
         let providerName = 'AWSCognito';
         if (params && params.providerName) providerName = params.providerName;
@@ -84,6 +103,10 @@ export default class Credentials{
         return ret;
     }
 
+    /**
+     * Get credentials with configuration
+     * @param {Object} config - the configuraiton
+     */
     public getCredentials(config?) {
         let providerName = 'AWSCognito';
         if (config && config.providerName) providerName = config.providerName;
@@ -98,8 +121,11 @@ export default class Credentials{
                         }).catch(err => {
                             res(null);
                         });
-                    }
-                });
+                } else {
+                    logger.debug('no provider found');
+                    res(null);
+                }
+            });
         });
     }
 }
