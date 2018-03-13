@@ -194,7 +194,7 @@
 			}
 
 			$li.append(
-				'<a class="' + aClass +'" href="#' + list[ i ].$el.attr( 'id' ) + '">' +
+				'<a class="js-smooth-scroll ' + aClass +'" href="#' + list[ i ].$el.attr( 'id' ) + '">' +
 					list[ i ].$el.text().replace( /^#\ /, '' ) +
 				'</a>'
 			);
@@ -221,8 +221,8 @@
 
 	$jsSmoothScroll.click( function() {
 		$( 'html, body' ).animate( {
-			scrollTop: $( $( this ).attr( 'href' ) ).offset().top
-		}, 1200 );
+			scrollTop: $( $( this ).attr( 'href' ) ).offset().top - 85
+		}, 500 );
 
 		return false;
 	} );

@@ -55,7 +55,7 @@
 
 			&.section-link {
 				a {
-					padding-left:20px;
+					padding-left:11px;
 				}
 			}
 			
@@ -113,6 +113,8 @@
 				@include link-reset;
 				font-size:0.9rem;
 				padding-left: 10px;
+				white-space: nowrap;
+				overflow: hidden;
 				&:hover {
 					text-decoration: underline;
 				}

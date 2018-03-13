@@ -34,42 +34,29 @@ $ react-native init myapp
 $ cd myapp
 $ npm install aws-amplify --save && npm install aws-amplify-react-native --save
 $ react-native link aws-amplify-react-native
-$ react-native link amazon-cognito-identity-js //if you did not link it
+$ react-native link amazon-cognito-identity-js #if you did not link it
 ```
-<<<<<<< HEAD
 That would install required npm modules and link React Native binaries.
-5. Open `android/build.gradle` file and add *classpath 'com.google.gms:google-services:3.1.1'* under buildscript dependencies:
-```gradle
-    buildscript {
-        repositories {
-            jcenter()
-        }
-=======
 
-4. Add your firebase app to your firebase project:
- - Visit the [Firebase](https://console.firebase.google.com) console and click the Gear icon next to "Project Overview" and click "Project Settings"
- - Click "Add App"
- - Choose "Add Firebase to your Android App"
- - Add your package name i.e. com.myProjectName
- - Download the `google-services.json` file to `android/app`
-
+5. Enable your app in Firebase. To do that, follow those steps:
+ - Visit the [Firebase console](https://console.firebase.google.com), and click the Gear icon next to **Project Overview** and click **Project Settings** Remember, if you don't have an existing project, you need to create one in order to continue
+ - Click **Add App**, if you have an existing app you can skip this step
+ - Choose **Add Firebase to your Android App**
+ - Add your package name i.e. **com.myProjectName** and click **Register App**
+ - Download  `google-services.json` file and copy it under your `android/app` project folder.
  Note: Please make sure you have this file in place or you won't pass the build process.
-
-5. Open ```android/build.gradle```
+6. Open ```android/build.gradle```
     - Add ```classpath 'com.google.gms:google-services:3.1.1'``` in the ```dependencies``` under ```buildscript```:
         ```gradle
->>>>>>> 7682bbc4b07c817a2541968b7f1c81e9fbc9db87
         dependencies {
             classpath 'com.android.tools.build:gradle:2.2.3'
             classpath 'com.google.gms:google-services:3.1.1'  
 
-<<<<<<< HEAD
             // NOTE: Do not place your application dependencies here; they belong
             // in the individual module build.gradle files
         }
-    }
 ```
-Also update maven `url` as the following under  `allprojects` > `repositories`.
+Also update maven `url` as the following under  `allprojects` > `repositories`. Revise `allprojects` to be:
 ```gradle
     allprojects {
         repositories {
@@ -77,39 +64,16 @@ Also update maven `url` as the following under  `allprojects` > `repositories`.
             jcenter()
             maven {
                 // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-                url 'https://maven.google.com'
+                url "$rootDir/../node_modules/react-native/android"
             }
         }
     }
 ```
-6. Open `android/app/build.gradle` file and add following configuration to the bottom of the file.
+7. Open `android/app/build.gradle` file and add following configuration to the bottom of the file.
 ```gradle
 apply plugin: 'com.google.gms.google-services'
 ``` 
-
-7. Open `android/app/src/main/AndroidManifest.xml` file and add the following configuration into `application` element.
-=======
-    - revise the ```allprojects``` to
-        ```gradle
-        allprojects {
-            repositories {
-                mavenLocal()
-                jcenter()
-                maven {
-                    // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-                    url "$rootDir/../node_modules/react-native/android"
-                }
-                maven {
-                    url 'https://maven.google.com'
-                }
-            }
-        }
-        ```
-
-6. Open ```android/app/build.gradle``` and add ```apply plugin: 'com.google.gms.google-services'``` to the bottom of the file.
-
-7. Open ```android/app/src/main/AndroidManifest.xml``` and add the following into ```application```
->>>>>>> 7682bbc4b07c817a2541968b7f1c81e9fbc9db87
+8. Open `android/app/src/main/AndroidManifest.xml` file and add the following configuration into `application` element.
 ```xml
     <application ... >
 
@@ -140,19 +104,8 @@ apply plugin: 'com.google.gms.google-services'
 
     </application>
 ```
-<<<<<<< HEAD
-8. Enable your app in Firebase. To do that, follow those steps:
- - Visit the [Firebase console](https://console.firebase.google.com), and click the Gear icon next to **Project Overview** and click **Project Settings** Remember, if you don't have an existing project, you need to create one in order to continue
- - Click **Add App**, if you have an existing app you can skip this step
- - Choose **Add Firebase to your Android App**
- - Add your package name i.e. **com.myProjectName** and click **Register App**
- - Download  `google-services.json` file and copy it under your `android/app` project folder.
-=======
->>>>>>> 7682bbc4b07c817a2541968b7f1c81e9fbc9db87
- 
 9. Configure Push Notification module for your app as shown in [Configure your App](#configure-your-app) section.
- 
-10. Run your app with ```yarn`` or with an appropriate run command.
+10. Run your app with `yarn` or with an appropriate run command.
 ```bash
   $ yarn/npm run android
 ```

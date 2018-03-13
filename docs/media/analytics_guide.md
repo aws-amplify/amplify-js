@@ -5,19 +5,6 @@
 
 AWS Amplify Analytics module helps you to easily collect analytics data for you app. Analytics data includes user sessions and other custom events that you want to track in your app.
 
-<<<<<<< HEAD
-=======
-* [Installation and Configuration](#installation-and-configuration)
-  - [Automated Setup](#automated-setup)
-  - [Manual Setup](#manual-setup)
-* [Integration](#integration)
-  - [1. Collect Session Data](#1-collect-session-data)
-  - [2. Record Event](#2-record-event)
-  - [3. Record Event with Attributes](#3-record-event-with-attributes)
-  - [4. Record Event with Metrics](#4-record-event-with-metrics)
-* [Add your own plugin](#add-your-own-plugin)
->>>>>>> 7682bbc4b07c817a2541968b7f1c81e9fbc9db87
-
 ## Installation and Configuration
 
 Please refer to [AWS Amplify Installation Guide](/media/install_n_config/index.html) for general setup. Here is how you can enable Analytics category for your app.
@@ -122,14 +109,19 @@ import { Analytics } from 'aws-amplify';
 Analytics.record('albumVisit', {}, { minutesListened: 30 });
 ```
 
-<<<<<<< HEAD
+
 ### API Reference
 
 For the complete API documentation for Analytics module, visit our [API Reference](/api/classes/analyticsclass.html)
 {: .callout .callout--info}
-=======
-## Add your own plugin
-You can write your own plugin by using the interface ```AnalyticsProvider```:
+
+## Customization
+
+### Create a Custom Analytics Plugin
+You can create your custom class and plug it to Analytics module, so that any Analytics event can also be handled by your custom methods. This may be helpful when you need to integrate your app with a custom analytics backend.  
+
+In your class, just implement `AnalyticsProvider`:
+
 ```js
 import { AnalyticsProvider } from 'aws-amplify';
 
@@ -160,4 +152,6 @@ Amplify.configure({
 // use the plugin
 Amplify.addPluggable(new MyAnalyticsProvider());
 ```
->>>>>>> 7682bbc4b07c817a2541968b7f1c81e9fbc9db87
+
+Please note that the default provider (Amazon Pinpoint) for the extended category (Analytics) will be in use when you call `Analytics.record()`.
+{: .callout .callout--info}

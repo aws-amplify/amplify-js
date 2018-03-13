@@ -30,7 +30,7 @@ marketing_grid:
                    <u>Angular</u> is coming soon...   
 
                 </p>
-    - title: Extendible
+    - title: Open and Pluggable
       excerpt: Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
 
       
