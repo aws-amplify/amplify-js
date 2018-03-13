@@ -42,7 +42,7 @@ export {
     Greetings
 };
 
-export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = []) {
+export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = [], initialSignedOutState = 'signIn') {
     class Wrapper extends React.Component {
         constructor(props) {
             super(props);
@@ -93,6 +93,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
                 {...this.props}
                 hideDefault={authenticatorComponents.length > 0}
                 onStateChange={this.handleAuthStateChange}
+                initialSignedOutState={initialSignedOutState}
                 children={authenticatorComponents}
             />
         }

@@ -75,7 +75,7 @@ export default class Authenticator extends React.Component {
         logger.debug('authenticator state change ' + state);
         if (state === this.state.authState) { return; }
 
-        if (state === 'signedOut') { state = 'signIn'; }
+        if (state === 'signedOut') { state = this.props.initialSignedOutState; }
         this.setState({ authState: state, authData: data, error: null });
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
 
@@ -92,11 +92,11 @@ export default class Authenticator extends React.Component {
     checkUser() {
         Auth.currentAuthenticatedUser()
             .then(user => {
-                const state = user? 'signedIn' : 'signIn';
+                const state = user? 'signedIn' : this.props.initialSignedOutState;
                 this.handleStateChange(state, user)
             })
             .catch(err => {
-                this.handleStateChange('signIn', null);
+                this.handleStateChange(this.props.initialSignedOutState, null);
                 logger.error(err);
             });
     }
@@ -140,4 +140,8 @@ export default class Authenticator extends React.Component {
             </TouchableWithoutFeedback>
         );
     }
+}
+
+Authenticator.defaultProps = {
+    initialSignedOutState: 'signIn'
 }

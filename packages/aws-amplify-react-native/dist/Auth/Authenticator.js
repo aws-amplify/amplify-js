@@ -72,7 +72,7 @@ export default class Authenticator extends React.Component {
         }
 
         if (state === 'signedOut') {
-            state = 'signIn';
+            state = this.props.initialSignedOutState;
         }
         this.setState({ authState: state, authData: data, error: null });
         if (this.props.onStateChange) {
@@ -91,10 +91,10 @@ export default class Authenticator extends React.Component {
 
     checkUser() {
         Auth.currentAuthenticatedUser().then(user => {
-            const state = user ? 'signedIn' : 'signIn';
+            const state = user ? 'signedIn' : this.props.initialSignedOutState;
             this.handleStateChange(state, user);
         }).catch(err => {
-            this.handleStateChange('signIn', null);
+            this.handleStateChange(this.props.initialSignedOutState, null);
             logger.error(err);
         });
     }
@@ -129,3 +129,7 @@ export default class Authenticator extends React.Component {
         );
     }
 }
+
+Authenticator.defaultProps = {
+    initialSignedOutState: 'signIn'
+};
