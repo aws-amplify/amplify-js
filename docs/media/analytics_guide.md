@@ -50,7 +50,7 @@ Manual setup enables you to use your existing Amazon Pinpoint credentials in you
 ```js
 import Amplify from 'aws-amplify';
 
-Amplify.configure(
+Amplify.configure({
     Analytics: {
     // OPTIONAL -  Amazon Pinpoint App Client ID
         appId: 'XXXXXXXXXXabcdefghij1234567890ab',
@@ -59,7 +59,7 @@ Amplify.configure(
     // OPTIONAL -  Customized endpoint
         endpointId: 'XXXXXXXXXXXX'
     } 
-);
+});
 
 ```
 
