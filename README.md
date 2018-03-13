@@ -35,7 +35,7 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
   - [3. Override default authentication screens](#3-override-default-authentication-screens)
   - [4. Sign HTTP requests](#4-sign-http-requests)
   - [5. Upload and Download public or private content](#5-upload-and-download-public-or-private-content)
-* [Try Beta Version)(#try-beta-version)
+* [Try Beta Version](#try-beta-version)
 * [Contributing](#contributing)
 
 ## Installation
