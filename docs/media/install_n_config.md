@@ -45,14 +45,14 @@ npm install aws-amplify-react-native
 
 AWS Amplify connects to [AWS Mobile Hub](https://aws.amazon.com/mobile/) to work with Amazon Web Services. AWS Mobile Hub gives you a single place to easily configure AWS service and automatically provisions the AWS services required for the features in your app.
 
-Check our [Quick Start Guide](/media/quick_start/index.html#set-up-your-backend) to see how you can set up your backend.
+Check our [Quick Start Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start#set-up-your-backend) to see how you can set up your backend.
 {: .next-link}
 
 ## Connect to Your Backend
 
 Connecting to your backend requires loading the required configuration in your app with `Amplify.configure()` method.
 
-Check our [Quick Start Guide](/media/quick_start/index.html#connect-to-your-backend) to see how you can connect to your backend.
+Check our [Quick Start Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start#connect-to-your-backend) to see how you can connect to your backend.
 {: .next-link}
 
  

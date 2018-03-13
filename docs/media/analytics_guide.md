@@ -7,7 +7,7 @@ AWS Amplify Analytics module helps you to easily collect analytics data for you 
 
 ## Installation and Configuration
 
-Please refer to [AWS Amplify Installation Guide](/media/install_n_config/index.html) for general setup. Here is how you can enable Analytics category for your app.
+Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config/) for general setup. Here is how you can enable Analytics category for your app.
 
 ### Automated Setup
 

@@ -8,7 +8,7 @@ AWS Amplify API module provides a simple solution when making HTTP requests. It 
 
 The API module can be used out of the box for creating signed requests against Amazon API Gateway, when the API Authorization is set to `AWS_IAM`. 
 
-Please refer to [AWS Amplify Installation Guide](/media/install_n_config/index.html) for initial setup.
+Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%} /media/install_n_config/) for initial setup.
 {: .callout .callout--info}
 
 In API configuration, you are required to pass in an *Amazon Cognito Identity Pool ID*, allowing AWS Amplify to retrieve base credentials for a user even in an un-authenticated state. The configuration also requires a list of your APIs, comprised of a friendly name for the API and the endpoint URL. 

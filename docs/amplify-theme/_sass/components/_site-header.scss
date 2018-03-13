@@ -67,6 +67,16 @@
 			border-color: orange;
 		}
 	}
+
+}
+
+@media (max-width: $screen-md-min) {
+	.site-header__nav {
+		width: 100%;
+		background: white;
+		text-align: center;
+		margin-top: -2px;
+	}
 }
 
 /* ----- Offcanvas ----- */

@@ -21,7 +21,8 @@ description: >- # this means to ignore newlines until "baseurl:"
   Google search results) and in your feed.xml site description.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com 
-github_docs_repo_url: https://github.com/aws/aws-amplify/edit/master/docs/
+github:
+  repository_url: https://github.com/aws/aws-amplify/edit/master/docs/
 
 show_downloads: "true"
 include: 
@@ -56,7 +57,7 @@ future: true
 
 # Amplify theme settings
 amplify:
-    baseurl: /aws-amplify
+    baseurl: /aws-amplify # Since the site is deployed under https://aws.github.io/aws-amplify
     color_theme:  # Available themes: blue (default), green, purple, red and yellow
     header:
         logo:
@@ -64,11 +65,11 @@ amplify:
             image: true
         nav:
             - item_name: Quick Start
-              item_url: '/media/quick_start/index.html'
+              item_url: '/media/quick_start'
             - item_name: Docs
-              item_url: '/media/developer_guide/index.html'
+              item_url: '/media/developer_guide/'
             - item_name: API
-              item_url: '/api/index.html'
+              item_url: '/api/'
             - item_name: Blog
               item_url: '/blog'
             - item_name: Github
@@ -114,7 +115,7 @@ category_list:
           excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
           cta: Read more
           class: aws-icon-ps-60-pie-bar-charts 
-          url: '/media/analytics_guide/index.html'
+          url: '/media/analytics_guide/'
           services:
             - title: AWS Pinpoint,
               url: https://aws.amazon.com/pinpoint/
@@ -126,7 +127,7 @@ category_list:
           excerpt: A simple and secure solution for making HTTP requests.
           cta: Read more
           class: aws-icon-ps-60-database-server
-          url: '/media/api_guide/index.html'    
+          url: '/media/api_guide/'    
           services:
             - title: AWS API Gateway
               url: https://aws.amazon.com/api-gateway
@@ -134,7 +135,7 @@ category_list:
           excerpt:  Authentication APIs with pre-built UI components for your app.  
           cta: Read more
           class: aws-icon-ps-60-shield-circle
-          url: '/media/authentication_guide/index.html'
+          url: '/media/authentication_guide/'
           services:
             - title: AWS Cognito ,
               url: https://aws.amazon.com/cognito/
@@ -146,7 +147,7 @@ category_list:
           excerpt: A simple mechanism for managing user content in public or private storage.
           cta: Read more
           class: aws-icon-ps-60-file-box
-          url: '/media/storage_guide/index.html'   
+          url: '/media/storage_guide/'   
           services:
               - title: AWS S3
                 url: https://aws.amazon.com/s3/
@@ -154,7 +155,7 @@ category_list:
           excerpt: Push notifications with campaign analytics and targeting.
           cta: Read more
           class: aws-icon-ps-60-bubble-gear
-          url: '/media/push_notifications_setup/index.html'   
+          url: '/media/push_notifications_setup/'   
           services:
               - title: AWS Pinpoint
                 url: https://aws.amazon.com/pinpoint/
@@ -164,26 +165,26 @@ category_list:
         - title: Cache 
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
           cta: Read more
-          url: '/media/cache_guide/index.html'  
+          url: '/media/cache_guide/'  
         - title: Hub  
           excerpt: A lightweight Pub-Sub system.
           cta: Read more
-          url: '/media/hub_guide/index.html' 
+          url: '/media/hub_guide/' 
         - title: I18n  
           excerpt: A lightweight internationalization solution.
           cta: Read more
-          url: '/media/i18n_guide/index.html'  
+          url: '/media/i18n_guide/'  
         - title: Logger  
           excerpt: Console logging utility.
           cta: Read more
-          url: '/media/logger_guide/index.html'  
+          url: '/media/logger_guide/'  
     -  category: CLI
        title: CLI
        subs:
         - title: AWS Mobile CLI
           excerpt: A CLI to create and manage your app's backend. 
           cta: Read more
-          url: '/media/cli_guide/index.html'       
+          url: '/media/cli_guide/'       
 
 defaults:
   -

@@ -16,7 +16,7 @@
 			<div class="row">
 				<div class="col-xs-12">
 					{% if site.amplify.header.logo.text %}
-						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/index.html" class="site-header__logo">
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
 							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
 							{{ site.amplify.header.logo.text }}
 						</a>

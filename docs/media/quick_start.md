@@ -197,10 +197,10 @@ In the configuration above, you are required to pass in an Amazon Cognito identi
 
 **Configuration Parameters for existing AWS resources**
 To see the configuration parameters for existing AWS resources, see the *Manual Setup* section in AWS Amplify Developer Guide for each individual service:
-[Amazon Cognito](/media/authentication_guide/index.html#manual-setup),
-[Amazon S3](/media/storage_guide/index.html#manual-setup),
-[Amazon Pinpoint](/media/analytics_guide/index.html#manual-setup),
-[Amazon API Gateway](/media/api_guide/#manual-setup)
+[Amazon Cognito]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide#manual-setup),
+[Amazon S3]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/storage_guide#manual-setup),
+[Amazon Pinpoint]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide#manual-setup),
+[Amazon API Gateway]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/api_guide/#manual-setup)
 {: .callout .callout--info}
 
 
@@ -261,7 +261,7 @@ $ awsmobile console
 
 To see app analytics data, run `awsmobile console`, choose Analytics in the upper right of the AWS Mobile Hub console, and then Analytics again in the upper left of the [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
 
-![Pinpoint Console](/media/images/pinpoint_dashboard.png)
+![Pinpoint Console]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/pinpoint_dashboard.png)
 
 By default, app analytics is enabled for tracking *user session* tracking. To enable additional tracking events, open `/src/App.js`, and add two lines of code.
 
@@ -276,7 +276,7 @@ import { Analytics } from 'aws-amplify';
 
 This will record an **appRender** event every time a user launches your app.
 
-You can easily add custom analytics events to suit your purposes. For more information about Analytics Category, see [AWS Amplify Analytics Developer Guide](/media/authentication_guide/index.html)
+You can easily add custom analytics events to suit your purposes. For more information about Analytics Category, see [AWS Amplify Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide/)
 {: .callout .callout--info}
 
 ## Add User Authentication to Your App
@@ -321,12 +321,12 @@ export default withAuthenticator(App);
 
 Reload your application on the physical device or emulator/simulator:
 
-<img src="/media/images/react_native_with_authenticator.png" width="100%"/>
+<img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/react_native_with_authenticator.png" width="100%"/>
 
 </div>
 </div>
 
-For more information about Authentication Category, see [AWS Amplify Authentication Developer Guide](/media/authentication_guide/index.html)
+For more information about Authentication Category, see [AWS Amplify Authentication Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide/)
 {: .callout .callout--info}
 
 

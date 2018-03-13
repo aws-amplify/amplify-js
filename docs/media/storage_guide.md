@@ -7,7 +7,7 @@ AWS Amplify Storage module gives a simple mechanism for managing user content in
 
 ## Installation and Configuration
 
-Please refer to [AWS Amplify Installation Guide](/media/install_n_config/index.html) for general setup. Here is how you can enable Storage category for your app.
+Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config/) for general setup. Here is how you can enable Storage category for your app.
 
 The default implementation of the Storage module leverages [Amazon S3](https://aws.amazon.com/s3).
 {: .callout .callout--info}
@@ -257,7 +257,7 @@ You can also use the track property directly on [React components](#analytics-fo
 
 `Picker` is used to pick a file from local device storage. `PhotoPicker` and `TextPicker` components are specific to image and text file types .
 
-<img src="/media/images/photo_picker_and_code.png" width="100%"/>
+<img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/photo_picker_and_code.png" width="100%"/>
 
 Listen to `PhotoPicker` onPick event:
 ```jsx
@@ -364,7 +364,7 @@ function fileToKey(data) {
 
 `S3Album` renders a list of `S3Image` and `S3Text` objects:
 
-<img src="/media/images/S3Album_and_code.png" width="100%"/>
+<img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/S3Album_and_code.png" width="100%"/>
 
 ```jsx
 import { S3Album } from 'aws-amplify-react';

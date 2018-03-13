@@ -11,7 +11,7 @@ Depending on your needs, you can integrate Authentication module at different le
 
 ## Installation and Configuration
 
-Please refer to [AWS Amplify Installation Guide](/media/install_n_config/index.html) for general setup. Here is how you can enable Authentication category for your app.
+Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config/) for general setup. Here is how you can enable Authentication category for your app.
 
 ### Automated Setup
 
@@ -85,7 +85,7 @@ Auth.signIn(username, password)
     .catch(err => console.log(err));
 
 // If MFA enabled, keep the user object from sign in, collect confirmation code, and then
-Auth.confirmSignIn(user, code)
+Auth.confirmSignIn(user, code, mfaType)
     .then(data => console.log(data))
     .catch(err => console.log(err));
 ```
@@ -263,7 +263,7 @@ in the component's constructor, then implement `showComponent(theme) {}` in lieu
 
 **Availibility Note**
 Currently, our federated identity components only support Google, Facebook and Amazon identities, and works with React. 
-Support for React Native is in progress. Please see our[ Setup Guide for Federated Identities](/media/federated_identity_setup/index.html). 
+Support for React Native is in progress. Please see our[ Setup Guide for Federated Identities]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/federated_identity_setup/). 
 {: .callout .callout--info}
 
 
@@ -451,7 +451,7 @@ let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
 
 ### Subscribing Events
 
-You can take specific actions when users sign-in or sign-out by subscribing authentication events in your app. Please see our [Hub Module Developer Guide](/media/hub_guide/index.html#listening-authentication-events) for more information.
+You can take specific actions when users sign-in or sign-out by subscribing authentication events in your app. Please see our [Hub Module Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/hub_guide#listening-authentication-events) for more information.
 
 
 ### Working with AWS Service Objects
@@ -601,4 +601,4 @@ const map = (message) => {
 <Authenticator errorMessage={map} />
 ```
 
-You may notice in `AmplifyMessageMap.js` it also handles internationalization. This topic is covered in our [I18n Guide](/media/i18n_guide/index.html).
+You may notice in `AmplifyMessageMap.js` it also handles internationalization. This topic is covered in our [I18n Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/i18n_guide/).

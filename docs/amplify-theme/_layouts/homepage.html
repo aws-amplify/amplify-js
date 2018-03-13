@@ -19,7 +19,7 @@
 								{% endif %}
 								{% for button in page.buttons %}
 									{% if button.external_url == true %}
-									<a href="{{ button.url }}" class="btn btn--dark btn--rounded btn--w-icon">
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ button.url }}" class="btn btn--dark btn--rounded btn--w-icon">
 										{% if button.icon %}<i class="icon icon--{{ button.icon }}"></i>{% endif %}
 										{{ button.content }}
 									</a>
@@ -40,7 +40,7 @@
 									<div class="hero-subheader__author">
 										<p class="hero-subheader__author-title">
 											{% if button.external_url == true %}
-											<a href="{{ page.author.title_url }}" class="btn btn--read-more">
+											<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.author.title_url }}" class="btn btn--read-more">
 												{{ page.author.title }}
 												<i class="icon icon--arrow-right"></i>
 											</a>

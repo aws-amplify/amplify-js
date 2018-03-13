@@ -33,8 +33,14 @@
 	.github-edit-link {
 		display: none;
 	}
-	 
 }
+
+@media (min-width: $screen-xs-min) {
+	.github-edit-link {
+		display: none;
+	}
+}
+ 
 
 /* ----- Medium grid ----- */
 @media (min-width: $screen-md-min) {
