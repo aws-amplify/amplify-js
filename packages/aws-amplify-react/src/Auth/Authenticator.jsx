@@ -22,6 +22,7 @@ import SignUp from './SignUp';
 import ConfirmSignUp from './ConfirmSignUp';
 import VerifyContact from './VerifyContact';
 import ForgotPassword from './ForgotPassword';
+import TOTPSetup from './TOTPSetup';
 
 import AmplifyTheme from '../AmplifyTheme';
 import { Container, ErrorSection, SectionBody } from '../AmplifyUI';
@@ -89,7 +90,8 @@ export default class Authenticator extends Component {
                 SignUp,
                 ConfirmSignUp,
                 VerifyContact,
-                ForgotPassword
+                ForgotPassword,
+                TOTPSetup
             ]);
         }
         const props_children = this.props.children || [];
@@ -101,12 +103,25 @@ export default class Authenticator extends Component {
             <SignUp/>,
             <ConfirmSignUp/>,
             <VerifyContact/>,
-            <ForgotPassword/>
+            <ForgotPassword/>,
+            <TOTPSetup/>
         ];
 
-        const children = default_children.concat(props_children);
-        const render_children = React.Children.map(children, (child) => {
+        const render_props_children = React.Children.map(props_children, (child, index) => {
+            return React.cloneElement(child, {
+                    key: 'aws-amplify-authenticator-props-children-' + index,
+                    theme: theme,
+                    messageMap: messageMap,
+                    authState: auth,
+                    authData: authData,
+                    onStateChange: this.handleStateChange,
+                    onAuthEvent: this.handleAuthEvent
+                });
+        });
+        
+        const render_default_children = React.Children.map(default_children, (child, index) => {
                 return React.cloneElement(child, {
+                    key: 'aws-amplify-authenticator-default-children-' + index,
                     theme: theme,
                     messageMap: messageMap,
                     authState: auth,
@@ -115,7 +130,9 @@ export default class Authenticator extends Component {
                     onAuthEvent: this.handleAuthEvent,
                     hide: hide
                 });
-            })
+            });
+
+        const render_children = render_default_children.concat(render_props_children);
 
         const errorRenderer = this.props.errorRenderer || this.errorRenderer;
         const error = this.state.error;

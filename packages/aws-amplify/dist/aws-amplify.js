@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 115);
+/******/ 	return __webpack_require__(__webpack_require__.s = 117);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -96,7 +96,7 @@ AWS.util.update(AWS, {
   /**
    * @constant
    */
-  VERSION: '2.193.0',
+  VERSION: '2.185.0',
 
   /**
    * @api private
@@ -107,18 +107,18 @@ AWS.util.update(AWS, {
    * @api private
    */
   Protocol: {
-    Json: __webpack_require__(32),
-    Query: __webpack_require__(54),
+    Json: __webpack_require__(33),
+    Query: __webpack_require__(55),
     Rest: __webpack_require__(21),
-    RestJson: __webpack_require__(56),
-    RestXml: __webpack_require__(57)
+    RestJson: __webpack_require__(57),
+    RestXml: __webpack_require__(58)
   },
 
   /**
    * @api private
    */
   XML: {
-    Builder: __webpack_require__(121),
+    Builder: __webpack_require__(124),
     Parser: null // conditionally set based on environment
   },
 
@@ -126,38 +126,38 @@ AWS.util.update(AWS, {
    * @api private
    */
   JSON: {
-    Builder: __webpack_require__(33),
-    Parser: __webpack_require__(34)
+    Builder: __webpack_require__(34),
+    Parser: __webpack_require__(35)
   },
 
   /**
    * @api private
    */
   Model: {
-    Api: __webpack_require__(80),
-    Operation: __webpack_require__(81),
-    Shape: __webpack_require__(16),
-    Paginator: __webpack_require__(82),
-    ResourceWaiter: __webpack_require__(83)
+    Api: __webpack_require__(81),
+    Operation: __webpack_require__(82),
+    Shape: __webpack_require__(15),
+    Paginator: __webpack_require__(83),
+    ResourceWaiter: __webpack_require__(84)
   },
 
   /**
    * @api private
    */
-  apiLoader: __webpack_require__(228)
+  apiLoader: __webpack_require__(231)
 });
 
-__webpack_require__(229);
 __webpack_require__(232);
+__webpack_require__(235);
 
-__webpack_require__(86);
 __webpack_require__(87);
-__webpack_require__(233);
-__webpack_require__(237);
-__webpack_require__(239);
+__webpack_require__(88);
+__webpack_require__(236);
 __webpack_require__(240);
-__webpack_require__(241);
-__webpack_require__(247);
+__webpack_require__(242);
+__webpack_require__(243);
+__webpack_require__(244);
+__webpack_require__(250);
 
 /**
  * @readonly
@@ -277,7 +277,7 @@ var util = {
 
   readFileSync: function readFileSync(path) {
     if (util.isBrowser()) return null;
-    return __webpack_require__(48).readFileSync(path, 'utf-8');
+    return __webpack_require__(49).readFileSync(path, 'utf-8');
   },
 
   base64: {
@@ -357,7 +357,7 @@ var util = {
       } else if (typeof string.size === 'number') {
         return string.size;
       } else if (typeof string.path === 'string') {
-        return __webpack_require__(48).lstatSync(string.path).size;
+        return __webpack_require__(49).lstatSync(string.path).size;
       } else {
         throw util.error(new Error('Cannot determine length of ' + string),
           { object: string });
@@ -885,7 +885,7 @@ var util = {
   computeSha256: function computeSha256(body, done) {
     if (util.isNode()) {
       var Stream = util.stream.Stream;
-      var fs = __webpack_require__(48);
+      var fs = __webpack_require__(49);
       if (body instanceof Stream) {
         if (typeof body.path === 'string') { // assume file object
           var settings = {};
@@ -993,7 +993,7 @@ var util = {
    */
   isDualstackAvailable: function isDualstackAvailable(service) {
     if (!service) return false;
-    var metadata = __webpack_require__(248);
+    var metadata = __webpack_require__(251);
     if (typeof service !== 'string') service = service.serviceIdentifier;
     if (typeof service !== 'string' || !metadata.hasOwnProperty(service)) return false;
     return !!metadata[service].dualstackAvailable;
@@ -1062,7 +1062,7 @@ var util = {
    */
   uuid: {
     v4: function uuidV4() {
-      return __webpack_require__(249).v4();
+      return __webpack_require__(252).v4();
     }
   },
 
@@ -1109,17 +1109,12 @@ var util = {
   /**
    * @api private
    */
-  sharedConfigFileEnv: 'AWS_CONFIG_FILE',
-
-  /**
-   * @api private
-   */
-  imdsDisabledEnv: 'AWS_EC2_METADATA_DISABLED'
+  sharedConfigFileEnv: 'AWS_CONFIG_FILE'
 };
 
 module.exports = util;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(118).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(121).setImmediate))
 
 /***/ }),
 /* 2 */
@@ -1143,20 +1138,23 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-var Facet_1 = __webpack_require__(53);
+var Facet_1 = __webpack_require__(54);
 var Logger_1 = __webpack_require__(14);
-__export(__webpack_require__(53));
-var ClientDevice_1 = __webpack_require__(300);
+__export(__webpack_require__(54));
+var ClientDevice_1 = __webpack_require__(303);
 exports.ClientDevice = ClientDevice_1.default;
 __export(__webpack_require__(14));
-__export(__webpack_require__(302));
-var Hub_1 = __webpack_require__(106);
+__export(__webpack_require__(305));
+var Hub_1 = __webpack_require__(107);
 exports.Hub = Hub_1.default;
-var JS_1 = __webpack_require__(303);
+var JS_1 = __webpack_require__(306);
 exports.JS = JS_1.default;
-var Signer_1 = __webpack_require__(107);
+var Signer_1 = __webpack_require__(108);
 exports.Signer = Signer_1.default;
-var Platform_1 = __webpack_require__(50);
+var Parser_1 = __webpack_require__(307);
+exports.Parser = Parser_1.default;
+__export(__webpack_require__(308));
+var Platform_1 = __webpack_require__(32);
 exports.Constants = {
     'userAgent': Platform_1.default.userAgent
 };
@@ -1178,8 +1176,8 @@ else {
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseAssign = __webpack_require__(149),
-    baseCreate = __webpack_require__(150);
+var baseAssign = __webpack_require__(152),
+    baseCreate = __webpack_require__(153);
 
 /**
  * Creates an object that inherits from the `prototype` object. If a
@@ -1230,8 +1228,8 @@ module.exports = create;
 "use strict";
 
 
-var bind = __webpack_require__(110);
-var isBuffer = __webpack_require__(317);
+var bind = __webpack_require__(112);
+var isBuffer = __webpack_require__(325);
 
 /*global toString:true*/
 
@@ -1617,9 +1615,9 @@ module.exports = isArray;
 
 
 
-var base64 = __webpack_require__(254)
-var ieee754 = __webpack_require__(255)
-var isArray = __webpack_require__(256)
+var base64 = __webpack_require__(257)
+var ieee754 = __webpack_require__(258)
+var isArray = __webpack_require__(259)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -3403,7 +3401,7 @@ function isnan (val) {
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var freeGlobal = __webpack_require__(61);
+var freeGlobal = __webpack_require__(62);
 
 /** Detect free variable `self`. */
 var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -3608,8 +3606,8 @@ process.umask = function() { return 0; };
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsNative = __webpack_require__(124),
-    getValue = __webpack_require__(129);
+var baseIsNative = __webpack_require__(127),
+    getValue = __webpack_require__(132);
 
 /**
  * Gets the native function at `key` of `object`.
@@ -3634,27 +3632,27 @@ module.exports = getNative;
 /* WEBPACK VAR INJECTION */(function(process) {var util = __webpack_require__(1);
 
 // browser specific modules
-util.crypto.lib = __webpack_require__(252);
+util.crypto.lib = __webpack_require__(255);
 util.Buffer = __webpack_require__(7).Buffer;
-util.url = __webpack_require__(92);
-util.querystring = __webpack_require__(93);
+util.url = __webpack_require__(93);
+util.querystring = __webpack_require__(94);
 util.environment = 'js';
 
 var AWS = __webpack_require__(0);
 module.exports = AWS;
 
-__webpack_require__(84);
 __webpack_require__(85);
-__webpack_require__(264);
-__webpack_require__(268);
-__webpack_require__(269);
-__webpack_require__(274);
+__webpack_require__(86);
+__webpack_require__(267);
+__webpack_require__(271);
+__webpack_require__(272);
+__webpack_require__(277);
 
 // Load the DOMParser XML parser
-AWS.XML.Parser = __webpack_require__(275);
+AWS.XML.Parser = __webpack_require__(278);
 
 // Load the XHR HttpClient
-__webpack_require__(276);
+__webpack_require__(279);
 
 if (typeof process === 'undefined') {
   process = {
@@ -3704,7 +3702,7 @@ module.exports = g;
 
   isFunction = __webpack_require__(22);
 
-  isEmpty = __webpack_require__(151);
+  isEmpty = __webpack_require__(154);
 
   XMLElement = null;
 
@@ -3726,13 +3724,13 @@ module.exports = g;
       this.options = this.parent.options;
       this.stringify = this.parent.stringify;
       if (XMLElement === null) {
-        XMLElement = __webpack_require__(68);
-        XMLCData = __webpack_require__(77);
-        XMLComment = __webpack_require__(78);
-        XMLDeclaration = __webpack_require__(66);
-        XMLDocType = __webpack_require__(79);
-        XMLRaw = __webpack_require__(226);
-        XMLText = __webpack_require__(227);
+        XMLElement = __webpack_require__(69);
+        XMLCData = __webpack_require__(78);
+        XMLComment = __webpack_require__(79);
+        XMLDeclaration = __webpack_require__(67);
+        XMLDocType = __webpack_require__(80);
+        XMLRaw = __webpack_require__(229);
+        XMLText = __webpack_require__(230);
       }
     }
 
@@ -4050,45 +4048,14 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(299));
+__export(__webpack_require__(302));
 
 
 /***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Auth_1 = __webpack_require__(116);
-var Common_1 = __webpack_require__(2);
-var logger = new Common_1.ConsoleLogger('Auth');
-var _instance = null;
-if (!_instance) {
-    logger.debug('Create Auth Instance');
-    _instance = new Auth_1.default(null);
-}
-var Auth = _instance;
-exports.default = Auth;
-
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Collection = __webpack_require__(55);
+var Collection = __webpack_require__(56);
 
 var util = __webpack_require__(1);
 
@@ -4444,12 +4411,12 @@ module.exports = Shape;
 
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(23),
-    getRawTag = __webpack_require__(125),
-    objectToString = __webpack_require__(126);
+    getRawTag = __webpack_require__(128),
+    objectToString = __webpack_require__(129);
 
 /** `Object#toString` result references. */
 var nullTag = '[object Null]',
@@ -4478,11 +4445,11 @@ module.exports = baseGetTag;
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isFunction = __webpack_require__(22),
-    isLength = __webpack_require__(36);
+    isLength = __webpack_require__(37);
 
 /**
  * Checks if `value` is array-like. A value is considered array-like if it's
@@ -4517,12 +4484,12 @@ module.exports = isArrayLike;
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayLikeKeys = __webpack_require__(138),
-    baseKeys = __webpack_require__(65),
-    isArrayLike = __webpack_require__(18);
+var arrayLikeKeys = __webpack_require__(141),
+    baseKeys = __webpack_require__(66),
+    isArrayLike = __webpack_require__(17);
 
 /**
  * Creates an array of the own enumerable property names of `object`.
@@ -4560,7 +4527,7 @@ module.exports = keys;
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports) {
 
 /**
@@ -4592,6 +4559,38 @@ function isObjectLike(value) {
 }
 
 module.exports = isObjectLike;
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Auth_1 = __webpack_require__(317);
+exports.AuthClass = Auth_1.default;
+var Common_1 = __webpack_require__(2);
+var logger = new Common_1.ConsoleLogger('Auth');
+var _instance = null;
+if (!_instance) {
+    logger.debug('Create Auth Instance');
+    _instance = new Auth_1.default(null);
+}
+var Auth = _instance;
+exports.default = Auth;
 
 
 /***/ }),
@@ -4747,7 +4746,7 @@ module.exports = {
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(17),
+var baseGetTag = __webpack_require__(16),
     isObject = __webpack_require__(5);
 
 /** `Object#toString` result references. */
@@ -4845,11 +4844,11 @@ module.exports = eq;
 /* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var listCacheClear = __webpack_require__(167),
-    listCacheDelete = __webpack_require__(168),
-    listCacheGet = __webpack_require__(169),
-    listCacheHas = __webpack_require__(170),
-    listCacheSet = __webpack_require__(171);
+var listCacheClear = __webpack_require__(170),
+    listCacheDelete = __webpack_require__(171),
+    listCacheGet = __webpack_require__(172),
+    listCacheHas = __webpack_require__(173),
+    listCacheSet = __webpack_require__(174);
 
 /**
  * Creates an list cache object.
@@ -4922,7 +4921,7 @@ module.exports = nativeCreate;
 /* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isKeyable = __webpack_require__(185);
+var isKeyable = __webpack_require__(188);
 
 /**
  * Gets the data for `map`.
@@ -4946,7 +4945,7 @@ module.exports = getMapData;
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isSymbol = __webpack_require__(46);
+var isSymbol = __webpack_require__(47);
 
 /** Used as references for various `Number` constants. */
 var INFINITY = 1 / 0;
@@ -5048,11 +5047,11 @@ var apiLoader = AWS.apiLoader;
 
 apiLoader.services['sts'] = {};
 AWS.STS = Service.defineService('sts', ['2011-06-15']);
-__webpack_require__(265);
+__webpack_require__(268);
 Object.defineProperty(apiLoader.services['sts'], '2011-06-15', {
   get: function get() {
-    var model = __webpack_require__(266);
-    model.paginators = __webpack_require__(267).pagination;
+    var model = __webpack_require__(269);
+    model.paginators = __webpack_require__(270).pagination;
     return model;
   },
   enumerable: true,
@@ -5066,9 +5065,51 @@ module.exports = AWS.STS;
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
+"use strict";
+
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Platform = {
+    'userAgent': 'aws-amplify/0.1.x js',
+    'product': '',
+    'navigator': null,
+    'isReactNative': false
+};
+if (typeof navigator !== 'undefined' && navigator.product) {
+    Platform.product = navigator.product || '';
+    Platform.navigator = navigator || null;
+    switch (navigator.product) {
+        case 'ReactNative':
+            Platform.userAgent = 'aws-amplify/0.1.x react-native';
+            Platform.isReactNative = true;
+            break;
+        default:
+            Platform.userAgent = 'aws-amplify/0.1.x js';
+            Platform.isReactNative = false;
+            break;
+    }
+}
+exports.default = Platform;
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var util = __webpack_require__(1);
-var JsonBuilder = __webpack_require__(33);
-var JsonParser = __webpack_require__(34);
+var JsonBuilder = __webpack_require__(34);
+var JsonParser = __webpack_require__(35);
 
 function buildRequest(req) {
   var httpRequest = req.httpRequest;
@@ -5136,7 +5177,7 @@ module.exports = {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
@@ -5198,7 +5239,7 @@ module.exports = JsonBuilder;
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
@@ -5268,7 +5309,7 @@ module.exports = JsonParser;
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports) {
 
 /**
@@ -5295,7 +5336,7 @@ module.exports = identity;
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports) {
 
 /** Used as references for various `Number` constants. */
@@ -5336,7 +5377,7 @@ module.exports = isLength;
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports) {
 
 /** Used as references for various `Number` constants. */
@@ -5364,7 +5405,7 @@ module.exports = isIndex;
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -5388,11 +5429,11 @@ module.exports = isPrototype;
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsArguments = __webpack_require__(140),
-    isObjectLike = __webpack_require__(20);
+var baseIsArguments = __webpack_require__(143),
+    isObjectLike = __webpack_require__(19);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -5430,11 +5471,11 @@ module.exports = isArguments;
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(8),
-    stubFalse = __webpack_require__(141);
+    stubFalse = __webpack_require__(144);
 
 /** Detect free variable `exports`. */
 var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
@@ -5472,10 +5513,10 @@ var isBuffer = nativeIsBuffer || stubFalse;
 
 module.exports = isBuffer;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module)))
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -5503,12 +5544,12 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsTypedArray = __webpack_require__(142),
-    baseUnary = __webpack_require__(143),
-    nodeUtil = __webpack_require__(144);
+var baseIsTypedArray = __webpack_require__(145),
+    baseUnary = __webpack_require__(146),
+    nodeUtil = __webpack_require__(147);
 
 /* Node.js helper references. */
 var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
@@ -5536,7 +5577,7 @@ module.exports = isTypedArray;
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getNative = __webpack_require__(10),
@@ -5549,14 +5590,14 @@ module.exports = Map;
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mapCacheClear = __webpack_require__(177),
-    mapCacheDelete = __webpack_require__(184),
-    mapCacheGet = __webpack_require__(186),
-    mapCacheHas = __webpack_require__(187),
-    mapCacheSet = __webpack_require__(188);
+var mapCacheClear = __webpack_require__(180),
+    mapCacheDelete = __webpack_require__(187),
+    mapCacheGet = __webpack_require__(189),
+    mapCacheHas = __webpack_require__(190),
+    mapCacheSet = __webpack_require__(191);
 
 /**
  * Creates a map cache object to store key-value pairs.
@@ -5587,11 +5628,11 @@ module.exports = MapCache;
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isArray = __webpack_require__(6),
-    isSymbol = __webpack_require__(46);
+    isSymbol = __webpack_require__(47);
 
 /** Used to match property names within property paths. */
 var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
@@ -5622,11 +5663,11 @@ module.exports = isKey;
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(17),
-    isObjectLike = __webpack_require__(20);
+var baseGetTag = __webpack_require__(16),
+    isObjectLike = __webpack_require__(19);
 
 /** `Object#toString` result references. */
 var symbolTag = '[object Symbol]';
@@ -5657,7 +5698,7 @@ module.exports = isSymbol;
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function(exports) {
@@ -7330,13 +7371,13 @@ module.exports = isSymbol;
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(7).Buffer;
@@ -7377,7 +7418,7 @@ module.exports = { hash: hash };
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7395,31 +7436,15 @@ module.exports = { hash: hash };
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Platform = {
-    'userAgent': 'aws-amplify/0.1.x js',
-    'product': '',
-    'navigator': null,
-    'isReactNative': false
-};
-if (typeof navigator !== 'undefined' && navigator.product) {
-    Platform.product = navigator.product || '';
-    Platform.navigator = navigator || null;
-    switch (navigator.product) {
-        case 'ReactNative':
-            Platform.userAgent = 'aws-amplify/0.1.x react-native';
-            Platform.isReactNative = true;
-            break;
-        default:
-            Platform.userAgent = 'aws-amplify/0.1.x js';
-            Platform.isReactNative = false;
-            break;
-    }
-}
-exports.default = Platform;
+var BrowserStorageCache_1 = __webpack_require__(310);
+exports.BrowserStorageCache = BrowserStorageCache_1.default;
+var InMemoryCache_1 = __webpack_require__(313);
+exports.InMemoryCache = InMemoryCache_1.default;
+exports.default = BrowserStorageCache_1.default;
 
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7440,20 +7465,20 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(305));
-var CacheList_1 = __webpack_require__(306);
+__export(__webpack_require__(311));
+var CacheList_1 = __webpack_require__(312);
 exports.CacheList = CacheList_1.default;
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var normalizeHeaderName = __webpack_require__(319);
+var normalizeHeaderName = __webpack_require__(327);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -7469,10 +7494,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(111);
+    adapter = __webpack_require__(113);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(111);
+    adapter = __webpack_require__(113);
   }
   return adapter;
 }
@@ -7546,7 +7571,7 @@ module.exports = defaults;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7565,26 +7590,26 @@ module.exports = defaults;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 // import * as AWS from 'aws-sdk/global';
-var S3 = __webpack_require__(117);
+var S3 = __webpack_require__(120);
 exports.S3 = S3;
-var AWS = __webpack_require__(283);
+var AWS = __webpack_require__(286);
 exports.AWS = AWS;
-var Cognito = __webpack_require__(284);
+var Cognito = __webpack_require__(287);
 exports.Cognito = Cognito;
-var Pinpoint = __webpack_require__(295);
+var Pinpoint = __webpack_require__(298);
 exports.Pinpoint = Pinpoint;
-var MobileAnalytics = __webpack_require__(297);
+var MobileAnalytics = __webpack_require__(300);
 exports.MobileAnalytics = MobileAnalytics;
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
 var util = __webpack_require__(1);
-var QueryParamSerializer = __webpack_require__(120);
-var Shape = __webpack_require__(16);
+var QueryParamSerializer = __webpack_require__(123);
+var Shape = __webpack_require__(15);
 
 function buildRequest(req) {
   var operation = req.service.api.operations[req.operation];
@@ -7688,7 +7713,7 @@ module.exports = {
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var memoizedProperty = __webpack_require__(1).memoizedProperty;
@@ -7714,14 +7739,14 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
 var Rest = __webpack_require__(21);
-var Json = __webpack_require__(32);
-var JsonBuilder = __webpack_require__(33);
-var JsonParser = __webpack_require__(34);
+var Json = __webpack_require__(33);
+var JsonBuilder = __webpack_require__(34);
+var JsonParser = __webpack_require__(35);
 
 function populateBody(req) {
   var builder = new JsonBuilder();
@@ -7802,7 +7827,7 @@ module.exports = {
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -7904,10 +7929,10 @@ module.exports = {
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseAssignValue = __webpack_require__(59),
+var baseAssignValue = __webpack_require__(60),
     eq = __webpack_require__(24);
 
 /** Used for built-in method references. */
@@ -7938,10 +7963,10 @@ module.exports = assignValue;
 
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var defineProperty = __webpack_require__(60);
+var defineProperty = __webpack_require__(61);
 
 /**
  * The base implementation of `assignValue` and `assignMergeValue` without
@@ -7969,7 +7994,7 @@ module.exports = baseAssignValue;
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getNative = __webpack_require__(10);
@@ -7986,7 +8011,7 @@ module.exports = defineProperty;
 
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
@@ -7997,7 +8022,7 @@ module.exports = freeGlobal;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -8029,11 +8054,11 @@ module.exports = toSource;
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assignValue = __webpack_require__(58),
-    baseAssignValue = __webpack_require__(59);
+var assignValue = __webpack_require__(59),
+    baseAssignValue = __webpack_require__(60);
 
 /**
  * Copies properties of `source` to `object`.
@@ -8075,12 +8100,12 @@ module.exports = copyObject;
 
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var eq = __webpack_require__(24),
-    isArrayLike = __webpack_require__(18),
-    isIndex = __webpack_require__(37),
+    isArrayLike = __webpack_require__(17),
+    isIndex = __webpack_require__(38),
     isObject = __webpack_require__(5);
 
 /**
@@ -8111,11 +8136,11 @@ module.exports = isIterateeCall;
 
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isPrototype = __webpack_require__(38),
-    nativeKeys = __webpack_require__(145);
+var isPrototype = __webpack_require__(39),
+    nativeKeys = __webpack_require__(148);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -8147,7 +8172,7 @@ module.exports = baseKeys;
 
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -8218,16 +8243,16 @@ module.exports = baseKeys;
 
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var DataView = __webpack_require__(152),
-    Map = __webpack_require__(43),
-    Promise = __webpack_require__(153),
-    Set = __webpack_require__(154),
-    WeakMap = __webpack_require__(155),
-    baseGetTag = __webpack_require__(17),
-    toSource = __webpack_require__(62);
+var DataView = __webpack_require__(155),
+    Map = __webpack_require__(44),
+    Promise = __webpack_require__(156),
+    Set = __webpack_require__(157),
+    WeakMap = __webpack_require__(158),
+    baseGetTag = __webpack_require__(16),
+    toSource = __webpack_require__(63);
 
 /** `Object#toString` result references. */
 var mapTag = '[object Map]',
@@ -8282,7 +8307,7 @@ module.exports = getTag;
 
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -8297,13 +8322,13 @@ module.exports = getTag;
 
   isFunction = __webpack_require__(22);
 
-  every = __webpack_require__(156);
+  every = __webpack_require__(159);
 
   XMLNode = __webpack_require__(13);
 
-  XMLAttribute = __webpack_require__(221);
+  XMLAttribute = __webpack_require__(224);
 
-  XMLProcessingInstruction = __webpack_require__(76);
+  XMLProcessingInstruction = __webpack_require__(77);
 
   module.exports = XMLElement = (function(superClass) {
     extend(XMLElement, superClass);
@@ -8500,15 +8525,15 @@ module.exports = getTag;
 
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var ListCache = __webpack_require__(25),
-    stackClear = __webpack_require__(172),
-    stackDelete = __webpack_require__(173),
-    stackGet = __webpack_require__(174),
-    stackHas = __webpack_require__(175),
-    stackSet = __webpack_require__(176);
+    stackClear = __webpack_require__(175),
+    stackDelete = __webpack_require__(176),
+    stackGet = __webpack_require__(177),
+    stackHas = __webpack_require__(178),
+    stackSet = __webpack_require__(179);
 
 /**
  * Creates a stack cache object to store key-value pairs.
@@ -8533,11 +8558,11 @@ module.exports = Stack;
 
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsEqualDeep = __webpack_require__(189),
-    isObjectLike = __webpack_require__(20);
+var baseIsEqualDeep = __webpack_require__(192),
+    isObjectLike = __webpack_require__(19);
 
 /**
  * The base implementation of `_.isEqual` which supports partial comparisons
@@ -8567,12 +8592,12 @@ module.exports = baseIsEqual;
 
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var SetCache = __webpack_require__(190),
-    arraySome = __webpack_require__(193),
-    cacheHas = __webpack_require__(194);
+var SetCache = __webpack_require__(193),
+    arraySome = __webpack_require__(196),
+    cacheHas = __webpack_require__(197);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1,
@@ -8656,7 +8681,7 @@ module.exports = equalArrays;
 
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(5);
@@ -8677,7 +8702,7 @@ module.exports = isStrictComparable;
 
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports) {
 
 /**
@@ -8703,10 +8728,10 @@ module.exports = matchesStrictComparable;
 
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var castPath = __webpack_require__(75),
+var castPath = __webpack_require__(76),
     toKey = __webpack_require__(29);
 
 /**
@@ -8733,13 +8758,13 @@ module.exports = baseGet;
 
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isArray = __webpack_require__(6),
-    isKey = __webpack_require__(45),
-    stringToPath = __webpack_require__(209),
-    toString = __webpack_require__(212);
+    isKey = __webpack_require__(46),
+    stringToPath = __webpack_require__(212),
+    toString = __webpack_require__(215);
 
 /**
  * Casts `value` to a path array if it's not one.
@@ -8760,7 +8785,7 @@ module.exports = castPath;
 
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -8817,7 +8842,7 @@ module.exports = castPath;
 
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -8872,7 +8897,7 @@ module.exports = castPath;
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -8927,7 +8952,7 @@ module.exports = castPath;
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -8938,19 +8963,19 @@ module.exports = castPath;
 
   isObject = __webpack_require__(5);
 
-  XMLCData = __webpack_require__(77);
+  XMLCData = __webpack_require__(78);
 
-  XMLComment = __webpack_require__(78);
+  XMLComment = __webpack_require__(79);
 
-  XMLDTDAttList = __webpack_require__(222);
+  XMLDTDAttList = __webpack_require__(225);
 
-  XMLDTDEntity = __webpack_require__(223);
+  XMLDTDEntity = __webpack_require__(226);
 
-  XMLDTDElement = __webpack_require__(224);
+  XMLDTDElement = __webpack_require__(227);
 
-  XMLDTDNotation = __webpack_require__(225);
+  XMLDTDNotation = __webpack_require__(228);
 
-  XMLProcessingInstruction = __webpack_require__(76);
+  XMLProcessingInstruction = __webpack_require__(77);
 
   module.exports = XMLDocType = (function() {
     function XMLDocType(parent, pubID, sysID) {
@@ -9121,14 +9146,14 @@ module.exports = castPath;
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Collection = __webpack_require__(55);
-var Operation = __webpack_require__(81);
-var Shape = __webpack_require__(16);
-var Paginator = __webpack_require__(82);
-var ResourceWaiter = __webpack_require__(83);
+var Collection = __webpack_require__(56);
+var Operation = __webpack_require__(82);
+var Shape = __webpack_require__(15);
+var Paginator = __webpack_require__(83);
+var ResourceWaiter = __webpack_require__(84);
 
 var util = __webpack_require__(1);
 var property = util.property;
@@ -9190,10 +9215,10 @@ module.exports = Api;
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Shape = __webpack_require__(16);
+var Shape = __webpack_require__(15);
 
 var util = __webpack_require__(1);
 var property = util.property;
@@ -9270,7 +9295,7 @@ module.exports = Operation;
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var property = __webpack_require__(1).property;
@@ -9287,7 +9312,7 @@ module.exports = Paginator;
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
@@ -9323,7 +9348,7 @@ module.exports = ResourceWaiter;
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -9543,7 +9568,7 @@ AWS.util.addPromises(AWS.Credentials);
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -9722,7 +9747,7 @@ AWS.util.addPromises(AWS.CredentialProviderChain);
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -9954,7 +9979,7 @@ AWS.HttpClient.getInstance = function getInstance() {
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -10191,7 +10216,7 @@ module.exports = AWS.SequentialExecutor;
 
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -10271,7 +10296,7 @@ module.exports = AWS.Signers.V3;
 
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -10374,7 +10399,7 @@ module.exports = {
 
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
@@ -10414,7 +10439,7 @@ module.exports = rng;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports) {
 
 /**
@@ -10443,7 +10468,7 @@ module.exports = bytesToUuid;
 
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10470,8 +10495,8 @@ module.exports = bytesToUuid;
 
 
 
-var punycode = __webpack_require__(260);
-var util = __webpack_require__(261);
+var punycode = __webpack_require__(263);
+var util = __webpack_require__(264);
 
 exports.parse = urlParse;
 exports.resolve = urlResolve;
@@ -10546,7 +10571,7 @@ var protocolPattern = /^([a-z0-9.+-]+:)/i,
       'gopher:': true,
       'file:': true
     },
-    querystring = __webpack_require__(93);
+    querystring = __webpack_require__(94);
 
 function urlParse(url, parseQueryString, slashesDenoteHost) {
   if (url && util.isObject(url) && url instanceof Url) return url;
@@ -11182,18 +11207,18 @@ Url.prototype.parseHost = function() {
 
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-exports.decode = exports.parse = __webpack_require__(262);
-exports.encode = exports.stringify = __webpack_require__(263);
+exports.decode = exports.parse = __webpack_require__(265);
+exports.encode = exports.stringify = __webpack_require__(266);
 
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11205,11 +11230,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _buffer = __webpack_require__(7);
 
-var _cryptoBrowserify = __webpack_require__(95);
+var _cryptoBrowserify = __webpack_require__(96);
 
 var crypto = _interopRequireWildcard(_cryptoBrowserify);
 
-var _BigInteger = __webpack_require__(96);
+var _BigInteger = __webpack_require__(97);
 
 var _BigInteger2 = _interopRequireDefault(_BigInteger);
 
@@ -11551,14 +11576,14 @@ var AuthenticationHelper = function () {
 exports.default = AuthenticationHelper;
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(7).Buffer
-var sha = __webpack_require__(286)
-var sha256 = __webpack_require__(287)
-var rng = __webpack_require__(288)
-var md5 = __webpack_require__(289)
+var sha = __webpack_require__(289)
+var sha256 = __webpack_require__(290)
+var rng = __webpack_require__(291)
+var md5 = __webpack_require__(292)
 
 var algorithms = {
   sha1: sha,
@@ -11654,7 +11679,7 @@ each(['createCredentials'
 
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12462,7 +12487,7 @@ BigInteger.ZERO = nbv(0);
 BigInteger.ONE = nbv(1);
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12474,7 +12499,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _CognitoJwtToken2 = __webpack_require__(98);
+var _CognitoJwtToken2 = __webpack_require__(99);
 
 var _CognitoJwtToken3 = _interopRequireDefault(_CognitoJwtToken2);
 
@@ -12539,7 +12564,7 @@ var CognitoAccessToken = function (_CognitoJwtToken) {
 exports.default = CognitoAccessToken;
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12632,7 +12657,7 @@ var CognitoJwtToken = function () {
 exports.default = CognitoJwtToken;
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12644,7 +12669,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _CognitoJwtToken2 = __webpack_require__(98);
+var _CognitoJwtToken2 = __webpack_require__(99);
 
 var _CognitoJwtToken3 = _interopRequireDefault(_CognitoJwtToken2);
 
@@ -12709,7 +12734,7 @@ var CognitoIdToken = function (_CognitoJwtToken) {
 exports.default = CognitoIdToken;
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12771,7 +12796,7 @@ var CognitoRefreshToken = function () {
 exports.default = CognitoRefreshToken;
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12783,43 +12808,43 @@ Object.defineProperty(exports, "__esModule", {
 
 var _buffer = __webpack_require__(7);
 
-var _cryptoBrowserify = __webpack_require__(95);
+var _cryptoBrowserify = __webpack_require__(96);
 
 var crypto = _interopRequireWildcard(_cryptoBrowserify);
 
-var _BigInteger = __webpack_require__(96);
+var _BigInteger = __webpack_require__(97);
 
 var _BigInteger2 = _interopRequireDefault(_BigInteger);
 
-var _AuthenticationHelper = __webpack_require__(94);
+var _AuthenticationHelper = __webpack_require__(95);
 
 var _AuthenticationHelper2 = _interopRequireDefault(_AuthenticationHelper);
 
-var _CognitoAccessToken = __webpack_require__(97);
+var _CognitoAccessToken = __webpack_require__(98);
 
 var _CognitoAccessToken2 = _interopRequireDefault(_CognitoAccessToken);
 
-var _CognitoIdToken = __webpack_require__(99);
+var _CognitoIdToken = __webpack_require__(100);
 
 var _CognitoIdToken2 = _interopRequireDefault(_CognitoIdToken);
 
-var _CognitoRefreshToken = __webpack_require__(100);
+var _CognitoRefreshToken = __webpack_require__(101);
 
 var _CognitoRefreshToken2 = _interopRequireDefault(_CognitoRefreshToken);
 
-var _CognitoUserSession = __webpack_require__(102);
+var _CognitoUserSession = __webpack_require__(103);
 
 var _CognitoUserSession2 = _interopRequireDefault(_CognitoUserSession);
 
-var _DateHelper = __webpack_require__(103);
+var _DateHelper = __webpack_require__(104);
 
 var _DateHelper2 = _interopRequireDefault(_DateHelper);
 
-var _CognitoUserAttribute = __webpack_require__(104);
+var _CognitoUserAttribute = __webpack_require__(105);
 
 var _CognitoUserAttribute2 = _interopRequireDefault(_CognitoUserAttribute);
 
-var _StorageHelper = __webpack_require__(105);
+var _StorageHelper = __webpack_require__(106);
 
 var _StorageHelper2 = _interopRequireDefault(_StorageHelper);
 
@@ -13841,6 +13866,29 @@ var CognitoUser = function () {
   };
 
   /**
+   * This is used by an authenticated users to get the userData
+   * @param {nodeCallback<UserData>} callback Called on success or error.
+   * @returns {void}
+   */
+
+  CognitoUser.prototype.getUserData = function getUserData(callback) {
+    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('GetUser', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err, userData) {
+      if (err) {
+        return callback(err, null);
+      }
+
+      return callback(null, userData);
+    });
+    return undefined;
+  };
+
+  /**
    * This is used by an authenticated user to delete a list of attributes
    * @param {string[]} attributeList Names of the attributes to delete.
    * @param {nodeCallback<string>} callback Called on success or error.
@@ -14549,7 +14597,7 @@ var CognitoUser = function () {
 exports.default = CognitoUser;
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14671,7 +14719,7 @@ var CognitoUserSession = function () {
 exports.default = CognitoUserSession;
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14752,7 +14800,7 @@ var DateHelper = function () {
 exports.default = DateHelper;
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14865,7 +14913,7 @@ var CognitoUserAttribute = function () {
 exports.default = CognitoUserAttribute;
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14986,7 +15034,7 @@ var StorageHelper = function () {
 exports.default = StorageHelper;
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15057,6 +15105,7 @@ var HubClass = /** @class */ (function () {
                 logger.warn('error dispatching ' + channel + ' event to ' + listener.name);
             }
         });
+        this.bus.pop();
     };
     return HubClass;
 }());
@@ -15066,7 +15115,7 @@ exports.default = Hub;
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15085,7 +15134,7 @@ exports.default = Hub;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
-var logger = new Common_1.ConsoleLogger('Signer'), url = __webpack_require__(92), crypto = Common_1.AWS['util'].crypto;
+var logger = new Common_1.ConsoleLogger('Signer'), url = __webpack_require__(93), crypto = Common_1.AWS['util'].crypto;
 var encrypt = function (key, src, encoding) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
 };
@@ -15315,32 +15364,6 @@ exports.default = Signer;
 
 
 /***/ }),
-/* 108 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var BrowserStorageCache_1 = __webpack_require__(304);
-exports.BrowserStorageCache = BrowserStorageCache_1.default;
-var InMemoryCache_1 = __webpack_require__(307);
-exports.InMemoryCache = InMemoryCache_1.default;
-exports.default = BrowserStorageCache_1.default;
-
-
-/***/ }),
 /* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15359,7 +15382,7 @@ exports.default = BrowserStorageCache_1.default;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Utils_1 = __webpack_require__(51);
+var Utils_1 = __webpack_require__(52);
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('StorageCache');
 /**
@@ -15460,6 +15483,73 @@ exports.default = StorageCache;
 
 /***/ }),
 /* 110 */
+/***/ (function(module, exports) {
+
+// Unique ID creation requires a high quality random # generator.  In the
+// browser this is a little complicated due to unknown quality of Math.random()
+// and inconsistent support for the `crypto` API.  We do the best we can via
+// feature-detection
+
+// getRandomValues needs to be invoked in a context where "this" is a Crypto implementation.
+var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues.bind(crypto)) ||
+                      (typeof(msCrypto) != 'undefined' && msCrypto.getRandomValues.bind(msCrypto));
+if (getRandomValues) {
+  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
+
+  module.exports = function whatwgRNG() {
+    getRandomValues(rnds8);
+    return rnds8;
+  };
+} else {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var rnds = new Array(16);
+
+  module.exports = function mathRNG() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return rnds;
+  };
+}
+
+
+/***/ }),
+/* 111 */
+/***/ (function(module, exports) {
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  return bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
+}
+
+module.exports = bytesToUuid;
+
+
+/***/ }),
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15477,19 +15567,19 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 111 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var settle = __webpack_require__(320);
-var buildURL = __webpack_require__(322);
-var parseHeaders = __webpack_require__(323);
-var isURLSameOrigin = __webpack_require__(324);
-var createError = __webpack_require__(112);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(325);
+var settle = __webpack_require__(328);
+var buildURL = __webpack_require__(330);
+var parseHeaders = __webpack_require__(331);
+var isURLSameOrigin = __webpack_require__(332);
+var createError = __webpack_require__(114);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(333);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -15586,7 +15676,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(326);
+      var cookies = __webpack_require__(334);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -15665,13 +15755,13 @@ module.exports = function xhrAdapter(config) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
 
 /***/ }),
-/* 112 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var enhanceError = __webpack_require__(321);
+var enhanceError = __webpack_require__(329);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -15690,7 +15780,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 113 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15702,7 +15792,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 114 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15728,7 +15818,7 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 115 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15746,17 +15836,21 @@ module.exports = Cancel;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Auth_1 = __webpack_require__(15);
-exports.Auth = Auth_1.default;
-var Analytics_1 = __webpack_require__(308);
+var Analytics_1 = __webpack_require__(118);
 exports.Analytics = Analytics_1.default;
-var Storage_1 = __webpack_require__(310);
+exports.AnalyticsClass = Analytics_1.AnalyticsClass;
+var Auth_1 = __webpack_require__(20);
+exports.Auth = Auth_1.default;
+exports.AuthClass = Auth_1.AuthClass;
+var Storage_1 = __webpack_require__(318);
 exports.Storage = Storage_1.default;
-var API_1 = __webpack_require__(312);
+exports.StorageClass = Storage_1.StorageClass;
+var API_1 = __webpack_require__(320);
 exports.API = API_1.default;
-var I18n_1 = __webpack_require__(334);
+exports.APIClass = API_1.APIClass;
+var I18n_1 = __webpack_require__(342);
 exports.I18n = I18n_1.default;
-var Cache_1 = __webpack_require__(108);
+var Cache_1 = __webpack_require__(51);
 exports.Cache = Cache_1.default;
 var Common_1 = __webpack_require__(2);
 exports.Logger = Common_1.ConsoleLogger;
@@ -15778,6 +15872,27 @@ var Amplify = /** @class */ (function () {
         API_1.default.configure(config);
         Storage_1.default.configure(config);
         Cache_1.default.configure(config);
+        return config;
+    };
+    Amplify.addPluggable = function (pluggable) {
+        if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
+            var category = pluggable.getCategory();
+            switch (category) {
+                case 'Analytics':
+                    Analytics_1.default.addPluggable(pluggable);
+                    break;
+                case 'Auth':
+                    break;
+                case 'API':
+                    break;
+                case 'Cache':
+                    break;
+                case 'Storage':
+                    break;
+                default:
+                    break;
+            }
+        }
     };
     Amplify.Auth = null;
     Amplify.Analytics = null;
@@ -15799,7 +15914,108 @@ Amplify.Logger = Common_1.ConsoleLogger;
 
 
 /***/ }),
-/* 116 */
+/* 118 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Analytics_1 = __webpack_require__(119);
+exports.AnalyticsClass = Analytics_1.default;
+var Common_1 = __webpack_require__(2);
+var Platform_1 = __webpack_require__(32);
+var logger = new Common_1.ConsoleLogger('Analytics');
+var _instance = null;
+if (!_instance) {
+    logger.debug('Create Analytics Instance');
+    _instance = new Analytics_1.default();
+}
+var Analytics = _instance;
+exports.default = Analytics;
+// listen on app state change
+var dispatchAppStateEvent = function (event, data) {
+    Common_1.Hub.dispatch('appState', { event: event, data: data }, 'AppState');
+};
+if (Platform_1.default.isReactNative) {
+    Common_1.AppState.addEventListener('change', function (nextAppState) {
+        switch (nextAppState) {
+            case 'active':
+                dispatchAppStateEvent('active', {});
+        }
+    });
+}
+Analytics.onHubCapsule = function (capsule) {
+    var channel = capsule.channel, payload = capsule.payload, source = capsule.source;
+    logger.debug('on hub capsule ' + channel, payload);
+    switch (channel) {
+        case 'auth':
+            authEvent(payload);
+            break;
+        case 'storage':
+            storageEvent(payload);
+            break;
+        case 'analytics':
+            analyticsEvent(payload);
+            break;
+        default:
+            break;
+    }
+};
+var storageEvent = function (payload) {
+    var attrs = payload.attrs, metrics = payload.metrics;
+    if (!attrs)
+        return;
+    Analytics.record('Storage', attrs, metrics);
+};
+var authEvent = function (payload) {
+    var event = payload.event;
+    if (!event) {
+        return;
+    }
+    switch (event) {
+        case 'signIn':
+            Analytics.record('_userauth.sign_in');
+            break;
+        case 'signUp':
+            Analytics.record('_userauth.sign_up');
+            break;
+        case 'signOut':
+            break;
+        case 'signIn_failure':
+            Analytics.record('_userauth.auth_fail');
+            break;
+    }
+};
+var analyticsEvent = function (payload) {
+    var eventType = payload.eventType;
+    if (!eventType)
+        return;
+    switch (eventType) {
+        case 'session_start':
+            Analytics.startSession();
+            break;
+    }
+};
+Common_1.Hub.listen('auth', Analytics);
+Common_1.Hub.listen('storage', Analytics);
+Common_1.Hub.listen('analytics', Analytics);
+Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
+
+
+/***/ }),
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15853,746 +16069,75 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
-var Platform_1 = __webpack_require__(50);
-var Cache_1 = __webpack_require__(108);
-var logger = new Common_1.ConsoleLogger('AuthClass');
-var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
-var CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
-var dispatchAuthEvent = function (event, data) {
-    Common_1.Hub.dispatch('auth', { event: event, data: data }, 'Auth');
-};
+var AWSAnalyticsProvider_1 = __webpack_require__(309);
+var Auth_1 = __webpack_require__(20);
+var logger = new Common_1.ConsoleLogger('AnalyticsClass');
+// events buffer
+var BUFFER_SIZE = 1000;
+var MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
+var interval = 5 * 1000; // 5s
 /**
-* Provide authentication steps
+* Provide mobile analytics client functions
 */
-var AuthClass = /** @class */ (function () {
+var AnalyticsClass = /** @class */ (function () {
     /**
-     * Initialize Auth with AWS configurations
-     * @param {Object} config - Configuration of the Auth
+     * Initialize Analtyics
+     * @param config - Configuration of the Analytics
      */
-    function AuthClass(config) {
-        this.userPool = null;
-        this.credentials = null;
-        this.credentials_source = ''; // aws, guest, userPool, federated
-        this.user = null;
-        this.configure(config);
-        if (Common_1.AWS.config) {
-            Common_1.AWS.config.update({ customUserAgent: Common_1.Constants.userAgent });
-        }
-        else {
-            logger.warn('No AWS.config');
-        }
+    function AnalyticsClass() {
+        var _this = this;
+        this._buffer = [];
+        this._config = {};
+        this._pluggables = [];
+        // default one
+        // events batch
+        var that = this;
+        // flush event buffer
+        setInterval(function () {
+            var size = _this._buffer.length < MAX_SIZE_PER_FLUSH ? _this._buffer.length : MAX_SIZE_PER_FLUSH;
+            for (var i = 0; i < size; i += 1) {
+                var params = _this._buffer.shift();
+                that._sendFromBuffer(params);
+            }
+        }, interval);
     }
-    AuthClass.prototype.configure = function (config) {
-        var _this = this;
-        logger.debug('configure Auth');
-        var conf = config ? config.Auth || config : {};
-        if (conf['aws_cognito_identity_pool_id']) {
-            conf = {
-                userPoolId: conf['aws_user_pools_id'],
-                userPoolWebClientId: conf['aws_user_pools_web_client_id'],
-                region: conf['aws_cognito_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id']
-            };
-        }
-        this._config = Object.assign({}, this._config, conf);
-        if (!this._config.identityPoolId) {
-            logger.debug('Do not have identityPoolId yet.');
-        }
-        var _a = this._config, userPoolId = _a.userPoolId, userPoolWebClientId = _a.userPoolWebClientId;
-        if (userPoolId) {
-            this.userPool = new CognitoUserPool({
-                UserPoolId: userPoolId,
-                ClientId: userPoolWebClientId
-            });
-            if (Platform_1.default.isReactNative) {
-                var that = this;
-                this._userPoolStorageSync = new Promise(function (resolve, reject) {
-                    _this.userPool.storage.sync(function (err, data) {
-                        if (err) {
-                            reject(err);
-                        }
-                        else {
-                            resolve(data);
-                        }
-                    });
-                });
-            }
-            else {
-                this.pickupCredentials();
-            }
-        }
-        return this._config;
-    };
     /**
-     * Sign up with username, password and other attrbutes like phone, email
-     * @param {String | object} params - The user attirbutes used for signin
-     * @param {String[]} restOfAttrs - for the backward compatability
-     * @return - A promise resolves callback data if success
+     * configure Analytics
+     * @param {Object} config - Configuration of the Analytics
      */
-    AuthClass.prototype.signUp = function (params) {
-        var _this = this;
-        var restOfAttrs = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            restOfAttrs[_i - 1] = arguments[_i];
-        }
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        var username = null;
-        var password = null;
-        var attributes = [];
-        var validationData = null;
-        if (params && typeof params === 'string') {
-            username = params;
-            password = restOfAttrs ? restOfAttrs[0] : null;
-            var email = restOfAttrs ? restOfAttrs[1] : null;
-            var phone_number = restOfAttrs ? restOfAttrs[2] : null;
-            if (email)
-                attributes.push({ Name: 'email', Value: email });
-            if (phone_number)
-                attributes.push({ Name: 'phone_number', Value: phone_number });
-        }
-        else if (params && typeof params === 'object') {
-            username = params['username'];
-            password = params['password'];
-            var attrs_1 = params['attributes'];
-            if (attrs_1) {
-                Object.keys(attrs_1).map(function (key) {
-                    var ele = { Name: key, Value: attrs_1[key] };
-                    attributes.push(ele);
-                });
-            }
-            validationData = params['validationData'] || null;
-        }
-        else {
-            return Promise.reject('The first parameter should either be non-null string or object');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-        if (!password) {
-            return Promise.reject('Password cannot be empty');
-        }
-        logger.debug('signUp attrs:', attributes);
-        logger.debug('signUp validation data:', validationData);
-        return new Promise(function (resolve, reject) {
-            _this.userPool.signUp(username, password, attributes, validationData, function (err, data) {
-                if (err) {
-                    dispatchAuthEvent('signUp_failure', err);
-                    reject(err);
-                }
-                else {
-                    dispatchAuthEvent('signUp', data);
-                    resolve(data);
-                }
-            });
+    AnalyticsClass.prototype.configure = function (config) {
+        logger.debug('configure Analytics');
+        var amplifyConfig = Common_1.Parser.parseMobilehubConfig(config);
+        var conf = Object.assign({}, this._config, amplifyConfig.Analytics);
+        var clientInfo = Common_1.ClientDevice.clientInfo();
+        conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
+        this._config = conf;
+        this._pluggables.map(function (pluggable) {
+            pluggable.configure(conf);
         });
+        if (this._pluggables.length === 0) {
+            this.addPluggable(new AWSAnalyticsProvider_1.default());
+        }
+        return conf;
     };
     /**
-     * Send the verfication code to confirm sign up
-     * @param {String} username - The username to be confirmed
-     * @param {String} code - The verification code
-     * @return - A promise resolves callback data if success
+     * add plugin into Analytics category
+     * @param {Object} pluggable - an instance of the plugin
      */
-    AuthClass.prototype.confirmSignUp = function (username, code) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-        if (!code) {
-            return Promise.reject('Code cannot be empty');
-        }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
-        return new Promise(function (resolve, reject) {
-            user.confirmRegistration(code, true, function (err, data) {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(data);
-                }
-            });
-        });
-    };
-    /**
-     * Resend the verification code
-     * @param {String} username - The username to be confirmed
-     * @return - A promise resolves data if success
-     */
-    AuthClass.prototype.resendSignUp = function (username) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
-        return new Promise(function (resolve, reject) {
-            user.resendConfirmationCode(function (err, data) {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(data);
-                }
-            });
-        });
-    };
-    /**
-     * Sign in
-     * @param {String} username - The username to be signed in
-     * @param {String} password - The password of the username
-     * @return - A promise resolves the CognitoUser object if success or mfa required
-     */
-    AuthClass.prototype.signIn = function (username, password) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-        if (!password) {
-            return Promise.reject('Password cannot be empty');
-        }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
-        var authDetails = new AuthenticationDetails({
-            Username: username,
-            Password: password
-        });
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            user.authenticateUser(authDetails, {
-                onSuccess: function (session) {
-                    logger.debug(session);
-                    that.setCredentialsFromSession(session);
-                    that.user = user;
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
-                },
-                onFailure: function (err) {
-                    logger.debug('signIn failure', err);
-                    dispatchAuthEvent('signIn_failure', err);
-                    reject(err);
-                },
-                mfaRequired: function (challengeName, challengeParam) {
-                    logger.debug('signIn MFA required');
-                    user['challengeName'] = challengeName;
-                    user['challengeParam'] = challengeParam;
-                    resolve(user);
-                },
-                newPasswordRequired: function (userAttributes, requiredAttributes) {
-                    logger.debug('signIn new password');
-                    user['challengeName'] = 'NEW_PASSWORD_REQUIRED';
-                    user['challengeParam'] = {
-                        userAttributes: userAttributes,
-                        requiredAttributes: requiredAttributes
-                    };
-                    resolve(user);
-                }
-            });
-        });
-    };
-    /**
-     * Send MFA code to confirm sign in
-     * @param {Object} user - The CognitoUser object
-     * @param {String} code - The confirmation code
-     */
-    AuthClass.prototype.confirmSignIn = function (user, code) {
-        if (!code) {
-            return Promise.reject('Code cannot be empty');
-        }
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            user.sendMFACode(code, {
-                onSuccess: function (session) {
-                    logger.debug(session);
-                    that.setCredentialsFromSession(session);
-                    that.user = user;
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
-                },
-                onFailure: function (err) {
-                    logger.debug('confirm signIn failure', err);
-                    reject(err);
-                }
-            });
-        });
-    };
-    AuthClass.prototype.completeNewPassword = function (user, password, requiredAttributes) {
-        if (!password) {
-            return Promise.reject('Password cannot be empty');
-        }
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            user.completeNewPasswordChallenge(password, requiredAttributes, {
-                onSuccess: function (session) {
-                    logger.debug(session);
-                    that.setCredentialsFromSession(session);
-                    that.user = user;
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
-                },
-                onFailure: function (err) {
-                    logger.debug('completeNewPassword failure', err);
-                    reject(err);
-                },
-                mfaRequired: function (challengeName, challengeParam) {
-                    logger.debug('signIn MFA required');
-                    user['challengeName'] = challengeName;
-                    user['challengeParam'] = challengeParam;
-                    resolve(user);
-                }
-            });
-        });
-    };
-    /**
-     * Update an authenticated users' attributes
-     * @param {CognitoUser} - The currently logged in user object
-     * @return {Promise}
-     **/
-    AuthClass.prototype.updateUserAttributes = function (user, attributes) {
-        var attr = {};
-        var attributeList = [];
-        return this.userSession(user)
-            .then(function (session) {
-            return new Promise(function (resolve, reject) {
-                for (var key in attributes) {
-                    if (key !== 'sub' &&
-                        key.indexOf('_verified') < 0 &&
-                        attributes[key]) {
-                        attr = {
-                            'Name': key,
-                            'Value': attributes[key]
-                        };
-                        attributeList.push(attr);
-                    }
-                }
-                user.updateAttributes(attributeList, function (err, result) {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(result);
-                    }
-                });
-            });
-        });
-    };
-    /**
-     * Return user attributes
-     * @param {Object} user - The CognitoUser object
-     * @return - A promise resolves to user attributes if success
-     */
-    AuthClass.prototype.userAttributes = function (user) {
-        return this.userSession(user)
-            .then(function (session) {
-            return new Promise(function (resolve, reject) {
-                user.getUserAttributes(function (err, attributes) {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(attributes);
-                    }
-                });
-            });
-        });
-    };
-    AuthClass.prototype.verifiedContact = function (user) {
-        var that = this;
-        return this.userAttributes(user)
-            .then(function (attributes) {
-            var attrs = that.attributesToObject(attributes);
-            var unverified = {};
-            var verified = {};
-            if (attrs['email']) {
-                if (attrs['email_verified']) {
-                    verified['email'] = attrs['email'];
-                }
-                else {
-                    unverified['email'] = attrs['email'];
-                }
-            }
-            if (attrs['phone_number']) {
-                if (attrs['phone_number_verified']) {
-                    verified['phone_number'] = attrs['phone_number'];
-                }
-                else {
-                    unverified['phone_number'] = attrs['phone_number'];
-                }
-            }
-            return {
-                verified: verified,
-                unverified: unverified
-            };
-        });
-    };
-    /**
-     * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
-     */
-    AuthClass.prototype.currentUserPoolUser = function () {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        var user = null;
-        if (Platform_1.default.isReactNative) {
-            var that = this;
-            return this.getSyncedUser().then(function (user) {
-                return new Promise(function (resolve, reject) {
-                    user.getSession(function (err, session) {
-                        if (err) {
-                            reject(err);
-                        }
-                        else {
-                            resolve(user);
-                        }
-                    });
-                });
-            });
-        }
-        else {
-            user = this.userPool.getCurrentUser();
-            if (!user) {
-                return Promise.reject('No current user in userPool');
-            }
-            return new Promise(function (resolve, reject) {
-                user.getSession(function (err, session) {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(user);
-                    }
-                });
-            });
-        }
-    };
-    /**
-     * Return the current user after synchornizing AsyncStorage
-     * @return - A promise with the current authenticated user
-     **/
-    AuthClass.prototype.getSyncedUser = function () {
-        var that = this;
-        return (this._userPoolStorageSync || Promise.resolve()).then(function (result) {
-            if (!that.userPool) {
-                return Promise.reject('No userPool');
-            }
-            that.credentials_source = 'userPool';
-            return that.userPool.getCurrentUser();
-        });
-    };
-    /**
-     * Get current authenticated user
-     * @return - A promise resolves to curret authenticated CognitoUser if success
-     */
-    AuthClass.prototype.currentAuthenticatedUser = function () {
-        var source = this.credentials_source;
-        logger.debug('get current authenticated user. source ' + source);
-        if (!source || source === 'aws' || source === 'userPool') {
-            return this.currentUserPoolUser();
-        }
-        if (source === 'federated') {
-            return Promise.resolve(this.user);
-        }
-        return Promise.reject('not authenticated');
-    };
-    /**
-     * Get current user's session
-     * @return - A promise resolves to session object if success
-     */
-    AuthClass.prototype.currentSession = function () {
-        var user;
-        var that = this;
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (Platform_1.default.isReactNative) {
-            return this.getSyncedUser().then(function (user) {
-                if (!user) {
-                    return Promise.reject('No current user');
-                }
-                return that.userSession(user);
-            });
-        }
-        else {
-            user = this.userPool.getCurrentUser();
-            if (!user) {
-                return Promise.reject('No current user');
-            }
-            return this.userSession(user);
-        }
-    };
-    /**
-     * Get the corresponding user session
-     * @param {Object} user - The CognitoUser object
-     * @return - A promise resolves to the session
-     */
-    AuthClass.prototype.userSession = function (user) {
-        return new Promise(function (resolve, reject) {
-            logger.debug(user);
-            user.getSession(function (err, session) {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(session);
-                }
-            });
-        });
-    };
-    /**
-     * Get authenticated credentials of current user.
-     * @return - A promise resolves to be current user's credentials
-     */
-    AuthClass.prototype.currentUserCredentials = function () {
-        var _this = this;
-        if (Platform_1.default.isReactNative) {
-            // asyncstorage
-            var that_1 = this;
-            return Cache_1.default.getItem('federatedInfo')
-                .then(function (federatedInfo) {
-                if (federatedInfo) {
-                    var provider_1 = federatedInfo.provider, token_1 = federatedInfo.token, user_1 = federatedInfo.user;
-                    return new Promise(function (resolve, reject) {
-                        that_1.setCredentialsFromFederation(provider_1, token_1, user_1);
-                        resolve();
-                    });
-                }
-                else {
-                    return that_1.currentSession()
-                        .then(function (session) { return that_1.setCredentialsFromSession(session); })
-                        .catch(function (error) { return that_1.setCredentialsForGuest(); });
-                }
-            }).catch(function (error) {
-                return new Promise(function (resolve, reject) {
-                    reject(error);
-                });
-            });
-        }
-        else {
-            // first to check whether there is federation info in the local storage
-            var federatedInfo = Cache_1.default.getItem('federatedInfo');
-            if (federatedInfo) {
-                var provider_2 = federatedInfo.provider, token_2 = federatedInfo.token, user_2 = federatedInfo.user;
-                return new Promise(function (resolve, reject) {
-                    _this.setCredentialsFromFederation(provider_2, token_2, user_2);
-                    resolve();
-                });
-            }
-            else {
-                return this.currentSession()
-                    .then(function (session) { return _this.setCredentialsFromSession(session); })
-                    .catch(function (error) { return _this.setCredentialsForGuest(); });
-            }
-        }
-    };
-    AuthClass.prototype.currentCredentials = function () {
-        return this.pickupCredentials();
-    };
-    /**
-     * Initiate an attribute confirmation request
-     * @param {Object} user - The CognitoUser
-     * @param {Object} attr - The attributes to be verified
-     * @return - A promise resolves to callback data if success
-     */
-    AuthClass.prototype.verifyUserAttribute = function (user, attr) {
-        return new Promise(function (resolve, reject) {
-            user.getAttributeVerificationCode(attr, {
-                onSuccess: function (data) { resolve(data); },
-                onFailure: function (err) { reject(err); }
-            });
-        });
-    };
-    /**
-     * Confirm an attribute using a confirmation code
-     * @param {Object} user - The CognitoUser
-     * @param {Object} attr - The attribute to be verified
-     * @param {String} code - The confirmation code
-     * @return - A promise resolves to callback data if success
-     */
-    AuthClass.prototype.verifyUserAttributeSubmit = function (user, attr, code) {
-        if (!code) {
-            return Promise.reject('Code cannot be empty');
-        }
-        return new Promise(function (resolve, reject) {
-            user.verifyAttribute(attr, code, {
-                onSuccess: function (data) { resolve(data); },
-                onFailure: function (err) { reject(err); }
-            });
-        });
-    };
-    AuthClass.prototype.verifyCurrentUserAttribute = function (attr) {
-        var that = this;
-        return that.currentUserPoolUser()
-            .then(function (user) { return that.verifyUserAttribute(user, attr); });
-    };
-    /**
-     * Confirm current user's attribute using a confirmation code
-     * @param {Object} attr - The attribute to be verified
-     * @param {String} code - The confirmation code
-     * @return - A promise resolves to callback data if success
-     */
-    AuthClass.prototype.verifyCurrentUserAttributeSubmit = function (attr, code) {
-        var that = this;
-        return that.currentUserPoolUser()
-            .then(function (user) { return that.verifyUserAttributeSubmit(user, attr, code); });
-    };
-    /**
-     * Sign out method
-     * @return - A promise resolved if success
-     */
-    AuthClass.prototype.signOut = function () {
+    AnalyticsClass.prototype.addPluggable = function (pluggable) {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            var source, user;
+            var ensureCredentails, config;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.currentUserCredentials()];
+                    case 0: return [4 /*yield*/, this._getCredentials()];
                     case 1:
-                        _a.sent();
-                        source = this.credentials_source;
-                        // clean out the cached stuff
-                        this.credentials.clearCachedId();
-                        // clear federatedInfo
-                        Cache_1.default.removeItem('federatedInfo');
-                        if (source === 'aws' || source === 'userPool') {
-                            if (!this.userPool) {
-                                return [2 /*return*/, Promise.reject('No userPool')];
-                            }
-                            user = this.userPool.getCurrentUser();
-                            if (!user) {
-                                return [2 /*return*/, Promise.resolve()];
-                            }
-                            user.signOut();
-                        }
-                        return [2 /*return*/, new Promise(function (resolve, reject) {
-                                _this.setCredentialsForGuest();
-                                dispatchAuthEvent('signOut', _this.user);
-                                _this.user = null;
-                                resolve();
-                            })];
-                }
-            });
-        });
-    };
-    /**
-     * Initiate a forgot password request
-     * @param {String} username - the username to change password
-     * @return - A promise resolves if success
-     */
-    AuthClass.prototype.forgotPassword = function (username) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
-        return new Promise(function (resolve, reject) {
-            user.forgotPassword({
-                onSuccess: function () { resolve(); },
-                onFailure: function (err) {
-                    logger.debug('forgot password failure', err);
-                    reject(err);
-                },
-                inputVerificationCode: function (data) {
-                    resolve(data);
-                }
-            });
-        });
-    };
-    /**
-     * Confirm a new password using a confirmation Code
-     * @param {String} username - The username
-     * @param {String} code - The confirmation code
-     * @param {String} password - The new password
-     * @return - A promise that resolves if success
-     */
-    AuthClass.prototype.forgotPasswordSubmit = function (username, code, password) {
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (!username) {
-            return Promise.reject('Username cannot be empty');
-        }
-        if (!code) {
-            return Promise.reject('Code cannot be empty');
-        }
-        if (!password) {
-            return Promise.reject('Password cannot be empty');
-        }
-        var user = new CognitoUser({
-            Username: username,
-            Pool: this.userPool
-        });
-        return new Promise(function (resolve, reject) {
-            user.confirmPassword(code, password, {
-                onSuccess: function () { resolve(); },
-                onFailure: function (err) { reject(err); }
-            });
-        });
-    };
-    /**
-     * Get user information
-     * @async
-     * @return {Object }- current User's information
-     */
-    AuthClass.prototype.currentUserInfo = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var credentials, source, user, attributes, userAttrs, info, err_1, user;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        credentials = this.credentials;
-                        source = this.credentials_source;
-                        if (!source) {
-                            return [2 /*return*/, null];
-                        }
-                        if (!(source === 'aws' || source === 'userPool')) return [3 /*break*/, 5];
-                        return [4 /*yield*/, this.currentUserPoolUser()
-                                .catch(function (err) { return logger.debug(err); })];
-                    case 1:
-                        user = _a.sent();
-                        if (!user) {
-                            return [2 /*return*/, null];
-                        }
-                        _a.label = 2;
-                    case 2:
-                        _a.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, this.userAttributes(user)];
-                    case 3:
-                        attributes = _a.sent();
-                        userAttrs = this.attributesToObject(attributes);
-                        info = {
-                            'id': credentials.identityId,
-                            'username': user.username,
-                            'attributes': userAttrs
-                        };
-                        return [2 /*return*/, info];
-                    case 4:
-                        err_1 = _a.sent();
-                        console.warn(err_1);
-                        logger.debug('currentUserInfo error', err_1);
-                        return [2 /*return*/, {}];
-                    case 5:
-                        if (source === 'federated') {
-                            user = this.user;
-                            return [2 /*return*/, user ? user : {}];
+                        ensureCredentails = _a.sent();
+                        if (!ensureCredentails)
+                            return [2 /*return*/, Promise.resolve(false)];
+                        if (pluggable) {
+                            this._pluggables.push(pluggable);
+                            config = pluggable.configure(this._config);
+                            return [2 /*return*/, Promise.resolve(config)];
                         }
                         return [2 /*return*/];
                 }
@@ -16600,170 +16145,152 @@ var AuthClass = /** @class */ (function () {
         });
     };
     /**
-     * For federated login
-     * @param {String} provider - federation login provider
-     * @param {Object} response - response including access_token
-     * @param {String} user - user info
+     * Record Session start
+     * @return - A promise which resolves if buffer doesn't overflow
      */
-    AuthClass.prototype.federatedSignIn = function (provider, response, user) {
-        var token = response.token, expires_at = response.expires_at;
-        this.setCredentialsFromFederation(provider, token, user);
-        // store it into localstorage
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1 });
-        dispatchAuthEvent('signIn', this.user);
-        logger.debug('federated sign in credentials', this.credentials);
-        return this.keepAlive();
+    AnalyticsClass.prototype.startSession = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var ensureCredentails, timestamp, params;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._getCredentials()];
+                    case 1:
+                        ensureCredentails = _a.sent();
+                        if (!ensureCredentails)
+                            return [2 /*return*/, Promise.resolve(false)];
+                        timestamp = new Date().getTime();
+                        params = { eventName: '_session_start', timestamp: timestamp, config: this._config };
+                        return [2 /*return*/, this._putToBuffer(params)];
+                }
+            });
+        });
     };
     /**
-     * Compact version of credentials
-     * @param {Object} credentials
-     * @return {Object} - Credentials
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+    AnalyticsClass.prototype.onHubCapsule = function (capsule) { };
+    /**
+     * Record Session stop
+     * @return - A promise which resolves if buffer doesn't overflow
      */
-    AuthClass.prototype.essentialCredentials = function (credentials) {
-        return {
-            accessKeyId: credentials.accessKeyId,
-            sessionToken: credentials.sessionToken,
-            secretAccessKey: credentials.secretAccessKey,
-            identityId: credentials.identityId,
-            authenticated: credentials.authenticated
-        };
-    };
-    AuthClass.prototype.attributesToObject = function (attributes) {
-        var obj = {};
-        if (attributes) {
-            attributes.map(function (attribute) {
-                if (attribute.Name === 'sub')
-                    return;
-                if (attribute.Value === 'true') {
-                    obj[attribute.Name] = true;
-                }
-                else if (attribute.Value === 'false') {
-                    obj[attribute.Name] = false;
-                }
-                else {
-                    obj[attribute.Name] = attribute.Value;
+    AnalyticsClass.prototype.stopSession = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var ensureCredentails, timestamp, params;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._getCredentials()];
+                    case 1:
+                        ensureCredentails = _a.sent();
+                        if (!ensureCredentails)
+                            return [2 /*return*/, Promise.resolve(false)];
+                        timestamp = new Date().getTime();
+                        params = { eventName: '_session_stop', timestamp: timestamp, config: this._config };
+                        return [2 /*return*/, this._putToBuffer(params)];
                 }
             });
-        }
-        return obj;
-    };
-    AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
-        var domains = {
-            'google': 'accounts.google.com',
-            'facebook': 'graph.facebook.com',
-            'amazon': 'www.amazon.com'
-        };
-        var domain = domains[provider];
-        if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
-        }
-        var logins = {};
-        logins[domain] = token;
-        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
-        this.credentials = new Common_1.AWS.CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
-            Logins: logins
-        }, {
-            region: region
         });
-        this.credentials.authenticated = true;
-        this.credentials_source = 'federated';
-        this.user = Object.assign({ id: this.credentials.identityId }, user);
-        if (Common_1.AWS && Common_1.AWS.config) {
-            Common_1.AWS.config.credentials = this.credentials;
-        }
     };
-    AuthClass.prototype.pickupCredentials = function () {
-        var _this = this;
-        if (this.credentials) {
-            return this.keepAlive();
-        }
-        else if (this.setCredentialsFromAWS()) {
-            return this.keepAlive();
-        }
-        else {
-            return this.currentUserCredentials()
-                .then(function () { return _this.keepAlive(); })
-                .catch(function (err) {
-                logger.debug('error when pickup', err);
-                _this.setCredentialsForGuest();
-                return _this.keepAlive();
+    /**
+     * Record one analytic event and send it to Pinpoint
+     * @param {String} name - The name of the event
+     * @param {Object} [attributs] - Attributes of the event
+     * @param {Object} [metrics] - Event metrics
+     * @return - A promise which resolves if buffer doesn't overflow
+     */
+    AnalyticsClass.prototype.record = function (eventName, attributes, metrics) {
+        return __awaiter(this, void 0, void 0, function () {
+            var ensureCredentails, timestamp, params;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._getCredentials()];
+                    case 1:
+                        ensureCredentails = _a.sent();
+                        if (!ensureCredentails)
+                            return [2 /*return*/, Promise.resolve(false)];
+                        timestamp = new Date().getTime();
+                        params = { eventName: eventName, attributes: attributes, metrics: metrics, timestamp: timestamp, config: this._config };
+                        return [2 /*return*/, this._putToBuffer(params)];
+                }
             });
-        }
-    };
-    AuthClass.prototype.setCredentialsFromAWS = function () {
-        if (Common_1.AWS.config && Common_1.AWS.config.credentials) {
-            this.credentials = Common_1.AWS.config.credentials;
-            this.credentials_source = 'aws';
-            return true;
-        }
-        return false;
-    };
-    AuthClass.prototype.setCredentialsForGuest = function () {
-        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
-        var credentials = new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId
-        }, {
-            region: region
         });
-        credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
-        this.credentials = credentials;
-        this.credentials.authenticated = false;
-        this.credentials_source = 'guest';
     };
-    AuthClass.prototype.setCredentialsFromSession = function (session) {
-        logger.debug('set credentials from session');
-        var idToken = session.getIdToken().getJwtToken();
-        var _a = this._config, region = _a.region, userPoolId = _a.userPoolId, identityPoolId = _a.identityPoolId;
-        var key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
-        var logins = {};
-        logins[key] = idToken;
-        this.credentials = new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
-            Logins: logins
-        }, {
-            region: region
+    AnalyticsClass.prototype.updateEndpoint = function (config) {
+        return __awaiter(this, void 0, void 0, function () {
+            var ensureCredentails, timestamp, conf, params;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._getCredentials()];
+                    case 1:
+                        ensureCredentails = _a.sent();
+                        if (!ensureCredentails)
+                            return [2 /*return*/, Promise.resolve(false)];
+                        timestamp = new Date().getTime();
+                        conf = Object.assign(this._config, config);
+                        params = { eventName: '_update_endpoint', timestamp: timestamp, config: conf };
+                        return [2 /*return*/, this._putToBuffer(params)];
+                }
+            });
         });
-        this.credentials.authenticated = true;
-        this.credentials_source = 'userPool';
     };
-    AuthClass.prototype.keepAlive = function () {
-        if (!this.credentials) {
-            this.setCredentialsForGuest();
-        }
-        var ts = new Date().getTime();
-        var delta = 10 * 60 * 1000; // 10 minutes
-        var credentials = this.credentials;
-        var expired = credentials.expired, expireTime = credentials.expireTime;
-        if (!expired && expireTime > ts + delta) {
-            return Promise.resolve(credentials);
-        }
+    /**
+     * @private
+     * @param {Object} params - params for the event recording
+     * Send events from buffer
+     */
+    AnalyticsClass.prototype._sendFromBuffer = function (params) {
         var that = this;
-        return new Promise(function (resolve, reject) {
-            that.currentUserCredentials()
-                .then(function () {
-                credentials = that.credentials;
-                credentials.refresh(function (err) {
-                    logger.debug('changed from previous');
-                    if (err) {
-                        logger.debug('refresh credentials error', err);
-                        resolve(null);
-                    }
-                    else {
-                        resolve(credentials);
-                    }
-                });
-            })
-                .catch(function () { return resolve(null); });
+        this._pluggables.map(function (pluggable) {
+            pluggable.record(params)
+                .then(function (success) {
+                if (!success) {
+                    that._putToBuffer(params);
+                }
+            });
         });
     };
-    return AuthClass;
+    /**
+     * @private
+     * @param params - params for the event recording
+     * Put events into buffer
+     */
+    AnalyticsClass.prototype._putToBuffer = function (params) {
+        if (this._buffer.length < BUFFER_SIZE) {
+            this._buffer.push(params);
+            return Promise.resolve();
+        }
+        else
+            return Promise.reject('exceed buffer size');
+    };
+    /**
+     * @private
+     * check if current credentials exists
+     */
+    AnalyticsClass.prototype._getCredentials = function () {
+        var that = this;
+        return Auth_1.default.currentCredentials()
+            .then(function (credentials) {
+            if (!credentials)
+                return false;
+            var cred = Auth_1.default.essentialCredentials(credentials);
+            that._config.credentials = cred;
+            // that._config.endpointId = cred.identityId;
+            // logger.debug('set endpointId for analytics', that._config.endpointId);
+            logger.debug('set credentials for analytics', that._config.credentials);
+            return true;
+        })
+            .catch(function (err) {
+            logger.debug('ensure credentials error', err);
+            return false;
+        });
+    };
+    return AnalyticsClass;
 }());
-exports.default = AuthClass;
+exports.default = AnalyticsClass;
 
 
 /***/ }),
-/* 117 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(11);
@@ -16773,12 +16300,12 @@ var apiLoader = AWS.apiLoader;
 
 apiLoader.services['s3'] = {};
 AWS.S3 = Service.defineService('s3', ['2006-03-01']);
-__webpack_require__(278);
+__webpack_require__(281);
 Object.defineProperty(apiLoader.services['s3'], '2006-03-01', {
   get: function get() {
-    var model = __webpack_require__(280);
-    model.paginators = __webpack_require__(281).pagination;
-    model.waiters = __webpack_require__(282).waiters;
+    var model = __webpack_require__(283);
+    model.paginators = __webpack_require__(284).pagination;
+    model.waiters = __webpack_require__(285).waiters;
     return model;
   },
   enumerable: true,
@@ -16789,7 +16316,7 @@ module.exports = AWS.S3;
 
 
 /***/ }),
-/* 118 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -16842,13 +16369,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(119);
+__webpack_require__(122);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 119 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -17041,7 +16568,7 @@ exports.clearImmediate = clearImmediate;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(9)))
 
 /***/ }),
-/* 120 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
@@ -17128,11 +16655,11 @@ module.exports = QueryParamSerializer;
 
 
 /***/ }),
-/* 121 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
-var builder = __webpack_require__(122);
+var builder = __webpack_require__(125);
 
 function XmlBuilder() { }
 
@@ -17220,16 +16747,16 @@ module.exports = XmlBuilder;
 
 
 /***/ }),
-/* 122 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
 (function() {
   var XMLBuilder, assign;
 
-  assign = __webpack_require__(123);
+  assign = __webpack_require__(126);
 
-  XMLBuilder = __webpack_require__(147);
+  XMLBuilder = __webpack_require__(150);
 
   module.exports.create = function(name, xmldec, doctype, options) {
     options = assign({}, xmldec, doctype, options);
@@ -17240,15 +16767,15 @@ module.exports = XmlBuilder;
 
 
 /***/ }),
-/* 123 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assignValue = __webpack_require__(58),
-    copyObject = __webpack_require__(63),
-    createAssigner = __webpack_require__(130),
-    isArrayLike = __webpack_require__(18),
-    isPrototype = __webpack_require__(38),
-    keys = __webpack_require__(19);
+var assignValue = __webpack_require__(59),
+    copyObject = __webpack_require__(64),
+    createAssigner = __webpack_require__(133),
+    isArrayLike = __webpack_require__(17),
+    isPrototype = __webpack_require__(39),
+    keys = __webpack_require__(18);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -17304,13 +16831,13 @@ module.exports = assign;
 
 
 /***/ }),
-/* 124 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isFunction = __webpack_require__(22),
-    isMasked = __webpack_require__(127),
+    isMasked = __webpack_require__(130),
     isObject = __webpack_require__(5),
-    toSource = __webpack_require__(62);
+    toSource = __webpack_require__(63);
 
 /**
  * Used to match `RegExp`
@@ -17357,7 +16884,7 @@ module.exports = baseIsNative;
 
 
 /***/ }),
-/* 125 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(23);
@@ -17409,7 +16936,7 @@ module.exports = getRawTag;
 
 
 /***/ }),
-/* 126 */
+/* 129 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -17437,10 +16964,10 @@ module.exports = objectToString;
 
 
 /***/ }),
-/* 127 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var coreJsData = __webpack_require__(128);
+var coreJsData = __webpack_require__(131);
 
 /** Used to detect methods masquerading as native. */
 var maskSrcKey = (function() {
@@ -17463,7 +16990,7 @@ module.exports = isMasked;
 
 
 /***/ }),
-/* 128 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var root = __webpack_require__(8);
@@ -17475,7 +17002,7 @@ module.exports = coreJsData;
 
 
 /***/ }),
-/* 129 */
+/* 132 */
 /***/ (function(module, exports) {
 
 /**
@@ -17494,11 +17021,11 @@ module.exports = getValue;
 
 
 /***/ }),
-/* 130 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseRest = __webpack_require__(131),
-    isIterateeCall = __webpack_require__(64);
+var baseRest = __webpack_require__(134),
+    isIterateeCall = __webpack_require__(65);
 
 /**
  * Creates a function like `_.assign`.
@@ -17537,12 +17064,12 @@ module.exports = createAssigner;
 
 
 /***/ }),
-/* 131 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var identity = __webpack_require__(35),
-    overRest = __webpack_require__(132),
-    setToString = __webpack_require__(134);
+var identity = __webpack_require__(36),
+    overRest = __webpack_require__(135),
+    setToString = __webpack_require__(137);
 
 /**
  * The base implementation of `_.rest` which doesn't validate or coerce arguments.
@@ -17560,10 +17087,10 @@ module.exports = baseRest;
 
 
 /***/ }),
-/* 132 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var apply = __webpack_require__(133);
+var apply = __webpack_require__(136);
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
@@ -17602,7 +17129,7 @@ module.exports = overRest;
 
 
 /***/ }),
-/* 133 */
+/* 136 */
 /***/ (function(module, exports) {
 
 /**
@@ -17629,11 +17156,11 @@ module.exports = apply;
 
 
 /***/ }),
-/* 134 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseSetToString = __webpack_require__(135),
-    shortOut = __webpack_require__(137);
+var baseSetToString = __webpack_require__(138),
+    shortOut = __webpack_require__(140);
 
 /**
  * Sets the `toString` method of `func` to return `string`.
@@ -17649,12 +17176,12 @@ module.exports = setToString;
 
 
 /***/ }),
-/* 135 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var constant = __webpack_require__(136),
-    defineProperty = __webpack_require__(60),
-    identity = __webpack_require__(35);
+var constant = __webpack_require__(139),
+    defineProperty = __webpack_require__(61),
+    identity = __webpack_require__(36);
 
 /**
  * The base implementation of `setToString` without support for hot loop shorting.
@@ -17677,7 +17204,7 @@ module.exports = baseSetToString;
 
 
 /***/ }),
-/* 136 */
+/* 139 */
 /***/ (function(module, exports) {
 
 /**
@@ -17709,7 +17236,7 @@ module.exports = constant;
 
 
 /***/ }),
-/* 137 */
+/* 140 */
 /***/ (function(module, exports) {
 
 /** Used to detect hot functions by number of calls within a span of milliseconds. */
@@ -17752,15 +17279,15 @@ module.exports = shortOut;
 
 
 /***/ }),
-/* 138 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseTimes = __webpack_require__(139),
-    isArguments = __webpack_require__(39),
+var baseTimes = __webpack_require__(142),
+    isArguments = __webpack_require__(40),
     isArray = __webpack_require__(6),
-    isBuffer = __webpack_require__(40),
-    isIndex = __webpack_require__(37),
-    isTypedArray = __webpack_require__(42);
+    isBuffer = __webpack_require__(41),
+    isIndex = __webpack_require__(38),
+    isTypedArray = __webpack_require__(43);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -17807,7 +17334,7 @@ module.exports = arrayLikeKeys;
 
 
 /***/ }),
-/* 139 */
+/* 142 */
 /***/ (function(module, exports) {
 
 /**
@@ -17833,11 +17360,11 @@ module.exports = baseTimes;
 
 
 /***/ }),
-/* 140 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(17),
-    isObjectLike = __webpack_require__(20);
+var baseGetTag = __webpack_require__(16),
+    isObjectLike = __webpack_require__(19);
 
 /** `Object#toString` result references. */
 var argsTag = '[object Arguments]';
@@ -17857,7 +17384,7 @@ module.exports = baseIsArguments;
 
 
 /***/ }),
-/* 141 */
+/* 144 */
 /***/ (function(module, exports) {
 
 /**
@@ -17881,12 +17408,12 @@ module.exports = stubFalse;
 
 
 /***/ }),
-/* 142 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(17),
-    isLength = __webpack_require__(36),
-    isObjectLike = __webpack_require__(20);
+var baseGetTag = __webpack_require__(16),
+    isLength = __webpack_require__(37),
+    isObjectLike = __webpack_require__(19);
 
 /** `Object#toString` result references. */
 var argsTag = '[object Arguments]',
@@ -17947,7 +17474,7 @@ module.exports = baseIsTypedArray;
 
 
 /***/ }),
-/* 143 */
+/* 146 */
 /***/ (function(module, exports) {
 
 /**
@@ -17967,10 +17494,10 @@ module.exports = baseUnary;
 
 
 /***/ }),
-/* 144 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {var freeGlobal = __webpack_require__(61);
+/* WEBPACK VAR INJECTION */(function(module) {var freeGlobal = __webpack_require__(62);
 
 /** Detect free variable `exports`. */
 var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
@@ -17993,13 +17520,13 @@ var nodeUtil = (function() {
 
 module.exports = nodeUtil;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module)))
 
 /***/ }),
-/* 145 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var overArg = __webpack_require__(146);
+var overArg = __webpack_require__(149);
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeKeys = overArg(Object.keys, Object);
@@ -18008,7 +17535,7 @@ module.exports = nativeKeys;
 
 
 /***/ }),
-/* 146 */
+/* 149 */
 /***/ (function(module, exports) {
 
 /**
@@ -18029,20 +17556,20 @@ module.exports = overArg;
 
 
 /***/ }),
-/* 147 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
 (function() {
   var XMLBuilder, XMLDeclaration, XMLDocType, XMLElement, XMLStringifier;
 
-  XMLStringifier = __webpack_require__(148);
+  XMLStringifier = __webpack_require__(151);
 
-  XMLDeclaration = __webpack_require__(66);
+  XMLDeclaration = __webpack_require__(67);
 
-  XMLDocType = __webpack_require__(79);
+  XMLDocType = __webpack_require__(80);
 
-  XMLElement = __webpack_require__(68);
+  XMLElement = __webpack_require__(69);
 
   module.exports = XMLBuilder = (function() {
     function XMLBuilder(name, options) {
@@ -18104,7 +17631,7 @@ module.exports = overArg;
 
 
 /***/ }),
-/* 148 */
+/* 151 */
 /***/ (function(module, exports) {
 
 // Generated by CoffeeScript 1.9.1
@@ -18280,11 +17807,11 @@ module.exports = overArg;
 
 
 /***/ }),
-/* 149 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var copyObject = __webpack_require__(63),
-    keys = __webpack_require__(19);
+var copyObject = __webpack_require__(64),
+    keys = __webpack_require__(18);
 
 /**
  * The base implementation of `_.assign` without support for multiple sources
@@ -18303,7 +17830,7 @@ module.exports = baseAssign;
 
 
 /***/ }),
-/* 150 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(5);
@@ -18339,17 +17866,17 @@ module.exports = baseCreate;
 
 
 /***/ }),
-/* 151 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseKeys = __webpack_require__(65),
-    getTag = __webpack_require__(67),
-    isArguments = __webpack_require__(39),
+var baseKeys = __webpack_require__(66),
+    getTag = __webpack_require__(68),
+    isArguments = __webpack_require__(40),
     isArray = __webpack_require__(6),
-    isArrayLike = __webpack_require__(18),
-    isBuffer = __webpack_require__(40),
-    isPrototype = __webpack_require__(38),
-    isTypedArray = __webpack_require__(42);
+    isArrayLike = __webpack_require__(17),
+    isBuffer = __webpack_require__(41),
+    isPrototype = __webpack_require__(39),
+    isTypedArray = __webpack_require__(43);
 
 /** `Object#toString` result references. */
 var mapTag = '[object Map]',
@@ -18422,7 +17949,7 @@ module.exports = isEmpty;
 
 
 /***/ }),
-/* 152 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getNative = __webpack_require__(10),
@@ -18435,7 +17962,7 @@ module.exports = DataView;
 
 
 /***/ }),
-/* 153 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getNative = __webpack_require__(10),
@@ -18448,7 +17975,7 @@ module.exports = Promise;
 
 
 /***/ }),
-/* 154 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getNative = __webpack_require__(10),
@@ -18461,7 +17988,7 @@ module.exports = Set;
 
 
 /***/ }),
-/* 155 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getNative = __webpack_require__(10),
@@ -18474,14 +18001,14 @@ module.exports = WeakMap;
 
 
 /***/ }),
-/* 156 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayEvery = __webpack_require__(157),
-    baseEvery = __webpack_require__(158),
-    baseIteratee = __webpack_require__(164),
+var arrayEvery = __webpack_require__(160),
+    baseEvery = __webpack_require__(161),
+    baseIteratee = __webpack_require__(167),
     isArray = __webpack_require__(6),
-    isIterateeCall = __webpack_require__(64);
+    isIterateeCall = __webpack_require__(65);
 
 /**
  * Checks if `predicate` returns truthy for **all** elements of `collection`.
@@ -18536,7 +18063,7 @@ module.exports = every;
 
 
 /***/ }),
-/* 157 */
+/* 160 */
 /***/ (function(module, exports) {
 
 /**
@@ -18565,10 +18092,10 @@ module.exports = arrayEvery;
 
 
 /***/ }),
-/* 158 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseEach = __webpack_require__(159);
+var baseEach = __webpack_require__(162);
 
 /**
  * The base implementation of `_.every` without support for iteratee shorthands.
@@ -18592,11 +18119,11 @@ module.exports = baseEvery;
 
 
 /***/ }),
-/* 159 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseForOwn = __webpack_require__(160),
-    createBaseEach = __webpack_require__(163);
+var baseForOwn = __webpack_require__(163),
+    createBaseEach = __webpack_require__(166);
 
 /**
  * The base implementation of `_.forEach` without support for iteratee shorthands.
@@ -18612,11 +18139,11 @@ module.exports = baseEach;
 
 
 /***/ }),
-/* 160 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseFor = __webpack_require__(161),
-    keys = __webpack_require__(19);
+var baseFor = __webpack_require__(164),
+    keys = __webpack_require__(18);
 
 /**
  * The base implementation of `_.forOwn` without support for iteratee shorthands.
@@ -18634,10 +18161,10 @@ module.exports = baseForOwn;
 
 
 /***/ }),
-/* 161 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var createBaseFor = __webpack_require__(162);
+var createBaseFor = __webpack_require__(165);
 
 /**
  * The base implementation of `baseForOwn` which iterates over `object`
@@ -18656,7 +18183,7 @@ module.exports = baseFor;
 
 
 /***/ }),
-/* 162 */
+/* 165 */
 /***/ (function(module, exports) {
 
 /**
@@ -18687,10 +18214,10 @@ module.exports = createBaseFor;
 
 
 /***/ }),
-/* 163 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isArrayLike = __webpack_require__(18);
+var isArrayLike = __webpack_require__(17);
 
 /**
  * Creates a `baseEach` or `baseEachRight` function.
@@ -18725,14 +18252,14 @@ module.exports = createBaseEach;
 
 
 /***/ }),
-/* 164 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseMatches = __webpack_require__(165),
-    baseMatchesProperty = __webpack_require__(207),
-    identity = __webpack_require__(35),
+var baseMatches = __webpack_require__(168),
+    baseMatchesProperty = __webpack_require__(210),
+    identity = __webpack_require__(36),
     isArray = __webpack_require__(6),
-    property = __webpack_require__(218);
+    property = __webpack_require__(221);
 
 /**
  * The base implementation of `_.iteratee`.
@@ -18762,12 +18289,12 @@ module.exports = baseIteratee;
 
 
 /***/ }),
-/* 165 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsMatch = __webpack_require__(166),
-    getMatchData = __webpack_require__(206),
-    matchesStrictComparable = __webpack_require__(73);
+var baseIsMatch = __webpack_require__(169),
+    getMatchData = __webpack_require__(209),
+    matchesStrictComparable = __webpack_require__(74);
 
 /**
  * The base implementation of `_.matches` which doesn't clone `source`.
@@ -18790,11 +18317,11 @@ module.exports = baseMatches;
 
 
 /***/ }),
-/* 166 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stack = __webpack_require__(69),
-    baseIsEqual = __webpack_require__(70);
+var Stack = __webpack_require__(70),
+    baseIsEqual = __webpack_require__(71);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1,
@@ -18858,7 +18385,7 @@ module.exports = baseIsMatch;
 
 
 /***/ }),
-/* 167 */
+/* 170 */
 /***/ (function(module, exports) {
 
 /**
@@ -18877,7 +18404,7 @@ module.exports = listCacheClear;
 
 
 /***/ }),
-/* 168 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assocIndexOf = __webpack_require__(26);
@@ -18918,7 +18445,7 @@ module.exports = listCacheDelete;
 
 
 /***/ }),
-/* 169 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assocIndexOf = __webpack_require__(26);
@@ -18943,7 +18470,7 @@ module.exports = listCacheGet;
 
 
 /***/ }),
-/* 170 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assocIndexOf = __webpack_require__(26);
@@ -18965,7 +18492,7 @@ module.exports = listCacheHas;
 
 
 /***/ }),
-/* 171 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assocIndexOf = __webpack_require__(26);
@@ -18997,7 +18524,7 @@ module.exports = listCacheSet;
 
 
 /***/ }),
-/* 172 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var ListCache = __webpack_require__(25);
@@ -19018,7 +18545,7 @@ module.exports = stackClear;
 
 
 /***/ }),
-/* 173 */
+/* 176 */
 /***/ (function(module, exports) {
 
 /**
@@ -19042,7 +18569,7 @@ module.exports = stackDelete;
 
 
 /***/ }),
-/* 174 */
+/* 177 */
 /***/ (function(module, exports) {
 
 /**
@@ -19062,7 +18589,7 @@ module.exports = stackGet;
 
 
 /***/ }),
-/* 175 */
+/* 178 */
 /***/ (function(module, exports) {
 
 /**
@@ -19082,12 +18609,12 @@ module.exports = stackHas;
 
 
 /***/ }),
-/* 176 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var ListCache = __webpack_require__(25),
-    Map = __webpack_require__(43),
-    MapCache = __webpack_require__(44);
+    Map = __webpack_require__(44),
+    MapCache = __webpack_require__(45);
 
 /** Used as the size to enable large array optimizations. */
 var LARGE_ARRAY_SIZE = 200;
@@ -19122,12 +18649,12 @@ module.exports = stackSet;
 
 
 /***/ }),
-/* 177 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Hash = __webpack_require__(178),
+var Hash = __webpack_require__(181),
     ListCache = __webpack_require__(25),
-    Map = __webpack_require__(43);
+    Map = __webpack_require__(44);
 
 /**
  * Removes all key-value entries from the map.
@@ -19149,14 +18676,14 @@ module.exports = mapCacheClear;
 
 
 /***/ }),
-/* 178 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var hashClear = __webpack_require__(179),
-    hashDelete = __webpack_require__(180),
-    hashGet = __webpack_require__(181),
-    hashHas = __webpack_require__(182),
-    hashSet = __webpack_require__(183);
+var hashClear = __webpack_require__(182),
+    hashDelete = __webpack_require__(183),
+    hashGet = __webpack_require__(184),
+    hashHas = __webpack_require__(185),
+    hashSet = __webpack_require__(186);
 
 /**
  * Creates a hash object.
@@ -19187,7 +18714,7 @@ module.exports = Hash;
 
 
 /***/ }),
-/* 179 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var nativeCreate = __webpack_require__(27);
@@ -19208,7 +18735,7 @@ module.exports = hashClear;
 
 
 /***/ }),
-/* 180 */
+/* 183 */
 /***/ (function(module, exports) {
 
 /**
@@ -19231,7 +18758,7 @@ module.exports = hashDelete;
 
 
 /***/ }),
-/* 181 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var nativeCreate = __webpack_require__(27);
@@ -19267,7 +18794,7 @@ module.exports = hashGet;
 
 
 /***/ }),
-/* 182 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var nativeCreate = __webpack_require__(27);
@@ -19296,7 +18823,7 @@ module.exports = hashHas;
 
 
 /***/ }),
-/* 183 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var nativeCreate = __webpack_require__(27);
@@ -19325,7 +18852,7 @@ module.exports = hashSet;
 
 
 /***/ }),
-/* 184 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getMapData = __webpack_require__(28);
@@ -19349,7 +18876,7 @@ module.exports = mapCacheDelete;
 
 
 /***/ }),
-/* 185 */
+/* 188 */
 /***/ (function(module, exports) {
 
 /**
@@ -19370,7 +18897,7 @@ module.exports = isKeyable;
 
 
 /***/ }),
-/* 186 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getMapData = __webpack_require__(28);
@@ -19392,7 +18919,7 @@ module.exports = mapCacheGet;
 
 
 /***/ }),
-/* 187 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getMapData = __webpack_require__(28);
@@ -19414,7 +18941,7 @@ module.exports = mapCacheHas;
 
 
 /***/ }),
-/* 188 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getMapData = __webpack_require__(28);
@@ -19442,17 +18969,17 @@ module.exports = mapCacheSet;
 
 
 /***/ }),
-/* 189 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stack = __webpack_require__(69),
-    equalArrays = __webpack_require__(71),
-    equalByTag = __webpack_require__(195),
-    equalObjects = __webpack_require__(199),
-    getTag = __webpack_require__(67),
+var Stack = __webpack_require__(70),
+    equalArrays = __webpack_require__(72),
+    equalByTag = __webpack_require__(198),
+    equalObjects = __webpack_require__(202),
+    getTag = __webpack_require__(68),
     isArray = __webpack_require__(6),
-    isBuffer = __webpack_require__(40),
-    isTypedArray = __webpack_require__(42);
+    isBuffer = __webpack_require__(41),
+    isTypedArray = __webpack_require__(43);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1;
@@ -19531,12 +19058,12 @@ module.exports = baseIsEqualDeep;
 
 
 /***/ }),
-/* 190 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MapCache = __webpack_require__(44),
-    setCacheAdd = __webpack_require__(191),
-    setCacheHas = __webpack_require__(192);
+var MapCache = __webpack_require__(45),
+    setCacheAdd = __webpack_require__(194),
+    setCacheHas = __webpack_require__(195);
 
 /**
  *
@@ -19564,7 +19091,7 @@ module.exports = SetCache;
 
 
 /***/ }),
-/* 191 */
+/* 194 */
 /***/ (function(module, exports) {
 
 /** Used to stand-in for `undefined` hash values. */
@@ -19589,7 +19116,7 @@ module.exports = setCacheAdd;
 
 
 /***/ }),
-/* 192 */
+/* 195 */
 /***/ (function(module, exports) {
 
 /**
@@ -19609,7 +19136,7 @@ module.exports = setCacheHas;
 
 
 /***/ }),
-/* 193 */
+/* 196 */
 /***/ (function(module, exports) {
 
 /**
@@ -19638,7 +19165,7 @@ module.exports = arraySome;
 
 
 /***/ }),
-/* 194 */
+/* 197 */
 /***/ (function(module, exports) {
 
 /**
@@ -19657,15 +19184,15 @@ module.exports = cacheHas;
 
 
 /***/ }),
-/* 195 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(23),
-    Uint8Array = __webpack_require__(196),
+    Uint8Array = __webpack_require__(199),
     eq = __webpack_require__(24),
-    equalArrays = __webpack_require__(71),
-    mapToArray = __webpack_require__(197),
-    setToArray = __webpack_require__(198);
+    equalArrays = __webpack_require__(72),
+    mapToArray = __webpack_require__(200),
+    setToArray = __webpack_require__(201);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1,
@@ -19775,7 +19302,7 @@ module.exports = equalByTag;
 
 
 /***/ }),
-/* 196 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var root = __webpack_require__(8);
@@ -19787,7 +19314,7 @@ module.exports = Uint8Array;
 
 
 /***/ }),
-/* 197 */
+/* 200 */
 /***/ (function(module, exports) {
 
 /**
@@ -19811,7 +19338,7 @@ module.exports = mapToArray;
 
 
 /***/ }),
-/* 198 */
+/* 201 */
 /***/ (function(module, exports) {
 
 /**
@@ -19835,10 +19362,10 @@ module.exports = setToArray;
 
 
 /***/ }),
-/* 199 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getAllKeys = __webpack_require__(200);
+var getAllKeys = __webpack_require__(203);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1;
@@ -19930,12 +19457,12 @@ module.exports = equalObjects;
 
 
 /***/ }),
-/* 200 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetAllKeys = __webpack_require__(201),
-    getSymbols = __webpack_require__(203),
-    keys = __webpack_require__(19);
+var baseGetAllKeys = __webpack_require__(204),
+    getSymbols = __webpack_require__(206),
+    keys = __webpack_require__(18);
 
 /**
  * Creates an array of own enumerable property names and symbols of `object`.
@@ -19952,10 +19479,10 @@ module.exports = getAllKeys;
 
 
 /***/ }),
-/* 201 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayPush = __webpack_require__(202),
+var arrayPush = __webpack_require__(205),
     isArray = __webpack_require__(6);
 
 /**
@@ -19978,7 +19505,7 @@ module.exports = baseGetAllKeys;
 
 
 /***/ }),
-/* 202 */
+/* 205 */
 /***/ (function(module, exports) {
 
 /**
@@ -20004,11 +19531,11 @@ module.exports = arrayPush;
 
 
 /***/ }),
-/* 203 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayFilter = __webpack_require__(204),
-    stubArray = __webpack_require__(205);
+var arrayFilter = __webpack_require__(207),
+    stubArray = __webpack_require__(208);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -20040,7 +19567,7 @@ module.exports = getSymbols;
 
 
 /***/ }),
-/* 204 */
+/* 207 */
 /***/ (function(module, exports) {
 
 /**
@@ -20071,7 +19598,7 @@ module.exports = arrayFilter;
 
 
 /***/ }),
-/* 205 */
+/* 208 */
 /***/ (function(module, exports) {
 
 /**
@@ -20100,11 +19627,11 @@ module.exports = stubArray;
 
 
 /***/ }),
-/* 206 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isStrictComparable = __webpack_require__(72),
-    keys = __webpack_require__(19);
+var isStrictComparable = __webpack_require__(73),
+    keys = __webpack_require__(18);
 
 /**
  * Gets the property names, values, and compare flags of `object`.
@@ -20130,15 +19657,15 @@ module.exports = getMatchData;
 
 
 /***/ }),
-/* 207 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsEqual = __webpack_require__(70),
-    get = __webpack_require__(208),
-    hasIn = __webpack_require__(215),
-    isKey = __webpack_require__(45),
-    isStrictComparable = __webpack_require__(72),
-    matchesStrictComparable = __webpack_require__(73),
+var baseIsEqual = __webpack_require__(71),
+    get = __webpack_require__(211),
+    hasIn = __webpack_require__(218),
+    isKey = __webpack_require__(46),
+    isStrictComparable = __webpack_require__(73),
+    matchesStrictComparable = __webpack_require__(74),
     toKey = __webpack_require__(29);
 
 /** Used to compose bitmasks for value comparisons. */
@@ -20169,10 +19696,10 @@ module.exports = baseMatchesProperty;
 
 
 /***/ }),
-/* 208 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGet = __webpack_require__(74);
+var baseGet = __webpack_require__(75);
 
 /**
  * Gets the value at `path` of `object`. If the resolved value is
@@ -20208,10 +19735,10 @@ module.exports = get;
 
 
 /***/ }),
-/* 209 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var memoizeCapped = __webpack_require__(210);
+var memoizeCapped = __webpack_require__(213);
 
 /** Used to match property names within property paths. */
 var reLeadingDot = /^\./,
@@ -20242,10 +19769,10 @@ module.exports = stringToPath;
 
 
 /***/ }),
-/* 210 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var memoize = __webpack_require__(211);
+var memoize = __webpack_require__(214);
 
 /** Used as the maximum memoize cache size. */
 var MAX_MEMOIZE_SIZE = 500;
@@ -20274,10 +19801,10 @@ module.exports = memoizeCapped;
 
 
 /***/ }),
-/* 211 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MapCache = __webpack_require__(44);
+var MapCache = __webpack_require__(45);
 
 /** Error message constants. */
 var FUNC_ERROR_TEXT = 'Expected a function';
@@ -20353,10 +19880,10 @@ module.exports = memoize;
 
 
 /***/ }),
-/* 212 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseToString = __webpack_require__(213);
+var baseToString = __webpack_require__(216);
 
 /**
  * Converts `value` to a string. An empty string is returned for `null`
@@ -20387,13 +19914,13 @@ module.exports = toString;
 
 
 /***/ }),
-/* 213 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(23),
-    arrayMap = __webpack_require__(214),
+    arrayMap = __webpack_require__(217),
     isArray = __webpack_require__(6),
-    isSymbol = __webpack_require__(46);
+    isSymbol = __webpack_require__(47);
 
 /** Used as references for various `Number` constants. */
 var INFINITY = 1 / 0;
@@ -20430,7 +19957,7 @@ module.exports = baseToString;
 
 
 /***/ }),
-/* 214 */
+/* 217 */
 /***/ (function(module, exports) {
 
 /**
@@ -20457,11 +19984,11 @@ module.exports = arrayMap;
 
 
 /***/ }),
-/* 215 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseHasIn = __webpack_require__(216),
-    hasPath = __webpack_require__(217);
+var baseHasIn = __webpack_require__(219),
+    hasPath = __webpack_require__(220);
 
 /**
  * Checks if `path` is a direct or inherited property of `object`.
@@ -20497,7 +20024,7 @@ module.exports = hasIn;
 
 
 /***/ }),
-/* 216 */
+/* 219 */
 /***/ (function(module, exports) {
 
 /**
@@ -20516,14 +20043,14 @@ module.exports = baseHasIn;
 
 
 /***/ }),
-/* 217 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var castPath = __webpack_require__(75),
-    isArguments = __webpack_require__(39),
+var castPath = __webpack_require__(76),
+    isArguments = __webpack_require__(40),
     isArray = __webpack_require__(6),
-    isIndex = __webpack_require__(37),
-    isLength = __webpack_require__(36),
+    isIndex = __webpack_require__(38),
+    isLength = __webpack_require__(37),
     toKey = __webpack_require__(29);
 
 /**
@@ -20561,12 +20088,12 @@ module.exports = hasPath;
 
 
 /***/ }),
-/* 218 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseProperty = __webpack_require__(219),
-    basePropertyDeep = __webpack_require__(220),
-    isKey = __webpack_require__(45),
+var baseProperty = __webpack_require__(222),
+    basePropertyDeep = __webpack_require__(223),
+    isKey = __webpack_require__(46),
     toKey = __webpack_require__(29);
 
 /**
@@ -20599,7 +20126,7 @@ module.exports = property;
 
 
 /***/ }),
-/* 219 */
+/* 222 */
 /***/ (function(module, exports) {
 
 /**
@@ -20619,10 +20146,10 @@ module.exports = baseProperty;
 
 
 /***/ }),
-/* 220 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGet = __webpack_require__(74);
+var baseGet = __webpack_require__(75);
 
 /**
  * A specialized version of `baseProperty` which supports deep paths.
@@ -20641,7 +20168,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 221 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20679,7 +20206,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 222 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20753,7 +20280,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 223 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20843,7 +20370,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 224 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20895,7 +20422,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 225 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20957,7 +20484,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 226 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -21012,7 +20539,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 227 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -21067,7 +20594,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 228 */
+/* 231 */
 /***/ (function(module, exports) {
 
 function apiLoader(svc, version) {
@@ -21088,12 +20615,12 @@ module.exports = apiLoader;
 
 
 /***/ }),
-/* 229 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-var Api = __webpack_require__(80);
-var regionConfig = __webpack_require__(230);
+var Api = __webpack_require__(81);
+var regionConfig = __webpack_require__(233);
 var inherit = AWS.util.inherit;
 var clientCount = 0;
 
@@ -21702,11 +21229,11 @@ module.exports = AWS.Service;
 
 
 /***/ }),
-/* 230 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
-var regionConfig = __webpack_require__(231);
+var regionConfig = __webpack_require__(234);
 
 function generateRegionPrefix(region) {
   if (!region) return null;
@@ -21777,18 +21304,18 @@ module.exports = configureEndpoint;
 
 
 /***/ }),
-/* 231 */
+/* 234 */
 /***/ (function(module, exports) {
 
 module.exports = {"rules":{"*/*":{"endpoint":"{service}.{region}.amazonaws.com"},"cn-*/*":{"endpoint":"{service}.{region}.amazonaws.com.cn"},"*/budgets":"globalSSL","*/cloudfront":"globalSSL","*/iam":"globalSSL","*/sts":"globalSSL","*/importexport":{"endpoint":"{service}.amazonaws.com","signatureVersion":"v2","globalEndpoint":true},"*/route53":{"endpoint":"https://{service}.amazonaws.com","signatureVersion":"v3https","globalEndpoint":true},"*/waf":"globalSSL","us-gov-*/iam":"globalGovCloud","us-gov-*/sts":{"endpoint":"{service}.{region}.amazonaws.com"},"us-gov-west-1/s3":"s3signature","us-west-1/s3":"s3signature","us-west-2/s3":"s3signature","eu-west-1/s3":"s3signature","ap-southeast-1/s3":"s3signature","ap-southeast-2/s3":"s3signature","ap-northeast-1/s3":"s3signature","sa-east-1/s3":"s3signature","us-east-1/s3":{"endpoint":"{service}.amazonaws.com","signatureVersion":"s3"},"us-east-1/sdb":{"endpoint":"{service}.amazonaws.com","signatureVersion":"v2"},"*/sdb":{"endpoint":"{service}.{region}.amazonaws.com","signatureVersion":"v2"}},"patterns":{"globalSSL":{"endpoint":"https://{service}.amazonaws.com","globalEndpoint":true},"globalGovCloud":{"endpoint":"{service}.us-gov.amazonaws.com"},"s3signature":{"endpoint":"{service}.{region}.amazonaws.com","signatureVersion":"s3"}}}
 
 /***/ }),
-/* 232 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-__webpack_require__(84);
 __webpack_require__(85);
+__webpack_require__(86);
 var PromisesDependency;
 
 /**
@@ -22329,11 +21856,11 @@ AWS.config = new AWS.Config();
 
 
 /***/ }),
-/* 233 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-var SequentialExecutor = __webpack_require__(87);
+var SequentialExecutor = __webpack_require__(88);
 /**
  * The namespace used to register global event listeners for request building
  * and sending.
@@ -22853,7 +22380,7 @@ AWS.EventListeners = {
           var inputShape = req.service.api.operations[req.operation].input;
           censoredParams = filterSensitiveLog(inputShape, req.params);
         }
-        var params = __webpack_require__(234).inspect(censoredParams, true, null);
+        var params = __webpack_require__(237).inspect(censoredParams, true, null);
         var message = '';
         if (ansi) message += '\x1B[33m';
         message += '[AWS ' + req.service.serviceIdentifier + ' ' + status;
@@ -22875,7 +22402,7 @@ AWS.EventListeners = {
   }),
 
   Json: new SequentialExecutor().addNamedListeners(function(add) {
-    var svc = __webpack_require__(32);
+    var svc = __webpack_require__(33);
     add('BUILD', 'build', svc.buildRequest);
     add('EXTRACT_DATA', 'extractData', svc.extractData);
     add('EXTRACT_ERROR', 'extractError', svc.extractError);
@@ -22889,21 +22416,21 @@ AWS.EventListeners = {
   }),
 
   RestJson: new SequentialExecutor().addNamedListeners(function(add) {
-    var svc = __webpack_require__(56);
-    add('BUILD', 'build', svc.buildRequest);
-    add('EXTRACT_DATA', 'extractData', svc.extractData);
-    add('EXTRACT_ERROR', 'extractError', svc.extractError);
-  }),
-
-  RestXml: new SequentialExecutor().addNamedListeners(function(add) {
     var svc = __webpack_require__(57);
     add('BUILD', 'build', svc.buildRequest);
     add('EXTRACT_DATA', 'extractData', svc.extractData);
     add('EXTRACT_ERROR', 'extractError', svc.extractError);
   }),
 
+  RestXml: new SequentialExecutor().addNamedListeners(function(add) {
+    var svc = __webpack_require__(58);
+    add('BUILD', 'build', svc.buildRequest);
+    add('EXTRACT_DATA', 'extractData', svc.extractData);
+    add('EXTRACT_ERROR', 'extractError', svc.extractError);
+  }),
+
   Query: new SequentialExecutor().addNamedListeners(function(add) {
-    var svc = __webpack_require__(54);
+    var svc = __webpack_require__(55);
     add('BUILD', 'build', svc.buildRequest);
     add('EXTRACT_DATA', 'extractData', svc.extractData);
     add('EXTRACT_ERROR', 'extractError', svc.extractError);
@@ -22912,7 +22439,7 @@ AWS.EventListeners = {
 
 
 /***/ }),
-/* 234 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -23440,7 +22967,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(235);
+exports.isBuffer = __webpack_require__(238);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -23484,7 +23011,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(236);
+exports.inherits = __webpack_require__(239);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -23505,7 +23032,7 @@ function hasOwnProperty(obj, prop) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(9)))
 
 /***/ }),
-/* 235 */
+/* 238 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -23516,7 +23043,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 236 */
+/* 239 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -23545,14 +23072,14 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 237 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {var AWS = __webpack_require__(0);
-var AcceptorStateMachine = __webpack_require__(238);
+var AcceptorStateMachine = __webpack_require__(241);
 var inherit = AWS.util.inherit;
 var domain = AWS.util.domain;
-var jmespath = __webpack_require__(47);
+var jmespath = __webpack_require__(48);
 
 /**
  * @api private
@@ -24357,7 +23884,7 @@ AWS.util.mixin(AWS.Request, AWS.SequentialExecutor);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
 
 /***/ }),
-/* 238 */
+/* 241 */
 /***/ (function(module, exports) {
 
 function AcceptorStateMachine(states, state) {
@@ -24405,12 +23932,12 @@ module.exports = AcceptorStateMachine;
 
 
 /***/ }),
-/* 239 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
 var inherit = AWS.util.inherit;
-var jmespath = __webpack_require__(47);
+var jmespath = __webpack_require__(48);
 
 /**
  * This class encapsulates the response information
@@ -24612,7 +24139,7 @@ AWS.Response = inherit({
 
 
 /***/ }),
-/* 240 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -24632,7 +24159,7 @@ AWS.Response = inherit({
 
 var AWS = __webpack_require__(0);
 var inherit = AWS.util.inherit;
-var jmespath = __webpack_require__(47);
+var jmespath = __webpack_require__(48);
 
 /**
  * @api private
@@ -24822,7 +24349,7 @@ AWS.ResourceWaiter = inherit({
 
 
 /***/ }),
-/* 241 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -24857,16 +24384,16 @@ AWS.Signers.RequestSigner.getVersion = function getVersion(version) {
   throw new Error('Unknown signing version ' + version);
 };
 
-__webpack_require__(242);
-__webpack_require__(88);
-__webpack_require__(243);
-__webpack_require__(244);
 __webpack_require__(245);
+__webpack_require__(89);
 __webpack_require__(246);
+__webpack_require__(247);
+__webpack_require__(248);
+__webpack_require__(249);
 
 
 /***/ }),
-/* 242 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -24917,13 +24444,13 @@ module.exports = AWS.Signers.V2;
 
 
 /***/ }),
-/* 243 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
 var inherit = AWS.util.inherit;
 
-__webpack_require__(88);
+__webpack_require__(89);
 
 /**
  * @api private
@@ -24945,11 +24472,11 @@ module.exports = AWS.Signers.V3Https;
 
 
 /***/ }),
-/* 244 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-var v4Credentials = __webpack_require__(89);
+var v4Credentials = __webpack_require__(90);
 var inherit = AWS.util.inherit;
 
 /**
@@ -25162,7 +24689,7 @@ module.exports = AWS.Signers.V4;
 
 
 /***/ }),
-/* 245 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -25340,7 +24867,7 @@ module.exports = AWS.Signers.S3;
 
 
 /***/ }),
-/* 246 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -25462,7 +24989,7 @@ module.exports = AWS.Signers.Presign;
 
 
 /***/ }),
-/* 247 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -25726,17 +25253,17 @@ AWS.ParamValidator = AWS.util.inherit({
 
 
 /***/ }),
-/* 248 */
+/* 251 */
 /***/ (function(module, exports) {
 
 module.exports = {"acm":{"name":"ACM","cors":true},"apigateway":{"name":"APIGateway","cors":true},"applicationautoscaling":{"prefix":"application-autoscaling","name":"ApplicationAutoScaling","cors":true},"appstream":{"name":"AppStream"},"autoscaling":{"name":"AutoScaling","cors":true},"batch":{"name":"Batch"},"budgets":{"name":"Budgets"},"clouddirectory":{"name":"CloudDirectory"},"cloudformation":{"name":"CloudFormation","cors":true},"cloudfront":{"name":"CloudFront","versions":["2013-05-12*","2013-11-11*","2014-05-31*","2014-10-21*","2014-11-06*","2015-04-17*","2015-07-27*","2015-09-17*","2016-01-13*","2016-01-28*","2016-08-01*","2016-08-20*","2016-09-07*","2016-09-29*","2016-11-25*"],"cors":true},"cloudhsm":{"name":"CloudHSM","cors":true},"cloudsearch":{"name":"CloudSearch"},"cloudsearchdomain":{"name":"CloudSearchDomain"},"cloudtrail":{"name":"CloudTrail","cors":true},"cloudwatch":{"prefix":"monitoring","name":"CloudWatch","cors":true},"cloudwatchevents":{"prefix":"events","name":"CloudWatchEvents","versions":["2014-02-03*"],"cors":true},"cloudwatchlogs":{"prefix":"logs","name":"CloudWatchLogs","cors":true},"codebuild":{"name":"CodeBuild"},"codecommit":{"name":"CodeCommit","cors":true},"codedeploy":{"name":"CodeDeploy","cors":true},"codepipeline":{"name":"CodePipeline","cors":true},"cognitoidentity":{"prefix":"cognito-identity","name":"CognitoIdentity","cors":true},"cognitoidentityserviceprovider":{"prefix":"cognito-idp","name":"CognitoIdentityServiceProvider","cors":true},"cognitosync":{"prefix":"cognito-sync","name":"CognitoSync","cors":true},"configservice":{"prefix":"config","name":"ConfigService","cors":true},"cur":{"name":"CUR","cors":true},"datapipeline":{"name":"DataPipeline"},"devicefarm":{"name":"DeviceFarm","cors":true},"directconnect":{"name":"DirectConnect","cors":true},"directoryservice":{"prefix":"ds","name":"DirectoryService"},"discovery":{"name":"Discovery"},"dms":{"name":"DMS"},"dynamodb":{"name":"DynamoDB","cors":true},"dynamodbstreams":{"prefix":"streams.dynamodb","name":"DynamoDBStreams","cors":true},"ec2":{"name":"EC2","versions":["2013-06-15*","2013-10-15*","2014-02-01*","2014-05-01*","2014-06-15*","2014-09-01*","2014-10-01*","2015-03-01*","2015-04-15*","2015-10-01*","2016-04-01*","2016-09-15*"],"cors":true},"ecr":{"name":"ECR","cors":true},"ecs":{"name":"ECS","cors":true},"efs":{"prefix":"elasticfilesystem","name":"EFS","cors":true},"elasticache":{"name":"ElastiCache","versions":["2012-11-15*","2014-03-24*","2014-07-15*","2014-09-30*"],"cors":true},"elasticbeanstalk":{"name":"ElasticBeanstalk","cors":true},"elb":{"prefix":"elasticloadbalancing","name":"ELB","cors":true},"elbv2":{"prefix":"elasticloadbalancingv2","name":"ELBv2","cors":true},"emr":{"prefix":"elasticmapreduce","name":"EMR","cors":true},"es":{"name":"ES"},"elastictranscoder":{"name":"ElasticTranscoder","cors":true},"firehose":{"name":"Firehose","cors":true},"gamelift":{"name":"GameLift","cors":true},"glacier":{"name":"Glacier"},"health":{"name":"Health"},"iam":{"name":"IAM"},"importexport":{"name":"ImportExport"},"inspector":{"name":"Inspector","versions":["2015-08-18*"],"cors":true},"iot":{"name":"Iot","cors":true},"iotdata":{"prefix":"iot-data","name":"IotData","cors":true},"kinesis":{"name":"Kinesis","cors":true},"kinesisanalytics":{"name":"KinesisAnalytics"},"kms":{"name":"KMS","cors":true},"lambda":{"name":"Lambda","cors":true},"lexruntime":{"prefix":"runtime.lex","name":"LexRuntime","cors":true},"lightsail":{"name":"Lightsail"},"machinelearning":{"name":"MachineLearning","cors":true},"marketplacecommerceanalytics":{"name":"MarketplaceCommerceAnalytics","cors":true},"marketplacemetering":{"prefix":"meteringmarketplace","name":"MarketplaceMetering"},"mturk":{"prefix":"mturk-requester","name":"MTurk","cors":true},"mobileanalytics":{"name":"MobileAnalytics","cors":true},"opsworks":{"name":"OpsWorks","cors":true},"opsworkscm":{"name":"OpsWorksCM"},"organizations":{"name":"Organizations"},"pinpoint":{"name":"Pinpoint"},"polly":{"name":"Polly","cors":true},"rds":{"name":"RDS","versions":["2014-09-01*"],"cors":true},"redshift":{"name":"Redshift","cors":true},"rekognition":{"name":"Rekognition","cors":true},"resourcegroupstaggingapi":{"name":"ResourceGroupsTaggingAPI"},"route53":{"name":"Route53","cors":true},"route53domains":{"name":"Route53Domains","cors":true},"s3":{"name":"S3","dualstackAvailable":true,"cors":true},"servicecatalog":{"name":"ServiceCatalog","cors":true},"ses":{"prefix":"email","name":"SES","cors":true},"shield":{"name":"Shield"},"simpledb":{"prefix":"sdb","name":"SimpleDB"},"sms":{"name":"SMS"},"snowball":{"name":"Snowball"},"sns":{"name":"SNS","cors":true},"sqs":{"name":"SQS","cors":true},"ssm":{"name":"SSM","cors":true},"storagegateway":{"name":"StorageGateway","cors":true},"stepfunctions":{"prefix":"states","name":"StepFunctions"},"sts":{"name":"STS","cors":true},"support":{"name":"Support"},"swf":{"name":"SWF"},"xray":{"name":"XRay"},"waf":{"name":"WAF","cors":true},"wafregional":{"prefix":"waf-regional","name":"WAFRegional"},"workdocs":{"name":"WorkDocs","cors":true},"workspaces":{"name":"WorkSpaces"},"codestar":{"name":"CodeStar"},"lexmodelbuildingservice":{"prefix":"lex-models","name":"LexModelBuildingService","cors":true},"marketplaceentitlementservice":{"prefix":"entitlement.marketplace","name":"MarketplaceEntitlementService"},"athena":{"name":"Athena"},"greengrass":{"name":"Greengrass"},"dax":{"name":"DAX"},"migrationhub":{"prefix":"AWSMigrationHub","name":"MigrationHub"},"cloudhsmv2":{"name":"CloudHSMV2"},"glue":{"name":"Glue"},"mobile":{"name":"Mobile"},"pricing":{"name":"Pricing"},"costexplorer":{"prefix":"ce","name":"CostExplorer"},"mediaconvert":{"name":"MediaConvert"},"medialive":{"name":"MediaLive"},"mediapackage":{"name":"MediaPackage"},"mediastore":{"name":"MediaStore"},"mediastoredata":{"prefix":"mediastore-data","name":"MediaStoreData"},"appsync":{"name":"AppSync"},"guardduty":{"name":"GuardDuty"},"mq":{"name":"MQ"},"comprehend":{"name":"Comprehend"},"iotjobsdataplane":{"prefix":"iot-jobs-data","name":"IoTJobsDataPlane"},"kinesisvideoarchivedmedia":{"prefix":"kinesis-video-archived-media","name":"KinesisVideoArchivedMedia"},"kinesisvideomedia":{"prefix":"kinesis-video-media","name":"KinesisVideoMedia"},"kinesisvideo":{"name":"KinesisVideo"},"sagemakerruntime":{"prefix":"runtime.sagemaker","name":"SageMakerRuntime"},"sagemaker":{"name":"SageMaker"},"translate":{"name":"Translate"},"resourcegroups":{"prefix":"resource-groups","name":"ResourceGroups"},"alexaforbusiness":{"name":"AlexaForBusiness"},"cloud9":{"name":"Cloud9"},"serverlessapplicationrepository":{"prefix":"serverlessrepo","name":"ServerlessApplicationRepository"},"servicediscovery":{"name":"ServiceDiscovery"},"workmail":{"name":"WorkMail"},"autoscalingplans":{"prefix":"autoscaling-plans","name":"AutoScalingPlans"},"transcribeservice":{"prefix":"transcribe","name":"TranscribeService"}}
 
 /***/ }),
-/* 249 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var v1 = __webpack_require__(250);
-var v4 = __webpack_require__(251);
+var v1 = __webpack_require__(253);
+var v4 = __webpack_require__(254);
 
 var uuid = v4;
 uuid.v1 = v1;
@@ -25746,11 +25273,11 @@ module.exports = uuid;
 
 
 /***/ }),
-/* 250 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(90);
-var bytesToUuid = __webpack_require__(91);
+var rng = __webpack_require__(91);
+var bytesToUuid = __webpack_require__(92);
 
 // **`v1()` - Generate time-based UUID**
 //
@@ -25852,11 +25379,11 @@ module.exports = v1;
 
 
 /***/ }),
-/* 251 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(90);
-var bytesToUuid = __webpack_require__(91);
+var rng = __webpack_require__(91);
+var bytesToUuid = __webpack_require__(92);
 
 function v4(options, buf, offset) {
   var i = buf && offset || 0;
@@ -25887,13 +25414,13 @@ module.exports = v4;
 
 
 /***/ }),
-/* 252 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Hmac = __webpack_require__(253);
-var Md5 = __webpack_require__(257);
-var Sha1 = __webpack_require__(258);
-var Sha256 = __webpack_require__(259);
+var Hmac = __webpack_require__(256);
+var Md5 = __webpack_require__(260);
+var Sha1 = __webpack_require__(261);
+var Sha256 = __webpack_require__(262);
 
 module.exports = exports = {
     createHash: function createHash(alg) {
@@ -25927,7 +25454,7 @@ module.exports = exports = {
 
 
 /***/ }),
-/* 253 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var hashUtils = __webpack_require__(30);
@@ -25995,7 +25522,7 @@ function bufferFromSecret(hashCtor, secret) {
 
 
 /***/ }),
-/* 254 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26116,7 +25643,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 255 */
+/* 258 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -26206,7 +25733,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 256 */
+/* 259 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -26217,7 +25744,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 257 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var hashUtils = __webpack_require__(30);
@@ -26402,7 +25929,7 @@ function ii(a, b, c, d, x, s, t) {
 
 
 /***/ }),
-/* 258 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(7).Buffer;
@@ -26571,7 +26098,7 @@ Sha1.prototype.processBlock = function processBlock() {
 
 
 /***/ }),
-/* 259 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(7).Buffer;
@@ -26813,7 +26340,7 @@ Sha256.prototype.hashBuffer = function () {
 
 
 /***/ }),
-/* 260 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/punycode v1.4.1 by @mathias */
@@ -27349,10 +26876,10 @@ Sha256.prototype.hashBuffer = function () {
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(41)(module), __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module), __webpack_require__(12)))
 
 /***/ }),
-/* 261 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27375,7 +26902,7 @@ module.exports = {
 
 
 /***/ }),
-/* 262 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27466,7 +26993,7 @@ var isArray = Array.isArray || function (xs) {
 
 
 /***/ }),
-/* 263 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27558,7 +27085,7 @@ var objectKeys = Object.keys || function (obj) {
 
 
 /***/ }),
-/* 264 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -27684,7 +27211,7 @@ AWS.TemporaryCredentials = AWS.util.inherit(AWS.Credentials, {
 
 
 /***/ }),
-/* 265 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -27737,19 +27264,19 @@ AWS.util.update(AWS.STS.prototype, {
 
 
 /***/ }),
-/* 266 */
+/* 269 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":"2.0","metadata":{"apiVersion":"2011-06-15","endpointPrefix":"sts","globalEndpoint":"sts.amazonaws.com","protocol":"query","serviceAbbreviation":"AWS STS","serviceFullName":"AWS Security Token Service","signatureVersion":"v4","uid":"sts-2011-06-15","xmlNamespace":"https://sts.amazonaws.com/doc/2011-06-15/"},"operations":{"AssumeRole":{"input":{"type":"structure","required":["RoleArn","RoleSessionName"],"members":{"RoleArn":{},"RoleSessionName":{},"Policy":{},"DurationSeconds":{"type":"integer"},"ExternalId":{},"SerialNumber":{},"TokenCode":{}}},"output":{"resultWrapper":"AssumeRoleResult","type":"structure","members":{"Credentials":{"shape":"Sa"},"AssumedRoleUser":{"shape":"Sf"},"PackedPolicySize":{"type":"integer"}}}},"AssumeRoleWithSAML":{"input":{"type":"structure","required":["RoleArn","PrincipalArn","SAMLAssertion"],"members":{"RoleArn":{},"PrincipalArn":{},"SAMLAssertion":{},"Policy":{},"DurationSeconds":{"type":"integer"}}},"output":{"resultWrapper":"AssumeRoleWithSAMLResult","type":"structure","members":{"Credentials":{"shape":"Sa"},"AssumedRoleUser":{"shape":"Sf"},"PackedPolicySize":{"type":"integer"},"Subject":{},"SubjectType":{},"Issuer":{},"Audience":{},"NameQualifier":{}}}},"AssumeRoleWithWebIdentity":{"input":{"type":"structure","required":["RoleArn","RoleSessionName","WebIdentityToken"],"members":{"RoleArn":{},"RoleSessionName":{},"WebIdentityToken":{},"ProviderId":{},"Policy":{},"DurationSeconds":{"type":"integer"}}},"output":{"resultWrapper":"AssumeRoleWithWebIdentityResult","type":"structure","members":{"Credentials":{"shape":"Sa"},"SubjectFromWebIdentityToken":{},"AssumedRoleUser":{"shape":"Sf"},"PackedPolicySize":{"type":"integer"},"Provider":{},"Audience":{}}}},"DecodeAuthorizationMessage":{"input":{"type":"structure","required":["EncodedMessage"],"members":{"EncodedMessage":{}}},"output":{"resultWrapper":"DecodeAuthorizationMessageResult","type":"structure","members":{"DecodedMessage":{}}}},"GetCallerIdentity":{"input":{"type":"structure","members":{}},"output":{"resultWrapper":"GetCallerIdentityResult","type":"structure","members":{"UserId":{},"Account":{},"Arn":{}}}},"GetFederationToken":{"input":{"type":"structure","required":["Name"],"members":{"Name":{},"Policy":{},"DurationSeconds":{"type":"integer"}}},"output":{"resultWrapper":"GetFederationTokenResult","type":"structure","members":{"Credentials":{"shape":"Sa"},"FederatedUser":{"type":"structure","required":["FederatedUserId","Arn"],"members":{"FederatedUserId":{},"Arn":{}}},"PackedPolicySize":{"type":"integer"}}}},"GetSessionToken":{"input":{"type":"structure","members":{"DurationSeconds":{"type":"integer"},"SerialNumber":{},"TokenCode":{}}},"output":{"resultWrapper":"GetSessionTokenResult","type":"structure","members":{"Credentials":{"shape":"Sa"}}}}},"shapes":{"Sa":{"type":"structure","required":["AccessKeyId","SecretAccessKey","SessionToken","Expiration"],"members":{"AccessKeyId":{},"SecretAccessKey":{},"SessionToken":{},"Expiration":{"type":"timestamp"}}},"Sf":{"type":"structure","required":["AssumedRoleId","Arn"],"members":{"AssumedRoleId":{},"Arn":{}}}}}
 
 /***/ }),
-/* 267 */
+/* 270 */
 /***/ (function(module, exports) {
 
 module.exports = {"pagination":{}}
 
 /***/ }),
-/* 268 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -27865,11 +27392,11 @@ AWS.WebIdentityCredentials = AWS.util.inherit(AWS.Credentials, {
 
 
 /***/ }),
-/* 269 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-var CognitoIdentity = __webpack_require__(270);
+var CognitoIdentity = __webpack_require__(273);
 var STS = __webpack_require__(31);
 
 /**
@@ -28248,7 +27775,7 @@ AWS.CognitoIdentityCredentials = AWS.util.inherit(AWS.Credentials, {
 
 
 /***/ }),
-/* 270 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(11);
@@ -28258,11 +27785,11 @@ var apiLoader = AWS.apiLoader;
 
 apiLoader.services['cognitoidentity'] = {};
 AWS.CognitoIdentity = Service.defineService('cognitoidentity', ['2014-06-30']);
-__webpack_require__(271);
+__webpack_require__(274);
 Object.defineProperty(apiLoader.services['cognitoidentity'], '2014-06-30', {
   get: function get() {
-    var model = __webpack_require__(272);
-    model.paginators = __webpack_require__(273).pagination;
+    var model = __webpack_require__(275);
+    model.paginators = __webpack_require__(276).pagination;
     return model;
   },
   enumerable: true,
@@ -28273,7 +27800,7 @@ module.exports = AWS.CognitoIdentity;
 
 
 /***/ }),
-/* 271 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -28294,19 +27821,19 @@ AWS.util.update(AWS.CognitoIdentity.prototype, {
 
 
 /***/ }),
-/* 272 */
+/* 275 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":"2.0","metadata":{"apiVersion":"2014-06-30","endpointPrefix":"cognito-identity","jsonVersion":"1.1","protocol":"json","serviceFullName":"Amazon Cognito Identity","signatureVersion":"v4","targetPrefix":"AWSCognitoIdentityService","uid":"cognito-identity-2014-06-30"},"operations":{"CreateIdentityPool":{"input":{"type":"structure","required":["IdentityPoolName","AllowUnauthenticatedIdentities"],"members":{"IdentityPoolName":{},"AllowUnauthenticatedIdentities":{"type":"boolean"},"SupportedLoginProviders":{"shape":"S4"},"DeveloperProviderName":{},"OpenIdConnectProviderARNs":{"shape":"S8"},"CognitoIdentityProviders":{"shape":"Sa"},"SamlProviderARNs":{"shape":"Sf"}}},"output":{"shape":"Sg"}},"DeleteIdentities":{"input":{"type":"structure","required":["IdentityIdsToDelete"],"members":{"IdentityIdsToDelete":{"type":"list","member":{}}}},"output":{"type":"structure","members":{"UnprocessedIdentityIds":{"type":"list","member":{"type":"structure","members":{"IdentityId":{},"ErrorCode":{}}}}}}},"DeleteIdentityPool":{"input":{"type":"structure","required":["IdentityPoolId"],"members":{"IdentityPoolId":{}}}},"DescribeIdentity":{"input":{"type":"structure","required":["IdentityId"],"members":{"IdentityId":{}}},"output":{"shape":"Sr"}},"DescribeIdentityPool":{"input":{"type":"structure","required":["IdentityPoolId"],"members":{"IdentityPoolId":{}}},"output":{"shape":"Sg"}},"GetCredentialsForIdentity":{"input":{"type":"structure","required":["IdentityId"],"members":{"IdentityId":{},"Logins":{"shape":"Sw"},"CustomRoleArn":{}}},"output":{"type":"structure","members":{"IdentityId":{},"Credentials":{"type":"structure","members":{"AccessKeyId":{},"SecretKey":{},"SessionToken":{},"Expiration":{"type":"timestamp"}}}}}},"GetId":{"input":{"type":"structure","required":["IdentityPoolId"],"members":{"AccountId":{},"IdentityPoolId":{},"Logins":{"shape":"Sw"}}},"output":{"type":"structure","members":{"IdentityId":{}}}},"GetIdentityPoolRoles":{"input":{"type":"structure","required":["IdentityPoolId"],"members":{"IdentityPoolId":{}}},"output":{"type":"structure","members":{"IdentityPoolId":{},"Roles":{"shape":"S18"},"RoleMappings":{"shape":"S1a"}}}},"GetOpenIdToken":{"input":{"type":"structure","required":["IdentityId"],"members":{"IdentityId":{},"Logins":{"shape":"Sw"}}},"output":{"type":"structure","members":{"IdentityId":{},"Token":{}}}},"GetOpenIdTokenForDeveloperIdentity":{"input":{"type":"structure","required":["IdentityPoolId","Logins"],"members":{"IdentityPoolId":{},"IdentityId":{},"Logins":{"shape":"Sw"},"TokenDuration":{"type":"long"}}},"output":{"type":"structure","members":{"IdentityId":{},"Token":{}}}},"ListIdentities":{"input":{"type":"structure","required":["IdentityPoolId","MaxResults"],"members":{"IdentityPoolId":{},"MaxResults":{"type":"integer"},"NextToken":{},"HideDisabled":{"type":"boolean"}}},"output":{"type":"structure","members":{"IdentityPoolId":{},"Identities":{"type":"list","member":{"shape":"Sr"}},"NextToken":{}}}},"ListIdentityPools":{"input":{"type":"structure","required":["MaxResults"],"members":{"MaxResults":{"type":"integer"},"NextToken":{}}},"output":{"type":"structure","members":{"IdentityPools":{"type":"list","member":{"type":"structure","members":{"IdentityPoolId":{},"IdentityPoolName":{}}}},"NextToken":{}}}},"LookupDeveloperIdentity":{"input":{"type":"structure","required":["IdentityPoolId"],"members":{"IdentityPoolId":{},"IdentityId":{},"DeveloperUserIdentifier":{},"MaxResults":{"type":"integer"},"NextToken":{}}},"output":{"type":"structure","members":{"IdentityId":{},"DeveloperUserIdentifierList":{"type":"list","member":{}},"NextToken":{}}}},"MergeDeveloperIdentities":{"input":{"type":"structure","required":["SourceUserIdentifier","DestinationUserIdentifier","DeveloperProviderName","IdentityPoolId"],"members":{"SourceUserIdentifier":{},"DestinationUserIdentifier":{},"DeveloperProviderName":{},"IdentityPoolId":{}}},"output":{"type":"structure","members":{"IdentityId":{}}}},"SetIdentityPoolRoles":{"input":{"type":"structure","required":["IdentityPoolId","Roles"],"members":{"IdentityPoolId":{},"Roles":{"shape":"S18"},"RoleMappings":{"shape":"S1a"}}}},"UnlinkDeveloperIdentity":{"input":{"type":"structure","required":["IdentityId","IdentityPoolId","DeveloperProviderName","DeveloperUserIdentifier"],"members":{"IdentityId":{},"IdentityPoolId":{},"DeveloperProviderName":{},"DeveloperUserIdentifier":{}}}},"UnlinkIdentity":{"input":{"type":"structure","required":["IdentityId","Logins","LoginsToRemove"],"members":{"IdentityId":{},"Logins":{"shape":"Sw"},"LoginsToRemove":{"shape":"Ss"}}}},"UpdateIdentityPool":{"input":{"shape":"Sg"},"output":{"shape":"Sg"}}},"shapes":{"S4":{"type":"map","key":{},"value":{}},"S8":{"type":"list","member":{}},"Sa":{"type":"list","member":{"type":"structure","members":{"ProviderName":{},"ClientId":{},"ServerSideTokenCheck":{"type":"boolean"}}}},"Sf":{"type":"list","member":{}},"Sg":{"type":"structure","required":["IdentityPoolId","IdentityPoolName","AllowUnauthenticatedIdentities"],"members":{"IdentityPoolId":{},"IdentityPoolName":{},"AllowUnauthenticatedIdentities":{"type":"boolean"},"SupportedLoginProviders":{"shape":"S4"},"DeveloperProviderName":{},"OpenIdConnectProviderARNs":{"shape":"S8"},"CognitoIdentityProviders":{"shape":"Sa"},"SamlProviderARNs":{"shape":"Sf"}}},"Sr":{"type":"structure","members":{"IdentityId":{},"Logins":{"shape":"Ss"},"CreationDate":{"type":"timestamp"},"LastModifiedDate":{"type":"timestamp"}}},"Ss":{"type":"list","member":{}},"Sw":{"type":"map","key":{},"value":{}},"S18":{"type":"map","key":{},"value":{}},"S1a":{"type":"map","key":{},"value":{"type":"structure","required":["Type"],"members":{"Type":{},"AmbiguousRoleResolution":{},"RulesConfiguration":{"type":"structure","required":["Rules"],"members":{"Rules":{"type":"list","member":{"type":"structure","required":["Claim","MatchType","Value","RoleARN"],"members":{"Claim":{},"MatchType":{},"Value":{},"RoleARN":{}}}}}}}}}}}
 
 /***/ }),
-/* 273 */
+/* 276 */
 /***/ (function(module, exports) {
 
 module.exports = {"pagination":{}}
 
 /***/ }),
-/* 274 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -28401,11 +27928,11 @@ AWS.SAMLCredentials = AWS.util.inherit(AWS.Credentials, {
 
 
 /***/ }),
-/* 275 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var util = __webpack_require__(1);
-var Shape = __webpack_require__(16);
+var Shape = __webpack_require__(15);
 
 function DomXmlParser() { }
 
@@ -28593,12 +28120,12 @@ module.exports = DomXmlParser;
 
 
 /***/ }),
-/* 276 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-var EventEmitter = __webpack_require__(277).EventEmitter;
-__webpack_require__(86);
+var EventEmitter = __webpack_require__(280).EventEmitter;
+__webpack_require__(87);
 
 /**
  * @api private
@@ -28735,7 +28262,7 @@ AWS.HttpClient.streamsApiVersion = 1;
 
 
 /***/ }),
-/* 277 */
+/* 280 */
 /***/ (function(module, exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
@@ -29043,14 +28570,14 @@ function isUndefined(arg) {
 
 
 /***/ }),
-/* 278 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-var v4Credentials = __webpack_require__(89);
+var v4Credentials = __webpack_require__(90);
 
 // Pull in managed upload extension
-__webpack_require__(279);
+__webpack_require__(282);
 
 /**
  * @api private
@@ -30119,7 +29646,7 @@ AWS.util.update(AWS.S3.prototype, {
 
 
 /***/ }),
-/* 279 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -30835,25 +30362,25 @@ module.exports = AWS.S3.ManagedUpload;
 
 
 /***/ }),
-/* 280 */
+/* 283 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":"2.0","metadata":{"apiVersion":"2006-03-01","checksumFormat":"md5","endpointPrefix":"s3","globalEndpoint":"s3.amazonaws.com","protocol":"rest-xml","serviceAbbreviation":"Amazon S3","serviceFullName":"Amazon Simple Storage Service","serviceId":"S3","signatureVersion":"s3","timestampFormat":"rfc822","uid":"s3-2006-03-01"},"operations":{"AbortMultipartUpload":{"http":{"method":"DELETE","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key","UploadId"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"UploadId":{"location":"querystring","locationName":"uploadId"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"CompleteMultipartUpload":{"http":{"requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key","UploadId"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"MultipartUpload":{"locationName":"CompleteMultipartUpload","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"Parts":{"locationName":"Part","type":"list","member":{"type":"structure","members":{"ETag":{},"PartNumber":{"type":"integer"}}},"flattened":true}}},"UploadId":{"location":"querystring","locationName":"uploadId"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}},"payload":"MultipartUpload"},"output":{"type":"structure","members":{"Location":{},"Bucket":{},"Key":{},"Expiration":{"location":"header","locationName":"x-amz-expiration"},"ETag":{},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"CopyObject":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","CopySource","Key"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"Bucket":{"location":"uri","locationName":"Bucket"},"CacheControl":{"location":"header","locationName":"Cache-Control"},"ContentDisposition":{"location":"header","locationName":"Content-Disposition"},"ContentEncoding":{"location":"header","locationName":"Content-Encoding"},"ContentLanguage":{"location":"header","locationName":"Content-Language"},"ContentType":{"location":"header","locationName":"Content-Type"},"CopySource":{"location":"header","locationName":"x-amz-copy-source"},"CopySourceIfMatch":{"location":"header","locationName":"x-amz-copy-source-if-match"},"CopySourceIfModifiedSince":{"location":"header","locationName":"x-amz-copy-source-if-modified-since","type":"timestamp"},"CopySourceIfNoneMatch":{"location":"header","locationName":"x-amz-copy-source-if-none-match"},"CopySourceIfUnmodifiedSince":{"location":"header","locationName":"x-amz-copy-source-if-unmodified-since","type":"timestamp"},"Expires":{"location":"header","locationName":"Expires","type":"timestamp"},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"},"Key":{"location":"uri","locationName":"Key"},"Metadata":{"shape":"S11","location":"headers","locationName":"x-amz-meta-"},"MetadataDirective":{"location":"header","locationName":"x-amz-metadata-directive"},"TaggingDirective":{"location":"header","locationName":"x-amz-tagging-directive"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"StorageClass":{"location":"header","locationName":"x-amz-storage-class"},"WebsiteRedirectLocation":{"location":"header","locationName":"x-amz-website-redirect-location"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"CopySourceSSECustomerAlgorithm":{"location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-algorithm"},"CopySourceSSECustomerKey":{"shape":"S1c","location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-key"},"CopySourceSSECustomerKeyMD5":{"location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-key-MD5"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"Tagging":{"location":"header","locationName":"x-amz-tagging"}}},"output":{"type":"structure","members":{"CopyObjectResult":{"type":"structure","members":{"ETag":{},"LastModified":{"type":"timestamp"}}},"Expiration":{"location":"header","locationName":"x-amz-expiration"},"CopySourceVersionId":{"location":"header","locationName":"x-amz-copy-source-version-id"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}},"payload":"CopyObjectResult"},"alias":"PutObjectCopy"},"CreateBucket":{"http":{"method":"PUT","requestUri":"/{Bucket}"},"input":{"type":"structure","required":["Bucket"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"Bucket":{"location":"uri","locationName":"Bucket"},"CreateBucketConfiguration":{"locationName":"CreateBucketConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"LocationConstraint":{}}},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWrite":{"location":"header","locationName":"x-amz-grant-write"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"}},"payload":"CreateBucketConfiguration"},"output":{"type":"structure","members":{"Location":{"location":"header","locationName":"Location"}}},"alias":"PutBucket"},"CreateMultipartUpload":{"http":{"requestUri":"/{Bucket}/{Key+}?uploads"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"Bucket":{"location":"uri","locationName":"Bucket"},"CacheControl":{"location":"header","locationName":"Cache-Control"},"ContentDisposition":{"location":"header","locationName":"Content-Disposition"},"ContentEncoding":{"location":"header","locationName":"Content-Encoding"},"ContentLanguage":{"location":"header","locationName":"Content-Language"},"ContentType":{"location":"header","locationName":"Content-Type"},"Expires":{"location":"header","locationName":"Expires","type":"timestamp"},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"},"Key":{"location":"uri","locationName":"Key"},"Metadata":{"shape":"S11","location":"headers","locationName":"x-amz-meta-"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"StorageClass":{"location":"header","locationName":"x-amz-storage-class"},"WebsiteRedirectLocation":{"location":"header","locationName":"x-amz-website-redirect-location"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"Tagging":{"location":"header","locationName":"x-amz-tagging"}}},"output":{"type":"structure","members":{"AbortDate":{"location":"header","locationName":"x-amz-abort-date","type":"timestamp"},"AbortRuleId":{"location":"header","locationName":"x-amz-abort-rule-id"},"Bucket":{"locationName":"Bucket"},"Key":{},"UploadId":{},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}},"alias":"InitiateMultipartUpload"},"DeleteBucket":{"http":{"method":"DELETE","requestUri":"/{Bucket}"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketAnalyticsConfiguration":{"http":{"method":"DELETE","requestUri":"/{Bucket}?analytics"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}}},"DeleteBucketCors":{"http":{"method":"DELETE","requestUri":"/{Bucket}?cors"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketEncryption":{"http":{"method":"DELETE","requestUri":"/{Bucket}?encryption"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketInventoryConfiguration":{"http":{"method":"DELETE","requestUri":"/{Bucket}?inventory"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}}},"DeleteBucketLifecycle":{"http":{"method":"DELETE","requestUri":"/{Bucket}?lifecycle"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketMetricsConfiguration":{"http":{"method":"DELETE","requestUri":"/{Bucket}?metrics"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}}},"DeleteBucketPolicy":{"http":{"method":"DELETE","requestUri":"/{Bucket}?policy"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketReplication":{"http":{"method":"DELETE","requestUri":"/{Bucket}?replication"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketTagging":{"http":{"method":"DELETE","requestUri":"/{Bucket}?tagging"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketWebsite":{"http":{"method":"DELETE","requestUri":"/{Bucket}?website"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteObject":{"http":{"method":"DELETE","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"MFA":{"location":"header","locationName":"x-amz-mfa"},"VersionId":{"location":"querystring","locationName":"versionId"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"DeleteMarker":{"location":"header","locationName":"x-amz-delete-marker","type":"boolean"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"DeleteObjectTagging":{"http":{"method":"DELETE","requestUri":"/{Bucket}/{Key+}?tagging"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"VersionId":{"location":"querystring","locationName":"versionId"}}},"output":{"type":"structure","members":{"VersionId":{"location":"header","locationName":"x-amz-version-id"}}}},"DeleteObjects":{"http":{"requestUri":"/{Bucket}?delete"},"input":{"type":"structure","required":["Bucket","Delete"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Delete":{"locationName":"Delete","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","required":["Objects"],"members":{"Objects":{"locationName":"Object","type":"list","member":{"type":"structure","required":["Key"],"members":{"Key":{},"VersionId":{}}},"flattened":true},"Quiet":{"type":"boolean"}}},"MFA":{"location":"header","locationName":"x-amz-mfa"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}},"payload":"Delete"},"output":{"type":"structure","members":{"Deleted":{"type":"list","member":{"type":"structure","members":{"Key":{},"VersionId":{},"DeleteMarker":{"type":"boolean"},"DeleteMarkerVersionId":{}}},"flattened":true},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"},"Errors":{"locationName":"Error","type":"list","member":{"type":"structure","members":{"Key":{},"VersionId":{},"Code":{},"Message":{}}},"flattened":true}}},"alias":"DeleteMultipleObjects"},"GetBucketAccelerateConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?accelerate"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Status":{}}}},"GetBucketAcl":{"http":{"method":"GET","requestUri":"/{Bucket}?acl"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Owner":{"shape":"S2v"},"Grants":{"shape":"S2y","locationName":"AccessControlList"}}}},"GetBucketAnalyticsConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?analytics"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}},"output":{"type":"structure","members":{"AnalyticsConfiguration":{"shape":"S37"}},"payload":"AnalyticsConfiguration"}},"GetBucketCors":{"http":{"method":"GET","requestUri":"/{Bucket}?cors"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"CORSRules":{"shape":"S3n","locationName":"CORSRule"}}}},"GetBucketEncryption":{"http":{"method":"GET","requestUri":"/{Bucket}?encryption"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"ServerSideEncryptionConfiguration":{"shape":"S40"}},"payload":"ServerSideEncryptionConfiguration"}},"GetBucketInventoryConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?inventory"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}},"output":{"type":"structure","members":{"InventoryConfiguration":{"shape":"S46"}},"payload":"InventoryConfiguration"}},"GetBucketLifecycle":{"http":{"method":"GET","requestUri":"/{Bucket}?lifecycle"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Rules":{"shape":"S4m","locationName":"Rule"}}},"deprecated":true},"GetBucketLifecycleConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?lifecycle"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Rules":{"shape":"S51","locationName":"Rule"}}}},"GetBucketLocation":{"http":{"method":"GET","requestUri":"/{Bucket}?location"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"LocationConstraint":{}}}},"GetBucketLogging":{"http":{"method":"GET","requestUri":"/{Bucket}?logging"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"LoggingEnabled":{"shape":"S5b"}}}},"GetBucketMetricsConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?metrics"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}},"output":{"type":"structure","members":{"MetricsConfiguration":{"shape":"S5j"}},"payload":"MetricsConfiguration"}},"GetBucketNotification":{"http":{"method":"GET","requestUri":"/{Bucket}?notification"},"input":{"shape":"S5m"},"output":{"shape":"S5n"},"deprecated":true},"GetBucketNotificationConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?notification"},"input":{"shape":"S5m"},"output":{"shape":"S5y"}},"GetBucketPolicy":{"http":{"method":"GET","requestUri":"/{Bucket}?policy"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Policy":{}},"payload":"Policy"}},"GetBucketReplication":{"http":{"method":"GET","requestUri":"/{Bucket}?replication"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"ReplicationConfiguration":{"shape":"S6h"}},"payload":"ReplicationConfiguration"}},"GetBucketRequestPayment":{"http":{"method":"GET","requestUri":"/{Bucket}?requestPayment"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Payer":{}}}},"GetBucketTagging":{"http":{"method":"GET","requestUri":"/{Bucket}?tagging"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","required":["TagSet"],"members":{"TagSet":{"shape":"S3d"}}}},"GetBucketVersioning":{"http":{"method":"GET","requestUri":"/{Bucket}?versioning"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Status":{},"MFADelete":{"locationName":"MfaDelete"}}}},"GetBucketWebsite":{"http":{"method":"GET","requestUri":"/{Bucket}?website"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"RedirectAllRequestsTo":{"shape":"S75"},"IndexDocument":{"shape":"S78"},"ErrorDocument":{"shape":"S7a"},"RoutingRules":{"shape":"S7b"}}}},"GetObject":{"http":{"method":"GET","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"IfMatch":{"location":"header","locationName":"If-Match"},"IfModifiedSince":{"location":"header","locationName":"If-Modified-Since","type":"timestamp"},"IfNoneMatch":{"location":"header","locationName":"If-None-Match"},"IfUnmodifiedSince":{"location":"header","locationName":"If-Unmodified-Since","type":"timestamp"},"Key":{"location":"uri","locationName":"Key"},"Range":{"location":"header","locationName":"Range"},"ResponseCacheControl":{"location":"querystring","locationName":"response-cache-control"},"ResponseContentDisposition":{"location":"querystring","locationName":"response-content-disposition"},"ResponseContentEncoding":{"location":"querystring","locationName":"response-content-encoding"},"ResponseContentLanguage":{"location":"querystring","locationName":"response-content-language"},"ResponseContentType":{"location":"querystring","locationName":"response-content-type"},"ResponseExpires":{"location":"querystring","locationName":"response-expires","type":"timestamp"},"VersionId":{"location":"querystring","locationName":"versionId"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"PartNumber":{"location":"querystring","locationName":"partNumber","type":"integer"}}},"output":{"type":"structure","members":{"Body":{"streaming":true,"type":"blob"},"DeleteMarker":{"location":"header","locationName":"x-amz-delete-marker","type":"boolean"},"AcceptRanges":{"location":"header","locationName":"accept-ranges"},"Expiration":{"location":"header","locationName":"x-amz-expiration"},"Restore":{"location":"header","locationName":"x-amz-restore"},"LastModified":{"location":"header","locationName":"Last-Modified","type":"timestamp"},"ContentLength":{"location":"header","locationName":"Content-Length","type":"long"},"ETag":{"location":"header","locationName":"ETag"},"MissingMeta":{"location":"header","locationName":"x-amz-missing-meta","type":"integer"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"CacheControl":{"location":"header","locationName":"Cache-Control"},"ContentDisposition":{"location":"header","locationName":"Content-Disposition"},"ContentEncoding":{"location":"header","locationName":"Content-Encoding"},"ContentLanguage":{"location":"header","locationName":"Content-Language"},"ContentRange":{"location":"header","locationName":"Content-Range"},"ContentType":{"location":"header","locationName":"Content-Type"},"Expires":{"location":"header","locationName":"Expires","type":"timestamp"},"WebsiteRedirectLocation":{"location":"header","locationName":"x-amz-website-redirect-location"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"Metadata":{"shape":"S11","location":"headers","locationName":"x-amz-meta-"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"StorageClass":{"location":"header","locationName":"x-amz-storage-class"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"},"ReplicationStatus":{"location":"header","locationName":"x-amz-replication-status"},"PartsCount":{"location":"header","locationName":"x-amz-mp-parts-count","type":"integer"},"TagCount":{"location":"header","locationName":"x-amz-tagging-count","type":"integer"}},"payload":"Body"}},"GetObjectAcl":{"http":{"method":"GET","requestUri":"/{Bucket}/{Key+}?acl"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"VersionId":{"location":"querystring","locationName":"versionId"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"Owner":{"shape":"S2v"},"Grants":{"shape":"S2y","locationName":"AccessControlList"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"GetObjectTagging":{"http":{"method":"GET","requestUri":"/{Bucket}/{Key+}?tagging"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"VersionId":{"location":"querystring","locationName":"versionId"}}},"output":{"type":"structure","required":["TagSet"],"members":{"VersionId":{"location":"header","locationName":"x-amz-version-id"},"TagSet":{"shape":"S3d"}}}},"GetObjectTorrent":{"http":{"method":"GET","requestUri":"/{Bucket}/{Key+}?torrent"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"Body":{"streaming":true,"type":"blob"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}},"payload":"Body"}},"HeadBucket":{"http":{"method":"HEAD","requestUri":"/{Bucket}"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"HeadObject":{"http":{"method":"HEAD","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"IfMatch":{"location":"header","locationName":"If-Match"},"IfModifiedSince":{"location":"header","locationName":"If-Modified-Since","type":"timestamp"},"IfNoneMatch":{"location":"header","locationName":"If-None-Match"},"IfUnmodifiedSince":{"location":"header","locationName":"If-Unmodified-Since","type":"timestamp"},"Key":{"location":"uri","locationName":"Key"},"Range":{"location":"header","locationName":"Range"},"VersionId":{"location":"querystring","locationName":"versionId"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"PartNumber":{"location":"querystring","locationName":"partNumber","type":"integer"}}},"output":{"type":"structure","members":{"DeleteMarker":{"location":"header","locationName":"x-amz-delete-marker","type":"boolean"},"AcceptRanges":{"location":"header","locationName":"accept-ranges"},"Expiration":{"location":"header","locationName":"x-amz-expiration"},"Restore":{"location":"header","locationName":"x-amz-restore"},"LastModified":{"location":"header","locationName":"Last-Modified","type":"timestamp"},"ContentLength":{"location":"header","locationName":"Content-Length","type":"long"},"ETag":{"location":"header","locationName":"ETag"},"MissingMeta":{"location":"header","locationName":"x-amz-missing-meta","type":"integer"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"CacheControl":{"location":"header","locationName":"Cache-Control"},"ContentDisposition":{"location":"header","locationName":"Content-Disposition"},"ContentEncoding":{"location":"header","locationName":"Content-Encoding"},"ContentLanguage":{"location":"header","locationName":"Content-Language"},"ContentType":{"location":"header","locationName":"Content-Type"},"Expires":{"location":"header","locationName":"Expires","type":"timestamp"},"WebsiteRedirectLocation":{"location":"header","locationName":"x-amz-website-redirect-location"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"Metadata":{"shape":"S11","location":"headers","locationName":"x-amz-meta-"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"StorageClass":{"location":"header","locationName":"x-amz-storage-class"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"},"ReplicationStatus":{"location":"header","locationName":"x-amz-replication-status"},"PartsCount":{"location":"header","locationName":"x-amz-mp-parts-count","type":"integer"}}}},"ListBucketAnalyticsConfigurations":{"http":{"method":"GET","requestUri":"/{Bucket}?analytics"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContinuationToken":{"location":"querystring","locationName":"continuation-token"}}},"output":{"type":"structure","members":{"IsTruncated":{"type":"boolean"},"ContinuationToken":{},"NextContinuationToken":{},"AnalyticsConfigurationList":{"locationName":"AnalyticsConfiguration","type":"list","member":{"shape":"S37"},"flattened":true}}}},"ListBucketInventoryConfigurations":{"http":{"method":"GET","requestUri":"/{Bucket}?inventory"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContinuationToken":{"location":"querystring","locationName":"continuation-token"}}},"output":{"type":"structure","members":{"ContinuationToken":{},"InventoryConfigurationList":{"locationName":"InventoryConfiguration","type":"list","member":{"shape":"S46"},"flattened":true},"IsTruncated":{"type":"boolean"},"NextContinuationToken":{}}}},"ListBucketMetricsConfigurations":{"http":{"method":"GET","requestUri":"/{Bucket}?metrics"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContinuationToken":{"location":"querystring","locationName":"continuation-token"}}},"output":{"type":"structure","members":{"IsTruncated":{"type":"boolean"},"ContinuationToken":{},"NextContinuationToken":{},"MetricsConfigurationList":{"locationName":"MetricsConfiguration","type":"list","member":{"shape":"S5j"},"flattened":true}}}},"ListBuckets":{"http":{"method":"GET"},"output":{"type":"structure","members":{"Buckets":{"type":"list","member":{"locationName":"Bucket","type":"structure","members":{"Name":{},"CreationDate":{"type":"timestamp"}}}},"Owner":{"shape":"S2v"}}},"alias":"GetService"},"ListMultipartUploads":{"http":{"method":"GET","requestUri":"/{Bucket}?uploads"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Delimiter":{"location":"querystring","locationName":"delimiter"},"EncodingType":{"location":"querystring","locationName":"encoding-type"},"KeyMarker":{"location":"querystring","locationName":"key-marker"},"MaxUploads":{"location":"querystring","locationName":"max-uploads","type":"integer"},"Prefix":{"location":"querystring","locationName":"prefix"},"UploadIdMarker":{"location":"querystring","locationName":"upload-id-marker"}}},"output":{"type":"structure","members":{"Bucket":{},"KeyMarker":{},"UploadIdMarker":{},"NextKeyMarker":{},"Prefix":{},"Delimiter":{},"NextUploadIdMarker":{},"MaxUploads":{"type":"integer"},"IsTruncated":{"type":"boolean"},"Uploads":{"locationName":"Upload","type":"list","member":{"type":"structure","members":{"UploadId":{},"Key":{},"Initiated":{"type":"timestamp"},"StorageClass":{},"Owner":{"shape":"S2v"},"Initiator":{"shape":"S97"}}},"flattened":true},"CommonPrefixes":{"shape":"S98"},"EncodingType":{}}}},"ListObjectVersions":{"http":{"method":"GET","requestUri":"/{Bucket}?versions"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Delimiter":{"location":"querystring","locationName":"delimiter"},"EncodingType":{"location":"querystring","locationName":"encoding-type"},"KeyMarker":{"location":"querystring","locationName":"key-marker"},"MaxKeys":{"location":"querystring","locationName":"max-keys","type":"integer"},"Prefix":{"location":"querystring","locationName":"prefix"},"VersionIdMarker":{"location":"querystring","locationName":"version-id-marker"}}},"output":{"type":"structure","members":{"IsTruncated":{"type":"boolean"},"KeyMarker":{},"VersionIdMarker":{},"NextKeyMarker":{},"NextVersionIdMarker":{},"Versions":{"locationName":"Version","type":"list","member":{"type":"structure","members":{"ETag":{},"Size":{"type":"integer"},"StorageClass":{},"Key":{},"VersionId":{},"IsLatest":{"type":"boolean"},"LastModified":{"type":"timestamp"},"Owner":{"shape":"S2v"}}},"flattened":true},"DeleteMarkers":{"locationName":"DeleteMarker","type":"list","member":{"type":"structure","members":{"Owner":{"shape":"S2v"},"Key":{},"VersionId":{},"IsLatest":{"type":"boolean"},"LastModified":{"type":"timestamp"}}},"flattened":true},"Name":{},"Prefix":{},"Delimiter":{},"MaxKeys":{"type":"integer"},"CommonPrefixes":{"shape":"S98"},"EncodingType":{}}},"alias":"GetBucketObjectVersions"},"ListObjects":{"http":{"method":"GET","requestUri":"/{Bucket}"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Delimiter":{"location":"querystring","locationName":"delimiter"},"EncodingType":{"location":"querystring","locationName":"encoding-type"},"Marker":{"location":"querystring","locationName":"marker"},"MaxKeys":{"location":"querystring","locationName":"max-keys","type":"integer"},"Prefix":{"location":"querystring","locationName":"prefix"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"IsTruncated":{"type":"boolean"},"Marker":{},"NextMarker":{},"Contents":{"shape":"S9q"},"Name":{},"Prefix":{},"Delimiter":{},"MaxKeys":{"type":"integer"},"CommonPrefixes":{"shape":"S98"},"EncodingType":{}}},"alias":"GetBucket"},"ListObjectsV2":{"http":{"method":"GET","requestUri":"/{Bucket}?list-type=2"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Delimiter":{"location":"querystring","locationName":"delimiter"},"EncodingType":{"location":"querystring","locationName":"encoding-type"},"MaxKeys":{"location":"querystring","locationName":"max-keys","type":"integer"},"Prefix":{"location":"querystring","locationName":"prefix"},"ContinuationToken":{"location":"querystring","locationName":"continuation-token"},"FetchOwner":{"location":"querystring","locationName":"fetch-owner","type":"boolean"},"StartAfter":{"location":"querystring","locationName":"start-after"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"IsTruncated":{"type":"boolean"},"Contents":{"shape":"S9q"},"Name":{},"Prefix":{},"Delimiter":{},"MaxKeys":{"type":"integer"},"CommonPrefixes":{"shape":"S98"},"EncodingType":{},"KeyCount":{"type":"integer"},"ContinuationToken":{},"NextContinuationToken":{},"StartAfter":{}}}},"ListParts":{"http":{"method":"GET","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key","UploadId"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"MaxParts":{"location":"querystring","locationName":"max-parts","type":"integer"},"PartNumberMarker":{"location":"querystring","locationName":"part-number-marker","type":"integer"},"UploadId":{"location":"querystring","locationName":"uploadId"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"AbortDate":{"location":"header","locationName":"x-amz-abort-date","type":"timestamp"},"AbortRuleId":{"location":"header","locationName":"x-amz-abort-rule-id"},"Bucket":{},"Key":{},"UploadId":{},"PartNumberMarker":{"type":"integer"},"NextPartNumberMarker":{"type":"integer"},"MaxParts":{"type":"integer"},"IsTruncated":{"type":"boolean"},"Parts":{"locationName":"Part","type":"list","member":{"type":"structure","members":{"PartNumber":{"type":"integer"},"LastModified":{"type":"timestamp"},"ETag":{},"Size":{"type":"integer"}}},"flattened":true},"Initiator":{"shape":"S97"},"Owner":{"shape":"S2v"},"StorageClass":{},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"PutBucketAccelerateConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?accelerate"},"input":{"type":"structure","required":["Bucket","AccelerateConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"AccelerateConfiguration":{"locationName":"AccelerateConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"Status":{}}}},"payload":"AccelerateConfiguration"}},"PutBucketAcl":{"http":{"method":"PUT","requestUri":"/{Bucket}?acl"},"input":{"type":"structure","required":["Bucket"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"AccessControlPolicy":{"shape":"Sa8","locationName":"AccessControlPolicy","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}},"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWrite":{"location":"header","locationName":"x-amz-grant-write"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"}},"payload":"AccessControlPolicy"}},"PutBucketAnalyticsConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?analytics"},"input":{"type":"structure","required":["Bucket","Id","AnalyticsConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"},"AnalyticsConfiguration":{"shape":"S37","locationName":"AnalyticsConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"AnalyticsConfiguration"}},"PutBucketCors":{"http":{"method":"PUT","requestUri":"/{Bucket}?cors"},"input":{"type":"structure","required":["Bucket","CORSConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"CORSConfiguration":{"locationName":"CORSConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","required":["CORSRules"],"members":{"CORSRules":{"shape":"S3n","locationName":"CORSRule"}}},"ContentMD5":{"location":"header","locationName":"Content-MD5"}},"payload":"CORSConfiguration"}},"PutBucketEncryption":{"http":{"method":"PUT","requestUri":"/{Bucket}?encryption"},"input":{"type":"structure","required":["Bucket","ServerSideEncryptionConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"ServerSideEncryptionConfiguration":{"shape":"S40","locationName":"ServerSideEncryptionConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"ServerSideEncryptionConfiguration"}},"PutBucketInventoryConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?inventory"},"input":{"type":"structure","required":["Bucket","Id","InventoryConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"},"InventoryConfiguration":{"shape":"S46","locationName":"InventoryConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"InventoryConfiguration"}},"PutBucketLifecycle":{"http":{"method":"PUT","requestUri":"/{Bucket}?lifecycle"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"LifecycleConfiguration":{"locationName":"LifecycleConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","required":["Rules"],"members":{"Rules":{"shape":"S4m","locationName":"Rule"}}}},"payload":"LifecycleConfiguration"},"deprecated":true},"PutBucketLifecycleConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?lifecycle"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"LifecycleConfiguration":{"locationName":"LifecycleConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","required":["Rules"],"members":{"Rules":{"shape":"S51","locationName":"Rule"}}}},"payload":"LifecycleConfiguration"}},"PutBucketLogging":{"http":{"method":"PUT","requestUri":"/{Bucket}?logging"},"input":{"type":"structure","required":["Bucket","BucketLoggingStatus"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"BucketLoggingStatus":{"locationName":"BucketLoggingStatus","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"LoggingEnabled":{"shape":"S5b"}}},"ContentMD5":{"location":"header","locationName":"Content-MD5"}},"payload":"BucketLoggingStatus"}},"PutBucketMetricsConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?metrics"},"input":{"type":"structure","required":["Bucket","Id","MetricsConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"},"MetricsConfiguration":{"shape":"S5j","locationName":"MetricsConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"MetricsConfiguration"}},"PutBucketNotification":{"http":{"method":"PUT","requestUri":"/{Bucket}?notification"},"input":{"type":"structure","required":["Bucket","NotificationConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"NotificationConfiguration":{"shape":"S5n","locationName":"NotificationConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"NotificationConfiguration"},"deprecated":true},"PutBucketNotificationConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?notification"},"input":{"type":"structure","required":["Bucket","NotificationConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"NotificationConfiguration":{"shape":"S5y","locationName":"NotificationConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"NotificationConfiguration"}},"PutBucketPolicy":{"http":{"method":"PUT","requestUri":"/{Bucket}?policy"},"input":{"type":"structure","required":["Bucket","Policy"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"ConfirmRemoveSelfBucketAccess":{"location":"header","locationName":"x-amz-confirm-remove-self-bucket-access","type":"boolean"},"Policy":{}},"payload":"Policy"}},"PutBucketReplication":{"http":{"method":"PUT","requestUri":"/{Bucket}?replication"},"input":{"type":"structure","required":["Bucket","ReplicationConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"ReplicationConfiguration":{"shape":"S6h","locationName":"ReplicationConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"ReplicationConfiguration"}},"PutBucketRequestPayment":{"http":{"method":"PUT","requestUri":"/{Bucket}?requestPayment"},"input":{"type":"structure","required":["Bucket","RequestPaymentConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"RequestPaymentConfiguration":{"locationName":"RequestPaymentConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","required":["Payer"],"members":{"Payer":{}}}},"payload":"RequestPaymentConfiguration"}},"PutBucketTagging":{"http":{"method":"PUT","requestUri":"/{Bucket}?tagging"},"input":{"type":"structure","required":["Bucket","Tagging"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"Tagging":{"shape":"Sau","locationName":"Tagging","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"Tagging"}},"PutBucketVersioning":{"http":{"method":"PUT","requestUri":"/{Bucket}?versioning"},"input":{"type":"structure","required":["Bucket","VersioningConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"MFA":{"location":"header","locationName":"x-amz-mfa"},"VersioningConfiguration":{"locationName":"VersioningConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"MFADelete":{"locationName":"MfaDelete"},"Status":{}}}},"payload":"VersioningConfiguration"}},"PutBucketWebsite":{"http":{"method":"PUT","requestUri":"/{Bucket}?website"},"input":{"type":"structure","required":["Bucket","WebsiteConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"WebsiteConfiguration":{"locationName":"WebsiteConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"ErrorDocument":{"shape":"S7a"},"IndexDocument":{"shape":"S78"},"RedirectAllRequestsTo":{"shape":"S75"},"RoutingRules":{"shape":"S7b"}}}},"payload":"WebsiteConfiguration"}},"PutObject":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"Body":{"streaming":true,"type":"blob"},"Bucket":{"location":"uri","locationName":"Bucket"},"CacheControl":{"location":"header","locationName":"Cache-Control"},"ContentDisposition":{"location":"header","locationName":"Content-Disposition"},"ContentEncoding":{"location":"header","locationName":"Content-Encoding"},"ContentLanguage":{"location":"header","locationName":"Content-Language"},"ContentLength":{"location":"header","locationName":"Content-Length","type":"long"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"ContentType":{"location":"header","locationName":"Content-Type"},"Expires":{"location":"header","locationName":"Expires","type":"timestamp"},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"},"Key":{"location":"uri","locationName":"Key"},"Metadata":{"shape":"S11","location":"headers","locationName":"x-amz-meta-"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"StorageClass":{"location":"header","locationName":"x-amz-storage-class"},"WebsiteRedirectLocation":{"location":"header","locationName":"x-amz-website-redirect-location"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"Tagging":{"location":"header","locationName":"x-amz-tagging"}},"payload":"Body"},"output":{"type":"structure","members":{"Expiration":{"location":"header","locationName":"x-amz-expiration"},"ETag":{"location":"header","locationName":"ETag"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"PutObjectAcl":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}?acl"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"AccessControlPolicy":{"shape":"Sa8","locationName":"AccessControlPolicy","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}},"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWrite":{"location":"header","locationName":"x-amz-grant-write"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"},"Key":{"location":"uri","locationName":"Key"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"VersionId":{"location":"querystring","locationName":"versionId"}},"payload":"AccessControlPolicy"},"output":{"type":"structure","members":{"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"PutObjectTagging":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}?tagging"},"input":{"type":"structure","required":["Bucket","Key","Tagging"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"VersionId":{"location":"querystring","locationName":"versionId"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"Tagging":{"shape":"Sau","locationName":"Tagging","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"Tagging"},"output":{"type":"structure","members":{"VersionId":{"location":"header","locationName":"x-amz-version-id"}}}},"RestoreObject":{"http":{"requestUri":"/{Bucket}/{Key+}?restore"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"VersionId":{"location":"querystring","locationName":"versionId"},"RestoreRequest":{"locationName":"RestoreRequest","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"Days":{"type":"integer"},"GlacierJobParameters":{"type":"structure","required":["Tier"],"members":{"Tier":{}}},"Type":{},"Tier":{},"Description":{},"SelectParameters":{"type":"structure","required":["InputSerialization","ExpressionType","Expression","OutputSerialization"],"members":{"InputSerialization":{"type":"structure","members":{"CSV":{"type":"structure","members":{"FileHeaderInfo":{},"Comments":{},"QuoteEscapeCharacter":{},"RecordDelimiter":{},"FieldDelimiter":{},"QuoteCharacter":{}}}}},"ExpressionType":{},"Expression":{},"OutputSerialization":{"type":"structure","members":{"CSV":{"type":"structure","members":{"QuoteFields":{},"QuoteEscapeCharacter":{},"RecordDelimiter":{},"FieldDelimiter":{},"QuoteCharacter":{}}}}}}},"OutputLocation":{"type":"structure","members":{"S3":{"type":"structure","required":["BucketName","Prefix"],"members":{"BucketName":{},"Prefix":{},"Encryption":{"type":"structure","required":["EncryptionType"],"members":{"EncryptionType":{},"KMSKeyId":{"shape":"Sj"},"KMSContext":{}}},"CannedACL":{},"AccessControlList":{"shape":"S2y"},"Tagging":{"shape":"Sau"},"UserMetadata":{"type":"list","member":{"locationName":"MetadataEntry","type":"structure","members":{"Name":{},"Value":{}}}},"StorageClass":{}}}}}}},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}},"payload":"RestoreRequest"},"output":{"type":"structure","members":{"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"},"RestoreOutputPath":{"location":"header","locationName":"x-amz-restore-output-path"}}},"alias":"PostObjectRestore"},"UploadPart":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key","PartNumber","UploadId"],"members":{"Body":{"streaming":true,"type":"blob"},"Bucket":{"location":"uri","locationName":"Bucket"},"ContentLength":{"location":"header","locationName":"Content-Length","type":"long"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"Key":{"location":"uri","locationName":"Key"},"PartNumber":{"location":"querystring","locationName":"partNumber","type":"integer"},"UploadId":{"location":"querystring","locationName":"uploadId"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}},"payload":"Body"},"output":{"type":"structure","members":{"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"ETag":{"location":"header","locationName":"ETag"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"UploadPartCopy":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","CopySource","Key","PartNumber","UploadId"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"CopySource":{"location":"header","locationName":"x-amz-copy-source"},"CopySourceIfMatch":{"location":"header","locationName":"x-amz-copy-source-if-match"},"CopySourceIfModifiedSince":{"location":"header","locationName":"x-amz-copy-source-if-modified-since","type":"timestamp"},"CopySourceIfNoneMatch":{"location":"header","locationName":"x-amz-copy-source-if-none-match"},"CopySourceIfUnmodifiedSince":{"location":"header","locationName":"x-amz-copy-source-if-unmodified-since","type":"timestamp"},"CopySourceRange":{"location":"header","locationName":"x-amz-copy-source-range"},"Key":{"location":"uri","locationName":"Key"},"PartNumber":{"location":"querystring","locationName":"partNumber","type":"integer"},"UploadId":{"location":"querystring","locationName":"uploadId"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"CopySourceSSECustomerAlgorithm":{"location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-algorithm"},"CopySourceSSECustomerKey":{"shape":"S1c","location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-key"},"CopySourceSSECustomerKeyMD5":{"location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-key-MD5"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"CopySourceVersionId":{"location":"header","locationName":"x-amz-copy-source-version-id"},"CopyPartResult":{"type":"structure","members":{"ETag":{},"LastModified":{"type":"timestamp"}}},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}},"payload":"CopyPartResult"}}},"shapes":{"Sj":{"type":"string","sensitive":true},"S11":{"type":"map","key":{},"value":{}},"S19":{"type":"blob","sensitive":true},"S1c":{"type":"blob","sensitive":true},"S2v":{"type":"structure","members":{"DisplayName":{},"ID":{}}},"S2y":{"type":"list","member":{"locationName":"Grant","type":"structure","members":{"Grantee":{"shape":"S30"},"Permission":{}}}},"S30":{"type":"structure","required":["Type"],"members":{"DisplayName":{},"EmailAddress":{},"ID":{},"Type":{"locationName":"xsi:type","xmlAttribute":true},"URI":{}},"xmlNamespace":{"prefix":"xsi","uri":"http://www.w3.org/2001/XMLSchema-instance"}},"S37":{"type":"structure","required":["Id","StorageClassAnalysis"],"members":{"Id":{},"Filter":{"type":"structure","members":{"Prefix":{},"Tag":{"shape":"S3a"},"And":{"type":"structure","members":{"Prefix":{},"Tags":{"shape":"S3d","flattened":true,"locationName":"Tag"}}}}},"StorageClassAnalysis":{"type":"structure","members":{"DataExport":{"type":"structure","required":["OutputSchemaVersion","Destination"],"members":{"OutputSchemaVersion":{},"Destination":{"type":"structure","required":["S3BucketDestination"],"members":{"S3BucketDestination":{"type":"structure","required":["Format","Bucket"],"members":{"Format":{},"BucketAccountId":{},"Bucket":{},"Prefix":{}}}}}}}}}}},"S3a":{"type":"structure","required":["Key","Value"],"members":{"Key":{},"Value":{}}},"S3d":{"type":"list","member":{"shape":"S3a","locationName":"Tag"}},"S3n":{"type":"list","member":{"type":"structure","required":["AllowedMethods","AllowedOrigins"],"members":{"AllowedHeaders":{"locationName":"AllowedHeader","type":"list","member":{},"flattened":true},"AllowedMethods":{"locationName":"AllowedMethod","type":"list","member":{},"flattened":true},"AllowedOrigins":{"locationName":"AllowedOrigin","type":"list","member":{},"flattened":true},"ExposeHeaders":{"locationName":"ExposeHeader","type":"list","member":{},"flattened":true},"MaxAgeSeconds":{"type":"integer"}}},"flattened":true},"S40":{"type":"structure","required":["Rules"],"members":{"Rules":{"locationName":"Rule","type":"list","member":{"type":"structure","members":{"ApplyServerSideEncryptionByDefault":{"type":"structure","required":["SSEAlgorithm"],"members":{"SSEAlgorithm":{},"KMSMasterKeyID":{"shape":"Sj"}}}}},"flattened":true}}},"S46":{"type":"structure","required":["Destination","IsEnabled","Id","IncludedObjectVersions","Schedule"],"members":{"Destination":{"type":"structure","required":["S3BucketDestination"],"members":{"S3BucketDestination":{"type":"structure","required":["Bucket","Format"],"members":{"AccountId":{},"Bucket":{},"Format":{},"Prefix":{},"Encryption":{"type":"structure","members":{"SSES3":{"locationName":"SSE-S3","type":"structure","members":{}},"SSEKMS":{"locationName":"SSE-KMS","type":"structure","required":["KeyId"],"members":{"KeyId":{"shape":"Sj"}}}}}}}}},"IsEnabled":{"type":"boolean"},"Filter":{"type":"structure","required":["Prefix"],"members":{"Prefix":{}}},"Id":{},"IncludedObjectVersions":{},"OptionalFields":{"type":"list","member":{"locationName":"Field"}},"Schedule":{"type":"structure","required":["Frequency"],"members":{"Frequency":{}}}}},"S4m":{"type":"list","member":{"type":"structure","required":["Prefix","Status"],"members":{"Expiration":{"shape":"S4o"},"ID":{},"Prefix":{},"Status":{},"Transition":{"shape":"S4t"},"NoncurrentVersionTransition":{"shape":"S4v"},"NoncurrentVersionExpiration":{"shape":"S4w"},"AbortIncompleteMultipartUpload":{"shape":"S4x"}}},"flattened":true},"S4o":{"type":"structure","members":{"Date":{"shape":"S4p"},"Days":{"type":"integer"},"ExpiredObjectDeleteMarker":{"type":"boolean"}}},"S4p":{"type":"timestamp","timestampFormat":"iso8601"},"S4t":{"type":"structure","members":{"Date":{"shape":"S4p"},"Days":{"type":"integer"},"StorageClass":{}}},"S4v":{"type":"structure","members":{"NoncurrentDays":{"type":"integer"},"StorageClass":{}}},"S4w":{"type":"structure","members":{"NoncurrentDays":{"type":"integer"}}},"S4x":{"type":"structure","members":{"DaysAfterInitiation":{"type":"integer"}}},"S51":{"type":"list","member":{"type":"structure","required":["Status"],"members":{"Expiration":{"shape":"S4o"},"ID":{},"Prefix":{"deprecated":true},"Filter":{"type":"structure","members":{"Prefix":{},"Tag":{"shape":"S3a"},"And":{"type":"structure","members":{"Prefix":{},"Tags":{"shape":"S3d","flattened":true,"locationName":"Tag"}}}}},"Status":{},"Transitions":{"locationName":"Transition","type":"list","member":{"shape":"S4t"},"flattened":true},"NoncurrentVersionTransitions":{"locationName":"NoncurrentVersionTransition","type":"list","member":{"shape":"S4v"},"flattened":true},"NoncurrentVersionExpiration":{"shape":"S4w"},"AbortIncompleteMultipartUpload":{"shape":"S4x"}}},"flattened":true},"S5b":{"type":"structure","members":{"TargetBucket":{},"TargetGrants":{"type":"list","member":{"locationName":"Grant","type":"structure","members":{"Grantee":{"shape":"S30"},"Permission":{}}}},"TargetPrefix":{}}},"S5j":{"type":"structure","required":["Id"],"members":{"Id":{},"Filter":{"type":"structure","members":{"Prefix":{},"Tag":{"shape":"S3a"},"And":{"type":"structure","members":{"Prefix":{},"Tags":{"shape":"S3d","flattened":true,"locationName":"Tag"}}}}}}},"S5m":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"S5n":{"type":"structure","members":{"TopicConfiguration":{"type":"structure","members":{"Id":{},"Events":{"shape":"S5q","locationName":"Event"},"Event":{"deprecated":true},"Topic":{}}},"QueueConfiguration":{"type":"structure","members":{"Id":{},"Event":{"deprecated":true},"Events":{"shape":"S5q","locationName":"Event"},"Queue":{}}},"CloudFunctionConfiguration":{"type":"structure","members":{"Id":{},"Event":{"deprecated":true},"Events":{"shape":"S5q","locationName":"Event"},"CloudFunction":{},"InvocationRole":{}}}}},"S5q":{"type":"list","member":{},"flattened":true},"S5y":{"type":"structure","members":{"TopicConfigurations":{"locationName":"TopicConfiguration","type":"list","member":{"type":"structure","required":["TopicArn","Events"],"members":{"Id":{},"TopicArn":{"locationName":"Topic"},"Events":{"shape":"S5q","locationName":"Event"},"Filter":{"shape":"S61"}}},"flattened":true},"QueueConfigurations":{"locationName":"QueueConfiguration","type":"list","member":{"type":"structure","required":["QueueArn","Events"],"members":{"Id":{},"QueueArn":{"locationName":"Queue"},"Events":{"shape":"S5q","locationName":"Event"},"Filter":{"shape":"S61"}}},"flattened":true},"LambdaFunctionConfigurations":{"locationName":"CloudFunctionConfiguration","type":"list","member":{"type":"structure","required":["LambdaFunctionArn","Events"],"members":{"Id":{},"LambdaFunctionArn":{"locationName":"CloudFunction"},"Events":{"shape":"S5q","locationName":"Event"},"Filter":{"shape":"S61"}}},"flattened":true}}},"S61":{"type":"structure","members":{"Key":{"locationName":"S3Key","type":"structure","members":{"FilterRules":{"locationName":"FilterRule","type":"list","member":{"type":"structure","members":{"Name":{},"Value":{}}},"flattened":true}}}}},"S6h":{"type":"structure","required":["Role","Rules"],"members":{"Role":{},"Rules":{"locationName":"Rule","type":"list","member":{"type":"structure","required":["Prefix","Status","Destination"],"members":{"ID":{},"Prefix":{},"Status":{},"SourceSelectionCriteria":{"type":"structure","members":{"SseKmsEncryptedObjects":{"type":"structure","required":["Status"],"members":{"Status":{}}}}},"Destination":{"type":"structure","required":["Bucket"],"members":{"Bucket":{},"Account":{},"StorageClass":{},"AccessControlTranslation":{"type":"structure","required":["Owner"],"members":{"Owner":{}}},"EncryptionConfiguration":{"type":"structure","members":{"ReplicaKmsKeyID":{}}}}}}},"flattened":true}}},"S75":{"type":"structure","required":["HostName"],"members":{"HostName":{},"Protocol":{}}},"S78":{"type":"structure","required":["Suffix"],"members":{"Suffix":{}}},"S7a":{"type":"structure","required":["Key"],"members":{"Key":{}}},"S7b":{"type":"list","member":{"locationName":"RoutingRule","type":"structure","required":["Redirect"],"members":{"Condition":{"type":"structure","members":{"HttpErrorCodeReturnedEquals":{},"KeyPrefixEquals":{}}},"Redirect":{"type":"structure","members":{"HostName":{},"HttpRedirectCode":{},"Protocol":{},"ReplaceKeyPrefixWith":{},"ReplaceKeyWith":{}}}}}},"S97":{"type":"structure","members":{"ID":{},"DisplayName":{}}},"S98":{"type":"list","member":{"type":"structure","members":{"Prefix":{}}},"flattened":true},"S9q":{"type":"list","member":{"type":"structure","members":{"Key":{},"LastModified":{"type":"timestamp"},"ETag":{},"Size":{"type":"integer"},"StorageClass":{},"Owner":{"shape":"S2v"}}},"flattened":true},"Sa8":{"type":"structure","members":{"Grants":{"shape":"S2y","locationName":"AccessControlList"},"Owner":{"shape":"S2v"}}},"Sau":{"type":"structure","required":["TagSet"],"members":{"TagSet":{"shape":"S3d"}}}}}
 
 /***/ }),
-/* 281 */
+/* 284 */
 /***/ (function(module, exports) {
 
 module.exports = {"pagination":{"ListBuckets":{"result_key":"Buckets"},"ListMultipartUploads":{"input_token":["KeyMarker","UploadIdMarker"],"limit_key":"MaxUploads","more_results":"IsTruncated","output_token":["NextKeyMarker","NextUploadIdMarker"],"result_key":["Uploads","CommonPrefixes"]},"ListObjectVersions":{"input_token":["KeyMarker","VersionIdMarker"],"limit_key":"MaxKeys","more_results":"IsTruncated","output_token":["NextKeyMarker","NextVersionIdMarker"],"result_key":["Versions","DeleteMarkers","CommonPrefixes"]},"ListObjects":{"input_token":"Marker","limit_key":"MaxKeys","more_results":"IsTruncated","output_token":"NextMarker || Contents[-1].Key","result_key":["Contents","CommonPrefixes"]},"ListObjectsV2":{"input_token":"ContinuationToken","limit_key":"MaxKeys","output_token":"NextContinuationToken","result_key":["Contents","CommonPrefixes"]},"ListParts":{"input_token":"PartNumberMarker","limit_key":"MaxParts","more_results":"IsTruncated","output_token":"NextPartNumberMarker","result_key":"Parts"}}}
 
 /***/ }),
-/* 282 */
+/* 285 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":2,"waiters":{"BucketExists":{"delay":5,"operation":"HeadBucket","maxAttempts":20,"acceptors":[{"expected":200,"matcher":"status","state":"success"},{"expected":301,"matcher":"status","state":"success"},{"expected":403,"matcher":"status","state":"success"},{"expected":404,"matcher":"status","state":"retry"}]},"BucketNotExists":{"delay":5,"operation":"HeadBucket","maxAttempts":20,"acceptors":[{"expected":404,"matcher":"status","state":"success"}]},"ObjectExists":{"delay":5,"operation":"HeadObject","maxAttempts":20,"acceptors":[{"expected":200,"matcher":"status","state":"success"},{"expected":404,"matcher":"status","state":"retry"}]},"ObjectNotExists":{"delay":5,"operation":"HeadObject","maxAttempts":20,"acceptors":[{"expected":404,"matcher":"status","state":"success"}]}}}
 
 /***/ }),
-/* 283 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(11);
@@ -30864,7 +30391,7 @@ if (true) module.exports = AWS;
 if (typeof self !== 'undefined') self.AWS = AWS;
 
 /***/ }),
-/* 284 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30874,7 +30401,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _AuthenticationDetails = __webpack_require__(285);
+var _AuthenticationDetails = __webpack_require__(288);
 
 Object.defineProperty(exports, 'AuthenticationDetails', {
   enumerable: true,
@@ -30883,7 +30410,7 @@ Object.defineProperty(exports, 'AuthenticationDetails', {
   }
 });
 
-var _AuthenticationHelper = __webpack_require__(94);
+var _AuthenticationHelper = __webpack_require__(95);
 
 Object.defineProperty(exports, 'AuthenticationHelper', {
   enumerable: true,
@@ -30892,7 +30419,7 @@ Object.defineProperty(exports, 'AuthenticationHelper', {
   }
 });
 
-var _CognitoAccessToken = __webpack_require__(97);
+var _CognitoAccessToken = __webpack_require__(98);
 
 Object.defineProperty(exports, 'CognitoAccessToken', {
   enumerable: true,
@@ -30901,7 +30428,7 @@ Object.defineProperty(exports, 'CognitoAccessToken', {
   }
 });
 
-var _CognitoIdToken = __webpack_require__(99);
+var _CognitoIdToken = __webpack_require__(100);
 
 Object.defineProperty(exports, 'CognitoIdToken', {
   enumerable: true,
@@ -30910,7 +30437,7 @@ Object.defineProperty(exports, 'CognitoIdToken', {
   }
 });
 
-var _CognitoRefreshToken = __webpack_require__(100);
+var _CognitoRefreshToken = __webpack_require__(101);
 
 Object.defineProperty(exports, 'CognitoRefreshToken', {
   enumerable: true,
@@ -30919,7 +30446,7 @@ Object.defineProperty(exports, 'CognitoRefreshToken', {
   }
 });
 
-var _CognitoUser = __webpack_require__(101);
+var _CognitoUser = __webpack_require__(102);
 
 Object.defineProperty(exports, 'CognitoUser', {
   enumerable: true,
@@ -30928,7 +30455,7 @@ Object.defineProperty(exports, 'CognitoUser', {
   }
 });
 
-var _CognitoUserAttribute = __webpack_require__(104);
+var _CognitoUserAttribute = __webpack_require__(105);
 
 Object.defineProperty(exports, 'CognitoUserAttribute', {
   enumerable: true,
@@ -30937,7 +30464,7 @@ Object.defineProperty(exports, 'CognitoUserAttribute', {
   }
 });
 
-var _CognitoUserPool = __webpack_require__(290);
+var _CognitoUserPool = __webpack_require__(293);
 
 Object.defineProperty(exports, 'CognitoUserPool', {
   enumerable: true,
@@ -30946,7 +30473,7 @@ Object.defineProperty(exports, 'CognitoUserPool', {
   }
 });
 
-var _CognitoUserSession = __webpack_require__(102);
+var _CognitoUserSession = __webpack_require__(103);
 
 Object.defineProperty(exports, 'CognitoUserSession', {
   enumerable: true,
@@ -30955,7 +30482,7 @@ Object.defineProperty(exports, 'CognitoUserSession', {
   }
 });
 
-var _CookieStorage = __webpack_require__(293);
+var _CookieStorage = __webpack_require__(296);
 
 Object.defineProperty(exports, 'CookieStorage', {
   enumerable: true,
@@ -30964,7 +30491,7 @@ Object.defineProperty(exports, 'CookieStorage', {
   }
 });
 
-var _DateHelper = __webpack_require__(103);
+var _DateHelper = __webpack_require__(104);
 
 Object.defineProperty(exports, 'DateHelper', {
   enumerable: true,
@@ -30976,7 +30503,7 @@ Object.defineProperty(exports, 'DateHelper', {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
-/* 285 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31071,7 +30598,7 @@ var AuthenticationDetails = function () {
 exports.default = AuthenticationDetails;
 
 /***/ }),
-/* 286 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -31083,7 +30610,7 @@ exports.default = AuthenticationDetails;
  * See http://pajhome.org.uk/crypt/md5 for details.
  */
 
-var helpers = __webpack_require__(49);
+var helpers = __webpack_require__(50);
 
 /*
  * Calculate the SHA-1 of an array of big-endian words, and a bit length
@@ -31178,7 +30705,7 @@ module.exports = function sha1(buf) {
 
 
 /***/ }),
-/* 287 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -31190,7 +30717,7 @@ module.exports = function sha1(buf) {
  *
  */
 
-var helpers = __webpack_require__(49);
+var helpers = __webpack_require__(50);
 
 var safe_add = function(x, y) {
   var lsw = (x & 0xFFFF) + (y & 0xFFFF);
@@ -31263,7 +30790,7 @@ module.exports = function sha256(buf) {
 
 
 /***/ }),
-/* 288 */
+/* 291 */
 /***/ (function(module, exports) {
 
 // Original code adapted from Robert Kieffer.
@@ -31300,7 +30827,7 @@ module.exports = function sha256(buf) {
 
 
 /***/ }),
-/* 289 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -31312,7 +30839,7 @@ module.exports = function sha256(buf) {
  * See http://pajhome.org.uk/crypt/md5 for more info.
  */
 
-var helpers = __webpack_require__(49);
+var helpers = __webpack_require__(50);
 
 /*
  * Perform a simple self-test to see if the VM is working
@@ -31469,7 +30996,7 @@ module.exports = function md5(buf) {
 
 
 /***/ }),
-/* 290 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31479,15 +31006,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Client = __webpack_require__(291);
+var _Client = __webpack_require__(294);
 
 var _Client2 = _interopRequireDefault(_Client);
 
-var _CognitoUser = __webpack_require__(101);
+var _CognitoUser = __webpack_require__(102);
 
 var _CognitoUser2 = _interopRequireDefault(_CognitoUser);
 
-var _StorageHelper = __webpack_require__(105);
+var _StorageHelper = __webpack_require__(106);
 
 var _StorageHelper2 = _interopRequireDefault(_StorageHelper);
 
@@ -31684,7 +31211,7 @@ var CognitoUserPool = function () {
 exports.default = CognitoUserPool;
 
 /***/ }),
-/* 291 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31694,7 +31221,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _UserAgent = __webpack_require__(292);
+var _UserAgent = __webpack_require__(295);
 
 var _UserAgent2 = _interopRequireDefault(_UserAgent);
 
@@ -31785,7 +31312,7 @@ var Client = function () {
 exports.default = Client;
 
 /***/ }),
-/* 292 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31803,7 +31330,7 @@ function UserAgent() {}
 UserAgent.prototype.userAgent = 'aws-amplify/0.1.x js';
 
 /***/ }),
-/* 293 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31813,7 +31340,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _jsCookie = __webpack_require__(294);
+var _jsCookie = __webpack_require__(297);
 
 var Cookies = _interopRequireWildcard(_jsCookie);
 
@@ -31920,7 +31447,7 @@ var CookieStorage = function () {
 exports.default = CookieStorage;
 
 /***/ }),
-/* 294 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -32095,7 +31622,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 /***/ }),
-/* 295 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(11);
@@ -32107,7 +31634,7 @@ apiLoader.services['pinpoint'] = {};
 AWS.Pinpoint = Service.defineService('pinpoint', ['2016-12-01']);
 Object.defineProperty(apiLoader.services['pinpoint'], '2016-12-01', {
   get: function get() {
-    var model = __webpack_require__(296);
+    var model = __webpack_require__(299);
     return model;
   },
   enumerable: true,
@@ -32118,13 +31645,13 @@ module.exports = AWS.Pinpoint;
 
 
 /***/ }),
-/* 296 */
+/* 299 */
 /***/ (function(module, exports) {
 
 module.exports = {"metadata":{"apiVersion":"2016-12-01","endpointPrefix":"pinpoint","signingName":"mobiletargeting","serviceFullName":"Amazon Pinpoint","protocol":"rest-json","jsonVersion":"1.1","uid":"pinpoint-2016-12-01","signatureVersion":"v4"},"operations":{"CreateApp":{"http":{"requestUri":"/v1/apps","responseCode":201},"input":{"type":"structure","members":{"CreateApplicationRequest":{"type":"structure","members":{"Name":{}}}},"required":["CreateApplicationRequest"],"payload":"CreateApplicationRequest"},"output":{"type":"structure","members":{"ApplicationResponse":{"shape":"S5"}},"required":["ApplicationResponse"],"payload":"ApplicationResponse"}},"CreateCampaign":{"http":{"requestUri":"/v1/apps/{application-id}/campaigns","responseCode":201},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"WriteCampaignRequest":{"shape":"S7"}},"required":["ApplicationId","WriteCampaignRequest"],"payload":"WriteCampaignRequest"},"output":{"type":"structure","members":{"CampaignResponse":{"shape":"Sn"}},"required":["CampaignResponse"],"payload":"CampaignResponse"}},"CreateImportJob":{"http":{"requestUri":"/v1/apps/{application-id}/jobs/import","responseCode":201},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"ImportJobRequest":{"type":"structure","members":{"DefineSegment":{"type":"boolean"},"ExternalId":{},"Format":{},"RegisterEndpoints":{"type":"boolean"},"RoleArn":{},"S3Url":{},"SegmentId":{},"SegmentName":{}}}},"required":["ApplicationId","ImportJobRequest"],"payload":"ImportJobRequest"},"output":{"type":"structure","members":{"ImportJobResponse":{"shape":"Sw"}},"required":["ImportJobResponse"],"payload":"ImportJobResponse"}},"CreateSegment":{"http":{"requestUri":"/v1/apps/{application-id}/segments","responseCode":201},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"WriteSegmentRequest":{"shape":"S11"}},"required":["ApplicationId","WriteSegmentRequest"],"payload":"WriteSegmentRequest"},"output":{"type":"structure","members":{"SegmentResponse":{"shape":"S1f"}},"required":["SegmentResponse"],"payload":"SegmentResponse"}},"DeleteAdmChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/adm","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ADMChannelResponse":{"shape":"S1l"}},"required":["ADMChannelResponse"],"payload":"ADMChannelResponse"}},"DeleteApnsChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/apns","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSChannelResponse":{"shape":"S1o"}},"required":["APNSChannelResponse"],"payload":"APNSChannelResponse"}},"DeleteApnsSandboxChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/apns_sandbox","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSSandboxChannelResponse":{"shape":"S1r"}},"required":["APNSSandboxChannelResponse"],"payload":"APNSSandboxChannelResponse"}},"DeleteApnsVoipChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/apns_voip","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSVoipChannelResponse":{"shape":"S1u"}},"required":["APNSVoipChannelResponse"],"payload":"APNSVoipChannelResponse"}},"DeleteApnsVoipSandboxChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/apns_voip_sandbox","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSVoipSandboxChannelResponse":{"shape":"S1x"}},"required":["APNSVoipSandboxChannelResponse"],"payload":"APNSVoipSandboxChannelResponse"}},"DeleteApp":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ApplicationResponse":{"shape":"S5"}},"required":["ApplicationResponse"],"payload":"ApplicationResponse"}},"DeleteBaiduChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/baidu","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"BaiduChannelResponse":{"shape":"S22"}},"required":["BaiduChannelResponse"],"payload":"BaiduChannelResponse"}},"DeleteCampaign":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"}},"required":["CampaignId","ApplicationId"]},"output":{"type":"structure","members":{"CampaignResponse":{"shape":"Sn"}},"required":["CampaignResponse"],"payload":"CampaignResponse"}},"DeleteEmailChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/email","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"EmailChannelResponse":{"shape":"S27"}},"required":["EmailChannelResponse"],"payload":"EmailChannelResponse"}},"DeleteEventStream":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/eventstream","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"EventStream":{"shape":"S2a"}},"required":["EventStream"],"payload":"EventStream"}},"DeleteGcmChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/gcm","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"GCMChannelResponse":{"shape":"S2d"}},"required":["GCMChannelResponse"],"payload":"GCMChannelResponse"}},"DeleteSegment":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/segments/{segment-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SegmentId":{"location":"uri","locationName":"segment-id"}},"required":["SegmentId","ApplicationId"]},"output":{"type":"structure","members":{"SegmentResponse":{"shape":"S1f"}},"required":["SegmentResponse"],"payload":"SegmentResponse"}},"DeleteSmsChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/sms","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"SMSChannelResponse":{"shape":"S2i"}},"required":["SMSChannelResponse"],"payload":"SMSChannelResponse"}},"GetAdmChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/adm","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ADMChannelResponse":{"shape":"S1l"}},"required":["ADMChannelResponse"],"payload":"ADMChannelResponse"}},"GetApnsChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/apns","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSChannelResponse":{"shape":"S1o"}},"required":["APNSChannelResponse"],"payload":"APNSChannelResponse"}},"GetApnsSandboxChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/apns_sandbox","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSSandboxChannelResponse":{"shape":"S1r"}},"required":["APNSSandboxChannelResponse"],"payload":"APNSSandboxChannelResponse"}},"GetApnsVoipChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/apns_voip","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSVoipChannelResponse":{"shape":"S1u"}},"required":["APNSVoipChannelResponse"],"payload":"APNSVoipChannelResponse"}},"GetApnsVoipSandboxChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/apns_voip_sandbox","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSVoipSandboxChannelResponse":{"shape":"S1x"}},"required":["APNSVoipSandboxChannelResponse"],"payload":"APNSVoipSandboxChannelResponse"}},"GetApp":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ApplicationResponse":{"shape":"S5"}},"required":["ApplicationResponse"],"payload":"ApplicationResponse"}},"GetApplicationSettings":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/settings","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ApplicationSettingsResource":{"shape":"S2x"}},"required":["ApplicationSettingsResource"],"payload":"ApplicationSettingsResource"}},"GetApps":{"http":{"method":"GET","requestUri":"/v1/apps","responseCode":200},"input":{"type":"structure","members":{"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}}},"output":{"type":"structure","members":{"ApplicationsResponse":{"type":"structure","members":{"Item":{"type":"list","member":{"shape":"S5"}},"NextToken":{}}}},"required":["ApplicationsResponse"],"payload":"ApplicationsResponse"}},"GetBaiduChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/baidu","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"BaiduChannelResponse":{"shape":"S22"}},"required":["BaiduChannelResponse"],"payload":"BaiduChannelResponse"}},"GetCampaign":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"}},"required":["CampaignId","ApplicationId"]},"output":{"type":"structure","members":{"CampaignResponse":{"shape":"Sn"}},"required":["CampaignResponse"],"payload":"CampaignResponse"}},"GetCampaignActivities":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}/activities","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}},"required":["ApplicationId","CampaignId"]},"output":{"type":"structure","members":{"ActivitiesResponse":{"type":"structure","members":{"Item":{"type":"list","member":{"type":"structure","members":{"ApplicationId":{},"CampaignId":{},"End":{},"Id":{},"Result":{},"ScheduledStart":{},"Start":{},"State":{},"SuccessfulEndpointCount":{"type":"integer"},"TimezonesCompletedCount":{"type":"integer"},"TimezonesTotalCount":{"type":"integer"},"TotalEndpointCount":{"type":"integer"},"TreatmentId":{}}}}}}},"required":["ActivitiesResponse"],"payload":"ActivitiesResponse"}},"GetCampaignVersion":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}/versions/{version}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"},"Version":{"location":"uri","locationName":"version"}},"required":["Version","ApplicationId","CampaignId"]},"output":{"type":"structure","members":{"CampaignResponse":{"shape":"Sn"}},"required":["CampaignResponse"],"payload":"CampaignResponse"}},"GetCampaignVersions":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}/versions","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}},"required":["ApplicationId","CampaignId"]},"output":{"type":"structure","members":{"CampaignsResponse":{"shape":"S3f"}},"required":["CampaignsResponse"],"payload":"CampaignsResponse"}},"GetCampaigns":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/campaigns","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"CampaignsResponse":{"shape":"S3f"}},"required":["CampaignsResponse"],"payload":"CampaignsResponse"}},"GetEmailChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/email","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"EmailChannelResponse":{"shape":"S27"}},"required":["EmailChannelResponse"],"payload":"EmailChannelResponse"}},"GetEndpoint":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/endpoints/{endpoint-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"EndpointId":{"location":"uri","locationName":"endpoint-id"}},"required":["ApplicationId","EndpointId"]},"output":{"type":"structure","members":{"EndpointResponse":{"type":"structure","members":{"Address":{},"ApplicationId":{},"Attributes":{"shape":"S3o"},"ChannelType":{},"CohortId":{},"CreationDate":{},"Demographic":{"shape":"S3q"},"EffectiveDate":{},"EndpointStatus":{},"Id":{},"Location":{"shape":"S3r"},"Metrics":{"shape":"S3t"},"OptOut":{},"RequestId":{},"User":{"shape":"S3u"}}}},"required":["EndpointResponse"],"payload":"EndpointResponse"}},"GetEventStream":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/eventstream","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"EventStream":{"shape":"S2a"}},"required":["EventStream"],"payload":"EventStream"}},"GetGcmChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/gcm","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"GCMChannelResponse":{"shape":"S2d"}},"required":["GCMChannelResponse"],"payload":"GCMChannelResponse"}},"GetImportJob":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/jobs/import/{job-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"JobId":{"location":"uri","locationName":"job-id"}},"required":["ApplicationId","JobId"]},"output":{"type":"structure","members":{"ImportJobResponse":{"shape":"Sw"}},"required":["ImportJobResponse"],"payload":"ImportJobResponse"}},"GetImportJobs":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/jobs/import","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ImportJobsResponse":{"shape":"S43"}},"required":["ImportJobsResponse"],"payload":"ImportJobsResponse"}},"GetSegment":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/segments/{segment-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SegmentId":{"location":"uri","locationName":"segment-id"}},"required":["SegmentId","ApplicationId"]},"output":{"type":"structure","members":{"SegmentResponse":{"shape":"S1f"}},"required":["SegmentResponse"],"payload":"SegmentResponse"}},"GetSegmentImportJobs":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/segments/{segment-id}/jobs/import","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"SegmentId":{"location":"uri","locationName":"segment-id"},"Token":{"location":"querystring","locationName":"token"}},"required":["SegmentId","ApplicationId"]},"output":{"type":"structure","members":{"ImportJobsResponse":{"shape":"S43"}},"required":["ImportJobsResponse"],"payload":"ImportJobsResponse"}},"GetSegmentVersion":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/segments/{segment-id}/versions/{version}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SegmentId":{"location":"uri","locationName":"segment-id"},"Version":{"location":"uri","locationName":"version"}},"required":["SegmentId","Version","ApplicationId"]},"output":{"type":"structure","members":{"SegmentResponse":{"shape":"S1f"}},"required":["SegmentResponse"],"payload":"SegmentResponse"}},"GetSegmentVersions":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/segments/{segment-id}/versions","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"SegmentId":{"location":"uri","locationName":"segment-id"},"Token":{"location":"querystring","locationName":"token"}},"required":["SegmentId","ApplicationId"]},"output":{"type":"structure","members":{"SegmentsResponse":{"shape":"S4d"}},"required":["SegmentsResponse"],"payload":"SegmentsResponse"}},"GetSegments":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/segments","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"SegmentsResponse":{"shape":"S4d"}},"required":["SegmentsResponse"],"payload":"SegmentsResponse"}},"GetSmsChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/sms","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"SMSChannelResponse":{"shape":"S2i"}},"required":["SMSChannelResponse"],"payload":"SMSChannelResponse"}},"PutEventStream":{"http":{"requestUri":"/v1/apps/{application-id}/eventstream","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"WriteEventStream":{"type":"structure","members":{"DestinationStreamArn":{},"RoleArn":{}}}},"required":["ApplicationId","WriteEventStream"],"payload":"WriteEventStream"},"output":{"type":"structure","members":{"EventStream":{"shape":"S2a"}},"required":["EventStream"],"payload":"EventStream"}},"SendMessages":{"http":{"requestUri":"/v1/apps/{application-id}/messages","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"MessageRequest":{"type":"structure","members":{"Addresses":{"type":"map","key":{},"value":{"type":"structure","members":{"BodyOverride":{},"ChannelType":{},"Context":{"shape":"S4q"},"RawContent":{},"Substitutions":{"shape":"S3o"},"TitleOverride":{}}}},"Context":{"shape":"S4q"},"Endpoints":{"shape":"S4r"},"MessageConfiguration":{"shape":"S4t"}}}},"required":["ApplicationId","MessageRequest"],"payload":"MessageRequest"},"output":{"type":"structure","members":{"MessageResponse":{"type":"structure","members":{"ApplicationId":{},"EndpointResult":{"shape":"S53"},"RequestId":{},"Result":{"type":"map","key":{},"value":{"type":"structure","members":{"DeliveryStatus":{},"StatusCode":{"type":"integer"},"StatusMessage":{},"UpdatedToken":{}}}}}}},"required":["MessageResponse"],"payload":"MessageResponse"}},"SendUsersMessages":{"http":{"requestUri":"/v1/apps/{application-id}/users-messages","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SendUsersMessageRequest":{"type":"structure","members":{"Context":{"shape":"S4q"},"MessageConfiguration":{"shape":"S4t"},"Users":{"shape":"S4r"}}}},"required":["ApplicationId","SendUsersMessageRequest"],"payload":"SendUsersMessageRequest"},"output":{"type":"structure","members":{"SendUsersMessageResponse":{"type":"structure","members":{"ApplicationId":{},"RequestId":{},"Result":{"type":"map","key":{},"value":{"shape":"S53"}}}}},"required":["SendUsersMessageResponse"],"payload":"SendUsersMessageResponse"}},"UpdateAdmChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/adm","responseCode":200},"input":{"type":"structure","members":{"ADMChannelRequest":{"type":"structure","members":{"ClientId":{},"ClientSecret":{},"Enabled":{"type":"boolean"}}},"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId","ADMChannelRequest"],"payload":"ADMChannelRequest"},"output":{"type":"structure","members":{"ADMChannelResponse":{"shape":"S1l"}},"required":["ADMChannelResponse"],"payload":"ADMChannelResponse"}},"UpdateApnsChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/apns","responseCode":200},"input":{"type":"structure","members":{"APNSChannelRequest":{"type":"structure","members":{"BundleId":{},"Certificate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"PrivateKey":{},"TeamId":{},"TokenKey":{},"TokenKeyId":{}}},"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId","APNSChannelRequest"],"payload":"APNSChannelRequest"},"output":{"type":"structure","members":{"APNSChannelResponse":{"shape":"S1o"}},"required":["APNSChannelResponse"],"payload":"APNSChannelResponse"}},"UpdateApnsSandboxChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/apns_sandbox","responseCode":200},"input":{"type":"structure","members":{"APNSSandboxChannelRequest":{"type":"structure","members":{"BundleId":{},"Certificate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"PrivateKey":{},"TeamId":{},"TokenKey":{},"TokenKeyId":{}}},"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId","APNSSandboxChannelRequest"],"payload":"APNSSandboxChannelRequest"},"output":{"type":"structure","members":{"APNSSandboxChannelResponse":{"shape":"S1r"}},"required":["APNSSandboxChannelResponse"],"payload":"APNSSandboxChannelResponse"}},"UpdateApnsVoipChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/apns_voip","responseCode":200},"input":{"type":"structure","members":{"APNSVoipChannelRequest":{"type":"structure","members":{"BundleId":{},"Certificate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"PrivateKey":{},"TeamId":{},"TokenKey":{},"TokenKeyId":{}}},"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId","APNSVoipChannelRequest"],"payload":"APNSVoipChannelRequest"},"output":{"type":"structure","members":{"APNSVoipChannelResponse":{"shape":"S1u"}},"required":["APNSVoipChannelResponse"],"payload":"APNSVoipChannelResponse"}},"UpdateApnsVoipSandboxChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/apns_voip_sandbox","responseCode":200},"input":{"type":"structure","members":{"APNSVoipSandboxChannelRequest":{"type":"structure","members":{"BundleId":{},"Certificate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"PrivateKey":{},"TeamId":{},"TokenKey":{},"TokenKeyId":{}}},"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId","APNSVoipSandboxChannelRequest"],"payload":"APNSVoipSandboxChannelRequest"},"output":{"type":"structure","members":{"APNSVoipSandboxChannelResponse":{"shape":"S1x"}},"required":["APNSVoipSandboxChannelResponse"],"payload":"APNSVoipSandboxChannelResponse"}},"UpdateApplicationSettings":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/settings","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"WriteApplicationSettingsRequest":{"type":"structure","members":{"Limits":{"shape":"Sl"},"QuietTime":{"shape":"Sj"}}}},"required":["ApplicationId","WriteApplicationSettingsRequest"],"payload":"WriteApplicationSettingsRequest"},"output":{"type":"structure","members":{"ApplicationSettingsResource":{"shape":"S2x"}},"required":["ApplicationSettingsResource"],"payload":"ApplicationSettingsResource"}},"UpdateBaiduChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/baidu","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"BaiduChannelRequest":{"type":"structure","members":{"ApiKey":{},"Enabled":{"type":"boolean"},"SecretKey":{}}}},"required":["ApplicationId","BaiduChannelRequest"],"payload":"BaiduChannelRequest"},"output":{"type":"structure","members":{"BaiduChannelResponse":{"shape":"S22"}},"required":["BaiduChannelResponse"],"payload":"BaiduChannelResponse"}},"UpdateCampaign":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"},"WriteCampaignRequest":{"shape":"S7"}},"required":["CampaignId","ApplicationId","WriteCampaignRequest"],"payload":"WriteCampaignRequest"},"output":{"type":"structure","members":{"CampaignResponse":{"shape":"Sn"}},"required":["CampaignResponse"],"payload":"CampaignResponse"}},"UpdateEmailChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/email","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"EmailChannelRequest":{"type":"structure","members":{"Enabled":{"type":"boolean"},"FromAddress":{},"Identity":{},"RoleArn":{}}}},"required":["ApplicationId","EmailChannelRequest"],"payload":"EmailChannelRequest"},"output":{"type":"structure","members":{"EmailChannelResponse":{"shape":"S27"}},"required":["EmailChannelResponse"],"payload":"EmailChannelResponse"}},"UpdateEndpoint":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/endpoints/{endpoint-id}","responseCode":202},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"EndpointId":{"location":"uri","locationName":"endpoint-id"},"EndpointRequest":{"type":"structure","members":{"Address":{},"Attributes":{"shape":"S3o"},"ChannelType":{},"Demographic":{"shape":"S3q"},"EffectiveDate":{},"EndpointStatus":{},"Location":{"shape":"S3r"},"Metrics":{"shape":"S3t"},"OptOut":{},"RequestId":{},"User":{"shape":"S3u"}}}},"required":["ApplicationId","EndpointId","EndpointRequest"],"payload":"EndpointRequest"},"output":{"type":"structure","members":{"MessageBody":{"shape":"S66"}},"required":["MessageBody"],"payload":"MessageBody"}},"UpdateEndpointsBatch":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/endpoints","responseCode":202},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"EndpointBatchRequest":{"type":"structure","members":{"Item":{"type":"list","member":{"type":"structure","members":{"Address":{},"Attributes":{"shape":"S3o"},"ChannelType":{},"Demographic":{"shape":"S3q"},"EffectiveDate":{},"EndpointStatus":{},"Id":{},"Location":{"shape":"S3r"},"Metrics":{"shape":"S3t"},"OptOut":{},"RequestId":{},"User":{"shape":"S3u"}}}}}}},"required":["ApplicationId","EndpointBatchRequest"],"payload":"EndpointBatchRequest"},"output":{"type":"structure","members":{"MessageBody":{"shape":"S66"}},"required":["MessageBody"],"payload":"MessageBody"}},"UpdateGcmChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/gcm","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"GCMChannelRequest":{"type":"structure","members":{"ApiKey":{},"Enabled":{"type":"boolean"}}}},"required":["ApplicationId","GCMChannelRequest"],"payload":"GCMChannelRequest"},"output":{"type":"structure","members":{"GCMChannelResponse":{"shape":"S2d"}},"required":["GCMChannelResponse"],"payload":"GCMChannelResponse"}},"UpdateSegment":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/segments/{segment-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SegmentId":{"location":"uri","locationName":"segment-id"},"WriteSegmentRequest":{"shape":"S11"}},"required":["SegmentId","ApplicationId","WriteSegmentRequest"],"payload":"WriteSegmentRequest"},"output":{"type":"structure","members":{"SegmentResponse":{"shape":"S1f"}},"required":["SegmentResponse"],"payload":"SegmentResponse"}},"UpdateSmsChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/sms","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SMSChannelRequest":{"type":"structure","members":{"Enabled":{"type":"boolean"},"SenderId":{},"ShortCode":{}}}},"required":["ApplicationId","SMSChannelRequest"],"payload":"SMSChannelRequest"},"output":{"type":"structure","members":{"SMSChannelResponse":{"shape":"S2i"}},"required":["SMSChannelResponse"],"payload":"SMSChannelResponse"}}},"shapes":{"S5":{"type":"structure","members":{"Id":{},"Name":{}}},"S7":{"type":"structure","members":{"AdditionalTreatments":{"type":"list","member":{"type":"structure","members":{"MessageConfiguration":{"shape":"Sa"},"Schedule":{"shape":"Sh"},"SizePercent":{"type":"integer"},"TreatmentDescription":{},"TreatmentName":{}}}},"Description":{},"HoldoutPercent":{"type":"integer"},"IsPaused":{"type":"boolean"},"Limits":{"shape":"Sl"},"MessageConfiguration":{"shape":"Sa"},"Name":{},"Schedule":{"shape":"Sh"},"SegmentId":{},"SegmentVersion":{"type":"integer"},"TreatmentDescription":{},"TreatmentName":{}}},"Sa":{"type":"structure","members":{"ADMMessage":{"shape":"Sb"},"APNSMessage":{"shape":"Sb"},"BaiduMessage":{"shape":"Sb"},"DefaultMessage":{"shape":"Sb"},"EmailMessage":{"type":"structure","members":{"Body":{},"FromAddress":{},"HtmlBody":{},"Title":{}}},"GCMMessage":{"shape":"Sb"},"SMSMessage":{"type":"structure","members":{"Body":{},"MessageType":{},"SenderId":{}}}}},"Sb":{"type":"structure","members":{"Action":{},"Body":{},"ImageIconUrl":{},"ImageSmallIconUrl":{},"ImageUrl":{},"JsonBody":{},"MediaUrl":{},"RawContent":{},"SilentPush":{"type":"boolean"},"Title":{},"Url":{}}},"Sh":{"type":"structure","members":{"EndTime":{},"Frequency":{},"IsLocalTime":{"type":"boolean"},"QuietTime":{"shape":"Sj"},"StartTime":{},"Timezone":{}}},"Sj":{"type":"structure","members":{"End":{},"Start":{}}},"Sl":{"type":"structure","members":{"Daily":{"type":"integer"},"MaximumDuration":{"type":"integer"},"MessagesPerSecond":{"type":"integer"},"Total":{"type":"integer"}}},"Sn":{"type":"structure","members":{"AdditionalTreatments":{"type":"list","member":{"type":"structure","members":{"Id":{},"MessageConfiguration":{"shape":"Sa"},"Schedule":{"shape":"Sh"},"SizePercent":{"type":"integer"},"State":{"shape":"Sq"},"TreatmentDescription":{},"TreatmentName":{}}}},"ApplicationId":{},"CreationDate":{},"DefaultState":{"shape":"Sq"},"Description":{},"HoldoutPercent":{"type":"integer"},"Id":{},"IsPaused":{"type":"boolean"},"LastModifiedDate":{},"Limits":{"shape":"Sl"},"MessageConfiguration":{"shape":"Sa"},"Name":{},"Schedule":{"shape":"Sh"},"SegmentId":{},"SegmentVersion":{"type":"integer"},"State":{"shape":"Sq"},"TreatmentDescription":{},"TreatmentName":{},"Version":{"type":"integer"}}},"Sq":{"type":"structure","members":{"CampaignStatus":{}}},"Sw":{"type":"structure","members":{"ApplicationId":{},"CompletedPieces":{"type":"integer"},"CompletionDate":{},"CreationDate":{},"Definition":{"type":"structure","members":{"DefineSegment":{"type":"boolean"},"ExternalId":{},"Format":{},"RegisterEndpoints":{"type":"boolean"},"RoleArn":{},"S3Url":{},"SegmentId":{},"SegmentName":{}}},"FailedPieces":{"type":"integer"},"Failures":{"shape":"Sy"},"Id":{},"JobStatus":{},"TotalFailures":{"type":"integer"},"TotalPieces":{"type":"integer"},"TotalProcessed":{"type":"integer"},"Type":{}}},"Sy":{"type":"list","member":{}},"S11":{"type":"structure","members":{"Dimensions":{"shape":"S12"},"Name":{}}},"S12":{"type":"structure","members":{"Attributes":{"shape":"S13"},"Behavior":{"type":"structure","members":{"Recency":{"type":"structure","members":{"Duration":{},"RecencyType":{}}}}},"Demographic":{"type":"structure","members":{"AppVersion":{"shape":"S1b"},"Channel":{"shape":"S1b"},"DeviceType":{"shape":"S1b"},"Make":{"shape":"S1b"},"Model":{"shape":"S1b"},"Platform":{"shape":"S1b"}}},"Location":{"type":"structure","members":{"Country":{"shape":"S1b"}}},"UserAttributes":{"shape":"S13"}}},"S13":{"type":"map","key":{},"value":{"type":"structure","members":{"AttributeType":{},"Values":{"shape":"Sy"}}}},"S1b":{"type":"structure","members":{"DimensionType":{},"Values":{"shape":"Sy"}}},"S1f":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Dimensions":{"shape":"S12"},"Id":{},"ImportDefinition":{"type":"structure","members":{"ChannelCounts":{"type":"map","key":{},"value":{"type":"integer"}},"ExternalId":{},"Format":{},"RoleArn":{},"S3Url":{},"Size":{"type":"integer"}}},"LastModifiedDate":{},"Name":{},"SegmentType":{},"Version":{"type":"integer"}}},"S1l":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S1o":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"HasTokenKey":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S1r":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"HasTokenKey":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S1u":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"HasTokenKey":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S1x":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"HasTokenKey":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S22":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Credential":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S27":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Enabled":{"type":"boolean"},"FromAddress":{},"HasCredential":{"type":"boolean"},"Id":{},"Identity":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"RoleArn":{},"Version":{"type":"integer"}}},"S2a":{"type":"structure","members":{"ApplicationId":{},"DestinationStreamArn":{},"ExternalId":{},"LastModifiedDate":{},"LastUpdatedBy":{},"RoleArn":{}}},"S2d":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Credential":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S2i":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"SenderId":{},"ShortCode":{},"Version":{"type":"integer"}}},"S2x":{"type":"structure","members":{"ApplicationId":{},"LastModifiedDate":{},"Limits":{"shape":"Sl"},"QuietTime":{"shape":"Sj"}}},"S3f":{"type":"structure","members":{"Item":{"type":"list","member":{"shape":"Sn"}},"NextToken":{}}},"S3o":{"type":"map","key":{},"value":{"shape":"Sy"}},"S3q":{"type":"structure","members":{"AppVersion":{},"Locale":{},"Make":{},"Model":{},"ModelVersion":{},"Platform":{},"PlatformVersion":{},"Timezone":{}}},"S3r":{"type":"structure","members":{"City":{},"Country":{},"Latitude":{"type":"double"},"Longitude":{"type":"double"},"PostalCode":{},"Region":{}}},"S3t":{"type":"map","key":{},"value":{"type":"double"}},"S3u":{"type":"structure","members":{"UserAttributes":{"shape":"S3o"},"UserId":{}}},"S43":{"type":"structure","members":{"Item":{"type":"list","member":{"shape":"Sw"}},"NextToken":{}}},"S4d":{"type":"structure","members":{"Item":{"type":"list","member":{"shape":"S1f"}},"NextToken":{}}},"S4q":{"type":"map","key":{},"value":{}},"S4r":{"type":"map","key":{},"value":{"type":"structure","members":{"BodyOverride":{},"Context":{"shape":"S4q"},"RawContent":{},"Substitutions":{"shape":"S3o"},"TitleOverride":{}}}},"S4t":{"type":"structure","members":{"ADMMessage":{"type":"structure","members":{"Action":{},"Body":{},"ConsolidationKey":{},"Data":{"shape":"S4q"},"ExpiresAfter":{},"IconReference":{},"ImageIconUrl":{},"ImageUrl":{},"MD5":{},"RawContent":{},"SilentPush":{"type":"boolean"},"SmallImageIconUrl":{},"Sound":{},"Substitutions":{"shape":"S3o"},"Title":{},"Url":{}}},"APNSMessage":{"type":"structure","members":{"Action":{},"Badge":{"type":"integer"},"Body":{},"Category":{},"CollapseId":{},"Data":{"shape":"S4q"},"MediaUrl":{},"PreferredAuthenticationMethod":{},"Priority":{},"RawContent":{},"SilentPush":{"type":"boolean"},"Sound":{},"Substitutions":{"shape":"S3o"},"ThreadId":{},"TimeToLive":{"type":"integer"},"Title":{},"Url":{}}},"BaiduMessage":{"type":"structure","members":{"Action":{},"Body":{},"Data":{"shape":"S4q"},"IconReference":{},"ImageIconUrl":{},"ImageUrl":{},"RawContent":{},"SilentPush":{"type":"boolean"},"SmallImageIconUrl":{},"Sound":{},"Substitutions":{"shape":"S3o"},"Title":{},"Url":{}}},"DefaultMessage":{"type":"structure","members":{"Body":{},"Substitutions":{"shape":"S3o"}}},"DefaultPushNotificationMessage":{"type":"structure","members":{"Action":{},"Body":{},"Data":{"shape":"S4q"},"SilentPush":{"type":"boolean"},"Substitutions":{"shape":"S3o"},"Title":{},"Url":{}}},"GCMMessage":{"type":"structure","members":{"Action":{},"Body":{},"CollapseKey":{},"Data":{"shape":"S4q"},"IconReference":{},"ImageIconUrl":{},"ImageUrl":{},"Priority":{},"RawContent":{},"RestrictedPackageName":{},"SilentPush":{"type":"boolean"},"SmallImageIconUrl":{},"Sound":{},"Substitutions":{"shape":"S3o"},"TimeToLive":{"type":"integer"},"Title":{},"Url":{}}},"SMSMessage":{"type":"structure","members":{"Body":{},"MessageType":{},"SenderId":{},"Substitutions":{"shape":"S3o"}}}}},"S53":{"type":"map","key":{},"value":{"type":"structure","members":{"Address":{},"DeliveryStatus":{},"StatusCode":{"type":"integer"},"StatusMessage":{},"UpdatedToken":{}}}},"S66":{"type":"structure","members":{"Message":{},"RequestID":{}}}}}
 
 /***/ }),
-/* 297 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(11);
@@ -32136,7 +31663,7 @@ apiLoader.services['mobileanalytics'] = {};
 AWS.MobileAnalytics = Service.defineService('mobileanalytics', ['2014-06-05']);
 Object.defineProperty(apiLoader.services['mobileanalytics'], '2014-06-05', {
   get: function get() {
-    var model = __webpack_require__(298);
+    var model = __webpack_require__(301);
     return model;
   },
   enumerable: true,
@@ -32147,13 +31674,13 @@ module.exports = AWS.MobileAnalytics;
 
 
 /***/ }),
-/* 298 */
+/* 301 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":"2.0","metadata":{"apiVersion":"2014-06-05","endpointPrefix":"mobileanalytics","serviceFullName":"Amazon Mobile Analytics","signatureVersion":"v4","protocol":"rest-json"},"operations":{"PutEvents":{"http":{"requestUri":"/2014-06-05/events","responseCode":202},"input":{"type":"structure","required":["events","clientContext"],"members":{"events":{"type":"list","member":{"type":"structure","required":["eventType","timestamp"],"members":{"eventType":{},"timestamp":{},"session":{"type":"structure","members":{"id":{},"duration":{"type":"long"},"startTimestamp":{},"stopTimestamp":{}}},"version":{},"attributes":{"type":"map","key":{},"value":{}},"metrics":{"type":"map","key":{},"value":{"type":"double"}}}}},"clientContext":{"location":"header","locationName":"x-amz-Client-Context"},"clientContextEncoding":{"location":"header","locationName":"x-amz-Client-Context-Encoding"}}}}},"shapes":{}}
 
 /***/ }),
-/* 299 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32350,7 +31877,7 @@ exports.ConsoleLogger = ConsoleLogger;
 
 
 /***/ }),
-/* 300 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32368,7 +31895,7 @@ exports.ConsoleLogger = ConsoleLogger;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Browser = __webpack_require__(301);
+var Browser = __webpack_require__(304);
 var ClientDevice = /** @class */ (function () {
     function ClientDevice() {
     }
@@ -32384,7 +31911,7 @@ exports.default = ClientDevice;
 
 
 /***/ }),
-/* 301 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32402,7 +31929,7 @@ exports.default = ClientDevice;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Hub_1 = __webpack_require__(106);
+var Hub_1 = __webpack_require__(107);
 var Logger_1 = __webpack_require__(14);
 var logger = new Logger_1.ConsoleLogger('ClientDevice_Browser');
 function clientInfo() {
@@ -32495,7 +32022,7 @@ if (typeof window !== 'undefined') {
 
 
 /***/ }),
-/* 302 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32520,7 +32047,7 @@ exports.invalidParameter = invalidParameter;
 
 
 /***/ }),
-/* 303 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32631,13 +32158,533 @@ var JS = /** @class */ (function () {
             'application/xml' === type ||
             'application/sh' === type);
     };
+    /**
+     * generate random string
+     */
+    JS.generateRandomString = function () {
+        var result = '';
+        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (var i = 32; i > 0; i -= 1) {
+            result += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return result;
+    };
     return JS;
 }());
 exports.default = JS;
 
 
 /***/ }),
-/* 304 */
+/* 307 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Parser = /** @class */ (function () {
+    function Parser() {
+    }
+    Parser.parseMobilehubConfig = function (config) {
+        var amplifyConfig = {};
+        // Analytics
+        if (config['aws_mobile_analytics_app_id']) {
+            var Analytics = {};
+            Analytics['appId'] = config['aws_mobile_analytics_app_id'];
+            Analytics['region'] = config['aws_mobile_analytics_app_region'];
+            amplifyConfig.Analytics = Analytics;
+        }
+        amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
+        return amplifyConfig;
+    };
+    return Parser;
+}());
+exports.default = Parser;
+
+
+/***/ }),
+/* 308 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+var Linking = {};
+exports.Linking = Linking;
+var AppState = {
+    addEventListener: function (action, handler) {
+        return;
+    }
+};
+exports.AppState = AppState;
+
+
+/***/ }),
+/* 309 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+var Common_1 = __webpack_require__(2);
+var Cache_1 = __webpack_require__(51);
+var uuid_1 = __webpack_require__(314);
+var logger = new Common_1.ConsoleLogger('AWSAnalyticsProvider');
+var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
+var AWSAnalyticsProvider = /** @class */ (function () {
+    function AWSAnalyticsProvider(config) {
+        this._config = config ? config : {};
+    }
+    /**
+     * get the category of the plugin
+     */
+    AWSAnalyticsProvider.prototype.getCategory = function () {
+        return 'Analytics';
+    };
+    /**
+     * get provider name of the plugin
+     */
+    AWSAnalyticsProvider.prototype.getProviderName = function () {
+        return 'AWSAnalytics';
+    };
+    /**
+     * configure the plugin
+     * @param {Object} config - configuration
+     */
+    AWSAnalyticsProvider.prototype.configure = function (config) {
+        logger.debug('configure Analytics', config);
+        var conf = config ? config : {};
+        this._config = Object.assign({}, this._config, conf);
+        return this._config;
+    };
+    /**
+     * record an event
+     * @param {Object} params - the params of an event
+     */
+    AWSAnalyticsProvider.prototype.record = function (params) {
+        var eventName = params.eventName;
+        switch (eventName) {
+            case '_session_start':
+                return this._startSession(params);
+            case '_session_stop':
+                return this._stopSession(params);
+            case '_update_endpoint':
+                return this._updateEndpoint(params);
+            default:
+                return this._recordCustomEvent(params);
+        }
+    };
+    /**
+     * @private
+     * @param params
+     */
+    AWSAnalyticsProvider.prototype._startSession = function (params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var timestamp, config, initClients, sessionId, clientContext, eventParams;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        timestamp = params.timestamp, config = params.config;
+                        return [4 /*yield*/, this._init(config)];
+                    case 1:
+                        initClients = _a.sent();
+                        if (!initClients)
+                            return [2 /*return*/, false];
+                        logger.debug('record session start');
+                        this._sessionId = uuid_1.v1();
+                        sessionId = this._sessionId;
+                        clientContext = this._generateClientContext();
+                        eventParams = {
+                            clientContext: clientContext,
+                            events: [
+                                {
+                                    eventType: '_session.start',
+                                    timestamp: new Date(timestamp).toISOString(),
+                                    'session': {
+                                        'id': sessionId,
+                                        'startTimestamp': new Date(timestamp).toISOString()
+                                    }
+                                }
+                            ]
+                        };
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
+                                    if (err) {
+                                        logger.debug('record event failed. ', err);
+                                        res(false);
+                                    }
+                                    else {
+                                        logger.debug('record event success. ', data);
+                                        res(true);
+                                    }
+                                });
+                            })];
+                }
+            });
+        });
+    };
+    /**
+     * @private
+     * @param params
+     */
+    AWSAnalyticsProvider.prototype._stopSession = function (params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var timestamp, config, initClients, sessionId, clientContext, eventParams;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        timestamp = params.timestamp, config = params.config;
+                        return [4 /*yield*/, this._init(config)];
+                    case 1:
+                        initClients = _a.sent();
+                        if (!initClients)
+                            return [2 /*return*/, false];
+                        logger.debug('record session stop');
+                        sessionId = this._sessionId ? this._sessionId : uuid_1.v1();
+                        clientContext = this._generateClientContext();
+                        eventParams = {
+                            clientContext: clientContext,
+                            events: [
+                                {
+                                    eventType: '_session.stop',
+                                    timestamp: new Date(timestamp).toISOString(),
+                                    'session': {
+                                        'id': sessionId,
+                                        'startTimestamp': new Date(timestamp).toISOString()
+                                    }
+                                }
+                            ]
+                        };
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
+                                    if (err) {
+                                        logger.debug('record event failed. ', err);
+                                        res(false);
+                                    }
+                                    else {
+                                        logger.debug('record event success. ', data);
+                                        res(true);
+                                    }
+                                });
+                            })];
+                }
+            });
+        });
+    };
+    AWSAnalyticsProvider.prototype._updateEndpoint = function (params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var timestamp, config, initClients, _a, appId, region, credentials, cacheKey, endpointId, request, update_params, that;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        timestamp = params.timestamp, config = params.config;
+                        return [4 /*yield*/, this._init(config)];
+                    case 1:
+                        initClients = _b.sent();
+                        if (!initClients)
+                            return [2 /*return*/, false];
+                        this._config = Object.assign(this._config, config);
+                        _a = this._config, appId = _a.appId, region = _a.region, credentials = _a.credentials;
+                        cacheKey = this.getProviderName() + '_' + appId;
+                        return [4 /*yield*/, this._getEndpointId(cacheKey)];
+                    case 2:
+                        endpointId = _b.sent();
+                        request = this._endpointRequest();
+                        update_params = {
+                            ApplicationId: appId,
+                            EndpointId: endpointId,
+                            EndpointRequest: request
+                        };
+                        that = this;
+                        logger.debug('updateEndpoint with params: ', update_params);
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                that.pinpointClient.updateEndpoint(update_params, function (err, data) {
+                                    if (err) {
+                                        logger.debug('Pinpoint ERROR', err);
+                                        res(false);
+                                    }
+                                    else {
+                                        logger.debug('Pinpoint SUCCESS', data);
+                                        res(true);
+                                    }
+                                });
+                            })];
+                }
+            });
+        });
+    };
+    /**
+     * @private
+     * @param params
+     */
+    AWSAnalyticsProvider.prototype._recordCustomEvent = function (params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var eventName, attributes, metrics, timestamp, config, initClients, clientContext, eventParams;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        eventName = params.eventName, attributes = params.attributes, metrics = params.metrics, timestamp = params.timestamp, config = params.config;
+                        return [4 /*yield*/, this._init(config)];
+                    case 1:
+                        initClients = _a.sent();
+                        if (!initClients)
+                            return [2 /*return*/, false];
+                        clientContext = this._generateClientContext();
+                        eventParams = {
+                            clientContext: clientContext,
+                            events: [
+                                {
+                                    eventType: eventName,
+                                    timestamp: new Date(timestamp).toISOString(),
+                                    attributes: attributes,
+                                    metrics: metrics
+                                }
+                            ]
+                        };
+                        logger.debug('record event with params', eventParams);
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
+                                    if (err) {
+                                        logger.debug('record event failed. ', err);
+                                        res(false);
+                                    }
+                                    else {
+                                        logger.debug('record event success. ', data);
+                                        res(true);
+                                    }
+                                });
+                            })];
+                }
+            });
+        });
+    };
+    /**
+     * @private
+     * @param config
+     * Init the clients
+     */
+    AWSAnalyticsProvider.prototype._init = function (config) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var appId, cacheKey, endpointId, _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        logger.debug('init clients');
+                        if (!config.credentials) {
+                            logger.debug('no credentials provided by config, abort this init');
+                            return [2 /*return*/, false];
+                        }
+                        if (this.mobileAnalytics
+                            && this._config.credentials
+                            && this._config.credentials.sessionToken === config.credentials.sessionToken
+                            && this._config.credentials.identityId === config.credentials.identityId) {
+                            logger.debug('no change for analytics config, directly return from init');
+                            return [2 /*return*/, true];
+                        }
+                        appId = config.appId;
+                        cacheKey = this.getProviderName() + '_' + appId;
+                        if (!config.endpointId) return [3 /*break*/, 1];
+                        _a = config.endpointId;
+                        return [3 /*break*/, 5];
+                    case 1:
+                        if (!this._config.endpointId) return [3 /*break*/, 2];
+                        _b = this._config.endpointId;
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, this._getEndpointId(cacheKey)];
+                    case 3:
+                        _b = _c.sent();
+                        _c.label = 4;
+                    case 4:
+                        _a = (_b);
+                        _c.label = 5;
+                    case 5:
+                        endpointId = _a;
+                        this._config = Object.assign(this._config, { endpointId: endpointId }, config);
+                        this._initMobileAnalytics();
+                        return [2 /*return*/, new Promise(function (res, rej) {
+                                _this._initPinpoint().then(function (data) {
+                                    res(true);
+                                }).catch(function (err) {
+                                    res(false);
+                                });
+                            })];
+                }
+            });
+        });
+    };
+    AWSAnalyticsProvider.prototype._getEndpointId = function (cacheKey) {
+        return __awaiter(this, void 0, void 0, function () {
+            var endpointId;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, Cache_1.default.getItem(cacheKey)];
+                    case 1:
+                        endpointId = _a.sent();
+                        logger.debug('endpointId from cache', endpointId, 'type', typeof endpointId);
+                        if (!endpointId) {
+                            endpointId = uuid_1.v1();
+                            Cache_1.default.setItem(cacheKey, endpointId);
+                        }
+                        return [2 /*return*/, endpointId];
+                }
+            });
+        });
+    };
+    /**
+     * @private
+     * Init the MobileAnalytics client
+     */
+    AWSAnalyticsProvider.prototype._initMobileAnalytics = function () {
+        var _a = this._config, credentials = _a.credentials, region = _a.region;
+        this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });
+    };
+    /**
+     * @private
+     * Init Pinpoint with configuration and update pinpoint client endpoint
+     * @return - A promise resolves if endpoint updated successfully
+     */
+    AWSAnalyticsProvider.prototype._initPinpoint = function () {
+        var _this = this;
+        var _a = this._config, region = _a.region, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials;
+        this.pinpointClient = new Common_1.Pinpoint({
+            region: region,
+            credentials: credentials,
+        });
+        var request = this._endpointRequest();
+        var update_params = {
+            ApplicationId: appId,
+            EndpointId: endpointId,
+            EndpointRequest: request
+        };
+        logger.debug('updateEndpoint with params: ', update_params);
+        return new Promise(function (res, rej) {
+            _this.pinpointClient.updateEndpoint(update_params, function (err, data) {
+                if (err) {
+                    logger.debug('Pinpoint ERROR', err);
+                    rej(err);
+                }
+                else {
+                    logger.debug('Pinpoint SUCCESS', data);
+                    res(data);
+                }
+            });
+        });
+    };
+    /**
+     * EndPoint request
+     * @return {Object} - The request of updating endpoint
+     */
+    AWSAnalyticsProvider.prototype._endpointRequest = function () {
+        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, endpointId = _a.endpointId;
+        var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
+        var ChannelType = Address ? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
+        logger.debug('demographic user id: ', user_id);
+        var OptOut = this._config.OptOut ? this._config.OptOut : undefined;
+        return {
+            Address: Address,
+            ChannelType: ChannelType,
+            Demographic: {
+                AppVersion: this._config.appVersion || clientInfo.appVersion,
+                Make: clientInfo.make,
+                Model: clientInfo.model,
+                ModelVersion: clientInfo.version,
+                Platform: clientInfo.platform
+            },
+            OptOut: OptOut,
+            RequestId: RequestId,
+            EffectiveDate: Address ? new Date().toISOString() : undefined,
+            User: {
+                UserId: credentials.identityId
+            }
+        };
+    };
+    /**
+     * @private
+     * generate client context with endpoint Id and app Id provided
+     */
+    AWSAnalyticsProvider.prototype._generateClientContext = function () {
+        var _a = this._config, endpointId = _a.endpointId, appId = _a.appId;
+        var clientContext = {
+            client: {
+                client_id: endpointId
+            },
+            services: {
+                mobile_analytics: {
+                    app_id: appId
+                }
+            }
+        };
+        return JSON.stringify(clientContext);
+    };
+    return AWSAnalyticsProvider;
+}());
+exports.default = AWSAnalyticsProvider;
+
+
+/***/ }),
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32665,7 +32712,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Utils_1 = __webpack_require__(51);
+var Utils_1 = __webpack_require__(52);
 var StorageCache_1 = __webpack_require__(109);
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('Cache');
@@ -33079,7 +33126,7 @@ exports.default = instance;
 
 
 /***/ }),
-/* 305 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33156,7 +33203,7 @@ function _isInteger(value) {
 
 
 /***/ }),
-/* 306 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33330,7 +33377,7 @@ exports.default = CacheList;
 
 
 /***/ }),
-/* 307 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33358,7 +33405,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Utils_1 = __webpack_require__(51);
+var Utils_1 = __webpack_require__(52);
 var StorageCache_1 = __webpack_require__(109);
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('InMemoryCache');
@@ -33676,79 +33723,171 @@ exports.default = instance;
 
 
 /***/ }),
-/* 308 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+var v1 = __webpack_require__(315);
+var v4 = __webpack_require__(316);
 
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Analytics_1 = __webpack_require__(309);
-var Common_1 = __webpack_require__(2);
-var logger = new Common_1.ConsoleLogger('Analytics');
-var _instance = null;
-if (!_instance) {
-    logger.debug('Create Analytics Instance');
-    _instance = new Analytics_1.default(null);
-}
-var Analytics = _instance;
-exports.default = Analytics;
-Analytics.onHubCapsule = function (capsule) {
-    var channel = capsule.channel, payload = capsule.payload, source = capsule.source;
-    logger.debug('on hub capsule ' + channel, payload);
-    switch (channel) {
-        case 'auth':
-            authEvent(payload);
-            break;
-        case 'storage':
-            storageEvent(payload);
-            break;
-    }
-};
-var storageEvent = function (payload) {
-    var attrs = payload.attrs, metrics = payload.metrics;
-    if (!attrs)
-        return;
-    Analytics.record('Storage', attrs, metrics);
-};
-var authEvent = function (payload) {
-    var event = payload.event;
-    if (!event) {
-        return;
-    }
-    switch (event) {
-        case 'signIn':
-            Analytics.restart();
-            Analytics.record('_userauth.sign_in');
-            break;
-        case 'signUp':
-            Analytics.record('_userauth.sign_up');
-            break;
-        case 'signOut':
-            Analytics.restart();
-            break;
-        case 'signIn_failure':
-            Analytics.record('_userauth.auth_fail');
-            break;
-    }
-};
-Common_1.Hub.listen('auth', Analytics);
-Common_1.Hub.listen('storage', Analytics);
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+
+module.exports = uuid;
 
 
 /***/ }),
-/* 309 */
+/* 315 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var rng = __webpack_require__(110);
+var bytesToUuid = __webpack_require__(111);
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+
+var _nodeId;
+var _clockseq;
+
+// Previous uuid creation time
+var _lastMSecs = 0;
+var _lastNSecs = 0;
+
+// See https://github.com/broofa/node-uuid for API details
+function v1(options, buf, offset) {
+  var i = buf && offset || 0;
+  var b = buf || [];
+
+  options = options || {};
+  var node = options.node || _nodeId;
+  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+  if (node == null || clockseq == null) {
+    var seedBytes = rng();
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [
+        seedBytes[0] | 0x01,
+        seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]
+      ];
+    }
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  }
+
+  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
+
+  // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
+
+  // Time since last uuid creation (in msecs)
+  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
+
+  // Per 4.2.1.2, Bump clockseq on clock regression
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  }
+
+  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  }
+
+  // Per 4.2.1.2 Throw error if too many uuids are requested
+  if (nsecs >= 10000) {
+    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+
+  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+  msecs += 12219292800000;
+
+  // `time_low`
+  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff;
+
+  // `time_mid`
+  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff;
+
+  // `time_high_and_version`
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+  b[i++] = tmh >>> 16 & 0xff;
+
+  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+  b[i++] = clockseq >>> 8 | 0x80;
+
+  // `clock_seq_low`
+  b[i++] = clockseq & 0xff;
+
+  // `node`
+  for (var n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf ? buf : bytesToUuid(b);
+}
+
+module.exports = v1;
+
+
+/***/ }),
+/* 316 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var rng = __webpack_require__(110);
+var bytesToUuid = __webpack_require__(111);
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options === 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+
+/***/ }),
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33802,397 +33941,1136 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
-var Auth_1 = __webpack_require__(15);
-var logger = new Common_1.ConsoleLogger('AnalyticsClass');
-var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
+var Platform_1 = __webpack_require__(32);
+var Cache_1 = __webpack_require__(51);
+var logger = new Common_1.ConsoleLogger('AuthClass');
+var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
+var CookieStorage = Common_1.Cognito.CookieStorage, CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
+var dispatchAuthEvent = function (event, data) {
+    Common_1.Hub.dispatch('auth', { event: event, data: data }, 'Auth');
+};
 /**
-* Provide mobile analytics client functions
+* Provide authentication steps
 */
-var AnalyticsClass = /** @class */ (function () {
+var AuthClass = /** @class */ (function () {
     /**
-     * Initialize Analtyics
-     * @param config - Configuration of the Analytics
+     * Initialize Auth with AWS configurations
+     * @param {Object} config - Configuration of the Auth
      */
-    function AnalyticsClass(config) {
-        if (config) {
-            this.configure(config);
+    function AuthClass(config) {
+        this.userPool = null;
+        this.credentials = null;
+        this.credentials_source = ''; // aws, guest, userPool, federated
+        this.user = null;
+        this.configure(config);
+        if (Common_1.AWS.config) {
+            Common_1.AWS.config.update({ customUserAgent: Common_1.Constants.userAgent });
         }
         else {
-            this._config = {};
+            logger.warn('No AWS.config');
         }
-        var client_info = Common_1.ClientDevice.clientInfo();
-        if (client_info.platform) {
-            this._config.platform = client_info.platform;
-        }
-        this._buffer = [];
     }
-    /**
-     * configure Analytics
-     * @param {Object} config - Configuration of the Analytics
-     */
-    AnalyticsClass.prototype.configure = function (config) {
-        logger.debug('configure Analytics');
-        var conf = config ? config.Analytics || config : {};
-        // using app_id from aws-exports if provided
-        if (conf['aws_mobile_analytics_app_id']) {
+    AuthClass.prototype.configure = function (config) {
+        var _this = this;
+        logger.debug('configure Auth');
+        var conf = config ? config.Auth || config : {};
+        if (conf['aws_cognito_identity_pool_id']) {
             conf = {
-                appId: conf['aws_mobile_analytics_app_id'],
-                region: conf['aws_project_region'],
-                platform: 'other'
+                userPoolId: conf['aws_user_pools_id'],
+                userPoolWebClientId: conf['aws_user_pools_web_client_id'],
+                region: conf['aws_cognito_region'],
+                identityPoolId: conf['aws_cognito_identity_pool_id'],
+                mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable' ? true : false
             };
         }
-        // hard code region
-        conf.region = 'us-east-1';
         this._config = Object.assign({}, this._config, conf);
-        // no app id provided
-        if (!this._config.appId) {
-            logger.debug('Do not have appId yet.');
+        if (!this._config.identityPoolId) {
+            logger.debug('Do not have identityPoolId yet.');
         }
-        // async init clients
-        this._initClients();
+        var _a = this._config, userPoolId = _a.userPoolId, userPoolWebClientId = _a.userPoolWebClientId, cookieStorage = _a.cookieStorage;
+        if (userPoolId) {
+            var userPoolData = {
+                UserPoolId: userPoolId,
+                ClientId: userPoolWebClientId,
+            };
+            if (cookieStorage) {
+                userPoolData.Storage = new CookieStorage(cookieStorage);
+            }
+            this.userPool = new CognitoUserPool(userPoolData);
+            if (Platform_1.default.isReactNative) {
+                var that = this;
+                this._userPoolStorageSync = new Promise(function (resolve, reject) {
+                    _this.userPool.storage.sync(function (err, data) {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            resolve(data);
+                        }
+                    });
+                });
+            }
+            else {
+                this.pickupCredentials();
+            }
+        }
         return this._config;
     };
     /**
-     * Record Session start
-     * @return - A promise which resolves if event record successfully
+     * Sign up with username, password and other attrbutes like phone, email
+     * @param {String | object} params - The user attirbutes used for signin
+     * @param {String[]} restOfAttrs - for the backward compatability
+     * @return - A promise resolves callback data if success
      */
-    AnalyticsClass.prototype.startSession = function () {
+    AuthClass.prototype.signUp = function (params) {
         var _this = this;
-        logger.debug('record session start');
-        var sessionId = this.generateRandomString();
-        this._sessionId = sessionId;
-        var clientContext = this._generateClientContext();
-        var params = {
-            clientContext: clientContext,
-            events: [
-                {
-                    eventType: '_session.start',
-                    timestamp: new Date().toISOString(),
-                    'session': {
-                        'id': sessionId,
-                        'startTimestamp': new Date().toISOString()
-                    }
-                }
-            ]
-        };
-        return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ', data);
-                    res(data);
-                }
-            });
-        });
-    };
-    /**
-     * Record Session stop
-     * @return - A promise which resolves if event record successfully
-     */
-    AnalyticsClass.prototype.stopSession = function () {
-        var _this = this;
-        logger.debug('record session stop');
-        var sessionId = this._sessionId ? this._sessionId : this.generateRandomString();
-        var clientContext = this._generateClientContext();
-        var params = {
-            clientContext: clientContext,
-            events: [
-                {
-                    eventType: '_session.stop',
-                    timestamp: new Date().toISOString(),
-                    'session': {
-                        'id': sessionId,
-                        'startTimestamp': new Date().toISOString()
-                    }
-                }
-            ]
-        };
-        return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
-                if (err) {
-                    logger.debug('record event failed. ', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('record event success. ', data);
-                    res(data);
-                }
-            });
-        });
-    };
-    /**
-     * @async
-     * Restart Analytics client and record session stop
-     * @return - A promise ehich resolves to be true if current credential exists
-     */
-    AnalyticsClass.prototype.restart = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                this.stopSession().then(function (data) {
-                    logger.debug('restarting clients');
-                    return _this._initClients();
-                }).catch(function (e) {
-                    logger.debug('restart error', e);
-                });
-                return [2 /*return*/];
-            });
-        });
-    };
-    /**
-    * Record one analytic event and send it to Pinpoint
-    * @param {String} name - The name of the event
-    * @param {Object} [attributs] - Attributes of the event
-    * @param {Object} [metrics] - Event metrics
-    * @return - A promise which resolves if event record successfully
-    */
-    AnalyticsClass.prototype.record = function (name, attributes, metrics) {
-        var _this = this;
-        logger.debug("record event: { name: " + name + ", attributes: " + attributes + ", metrics: " + metrics);
-        // if mobile analytics client not ready, buffer it
-        if (!this.mobileAnalytics) {
-            logger.debug('mobileAnalytics not ready, put in buffer');
-            this._buffer.push({
-                name: name,
-                attributes: attributes,
-                metrics: metrics
-            });
-            return;
+        var restOfAttrs = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            restOfAttrs[_i - 1] = arguments[_i];
         }
-        var clientContext = this._generateClientContext();
-        var params = {
-            clientContext: clientContext,
-            events: [
-                {
-                    eventType: name,
-                    timestamp: new Date().toISOString(),
-                    attributes: attributes,
-                    metrics: metrics
-                }
-            ]
-        };
-        return new Promise(function (res, rej) {
-            _this.mobileAnalytics.putEvents(params, function (err, data) {
+        if (!this.userPool) {
+            return Promise.reject('No userPool');
+        }
+        var username = null;
+        var password = null;
+        var attributes = [];
+        var validationData = null;
+        if (params && typeof params === 'string') {
+            username = params;
+            password = restOfAttrs ? restOfAttrs[0] : null;
+            var email = restOfAttrs ? restOfAttrs[1] : null;
+            var phone_number = restOfAttrs ? restOfAttrs[2] : null;
+            if (email)
+                attributes.push({ Name: 'email', Value: email });
+            if (phone_number)
+                attributes.push({ Name: 'phone_number', Value: phone_number });
+        }
+        else if (params && typeof params === 'object') {
+            username = params['username'];
+            password = params['password'];
+            var attrs_1 = params['attributes'];
+            if (attrs_1) {
+                Object.keys(attrs_1).map(function (key) {
+                    var ele = { Name: key, Value: attrs_1[key] };
+                    attributes.push(ele);
+                });
+            }
+            validationData = params['validationData'] || null;
+        }
+        else {
+            return Promise.reject('The first parameter should either be non-null string or object');
+        }
+        if (!username) {
+            return Promise.reject('Username cannot be empty');
+        }
+        if (!password) {
+            return Promise.reject('Password cannot be empty');
+        }
+        logger.debug('signUp attrs:', attributes);
+        logger.debug('signUp validation data:', validationData);
+        return new Promise(function (resolve, reject) {
+            _this.userPool.signUp(username, password, attributes, validationData, function (err, data) {
                 if (err) {
-                    logger.debug('record event failed. ', err);
-                    rej(err);
+                    dispatchAuthEvent('signUp_failure', err);
+                    reject(err);
                 }
                 else {
-                    logger.debug('record event success. ', data);
-                    res(data);
+                    dispatchAuthEvent('signUp', data);
+                    resolve(data);
                 }
             });
         });
     };
-    /*
-        _putEventsCallback() {
-            return (err, data, res, rej) => {
+    /**
+     * Send the verfication code to confirm sign up
+     * @param {String} username - The username to be confirmed
+     * @param {String} code - The verification code
+     * @return - A promise resolves callback data if success
+     */
+    AuthClass.prototype.confirmSignUp = function (username, code) {
+        if (!this.userPool) {
+            return Promise.reject('No userPool');
+        }
+        if (!username) {
+            return Promise.reject('Username cannot be empty');
+        }
+        if (!code) {
+            return Promise.reject('Code cannot be empty');
+        }
+        var user = this.createCognitoUser(username);
+        return new Promise(function (resolve, reject) {
+            user.confirmRegistration(code, true, function (err, data) {
                 if (err) {
-                    logger.debug('record event failed. ' + err);
-                    if (err.statusCode === undefined || err.statusCode === 400){
-                        if (err.code === 'ThrottlingException') {
-                            // todo
-                            // cache events
-                            logger.debug('get throttled, caching events');
+                    reject(err);
+                }
+                else {
+                    resolve(data);
+                }
+            });
+        });
+    };
+    /**
+     * Resend the verification code
+     * @param {String} username - The username to be confirmed
+     * @return - A promise resolves data if success
+     */
+    AuthClass.prototype.resendSignUp = function (username) {
+        if (!this.userPool) {
+            return Promise.reject('No userPool');
+        }
+        if (!username) {
+            return Promise.reject('Username cannot be empty');
+        }
+        var user = this.createCognitoUser(username);
+        return new Promise(function (resolve, reject) {
+            user.resendConfirmationCode(function (err, data) {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(data);
+                }
+            });
+        });
+    };
+    /**
+     * Sign in
+     * @param {String} username - The username to be signed in
+     * @param {String} password - The password of the username
+     * @return - A promise resolves the CognitoUser
+     */
+    AuthClass.prototype.signIn = function (username, password) {
+        if (!this.userPool) {
+            return Promise.reject('No userPool');
+        }
+        if (!username) {
+            return Promise.reject('Username cannot be empty');
+        }
+        if (!password) {
+            return Promise.reject('Password cannot be empty');
+        }
+        var user = this.createCognitoUser(username);
+        var authDetails = new AuthenticationDetails({
+            Username: username,
+            Password: password
+        });
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            user.authenticateUser(authDetails, {
+                onSuccess: function (session) {
+                    logger.debug(session);
+                    that.setCredentialsFromSession(session);
+                    that.user = user;
+                    dispatchAuthEvent('signIn', user);
+                    resolve(user);
+                },
+                onFailure: function (err) {
+                    logger.debug('signIn failure', err);
+                    dispatchAuthEvent('signIn_failure', err);
+                    reject(err);
+                },
+                mfaRequired: function (challengeName, challengeParam) {
+                    logger.debug('signIn MFA required');
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                },
+                newPasswordRequired: function (userAttributes, requiredAttributes) {
+                    logger.debug('signIn new password');
+                    user['challengeName'] = 'NEW_PASSWORD_REQUIRED';
+                    user['challengeParam'] = {
+                        userAttributes: userAttributes,
+                        requiredAttributes: requiredAttributes
+                    };
+                    resolve(user);
+                },
+                mfaSetup: function (challengeName, challengeParam) {
+                    logger.debug('signIn mfa setup', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                },
+                totpRequired: function (challengeName, challengeParam) {
+                    logger.debug('signIn totpRequired');
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                },
+                selectMFAType: function (challengeName, challengeParam) {
+                    logger.debug('signIn selectMFAType', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                }
+            });
+        });
+    };
+    /**
+     * get user current preferred mfa option
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves the current preferred mfa option if success
+     */
+    AuthClass.prototype.getMFAOptions = function (user) {
+        return new Promise(function (res, rej) {
+            user.getMFAOptions(function (err, mfaOptions) {
+                if (err) {
+                    logger.debug('get MFA Options failed', err);
+                    rej(err);
+                }
+                logger.debug('get MFA options success', mfaOptions);
+                res(mfaOptions);
+            });
+        });
+    };
+    /**
+     * set preferred MFA method
+     * @param {CognitoUser} user - the current Cognito user
+     * @param {string} mfaMethod - preferred mfa method
+     * @return - A promise resolve if success
+     */
+    AuthClass.prototype.setPreferredMFA = function (user, mfaMethod) {
+        var smsMfaSettings = {
+            PreferredMfa: false,
+            Enabled: false
+        };
+        var totpMfaSettings = {
+            PreferredMfa: false,
+            Enabled: false
+        };
+        switch (mfaMethod) {
+            case 'TOTP':
+                totpMfaSettings = {
+                    PreferredMfa: true,
+                    Enabled: true
+                };
+                break;
+            case 'SMS':
+                smsMfaSettings = {
+                    PreferredMfa: true,
+                    Enabled: true
+                };
+                break;
+            case 'NOMFA':
+                break;
+            default:
+                logger.debug('no validmfa method provided');
+                return Promise.reject('no validmfa method provided');
+        }
+        var that = this;
+        var TOTP_NOT_VERIFED = 'User has not verified software token mfa';
+        var TOTP_NOT_SETUP = 'User has not set up software token mfa';
+        return new Promise(function (res, rej) {
+            user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, function (err, result) {
+                if (err) {
+                    // if totp not setup or verified and user want to set it, return error
+                    // otherwise igonre it
+                    if (err.message === TOTP_NOT_SETUP || err.message === TOTP_NOT_VERIFED) {
+                        if (mfaMethod === 'SMS') {
+                            that.enableSMS(user).then(function (data) {
+                                logger.debug('Set user mfa success', data);
+                                res(data);
+                            }).catch(function (err) {
+                                logger.debug('Set user mfa preference error', err);
+                                rej(err);
+                            });
+                        }
+                        else if (mfaMethod === 'NOMFA') {
+                            // diable sms
+                            that.disableSMS(user).then(function (data) {
+                                logger.debug('Set user mfa success', data);
+                                res(data);
+                            }).catch(function (err) {
+                                logger.debug('Set user mfa preference error', err);
+                                rej(err);
+                            });
+                        }
+                        else {
+                            logger.debug('Set user mfa preference error', err);
+                            rej(err);
                         }
                     }
-                    rej(err);
+                    else {
+                        logger.debug('Set user mfa preference error', err);
+                        rej(err);
+                    }
                 }
-                else {
-                    logger.debug('record event success. ' + data);
-                    // try to clean cached events if exist
-    
-    
-                    res(data);
-                }
-            };
-        }
-    */
-    /**
-    * Record one analytic event
-    * @param {String} name - Event name
-    * @param {Object} [attributes] - Attributes of the event
-    * @param {Object} [metrics] - Event metrics
-    */
-    // async recordMonetization(name, attributes?: EventAttributes, metrics?: EventMetrics) {
-    //     this.amaClient.recordMonetizationEvent(name, attributes, metrics);
-    // }
-    /**
-     * @private
-     * generate client context with endpoint Id and app Id provided
-     */
-    AnalyticsClass.prototype._generateClientContext = function () {
-        var _a = this._config, endpointId = _a.endpointId, appId = _a.appId;
-        var clientContext = {
-            client: {
-                client_id: endpointId
-            },
-            services: {
-                mobile_analytics: {
-                    app_id: appId
-                }
-            }
-        };
-        return JSON.stringify(clientContext);
-    };
-    /**
-     * generate random string
-     */
-    AnalyticsClass.prototype.generateRandomString = function () {
-        var result = '';
-        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        for (var i = 32; i > 0; i -= 1) {
-            result += chars[Math.floor(Math.random() * chars.length)];
-        }
-        return result;
-    };
-    /**
-     * @private
-     * check if app Id exists
-     */
-    AnalyticsClass.prototype._checkConfig = function () {
-        return !!this._config.appId;
-    };
-    /**
-     * @private
-     * check if current crednetials exists
-     */
-    AnalyticsClass.prototype._ensureCredentials = function () {
-        var conf = this._config;
-        // commented
-        // will cause bug if another user logged in without refreshing page
-        // if (conf.credentials) { return Promise.resolve(true); }
-        return Auth_1.default.currentCredentials()
-            .then(function (credentials) {
-            var cred = Auth_1.default.essentialCredentials(credentials);
-            conf.credentials = cred;
-            conf.endpointId = conf.credentials.identityId;
-            logger.debug('set endpointId for analytics', conf.endpointId);
-            logger.debug('set credentials for analytics', conf.credentials);
-            return true;
-        })
-            .catch(function (err) {
-            logger.debug('ensure credentials error', err);
-            return false;
+                logger.debug('Set user mfa success', result);
+                res(result);
+            });
         });
     };
     /**
-     * @private
-     * @async
-     * init clients for Anlytics including mobile analytics and pinpoint
-     * @return - True if initilization succeeds
+     * diable SMS
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves is success
      */
-    AnalyticsClass.prototype._initClients = function () {
+    AuthClass.prototype.disableSMS = function (user) {
+        return new Promise(function (res, rej) {
+            user.disableMFA(function (err, data) {
+                if (err) {
+                    logger.debug('disable mfa failed', err);
+                    rej(err);
+                }
+                logger.debug('disable mfa succeed', data);
+                res(data);
+            });
+        });
+    };
+    /**
+     * enable SMS
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves is success
+     */
+    AuthClass.prototype.enableSMS = function (user) {
+        return new Promise(function (res, rej) {
+            user.enableMFA(function (err, data) {
+                if (err) {
+                    logger.debug('enable mfa failed', err);
+                    rej(err);
+                }
+                logger.debug('enable mfa succeed', data);
+                res(data);
+            });
+        });
+    };
+    /**
+     * Setup TOTP
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves with the secret code if success
+     */
+    AuthClass.prototype.setupTOTP = function (user) {
+        return new Promise(function (res, rej) {
+            user.associateSoftwareToken({
+                onFailure: function (err) {
+                    logger.debug('associateSoftwareToken failed', err);
+                    rej(err);
+                },
+                associateSecretCode: function (secretCode) {
+                    logger.debug('associateSoftwareToken sucess', secretCode);
+                    res(secretCode);
+                }
+            });
+        });
+    };
+    /**
+     * verify TOTP setup
+     * @param {CognitoUser} user - the current user
+     * @param {string} challengeAnswer - challenge answer
+     * @return - A promise resolves is success
+     */
+    AuthClass.prototype.verifyTotpToken = function (user, challengeAnswer) {
+        logger.debug('verfication totp token', user, challengeAnswer);
+        return new Promise(function (res, rej) {
+            user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
+                onFailure: function (err) {
+                    logger.debug('verifyTotpToken failed', err);
+                    rej(err);
+                },
+                onSuccess: function (data) {
+                    logger.debug('verifyTotpToken success', data);
+                    res(data);
+                }
+            });
+        });
+    };
+    /**
+     * Send MFA code to confirm sign in
+     * @param {Object} user - The CognitoUser object
+     * @param {String} code - The confirmation code
+     */
+    AuthClass.prototype.confirmSignIn = function (user, code, mfaType) {
+        if (!code) {
+            return Promise.reject('Code cannot be empty');
+        }
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            user.sendMFACode(code, {
+                onSuccess: function (session) {
+                    logger.debug(session);
+                    that.setCredentialsFromSession(session);
+                    that.user = user;
+                    dispatchAuthEvent('signIn', user);
+                    resolve(user);
+                },
+                onFailure: function (err) {
+                    logger.debug('confirm signIn failure', err);
+                    reject(err);
+                }
+            }, mfaType);
+        });
+    };
+    AuthClass.prototype.completeNewPassword = function (user, password, requiredAttributes) {
+        if (!password) {
+            return Promise.reject('Password cannot be empty');
+        }
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            user.completeNewPasswordChallenge(password, requiredAttributes, {
+                onSuccess: function (session) {
+                    logger.debug(session);
+                    that.setCredentialsFromSession(session);
+                    that.user = user;
+                    dispatchAuthEvent('signIn', user);
+                    resolve(user);
+                },
+                onFailure: function (err) {
+                    logger.debug('completeNewPassword failure', err);
+                    reject(err);
+                },
+                mfaRequired: function (challengeName, challengeParam) {
+                    logger.debug('signIn MFA required');
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                }
+            });
+        });
+    };
+    /**
+     * Update an authenticated users' attributes
+     * @param {CognitoUser} - The currently logged in user object
+     * @return {Promise}
+     **/
+    AuthClass.prototype.updateUserAttributes = function (user, attributes) {
+        var attr = {};
+        var attributeList = [];
+        return this.userSession(user)
+            .then(function (session) {
+            return new Promise(function (resolve, reject) {
+                for (var key in attributes) {
+                    if (key !== 'sub' &&
+                        key.indexOf('_verified') < 0 &&
+                        attributes[key]) {
+                        attr = {
+                            'Name': key,
+                            'Value': attributes[key]
+                        };
+                        attributeList.push(attr);
+                    }
+                }
+                user.updateAttributes(attributeList, function (err, result) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(result);
+                    }
+                });
+            });
+        });
+    };
+    /**
+     * Return user attributes
+     * @param {Object} user - The CognitoUser object
+     * @return - A promise resolves to user attributes if success
+     */
+    AuthClass.prototype.userAttributes = function (user) {
+        return this.userSession(user)
+            .then(function (session) {
+            return new Promise(function (resolve, reject) {
+                user.getUserAttributes(function (err, attributes) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(attributes);
+                    }
+                });
+            });
+        });
+    };
+    AuthClass.prototype.verifiedContact = function (user) {
+        var that = this;
+        return this.userAttributes(user)
+            .then(function (attributes) {
+            var attrs = that.attributesToObject(attributes);
+            var unverified = {};
+            var verified = {};
+            if (attrs['email']) {
+                if (attrs['email_verified']) {
+                    verified['email'] = attrs['email'];
+                }
+                else {
+                    unverified['email'] = attrs['email'];
+                }
+            }
+            if (attrs['phone_number']) {
+                if (attrs['phone_number_verified']) {
+                    verified['phone_number'] = attrs['phone_number'];
+                }
+                else {
+                    unverified['phone_number'] = attrs['phone_number'];
+                }
+            }
+            return {
+                verified: verified,
+                unverified: unverified
+            };
+        });
+    };
+    /**
+     * Get current authenticated user
+     * @return - A promise resolves to curret authenticated CognitoUser if success
+     */
+    AuthClass.prototype.currentUserPoolUser = function () {
+        if (!this.userPool) {
+            return Promise.reject('No userPool');
+        }
+        var user = null;
+        if (Platform_1.default.isReactNative) {
+            var that = this;
+            return this.getSyncedUser().then(function (user) {
+                if (!user) {
+                    return Promise.reject('No current user in userPool');
+                }
+                return new Promise(function (resolve, reject) {
+                    user.getSession(function (err, session) {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            resolve(user);
+                        }
+                    });
+                });
+            });
+        }
+        else {
+            user = this.userPool.getCurrentUser();
+            if (!user) {
+                return Promise.reject('No current user in userPool');
+            }
+            return new Promise(function (resolve, reject) {
+                user.getSession(function (err, session) {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(user);
+                    }
+                });
+            });
+        }
+    };
+    /**
+     * Return the current user after synchornizing AsyncStorage
+     * @return - A promise with the current authenticated user
+     **/
+    AuthClass.prototype.getSyncedUser = function () {
+        var that = this;
+        return (this._userPoolStorageSync || Promise.resolve()).then(function (result) {
+            if (!that.userPool) {
+                return Promise.reject('No userPool');
+            }
+            that.credentials_source = 'userPool';
+            return that.userPool.getCurrentUser();
+        });
+    };
+    /**
+     * Get current authenticated user
+     * @return - A promise resolves to curret authenticated CognitoUser if success
+     */
+    AuthClass.prototype.currentAuthenticatedUser = function () {
+        var source = this.credentials_source;
+        logger.debug('get current authenticated user. source ' + source);
+        if (!source || source === 'aws' || source === 'userPool') {
+            return this.currentUserPoolUser();
+        }
+        if (source === 'federated') {
+            return Promise.resolve(this.user);
+        }
+        return Promise.reject('not authenticated');
+    };
+    /**
+     * Get current user's session
+     * @return - A promise resolves to session object if success
+     */
+    AuthClass.prototype.currentSession = function () {
+        var user;
+        var that = this;
+        if (!this.userPool) {
+            return Promise.reject('No userPool');
+        }
+        if (Platform_1.default.isReactNative) {
+            return this.getSyncedUser().then(function (user) {
+                if (!user) {
+                    return Promise.reject('No current user');
+                }
+                return that.userSession(user);
+            });
+        }
+        else {
+            user = this.userPool.getCurrentUser();
+            if (!user) {
+                return Promise.reject('No current user');
+            }
+            return this.userSession(user);
+        }
+    };
+    /**
+     * Get the corresponding user session
+     * @param {Object} user - The CognitoUser object
+     * @return - A promise resolves to the session
+     */
+    AuthClass.prototype.userSession = function (user) {
+        return new Promise(function (resolve, reject) {
+            logger.debug(user);
+            user.getSession(function (err, session) {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(session);
+                }
+            });
+        });
+    };
+    /**
+     * Get authenticated credentials of current user.
+     * @return - A promise resolves to be current user's credentials
+     */
+    AuthClass.prototype.currentUserCredentials = function () {
+        var _this = this;
+        if (Platform_1.default.isReactNative) {
+            // asyncstorage
+            var that_1 = this;
+            return Cache_1.default.getItem('federatedInfo')
+                .then(function (federatedInfo) {
+                if (federatedInfo) {
+                    var provider_1 = federatedInfo.provider, token_1 = federatedInfo.token, user_1 = federatedInfo.user;
+                    return new Promise(function (resolve, reject) {
+                        that_1.setCredentialsFromFederation(provider_1, token_1, user_1);
+                        resolve();
+                    });
+                }
+                else {
+                    return that_1.currentSession()
+                        .then(function (session) { return that_1.setCredentialsFromSession(session); })
+                        .catch(function (error) { return that_1.setCredentialsForGuest(); });
+                }
+            }).catch(function (error) {
+                return new Promise(function (resolve, reject) {
+                    reject(error);
+                });
+            });
+        }
+        else {
+            // first to check whether there is federation info in the local storage
+            var federatedInfo = Cache_1.default.getItem('federatedInfo');
+            if (federatedInfo) {
+                var provider_2 = federatedInfo.provider, token_2 = federatedInfo.token, user_2 = federatedInfo.user;
+                return new Promise(function (resolve, reject) {
+                    _this.setCredentialsFromFederation(provider_2, token_2, user_2);
+                    resolve();
+                });
+            }
+            else {
+                return this.currentSession()
+                    .then(function (session) { return _this.setCredentialsFromSession(session); })
+                    .catch(function (error) { return _this.setCredentialsForGuest(); });
+            }
+        }
+    };
+    AuthClass.prototype.currentCredentials = function () {
+        return this.pickupCredentials();
+    };
+    /**
+     * Initiate an attribute confirmation request
+     * @param {Object} user - The CognitoUser
+     * @param {Object} attr - The attributes to be verified
+     * @return - A promise resolves to callback data if success
+     */
+    AuthClass.prototype.verifyUserAttribute = function (user, attr) {
+        return new Promise(function (resolve, reject) {
+            user.getAttributeVerificationCode(attr, {
+                onSuccess: function (data) { resolve(data); },
+                onFailure: function (err) { reject(err); }
+            });
+        });
+    };
+    /**
+     * Confirm an attribute using a confirmation code
+     * @param {Object} user - The CognitoUser
+     * @param {Object} attr - The attribute to be verified
+     * @param {String} code - The confirmation code
+     * @return - A promise resolves to callback data if success
+     */
+    AuthClass.prototype.verifyUserAttributeSubmit = function (user, attr, code) {
+        if (!code) {
+            return Promise.reject('Code cannot be empty');
+        }
+        return new Promise(function (resolve, reject) {
+            user.verifyAttribute(attr, code, {
+                onSuccess: function (data) { resolve(data); },
+                onFailure: function (err) { reject(err); }
+            });
+        });
+    };
+    AuthClass.prototype.verifyCurrentUserAttribute = function (attr) {
+        var that = this;
+        return that.currentUserPoolUser()
+            .then(function (user) { return that.verifyUserAttribute(user, attr); });
+    };
+    /**
+     * Confirm current user's attribute using a confirmation code
+     * @param {Object} attr - The attribute to be verified
+     * @param {String} code - The confirmation code
+     * @return - A promise resolves to callback data if success
+     */
+    AuthClass.prototype.verifyCurrentUserAttributeSubmit = function (attr, code) {
+        var that = this;
+        return that.currentUserPoolUser()
+            .then(function (user) { return that.verifyUserAttributeSubmit(user, attr, code); });
+    };
+    /**
+     * Sign out method
+     * @return - A promise resolved if success
+     */
+    AuthClass.prototype.signOut = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, e_1;
+            var _this = this;
+            var source, user;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.currentUserCredentials()];
+                    case 1:
+                        _a.sent();
+                        source = this.credentials_source;
+                        // clean out the cached stuff
+                        this.credentials.clearCachedId();
+                        // clear federatedInfo
+                        Cache_1.default.removeItem('federatedInfo');
+                        if (source === 'aws' || source === 'userPool') {
+                            if (!this.userPool) {
+                                return [2 /*return*/, Promise.reject('No userPool')];
+                            }
+                            user = this.userPool.getCurrentUser();
+                            if (!user) {
+                                return [2 /*return*/, Promise.resolve()];
+                            }
+                            user.signOut();
+                        }
+                        return [2 /*return*/, new Promise(function (resolve, reject) {
+                                _this.setCredentialsForGuest();
+                                dispatchAuthEvent('signOut', _this.user);
+                                _this.user = null;
+                                resolve();
+                            })];
+                }
+            });
+        });
+    };
+    /**
+     * Change a password for an authenticated user
+     * @param {Object} user - The CognitoUser object
+     * @param {String} oldPassword - the current password
+     * @param {String} newPassword - the requested new password
+     * @return - A promise resolves if success
+     */
+    AuthClass.prototype.changePassword = function (user, oldPassword, newPassword) {
+        return this.userSession(user)
+            .then(function (session) {
+            return new Promise(function (resolve, reject) {
+                user.changePassword(oldPassword, newPassword, function (err, data) {
+                    if (err) {
+                        logger.debug('change password failure', err);
+                        reject(err);
+                    }
+                    else {
+                        resolve(data);
+                    }
+                });
+            });
+        });
+    };
+    /**
+     * Initiate a forgot password request
+     * @param {String} username - the username to change password
+     * @return - A promise resolves if success
+     */
+    AuthClass.prototype.forgotPassword = function (username) {
+        if (!this.userPool) {
+            return Promise.reject('No userPool');
+        }
+        if (!username) {
+            return Promise.reject('Username cannot be empty');
+        }
+        var user = this.createCognitoUser(username);
+        return new Promise(function (resolve, reject) {
+            user.forgotPassword({
+                onSuccess: function () { resolve(); },
+                onFailure: function (err) {
+                    logger.debug('forgot password failure', err);
+                    reject(err);
+                },
+                inputVerificationCode: function (data) {
+                    resolve(data);
+                }
+            });
+        });
+    };
+    /**
+     * Confirm a new password using a confirmation Code
+     * @param {String} username - The username
+     * @param {String} code - The confirmation code
+     * @param {String} password - The new password
+     * @return - A promise that resolves if success
+     */
+    AuthClass.prototype.forgotPasswordSubmit = function (username, code, password) {
+        if (!this.userPool) {
+            return Promise.reject('No userPool');
+        }
+        if (!username) {
+            return Promise.reject('Username cannot be empty');
+        }
+        if (!code) {
+            return Promise.reject('Code cannot be empty');
+        }
+        if (!password) {
+            return Promise.reject('Password cannot be empty');
+        }
+        var user = this.createCognitoUser(username);
+        return new Promise(function (resolve, reject) {
+            user.confirmPassword(code, password, {
+                onSuccess: function () { resolve(); },
+                onFailure: function (err) { reject(err); }
+            });
+        });
+    };
+    /**
+     * Get user information
+     * @async
+     * @return {Object }- current User's information
+     */
+    AuthClass.prototype.currentUserInfo = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var source, user, attributes, userAttrs, info, err_1, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!this._checkConfig()) {
-                            return [2 /*return*/, false];
-                        }
-                        return [4 /*yield*/, this._ensureCredentials()];
+                        source = this.credentials_source;
+                        if (!(!source || source === 'aws' || source === 'userPool')) return [3 /*break*/, 5];
+                        return [4 /*yield*/, this.currentUserPoolUser()
+                                .catch(function (err) { return logger.debug(err); })];
                     case 1:
-                        credentialsOK = _a.sent();
-                        if (!credentialsOK) {
-                            return [2 /*return*/, false];
+                        user = _a.sent();
+                        if (!user) {
+                            return [2 /*return*/, null];
                         }
-                        this._initMobileAnalytics();
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, this._initPinpoint()];
+                        return [4 /*yield*/, this.userAttributes(user)];
                     case 3:
-                        _a.sent();
-                        this.startSession();
-                        return [3 /*break*/, 5];
+                        attributes = _a.sent();
+                        userAttrs = this.attributesToObject(attributes);
+                        info = {
+                            'id': this.credentials.identityId,
+                            'username': user.username,
+                            'attributes': userAttrs
+                        };
+                        return [2 /*return*/, info];
                     case 4:
-                        e_1 = _a.sent();
-                        return [2 /*return*/, false];
-                    case 5: return [2 /*return*/, true];
+                        err_1 = _a.sent();
+                        logger.debug('currentUserInfo error', err_1);
+                        return [2 /*return*/, {}];
+                    case 5:
+                        if (source === 'federated') {
+                            user = this.user;
+                            return [2 /*return*/, user ? user : {}];
+                        }
+                        return [2 /*return*/];
                 }
             });
         });
     };
     /**
-     * @private
-     * Init mobile analytics and clear buffer
+     * For federated login
+     * @param {String} provider - federation login provider
+     * @param {Object} response - response including access_token
+     * @param {String} user - user info
      */
-    AnalyticsClass.prototype._initMobileAnalytics = function () {
-        var _this = this;
-        var _a = this._config, credentials = _a.credentials, region = _a.region;
-        this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });
-        if (this._buffer.length > 0) {
-            logger.debug('something in buffer, flush it');
-            var buffer = this._buffer;
-            this._buffer = [];
-            buffer.forEach(function (event) {
-                _this.record(event.name, event.attributes, event.metrics);
+    AuthClass.prototype.federatedSignIn = function (provider, response, user) {
+        var token = response.token, expires_at = response.expires_at;
+        this.setCredentialsFromFederation(provider, token, user);
+        // store it into localstorage
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1 });
+        dispatchAuthEvent('signIn', this.user);
+        logger.debug('federated sign in credentials', this.credentials);
+        return this.keepAlive();
+    };
+    /**
+     * Compact version of credentials
+     * @param {Object} credentials
+     * @return {Object} - Credentials
+     */
+    AuthClass.prototype.essentialCredentials = function (credentials) {
+        return {
+            accessKeyId: credentials.accessKeyId,
+            sessionToken: credentials.sessionToken,
+            secretAccessKey: credentials.secretAccessKey,
+            identityId: credentials.identityId,
+            authenticated: credentials.authenticated
+        };
+    };
+    AuthClass.prototype.attributesToObject = function (attributes) {
+        var obj = {};
+        if (attributes) {
+            attributes.map(function (attribute) {
+                if (attribute.Name === 'sub')
+                    return;
+                if (attribute.Value === 'true') {
+                    obj[attribute.Name] = true;
+                }
+                else if (attribute.Value === 'false') {
+                    obj[attribute.Name] = false;
+                }
+                else {
+                    obj[attribute.Name] = attribute.Value;
+                }
+            });
+        }
+        return obj;
+    };
+    AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
+        var domains = {
+            'google': 'accounts.google.com',
+            'facebook': 'graph.facebook.com',
+            'amazon': 'www.amazon.com',
+            'developer': 'cognito-identity.amazonaws.com'
+        };
+        var domain = domains[provider];
+        if (!domain) {
+            return Promise.reject(provider + ' is not supported: [google, facebook, amazon, developer]');
+        }
+        var logins = {};
+        logins[domain] = token;
+        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
+        this.credentials = new Common_1.AWS.CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId,
+            Logins: logins
+        }, {
+            region: region
+        });
+        this.credentials.authenticated = true;
+        this.credentials_source = 'federated';
+        this.user = Object.assign({ id: this.credentials.identityId }, user);
+        if (Common_1.AWS && Common_1.AWS.config) {
+            Common_1.AWS.config.credentials = this.credentials;
+        }
+    };
+    AuthClass.prototype.pickupCredentials = function () {
+        var that = this;
+        if (this.credentials) {
+            return this.keepAlive();
+        }
+        else if (this.setCredentialsFromAWS()) {
+            return this.keepAlive();
+        }
+        else {
+            return this.currentUserCredentials()
+                .then(function () {
+                if (that.credentials_source === 'no credentials') {
+                    return Promise.resolve(null);
+                }
+                return that.keepAlive();
+            })
+                .catch(function (err) {
+                logger.debug('error when pickup', err);
+                that.setCredentialsForGuest();
+                return that.keepAlive();
             });
         }
     };
-    /**
-     * @private
-     * Init Pinpoint with configuration and update pinpoint client endpoint
-     * @return - A promise resolves if endpoint updated successfully
-     */
-    AnalyticsClass.prototype._initPinpoint = function () {
-        var _this = this;
-        var _a = this._config, region = _a.region, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials;
-        this.pinpointClient = new Common_1.Pinpoint({
-            region: region,
-            credentials: credentials,
+    AuthClass.prototype.setCredentialsFromAWS = function () {
+        if (Common_1.AWS.config && Common_1.AWS.config.credentials) {
+            this.credentials = Common_1.AWS.config.credentials;
+            this.credentials_source = 'aws';
+            return true;
+        }
+        return false;
+    };
+    AuthClass.prototype.setCredentialsForGuest = function () {
+        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
+        if (mandatorySignIn) {
+            this.credentials = null;
+            this.credentials_source = 'no credentials';
+            return;
+        }
+        var credentials = new CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId
+        }, {
+            region: region
         });
-        var request = this._endpointRequest();
-        var update_params = {
-            ApplicationId: appId,
-            EndpointId: endpointId,
-            EndpointRequest: request
-        };
-        logger.debug('updateEndpoint with params: ', update_params);
-        return new Promise(function (res, rej) {
-            _this.pinpointClient.updateEndpoint(update_params, function (err, data) {
-                if (err) {
-                    logger.debug('Pinpoint ERROR', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('Pinpoint SUCCESS', data);
-                    res(data);
-                }
-            });
+        credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
+        this.credentials = credentials;
+        this.credentials.authenticated = false;
+        this.credentials_source = 'guest';
+    };
+    AuthClass.prototype.setCredentialsFromSession = function (session) {
+        logger.debug('set credentials from session');
+        var idToken = session.getIdToken().getJwtToken();
+        var _a = this._config, region = _a.region, userPoolId = _a.userPoolId, identityPoolId = _a.identityPoolId;
+        var key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
+        var logins = {};
+        logins[key] = idToken;
+        this.credentials = new CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId,
+            Logins: logins
+        }, {
+            region: region
+        });
+        this.credentials.authenticated = true;
+        this.credentials_source = 'userPool';
+    };
+    AuthClass.prototype.keepAlive = function () {
+        if (!this.credentials) {
+            this.setCredentialsForGuest();
+        }
+        var ts = new Date().getTime();
+        var delta = 10 * 60 * 1000; // 10 minutes
+        var credentials = this.credentials;
+        var expired = credentials.expired, expireTime = credentials.expireTime;
+        if (!expired && expireTime > ts + delta) {
+            return Promise.resolve(credentials);
+        }
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            that.currentUserCredentials()
+                .then(function () {
+                credentials = that.credentials;
+                credentials.refresh(function (err) {
+                    logger.debug('changed from previous');
+                    if (err) {
+                        logger.debug('refresh credentials error', err);
+                        resolve(null);
+                    }
+                    else {
+                        resolve(credentials);
+                    }
+                });
+            })
+                .catch(function () { return resolve(null); });
         });
     };
-    /**
-     * EndPoint request
-     * @return {Object} - The request of updating endpoint
-     */
-    AnalyticsClass.prototype._endpointRequest = function () {
-        var client_info = Common_1.ClientDevice.clientInfo();
-        var credentials = this._config.credentials;
-        var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
-        logger.debug('demographic user id: ', user_id);
-        return {
-            Demographic: {
-                AppVersion: this._config.appVersion || client_info.appVersion,
-                Make: client_info.make,
-                Model: client_info.model,
-                ModelVersion: client_info.version,
-                Platform: client_info.platform
-            },
-            User: { UserId: user_id }
+    AuthClass.prototype.createCognitoUser = function (username) {
+        var userData = {
+            Username: username,
+            Pool: this.userPool,
         };
+        var cookieStorage = this._config.cookieStorage;
+        if (cookieStorage) {
+            userData.Storage = new CookieStorage(cookieStorage);
+        }
+        return new CognitoUser(userData);
     };
-    return AnalyticsClass;
+    return AuthClass;
 }());
-exports.default = AnalyticsClass;
+exports.default = AuthClass;
 
 
 /***/ }),
-/* 310 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34210,7 +35088,8 @@ exports.default = AnalyticsClass;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Storage_1 = __webpack_require__(311);
+var Storage_1 = __webpack_require__(319);
+exports.StorageClass = Storage_1.default;
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('Storage');
 var _instance = null;
@@ -34231,7 +35110,7 @@ exports.default = Storage;
 
 
 /***/ }),
-/* 311 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34285,7 +35164,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
-var Auth_1 = __webpack_require__(15);
+var Auth_1 = __webpack_require__(20);
 var logger = new Common_1.ConsoleLogger('StorageClass');
 var dispatchStorageEvent = function (track, attrs, metrics) {
     if (track) {
@@ -34332,7 +35211,7 @@ var StorageClass = /** @class */ (function () {
     */
     StorageClass.prototype.get = function (key, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, opt, bucket, region, credentials, level, download, track, prefix, final_key, s3, params;
+            var credentialsOK, opt, bucket, region, credentials, level, download, track, expires, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._ensureCredentials()];
@@ -34342,7 +35221,7 @@ var StorageClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.reject('No credentials')];
                         }
                         opt = Object.assign({}, this._options, options);
-                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, download = opt.download, track = opt.track;
+                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, download = opt.download, track = opt.track, expires = opt.expires;
                         prefix = this._prefix(opt);
                         final_key = prefix + key;
                         s3 = this._createS3(opt);
@@ -34364,6 +35243,9 @@ var StorageClass = /** @class */ (function () {
                                         }
                                     });
                                 })];
+                        }
+                        if (expires) {
+                            params.Expires = expires;
                         }
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 try {
@@ -34389,6 +35271,7 @@ var StorageClass = /** @class */ (function () {
      * @return - promise resolves to object on success
      */
     StorageClass.prototype.put = function (key, object, options) {
+        if (options === void 0) { options = {}; }
         return __awaiter(this, void 0, void 0, function () {
             var credentialsOK, opt, bucket, region, credentials, level, track, contentType, cacheControl, expires, metadata, type, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
@@ -34548,6 +35431,8 @@ var StorageClass = /** @class */ (function () {
         var _this = this;
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
+            if (!credentials)
+                return false;
             var cred = Auth_1.default.essentialCredentials(credentials);
             logger.debug('set credentials for storage', cred);
             _this._options.credentials = cred;
@@ -34593,7 +35478,7 @@ exports.default = StorageClass;
 
 
 /***/ }),
-/* 312 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34611,7 +35496,8 @@ exports.default = StorageClass;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var API_1 = __webpack_require__(313);
+var API_1 = __webpack_require__(321);
+exports.APIClass = API_1.default;
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('API');
 var _instance = null;
@@ -34624,7 +35510,7 @@ exports.default = API;
 
 
 /***/ }),
-/* 313 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34677,19 +35563,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var RestClient_1 = __webpack_require__(314);
-var Auth_1 = __webpack_require__(15);
+var RestClient_1 = __webpack_require__(322);
+var Auth_1 = __webpack_require__(20);
 var Logger_1 = __webpack_require__(14);
 var logger = new Logger_1.ConsoleLogger('API');
 /**
  * Export Cloud Logic APIs
  */
-var API = /** @class */ (function () {
+var APIClass = /** @class */ (function () {
     /**
      * Initialize Storage with AWS configurations
      * @param {Object} options - Configuration object for storage
      */
-    function API(options) {
+    function APIClass(options) {
         this._api = null;
         this._options = options;
         logger.debug('API Options', this._options);
@@ -34699,7 +35585,7 @@ var API = /** @class */ (function () {
      * @param {Object} config - Configuration of the API
      * @return {Object} - The current configuration
      */
-    API.prototype.configure = function (options) {
+    APIClass.prototype.configure = function (options) {
         logger.debug('configure API');
         var opt = options ? options.API || options : {};
         if (opt['aws_project_region']) {
@@ -34721,7 +35607,7 @@ var API = /** @class */ (function () {
      * Create an instance of API for the library
      * @return - A promise of true if Success
      */
-    API.prototype.createInstance = function () {
+    APIClass.prototype.createInstance = function () {
         logger.debug('create API instance');
         if (this._options) {
             this._api = new RestClient_1.RestClient(this._options);
@@ -34738,7 +35624,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.get = function (apiName, path, init) {
+    APIClass.prototype.get = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_1, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -34777,7 +35663,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.post = function (apiName, path, init) {
+    APIClass.prototype.post = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_2, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -34816,7 +35702,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.put = function (apiName, path, init) {
+    APIClass.prototype.put = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_3, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -34855,7 +35741,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.patch = function (apiName, path, init) {
+    APIClass.prototype.patch = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_4, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -34894,7 +35780,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.del = function (apiName, path, init) {
+    APIClass.prototype.del = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_5, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -34933,7 +35819,7 @@ var API = /** @class */ (function () {
      * @param {json} [init] - Request extra params
      * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
      */
-    API.prototype.head = function (apiName, path, init) {
+    APIClass.prototype.head = function (apiName, path, init) {
         return __awaiter(this, void 0, void 0, function () {
             var error_6, credentialsOK, endpoint;
             return __generator(this, function (_a) {
@@ -34970,7 +35856,7 @@ var API = /** @class */ (function () {
     * @param {string} apiName - The name of the api
     * @return {string} - The endpoint of the api
     */
-    API.prototype.endpoint = function (apiName) {
+    APIClass.prototype.endpoint = function (apiName) {
         return __awaiter(this, void 0, void 0, function () {
             var error_7;
             return __generator(this, function (_a) {
@@ -34995,9 +35881,11 @@ var API = /** @class */ (function () {
     /**
      * @private
      */
-    API.prototype._ensureCredentials = function () {
+    APIClass.prototype._ensureCredentials = function () {
         return Auth_1.default.currentCredentials()
             .then(function (credentials) {
+            if (!credentials)
+                return false;
             var cred = Auth_1.default.essentialCredentials(credentials);
             logger.debug('set credentials for api', cred);
             return true;
@@ -35007,13 +35895,13 @@ var API = /** @class */ (function () {
             return false;
         });
     };
-    return API;
+    return APIClass;
 }());
-exports.default = API;
+exports.default = APIClass;
 
 
 /***/ }),
-/* 314 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35074,11 +35962,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Signer_1 = __webpack_require__(107);
+var Signer_1 = __webpack_require__(108);
 var Common_1 = __webpack_require__(2);
-var Auth_1 = __webpack_require__(15);
-var axios_1 = __webpack_require__(315);
-var Platform_1 = __webpack_require__(50);
+var Auth_1 = __webpack_require__(20);
+var axios_1 = __webpack_require__(323);
+var Platform_1 = __webpack_require__(32);
 var logger = new Common_1.ConsoleLogger('RestClient');
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -35098,6 +35986,8 @@ var RestClient = /** @class */ (function () {
     * @param {RestClientOptions} [options] - Instance options
     */
     function RestClient(options) {
+        this._region = 'us-east-1'; // this will be updated by config
+        this._service = 'execute-api'; // this can be updated by config
         var endpoints = options.endpoints;
         this._options = options;
         logger.debug('API Options', this._options);
@@ -35120,7 +36010,7 @@ var RestClient = /** @class */ (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders, userAgent, extraParams;
+            var parsed_url, params, libraryHeaders, userAgent, extraParams, isAllResponse;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -35140,6 +36030,7 @@ var RestClient = /** @class */ (function () {
                     };
                 }
                 extraParams = Object.assign({}, init);
+                isAllResponse = init ? init.response : null;
                 if (extraParams.body) {
                     libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
                     params.data = JSON.stringify(extraParams.body);
@@ -35148,10 +36039,10 @@ var RestClient = /** @class */ (function () {
                 // Do not sign the request if client has added 'Authorization' header,
                 // which means custom authorizer.
                 if (params.headers['Authorization']) {
-                    return [2 /*return*/, this._request(params)];
+                    return [2 /*return*/, this._request(params, isAllResponse)];
                 }
                 return [2 /*return*/, Auth_1.default.currentCredentials()
-                        .then(function (credentials) { return _this._signed(params, credentials); })];
+                        .then(function (credentials) { return _this._signed(params, credentials, isAllResponse); })];
             });
         });
     };
@@ -35215,37 +36106,54 @@ var RestClient = /** @class */ (function () {
     * @return {string} - The endpoint of the api
     */
     RestClient.prototype.endpoint = function (apiName) {
+        var _this = this;
         var cloud_logic_array = this._options.endpoints;
         var response = '';
         cloud_logic_array.forEach(function (v) {
             if (v.name === apiName) {
                 response = v.endpoint;
+                if (typeof v.region === 'string') {
+                    _this._region = v.region;
+                }
+                else if (typeof _this._options.region === 'string') {
+                    _this._region = _this._options.region;
+                }
+                if (typeof v.service === 'string') {
+                    _this._service = v.service || 'execute-api';
+                }
             }
         });
         return response;
     };
     /** private methods **/
-    RestClient.prototype._signed = function (params, credentials) {
-        var signed_params = Signer_1.default.sign(params, {
-            secret_key: credentials.secretAccessKey,
-            access_key: credentials.accessKeyId,
-            session_token: credentials.sessionToken
-        });
+    RestClient.prototype._signed = function (params, credentials, isAllResponse) {
+        var endpoint_region = this._region || this._options.region;
+        var endpoint_service = this._service || this._options.service;
+        var creds = {
+            'secret_key': credentials.secretAccessKey,
+            'access_key': credentials.accessKeyId,
+            'session_token': credentials.sessionToken
+        };
+        var service_info = {
+            'service': endpoint_service,
+            'region': endpoint_region
+        };
+        var signed_params = Signer_1.default.sign(params, creds, service_info);
         if (signed_params.data) {
             signed_params.body = signed_params.data;
         }
-        logger.debug(signed_params);
+        logger.debug('Signed Request: ', signed_params);
         delete signed_params.headers['host'];
         return axios_1.default(signed_params)
-            .then(function (response) { return response.data; })
+            .then(function (response) { return isAllResponse ? response : response.data; })
             .catch(function (error) {
             logger.debug(error);
             throw error;
         });
     };
-    RestClient.prototype._request = function (params) {
+    RestClient.prototype._request = function (params, isAllResponse) {
         return axios_1.default(params)
-            .then(function (response) { return response.data; })
+            .then(function (response) { return isAllResponse ? response : response.data; })
             .catch(function (error) {
             logger.debug(error);
             throw error;
@@ -35264,22 +36172,22 @@ exports.RestClient = RestClient;
 
 
 /***/ }),
-/* 315 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(316);
+module.exports = __webpack_require__(324);
 
 /***/ }),
-/* 316 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var bind = __webpack_require__(110);
-var Axios = __webpack_require__(318);
-var defaults = __webpack_require__(52);
+var bind = __webpack_require__(112);
+var Axios = __webpack_require__(326);
+var defaults = __webpack_require__(53);
 
 /**
  * Create an instance of Axios
@@ -35312,15 +36220,15 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(114);
-axios.CancelToken = __webpack_require__(332);
-axios.isCancel = __webpack_require__(113);
+axios.Cancel = __webpack_require__(116);
+axios.CancelToken = __webpack_require__(340);
+axios.isCancel = __webpack_require__(115);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(333);
+axios.spread = __webpack_require__(341);
 
 module.exports = axios;
 
@@ -35329,7 +36237,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 317 */
+/* 325 */
 /***/ (function(module, exports) {
 
 /*!
@@ -35356,16 +36264,16 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 318 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(52);
+var defaults = __webpack_require__(53);
 var utils = __webpack_require__(4);
-var InterceptorManager = __webpack_require__(327);
-var dispatchRequest = __webpack_require__(328);
+var InterceptorManager = __webpack_require__(335);
+var dispatchRequest = __webpack_require__(336);
 
 /**
  * Create a new instance of Axios
@@ -35442,7 +36350,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 319 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35461,13 +36369,13 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 320 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var createError = __webpack_require__(112);
+var createError = __webpack_require__(114);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -35494,7 +36402,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 321 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35522,7 +36430,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 322 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35597,7 +36505,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 323 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35657,7 +36565,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 324 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35732,7 +36640,7 @@ module.exports = (
 
 
 /***/ }),
-/* 325 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35775,7 +36683,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 326 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35835,7 +36743,7 @@ module.exports = (
 
 
 /***/ }),
-/* 327 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35894,18 +36802,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 328 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var transformData = __webpack_require__(329);
-var isCancel = __webpack_require__(113);
-var defaults = __webpack_require__(52);
-var isAbsoluteURL = __webpack_require__(330);
-var combineURLs = __webpack_require__(331);
+var transformData = __webpack_require__(337);
+var isCancel = __webpack_require__(115);
+var defaults = __webpack_require__(53);
+var isAbsoluteURL = __webpack_require__(338);
+var combineURLs = __webpack_require__(339);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -35987,7 +36895,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 329 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36014,7 +36922,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 330 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36035,7 +36943,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 331 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36056,13 +36964,13 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 332 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Cancel = __webpack_require__(114);
+var Cancel = __webpack_require__(116);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -36120,7 +37028,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 333 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36154,7 +37062,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 334 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36172,7 +37080,7 @@ module.exports = function spread(callback) {
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var I18n_1 = __webpack_require__(335);
+var I18n_1 = __webpack_require__(343);
 var Logger_1 = __webpack_require__(14);
 var logger = new Logger_1.ConsoleLogger('I18n');
 var _config = null;
@@ -36265,7 +37173,7 @@ exports.default = I18n;
 
 
 /***/ }),
-/* 335 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

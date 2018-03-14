@@ -13,9 +13,11 @@ The AWS Amplify Auth module provides Authentication APIs and building blocks to 
   - [5. Write Your Own Auth UI](#5-write-your-own-auth-ui)
   - [6. Federated Identity](#6-federated-identity)
   - [7. User Attributes](#7-user-attributes)
+  - [8. Select Preferred MFA](#8-select-preferred-mfa)
 * [Extension](#extension)
   - [UI Theme](#ui-theme)
   - [Error Message](#error-message)
+  - [AWS Services](#aws-services)
 
 ## Installation and Configuration
 
@@ -51,13 +53,24 @@ Amplify.configure({
     // REQUIRED - Amazon Cognito Identity Pool ID
         identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
     // REQUIRED - Amazon Cognito Region
-        region: 'XX-XXXX-X', 
+        region: 'XX-XXXX-X',
     // OPTIONAL - Amazon Cognito User Pool ID
         userPoolId: 'XX-XXXX-X_abcd1234',
-    // OPTIONAL - Amazon Cognito Web Client ID
-        userPoolWebClientId: 'XX-XXXX-X_abcd1234',
+    // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
+        userPoolWebClientId: 'a1b2c3d4e5f6g7h8i9j0k1l2m3',
     // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
-        mandatorySignIn: false
+        mandatorySignIn: false,
+    // OPTIONAL - Configuration for cookie storage
+        cookieStorage: {
+        // REQUIRED - Cookie domain (only required if cookieStorage is provided)
+            domain: '.yourdomain.com',
+        // OPTIONAL - Cookie path
+            path: '/',
+        // OPTIONAL - Cookie expiration in days
+            expires: 365,
+        // OPTIONAL - Cookie secure flag
+            secure: true
+        }
     }
 });
 ```
@@ -115,6 +128,18 @@ Auth.signOut()
     .catch(err => console.log(err));
 ```
 
+#### Change password
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.currentAuthenticatedUser()
+    .then(user => {
+        return Auth.changePassword(user, 'oldPassword', 'newPassword');
+    })
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+```
+
 #### Forgot Password
 ```js
 import { Auth } from 'aws-amplify';
@@ -134,6 +159,47 @@ Return a `CognitoUserSession` which contains JWT `accessToken`, `idToken`, and `
 ```js
 let session = Auth.currentSession();
 // CognitoUserSession => { idToken, refreshToken, accessToken }
+```
+
+#### Setup TOTP
+```js
+import { Auth } from 'aws-amplify';
+
+// To setup TOTP, first you need to get a secret code from AWS Cognito
+// user -> the current Authenticated user
+Auth.setupTOTP(user).then((code) => {
+    // directly output the code or transfer it into a QR code
+});
+
+// ...
+
+// Then you will have your TOTP account in your App (like Google Authenticator)
+// Use the password generated to verify the setup
+Auth.verifyTotpToken(user).then(() => {
+    // don't forget to set TOTP as the preferred MFA method
+    Auth.setPreferredMFA(user, 'TOTP');
+    // ...
+});
+```
+
+#### Select MFA Type
+```js
+import { Auth } from 'aws-amplify';
+
+// You can select preferred mfa type, for example:
+// Select TOTP as preferred
+Auth.setPreferredMFA(user, 'TOTP').then((data) => {
+    console.log(data);
+    // ...
+}).catch(e => {});
+
+// Select SMS as preferred
+Auth.setPreferredMFA(user, 'SMS');
+
+// Select no-mfa
+Auth.setPreferredMFA(user, 'NOMFA');
+
+// Please Note that this will only work
 ```
 
 ### 2. withAuthenticator HOC
@@ -395,6 +461,38 @@ If you change the email address you will receive a confirmation code to that ema
 let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
 ```
 
+### 8 Select Preferred MFA
+
+You can directly use the ```SelectMFType``` UI Component provided by ```aws-amplify-react```.
+
+```js
+import Amplify from 'aws-amplify';
+import awsmobile from './aws-exports';
+import { SelectMFAType } from 'aws-amplify-react';
+
+Amplify.configure(awsmobile);
+
+// Please have at least TWO types
+// Please make sure you set it properly accroding to your Cognito Userpool
+const MFATypes = {
+    SMS: true, // if SMS enabled in your user pool
+    TOTP: true, // if TOTP enabled in your user pool
+    Optional: true, // if MFA is set to optional in your user pool
+}
+
+class App extends Component {
+    // ...
+    render() {
+        return (
+            // ...
+            <SelectMFAType authData={this.props.authData} MFATypes={MFATypes}>
+        )
+    }
+}
+
+export default withAuthenticator(App, true);
+```
+
 ## Extensions
 
 ### UI Theme
@@ -441,3 +539,24 @@ const map = (message) => {
 ```
 
 You may notice in `AmplifyMessageMap.js` it also handles internationalization. The topic is covered in [I18n Guide](i18n_guide.md)
+
+### AWS Services
+
+You can call methods on any AWS Service by passing in your credentials from auth to the service call constructor:
+
+```js
+Auth.currentCredentials()
+  .then(credentials => {
+    const route53 = new Route53({
+      apiVersion: '2013-04-01',
+      credentials: Auth.essentialCredentials(credentials)
+    });
+
+    // more code working with route53 object
+    // route53.changeResourceRecordSets();
+  })
+```
+
+Note: your Amazon Cognito users' [IAM role](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) must have the appropriate permissions to call the requested services.
+
+Full API Documentation is available <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html" target="_blank">here</a>.

@@ -328,7 +328,7 @@ class AsyncStorageCache extends StorageCache implements ICache {
           // if not expired, great, return the value and refresh it
           let item = JSON.parse(ret);
           item = await this._refreshItem(item, prefixedKey);
-          return JSON.parse(item.data);
+          return item.data;
         }
       }
 

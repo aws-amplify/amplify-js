@@ -4,4 +4,8 @@ export default class JS {
     static objectLessAttributes(obj: any, less: any): any;
     static filenameToContentType(filename: any, defVal?: string): string;
     static isTextFile(contentType: any): boolean;
+    /**
+     * generate random string
+     */
+    static generateRandomString(): string;
 }

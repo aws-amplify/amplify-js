@@ -18,6 +18,7 @@ import { View } from 'react-native';
 import { Logger } from 'aws-amplify';
 import Authenticator from './Authenticator';
 import AuthPiece from './AuthPiece';
+import Loading from './Loading';
 import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
 import SignUp from './SignUp';
@@ -29,7 +30,7 @@ import Greetings from './Greetings';
 
 const logger = new Logger('auth components');
 
-export { Authenticator, AuthPiece, SignIn, ConfirmSignIn, SignUp, ConfirmSignUp, ForgotPassword, RequireNewPassword, VerifyContact, Greetings };
+export { Authenticator, AuthPiece, SignIn, ConfirmSignIn, SignUp, ConfirmSignUp, ForgotPassword, Loading, RequireNewPassword, VerifyContact, Greetings };
 
 export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = []) {
     class Wrapper extends React.Component {

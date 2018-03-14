@@ -11,10 +11,10 @@
  * and limitations under the License.
  */
 
-import Auth from './Auth';
-import Analytics from './Analytics';
-import Storage from './Storage';
-import API from './API';
+import Analytics, { AnalyticsClass, AnalyticsProvider } from './Analytics';
+import Auth, { AuthClass } from './Auth';
+import Storage, { StorageClass } from './Storage';
+import API, { APIClass } from './API';
 import I18n from './I18n';
 import Cache from './Cache';
 import {
@@ -28,10 +28,10 @@ import {
 const logger = new Logger('Amplify');
 
 export default class Amplify {
-    static Auth = null;
-    static Analytics = null;
-    static API = null;
-    static Storage = null;
+    static Auth: AuthClass = null;
+    static Analytics: AnalyticsClass = null;
+    static API: APIClass = null;
+    static Storage: StorageClass = null;
     static I18n = null;
     static Cache = null;
 
@@ -45,6 +45,29 @@ export default class Amplify {
         API.configure(config);
         Storage.configure(config);
         Cache.configure(config);
+
+        return config;
+    }
+
+    static addPluggable(pluggable) {
+        if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
+            const category = pluggable.getCategory();
+            switch(category) {
+                case 'Analytics':
+                    Analytics.addPluggable(pluggable);
+                    break;
+                case 'Auth':
+                    break;
+                case 'API':
+                    break;
+                case 'Cache':
+                    break;
+                case 'Storage':
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
 
@@ -58,3 +81,4 @@ Amplify.Cache = Cache;
 Amplify.Logger = Logger;
 
 export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
+export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider };
