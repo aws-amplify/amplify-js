@@ -127,11 +127,6 @@ export default function withFacebook(Comp) {
                         }
                         Auth.federatedSignIn('facebook', { token: accessToken, expires_at, refreshing: true }, user);
                     });
-                } else {
-                    const { onStateChange } = this.props;
-                    if (onStateChange) {
-                        onStateChange('signIn');
-                    }
                 }
             });
         }

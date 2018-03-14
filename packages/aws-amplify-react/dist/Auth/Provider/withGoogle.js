@@ -81,7 +81,7 @@ function withGoogle(Comp) {
 
                     var onStateChange = this.props.onStateChange;
 
-                    return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user).then(function (credentials) {
+                    return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at, refreshing: false }, user).then(function (crednetials) {
                         if (onStateChange) {
                             onStateChange('signedIn');
                         }
@@ -170,6 +170,9 @@ function withGoogle(Comp) {
                                 return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at, refreshing: true }, user);
                             });
                         }
+                    })['catch'](function (err) {
+                        logger.debug('Failed to refresh google token', err);
+                        return Promise.resolve();
                     });
                 }
 

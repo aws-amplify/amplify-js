@@ -46,6 +46,7 @@ function withFacebook(Comp) {
             _this.initFB = _this.initFB.bind(_this);
             _this.signIn = _this.signIn.bind(_this);
             _this.federatedSignIn = _this.federatedSignIn.bind(_this);
+            _this.refreshFacebookToken = _this.refreshFacebookToken.bind(_this);
 
             _this.state = {};
             return _this;
@@ -96,7 +97,7 @@ function withFacebook(Comp) {
                             name: response.name
                         };
 
-                        _awsAmplify.Auth.federatedSignIn('facebook', { token: accessToken, expires_at: expires_at }, user).then(function (credentials) {
+                        _awsAmplify.Auth.federatedSignIn('facebook', { token: accessToken, expires_at: expires_at, refreshing: false }, user).then(function (credentials) {
                             if (onStateChange) {
                                 onStateChange('signedIn');
                             }
@@ -110,7 +111,12 @@ function withFacebook(Comp) {
             key: 'componentDidMount',
             value: function () {
                 function componentDidMount() {
+                    var refreshInterval = 25 * 60 * 1000; // 25min
                     this.createScript();
+                    var that = this;
+                    window.setInterval(function () {
+                        that.refreshFacebookToken();
+                    }, refreshInterval);
                 }
 
                 return componentDidMount;
@@ -162,6 +168,42 @@ function withFacebook(Comp) {
                 }
 
                 return createScript;
+            }()
+        }, {
+            key: 'refreshFacebookToken',
+            value: function () {
+                function refreshFacebookToken() {
+                    var fb = window.FB;
+                    if (!fb) {
+                        logger.debug('no fb sdk available');
+                        return Promise.resolve();
+                    }
+
+                    fb.getLoginStatus(function (response) {
+                        if (response.status === 'connected') {
+                            var authResponse = response.authResponse;
+                            var accessToken = authResponse.accessToken,
+                                expiresIn = authResponse.expiresIn;
+
+
+                            var date = new Date();
+                            var expires_at = expiresIn * 1000 + date.getTime();
+                            if (!accessToken) {
+                                return;
+                            }
+
+                            var _fb = window.FB;
+                            _fb.api('/me', function (response) {
+                                var user = {
+                                    name: response.name
+                                };
+                                _awsAmplify.Auth.federatedSignIn('facebook', { token: accessToken, expires_at: expires_at, refreshing: true }, user);
+                            });
+                        }
+                    });
+                }
+
+                return refreshFacebookToken;
             }()
         }, {
             key: 'render',
