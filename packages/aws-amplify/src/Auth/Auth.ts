@@ -220,7 +220,7 @@ export default class AuthClass {
             user.authenticateUser(authDetails, {
                 onSuccess: (session) => {
                     logger.debug(session);
-                    Credentials.setCredentials({session, providerName: 'AWSCognito'});
+                    Credentials.setCredentials({session, providerName: 'AWSCognito', currentSessionHandler: that.currentSession});
                     that.user = user;
                     that.user_source = 'userpool';
                     dispatchAuthEvent('signIn', user);
@@ -456,7 +456,7 @@ export default class AuthClass {
                 { 
                     onSuccess: (session) => {
                         logger.debug(session);
-                        Credentials.setCredentials({session, providerName: 'AWSCognito'});
+                        Credentials.setCredentials({session, providerName: 'AWSCognito', currentSession: that.currentSession});
                         that.user = user;
                         that.user_source = 'userpool';
                         dispatchAuthEvent('signIn', user);

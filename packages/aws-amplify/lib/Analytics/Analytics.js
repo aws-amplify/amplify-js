@@ -252,8 +252,10 @@ var AnalyticsClass = /** @class */ (function () {
         var that = this;
         return Credentials_1.default.getCredentials()
             .then(function (credentials) {
-            if (!credentials)
+            if (!credentials) {
+                logger.debug('no credentials available');
                 return false;
+            }
             var cred = Credentials_1.default.essentialCredentials({ credentials: credentials });
             that._config.credentials = cred;
             // that._config.endpointId = cred.identityId;

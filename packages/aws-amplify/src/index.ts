@@ -40,14 +40,15 @@ export default class Amplify {
 
     static configure(config) {
         if (!config) { return; }
-        Credentials.configure(config);
-        Auth.configure(config);
-        I18n.configure(config);
-        Analytics.configure(config);
-        API.configure(config);
-        Storage.configure(config);
         Cache.configure(config);
-
+        Auth.configure(config);
+        Credentials.configure(config);
+        Credentials.getCredentials(config).then(credentials => {
+            I18n.configure(config);
+            Analytics.configure(config);
+            API.configure(config);
+            Storage.configure(config);
+        });
         return config;
     }
 

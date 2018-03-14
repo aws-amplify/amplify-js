@@ -6,7 +6,6 @@ import {
     Hub
 } from '../../Common';
 
-import Auth from '../../Auth'; 
 import Cache from '../../Cache';
 const {
     CognitoIdentityCredentials
@@ -18,6 +17,8 @@ export default class CognitoCredentials {
     private _credentials;
     private credentials_source = ''; // aws, guest, userPool, federated
     private _config;
+    private gettingCred = false;
+    private _currentSessionHandler;
 
     constructor(config?) {
         this._config = config? config: {};
@@ -57,6 +58,7 @@ export default class CognitoCredentials {
         const { session, guest, federated } = config;
         
         if (session) {
+            this._currentSessionHandler = config.currentSessionHandler;
             return this._setCredentialsFromSession(session);
         } else if (guest) {
             return this._setCredentialsForGuest();
@@ -82,21 +84,14 @@ export default class CognitoCredentials {
      * Get authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
-    public getCredentials(config?): Promise<any> {
+    public async getCredentials(config?): Promise<any> {
         logger.debug('getting credentials with config', config);
-        if (this._credentials && !this._isExpired(this._credentials)) {
+        const cred = this._credentials || AWS.config.credentials;
+        if (cred && !this._isExpired(cred)) {
             logger.debug('credentails exists and not expired');
-            return Promise.resolve(this._credentials);
+            return Promise.resolve(cred);
         } else {
-            const that = this;
-            return this._retrieveCredentialsFromAuth()
-                .then(() => {
-                    const credentials = that._credentials;
-                    return that._refreshCredentials(credentials);
-                })
-                .catch(() => {
-                    return Promise.resolve(null);
-                });
+            return this._retrieveCredentialsFromAuth();
         } 
     }
 
@@ -123,15 +118,16 @@ export default class CognitoCredentials {
             const federatedInfo = await Cache.getItem('federatedInfo');
             if (federatedInfo) {
                 const { provider, token, user} = federatedInfo;
-                return new Promise((resolve, reject) => {
-                    this._setCredentialsFromFederation({ provider, token, user });
-                    resolve();
-                });
+                return this._setCredentialsFromFederation({ provider, token, user });
             } else {
                 const that = this;
-                return Auth.currentSession()
-                    .then(session => that._setCredentialsFromSession(session))
-                    .catch((error) => that._setCredentialsForGuest());
+                if (this._currentSessionHandler && typeof this._currentSessionHandler === 'function') {
+                    return this._currentSessionHandler()
+                        .then(session => that._setCredentialsFromSession(session))
+                        .catch((error) => that._setCredentialsForGuest())
+                } else {
+                    return this._setCredentialsForGuest();
+                }
             }
         } catch (e) {
             return Promise.reject(e);
@@ -187,12 +183,26 @@ export default class CognitoCredentials {
         },  {
             region: cognitoRegion
         });
-        credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
-        this._credentials = credentials;
-        this._credentials.authenticated = false;
-        this.credentials_source = 'guest';
 
-        return Promise.resolve(this._credentials);
+        const that = this;
+        return new Promise((res, rej) => {
+            credentials.getPromise().then(
+                () => {
+                    logger.debug('Load creadentials for guest successfully', credentials);
+                    that._credentials = credentials;
+                    that._credentials.authenticated = false;
+                    that.credentials_source = 'guest';
+                    if (AWS && AWS.config) { AWS.config.credentials = that._credentials; }
+                    this.gettingCred = false;
+                    res(that._credentials);
+                },
+                (err) => {
+                    logger.debug('Failed to load creadentials for guest', credentials);
+                    this.gettingCred = false;
+                    rej('Failed to load creadentials for guest');
+                }
+            );
+        });
     }
     
     private _setCredentialsFromSession(session) {
@@ -202,17 +212,33 @@ export default class CognitoCredentials {
         const key = 'cognito-idp.' + cognitoRegion + '.amazonaws.com/' + cognitoUserPoolId;
         const logins = {};
         logins[key] = idToken;
-        this._credentials = new CognitoIdentityCredentials(
+        const credentials = new CognitoIdentityCredentials(
             {
             IdentityPoolId: cognitoIdentityPoolId,
             Logins: logins
         },  {
             region: cognitoRegion
         });
-        this._credentials.authenticated = true;
-        this.credentials_source = 'userPool';
-
-        return Promise.resolve(this._credentials);
+        
+        const that = this;
+        return new Promise((res, rej) => {
+            credentials.getPromise().then(
+                () => {
+                    logger.debug('Load creadentials for userpool user successfully', credentials);
+                    that._credentials = credentials;
+                    that._credentials.authenticated = true;
+                    that.credentials_source = 'userpool';
+                    if (AWS && AWS.config) { AWS.config.credentials = that._credentials; }
+                    this.gettingCred = false;
+                    res(that._credentials);
+                },
+                (err) => {
+                    logger.debug('Failed to load creadentials for userpoool user', credentials);
+                    this.gettingCred = false;
+                    rej('Failed to load creadentials for userpool user');
+                }
+            );
+        });
     }
 
     private _setCredentialsFromFederation(federated) {
@@ -236,18 +262,32 @@ export default class CognitoCredentials {
         logins[domain] = token;
 
         const { cognitoIdentityPoolId, cognitoRegion } = this._config;
-        this._credentials = new AWS.CognitoIdentityCredentials(
+        const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: cognitoIdentityPoolId,
             Logins: logins
         },  {
             region: cognitoRegion
         });
-        this._credentials.authenticated = true;
-        this.credentials_source = 'federated';
-
-        if (AWS && AWS.config) { AWS.config.credentials = this._credentials; }
-
-        return Promise.resolve(this._credentials);
+        
+        const that = this;
+        return new Promise((res, rej) => {
+            credentials.getPromise().then(
+                () => {
+                    logger.debug('Load creadentials for federation user successfully', credentials);
+                    that._credentials = credentials;
+                    that._credentials.authenticated = false;
+                    that.credentials_source = 'federated';
+                    if (AWS && AWS.config) { AWS.config.credentials = that._credentials; }
+                    this.gettingCred = false;
+                    res(that._credentials);
+                },
+                (err) => {
+                    logger.debug('Failed to load creadentials for federation user', credentials);
+                    this.gettingCred = false;
+                    rej('Failed to load creadentials for federation user');
+                }
+            );
+        });
     }
 }

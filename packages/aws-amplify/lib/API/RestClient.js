@@ -102,8 +102,7 @@ var RestClient = /** @class */ (function () {
     */
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            var parsed_url, params, libraryHeaders, userAgent, extraParams, isAllResponse;
+            var parsed_url, params, libraryHeaders, userAgent, extraParams, isAllResponse, that;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -134,8 +133,18 @@ var RestClient = /** @class */ (function () {
                 if (params.headers['Authorization']) {
                     return [2 /*return*/, this._request(params, isAllResponse)];
                 }
+                that = this;
                 return [2 /*return*/, Credentials_1.default.getCredentials()
-                        .then(function (credentials) { return _this._signed(params, credentials, isAllResponse); })];
+                        .then(function (credentials) {
+                        if (!credentials) {
+                            logger.debug('no credentials available');
+                            return;
+                        }
+                        that._signed(params, credentials, isAllResponse);
+                    })
+                        .catch(function (e) {
+                        logger.debug('get credentials error', e);
+                    })];
             });
         });
     };

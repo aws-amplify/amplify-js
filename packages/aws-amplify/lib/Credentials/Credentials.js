@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var CognitoCredentials_1 = require("./CognitoCredentials");
+var CognitoCredentials_1 = require("./Providers/CognitoCredentials");
 var Common_1 = require("../Common");
 var logger = new Common_1.ConsoleLogger('Auth');
 var Credentials = /** @class */ (function () {
@@ -9,6 +9,10 @@ var Credentials = /** @class */ (function () {
         this._pluggables = [];
         this.addPluggable(new CognitoCredentials_1.default());
     }
+    /**
+     * Configure
+     * @param {Object} config - the configuration
+     */
     Credentials.prototype.configure = function (config) {
         logger.debug('configure Credentials');
         var conf = Object.assign({}, this._config, Common_1.Parser.parseMobilehubConfig(config).Credentials);
@@ -17,10 +21,12 @@ var Credentials = /** @class */ (function () {
         this._pluggables.map(function (pluggable) {
             pluggable.configure(conf);
         });
-        // if (this._pluggables.length === 0) {
-        // }
         return this._config;
     };
+    /**
+     * Add pluggables to Credentials category
+     * @param {Object} pluggable - plugin
+     */
     Credentials.prototype.addPluggable = function (pluggable) {
         if (pluggable) {
             this._pluggables.push(pluggable);
@@ -28,6 +34,10 @@ var Credentials = /** @class */ (function () {
             return config;
         }
     };
+    /**
+     * Set credentials with configuration
+     * @param {Object} config - the configuration
+     */
     Credentials.prototype.setCredentials = function (config) {
         var _this = this;
         var providerName = 'AWSCognito';
@@ -43,9 +53,17 @@ var Credentials = /** @class */ (function () {
                         rej('set credentials failed: ' + e);
                     });
                 }
+                else {
+                    logger.debug('no provider found');
+                    res(null);
+                }
             });
         });
     };
+    /**
+     * Remove credentials with configuration
+     * @param {Object} config - the configuraiton
+     */
     Credentials.prototype.removeCredentials = function (config) {
         var providerName = 'AWSCognito';
         if (config && config.providerName)
@@ -56,6 +74,10 @@ var Credentials = /** @class */ (function () {
             }
         });
     };
+    /**
+     * cut credentials to compact version
+     * @param params
+     */
     Credentials.prototype.essentialCredentials = function (params) {
         var providerName = 'AWSCognito';
         if (params && params.providerName)
@@ -68,6 +90,10 @@ var Credentials = /** @class */ (function () {
         });
         return ret;
     };
+    /**
+     * Get credentials with configuration
+     * @param {Object} config - the configuraiton
+     */
     Credentials.prototype.getCredentials = function (config) {
         var providerName = 'AWSCognito';
         if (config && config.providerName)
@@ -82,6 +108,10 @@ var Credentials = /** @class */ (function () {
                     }).catch(function (err) {
                         res(null);
                     });
+                }
+                else {
+                    logger.debug('no provider found');
+                    res(null);
                 }
             });
         });

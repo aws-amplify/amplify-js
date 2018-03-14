@@ -2,19 +2,35 @@ export default class CognitoCredentials {
     private _credentials;
     private credentials_source;
     private _config;
+    private gettingCred;
+    private _currentSessionHandler;
     constructor(config?: any);
+    /**
+     * pass the configuration
+     * @param config
+     */
     configure(config: any): any;
+    /**
+     * Get the category of this provider
+     */
     getCategory(): string;
+    /**
+     * Get the name of this provider
+     */
     getProviderName(): string;
-    setCredentials(config: any): Promise<any>;
+    /**
+     * Set the credentials with configuration
+     * @param config - the configuration to set the credentials
+     */
+    setCredentials(config: any): Promise<{}>;
+    /**
+     * Remove the credential from library
+     */
     removeCredentials(): void;
-    refreshCredentials(credentials: any): Promise<any>;
-    isExpired(credentials: any): boolean;
     /**
      * Get authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
-    retrieveCredentialsFromAuth(): Promise<any>;
     getCredentials(config?: any): Promise<any>;
     /**
      * Compact version of credentials
@@ -28,7 +44,10 @@ export default class CognitoCredentials {
         identityId: any;
         authenticated: any;
     };
-    private setCredentialsForGuest();
-    private setCredentialsFromSession(session);
-    private setCredentialsFromFederation(federated);
+    private _retrieveCredentialsFromAuth();
+    private _isExpired(credentials);
+    private _refreshCredentials(credentials);
+    private _setCredentialsForGuest();
+    private _setCredentialsFromSession(session);
+    private _setCredentialsFromFederation(federated);
 }

@@ -129,10 +129,6 @@ export default class AuthClass {
      */
     userSession(user: any): Promise<any>;
     /**
-    //  * Get authenticated credentials of current user.
-    //  * @return - A promise resolves to be current user's credentials
-    //  */
-    /**
      * Initiate an attribute confirmation request
      * @param {Object} user - The CognitoUser
      * @param {Object} attr - The attributes to be verified

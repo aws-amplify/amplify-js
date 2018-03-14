@@ -44,13 +44,15 @@ var Amplify = /** @class */ (function () {
         if (!config) {
             return;
         }
-        Credentials_1.default.configure(config);
-        Auth_1.default.configure(config);
-        I18n_1.default.configure(config);
-        Analytics_1.default.configure(config);
-        API_1.default.configure(config);
-        Storage_1.default.configure(config);
         Cache_1.default.configure(config);
+        Auth_1.default.configure(config);
+        Credentials_1.default.configure(config);
+        Credentials_1.default.getCredentials(config).then(function (credentials) {
+            I18n_1.default.configure(config);
+            Analytics_1.default.configure(config);
+            API_1.default.configure(config);
+            Storage_1.default.configure(config);
+        });
         return config;
     };
     Amplify.addPluggable = function (pluggable) {

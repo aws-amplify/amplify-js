@@ -20,6 +20,7 @@ var Parser = /** @class */ (function () {
             Credentials['cognitoIdentityPoolId'] = config['aws_cognito_identity_pool_id'];
             Credentials['cognitoRegion'] = config['aws_cognito_region'];
             Credentials['cognitoUserPoolId'] = config['aws_user_pools_id'];
+            Credentials['mandatorySignIn'] = config['aws_mandatory_sign_in'];
             amplifyConfig.Credentials = Credentials;
         }
         amplifyConfig.Analytics = Object.assign({}, amplifyConfig.Analytics, config.Analytics);
