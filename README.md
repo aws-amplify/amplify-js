@@ -36,9 +36,8 @@ AWS Amplify provides a declarative and easy-to-use interface across different ca
 * [Examples](#example)
   - [1. Collect user session metrics.](#1-collect-user-session-metrics)
   - [2. Add Authentication](#2-add-authentication-to-your-app)
-  - [3. Override default authentication screens](#3-override-default-authentication-screens)
-  - [4. Sign HTTP requests](#4-sign-http-requests)
-  - [5. Upload and Download public or private content](#5-upload-and-download-public-or-private-content)
+  - [3. Sign HTTP requests](#4-sign-http-requests)
+  - [4. Upload and Download public or private content](#5-upload-and-download-public-or-private-content)
 * [Contributing](#contributing)
 
 ## Installation
@@ -56,7 +55,7 @@ If you are developing a [React](https://github.com/facebook/react/) app, you can
 ```
 $ npm install aws-amplify-react --save
 ```
-#### Visit our [Installation Guide for Web]('https://aws.github.io/aws-amplify/media/install_n_config?platform=javascript') to start building your web app.  
+#### Visit our [Installation Guide for Web](https://aws.github.io/aws-amplify/media/install_n_config?platform=javascript) to start building your web app.  
 
 ### React Native Development
 
@@ -72,11 +71,11 @@ If you are developing a [React Native](https://github.com/facebook/react-native)
 $ npm install aws-amplify-react-native --save
 ```
 
-#### Visit our [Installation Guide for React Native]('https://aws.github.io/aws-amplify/media/install_n_config?platform=react-native') to start building your web app.  
+#### Visit our [Installation Guide for React Native](https://aws.github.io/aws-amplify/media/install_n_config?platform=react-native) to start building your web app.  
 
 ## Examples
 
-AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](https://aws.github.io/aws-amplify/media/developer_guide). A couple of samples are below. For in-depth samples with specific frameworks:
+AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](https://aws.github.io/aws-amplify/media/developer_guide). A couple of samples are below:
 
 ### 1. Collect user session metrics
 
@@ -128,9 +127,9 @@ API.get(apiName, path, options).then(response => {
 
 #### See our [API Developer Guide](https://aws.github.io/aws-amplify/media/api_guide) for detailed information. 
 
-### 5. Upload and Download public or private content
+### 4. Upload and Download public or private content
 
-AWS Amplify provides an easy-to-use API to store and get content from public or private folders:  
+AWS Amplify provides an easy-to-use API to store and get content from public or private storage folders:  
 
 ```js
   Storage.put(key, fileObj, {level: 'private'})
@@ -151,14 +150,3 @@ AWS Amplify provides an easy-to-use API to store and get content from public or 
 ## Contributing
 
 See [Contributing Guidelines](https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md)
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-115615468-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-115615468-1');
-</script>
-
