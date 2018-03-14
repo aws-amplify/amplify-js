@@ -52,6 +52,7 @@ kramdown:
   parse_block_html: true
 plugins:
   - jekyll-feed
+  - jekyll-sitemap
 future: true  
 
 
@@ -105,7 +106,8 @@ sass:
 layouts_dir: ./amplify-theme/_layouts
 includes_dir: ./amplify-theme/_includes
 exclude: [ 'README.md', 'CHANGELOG.md' ]
-permalink: /:title/
+permalink: /:title
+post_dirs: true
 
 category_list:
     - category: Modules

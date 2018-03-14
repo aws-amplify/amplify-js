@@ -9,7 +9,7 @@ description: A JavaScript library for application development using cloud servic
 buttons:
     - content: Let's Rock!
       icon: arrow-right
-      url: 'media/quick_start/'
+      url: '/media/quick_start'
       external_url: false
 
 # Grid navigation
