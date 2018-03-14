@@ -20,7 +20,7 @@ marketing_grid:
                     See our <a href='/aws-amplify/media/examples'>code examples</a> to learn how you can 'cloud-enable' your app in under 5 minutes.
                 </p> 
     - title: Bring your own frontend 
-      excerpt: <p>AWS Amplify goes well with any JavaScript based frontend worfklow, and React Native for mobile developers.</p> 
+      excerpt: <p>AWS Amplify goes well with any JavaScript based frontend workflow, and React Native for mobile developers.</p> 
                <p>See our starter kits for  
                   <a href='https://github.com/awslabs/aws-mobile-react-sample'>React</a>, 
                   <a href='https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws'>Ionic</a>,

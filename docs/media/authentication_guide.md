@@ -583,6 +583,39 @@ The *Greetings* component has two states: signedIn, and signedOut. To customize 
     </Authenticator>
 ```
 
+### Customize `withAuthenticator` 
+
+The `withAuthenticator` HOC gives you some nice default authentication screens out-of-box. If you want to
+use your own components rather then provided default components, you can pass the list of customized components to `withAuthenticator`:
+
+```js
+import React, { Component } from 'react';
+import { ConfirmSignIn, ConfirmSignUp, ForgotPassword, SignIn, SignUp, VerifyContact, withAuthenticator } from 'aws-amplify-react';
+
+class App extends Component {
+  render() {
+    ...
+  }
+}
+
+// This is my custom Sign in component
+class MySignIn extends SignIn {
+  render() {
+    ...
+  }
+}
+
+export default withAuthenticator(App, false, [
+  <MySignIn/>,
+  <ConfirmSignIn/>,
+  <VerifyContact/>,
+  <SignUp/>,
+  <ConfirmSignUp/>,
+  <ForgotPassword/>
+]);
+
+```
+
 ### Customizing Error Messages
 
 During authentication flows, Amplify handles error messages returned from server. Amplify provides a simple way of customizing those error messages with a `messageMap` callback.
