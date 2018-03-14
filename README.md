@@ -23,7 +23,9 @@
 
 ### AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications. 
 
-AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations. AWS Amplify goes well with any JavaScript based frontend workflow, and React Native for mobile developers. Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
+AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations. AWS Amplify goes well with any JavaScript based frontend workflow, and React Native for mobile developers. 
+
+Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
 
 #### Visit our [Web Site](https://aws.github.io/aws-amplify) to learn more about AWS Amplify.
 
