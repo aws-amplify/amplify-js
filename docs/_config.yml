@@ -75,7 +75,7 @@ amplify:
               item_url: '/blog'
             - item_name: Github
               item_icon: github
-              item_url: 'https://github.com/aws/aws-amplify'
+              item_external_url: 'https://github.com/aws/aws-amplify'
     footer:
         content:
             logo:

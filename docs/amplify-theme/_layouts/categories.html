@@ -46,7 +46,7 @@
 												<div class="col-sm-6 col-lg-4">
 													<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="nav-grid__item">
 														<div class="nav-grid__content" data-mh>
-															<h2 class="nav-grid__title with-icon {{ item.class }}" >
+															<h2 class="nav-grid__title {% if item.class %}  with-icon {{ item.class }} {% endif %} " >
 																{{ item.title }}
 															</h2>
 															<p>{{ item.excerpt }}</p>

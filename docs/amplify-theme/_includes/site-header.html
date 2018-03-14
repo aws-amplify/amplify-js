@@ -2,8 +2,16 @@
 	<div class="offcanvas visible-xs">
 		<ul class="offcanvas__nav">
 			{% for item in site.amplify.header.nav %}
-				<li><a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
-					{{ item.item_name }}</a>
+				<li>
+					{% if item.item_external_url %}
+						<a href="{{ item.item_external_url }}">
+							 {{ item.item_name }}   
+						</a>
+					{% else %}
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
+							{{ item.item_name }}
+						</a>
+					{% endif %}
 				</li>
 			{% endfor %}
 		</ul><!-- /.offcanvas__nav -->
@@ -28,10 +36,18 @@
 					{% if site.amplify.header.nav %}
 						<ul class="site-header__nav hidden-xs">
 							{% for item in site.amplify.header.nav %}
-								<li><a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
-									{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
-									{{ item.item_name }}
-									</a>
+								<li>
+									{% if item.item_external_url %}
+										<a href="{{ item.item_external_url }}">
+											{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
+											{{ item.item_name }}
+										</a>
+									{% else %}
+										<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
+											{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
+											{{ item.item_name }}
+										</a>
+									{% endif %}
 								</li>
 							{% endfor %}
 							<li class="site-search">
