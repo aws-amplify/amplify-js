@@ -297,10 +297,6 @@ var AuthClass = /** @class */ (function () {
                     user['challengeParam'] = challengeParam;
                     resolve(user);
                 },
-                // associateSecretCode: (secretCode) => {
-                //     logger.debug('signIn asscoiateSecretCode', secretCode);
-                //     resolve(user);
-                // },
                 totpRequired: function (challengeName, challengeParam) {
                     logger.debug('signIn totpRequired');
                     user['challengeName'] = challengeName;
@@ -337,7 +333,7 @@ var AuthClass = /** @class */ (function () {
      * set preferred MFA method
      * @param {CognitoUser} user - the current Cognito user
      * @param {string} mfaMethod - preferred mfa method
-     * @return - A promise resolves if success
+     * @return - A promise resolve if success
      */
     AuthClass.prototype.setPreferredMFA = function (user, mfaMethod) {
         var smsMfaSettings = {
@@ -369,13 +365,13 @@ var AuthClass = /** @class */ (function () {
         }
         var that = this;
         var TOTP_NOT_VERIFED = 'User has not verified software token mfa';
-        var TOTP_NOT_SETUPED = 'User has not set up software token mfa';
+        var TOTP_NOT_SETUP = 'User has not set up software token mfa';
         return new Promise(function (res, rej) {
             user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, function (err, result) {
                 if (err) {
                     // if totp not setup or verified and user want to set it, return error
                     // otherwise igonre it
-                    if (err.message === TOTP_NOT_SETUPED || err.message === TOTP_NOT_VERIFED) {
+                    if (err.message === TOTP_NOT_SETUP || err.message === TOTP_NOT_VERIFED) {
                         if (mfaMethod === 'SMS') {
                             that.enableSMS(user).then(function (data) {
                                 logger.debug('Set user mfa success', data);

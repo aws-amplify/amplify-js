@@ -246,9 +246,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         if (this.mobileAnalytics 
             && this._config.credentials 
             && this._config.credentials.sessionToken === config.credentials.sessionToken
-            && (config.userId? 
-                this._config.userId === config.userId :
-                this._config.credentials.identityId === config.credentials.identityId)) {
+            && this._config.credentials.identityId === config.credentials.identityId) {
             logger.debug('no change for analytics config, directly return from init');
             return true;
         }
@@ -327,7 +325,17 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @return {Object} - The request of updating endpoint
      */
     _endpointRequest() {
-        const { clientInfo, credentials, Address, RequestId, endpointId, userId } = this._config;
+        const { 
+            clientInfo, 
+            credentials, 
+            Address, 
+            RequestId, 
+            Attributes,
+            UserAttributes,
+            endpointId, 
+            UserId
+        } = this._config;
+
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
 
@@ -335,6 +343,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         const OptOut = this._config.OptOut? this._config.OptOut: undefined;
         const ret = {
             Address,
+            Attributes,
             ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || clientInfo.appVersion,
@@ -347,7 +356,8 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             RequestId,
             EffectiveDate: Address? new Date().toISOString() : undefined,
             User: { 
-                UserId: userId? userId: credentials.identityId
+                UserId: UserId? UserId: credentials.identityId,
+                UserAttributes
             }
         };
         return ret;

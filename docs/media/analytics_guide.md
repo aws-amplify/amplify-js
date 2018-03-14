@@ -49,8 +49,6 @@ Amplify.configure(
         region: 'XX-XXXX-X',
     // OPTIONAL -  Customized endpoint
         endpointId: 'XXXXXXXXXXXX'
-    // OPTIONAL -  Cusomized UserId
-        userId: 'XXXXXXXXXXX'
     } 
 );
 
@@ -100,6 +98,29 @@ Metrics can also be added to an event:
 import { Analytics } from 'aws-amplify';
 
 Analytics.record('albumVisit', {}, { minutesListened: 30 });
+```
+
+### 5. Update endpoint with custom attributes
+
+You can update endpoint with your customized attributes so you can segement users based on these attributes.
+
+```js
+import { Analytics } from 'aws-amplify';
+
+Analytics.updateEndpoint({
+    // Customized userId
+    UserId: 'XXXXXXXXXXXX',
+    // Customized attributes
+    Attributes: {
+        interests: ['football', 'basketball', 'AWS']
+        // ...
+    },
+    // Customized user attributes
+    UserAttributes: {
+        hobbies: ['piano', 'hiking']
+        // ...
+    }
+})
 ```
 
 ## Add your own plugin

@@ -302,9 +302,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                         if (this.mobileAnalytics
                             && this._config.credentials
                             && this._config.credentials.sessionToken === config.credentials.sessionToken
-                            && (config.userId ?
-                                this._config.userId === config.userId :
-                                this._config.credentials.identityId === config.credentials.identityId)) {
+                            && this._config.credentials.identityId === config.credentials.identityId) {
                             logger.debug('no change for analytics config, directly return from init');
                             return [2 /*return*/, true];
                         }
@@ -402,13 +400,14 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @return {Object} - The request of updating endpoint
      */
     AWSAnalyticsProvider.prototype._endpointRequest = function () {
-        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, endpointId = _a.endpointId, userId = _a.userId;
+        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, Attributes = _a.Attributes, UserAttributes = _a.UserAttributes, endpointId = _a.endpointId, userId = _a.userId;
         var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         var ChannelType = Address ? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         logger.debug('demographic user id: ', user_id);
         var OptOut = this._config.OptOut ? this._config.OptOut : undefined;
         var ret = {
             Address: Address,
+            Attributes: Attributes,
             ChannelType: ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || clientInfo.appVersion,
@@ -421,7 +420,8 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             RequestId: RequestId,
             EffectiveDate: Address ? new Date().toISOString() : undefined,
             User: {
-                UserId: userId ? userId : credentials.identityId
+                UserId: userId ? userId : credentials.identityId,
+                UserAttributes: UserAttributes
             }
         };
         return ret;
