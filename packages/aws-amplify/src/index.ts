@@ -52,6 +52,26 @@ export default class Amplify {
         return config;
     }
 
+    static async asyncConfigure(config) {
+        if (!config) { return; }
+        return Credentials.configure(config).then(() => {
+                return Auth.configure(config);
+            }).then(() => {
+                return Analytics.configure(config);
+            }).then(() => {
+                return API.configure(config);
+            }).then(() => {
+                return Storage.configure(config);
+            }).then(() => {
+                return Cache.configure(config);
+            }).then(() => {
+                return I18n.configure(config);
+            }).catch((e) => {
+                logger.debug('error happened while setting the configuration', e);
+                return config;
+            });
+    }
+
     static addPluggable(pluggable) {
         if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
             const category = pluggable.getCategory();

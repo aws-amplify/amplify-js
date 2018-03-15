@@ -6,6 +6,8 @@ import {
     Hub
 } from '../../Common';
 
+import { CredentialsProvider } from '../types';
+
 import Cache from '../../Cache';
 const {
     CognitoIdentityCredentials
@@ -13,7 +15,7 @@ const {
 
 const logger = new Logger('CognitoCredentials');
 
-export default class CognitoCredentials {
+export default class CognitoCredentials implements CredentialsProvider {
     private _credentials;
     private credentials_source = ''; // aws, guest, userPool, federated
     private _config;
@@ -29,7 +31,7 @@ export default class CognitoCredentials {
      * pass the configuration
      * @param config 
      */
-    public configure(config) {
+    public async configure(config) {
         logger.debug('configure CognitoCredentials with config', config);
         const conf= config? config: {};
         this._config = Object.assign({}, this._config, conf);
@@ -84,7 +86,7 @@ export default class CognitoCredentials {
      * Get authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
-    public async getCredentials(config?): Promise<any> {
+    public getCredentials(config?): Promise<any> {
         logger.debug('getting credentials with config', config);
         const cred = this._credentials || AWS.config.credentials;
         if (cred && !this._isExpired(cred)) {
@@ -124,7 +126,7 @@ export default class CognitoCredentials {
                 if (this._currentSessionHandler && typeof this._currentSessionHandler === 'function') {
                     return this._currentSessionHandler()
                         .then(session => that._setCredentialsFromSession(session))
-                        .catch((error) => that._setCredentialsForGuest())
+                        .catch((error) => that._setCredentialsForGuest());
                 } else {
                     return this._setCredentialsForGuest();
                 }

@@ -18,7 +18,8 @@ import {
     Cognito,
     ConsoleLogger as Logger,
     Constants,
-    Hub
+    Hub,
+    Parser
 } from '../Common';
 import Platform from '../Common/Platform';
 import Credentials from '../Credentials';
@@ -58,7 +59,7 @@ export default class AuthClass {
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
      */
-    constructor(config: AuthOptions) {
+    constructor(config) {
         this.configure(config);
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
@@ -69,17 +70,20 @@ export default class AuthClass {
 
     configure(config) {
         logger.debug('configure Auth');
-        let conf = config? config.Auth || config : {};
-        if (conf['aws_cognito_identity_pool_id']) {
-            conf = {
-                userPoolId: conf['aws_user_pools_id'],
-                userPoolWebClientId: conf['aws_user_pools_web_client_id'],
-                region: conf['aws_cognito_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id'],
-                mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable'? true: false
-            };
-        }
-        this._config = Object.assign({}, this._config, conf);
+        const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Auth);
+        this._config = conf;
+        // let conf = config? config.Auth || config : {};
+        // if (conf['aws_cognito_identity_pool_id']) {
+        //     conf = {
+        //         userPoolId: conf['aws_user_pools_id'],
+        //         userPoolWebClientId: conf['aws_user_pools_web_client_id'],
+        //         region: conf['aws_cognito_region'],
+        //         identityPoolId: conf['aws_cognito_identity_pool_id'],
+        //         mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable'? true: false
+        //     };
+        // }
+        // this._config = Object.assign({}, this._config, conf);
+        
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
         const { userPoolId, userPoolWebClientId, cookieStorage } = this._config;
         if (userPoolId) {
@@ -220,7 +224,11 @@ export default class AuthClass {
             user.authenticateUser(authDetails, {
                 onSuccess: (session) => {
                     logger.debug(session);
-                    Credentials.setCredentials({session, providerName: 'AWSCognito', currentSessionHandler: that.currentSession});
+                    Credentials.setCredentials({
+                        session,
+                        providerName: 'AWSCognito', 
+                        currentSessionHandler: that.currentSession
+                    });
                     that.user = user;
                     that.user_source = 'userpool';
                     dispatchAuthEvent('signIn', user);
@@ -456,7 +464,11 @@ export default class AuthClass {
                 { 
                     onSuccess: (session) => {
                         logger.debug(session);
-                        Credentials.setCredentials({session, providerName: 'AWSCognito', currentSession: that.currentSession});
+                        Credentials.setCredentials({
+                            session, 
+                            providerName: 'AWSCognito', 
+                            currentSession: that.currentSession
+                        });
                         that.user = user;
                         that.user_source = 'userpool';
                         dispatchAuthEvent('signIn', user);
