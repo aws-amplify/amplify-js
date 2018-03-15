@@ -96,7 +96,7 @@ AWS.util.update(AWS, {
   /**
    * @constant
    */
-  VERSION: '2.185.0',
+  VERSION: '2.198.0',
 
   /**
    * @api private
@@ -1109,7 +1109,12 @@ var util = {
   /**
    * @api private
    */
-  sharedConfigFileEnv: 'AWS_CONFIG_FILE'
+  sharedConfigFileEnv: 'AWS_CONFIG_FILE',
+
+  /**
+   * @api private
+   */
+  imdsDisabledEnv: 'AWS_EC2_METADATA_DISABLED'
 };
 
 module.exports = util;
@@ -3395,7 +3400,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 8 */
@@ -3604,6 +3609,33 @@ process.umask = function() { return 0; };
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsNative = __webpack_require__(127),
@@ -3626,7 +3658,7 @@ module.exports = getNative;
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {var util = __webpack_require__(1);
@@ -3661,33 +3693,6 @@ if (typeof process === 'undefined') {
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
 
 /***/ }),
 /* 13 */
@@ -4909,7 +4914,7 @@ module.exports = assocIndexOf;
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10);
+var getNative = __webpack_require__(11);
 
 /* Built-in method references that are verified to be native. */
 var nativeCreate = getNative(Object, 'create');
@@ -5040,7 +5045,7 @@ module.exports = exports = {
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -5395,10 +5400,13 @@ var reIsUint = /^(?:0|[1-9]\d*)$/;
  * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
  */
 function isIndex(value, length) {
+  var type = typeof value;
   length = length == null ? MAX_SAFE_INTEGER : length;
+
   return !!length &&
-    (typeof value == 'number' || reIsUint.test(value)) &&
-    (value > -1 && value % 1 == 0 && value < length);
+    (type == 'number' ||
+      (type != 'symbol' && reIsUint.test(value))) &&
+        (value > -1 && value % 1 == 0 && value < length);
 }
 
 module.exports = isIndex;
@@ -5580,7 +5588,7 @@ module.exports = isTypedArray;
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(11),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -7997,7 +8005,7 @@ module.exports = baseAssignValue;
 /* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10);
+var getNative = __webpack_require__(11);
 
 var defineProperty = (function() {
   try {
@@ -8019,7 +8027,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 module.exports = freeGlobal;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 63 */
@@ -10436,7 +10444,7 @@ if (!rng) {
 
 module.exports = rng;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 92 */
@@ -13063,7 +13071,9 @@ var CognitoUser = function () {
   };
 
   /**
-   * This is used for authenticating the user. it calls the AuthenticationHelper for SRP related
+   * PRIVATE ONLY: This is an internal only method and should not
+   * be directly called by the consumers.
+   * It calls the AuthenticationHelper for SRP related
    * stuff
    * @param {AuthenticationDetails} authDetails Contains the authentication data
    * @param {object} callback Result callback map.
@@ -16293,7 +16303,7 @@ exports.default = AnalyticsClass;
 /* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -16319,7 +16329,7 @@ module.exports = AWS.S3;
 /* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var apply = Function.prototype.apply;
+/* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
 
 // DOM APIs, for completeness
 
@@ -16370,9 +16380,17 @@ exports._unrefActive = exports.active = function(item) {
 
 // setimmediate attaches itself to the global object
 __webpack_require__(122);
-exports.setImmediate = setImmediate;
-exports.clearImmediate = clearImmediate;
+// On some exotic environments, it's not clear which object `setimmeidate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
 
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 122 */
@@ -16565,7 +16583,7 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(9)))
 
 /***/ }),
 /* 123 */
@@ -17952,7 +17970,7 @@ module.exports = isEmpty;
 /* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(11),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -17965,7 +17983,7 @@ module.exports = DataView;
 /* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(11),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -17978,7 +17996,7 @@ module.exports = Promise;
 /* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(11),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -17991,7 +18009,7 @@ module.exports = Set;
 /* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(11),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -19741,8 +19759,7 @@ module.exports = get;
 var memoizeCapped = __webpack_require__(213);
 
 /** Used to match property names within property paths. */
-var reLeadingDot = /^\./,
-    rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
 
 /** Used to match backslashes in property paths. */
 var reEscapeChar = /\\(\\)?/g;
@@ -19756,11 +19773,11 @@ var reEscapeChar = /\\(\\)?/g;
  */
 var stringToPath = memoizeCapped(function(string) {
   var result = [];
-  if (reLeadingDot.test(string)) {
+  if (string.charCodeAt(0) === 46 /* . */) {
     result.push('');
   }
-  string.replace(rePropName, function(match, number, quote, string) {
-    result.push(quote ? string.replace(reEscapeChar, '$1') : (number || match));
+  string.replace(rePropName, function(match, number, quote, subString) {
+    result.push(quote ? subString.replace(reEscapeChar, '$1') : (number || match));
   });
   return result;
 });
@@ -23029,7 +23046,7 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(9)))
 
 /***/ }),
 /* 238 */
@@ -26876,7 +26893,7 @@ Sha256.prototype.hashBuffer = function () {
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module), __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module), __webpack_require__(10)))
 
 /***/ }),
 /* 264 */
@@ -27778,7 +27795,7 @@ AWS.CognitoIdentityCredentials = AWS.util.inherit(AWS.Credentials, {
 /* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -30383,7 +30400,7 @@ module.exports = {"version":2,"waiters":{"BucketExists":{"delay":5,"operation":"
 /* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 
 var AWS = __webpack_require__(0);
 if (typeof window !== 'undefined') window.AWS = AWS;
@@ -31625,7 +31642,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 /* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -31654,7 +31671,7 @@ module.exports = {"metadata":{"apiVersion":"2016-12-01","endpointPrefix":"pinpoi
 /* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(12);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -34933,31 +34950,47 @@ var AuthClass = /** @class */ (function () {
         return obj;
     };
     AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
+        var _this = this;
         var domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
             'amazon': 'www.amazon.com',
             'developer': 'cognito-identity.amazonaws.com'
         };
-        var domain = domains[provider];
+        var domain;
+        if (provider === 'amazon') {
+            domain = 'www.amazon.com';
+        }
+        else if (provider === 'google') {
+            domain = 'accounts.google.com';
+        }
+        else if (provider === 'facebook') {
+            domain = 'graph.facebook.com';
+        }
+        else if (provider === 'developer') {
+            domain = 'cognito-identity.amazonaws.com';
+        }
         if (!domain) {
             return Promise.reject(provider + ' is not supported: [google, facebook, amazon, developer]');
         }
-        var logins = {};
-        logins[domain] = token;
+        var Logins = {};
+        Logins[domain] = token;
+        logger.debug('Logins map:', JSON.stringify(Logins));
         var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
-        this.credentials = new Common_1.AWS.CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
-            Logins: logins
-        }, {
-            region: region
+        var creds = new Common_1.AWS.CognitoIdentityCredentials({
+            Logins: Logins,
+            IdentityPoolId: identityPoolId
         });
-        this.credentials.authenticated = true;
-        this.credentials_source = 'federated';
-        this.user = Object.assign({ id: this.credentials.identityId }, user);
-        if (Common_1.AWS && Common_1.AWS.config) {
-            Common_1.AWS.config.credentials = this.credentials;
-        }
+        Common_1.AWS.config.update({
+            region: region,
+            credentials: creds
+        });
+        creds.getPromise().then(function () {
+            _this.credentials = creds;
+            _this.credentials.authenticated = true;
+            _this.credentials_source = 'federated';
+            _this.user = Object.assign({ id: _this.credentials.identityId }, user);
+        });
     };
     AuthClass.prototype.pickupCredentials = function () {
         var that = this;

@@ -1040,31 +1040,47 @@ var AuthClass = /** @class */ (function () {
         return obj;
     };
     AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
+        var _this = this;
         var domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
             'amazon': 'www.amazon.com',
             'developer': 'cognito-identity.amazonaws.com'
         };
-        var domain = domains[provider];
+        var domain;
+        if (provider === 'amazon') {
+            domain = 'www.amazon.com';
+        }
+        else if (provider === 'google') {
+            domain = 'accounts.google.com';
+        }
+        else if (provider === 'facebook') {
+            domain = 'graph.facebook.com';
+        }
+        else if (provider === 'developer') {
+            domain = 'cognito-identity.amazonaws.com';
+        }
         if (!domain) {
             return Promise.reject(provider + ' is not supported: [google, facebook, amazon, developer]');
         }
-        var logins = {};
-        logins[domain] = token;
+        var Logins = {};
+        Logins[domain] = token;
+        logger.debug('Logins map:', JSON.stringify(Logins));
         var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
-        this.credentials = new Common_1.AWS.CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
-            Logins: logins
-        }, {
-            region: region
+        var creds = new Common_1.AWS.CognitoIdentityCredentials({
+            Logins: Logins,
+            IdentityPoolId: identityPoolId
         });
-        this.credentials.authenticated = true;
-        this.credentials_source = 'federated';
-        this.user = Object.assign({ id: this.credentials.identityId }, user);
-        if (Common_1.AWS && Common_1.AWS.config) {
-            Common_1.AWS.config.credentials = this.credentials;
-        }
+        Common_1.AWS.config.update({
+            region: region,
+            credentials: creds
+        });
+        creds.getPromise().then(function () {
+            _this.credentials = creds;
+            _this.credentials.authenticated = true;
+            _this.credentials_source = 'federated';
+            _this.user = Object.assign({ id: _this.credentials.identityId }, user);
+        });
     };
     AuthClass.prototype.pickupCredentials = function () {
         var that = this;
