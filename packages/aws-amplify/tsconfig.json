@@ -9,7 +9,11 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "allowJs": false,
-        "declaration": true
+        "declaration": true,
+        "typeRoots": [
+            "./node_modules/@types",
+            "../../node_modules/@types"
+        ]
     },
     "include": ["src/**/*"]
  }
