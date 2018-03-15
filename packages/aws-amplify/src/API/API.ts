@@ -10,6 +10,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { print } from 'graphql/language/printer';
+import { parse } from 'graphql/language/parser';
+import * as Observable from 'zen-observable';
+import PubSub from '../PubSub';
 
 import { RestClient as RestClass } from './RestClient';
 
@@ -17,6 +21,8 @@ import Auth from '../Auth';
 import { ConsoleLogger as Logger } from '../Common/Logger';
 
 const logger = new Logger('API');
+
+export const graphqlOperation = (query, variables = {}) => ({ query, variables });
 
 /**
  * Export Cloud Logic APIs
@@ -43,21 +49,21 @@ export default class APIClass {
      * @return {Object} - The current configuration
      */
     configure(options) {
-        logger.debug('configure API');
-        let opt = options? options.API || options : {};
+        let opt = options ? options.API || options : {};
+        logger.debug('configure API', { opt });
 
         if (opt['aws_project_region']) {
             if (opt['aws_cloud_logic_custom']) {
                 const custom = opt['aws_cloud_logic_custom'];
-                opt.endpoints = (typeof custom === 'string')? JSON.parse(custom)
-                                                             : custom;
+                opt.endpoints = (typeof custom === 'string') ? JSON.parse(custom)
+                    : custom;
             }
             opt = Object.assign({}, opt, {
                 region: opt['aws_project_region'],
                 header: {},
             });
         }
-        
+
         this._options = Object.assign({}, this._options, opt);
 
         this.createInstance();
@@ -65,10 +71,10 @@ export default class APIClass {
         return this._options;
     }
 
-   /**
-    * Create an instance of API for the library
-    * @return - A promise of true if Success
-    */
+    /**
+     * Create an instance of API for the library
+     * @return - A promise of true if Success
+     */
     createInstance() {
         logger.debug('create API instance');
         if (this._options) {
@@ -90,7 +96,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -104,7 +110,7 @@ export default class APIClass {
         }
         return this._api.get(endpoint + path, init);
     }
-    
+
     /**
      * Make a POST request
      * @param {string} apiName  - The api name of the request
@@ -116,7 +122,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -142,7 +148,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -168,7 +174,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -194,7 +200,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -220,7 +226,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -244,11 +250,117 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
         return this._api.endpoint(apiName);
+    }
+
+    private async _headerBasedAuth() {
+        const {
+            aws_appsync_authenticationType: authenticationType,
+            aws_appsync_apiKey: apiKey,
+        } = this._options;
+        let headers = {};
+
+        const credentialsOK = await this._ensureCredentials();
+
+        switch (authenticationType) {
+            case 'NONE':
+                headers = {
+                    Authorization: null,
+                };
+                break;
+            case 'API_KEY':
+                headers = {
+                    Authorization: null,
+                    'X-Api-Key': apiKey
+                };
+                break;
+            case 'AWS_IAM':
+                if (!credentialsOK) { throw new Error('No credentials'); }
+                break;
+            case 'AMAZON_COGNITO_USER_POOLS':
+                const session = await Auth.currentSession();
+
+                headers = {
+                    Authorization: session.getAccessToken().getJwtToken()
+                };
+                break;
+        }
+
+        return headers;
+    }
+
+    async graphql({ query: queryStr, variables }) {
+        if (!this._api) {
+            await this.createInstance();
+        }
+
+        const {
+            aws_appsync_region: region,
+            aws_appsync_graphqlEndpoint: graphqlEndpoint
+        } = this._options;
+
+        const headers = await this._headerBasedAuth();
+
+        const doc = parse(queryStr);
+        const query = print(doc);
+
+        const body = {
+            query,
+            variables,
+        };
+
+        const init = {
+            headers,
+            body,
+            signerServiceInfo: {
+                service: 'appsync',
+                region,
+            }
+        };
+
+        const response = await this._api.post(graphqlEndpoint, init);
+
+        const { errors } = response;
+
+        if (errors && errors.length) {
+            const error = new Error(errors.map(err => `${err.errorType}: ${err.message}`).join('\n'));
+            (<any>error).errors = errors;
+
+            throw error;
+        }
+
+        return response;
+    }
+
+    graphqlSubscribe({ query, variables }) {
+        return new Observable(observer => {
+
+            let handle = null;
+
+            (async () => {
+                const {
+                    extensions: { subscription }
+                } = await this.graphql({ query, variables });
+
+                const { newSubscriptions } = subscription;
+
+                const newTopics = Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+
+                const observable = PubSub.subscribe(newTopics, subscription);
+
+                handle = observable.subscribe(observer);
+            })();
+
+            return () => {
+                if (handle) {
+                    handle.unsubscribe();
+                }
+            };
+        });
     }
 
     /**
@@ -261,7 +373,7 @@ export default class APIClass {
                 const cred = Auth.essentialCredentials(credentials);
                 logger.debug('set credentials for api', cred);
 
-                return true;
+                return credentials;
             })
             .catch(err => {
                 logger.warn('ensure credentials error', err);
