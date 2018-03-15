@@ -724,19 +724,22 @@ export default class AuthClass {
                         if (err) {
                             logger.debug('refreh federated token failed', err);
                         } else {
+                            logger.debug('refresh federated token sucessfully', data);
                             token = data.token;
                             expires_at = data.expires_at;
                             Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
                         }
+                        that.setCredentialsFromFederation(provider, token, user);
+                        res();
                     });
                 } else {
                     logger.debug('no provided fedaterated token refresh handler', this.federatedTokeneRefreshHandlers);
                 }
-            } 
+            }
+
             this.setCredentialsFromFederation(provider, token, user);
             res(); 
         });
-        
     }
 
     private _refreshFacebookToken(callback) {

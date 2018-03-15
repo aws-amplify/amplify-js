@@ -792,10 +792,13 @@ var AuthClass = /** @class */ (function () {
                             logger.debug('refreh federated token failed', err);
                         }
                         else {
+                            logger.debug('refresh federated token sucessfully', data);
                             token = data.token;
                             expires_at = data.expires_at;
                             Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
                         }
+                        that.setCredentialsFromFederation(provider, token, user);
+                        res();
                     });
                 }
                 else {
