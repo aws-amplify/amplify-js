@@ -14,7 +14,6 @@ export default function withGoogle(Comp) {
             this.initGapi = this.initGapi.bind(this);
             this.signIn = this.signIn.bind(this);
             this.federatedSignIn = this.federatedSignIn.bind(this);
-            this.refreshGoogleToken = this.refreshGoogleToken.bind(this);
 
             this.state = {};
         }
@@ -33,9 +32,10 @@ export default function withGoogle(Comp) {
                 name: profile.getName()
             };
 
+            const that = this;
             const { onStateChange } = this.props;
-            return Auth.federatedSignIn('google', { token: id_token, expires_at, refreshing: false }, user)
-                .then(crednetials => {
+            return Auth.federatedSignIn('google', { token: id_token, expires_at }, user)
+                .then(credentials => {
                     if (onStateChange) {
                         onStateChange('signedIn');
                     }
@@ -43,12 +43,7 @@ export default function withGoogle(Comp) {
         }
 
         componentDidMount() {
-            const refreshInterval = 25 * 60 * 1000; // 25min
             this.createScript();
-            const that = this;
-            window.setInterval(() => {
-                that.refreshGoogleToken();
-            }, refreshInterval);
         }
 
         createScript() {
@@ -70,41 +65,6 @@ export default function withGoogle(Comp) {
                     client_id: google_client_id,
                     scope: 'profile email openid'
                 });
-            });
-        }
-
-        refreshGoogleToken() {
-            const ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2 : null;
-            if (!ga) {
-                logger.debug('no gapi auth2 available');
-                return Promise.resolve();
-            }
-
-            ga.getAuthInstance().then((googleAuth) => {
-                if (!googleAuth) {
-                    console.log('google Auth undefiend');
-                    return Promise.resolve();
-                }
-
-                const googleUser = googleAuth.currentUser.get();
-                // refresh the token
-                if (googleUser.isSignedIn()) {
-                    logger.debug('refreshing the google access token')
-                    googleUser.reloadAuthResponse()
-                        .then((authResponse) => {
-                            const { id_token, expires_at } = authResponse;
-                            const profile = googleUser.getBasicProfile();
-                            const user = {
-                                email: profile.getEmail(),
-                                name: profile.getName()
-                            };
-
-                            return Auth.federatedSignIn('google', { token: id_token, expires_at, refreshing: true }, user);
-                        });
-                }
-            }).catch(err => {
-                logger.debug('Failed to refresh google token', err);
-                return Promise.resolve();
             });
         }
 

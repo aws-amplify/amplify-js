@@ -69,7 +69,11 @@ var AuthClass = /** @class */ (function () {
         this.credentials = null;
         this.credentials_source = ''; // aws, guest, userPool, federated
         this.user = null;
+        this.federatedTokeneRefreshHandlers = {};
         this.configure(config);
+        // refresh token
+        this.federatedTokeneRefreshHandlers['google'] = this._refreshGoogleToken;
+        this.federatedTokeneRefreshHandlers['facebook'] = this._refreshFacebookToken;
         if (Common_1.AWS.config) {
             Common_1.AWS.config.update({ customUserAgent: Common_1.Constants.userAgent });
         }
@@ -738,22 +742,19 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.currentUserCredentials = function () {
         var _this = this;
+        var that = this;
         if (Platform_1.default.isReactNative) {
             // asyncstorage
-            var that_1 = this;
             return Cache_1.default.getItem('federatedInfo')
                 .then(function (federatedInfo) {
                 if (federatedInfo) {
-                    var provider_1 = federatedInfo.provider, token_1 = federatedInfo.token, user_1 = federatedInfo.user;
-                    return new Promise(function (resolve, reject) {
-                        that_1.setCredentialsFromFederation(provider_1, token_1, user_1);
-                        resolve();
-                    });
+                    // refresh the jwt token here if necessary
+                    return that._refreshFederatedToken(federatedInfo);
                 }
                 else {
-                    return that_1.currentSession()
-                        .then(function (session) { return that_1.setCredentialsFromSession(session); })
-                        .catch(function (error) { return that_1.setCredentialsForGuest(); });
+                    return that.currentSession()
+                        .then(function (session) { return that.setCredentialsFromSession(session); })
+                        .catch(function (error) { return that.setCredentialsForGuest(); });
                 }
             }).catch(function (error) {
                 return new Promise(function (resolve, reject) {
@@ -765,11 +766,8 @@ var AuthClass = /** @class */ (function () {
             // first to check whether there is federation info in the local storage
             var federatedInfo = Cache_1.default.getItem('federatedInfo');
             if (federatedInfo) {
-                var provider_2 = federatedInfo.provider, token_2 = federatedInfo.token, user_2 = federatedInfo.user;
-                return new Promise(function (resolve, reject) {
-                    _this.setCredentialsFromFederation(provider_2, token_2, user_2);
-                    resolve();
-                });
+                // refresh the jwt token here if necessary
+                return this._refreshFederatedToken(federatedInfo);
             }
             else {
                 return this.currentSession()
@@ -777,6 +775,95 @@ var AuthClass = /** @class */ (function () {
                     .catch(function (error) { return _this.setCredentialsForGuest(); });
             }
         }
+    };
+    AuthClass.prototype._refreshFederatedToken = function (federatedInfo) {
+        var _this = this;
+        var provider = federatedInfo.provider, user = federatedInfo.user;
+        var token = federatedInfo.token;
+        var expires_at = federatedInfo.expires_at;
+        var that = this;
+        return new Promise(function (res, rej) {
+            logger.debug('checking if federated jwt token expired');
+            if (expires_at < new Date().getTime()) {
+                logger.debug('getting refreshed jwt token from federation provider');
+                if (that.federatedTokeneRefreshHandlers[provider]) {
+                    that.federatedTokeneRefreshHandlers[provider](function (err, data) {
+                        if (err) {
+                            logger.debug('refreh federated token failed', err);
+                            rej('refreh federated token failed');
+                        }
+                        token = data.token;
+                        expires_at = data.expires_at;
+                        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
+                    });
+                }
+                else {
+                    logger.debug('no provided fedaterated token refresh handler', _this.federatedTokeneRefreshHandlers);
+                    rej('no provided fedaterated token refresh handler');
+                }
+            }
+            _this.setCredentialsFromFederation(provider, token, user);
+            res();
+        });
+    };
+    AuthClass.prototype._refreshFacebookToken = function (callback) {
+        var fb = window['FB'];
+        if (!fb) {
+            logger.debug('no fb sdk available');
+            callback('no fb sdk available', null);
+        }
+        fb.getLoginStatus(function (response) {
+            if (response.status === 'connected') {
+                var authResponse = response.authResponse;
+                var accessToken_1 = authResponse.accessToken, expiresIn = authResponse.expiresIn;
+                var date = new Date();
+                var expires_at_1 = expiresIn * 1000 + date.getTime();
+                if (!accessToken_1) {
+                    return;
+                }
+                var fb_1 = window['FB'];
+                fb_1.api('/me', function (response) {
+                    var user = {
+                        name: response.name
+                    };
+                    callback(null, { token: accessToken_1, expires_at: expires_at_1 });
+                });
+            }
+            else {
+                callback('not connected to facebook', null);
+            }
+        });
+    };
+    AuthClass.prototype._refreshGoogleToken = function (callback) {
+        var ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+        if (!ga) {
+            logger.debug('no gapi auth2 available');
+            callback('no gapi auth2 available', null);
+        }
+        ga.getAuthInstance().then(function (googleAuth) {
+            if (!googleAuth) {
+                console.log('google Auth undefiend');
+                callback('google Auth undefiend', null);
+            }
+            var googleUser = googleAuth.currentUser.get();
+            // refresh the token
+            if (googleUser.isSignedIn()) {
+                logger.debug('refreshing the google access token');
+                googleUser.reloadAuthResponse()
+                    .then(function (authResponse) {
+                    var id_token = authResponse.id_token, expires_at = authResponse.expires_at;
+                    var profile = googleUser.getBasicProfile();
+                    var user = {
+                        email: profile.getEmail(),
+                        name: profile.getName()
+                    };
+                    callback(null, { token: id_token, expires_at: expires_at });
+                });
+            }
+        }).catch(function (err) {
+            logger.debug('Failed to refresh google token', err);
+            callback('Failed to refresh google token', null);
+        });
     };
     AuthClass.prototype.currentCredentials = function () {
         return this.pickupCredentials();
@@ -998,12 +1085,11 @@ var AuthClass = /** @class */ (function () {
      * @param {String} user - user info
      */
     AuthClass.prototype.federatedSignIn = function (provider, response, user) {
-        var token = response.token, expires_at = response.expires_at, refreshing = response.refreshing;
+        var token = response.token, expires_at = response.expires_at;
         this.setCredentialsFromFederation(provider, token, user);
         // store it into localstorage
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1 });
-        if (!refreshing)
-            dispatchAuthEvent('signIn', this.user);
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
+        dispatchAuthEvent('signIn', this.user);
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();
     };
@@ -1140,6 +1226,7 @@ var AuthClass = /** @class */ (function () {
         var credentials = this.credentials;
         var expired = credentials.expired, expireTime = credentials.expireTime;
         if (!expired && expireTime > ts + delta) {
+            logger.debug('not changed, directly return credentials');
             return Promise.resolve(credentials);
         }
         var that = this;
@@ -1148,7 +1235,7 @@ var AuthClass = /** @class */ (function () {
                 .then(function () {
                 credentials = that.credentials;
                 credentials.refresh(function (err) {
-                    logger.debug('changed from previous');
+                    logger.debug('refreshing credentials');
                     if (err) {
                         logger.debug('refresh credentials error', err);
                         resolve(null);

@@ -54,12 +54,18 @@ export default class AuthClass {
     private credentials_source = ''; // aws, guest, userPool, federated
     private user:any = null;
 
+    private federatedTokeneRefreshHandlers = {};
+
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
      */
     constructor(config: AuthOptions) {
         this.configure(config);
+        // refresh token
+        this.federatedTokeneRefreshHandlers['google'] = this._refreshGoogleToken;
+        this.federatedTokeneRefreshHandlers['facebook'] = this._refreshFacebookToken;
+
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
         } else {
@@ -671,17 +677,14 @@ export default class AuthClass {
      * @return - A promise resolves to be current user's credentials
      */
     public currentUserCredentials() : Promise<any> {
+        const that = this;
         if (Platform.isReactNative) {
             // asyncstorage
-            const that = this;
             return Cache.getItem('federatedInfo')
                 .then((federatedInfo) => {
                     if (federatedInfo) {
-                        const { provider, token, user} = federatedInfo;
-                        return new Promise((resolve, reject) => {
-                            that.setCredentialsFromFederation(provider, token, user);
-                            resolve();
-                        });
+                        // refresh the jwt token here if necessary
+                        return that._refreshFederatedToken(federatedInfo);
                     } else {
                         return that.currentSession()
                             .then(session => that.setCredentialsFromSession(session))
@@ -696,17 +699,113 @@ export default class AuthClass {
             // first to check whether there is federation info in the local storage
             const federatedInfo = Cache.getItem('federatedInfo');
             if (federatedInfo) {
-                const { provider, token, user} = federatedInfo;
-                return new Promise((resolve, reject) => {
-                    this.setCredentialsFromFederation(provider, token, user);
-                    resolve();
-                });
+                // refresh the jwt token here if necessary
+                return this._refreshFederatedToken(federatedInfo);
             } else {
                 return this.currentSession()
                     .then(session => this.setCredentialsFromSession(session))
                     .catch((error) => this.setCredentialsForGuest());
             }
         }
+    }
+
+    private _refreshFederatedToken(federatedInfo) {
+        const { provider, user } = federatedInfo;
+        let token = federatedInfo.token;
+        let expires_at = federatedInfo.expires_at;
+
+        const that = this;
+        return new Promise((res, rej) => {
+            logger.debug('checking if federated jwt token expired');
+            if (expires_at < new Date().getTime()) {
+                logger.debug('getting refreshed jwt token from federation provider');
+                if (that.federatedTokeneRefreshHandlers[provider]) {
+                    that.federatedTokeneRefreshHandlers[provider]((err, data) => {
+                        if (err) {
+                            logger.debug('refreh federated token failed', err);
+                            rej('refreh federated token failed');
+                        }
+                        token = data.token;
+                        expires_at = data.expires_at;
+
+                        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+                    });
+                } else {
+                    logger.debug('no provided fedaterated token refresh handler', this.federatedTokeneRefreshHandlers);
+                    rej('no provided fedaterated token refresh handler');
+                }
+            } 
+
+            this.setCredentialsFromFederation(provider, token, user);
+            res(); 
+        });
+        
+    }
+
+    private _refreshFacebookToken(callback) {
+        const fb = window['FB'];
+        if (!fb) {
+            logger.debug('no fb sdk available');
+            callback('no fb sdk available', null);
+        }
+
+        fb.getLoginStatus(response => {
+            if (response.status === 'connected') {
+                const { authResponse } = response;
+                const { accessToken, expiresIn } = authResponse;
+
+                const date = new Date();
+                const expires_at = expiresIn * 1000 + date.getTime();
+                if (!accessToken) {
+                    return;
+                }
+                
+                const fb = window['FB'];
+                fb.api('/me', response => {
+                    const user = {
+                        name: response.name
+                    };
+                    callback(null, { token: accessToken, expires_at });
+                });
+            } else {
+                callback('not connected to facebook', null);
+            }
+        });
+    }
+
+    private _refreshGoogleToken(callback) {
+        const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+        if (!ga) {
+            logger.debug('no gapi auth2 available');
+            callback('no gapi auth2 available', null);
+        }
+
+        ga.getAuthInstance().then((googleAuth) => {
+            if (!googleAuth) {
+                console.log('google Auth undefiend');
+                callback('google Auth undefiend', null);
+            }
+
+            const googleUser = googleAuth.currentUser.get();
+            // refresh the token
+            if (googleUser.isSignedIn()) {
+                logger.debug('refreshing the google access token');
+                googleUser.reloadAuthResponse()
+                    .then((authResponse) => {
+                        const { id_token, expires_at } = authResponse;
+                        const profile = googleUser.getBasicProfile();
+                        const user = {
+                            email: profile.getEmail(),
+                            name: profile.getName()
+                        };
+
+                        callback(null, { token: id_token, expires_at });
+                    });
+            }
+        }).catch(err => {
+            logger.debug('Failed to refresh google token', err);
+            callback('Failed to refresh google token', null);
+        });
     }
 
     public currentCredentials(): Promise<any> {
@@ -909,12 +1008,13 @@ export default class AuthClass {
      * @param {String} user - user info
      */
     public federatedSignIn(provider, response, user) {
-        const { token, expires_at, refreshing } = response;
+        const { token, expires_at } = response;
+
         this.setCredentialsFromFederation(provider, token, user);
 
         // store it into localstorage
-        Cache.setItem('federatedInfo', { provider, token, user }, { priority: 1 });
-        if (!refreshing) dispatchAuthEvent('signIn', this.user);
+        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+        dispatchAuthEvent('signIn', this.user);
         logger.debug('federated sign in credentials', this.credentials);
         return this.keepAlive();
     }
@@ -1064,6 +1164,7 @@ export default class AuthClass {
         let credentials = this.credentials;
         const { expired, expireTime } = credentials;
         if (!expired && expireTime > ts + delta) {
+            logger.debug('not changed, directly return credentials');
             return Promise.resolve(credentials);
         }
 
@@ -1073,7 +1174,7 @@ export default class AuthClass {
                 .then(() => {
                     credentials = that.credentials;
                     credentials.refresh(err => {
-                        logger.debug('changed from previous');
+                        logger.debug('refreshing credentials');
                         if (err) {
                             logger.debug('refresh credentials error', err);
                             resolve(null);

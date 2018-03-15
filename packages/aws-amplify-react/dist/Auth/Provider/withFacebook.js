@@ -90,6 +90,7 @@ function withFacebook(Comp) {
                     if (!accessToken) {
                         return;
                     }
+                    var that = this;
 
                     var fb = window.FB;
                     fb.api('/me', function (response) {
@@ -97,7 +98,7 @@ function withFacebook(Comp) {
                             name: response.name
                         };
 
-                        _awsAmplify.Auth.federatedSignIn('facebook', { token: accessToken, expires_at: expires_at, refreshing: false }, user).then(function (credentials) {
+                        _awsAmplify.Auth.federatedSignIn('facebook', { token: accessToken, expires_at: expires_at }, user).then(function (credentials) {
                             if (onStateChange) {
                                 onStateChange('signedIn');
                             }
@@ -111,12 +112,7 @@ function withFacebook(Comp) {
             key: 'componentDidMount',
             value: function () {
                 function componentDidMount() {
-                    var refreshInterval = 25 * 60 * 1000; // 25min
                     this.createScript();
-                    var that = this;
-                    window.setInterval(function () {
-                        that.refreshFacebookToken();
-                    }, refreshInterval);
                 }
 
                 return componentDidMount;
@@ -172,11 +168,11 @@ function withFacebook(Comp) {
         }, {
             key: 'refreshFacebookToken',
             value: function () {
-                function refreshFacebookToken() {
+                function refreshFacebookToken(callback) {
                     var fb = window.FB;
                     if (!fb) {
                         logger.debug('no fb sdk available');
-                        return Promise.resolve();
+                        callback('no fb sdk available', null);
                     }
 
                     fb.getLoginStatus(function (response) {
@@ -197,8 +193,10 @@ function withFacebook(Comp) {
                                 var user = {
                                     name: response.name
                                 };
-                                _awsAmplify.Auth.federatedSignIn('facebook', { token: accessToken, expires_at: expires_at, refreshing: true }, user);
+                                callback(null, { token: accessToken, expires_at: expires_at });
                             });
+                        } else {
+                            callback('not connected to facebook', null);
                         }
                     });
                 }

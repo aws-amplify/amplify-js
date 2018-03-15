@@ -79,9 +79,10 @@ function withGoogle(Comp) {
                         name: profile.getName()
                     };
 
+                    var that = this;
                     var onStateChange = this.props.onStateChange;
 
-                    return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at, refreshing: false }, user).then(function (crednetials) {
+                    return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user).then(function (credentials) {
                         if (onStateChange) {
                             onStateChange('signedIn');
                         }
@@ -94,12 +95,7 @@ function withGoogle(Comp) {
             key: 'componentDidMount',
             value: function () {
                 function componentDidMount() {
-                    var refreshInterval = 25 * 60 * 1000; // 25min
                     this.createScript();
-                    var that = this;
-                    window.setInterval(function () {
-                        that.refreshGoogleToken();
-                    }, refreshInterval);
                 }
 
                 return componentDidMount;
@@ -140,17 +136,17 @@ function withGoogle(Comp) {
         }, {
             key: 'refreshGoogleToken',
             value: function () {
-                function refreshGoogleToken() {
+                function refreshGoogleToken(callback) {
                     var ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2 : null;
                     if (!ga) {
                         logger.debug('no gapi auth2 available');
-                        return Promise.resolve();
+                        callback('no gapi auth2 available', null);
                     }
 
                     ga.getAuthInstance().then(function (googleAuth) {
                         if (!googleAuth) {
                             console.log('google Auth undefiend');
-                            return Promise.resolve();
+                            callback('google Auth undefiend', null);
                         }
 
                         var googleUser = googleAuth.currentUser.get();
@@ -167,12 +163,12 @@ function withGoogle(Comp) {
                                     name: profile.getName()
                                 };
 
-                                return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at, refreshing: true }, user);
+                                callback(null, { token: id_token, expires_at: expires_at });
                             });
                         }
                     })['catch'](function (err) {
                         logger.debug('Failed to refresh google token', err);
-                        return Promise.resolve();
+                        callback('Failed to refresh google token', null);
                     });
                 }
 
