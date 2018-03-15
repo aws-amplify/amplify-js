@@ -790,16 +790,16 @@ var AuthClass = /** @class */ (function () {
                     that.federatedTokeneRefreshHandlers[provider](function (err, data) {
                         if (err) {
                             logger.debug('refreh federated token failed', err);
-                            rej('refreh federated token failed');
                         }
-                        token = data.token;
-                        expires_at = data.expires_at;
-                        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
+                        else {
+                            token = data.token;
+                            expires_at = data.expires_at;
+                            Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
+                        }
                     });
                 }
                 else {
                     logger.debug('no provided fedaterated token refresh handler', _this.federatedTokeneRefreshHandlers);
-                    rej('no provided fedaterated token refresh handler');
                 }
             }
             _this.setCredentialsFromFederation(provider, token, user);

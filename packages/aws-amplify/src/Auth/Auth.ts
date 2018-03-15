@@ -723,19 +723,16 @@ export default class AuthClass {
                     that.federatedTokeneRefreshHandlers[provider]((err, data) => {
                         if (err) {
                             logger.debug('refreh federated token failed', err);
-                            rej('refreh federated token failed');
+                        } else {
+                            token = data.token;
+                            expires_at = data.expires_at;
+                            Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
                         }
-                        token = data.token;
-                        expires_at = data.expires_at;
-
-                        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
                     });
                 } else {
                     logger.debug('no provided fedaterated token refresh handler', this.federatedTokeneRefreshHandlers);
-                    rej('no provided fedaterated token refresh handler');
                 }
             } 
-
             this.setCredentialsFromFederation(provider, token, user);
             res(); 
         });
