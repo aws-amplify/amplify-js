@@ -12,15 +12,15 @@ var _react2 = _interopRequireDefault(_react);
 
 var _awsAmplify = require('aws-amplify');
 
-var _AuthPiece2 = require('./AuthPiece');
-
-var _AuthPiece3 = _interopRequireDefault(_AuthPiece2);
-
 var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../AmplifyUI');
+
+var _qrcode = require('qrcode.react');
+
+var _qrcode2 = _interopRequireDefault(_qrcode);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -41,68 +41,98 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * and limitations under the License.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var logger = new _awsAmplify.Logger('ConfirmSignIn');
+var logger = new _awsAmplify.Logger('MFASetup');
 
-var ConfirmSignIn = function (_AuthPiece) {
-    _inherits(ConfirmSignIn, _AuthPiece);
+var MFASetup = function (_Component) {
+    _inherits(MFASetup, _Component);
 
-    function ConfirmSignIn(props) {
-        _classCallCheck(this, ConfirmSignIn);
+    function MFASetup(props) {
+        _classCallCheck(this, MFASetup);
 
-        var _this = _possibleConstructorReturn(this, (ConfirmSignIn.__proto__ || Object.getPrototypeOf(ConfirmSignIn)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (MFASetup.__proto__ || Object.getPrototypeOf(MFASetup)).call(this, props));
 
-        _this._validAuthStates = ['confirmSignIn'];
-        _this.confirm = _this.confirm.bind(_this);
+        _this.setup = _this.setup.bind(_this);
+        _this.showSecretCode = _this.showSecretCode.bind(_this);
+        _this.verifyTotpToken = _this.verifyTotpToken.bind(_this);
+        _this.handleInputChange = _this.handleInputChange.bind(_this);
+
         _this.state = {
-            mfaType: 'SMS'
+            code: null
         };
         return _this;
     }
 
-    _createClass(ConfirmSignIn, [{
-        key: 'confirm',
+    _createClass(MFASetup, [{
+        key: 'handleInputChange',
         value: function () {
-            function confirm() {
+            function handleInputChange(evt) {
+                this.inputs = {};
+                var _evt$target = evt.target,
+                    name = _evt$target.name,
+                    value = _evt$target.value,
+                    type = _evt$target.type,
+                    checked = _evt$target.checked;
+
+                var check_type = ['radio', 'checkbox'].includes(type);
+                this.inputs[name] = check_type ? checked : value;
+            }
+
+            return handleInputChange;
+        }()
+    }, {
+        key: 'setup',
+        value: function () {
+            function setup() {
                 var _this2 = this;
 
                 var user = this.props.authData;
-                var code = this.inputs.code;
-
-                var mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
-                _awsAmplify.Auth.confirmSignIn(user, code, mfaType).then(function () {
-                    return _this2.changeState('signedIn');
+                _awsAmplify.Auth.setupMFA(user).then(function (data) {
+                    logger.debug('secret key', data);
+                    var code = "otpauth://totp/AWSCognito:" + user.username + "?secret=" + data + "&issuer=AWSCognito";
+                    _this2.setState({ code: code });
                 })['catch'](function (err) {
-                    return _this2.error(err);
+                    return logger.debug('mfa setup failed', err);
                 });
             }
 
-            return confirm;
+            return setup;
         }()
     }, {
-        key: 'componentDidUpdate',
+        key: 'verifyTotpToken',
         value: function () {
-            function componentDidUpdate() {
-                //logger.debug('component did update with props', this.props);
+            function verifyTotpToken() {
                 var user = this.props.authData;
-                var mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'TOTP' : 'SMS';
-                if (this.state.mfaType !== mfaType) this.setState({ mfaType: mfaType });
+                var totpCode = this.inputs.totpCode;
+
+                _awsAmplify.Auth.verifyTotpToken(user, totpCode).then(function () {
+                    return logger.debug('set up totp success!');
+                })['catch'](function (err) {
+                    return logger.error(err);
+                });
             }
 
-            return componentDidUpdate;
+            return verifyTotpToken;
         }()
     }, {
-        key: 'showComponent',
+        key: 'showSecretCode',
         value: function () {
-            function showComponent(theme) {
-                var _this3 = this;
+            function showSecretCode(code) {
+                if (!code) return null;
+                return _react2['default'].createElement(
+                    'div',
+                    null,
+                    _react2['default'].createElement(_qrcode2['default'], { value: code })
+                );
+            }
 
-                var _props = this.props,
-                    hide = _props.hide,
-                    authData = _props.authData;
-
-                if (hide && hide.includes(ConfirmSignIn)) {
-                    return null;
-                }
+            return showSecretCode;
+        }()
+    }, {
+        key: 'render',
+        value: function () {
+            function render() {
+                var theme = this.props.theme ? this.props.theme : _AmplifyTheme2['default'];
+                var code = this.state.code;
 
                 return _react2['default'].createElement(
                     _AmplifyUI.FormSection,
@@ -110,48 +140,39 @@ var ConfirmSignIn = function (_AuthPiece) {
                     _react2['default'].createElement(
                         _AmplifyUI.SectionHeader,
                         { theme: theme },
-                        _awsAmplify.I18n.get('Confirm ' + this.state.mfaType + ' Code')
+                        _awsAmplify.I18n.get('MFA Setup')
                     ),
                     _react2['default'].createElement(
                         _AmplifyUI.SectionBody,
                         { theme: theme },
+                        this.showSecretCode(code),
+                        _react2['default'].createElement(
+                            _AmplifyUI.ButtonRow,
+                            { theme: theme, onClick: this.setup },
+                            _awsAmplify.I18n.get('Get secret key')
+                        ),
                         _react2['default'].createElement(_AmplifyUI.InputRow, {
                             autoFocus: true,
-                            placeholder: _awsAmplify.I18n.get('Code'),
+                            placeholder: _awsAmplify.I18n.get('totp verification token'),
                             theme: theme,
-                            key: 'code',
-                            name: 'code',
+                            key: 'totpCode',
+                            name: 'totpCode',
                             onChange: this.handleInputChange
                         }),
                         _react2['default'].createElement(
                             _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.confirm },
-                            _awsAmplify.I18n.get('Confirm')
-                        )
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionFooter,
-                        { theme: theme },
-                        _react2['default'].createElement(
-                            _AmplifyUI.Link,
-                            { theme: theme, onClick: function () {
-                                    function onClick() {
-                                        return _this3.changeState('signIn');
-                                    }
-
-                                    return onClick;
-                                }() },
-                            _awsAmplify.I18n.get('Back to Sign In')
+                            { theme: theme, onClick: this.verifyTotpToken },
+                            _awsAmplify.I18n.get('Verify')
                         )
                     )
                 );
             }
 
-            return showComponent;
+            return render;
         }()
     }]);
 
-    return ConfirmSignIn;
-}(_AuthPiece3['default']);
+    return MFASetup;
+}(_react.Component);
 
-exports['default'] = ConfirmSignIn;
+exports['default'] = MFASetup;
