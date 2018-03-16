@@ -100,7 +100,22 @@ import { Analytics } from 'aws-amplify';
 Analytics.record('albumVisit', {}, { minutesListened: 30 });
 ```
 
-### 5. Update endpoint with custom attributes
+### 5. Record Authentication events
+
+```js
+import { Analytics } from 'aws-amplify';
+
+// Sign-in event
+Analytics.record('_userauth.sign_in');
+
+// Sign-up event
+Analytics.record('_userauth.sign_up');
+
+// Authentication failure event
+Analytics.record('_userauth.auth_fail');
+```
+
+### 6. Update endpoint with custom attributes
 
 You can update endpoint with your customized attributes so you can segement users based on these attributes.
 
