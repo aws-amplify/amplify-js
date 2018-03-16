@@ -31,7 +31,7 @@ export default class CognitoCredentials implements CredentialsProvider {
      * pass the configuration
      * @param config 
      */
-    public async configure(config) {
+    public configure(config) {
         logger.debug('configure CognitoCredentials with config', config);
         const conf= config? config: {};
         this._config = Object.assign({}, this._config, conf);

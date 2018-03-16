@@ -33,7 +33,7 @@ export default class Credentials{
      * Configure
      * @param {Object} config - the configuration
      */
-    async configure(config) {
+    configure(config) {
         logger.debug('configure Credentials');
         const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Credentials);
 

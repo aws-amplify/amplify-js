@@ -60,7 +60,7 @@ export default class AuthClass {
      * @param {Object} config - Configuration of the Auth
      */
     constructor(config) {
-        this.configure(config);
+        if (config) this.configure(config);
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
         } else {
@@ -72,17 +72,6 @@ export default class AuthClass {
         logger.debug('configure Auth');
         const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Auth);
         this._config = conf;
-        // let conf = config? config.Auth || config : {};
-        // if (conf['aws_cognito_identity_pool_id']) {
-        //     conf = {
-        //         userPoolId: conf['aws_user_pools_id'],
-        //         userPoolWebClientId: conf['aws_user_pools_web_client_id'],
-        //         region: conf['aws_cognito_region'],
-        //         identityPoolId: conf['aws_cognito_identity_pool_id'],
-        //         mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable'? true: false
-        //     };
-        // }
-        // this._config = Object.assign({}, this._config, conf);
         
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
         const { userPoolId, userPoolWebClientId, cookieStorage } = this._config;

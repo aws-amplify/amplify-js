@@ -1,30 +1,3 @@
-jest.mock('../../src/Credentials', () => {
-    const Credentials = {
-        getCredentials(params) {
-            return new Promise((res, rej) => {
-                res({
-                    accessKeyId: 'accessKeyId',
-                    secretAccessKey: 'secretAccessKey',
-                    sessionToken: 'sessionToken'
-                });
-            });
-        },
-        setCredentials(params) {
-            return null;
-        },
-        removeCredentials(params) {
-            return null;
-        },
-        essentialCredentials(params) {
-            return 'cred';
-        }
-    };
-
-    return {
-        default: Credentials        
-    }
-});
-
 import CognitoCredentials from '../../src/Credentials/Providers/CognitoCredentials';
 import Cache from '../../src/Cache';
 import Auth from '../../src/Auth';
@@ -63,7 +36,7 @@ describe('CognitoCredentials unit tests', () => {
     });
 
     describe('set Credentials test', () => {
-        test('from session', async () => {
+        test.only('from session', async () => {
             const cognitoCredentials = new CognitoCredentials();
             const session = {
                 getIdToken() {
@@ -75,6 +48,13 @@ describe('CognitoCredentials unit tests', () => {
                 }
             }
             cognitoCredentials.configure(config);
+
+            const spyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res();
+                });
+            });
+
             expect(await cognitoCredentials.setCredentials({ session })).toEqual({
                 "_clientConfig": {
                     "region": "region",
@@ -93,11 +73,19 @@ describe('CognitoCredentials unit tests', () => {
                 },
                 "sessionToken": undefined,
             });
+
+            spyon.mockClear();
         });
 
         test('for guest', async () => {
             const cognitoCredentials = new CognitoCredentials();
             cognitoCredentials.configure(config);
+            const spyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res();
+                });
+            });
+
             expect(await cognitoCredentials.setCredentials({ guest: true })).toEqual({
                 "_clientConfig": {
                     "region": "region",
@@ -114,13 +102,21 @@ describe('CognitoCredentials unit tests', () => {
                 },
                 "sessionToken": undefined,
             });
+            spyon.mockClear();
         });
 
         test('for guest with mandaroty signin', async () => {
             const cognitoCredentials = new CognitoCredentials();
             const new_config = Object.assign(config, {mandatorySignIn: true});
             cognitoCredentials.configure(new_config);
+            const spyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res();
+                });
+            });
+
             expect(await cognitoCredentials.setCredentials({ guest: true })).toBeUndefined();
+            spyon.mockClear();
         });
 
         test('from federation', async () => {
@@ -136,6 +132,12 @@ describe('CognitoCredentials unit tests', () => {
                 token: 'token',
                 user: 'user'
             }
+
+            const spyon2 = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res();
+                });
+            });
 
             expect(await cognitoCredentials.setCredentials({ federated })).toEqual({
                 "_clientConfig": {
@@ -157,6 +159,7 @@ describe('CognitoCredentials unit tests', () => {
             });
 
             spyon.mockClear();
+            spyon2.mockClear();
         });
 
         test('from federation with wrong provider', async () => {
