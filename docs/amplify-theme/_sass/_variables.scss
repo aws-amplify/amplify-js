@@ -100,9 +100,9 @@ $grid-columns: 12 !default;
 $grid-gutter-width: 30px !default;
 
 // Container
-$container-tablet: (720px + $grid-gutter-width) !default;
+$container-tablet: (90%) !default;
 $container-sm: $container-tablet !default;
-$container-desktop: (940px + $grid-gutter-width) !default;
+$container-desktop: (90%) !default;
 $container-md: $container-desktop !default;
 $container-large-desktop: (1400px + $grid-gutter-width) !default;
 $container-lg: $container-large-desktop !default;

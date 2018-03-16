@@ -71,8 +71,6 @@ amplify:
               item_url: '/media/developer_guide'
             - item_name: API
               item_url: '/api/'
-            - item_name: Blog
-              item_url: '/blog'
             - item_name: Github
               item_icon: github
               item_external_url: 'https://github.com/aws/aws-amplify'
@@ -107,7 +105,6 @@ layouts_dir: ./amplify-theme/_layouts
 includes_dir: ./amplify-theme/_includes
 exclude: [ 'README.md', 'CHANGELOG.md' ]
 permalink: /:title
-post_dirs: true
 
 category_list:
     - category: Modules
