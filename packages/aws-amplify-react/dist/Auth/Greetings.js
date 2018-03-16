@@ -52,8 +52,6 @@ var Greetings = function (_AuthPiece) {
         var _this = _possibleConstructorReturn(this, (Greetings.__proto__ || Object.getPrototypeOf(Greetings)).call(this, props));
 
         _this.signOut = _this.signOut.bind(_this);
-        _this.googleSignOut = _this.googleSignOut.bind(_this);
-        _this.facebookSignOut = _this.facebookSignOut.bind(_this);
         _this.checkUser = _this.checkUser.bind(_this);
         _this.onHubCapsule = _this.onHubCapsule.bind(_this);
 
@@ -91,8 +89,6 @@ var Greetings = function (_AuthPiece) {
             function signOut() {
                 var _this2 = this;
 
-                this.googleSignOut();
-                this.facebookSignOut();
                 _awsAmplify.Auth.signOut().then(function () {
                     return _this2.changeState('signedOut');
                 })['catch'](function (err) {
@@ -101,54 +97,6 @@ var Greetings = function (_AuthPiece) {
             }
 
             return signOut;
-        }()
-    }, {
-        key: 'googleSignOut',
-        value: function () {
-            function googleSignOut() {
-                var auth2 = window.gapi && window.gapi.auth2 ? window.gapi.auth2 : null;
-                if (!auth2) {
-                    return Promise.resolve(null);
-                }
-
-                auth2.getAuthInstance().then(function (googleAuth) {
-                    if (!googleAuth) {
-                        logger.debug('google Auth undefined');
-                        return Promise.resolve(null);
-                    }
-
-                    logger.debug('google signing out');
-                    return googleAuth.signOut();
-                });
-            }
-
-            return googleSignOut;
-        }()
-    }, {
-        key: 'facebookSignOut',
-        value: function () {
-            function facebookSignOut() {
-                var fb = window.FB;
-                if (!fb) {
-                    logger.debug('FB sdk undefined');
-                    return Promise.resolve(null);
-                }
-
-                fb.getLoginStatus(function (response) {
-                    if (response.status === 'connected') {
-                        return new Promise(function (res, rej) {
-                            logger.debug('facebook signing out');
-                            fb.logout(function (response) {
-                                res(response);
-                            });
-                        });
-                    } else {
-                        return Promise.resolve(null);
-                    }
-                });
-            }
-
-            return facebookSignOut;
         }()
     }, {
         key: 'checkUser',

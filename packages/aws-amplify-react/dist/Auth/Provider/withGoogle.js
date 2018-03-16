@@ -45,7 +45,6 @@ function withGoogle(Comp) {
             _this.initGapi = _this.initGapi.bind(_this);
             _this.signIn = _this.signIn.bind(_this);
             _this.federatedSignIn = _this.federatedSignIn.bind(_this);
-            _this.refreshGoogleToken = _this.refreshGoogleToken.bind(_this);
 
             _this.state = {};
             return _this;
@@ -79,7 +78,6 @@ function withGoogle(Comp) {
                         name: profile.getName()
                     };
 
-                    var that = this;
                     var onStateChange = this.props.onStateChange;
 
                     return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user).then(function (credentials) {
@@ -132,47 +130,6 @@ function withGoogle(Comp) {
                 }
 
                 return initGapi;
-            }()
-        }, {
-            key: 'refreshGoogleToken',
-            value: function () {
-                function refreshGoogleToken(callback) {
-                    var ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2 : null;
-                    if (!ga) {
-                        logger.debug('no gapi auth2 available');
-                        callback('no gapi auth2 available', null);
-                    }
-
-                    ga.getAuthInstance().then(function (googleAuth) {
-                        if (!googleAuth) {
-                            console.log('google Auth undefiend');
-                            callback('google Auth undefiend', null);
-                        }
-
-                        var googleUser = googleAuth.currentUser.get();
-                        // refresh the token
-                        if (googleUser.isSignedIn()) {
-                            logger.debug('refreshing the google access token');
-                            googleUser.reloadAuthResponse().then(function (authResponse) {
-                                var id_token = authResponse.id_token,
-                                    expires_at = authResponse.expires_at;
-
-                                var profile = googleUser.getBasicProfile();
-                                var user = {
-                                    email: profile.getEmail(),
-                                    name: profile.getName()
-                                };
-
-                                callback(null, { token: id_token, expires_at: expires_at });
-                            });
-                        }
-                    })['catch'](function (err) {
-                        logger.debug('Failed to refresh google token', err);
-                        callback('Failed to refresh google token', null);
-                    });
-                }
-
-                return refreshGoogleToken;
             }()
         }, {
             key: 'render',

@@ -9,7 +9,6 @@ export default class AuthClass {
     private credentials;
     private credentials_source;
     private user;
-    private federatedTokeneRefreshHandlers;
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -135,9 +134,6 @@ export default class AuthClass {
      * @return - A promise resolves to be current user's credentials
      */
     currentUserCredentials(): Promise<any>;
-    private _refreshFederatedToken(federatedInfo);
-    private _refreshFacebookToken(callback);
-    private _refreshGoogleToken(callback);
     currentCredentials(): Promise<any>;
     /**
      * Initiate an attribute confirmation request

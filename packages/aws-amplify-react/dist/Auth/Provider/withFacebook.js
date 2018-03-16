@@ -46,7 +46,6 @@ function withFacebook(Comp) {
             _this.initFB = _this.initFB.bind(_this);
             _this.signIn = _this.signIn.bind(_this);
             _this.federatedSignIn = _this.federatedSignIn.bind(_this);
-            _this.refreshFacebookToken = _this.refreshFacebookToken.bind(_this);
 
             _this.state = {};
             return _this;
@@ -90,7 +89,6 @@ function withFacebook(Comp) {
                     if (!accessToken) {
                         return;
                     }
-                    var that = this;
 
                     var fb = window.FB;
                     fb.api('/me', function (response) {
@@ -164,44 +162,6 @@ function withFacebook(Comp) {
                 }
 
                 return createScript;
-            }()
-        }, {
-            key: 'refreshFacebookToken',
-            value: function () {
-                function refreshFacebookToken(callback) {
-                    var fb = window.FB;
-                    if (!fb) {
-                        logger.debug('no fb sdk available');
-                        callback('no fb sdk available', null);
-                    }
-
-                    fb.getLoginStatus(function (response) {
-                        if (response.status === 'connected') {
-                            var authResponse = response.authResponse;
-                            var accessToken = authResponse.accessToken,
-                                expiresIn = authResponse.expiresIn;
-
-
-                            var date = new Date();
-                            var expires_at = expiresIn * 1000 + date.getTime();
-                            if (!accessToken) {
-                                return;
-                            }
-
-                            var _fb = window.FB;
-                            _fb.api('/me', function (response) {
-                                var user = {
-                                    name: response.name
-                                };
-                                callback(null, { token: accessToken, expires_at: expires_at });
-                            });
-                        } else {
-                            callback('not connected to facebook', null);
-                        }
-                    });
-                }
-
-                return refreshFacebookToken;
             }()
         }, {
             key: 'render',
