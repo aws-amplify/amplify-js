@@ -734,11 +734,13 @@ export default class AuthClass {
                     });
                 } else {
                     logger.debug('no provided fedaterated token refresh handler', this.federatedTokeneRefreshHandlers);
+                    this.setCredentialsFromFederation(provider, token, user);
+                    res(); 
                 }
+            } else {
+                this.setCredentialsFromFederation(provider, token, user);
+                res(); 
             }
-
-            this.setCredentialsFromFederation(provider, token, user);
-            res(); 
         });
     }
 
@@ -1174,7 +1176,7 @@ export default class AuthClass {
                 .then(() => {
                     credentials = that.credentials;
                     credentials.refresh(err => {
-                        logger.debug('refreshing credentials');
+                        logger.debug('refreshing credentials', credentials);
                         if (err) {
                             logger.debug('refresh credentials error', err);
                             resolve(null);

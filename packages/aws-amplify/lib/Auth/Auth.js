@@ -803,10 +803,14 @@ var AuthClass = /** @class */ (function () {
                 }
                 else {
                     logger.debug('no provided fedaterated token refresh handler', _this.federatedTokeneRefreshHandlers);
+                    _this.setCredentialsFromFederation(provider, token, user);
+                    res();
                 }
             }
-            _this.setCredentialsFromFederation(provider, token, user);
-            res();
+            else {
+                _this.setCredentialsFromFederation(provider, token, user);
+                res();
+            }
         });
     };
     AuthClass.prototype._refreshFacebookToken = function (callback) {
@@ -1238,7 +1242,7 @@ var AuthClass = /** @class */ (function () {
                 .then(function () {
                 credentials = that.credentials;
                 credentials.refresh(function (err) {
-                    logger.debug('refreshing credentials');
+                    logger.debug('refreshing credentials', credentials);
                     if (err) {
                         logger.debug('refresh credentials error', err);
                         resolve(null);
