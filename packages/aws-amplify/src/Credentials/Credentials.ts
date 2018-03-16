@@ -19,7 +19,7 @@ import { CredentialsProvider } from './types';
 
 const logger = new Logger('Auth');
 
-export default class Credentials{
+export default class CredentialsClass {
     private _config;
     private _pluggables: CredentialsProvider[];
 

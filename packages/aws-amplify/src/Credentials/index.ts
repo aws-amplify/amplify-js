@@ -1,5 +1,7 @@
-import Credentials from './Credentials';
+import CredentialsClass from './Credentials';
+import { CredentialsProvider } from './types';
 
-const instance = new Credentials();
+const instance = new CredentialsClass();
 
 export default instance;
+export { CredentialsProvider, CredentialsClass };

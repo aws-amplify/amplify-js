@@ -674,6 +674,20 @@ export default class AuthClass {
     }
 
     /**
+     * get the current user credentials
+     */
+    public currentUserCredentials(): Promise<any> {
+        return Credentials.getCredentials();
+    }
+
+    /**
+     * get the current credentials
+     */
+    public currentCredentials(): Promise<any> {
+        return Credentials.getCredentials();
+    }
+
+    /**
      * Initiate an attribute confirmation request
      * @param {Object} user - The CognitoUser
      * @param {Object} attr - The attributes to be verified
@@ -856,6 +870,32 @@ export default class AuthClass {
         }
     }
 
+    /**
+     * For federated login
+     * @param {String} provider - federation login provider
+     * @param {Object} response - response including access_token
+     * @param {String} user - user info 
+     */
+    public federatedSignIn(provider, response, user) {
+        const { token, expires_at } = response;
+
+        this.user = user;
+        this.user_source = 'federated';
+        Cache.setItem('federatedUser', { user }, { priority: 1 });
+        // store it into localstorage
+        dispatchAuthEvent('signIn', this.user);
+        return Credentials.setCredentials({federated: {provider, token, user}, providerName: 'AWSCognito'});
+    }
+
+    
+    /**
+     * Compact version of credentials
+     * @param credentials 
+     */
+    public essentialCredentials(credentials) {
+        return Credentials.essentialCredentials({ credentials });
+    }
+
     private attributesToObject(attributes) {
         const obj = {};
         if (attributes) {
@@ -872,23 +912,6 @@ export default class AuthClass {
             });
         }
         return obj;
-    }
-
-    /**
-     * For federated login
-     * @param {String} provider - federation login provider
-     * @param {Object} response - response including access_token
-     * @param {String} user - user info 
-     */
-    public federatedSignIn(provider, response, user) {
-        const { token, expires_at } = response;
-
-        this.user = user;
-        this.user_source = 'federated';
-        Cache.setItem('federatedUser', { user }, { priority: 1 });
-        // store it into localstorage
-        dispatchAuthEvent('signIn', this.user);
-        return Credentials.setCredentials({federated: {provider, token, user}, providerName: 'AWSCognito'});
     }
 
     private createCognitoUser(username: string): Cognito.CognitoUser {
