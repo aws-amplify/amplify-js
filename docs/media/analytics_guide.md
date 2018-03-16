@@ -41,14 +41,16 @@ Amplify.configure(aws_exports);
 ```js
 import Amplify from 'aws-amplify';
 
-Amplify.configure(
+Amplify.configure({
     Analytics: {
     // OPTIONAL -  Amazon Pinpoint App ID
         appId: 'XXXXXXXXXXabcdefghij1234567890ab',
     // OPTIONAL -  Amazon service region
         region: 'XX-XXXX-X',
+    // OPTIONAL -  Customized endpoint
+        endpointId: 'XXXXXXXXXXXX'
     } 
-);
+});
 
 ```
 
@@ -104,7 +106,7 @@ You can write your own plugin by using the interface ```AnalyticsProvider```:
 import { AnalyticsProvider } from 'aws-amplify';
 
 export default class MyAnalyticsProvider implements AnalyticsProvider {
-    // you need to implement those four methods
+    // you need to implement these four methods
     // configure your provider
     configure(config: object): object;
 
@@ -122,7 +124,11 @@ export default class MyAnalyticsProvider implements AnalyticsProvider {
 You can now add your own Analytics plugin now by using:
 ```js
 // send configuration into Amplify
-Amplify.configure({Analytics: { my_analytics_provider_configuration }});
+Amplify.configure({
+    Analytics: { 
+        // My Analytics provider configuration 
+    }
+});
 // use the plugin
 Amplify.addPluggable(new MyAnalyticsProvider());
 ```

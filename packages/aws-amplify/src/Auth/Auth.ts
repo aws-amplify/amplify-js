@@ -176,6 +176,7 @@ export default class AuthClass {
 
         const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
+            
             user.confirmRegistration(code, true, function(err, data) {
                 if (err) { reject(err); } else { resolve(data); }
             });
@@ -203,7 +204,7 @@ export default class AuthClass {
      * Sign in
      * @param {String} username - The username to be signed in
      * @param {String} password - The password of the username
-     * @return - A promise resolves the CognitoUser object if success or mfa required
+     * @return - A promise resolves the CognitoUser
      */
     public signIn(username: string, password: string): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
@@ -215,6 +216,7 @@ export default class AuthClass {
             Username: username,
             Password: password
         });
+
         const that = this;
         return new Promise((resolve, reject) => {
             user.authenticateUser(authDetails, {
@@ -244,6 +246,197 @@ export default class AuthClass {
                         requiredAttributes
                     };
                     resolve(user);
+                },
+                mfaSetup: (challengeName, challengeParam) => {
+                    logger.debug('signIn mfa setup', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                },
+                totpRequired: (challengeName, challengeParam) => {
+                    logger.debug('signIn totpRequired');
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                },
+                selectMFAType: (challengeName, challengeParam) => {
+                    logger.debug('signIn selectMFAType', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
+                }
+            });
+        });
+    }
+
+    /**
+     * get user current preferred mfa option
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves the current preferred mfa option if success
+     */
+    public getMFAOptions(user : any) : Promise<any> {
+        return new Promise((res, rej) => {
+            user.getMFAOptions((err, mfaOptions) => {
+                if (err) {
+                    logger.debug('get MFA Options failed', err);
+                    rej(err);
+                }
+                logger.debug('get MFA options success', mfaOptions);
+                res(mfaOptions);
+            });
+        });
+    }
+    
+    /**
+     * set preferred MFA method
+     * @param {CognitoUser} user - the current Cognito user
+     * @param {string} mfaMethod - preferred mfa method
+     * @return - A promise resolve if success
+     */
+    public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
+        let smsMfaSettings = {
+            PreferredMfa : false,
+            Enabled : false
+        };
+        let totpMfaSettings = {
+            PreferredMfa : false,
+            Enabled : false
+        };
+
+        switch(mfaMethod) {
+            case 'TOTP':
+                totpMfaSettings = {
+                    PreferredMfa : true,
+                    Enabled : true
+                };
+                break;
+            case 'SMS':
+                smsMfaSettings = {
+                    PreferredMfa : true,
+                    Enabled : true
+                };
+                break;
+            case 'NOMFA':
+                break;
+            default:
+                logger.debug('no validmfa method provided');
+                return Promise.reject('no validmfa method provided');
+        }
+
+        const that = this;
+        const TOTP_NOT_VERIFED = 'User has not verified software token mfa';
+        const TOTP_NOT_SETUP = 'User has not set up software token mfa';
+        return new Promise((res, rej) => {
+            user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, (err, result) => {
+                if (err) {
+                    // if totp not setup or verified and user want to set it, return error
+                    // otherwise igonre it
+                    if (err.message === TOTP_NOT_SETUP || err.message === TOTP_NOT_VERIFED) {
+                        if (mfaMethod === 'SMS') {
+                            that.enableSMS(user).then((data) => {
+                                logger.debug('Set user mfa success', data);
+                                res(data);
+                            }).catch(err => {
+                                logger.debug('Set user mfa preference error', err);
+                                rej(err);
+                            });
+                        } else if (mfaMethod === 'NOMFA') {
+                            // diable sms
+                            that.disableSMS(user).then((data) => {
+                                logger.debug('Set user mfa success', data);
+                                res(data);
+                            }).catch(err => {
+                                logger.debug('Set user mfa preference error', err);
+                                rej(err);
+                            });
+                        } else {
+                            logger.debug('Set user mfa preference error', err);
+                            rej(err);
+                        }
+                    } else {
+                        logger.debug('Set user mfa preference error', err);
+                        rej(err);
+                    }
+                }
+                logger.debug('Set user mfa success', result);
+                res(result);
+            });
+        });
+    }
+
+    /**
+     * diable SMS
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves is success
+     */
+    public disableSMS(user : any) : Promise<any> {
+        return new Promise((res, rej) => {
+            user.disableMFA((err, data) => {
+                if (err) {
+                    logger.debug('disable mfa failed', err);
+                    rej(err);
+                }
+                logger.debug('disable mfa succeed', data);
+                res(data);
+            });
+        });
+    }
+
+    /**
+     * enable SMS
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves is success
+     */
+    public enableSMS(user) {
+        return new Promise((res, rej) => {
+            user.enableMFA((err, data) => {
+                if (err) {
+                    logger.debug('enable mfa failed', err);
+                    rej(err);
+                }
+                logger.debug('enable mfa succeed', data);
+                res(data);
+            });
+        });
+    }
+
+    /**
+     * Setup TOTP
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves with the secret code if success
+     */
+    public setupTOTP(user) {
+        return new Promise((res, rej) => {
+            user.associateSoftwareToken({
+                onFailure: (err) => {
+                    logger.debug('associateSoftwareToken failed', err);
+                    rej(err);
+                },
+                associateSecretCode: (secretCode) => {
+                    logger.debug('associateSoftwareToken sucess', secretCode);
+                    res(secretCode);
+                }
+            });
+        });
+    }
+
+    /**
+     * verify TOTP setup
+     * @param {CognitoUser} user - the current user
+     * @param {string} challengeAnswer - challenge answer
+     * @return - A promise resolves is success
+     */
+    public verifyTotpToken(user, challengeAnswer) {
+        logger.debug('verfication totp token', user, challengeAnswer);
+        return new Promise((res, rej) => {
+            user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
+                onFailure: (err) => {
+                    logger.debug('verifyTotpToken failed', err);
+                    rej(err);
+                },
+                onSuccess: (data) => {
+                    logger.debug('verifyTotpToken success', data);
+                    res(data);
                 }
             });
         });
@@ -254,24 +447,26 @@ export default class AuthClass {
      * @param {Object} user - The CognitoUser object
      * @param {String} code - The confirmation code
      */
-    public confirmSignIn(user: any, code: string): Promise<any> {
+    public confirmSignIn(user: any, code: string, mfaType: string | null): Promise<any> {
         if (!code) { return Promise.reject('Code cannot be empty'); }
 
         const that = this;
         return new Promise((resolve, reject) => {
-            user.sendMFACode(code, {
-                onSuccess: (session) => {
-                    logger.debug(session);
-                    that.setCredentialsFromSession(session);
-                    that.user = user;
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
-                },
-                onFailure: (err) => {
-                    logger.debug('confirm signIn failure', err);
-                    reject(err);
-                }
-            });
+            user.sendMFACode(
+                code, {
+                    onSuccess: (session) => {
+                        logger.debug(session);
+                        that.setCredentialsFromSession(session);
+                        that.user = user;
+                        dispatchAuthEvent('signIn', user);
+                        resolve(user);
+                    },
+                    onFailure: (err) => {
+                        logger.debug('confirm signIn failure', err);
+                        reject(err);
+                    }
+                }, 
+                mfaType);
         });
     }
 
@@ -761,12 +956,13 @@ export default class AuthClass {
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
-            'amazon': 'www.amazon.com'
+            'amazon': 'www.amazon.com',
+            'developer': 'cognito-identity.amazonaws.com'
         };
 
         const domain = domains[provider];
         if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
+            return Promise.reject(provider + ' is not supported: [google, facebook, amazon, developer]');
         }
 
         const logins = {};
