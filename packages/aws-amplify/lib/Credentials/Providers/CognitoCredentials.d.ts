@@ -1,9 +1,10 @@
-export default class CognitoCredentials {
+import { CredentialsProvider } from '../types';
+export default class CognitoCredentials implements CredentialsProvider {
     private _credentials;
-    private credentials_source;
+    private _credentials_source;
     private _config;
-    private gettingCred;
-    private _currentSessionHandler;
+    private _userPool;
+    private _userPoolStorageSync;
     constructor(config?: any);
     /**
      * pass the configuration
@@ -50,4 +51,11 @@ export default class CognitoCredentials {
     private _setCredentialsForGuest();
     private _setCredentialsFromSession(session);
     private _setCredentialsFromFederation(federated);
+    private _currentSession();
+    /**
+     * Return the current user after synchornizing AsyncStorage
+     * @return - A promise with the current authenticated user
+     **/
+    private _getSyncedUser();
+    private _userSession(user);
 }

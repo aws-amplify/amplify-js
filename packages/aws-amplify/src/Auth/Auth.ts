@@ -215,8 +215,7 @@ export default class AuthClass {
                     logger.debug(session);
                     Credentials.setCredentials({
                         session,
-                        providerName: 'AWSCognito', 
-                        currentSessionHandler: that.currentSession
+                        providerName: 'AWSCognito'
                     });
                     that.user = user;
                     that.user_source = 'userpool';

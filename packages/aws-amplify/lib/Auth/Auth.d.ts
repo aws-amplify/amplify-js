@@ -12,7 +12,7 @@ export default class AuthClass {
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
      */
-    constructor(config: AuthOptions);
+    constructor(config: any);
     configure(config: any): AuthOptions;
     /**
      * Sign up with username, password and other attrbutes like phone, email
@@ -129,6 +129,14 @@ export default class AuthClass {
      */
     userSession(user: any): Promise<any>;
     /**
+     * get the current user credentials
+     */
+    currentUserCredentials(): Promise<any>;
+    /**
+     * get the current credentials
+     */
+    currentCredentials(): Promise<any>;
+    /**
      * Initiate an attribute confirmation request
      * @param {Object} user - The CognitoUser
      * @param {Object} attr - The attributes to be verified
@@ -184,7 +192,6 @@ export default class AuthClass {
      * @return {Object }- current User's information
      */
     currentUserInfo(): Promise<any>;
-    private attributesToObject(attributes);
     /**
      * For federated login
      * @param {String} provider - federation login provider
@@ -192,5 +199,11 @@ export default class AuthClass {
      * @param {String} user - user info
      */
     federatedSignIn(provider: any, response: any, user: any): Promise<{}>;
+    /**
+     * Compact version of credentials
+     * @param credentials
+     */
+    essentialCredentials(credentials: any): any;
+    private attributesToObject(attributes);
     private createCognitoUser(username);
 }

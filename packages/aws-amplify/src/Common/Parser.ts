@@ -21,7 +21,8 @@ export default class Parser {
                 cognitoIdentityPoolId: config['aws_cognito_identity_pool_id'],
                 cognitoRegion: config['aws_cognito_region'],
                 cognitoUserPoolId: config['aws_user_pools_id'],
-                mandatorySignIn: config['aws_mandatory_sign_in'] === 'enable'? true: false
+                mandatorySignIn: config['aws_mandatory_sign_in'] === 'enable'? true: false,
+                cognitoUserPoolWebClientId: config['aws_user_pools_web_client_id']
             };
             amplifyConfig.Credentials = Credentials;
         }

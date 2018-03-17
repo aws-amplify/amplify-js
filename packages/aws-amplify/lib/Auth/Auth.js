@@ -69,7 +69,8 @@ var AuthClass = /** @class */ (function () {
         this.userPool = null;
         this.user = null;
         this.user_source = null;
-        this.configure(config);
+        if (config)
+            this.configure(config);
         if (Common_1.AWS.config) {
             Common_1.AWS.config.update({ customUserAgent: Common_1.Constants.userAgent });
         }
@@ -80,17 +81,8 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.configure = function (config) {
         var _this = this;
         logger.debug('configure Auth');
-        var conf = config ? config.Auth || config : {};
-        if (conf['aws_cognito_identity_pool_id']) {
-            conf = {
-                userPoolId: conf['aws_user_pools_id'],
-                userPoolWebClientId: conf['aws_user_pools_web_client_id'],
-                region: conf['aws_cognito_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id'],
-                mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable' ? true : false
-            };
-        }
-        this._config = Object.assign({}, this._config, conf);
+        var conf = Object.assign({}, this._config, Common_1.Parser.parseMobilehubConfig(config).Auth);
+        this._config = conf;
         if (!this._config.identityPoolId) {
             logger.debug('Do not have identityPoolId yet.');
         }
@@ -263,7 +255,10 @@ var AuthClass = /** @class */ (function () {
             user.authenticateUser(authDetails, {
                 onSuccess: function (session) {
                     logger.debug(session);
-                    Credentials_1.default.setCredentials({ session: session, providerName: 'AWSCognito', currentSessionHandler: that.currentSession });
+                    Credentials_1.default.setCredentials({
+                        session: session,
+                        providerName: 'AWSCognito'
+                    });
                     that.user = user;
                     that.user_source = 'userpool';
                     dispatchAuthEvent('signIn', user);
@@ -492,7 +487,11 @@ var AuthClass = /** @class */ (function () {
             user.sendMFACode(code, {
                 onSuccess: function (session) {
                     logger.debug(session);
-                    Credentials_1.default.setCredentials({ session: session, providerName: 'AWSCognito', currentSession: that.currentSession });
+                    Credentials_1.default.setCredentials({
+                        session: session,
+                        providerName: 'AWSCognito',
+                        currentSession: that.currentSession
+                    });
                     that.user = user;
                     that.user_source = 'userpool';
                     dispatchAuthEvent('signIn', user);
@@ -746,6 +745,18 @@ var AuthClass = /** @class */ (function () {
         });
     };
     /**
+     * get the current user credentials
+     */
+    AuthClass.prototype.currentUserCredentials = function () {
+        return Credentials_1.default.getCredentials();
+    };
+    /**
+     * get the current credentials
+     */
+    AuthClass.prototype.currentCredentials = function () {
+        return Credentials_1.default.getCredentials();
+    };
+    /**
      * Initiate an attribute confirmation request
      * @param {Object} user - The CognitoUser
      * @param {Object} attr - The attributes to be verified
@@ -943,6 +954,28 @@ var AuthClass = /** @class */ (function () {
             });
         });
     };
+    /**
+     * For federated login
+     * @param {String} provider - federation login provider
+     * @param {Object} response - response including access_token
+     * @param {String} user - user info
+     */
+    AuthClass.prototype.federatedSignIn = function (provider, response, user) {
+        var token = response.token, expires_at = response.expires_at;
+        this.user = user;
+        this.user_source = 'federated';
+        Cache_1.default.setItem('federatedUser', { user: user }, { priority: 1 });
+        // store it into localstorage
+        dispatchAuthEvent('signIn', this.user);
+        return Credentials_1.default.setCredentials({ federated: { provider: provider, token: token, user: user }, providerName: 'AWSCognito' });
+    };
+    /**
+     * Compact version of credentials
+     * @param credentials
+     */
+    AuthClass.prototype.essentialCredentials = function (credentials) {
+        return Credentials_1.default.essentialCredentials({ credentials: credentials });
+    };
     AuthClass.prototype.attributesToObject = function (attributes) {
         var obj = {};
         if (attributes) {
@@ -961,21 +994,6 @@ var AuthClass = /** @class */ (function () {
             });
         }
         return obj;
-    };
-    /**
-     * For federated login
-     * @param {String} provider - federation login provider
-     * @param {Object} response - response including access_token
-     * @param {String} user - user info
-     */
-    AuthClass.prototype.federatedSignIn = function (provider, response, user) {
-        var token = response.token, expires_at = response.expires_at;
-        this.user = user;
-        this.user_source = 'federated';
-        Cache_1.default.setItem('federatedUser', { user: user }, { priority: 1 });
-        // store it into localstorage
-        dispatchAuthEvent('signIn', this.user);
-        return Credentials_1.default.setCredentials({ federated: { provider: provider, token: token, user: user }, providerName: 'AWSCognito' });
     };
     AuthClass.prototype.createCognitoUser = function (username) {
         var userData = {

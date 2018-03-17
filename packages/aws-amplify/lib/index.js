@@ -30,6 +30,7 @@ var Cache_1 = require("./Cache");
 exports.Cache = Cache_1.default;
 var Credentials_1 = require("./Credentials");
 exports.Credentials = Credentials_1.default;
+exports.CredentialsClass = Credentials_1.CredentialsClass;
 var Common_1 = require("./Common");
 exports.Logger = Common_1.ConsoleLogger;
 exports.Hub = Common_1.Hub;
@@ -44,17 +45,34 @@ var Amplify = /** @class */ (function () {
         if (!config) {
             return;
         }
+        Credentials_1.default.configure(config);
         Cache_1.default.configure(config);
         Auth_1.default.configure(config);
-        Credentials_1.default.configure(config);
-        Credentials_1.default.getCredentials(config).then(function (credentials) {
-            I18n_1.default.configure(config);
-            Analytics_1.default.configure(config);
-            API_1.default.configure(config);
-            Storage_1.default.configure(config);
-        });
+        I18n_1.default.configure(config);
+        Analytics_1.default.configure(config);
+        API_1.default.configure(config);
+        Storage_1.default.configure(config);
         return config;
     };
+    // static async asyncConfigure(config) {
+    //     if (!config) { return; }
+    //     return Credentials.configure(config).then(() => {
+    //             return Auth.configure(config);
+    //         }).then(() => {
+    //             return Analytics.configure(config);
+    //         }).then(() => {
+    //             return API.configure(config);
+    //         }).then(() => {
+    //             return Storage.configure(config);
+    //         }).then(() => {
+    //             return Cache.configure(config);
+    //         }).then(() => {
+    //             return I18n.configure(config);
+    //         }).catch((e) => {
+    //             logger.debug('error happened while setting the configuration', e);
+    //             return config;
+    //         });
+    // }
     Amplify.addPluggable = function (pluggable) {
         if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
             var category = pluggable.getCategory();
@@ -69,6 +87,9 @@ var Amplify = /** @class */ (function () {
                 case 'Cache':
                     break;
                 case 'Storage':
+                    break;
+                case 'Credentials':
+                    Credentials_1.default.addPluggable(pluggable);
                     break;
                 default:
                     break;

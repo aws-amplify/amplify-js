@@ -1,4 +1,4 @@
-export default class Credentials {
+export default class CredentialsClass {
     private _config;
     private _pluggables;
     constructor();

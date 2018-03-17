@@ -36,13 +36,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../../Common");
+var Platform_1 = require("../../Common/Platform");
 var Cache_1 = require("../../Cache");
 var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
+var CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUser = Common_1.Cognito.CognitoUser, CookieStorage = Common_1.Cognito.CookieStorage;
 var logger = new Common_1.ConsoleLogger('CognitoCredentials');
 var CognitoCredentials = /** @class */ (function () {
     function CognitoCredentials(config) {
-        this.credentials_source = ''; // aws, guest, userPool, federated
-        this.gettingCred = false;
+        this._credentials_source = ''; // aws, guest, userPool, federated
+        this._userPool = null;
         this._config = config ? config : {};
         this._credentials = null;
     }
@@ -51,9 +53,34 @@ var CognitoCredentials = /** @class */ (function () {
      * @param config
      */
     CognitoCredentials.prototype.configure = function (config) {
+        var _this = this;
         logger.debug('configure CognitoCredentials with config', config);
         var conf = config ? config : {};
         this._config = Object.assign({}, this._config, conf);
+        var _a = this._config, cognitoUserPoolId = _a.cognitoUserPoolId, cognitoUserPoolWebClientId = _a.cognitoUserPoolWebClientId, cookieStorage = _a.cookieStorage;
+        if (cognitoUserPoolId) {
+            var userPoolData = {
+                UserPoolId: cognitoUserPoolId,
+                ClientId: cognitoUserPoolWebClientId,
+            };
+            if (cookieStorage) {
+                userPoolData.Storage = new CookieStorage(cookieStorage);
+            }
+            this._userPool = new CognitoUserPool(userPoolData);
+            if (Platform_1.default.isReactNative) {
+                var that = this;
+                this._userPoolStorageSync = new Promise(function (resolve, reject) {
+                    _this._userPool.storage.sync(function (err, data) {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            resolve(data);
+                        }
+                    });
+                });
+            }
+        }
         return this._config;
     };
     /**
@@ -75,7 +102,6 @@ var CognitoCredentials = /** @class */ (function () {
     CognitoCredentials.prototype.setCredentials = function (config) {
         var session = config.session, guest = config.guest, federated = config.federated;
         if (session) {
-            this._currentSessionHandler = config.currentSessionHandler;
             return this._setCredentialsFromSession(session);
         }
         else if (guest) {
@@ -97,28 +123,22 @@ var CognitoCredentials = /** @class */ (function () {
             this._credentials.clearCachedId();
         Cache_1.default.removeItem('federatedInfo');
         this._credentials = null;
-        this.credentials_source = '';
+        this._credentials_source = '';
     };
     /**
      * Get authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
     CognitoCredentials.prototype.getCredentials = function (config) {
-        return __awaiter(this, void 0, void 0, function () {
-            var cred;
-            return __generator(this, function (_a) {
-                logger.debug('getting credentials with config', config);
-                cred = this._credentials || Common_1.AWS.config.credentials;
-                if (cred && !this._isExpired(cred)) {
-                    logger.debug('credentails exists and not expired');
-                    return [2 /*return*/, Promise.resolve(cred)];
-                }
-                else {
-                    return [2 /*return*/, this._retrieveCredentialsFromAuth()];
-                }
-                return [2 /*return*/];
-            });
-        });
+        logger.debug('getting credentials with config', config);
+        var cred = this._credentials || Common_1.AWS.config.credentials;
+        if (cred && !this._isExpired(cred)) {
+            logger.debug('credentails exists and not expired');
+            return Promise.resolve(cred);
+        }
+        else {
+            return this._retrieveCredentialsFromAuth();
+        }
     };
     /**
      * Compact version of credentials
@@ -153,14 +173,9 @@ var CognitoCredentials = /** @class */ (function () {
                         }
                         else {
                             that_1 = this;
-                            if (this._currentSessionHandler && typeof this._currentSessionHandler === 'function') {
-                                return [2 /*return*/, this._currentSessionHandler()
-                                        .then(function (session) { return that_1._setCredentialsFromSession(session); })
-                                        .catch(function (error) { return that_1._setCredentialsForGuest(); })];
-                            }
-                            else {
-                                return [2 /*return*/, this._setCredentialsForGuest()];
-                            }
+                            return [2 /*return*/, this._currentSession()
+                                    .then(function (session) { return that_1._setCredentialsFromSession(session); })
+                                    .catch(function (error) { return that_1._setCredentialsForGuest(); })];
                         }
                         return [3 /*break*/, 3];
                     case 2:
@@ -204,13 +219,12 @@ var CognitoCredentials = /** @class */ (function () {
         });
     };
     CognitoCredentials.prototype._setCredentialsForGuest = function () {
-        var _this = this;
         logger.debug('set credentials from guest with config', this._config);
         var _a = this._config, cognitoIdentityPoolId = _a.cognitoIdentityPoolId, cognitoRegion = _a.cognitoRegion, mandatorySignIn = _a.mandatorySignIn;
         if (mandatorySignIn) {
             logger.debug('mandatory sign in, no guest credentials provided');
             this._credentials = null;
-            this.credentials_source = 'no credentials';
+            this._credentials_source = 'no credentials';
             return;
         }
         var credentials = new CognitoIdentityCredentials({
@@ -224,21 +238,18 @@ var CognitoCredentials = /** @class */ (function () {
                 logger.debug('Load creadentials for guest successfully', credentials);
                 that._credentials = credentials;
                 that._credentials.authenticated = false;
-                that.credentials_source = 'guest';
+                that._credentials_source = 'guest';
                 if (Common_1.AWS && Common_1.AWS.config) {
                     Common_1.AWS.config.credentials = that._credentials;
                 }
-                _this.gettingCred = false;
                 res(that._credentials);
             }, function (err) {
                 logger.debug('Failed to load creadentials for guest', credentials);
-                _this.gettingCred = false;
                 rej('Failed to load creadentials for guest');
             });
         });
     };
     CognitoCredentials.prototype._setCredentialsFromSession = function (session) {
-        var _this = this;
         logger.debug('set credentials from session');
         var idToken = session.getIdToken().getJwtToken();
         var _a = this._config, cognitoRegion = _a.cognitoRegion, cognitoUserPoolId = _a.cognitoUserPoolId, cognitoIdentityPoolId = _a.cognitoIdentityPoolId;
@@ -257,21 +268,18 @@ var CognitoCredentials = /** @class */ (function () {
                 logger.debug('Load creadentials for userpool user successfully', credentials);
                 that._credentials = credentials;
                 that._credentials.authenticated = true;
-                that.credentials_source = 'userpool';
+                that._credentials_source = 'userpool';
                 if (Common_1.AWS && Common_1.AWS.config) {
                     Common_1.AWS.config.credentials = that._credentials;
                 }
-                _this.gettingCred = false;
                 res(that._credentials);
             }, function (err) {
                 logger.debug('Failed to load creadentials for userpoool user', credentials);
-                _this.gettingCred = false;
                 rej('Failed to load creadentials for userpool user');
             });
         });
     };
     CognitoCredentials.prototype._setCredentialsFromFederation = function (federated) {
-        var _this = this;
         logger.debug('set credentials from federation');
         var provider = federated.provider, token = federated.token, user = federated.user;
         var domains = {
@@ -300,16 +308,62 @@ var CognitoCredentials = /** @class */ (function () {
                 logger.debug('Load creadentials for federation user successfully', credentials);
                 that._credentials = credentials;
                 that._credentials.authenticated = false;
-                that.credentials_source = 'federated';
+                that._credentials_source = 'federated';
                 if (Common_1.AWS && Common_1.AWS.config) {
                     Common_1.AWS.config.credentials = that._credentials;
                 }
-                _this.gettingCred = false;
                 res(that._credentials);
             }, function (err) {
                 logger.debug('Failed to load creadentials for federation user', credentials);
-                _this.gettingCred = false;
                 rej('Failed to load creadentials for federation user');
+            });
+        });
+    };
+    CognitoCredentials.prototype._currentSession = function () {
+        var user;
+        var that = this;
+        if (!this._userPool) {
+            return Promise.reject('No userPool');
+        }
+        if (Platform_1.default.isReactNative) {
+            return this._getSyncedUser().then(function (user) {
+                if (!user) {
+                    return Promise.reject('No current user');
+                }
+                return that._userSession(user);
+            });
+        }
+        else {
+            user = this._userPool.getCurrentUser();
+            if (!user) {
+                return Promise.reject('No current user');
+            }
+            return this._userSession(user);
+        }
+    };
+    /**
+     * Return the current user after synchornizing AsyncStorage
+     * @return - A promise with the current authenticated user
+     **/
+    CognitoCredentials.prototype._getSyncedUser = function () {
+        var that = this;
+        return (this._userPoolStorageSync || Promise.resolve()).then(function (result) {
+            if (!that._userPool) {
+                return Promise.reject('No userPool');
+            }
+            return that._userPool.getCurrentUser();
+        });
+    };
+    CognitoCredentials.prototype._userSession = function (user) {
+        return new Promise(function (resolve, reject) {
+            logger.debug(user);
+            user.getSession(function (err, session) {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(session);
+                }
             });
         });
     };
