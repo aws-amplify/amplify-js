@@ -878,8 +878,14 @@ img { max-width: 100%; }
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell">
-					<strong><a href="index.html">aws-amplify</a></strong>
+				<div class="table-cell logo">
+					<a href="index.html">
+						<img src="https://aws.github.io/aws-amplify/amplify-theme/assets/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+					</a>
+				</div>
+				<div class="table-cell" style="">
+					<a href="/aws-amplify/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -901,7 +907,7 @@ img { max-width: 100%; }
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
-					<a href="#typedoc-main-index" class="tsd-widget menu no-caption">Menu</a>
+					<a href="/api#typedoc-main-index" class="tsd-widget menu no-caption">Menu</a>
 				</div>
 			</div>
 		</div>
@@ -913,7 +919,10 @@ img { max-width: 100%; }
 			<a href="enums/sessionstate.html" class="tsd-kind-icon">Session<wbr>State</a>
 		</li>
 		<li class=" tsd-kind-class">
-			<a href="classes/api.html" class="tsd-kind-icon">API</a>
+			<a href="classes/apiclass.html" class="tsd-kind-icon">APIClass</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="classes/awsanalyticsprovider.html" class="tsd-kind-icon">AWSAnalytics<wbr>Provider</a>
 		</li>
 		<li class=" tsd-kind-class">
 			<a href="classes/awscredentials.html" class="tsd-kind-icon">AWSCredentials</a>
@@ -964,6 +973,9 @@ img { max-width: 100%; }
 			<a href="classes/js.html" class="tsd-kind-icon">JS</a>
 		</li>
 		<li class=" tsd-kind-class">
+			<a href="classes/parser.html" class="tsd-kind-icon">Parser</a>
+		</li>
+		<li class=" tsd-kind-class">
 			<a href="classes/restclient.html" class="tsd-kind-icon">Rest<wbr>Client</a>
 		</li>
 		<li class=" tsd-kind-class">
@@ -979,7 +991,13 @@ img { max-width: 100%; }
 			<a href="classes/storageclass.html" class="tsd-kind-icon">Storage<wbr>Class</a>
 		</li>
 		<li class=" tsd-kind-interface">
+			<a href="interfaces/amplifyconfig.html" class="tsd-kind-icon">Amplify<wbr>Config</a>
+		</li>
+		<li class=" tsd-kind-interface">
 			<a href="interfaces/analyticsoptions.html" class="tsd-kind-icon">Analytics<wbr>Options</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="interfaces/analyticsprovider.html" class="tsd-kind-icon">Analytics<wbr>Provider</a>
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="interfaces/authoptions.html" class="tsd-kind-icon">Auth<wbr>Options</a>
@@ -1018,6 +1036,9 @@ img { max-width: 100%; }
 			<a href="interfaces/apioptions.html" class="tsd-kind-icon">api<wbr>Options</a>
 		</li>
 		<li class=" tsd-kind-variable">
+			<a href="globals.html#api" class="tsd-kind-icon">API</a>
+		</li>
+		<li class=" tsd-kind-variable">
 			<a href="globals.html#analytics" class="tsd-kind-icon">Analytics</a>
 		</li>
 		<li class=" tsd-kind-variable">
@@ -1025,6 +1046,9 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="globals.html#authenticationdetails" class="tsd-kind-icon">Authentication<wbr>Details</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="globals.html#buffer_size" class="tsd-kind-icon">BUFFER_<wbr>SIZE</a>
 		</li>
 		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="globals.html#cognitoidentitycredentials" class="tsd-kind-icon">Cognito<wbr>Identity<wbr>Credentials</a>
@@ -1038,11 +1062,17 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="globals.html#cognitouserpool" class="tsd-kind-icon">Cognito<wbr>User<wbr>Pool</a>
 		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="globals.html#cookiestorage" class="tsd-kind-icon">Cookie<wbr>Storage</a>
+		</li>
 		<li class=" tsd-kind-variable">
 			<a href="globals.html#hub" class="tsd-kind-icon">Hub</a>
 		</li>
 		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="globals.html#linking" class="tsd-kind-icon">Linking</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="globals.html#max_size_per_flush" class="tsd-kind-icon">MAX_<wbr>SIZE_<wbr>PER_<wbr>FLUSH</a>
 		</li>
 		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="globals.html#mime_map" class="tsd-kind-icon">MIME_<wbr>MAP</a>
@@ -1066,19 +1096,37 @@ img { max-width: 100%; }
 			<a href="globals.html#_instance" class="tsd-kind-icon">_instance</a>
 		</li>
 		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="globals.html#actions" class="tsd-kind-icon">actions</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="globals.html#crypto" class="tsd-kind-icon">crypto</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="globals.html#date" class="tsd-kind-icon">date</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="globals.html#expiretime" class="tsd-kind-icon">expire<wbr>Time</a>
 		</li>
 		<li class=" tsd-kind-variable">
 			<a href="globals.html#instance" class="tsd-kind-icon">instance</a>
 		</li>
 		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="globals.html#interval" class="tsd-kind-icon">interval</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="globals.html#logger" class="tsd-kind-icon">logger</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="globals.html#preinteract" class="tsd-kind-icon">pre<wbr>Interact</a>
 		</li>
 		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="globals.html#url" class="tsd-kind-icon">url</a>
 		</li>
 		<li class=" tsd-kind-function tsd-is-not-exported">
 			<a href="globals.html#_isinteger" class="tsd-kind-icon">_is<wbr>Integer</a>
+		</li>
+		<li class=" tsd-kind-function tsd-is-not-exported">
+			<a href="globals.html#analyticsevent" class="tsd-kind-icon">analytics<wbr>Event</a>
 		</li>
 		<li class=" tsd-kind-function tsd-is-not-exported">
 			<a href="globals.html#authevent" class="tsd-kind-icon">auth<wbr>Event</a>
@@ -1186,7 +1234,7 @@ img { max-width: 100%; }
 		<div class="tsd-panel tsd-typography">
 			<h1 id="aws-amplify-package-aws-amplify">AWS Amplify Package - aws-amplify</h1>
 			<p>AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications. The library is a declarative interface across different categories of operations in order to make common tasks easier to add into your application. The default implementation works with Amazon Web Services (AWS) resources but is designed to be open and pluggable for usage with other cloud services that wish to provide an implementation or custom backends.</p>
-			<p><code>aws-amplify</code> is the AWS Amplify core library. Documentation is available <a href="https://github.com/aws/aws-amplify/blob/master/README.md">here</a></p>
+			<p><code>aws-amplify</code> is the AWS Amplify core library. Documentation is available <a href="https://aws.github.io/aws-amplify/">here</a></p>
 		</div>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
@@ -1201,7 +1249,8 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Classes</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-class"><a href="classes/api.html" class="tsd-kind-icon">API</a></li>
+							<li class="tsd-kind-class"><a href="classes/apiclass.html" class="tsd-kind-icon">APIClass</a></li>
+							<li class="tsd-kind-class"><a href="classes/awsanalyticsprovider.html" class="tsd-kind-icon">AWSAnalytics<wbr>Provider</a></li>
 							<li class="tsd-kind-class"><a href="classes/awscredentials.html" class="tsd-kind-icon">AWSCredentials</a></li>
 							<li class="tsd-kind-class"><a href="classes/amplify.html" class="tsd-kind-icon">Amplify</a></li>
 							<li class="tsd-kind-class"><a href="classes/analyticsclass.html" class="tsd-kind-icon">Analytics<wbr>Class</a></li>
@@ -1218,6 +1267,7 @@ img { max-width: 100%; }
 							<li class="tsd-kind-class"><a href="classes/i18noptions.html" class="tsd-kind-icon">I18n<wbr>Options</a></li>
 							<li class="tsd-kind-class"><a href="classes/inmemorycache.html" class="tsd-kind-icon">In<wbr>Memory<wbr>Cache</a></li>
 							<li class="tsd-kind-class"><a href="classes/js.html" class="tsd-kind-icon">JS</a></li>
+							<li class="tsd-kind-class"><a href="classes/parser.html" class="tsd-kind-icon">Parser</a></li>
 							<li class="tsd-kind-class"><a href="classes/restclient.html" class="tsd-kind-icon">Rest<wbr>Client</a></li>
 							<li class="tsd-kind-class"><a href="classes/restclientoptions.html" class="tsd-kind-icon">Rest<wbr>Client<wbr>Options</a></li>
 							<li class="tsd-kind-class"><a href="classes/signer.html" class="tsd-kind-icon">Signer</a></li>
@@ -1228,7 +1278,9 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Interfaces</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-interface"><a href="interfaces/amplifyconfig.html" class="tsd-kind-icon">Amplify<wbr>Config</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/analyticsoptions.html" class="tsd-kind-icon">Analytics<wbr>Options</a></li>
+							<li class="tsd-kind-interface"><a href="interfaces/analyticsprovider.html" class="tsd-kind-icon">Analytics<wbr>Provider</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/authoptions.html" class="tsd-kind-icon">Auth<wbr>Options</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/cacheconfig.html" class="tsd-kind-icon">Cache<wbr>Config</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/cacheitem.html" class="tsd-kind-icon">Cache<wbr>Item</a></li>
@@ -1246,15 +1298,19 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Variables</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-variable"><a href="globals.html#api" class="tsd-kind-icon">API</a></li>
 							<li class="tsd-kind-variable"><a href="globals.html#analytics" class="tsd-kind-icon">Analytics</a></li>
 							<li class="tsd-kind-variable"><a href="globals.html#auth" class="tsd-kind-icon">Auth</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#authenticationdetails" class="tsd-kind-icon">Authentication<wbr>Details</a></li>
+							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#buffer_size" class="tsd-kind-icon">BUFFER_<wbr>SIZE</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#cognitoidentitycredentials" class="tsd-kind-icon">Cognito<wbr>Identity<wbr>Credentials</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#cognitouser" class="tsd-kind-icon">Cognito<wbr>User</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#cognitouserattribute" class="tsd-kind-icon">Cognito<wbr>User<wbr>Attribute</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#cognitouserpool" class="tsd-kind-icon">Cognito<wbr>User<wbr>Pool</a></li>
+							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#cookiestorage" class="tsd-kind-icon">Cookie<wbr>Storage</a></li>
 							<li class="tsd-kind-variable"><a href="globals.html#hub" class="tsd-kind-icon">Hub</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#linking" class="tsd-kind-icon">Linking</a></li>
+							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#max_size_per_flush" class="tsd-kind-icon">MAX_<wbr>SIZE_<wbr>PER_<wbr>FLUSH</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#mime_map" class="tsd-kind-icon">MIME_<wbr>MAP</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#non_retryable_exceptions" class="tsd-kind-icon">NON_<wbr>RETRYABLE_<wbr>EXCEPTIONS</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#os" class="tsd-kind-icon">OS</a></li>
@@ -1262,9 +1318,14 @@ img { max-width: 100%; }
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#_config" class="tsd-kind-icon">_config</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#_i18n" class="tsd-kind-icon">_i18n</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#_instance" class="tsd-kind-icon">_instance</a></li>
+							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#actions" class="tsd-kind-icon">actions</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#crypto" class="tsd-kind-icon">crypto</a></li>
+							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#date" class="tsd-kind-icon">date</a></li>
+							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#expiretime" class="tsd-kind-icon">expire<wbr>Time</a></li>
 							<li class="tsd-kind-variable"><a href="globals.html#instance" class="tsd-kind-icon">instance</a></li>
+							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#interval" class="tsd-kind-icon">interval</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#logger" class="tsd-kind-icon">logger</a></li>
+							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#preinteract" class="tsd-kind-icon">pre<wbr>Interact</a></li>
 							<li class="tsd-kind-variable tsd-is-not-exported"><a href="globals.html#url" class="tsd-kind-icon">url</a></li>
 						</ul>
 					</section>
@@ -1272,6 +1333,7 @@ img { max-width: 100%; }
 						<h3>Functions</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#_isinteger" class="tsd-kind-icon">_is<wbr>Integer</a></li>
+							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#analyticsevent" class="tsd-kind-icon">analytics<wbr>Event</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#authevent" class="tsd-kind-icon">auth<wbr>Event</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#browserclientinfo" class="tsd-kind-icon">browser<wbr>Client<wbr>Info</a></li>
 							<li class="tsd-kind-function tsd-is-not-exported"><a href="globals.html#browsertimezone" class="tsd-kind-icon">browser<wbr>Timezone</a></li>
@@ -1318,12 +1380,22 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Variables</h2>
 			<section class="tsd-panel tsd-member tsd-kind-variable">
+				<a name="api" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> API</h3>
+				<div class="tsd-signature tsd-kind-icon">API<span class="tsd-signature-symbol">:</span> <a href="classes/apiclass.html" class="tsd-signature-type">APIClass</a><span class="tsd-signature-symbol"> =&nbsp;_instance</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/API/index.ts#L27">API/index.ts:27</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable">
 				<a name="analytics" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> Analytics</h3>
 				<div class="tsd-signature tsd-kind-icon">Analytics<span class="tsd-signature-symbol">:</span> <a href="classes/analyticsclass.html" class="tsd-signature-type">AnalyticsClass</a><span class="tsd-signature-symbol"> =&nbsp;_instance</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Analytics/index.ts#L33">Analytics/index.ts:33</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/index.ts#L34">Analytics/index.ts:34</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1333,7 +1405,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Auth<span class="tsd-signature-symbol">:</span> <a href="classes/authclass.html" class="tsd-signature-type">AuthClass</a><span class="tsd-signature-symbol"> =&nbsp;_instance</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/index.ts#L27">Auth/index.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/index.ts#L27">Auth/index.ts:27</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1343,7 +1415,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Authentication<wbr>Details<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L36">Auth/Auth.ts:36</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/Auth.ts#L38">Auth/Auth.ts:38</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+				<a name="buffer_size" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> BUFFER_<wbr>SIZE</h3>
+				<div class="tsd-signature tsd-kind-icon">BUFFER_<wbr>SIZE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">1000</span><span class="tsd-signature-symbol"> =&nbsp;1000</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/Analytics.ts#L29">Analytics/Analytics.ts:29</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1353,7 +1435,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Cognito<wbr>Identity<wbr>Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L29">Auth/Auth.ts:29</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/Auth.ts#L30">Auth/Auth.ts:30</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1363,7 +1445,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Cognito<wbr>User<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L35">Auth/Auth.ts:35</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/Auth.ts#L37">Auth/Auth.ts:37</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1373,7 +1455,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Cognito<wbr>User<wbr>Attribute<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L34">Auth/Auth.ts:34</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/Auth.ts#L36">Auth/Auth.ts:36</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1383,7 +1465,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Cognito<wbr>User<wbr>Pool<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L33">Auth/Auth.ts:33</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/Auth.ts#L35">Auth/Auth.ts:35</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+				<a name="cookiestorage" class="tsd-anchor"></a>
+				<h3>Cookie<wbr>Storage</h3>
+				<div class="tsd-signature tsd-kind-icon">Cookie<wbr>Storage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/Auth.ts#L34">Auth/Auth.ts:34</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1393,7 +1485,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Hub<span class="tsd-signature-symbol">:</span> <a href="classes/hubclass.html" class="tsd-signature-type">HubClass</a><span class="tsd-signature-symbol"> =&nbsp;new HubClass(&#x27;__default__&#x27;)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Hub.ts#L76">Common/Hub.ts:76</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Hub.ts#L78">Common/Hub.ts:78</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1403,7 +1495,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Linking<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/RNComponents/index.ts#L13">Common/RNComponents/index.ts:13</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/RNComponents/index.ts#L13">Common/RNComponents/index.ts:13</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1413,12 +1505,22 @@ img { max-width: 100%; }
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+				<a name="max_size_per_flush" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> MAX_<wbr>SIZE_<wbr>PER_<wbr>FLUSH</h3>
+				<div class="tsd-signature tsd-kind-icon">MAX_<wbr>SIZE_<wbr>PER_<wbr>FLUSH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;BUFFER_SIZE * 0.1</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/Analytics.ts#L30">Analytics/Analytics.ts:30</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
 				<a name="mime_map" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> MIME_<wbr>MAP</h3>
 				<div class="tsd-signature tsd-kind-icon">MIME_<wbr>MAP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[{ type: &#x27;text/plain&#x27;, ext: &#x27;txt&#x27; },{ type: &#x27;text/html&#x27;, ext: &#x27;html&#x27; },{ type: &#x27;text/javascript&#x27;, ext: &#x27;js&#x27; },{ type: &#x27;text/css&#x27;, ext: &#x27;css&#x27; },{ type: &#x27;text/csv&#x27;, ext: &#x27;csv&#x27; },{ type: &#x27;text/yaml&#x27;, ext: &#x27;yml&#x27; },{ type: &#x27;text/yaml&#x27;, ext: &#x27;yaml&#x27; },{ type: &#x27;text/calendar&#x27;, ext: &#x27;ics&#x27; },{ type: &#x27;text/calendar&#x27;, ext: &#x27;ical&#x27; },{ type: &#x27;image/png&#x27;, ext: &#x27;png&#x27; },{ type: &#x27;image/gif&#x27;, ext: &#x27;gif&#x27; },{ type: &#x27;image/jpeg&#x27;, ext: &#x27;jpg&#x27; },{ type: &#x27;image/jpeg&#x27;, ext: &#x27;jpeg&#x27; },{ type: &#x27;image/bmp&#x27;, ext: &#x27;bmp&#x27; },{ type: &#x27;image/x-icon&#x27;, ext: &#x27;ico&#x27; },{ type: &#x27;image/tiff&#x27;, ext: &#x27;tif&#x27; },{ type: &#x27;image/tiff&#x27;, ext: &#x27;tiff&#x27; },{ type: &#x27;image/svg+xml&#x27;, ext: &#x27;svg&#x27; },{ type: &#x27;application/json&#x27;, ext: &#x27;json&#x27; },{ type: &#x27;application/xml&#x27;, ext: &#x27;xml&#x27; },{ type: &#x27;application/x-sh&#x27;, ext: &#x27;sh&#x27; },{ type: &#x27;application/zip&#x27;, ext: &#x27;zip&#x27; },{ type: &#x27;application/x-rar-compressed&#x27;, ext: &#x27;rar&#x27; },{ type: &#x27;application/x-tar&#x27;, ext: &#x27;tar&#x27; },{ type: &#x27;application/x-bzip&#x27;, ext: &#x27;bz&#x27; },{ type: &#x27;application/x-bzip2&#x27;, ext: &#x27;bz2&#x27; },{ type: &#x27;application/pdf&#x27;, ext: &#x27;pdf&#x27; },{ type: &#x27;application/java-archive&#x27;, ext: &#x27;jar&#x27; },{ type: &#x27;application/msword&#x27;, ext: &#x27;doc&#x27; },{ type: &#x27;application/vnd.ms-excel&#x27;, ext: &#x27;xls&#x27; },{ type: &#x27;application/vnd.ms-excel&#x27;, ext: &#x27;xlsx&#x27; },{ type: &#x27;message/rfc822&#x27;, ext: &#x27;eml&#x27; }]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/JS.ts#L14">Common/JS.ts:14</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/JS.ts#L14">Common/JS.ts:14</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1428,7 +1530,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">NON_<wbr>RETRYABLE_<wbr>EXCEPTIONS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&#x27;BadRequestException&#x27;, &#x27;SerializationException&#x27;, &#x27;ValidationException&#x27;]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Analytics/Analytics.ts#L27">Analytics/Analytics.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/Providers/AWSAnalyticsProvider.ts#L19">Analytics/Providers/AWSAnalyticsProvider.ts:19</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1438,7 +1540,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">OS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/reactnative.ts#L18">Common/ClientDevice/reactnative.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/reactnative.ts#L18">Common/ClientDevice/reactnative.ts:18</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1448,7 +1550,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Storage<span class="tsd-signature-symbol">:</span> <a href="classes/storageclass.html" class="tsd-signature-type">StorageClass</a><span class="tsd-signature-symbol"> =&nbsp;_instance</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Storage/index.ts#L37">Storage/index.ts:37</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Storage/index.ts#L37">Storage/index.ts:37</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1458,7 +1560,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/I18n/index.ts#L20">I18n/index.ts:20</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/I18n/index.ts#L20">I18n/index.ts:20</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1468,7 +1570,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_i18n<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/I18n/index.ts#L21">I18n/index.ts:21</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/I18n/index.ts#L21">I18n/index.ts:21</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1478,10 +1580,20 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">_instance<span class="tsd-signature-symbol">:</span> <a href="classes/storageclass.html" class="tsd-signature-type">StorageClass</a><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/API/index.ts#L20">API/index.ts:20</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Analytics/index.ts#L26">Analytics/index.ts:26</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/index.ts#L20">Auth/index.ts:20</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Storage/index.ts#L20">Storage/index.ts:20</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/API/index.ts#L20">API/index.ts:20</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/index.ts#L27">Analytics/index.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/index.ts#L20">Auth/index.ts:20</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Storage/index.ts#L20">Storage/index.ts:20</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+				<a name="actions" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> actions</h3>
+				<div class="tsd-signature tsd-kind-icon">actions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&#x27;mousemove&#x27;, &#x27;keydown&#x27;, &#x27;scroll&#x27;]</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/SessionManage.ts#L21">Analytics/SessionManage.ts:21</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1491,7 +1603,27 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">crypto<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;AWS[&#x27;util&#x27;].crypto</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L19">Common/Signer.ts:19</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L19">Common/Signer.ts:19</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+				<a name="date" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> date</h3>
+				<div class="tsd-signature tsd-kind-icon">date<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol"> =&nbsp;new Date()</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/SessionManage.ts#L17">Analytics/SessionManage.ts:17</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+				<a name="expiretime" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> expire<wbr>Time</h3>
+				<div class="tsd-signature tsd-kind-icon">expire<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;30*60*1000</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/SessionManage.ts#L19">Analytics/SessionManage.ts:19</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1501,9 +1633,19 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">instance<span class="tsd-signature-symbol">:</span> <a href="interfaces/icache.html" class="tsd-signature-type">ICache</a><span class="tsd-signature-symbol"> =&nbsp;new InMemoryCache()</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/AsyncStorageCache.ts#L451">Cache/AsyncStorageCache.ts:451</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/BrowserStorageCache.ts#L457">Cache/BrowserStorageCache.ts:457</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/InMemoryCache.ts#L372">Cache/InMemoryCache.ts:372</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/AsyncStorageCache.ts#L451">Cache/AsyncStorageCache.ts:451</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/BrowserStorageCache.ts#L457">Cache/BrowserStorageCache.ts:457</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/InMemoryCache.ts#L372">Cache/InMemoryCache.ts:372</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+				<a name="interval" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> interval</h3>
+				<div class="tsd-signature tsd-kind-icon">interval<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;5*1000</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/Analytics.ts#L31">Analytics/Analytics.ts:31</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1513,28 +1655,39 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;new Logger(&#x27;Amplify&#x27;)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L17">Common/Signer.ts:17</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/API/RestClient.ts#L22">API/RestClient.ts:22</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/API/API.ts#L19">API/API.ts:19</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/API/index.ts#L18">API/index.ts:18</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Analytics/Analytics.ts#L26">Analytics/Analytics.ts:26</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Analytics/index.ts#L24">Analytics/index.ts:24</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L26">Auth/Auth.ts:26</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/index.ts#L18">Auth/index.ts:18</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/StorageCache.ts#L24">Cache/StorageCache.ts:24</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/AsyncStorageCache.ts#L20">Cache/AsyncStorageCache.ts:20</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/BrowserStorageCache.ts#L23">Cache/BrowserStorageCache.ts:23</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/InMemoryCache.ts#L24">Cache/InMemoryCache.ts:24</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/android.ts#L17">Common/ClientDevice/android.ts:17</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Hub.ts#L16">Common/Hub.ts:16</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/browser.ts#L17">Common/ClientDevice/browser.ts:17</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/ios.ts#L17">Common/ClientDevice/ios.ts:17</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/index.ts#L31">Common/index.ts:31</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/I18n/I18n.ts#L17">I18n/I18n.ts:17</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/I18n/index.ts#L18">I18n/index.ts:18</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Storage/Storage.ts#L24">Storage/Storage.ts:24</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Storage/index.ts#L18">Storage/index.ts:18</a></li>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/index.ts#L28">index.ts:28</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L17">Common/Signer.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/API/RestClient.ts#L22">API/RestClient.ts:22</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/API/API.ts#L19">API/API.ts:19</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/API/index.ts#L18">API/index.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/Providers/AWSAnalyticsProvider.ts#L18">Analytics/Providers/AWSAnalyticsProvider.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/Analytics.ts#L26">Analytics/Analytics.ts:26</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/index.ts#L25">Analytics/index.ts:25</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/Auth.ts#L27">Auth/Auth.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/index.ts#L18">Auth/index.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/StorageCache.ts#L24">Cache/StorageCache.ts:24</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/AsyncStorageCache.ts#L20">Cache/AsyncStorageCache.ts:20</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/BrowserStorageCache.ts#L23">Cache/BrowserStorageCache.ts:23</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/InMemoryCache.ts#L24">Cache/InMemoryCache.ts:24</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/android.ts#L17">Common/ClientDevice/android.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Hub.ts#L16">Common/Hub.ts:16</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/browser.ts#L17">Common/ClientDevice/browser.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/ios.ts#L17">Common/ClientDevice/ios.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/index.ts#L32">Common/index.ts:32</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/I18n/I18n.ts#L17">I18n/I18n.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/I18n/index.ts#L18">I18n/index.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Storage/Storage.ts#L24">Storage/Storage.ts:24</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Storage/index.ts#L18">Storage/index.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/index.ts#L28">index.ts:28</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-not-exported">
+				<a name="preinteract" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagLet">Let</span> pre<wbr>Interact</h3>
+				<div class="tsd-signature tsd-kind-icon">pre<wbr>Interact<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;date.getTime()</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/SessionManage.ts#L18">Analytics/SessionManage.ts:18</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1544,7 +1697,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;require(&#x27;url&#x27;)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L18">Common/Signer.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L18">Common/Signer.ts:18</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1561,7 +1714,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L73">Cache/Utils/CacheUtils.ts:73</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L73">Cache/Utils/CacheUtils.ts:73</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1575,6 +1728,29 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-function tsd-is-not-exported">
+				<a name="analyticsevent" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> analytics<wbr>Event</h3>
+				<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
+					<li class="tsd-signature tsd-kind-icon">analytics<wbr>Event<span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/index.ts#L99">Analytics/index.ts:99</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>payload: <span class="tsd-signature-type">any</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function tsd-is-not-exported">
 				<a name="authevent" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagConst">Const</span> auth<wbr>Event</h3>
 				<ul class="tsd-signatures tsd-kind-function tsd-is-not-exported">
@@ -1584,7 +1760,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Analytics/index.ts#L72">Analytics/index.ts:72</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/index.ts#L80">Analytics/index.ts:80</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1607,7 +1783,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/browser.ts#L25">Common/ClientDevice/browser.ts:25</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/browser.ts#L25">Common/ClientDevice/browser.ts:25</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span>
@@ -1627,7 +1803,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/browser.ts#L64">Common/ClientDevice/browser.ts:64</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/browser.ts#L64">Common/ClientDevice/browser.ts:64</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1644,7 +1820,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/browser.ts#L69">Common/ClientDevice/browser.ts:69</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/browser.ts#L69">Common/ClientDevice/browser.ts:69</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1675,7 +1851,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L41">Common/Signer.ts:41</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L41">Common/Signer.ts:41</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1698,7 +1874,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L87">Common/Signer.ts:87</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L87">Common/Signer.ts:87</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1722,7 +1898,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/android.ts#L19">Common/ClientDevice/android.ts:19</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/android.ts#L19">Common/ClientDevice/android.ts:19</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
@@ -1741,7 +1917,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/ios.ts#L19">Common/ClientDevice/ios.ts:19</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/ios.ts#L19">Common/ClientDevice/ios.ts:19</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
@@ -1775,7 +1951,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L120">Common/Signer.ts:120</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L120">Common/Signer.ts:120</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1804,7 +1980,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/ios.ts#L34">Common/ClientDevice/ios.ts:34</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/ios.ts#L34">Common/ClientDevice/ios.ts:34</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1835,7 +2011,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/ClientDevice/browser.ts#L52">Common/ClientDevice/browser.ts:52</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/ClientDevice/browser.ts#L52">Common/ClientDevice/browser.ts:52</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
@@ -1860,7 +2036,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Analytics/index.ts#L37">Analytics/index.ts:37</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/index.ts#L40">Analytics/index.ts:40</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1886,7 +2062,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/Auth.ts#L39">Auth/Auth.ts:39</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/Auth.ts#L41">Auth/Auth.ts:41</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1912,7 +2088,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Storage/Storage.ts#L26">Storage/Storage.ts:26</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Storage/Storage.ts#L26">Storage/Storage.ts:26</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1941,7 +2117,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L21">Common/Signer.ts:21</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L21">Common/Signer.ts:21</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1970,7 +2146,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L34">Cache/Utils/CacheUtils.ts:34</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L34">Cache/Utils/CacheUtils.ts:34</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2000,7 +2176,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L57">Cache/Utils/CacheUtils.ts:57</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L57">Cache/Utils/CacheUtils.ts:57</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2022,7 +2198,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L187">Common/Signer.ts:187</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L187">Common/Signer.ts:187</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2057,7 +2233,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L177">Common/Signer.ts:177</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L177">Common/Signer.ts:177</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2083,7 +2259,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L166">Common/Signer.ts:166</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L166">Common/Signer.ts:166</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2112,7 +2288,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L25">Common/Signer.ts:25</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L25">Common/Signer.ts:25</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2135,7 +2311,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Errors.ts#L15">Common/Errors.ts:15</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Errors.ts#L15">Common/Errors.ts:15</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2158,7 +2334,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L65">Cache/Utils/CacheUtils.ts:65</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L65">Cache/Utils/CacheUtils.ts:65</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2186,7 +2362,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Errors.ts#L14">Common/Errors.ts:14</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Errors.ts#L14">Common/Errors.ts:14</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2209,7 +2385,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L103">Common/Signer.ts:103</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L103">Common/Signer.ts:103</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2240,7 +2416,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L231">Common/Signer.ts:231</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L231">Common/Signer.ts:231</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2302,7 +2478,7 @@ session_token: ...
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L64">Common/Signer.ts:64</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L64">Common/Signer.ts:64</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2330,7 +2506,7 @@ session_token: ...
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Analytics/index.ts#L65">Analytics/index.ts:65</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Analytics/index.ts#L73">Analytics/index.ts:73</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2353,7 +2529,7 @@ session_token: ...
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Signer.ts#L143">Common/Signer.ts:143</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Signer.ts#L143">Common/Signer.ts:143</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2384,7 +2560,7 @@ session_token: ...
 				<div class="tsd-signature tsd-kind-icon">App<wbr>State<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/RNComponents/index.ts#L14">Common/RNComponents/index.ts:14</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/RNComponents/index.ts#L14">Common/RNComponents/index.ts:14</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -2397,7 +2573,7 @@ session_token: ...
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/RNComponents/index.ts#L15">Common/RNComponents/index.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/RNComponents/index.ts#L15">Common/RNComponents/index.ts:15</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2420,7 +2596,7 @@ session_token: ...
 				<div class="tsd-signature tsd-kind-icon">Constants<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/index.ts#L27">Common/index.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/index.ts#L28">Common/index.ts:28</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -2429,7 +2605,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">user<wbr>Agent<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;Platform.userAgent</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/index.ts#L28">Common/index.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/index.ts#L29">Common/index.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2440,7 +2616,7 @@ session_token: ...
 				<div class="tsd-signature tsd-kind-icon">LOG_<wbr>LEVELS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L16">Common/Logger/ConsoleLogger.ts:16</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L16">Common/Logger/ConsoleLogger.ts:16</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -2449,7 +2625,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">DEBUG<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;2</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L18">Common/Logger/ConsoleLogger.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L18">Common/Logger/ConsoleLogger.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2459,7 +2635,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">ERROR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;5</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L21">Common/Logger/ConsoleLogger.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L21">Common/Logger/ConsoleLogger.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2469,7 +2645,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">INFO<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;3</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L19">Common/Logger/ConsoleLogger.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L19">Common/Logger/ConsoleLogger.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2479,7 +2655,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">VERBOSE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L17">Common/Logger/ConsoleLogger.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L17">Common/Logger/ConsoleLogger.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2489,7 +2665,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">WARN<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;4</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L20">Common/Logger/ConsoleLogger.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Logger/ConsoleLogger.ts#L20">Common/Logger/ConsoleLogger.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2500,7 +2676,7 @@ session_token: ...
 				<div class="tsd-signature tsd-kind-icon">Platform<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Platform/index.ts#L14">Common/Platform/index.ts:14</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Platform/index.ts#L14">Common/Platform/index.ts:14</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -2509,7 +2685,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">is<wbr>React<wbr>Native<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Platform/index.ts#L18">Common/Platform/index.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Platform/index.ts#L18">Common/Platform/index.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2519,7 +2695,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">navigator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Platform/index.ts#L17">Common/Platform/index.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Platform/index.ts#L17">Common/Platform/index.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2529,7 +2705,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">product<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Platform/index.ts#L16">Common/Platform/index.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Platform/index.ts#L16">Common/Platform/index.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2539,7 +2715,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">user<wbr>Agent<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;aws-amplify/0.1.x js&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/Platform/index.ts#L15">Common/Platform/index.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/Platform/index.ts#L15">Common/Platform/index.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2550,7 +2726,7 @@ session_token: ...
 				<div class="tsd-signature tsd-kind-icon">default<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L20">Cache/Utils/CacheUtils.ts:20</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L20">Cache/Utils/CacheUtils.ts:20</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2564,7 +2740,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">capacity<wbr>InBytes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;1048576</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L22">Cache/Utils/CacheUtils.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L22">Cache/Utils/CacheUtils.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2574,7 +2750,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Priority<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;5</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L25">Cache/Utils/CacheUtils.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L25">Cache/Utils/CacheUtils.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2584,7 +2760,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">defaultTTL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;259200000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L24">Cache/Utils/CacheUtils.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L24">Cache/Utils/CacheUtils.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2594,7 +2770,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">item<wbr>Max<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;210000</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L23">Cache/Utils/CacheUtils.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L23">Cache/Utils/CacheUtils.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2604,7 +2780,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">key<wbr>Prefix<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;aws-amplify-cache&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L21">Cache/Utils/CacheUtils.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L21">Cache/Utils/CacheUtils.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2614,7 +2790,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">storage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Storage</span><span class="tsd-signature-symbol"> =&nbsp;(typeof window &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27;) ? null : window.localStorage</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L27">Cache/Utils/CacheUtils.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L27">Cache/Utils/CacheUtils.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2624,7 +2800,7 @@ session_token: ...
 					<div class="tsd-signature tsd-kind-icon">warning<wbr>Threshold<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0.8</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L26">Cache/Utils/CacheUtils.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Cache/Utils/CacheUtils.ts#L26">Cache/Utils/CacheUtils.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
