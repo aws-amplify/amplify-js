@@ -751,28 +751,22 @@ export default class AuthClass {
             callback('no fb sdk available', null);
         }
 
-        fb.getLoginStatus(response => {
-            if (response.status === 'connected') {
-                const { authResponse } = response;
-                const { accessToken, expiresIn } = authResponse;
-
-                const date = new Date();
-                const expires_at = expiresIn * 1000 + date.getTime();
-                if (!accessToken) {
-                    return;
-                }
-                
-                const fb = window['FB'];
-                fb.api('/me', response => {
-                    const user = {
-                        name: response.name
-                    };
-                    callback(null, { token: accessToken, expires_at });
-                });
-            } else {
-                callback('not connected to facebook', null);
+        fb.login(fbResponse => {
+            if (!fbResponse || !fbResponse.authResponse) {
+                logger.debug('no response from facebook when refreshing the jwt token');
+                callback('no response from facebook when refreshing the jwt token', null);
             }
-        });
+
+            const response = fbResponse.authResponse;
+            const { accessToken, expiresIn } = response;
+            const date = new Date();
+            const expires_at = expiresIn * 1000 + date.getTime();
+            if (!accessToken) {
+                logger.debug('the jwtToken is undefined');
+                callback('the jwtToken is undefined', null);
+            }
+            callback(null, {token: accessToken, expires_at });
+        }, {scope: 'public_profile,email' });
     }
 
     private _refreshGoogleToken(callback) {
