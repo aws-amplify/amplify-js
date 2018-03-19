@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include site-head.html %}
+	</head>
+	<body class="{{ site.amplify.color_theme }}">
+		{% include site-header.html %}
+		<div class="hero-subheader{% if page.grid_navigation %} hero-subheader--before-out{% endif %}">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-7">
+						<div class="align-container" data-mh>
+							<div class="align-inner">
+								{% if page.title %}
+									<h1 class="hero-subheader__title">{{ page.title }}</h1>
+								{% endif %}
+								{% if page.description %}
+									<p class="hero-subheader__desc">{{ page.description }}</p>
+								{% endif %}
+								{% for button in page.buttons %}
+									{% if button.external_url == true %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ button.url }}" class="btn btn--dark btn--rounded btn--w-icon">
+										{% if button.icon %}<i class="icon icon--{{ button.icon }}"></i>{% endif %}
+										{{ button.content }}
+									</a>
+									{% else %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ button.url }}" class="btn btn--dark btn--rounded btn--w-icon">
+										{% if button.icon %}<i class="icon icon--{{ button.icon }}"></i>{% endif %}
+										{{ button.content }}
+									</a>
+									{% endif %}
+								{% endfor %}
+							</div><!-- /.align-inner -->
+						</div><!-- /.align-container -->
+					</div><!-- /.col -->
+					{% if page.author.title and page.author.description and page.author.title_url %}
+						<div class="col-md-4 col-md-offset-1 hidden-xs hidden-sm">
+							<div class="align-container" data-mh>
+								<div class="align-inner">
+									<div class="hero-subheader__author">
+										<p class="hero-subheader__author-title">
+											{% if button.external_url == true %}
+											<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.author.title_url }}" class="btn btn--read-more">
+												{{ page.author.title }}
+												<i class="icon icon--arrow-right"></i>
+											</a>
+											{% else %}
+											<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.author.title_url }}" class="btn btn--read-more">
+												{{ page.author.title }}
+												<i class="icon icon--arrow-right"></i>
+											</a>
+											{% endif %}
+										</p><!-- /.hero-subheader__author-title -->
+										<p>{{ page.author.description }}</p>
+									</div><!-- /.hero-subheader__author -->
+								</div><!-- /.align-inner -->
+							</div><!-- /.align-container -->
+						</div><!-- /.col -->
+					{% endif %}
+				</div><!-- /.row -->
+			</div><!-- /.container -->
+		</div><!-- /.hero-subheader -->
+		<div class="photo-credit">
+			<span>
+				Photo by <a target="_new" href="https://unsplash.com/@juandinella?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Juan Di Nella</a>
+			</span>
+		</div>
+
+		{% if page.marketing_message%}
+		<div class="section section--darker-theme-color-bg">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							{{ page.marketing_message }}
+						</div><!-- /.col -->
+					</div><!-- /.row -->
+				</div><!-- /.container -->
+		</div><!-- /.section -->
+		{% endif %}
+
+		{% if page.marketing_grid%}
+		<div class="section section-top">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="marketing-grid">
+							<div class="row">
+								{% for item in page.marketing_grid %}
+									<div class="col-sm-6 col-lg-4">
+										<span class="marketing-grid-item">
+											<div class="marketing-grid-content" data-mh>
+												<h2 class="marketing-grid__title">{{ item.title }}</h2>
+												<p>{{ item.excerpt }}</p>
+											</div><!-- /.nav-grid__content -->
+										</span><!-- /.nav-grid__item -->
+									</div><!-- /.col -->
+								{% endfor %}
+							</div><!-- /.row -->
+						</div><!-- /.nav-grid -->
+					</div><!-- /.col -->
+				</div><!-- /.row -->
+			</div><!-- /.container -->
+		</div><!-- /.section -->
+		{% endif %}
+
+		{% if page.grid_navigation %}
+			<div class="section section--darker-theme-color-bg">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="nav-grid nav-grid--out">
+								<div class="row">
+									{% for item in page.grid_navigation %}
+										<div class="col-sm-6 col-lg-4">
+											<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="nav-grid__item">
+												<div class="nav-grid__content" data-mh>
+													<h2 class="nav-grid__title">{{ item.title }}</h2>
+													<p>{{ item.excerpt }}</p>
+												</div><!-- /.nav-grid__content -->
+												<p class="nav-grid__btn">
+													{{ item.cta }}
+													<i class="icon icon--arrow-right"></i>
+												</p>
+											</a><!-- /.nav-grid__item -->
+										</div><!-- /.col -->
+									{% endfor %}
+								</div><!-- /.row -->
+							</div><!-- /.nav-grid -->
+						</div><!-- /.col -->
+					</div><!-- /.row -->
+				</div><!-- /.container -->
+			</div><!-- /.section -->
+		{% endif %}
+
+		{% include site-footer.html %}
+	</body>
+</html>

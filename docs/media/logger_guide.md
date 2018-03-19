@@ -1,12 +1,22 @@
+---
+---
+
 # Logger
 
-AWS Amplify writes logs through Logger.
+AWS Amplify writes console logs through Logger. You can use Logger in your apps for the same purpose.
 
-## Usage
+## Installation
 
-Create a logger
+Import Logger:
 ```js
 import { Logger } from 'aws-amplify';
+
+```
+
+## Working with the API
+
+You can call logger for different console message modes:
+```js
 
 const logger = new Logger('foo');
 
@@ -16,7 +26,7 @@ logger.warn('warn bar');
 logger.error('error bar');
 ```
 
-When error
+When handling an error:
 ```js
 try {
     ...
@@ -25,27 +35,27 @@ try {
 }
 ```
 
-## Log Level
+## Setting Logging Levels
 
-Log level can be set on logger creation
+You can set a log level when you create your logger instance:
 
 ```js
 const logger = new Logger('foo', 'INFO');
 
-logger.debug('callback data', data); // this will not write, unless ...
+logger.debug('callback data', data); // this will not write the message
 ```
 
-Global setting overrides logger instance setting
+Global logger configuration will override your logger instance's configuration:
 
 ```js
 Amplify.Logger.LOG_LEVEL = 'DEBUG';
 
 const logger = new Logger('foo', 'INFO');
 
-logger.debug('callback data', data); // this will write
+logger.debug('callback data', data); //  this will write the message since the global log level is 'DEBUG'
 ```
 
-During web development, you can set global log level in browser console log
+During web development, you can set global log level in browser console log:
 ```js
 window.LOG_LEVEL = 'DEBUG';
 ```

@@ -862,7 +862,11 @@ In order to authenticate with the Amazon Cognito User Pool Service, the client n
 
 ## Change Log
 
-**v1.32.0:**
+**v2.0.2:**
+* What has changed
+  * To make a new version for NPM package sync with Github repo. 
+
+**v2.0.1:**
 * What has changed
   * Added migration lambda trigger support. 
 
