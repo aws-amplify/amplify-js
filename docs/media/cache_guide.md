@@ -132,7 +132,7 @@ const newCache = Cache.createInstance(config);
 
 ### API Reference
 
-For the complete API documentation for Cache module, visit our [API Reference](/api/classes/cacheobject.html)
+For the complete API documentation for Cache module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/cacheobject.html)
 {: .callout .callout--info}
 
 
