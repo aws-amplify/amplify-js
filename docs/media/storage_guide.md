@@ -3,7 +3,7 @@
 
 # Storage
 
-AWS Amplify Storage module gives a simple mechanism for managing user content in public or private storage buckets.
+AWS Amplify Storage module provides a simple mechanism for managing user content for your app in public or private storage buckets.
 
 ## Installation and Configuration
 
