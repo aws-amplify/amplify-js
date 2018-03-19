@@ -225,7 +225,7 @@ Storage.list('photos/', {level: 'private'})
 
 #### API Reference
 
-For the complete API documentation for Storage module, visit our [API Reference](/api/classes/storageclass.html)
+For the complete API documentation for Storage module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/storageclass.html)
 {: .callout .callout--info}
 
 ## Tracking Events
