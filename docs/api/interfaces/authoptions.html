@@ -878,8 +878,14 @@ img { max-width: 100%; }
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell">
-					<strong><a href="../index.html">aws-amplify</a></strong>
+				<div class="table-cell logo">
+					<a href="../index.html">
+						<img src="https://aws.github.io/aws-amplify/amplify-theme/assets/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+					</a>
+				</div>
+				<div class="table-cell" style="">
+					<a href="/aws-amplify/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -901,7 +907,7 @@ img { max-width: 100%; }
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
-					<a href="#typedoc-main-index" class="tsd-widget menu no-caption">Menu</a>
+					<a href="/api#typedoc-main-index" class="tsd-widget menu no-caption">Menu</a>
 				</div>
 			</div>
 		</div>
@@ -912,6 +918,9 @@ img { max-width: 100%; }
 		<li class="current tsd-kind-interface">
 			<a href="authoptions.html" class="tsd-kind-icon">Auth<wbr>Options</a>
 			<ul>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="authoptions.html#cookiestorage" class="tsd-kind-icon">cookie<wbr>Storage</a>
+				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="authoptions.html#identitypoolid" class="tsd-kind-icon">identity<wbr>Pool<wbr>Id</a>
 				</li>
@@ -955,6 +964,7 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="authoptions.html#cookiestorage" class="tsd-kind-icon">cookie<wbr>Storage</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="authoptions.html#identitypoolid" class="tsd-kind-icon">identity<wbr>Pool<wbr>Id</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="authoptions.html#mandatorysignin" class="tsd-kind-icon">mandatory<wbr>Sign<wbr>In</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="authoptions.html#region" class="tsd-kind-icon">region</a></li>
@@ -968,12 +978,22 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="cookiestorage" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> cookie<wbr>Storage</h3>
+				<div class="tsd-signature tsd-kind-icon">cookie<wbr>Storage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ICookieStorageData</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/types/Auth.ts#L34">Auth/types/Auth.ts:34</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="identitypoolid" class="tsd-anchor"></a>
 				<h3>identity<wbr>Pool<wbr>Id</h3>
 				<div class="tsd-signature tsd-kind-icon">identity<wbr>Pool<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/types/Auth.ts#L29">Auth/types/Auth.ts:29</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/types/Auth.ts#L31">Auth/types/Auth.ts:31</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -983,7 +1003,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">mandatory<wbr>Sign<wbr>In<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/types/Auth.ts#L31">Auth/types/Auth.ts:31</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/types/Auth.ts#L33">Auth/types/Auth.ts:33</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -993,7 +1013,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">region<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/types/Auth.ts#L30">Auth/types/Auth.ts:30</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/types/Auth.ts#L32">Auth/types/Auth.ts:32</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1003,7 +1023,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">user<wbr>Pool<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/types/Auth.ts#L27">Auth/types/Auth.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/types/Auth.ts#L29">Auth/types/Auth.ts:29</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1013,7 +1033,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">user<wbr>Pool<wbr>Web<wbr>Client<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Auth/types/Auth.ts#L28">Auth/types/Auth.ts:28</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Auth/types/Auth.ts#L30">Auth/types/Auth.ts:30</a></li>
 					</ul>
 				</aside>
 			</section>
