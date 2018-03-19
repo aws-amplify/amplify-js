@@ -112,7 +112,7 @@ Analytics.record('albumVisit', {}, { minutesListened: 30 });
 
 ### API Reference
 
-For the complete API documentation for Analytics module, visit our [API Reference](/api/classes/analyticsclass.html)
+For the complete API documentation for Analytics module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/analyticsclass.html)
 {: .callout .callout--info}
 
 ## Customization
