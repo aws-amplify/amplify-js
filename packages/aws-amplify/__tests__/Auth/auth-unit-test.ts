@@ -1533,7 +1533,8 @@ describe('auth unit test', () => {
             expect(spyon).toBeCalledWith('federatedInfo', {
                 provider: 'google',
                 token: 'token',
-                user: 'user'
+                user: 'user',
+                expires_at: 'expires_at'
             },
             {
                 priority: 1
