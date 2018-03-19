@@ -41,3 +41,13 @@ export interface MfaRequiredDetails {
     challengeName: any,
     challengeParameters: any
 }
+
+/**
+ * interface for federatedResponse
+ */
+export interface FederatedResponse {
+    // access token
+    token: string,
+    // the universal time when token expired
+    expires_at: number
+}
