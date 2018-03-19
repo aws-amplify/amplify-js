@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { AuthOptions } from './types';
+import { AuthOptions, FederatedResponse } from './types';
 
 import {
     AWS,
@@ -61,6 +61,7 @@ export default class AuthClass {
      */
     constructor(config) {
         if (config) this.configure(config);
+
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
         } else {
@@ -666,9 +667,6 @@ export default class AuthClass {
         return Credentials.getCredentials();
     }
 
-    /**
-     * get the current credentials
-     */
     public currentCredentials(): Promise<any> {
         return Credentials.getCredentials();
     }
@@ -859,10 +857,11 @@ export default class AuthClass {
     /**
      * For federated login
      * @param {String} provider - federation login provider
-     * @param {Object} response - response including access_token
-     * @param {String} user - user info 
+     * @param {FederatedResponse} response - response should have the access token
+     * and the expiration time (the universal time)
+     * @param {String} user - user info
      */
-    public federatedSignIn(provider, response, user) {
+    public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
         const { token, expires_at } = response;
 
         this.user = user;

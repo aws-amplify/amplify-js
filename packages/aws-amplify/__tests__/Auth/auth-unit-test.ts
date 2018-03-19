@@ -1440,8 +1440,11 @@ describe('auth unit test', () => {
 
             auth.federatedSignIn('google', {token: 'token', expires_at: 'expires_at'}, 'user');
 
-            expect(spyon).toBeCalledWith('federatedUser', {
-                user: 'user'
+            expect(spyon).toBeCalledWith('federatedInfo', {
+                provider: 'google',
+                token: 'token',
+                user: 'user',
+                expires_at: 'expires_at'
             },
             {
                 priority: 1

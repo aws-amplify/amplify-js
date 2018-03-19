@@ -1,38 +1,36 @@
+---
+---
 # Cache
 
-The Amplify Cache module provides a generic [LRU](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) cache to JavaScript developers for storing data with priority and expiration settings. It is a key/value structure where expiration values can be configured globally or on a per-key basis. For instance you may wish to cache JSON responses from the API module as well as input values that a user enters into an application (preferences, UX configuration, etc.).
+The Amplify Cache module provides a generic [LRU](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) cache for JavaScript developers to store data with priority and expiration settings. 
 
-* [Installation](#installation)
-* [Integration](#integration)
-* [Configuration](#configuration)
-
+It is a key/value structure where expiration values can be configured **globally** or on a **per-key basis**. For instance, you may wish to cache all JSON responses from the API module for the next 10 minutes, but like to store user input values or preferences for a month.  
 
 ## Installation
 
-For both Web and React Native development, install `aws-amplify`
+Install `aws-amplify`.
 ```bash
 npm install aws-amplify
 ```
 
+## Working with the API
 
-## Integration
-
-### Integrate into Web and React Native applications
-
-First import the library:
+First, import the library:
 ```js
 import { Cache } from 'aws-amplify';
 ```
 
-After importing you can invoke the appropriate methods from your application.
+After the import, you can invoke the appropriate methods within your application.
 
-- **setItem()**
-
-  You can set number, string, boolean or object into the cache. You can also specify options along with the call such as the priority or expiration time.
+### setItem()
 
 ```js
-Cache.setItem(key, value[, options]);
+Cache.setItem(key, value, [options]);
+```
 
+You can set *number*, *string*, *boolean* or *object* values to the cache. You can also specify options along with the call such as the priority or expiration time.
+
+```js
 // Standard case
 Cache.setItem('key', 'value');
 
@@ -44,21 +42,22 @@ const expiration = new Date(2018, 1, 1);
 Cache.setItem('key', 'value', { expires: expiration.getTime() });
 ```
 
-When using the `priority` setting the lower number will be evicted last. For example:
+When using `priority` setting, the cached item with the lower number will be expired first. The Cache module decides expiration based on the memory available to the cache. In the following example,`breakfastFoodOrder` will be expired before `mothersBirthday`.
+
 
 ```js
 Cache.setItem('mothersBirthday', 'July 18th', { priority: 1 });
 Cache.setItem('breakfastFoodOrder', 'Pancakes', { priority: 3 });
 ```
 
-In the example above once the cache fills, the key of `breakfastFoodOrder` will be evicted before `mothersBirthday`.
-
-- **getItem()**
-
-  Retrieve an item from the cache. It will return null if the item doesn’t exist or it has expired.
+### getItem()
 
 ```js
 Cache.getItem(key[, options]);
+```
+  Retrieves an item from the cache. It will return null if the item doesn’t exist or it has expired.
+
+```js
 
 // Standard case
 Cache.getItem('key');
@@ -69,41 +68,41 @@ Cache.getItem('key');
 Cache.getItem('key', { callback: callback });
 ```
 
-- **removeItem()**
+### removeItem()
 
-  Remove item from cache.
+  Removes item from cache.
 
 ```js
 Cache.removeItem(key);
 ```
 
-- **clear()**
+### clear()
 
-Clears all of the items in the cache.
+Removes all of the items in the cache.
 
 ```js
 Cache.clear();
 ```
 
-- **getAllKeys()**
+### getAllKeys()
 
-  Returns all of the keys in the cache.
+Returns all of the keys available in the cache.
 
 ```js
 Cache.getAllKeys();
 ```
 
-- **getCacheCurSize()**
+### getCacheCurSize()
 
-  Returns the current size of the cache.
+Returns the current size of the cache in bytes.
 
 ```js
 const size = Cache.getCacheCurSize();
 ```
 
-- **configure()**
+### configure()
 
-  Configure Cache such as default settings for `setItem` functionality. You can see all the options in the [Configuration](#configuration) section.
+Configures default settings for `setItem` functionality. You can see all available options in [Configuration](#configuration) section.
 
 ```js
 const config = {
@@ -117,9 +116,9 @@ const myCacheConfig = Cache.configure(config);
 // But don't try to modify keyPrefix which is the identifier of Cache.
 ```
 
-- **createInstance()**
+### createInstance()
 
-  Create a new instance of Cache with customized configuration
+Creates a new instance of Cache with custom configuration.
 
 ```js
 const config = {
@@ -127,52 +126,38 @@ const config = {
   storage: window.sessionStorage // switch to sessionStorage
   // ...
 };
-const myCache = Cache.createInstance(config);
+const newCache = Cache.createInstance(config);
 // Please provide a new keyPrefix which is the identifier of Cache.
 ```
 
+### API Reference
+
+For the complete API documentation for Cache module, visit our [API Reference](/api/classes/cacheobject.html)
+{: .callout .callout--info}
+
+
 ## Configuration
 
-### Cache configuration:
+### Configuration Parameters
 
-1. keyPrefix: string
+Here is the list of configuration parameters for the Cache module:
 
-The ID of Cache which can only be configured when creating new instance.
+**Parameter** | **Type** | **Description**
+keyPrefix | *string* | The ID of Cache which can only be configured when creating new instance.
+capacityInBytes | *number* | Max size of Cache in bytes. By default is 1MB and has a maximum of 5MB.  
+itemMaxSize |  *number* | Max size of individual item which can be set into Cache in bytes. The default value is 200KB.  
+defaultTTL | *number* | TTL for the cache items in milliseconds. The default value is 72 hours.  
+defaultPriority | *number* | Default priority of the cache items. The default value is 5, the highest priority is 1.
+warningThreshold | *number* | This is for keeping Cache's current capacity in a reasonable level. The default is 0.8, which sets warnings for 80% of space usage.
+storage | *StorageType* | The storage medium that will be used for the Cache. Supported values are *LocalStorage*(default) and *SessionStorage* for Web development and *AsyncStorage* for React Native.
 
-2. capacityInBytes: number
+### Configuration Parameters for Items
 
-Max size of Cache in bytes. By default is 1MB and has a maximum of 5MB. Unit is one byte.
+Here is the list of configuration parameters for the items in the cache :
 
-3. itemMaxSize: number
+**Parameter** | **Type** | **Description**
+priority | *number* | Priority of the item to be kept in cache. Higher priority means longer expiration time. 
+expires | *number* | The expiration time of the cache item in milliseconds.
+callback | *function* | You can provide a callback function with getItem() to implement cache miss scenarios. The provided function will only be called if there is not a match for the cache key, and the return value from the function will be assigned as the new value for the key in cache.  
 
-Max size of item which can be set into Cache. By default is 200KB. Unit is one byte.
 
-4. defaultTTL: number
-
-Default ttl of the item. By default is 72 hours. Unit is one millisecond.
-
-5. defaultPriority: number
-
-Default priority of the item. By default is 5. The highest priority is 1.
-
-6. warningThreshold: number
-
-This is to keep Cache's current capacity in a reasonable level. By default is 0.8, which means to keep Cache around 80% space usage.
-
-7. storage: Storage
-
-The storage medium used to keep your Cache data. Supported mediums are LocalStorage(default) and SessionStorage for Web development and AsyncStorage for React Native.
-
-### Item Configuration:
-
-1. priority: number
-
-Priority of the item.
-
-2. expires: number
-
-The expiration time of the cache item.
-
-3. callback: function
-
-The callback function can be specified when using getItem(). It will be used to fetch data when there is no such item in the Cache. Cache will store the data after fetching from the callback function.

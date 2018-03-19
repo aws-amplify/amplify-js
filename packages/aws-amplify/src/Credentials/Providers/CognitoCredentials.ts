@@ -41,11 +41,18 @@ export default class CognitoCredentials implements CredentialsProvider {
     private _userPool = null;
     private _userPoolStorageSync;
     private _gettingCredPromise;
+    
+    private _refreshHandlers = {};
 
     constructor(config?) {
         this._config = config? config: {};
         this._credentials = null;
         this._gettingCredPromise = null;
+
+                
+        // refresh token
+        this._refreshHandlers['google'] = this._refreshGoogleToken;
+        this._refreshHandlers['facebook'] = this._refreshFacebookToken;
     }
 
     /**
@@ -167,8 +174,8 @@ export default class CognitoCredentials implements CredentialsProvider {
             logger.debug('getting credentials from cognito auth');
             const federatedInfo = await Cache.getItem('federatedInfo');
             if (federatedInfo) {
-                const { provider, token, user} = federatedInfo;
-                return this._setCredentialsFromFederation({ provider, token, user });
+                // refresh the jwt token here if necessary
+                return this._refreshFederatedToken(federatedInfo);
             } else {
                 const that = this;
                 return this.currentSession()
@@ -178,6 +185,101 @@ export default class CognitoCredentials implements CredentialsProvider {
         } catch (e) {
             return Promise.reject(e);
         }
+    }
+
+    private _refreshFederatedToken(federatedInfo) {
+        const { provider, user } = federatedInfo;
+        let token = federatedInfo.token;
+        let expires_at = federatedInfo.expires_at;
+
+        const that = this;
+
+        logger.debug('checking if federated jwt token expired');
+        if (expires_at < new Date().getTime()) {
+            logger.debug('getting refreshed jwt token from federation provider');
+            if (that._refreshHandlers[provider]) {
+                that._refreshHandlers[provider]((err, data) => {
+                    if (err) {
+                        logger.debug('refreh federated token failed', err);
+                    } else {
+                        logger.debug('refresh federated token sucessfully', data);
+                        token = data.token;
+                        expires_at = data.expires_at;
+                        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+                    }
+                    return that._setCredentialsFromFederation({provider, token, user, expires_at});
+                });
+            } else {
+                logger.debug('no provided fedaterated token refresh handler for the provider:', provider);
+                return this._setCredentialsFromFederation({provider, token, user, expires_at});
+            }
+        } else {
+            return this._setCredentialsFromFederation({provider, token, user, expires_at});
+        }
+
+    }
+
+    private _refreshFacebookToken(callback) {
+        const fb = window['FB'];
+        if (!fb) {
+            logger.debug('no fb sdk available');
+            callback('no fb sdk available', null);
+        }
+
+        fb.login(
+            fbResponse => {
+                if (!fbResponse || !fbResponse.authResponse) {
+                    logger.debug('no response from facebook when refreshing the jwt token');
+                    callback('no response from facebook when refreshing the jwt token', null);
+                }
+
+                const response = fbResponse.authResponse;
+                const { accessToken, expiresIn } = response;
+                const date = new Date();
+                const expires_at = expiresIn * 1000 + date.getTime();
+                if (!accessToken) {
+                    logger.debug('the jwtToken is undefined');
+                    callback('the jwtToken is undefined', null);
+                }
+                callback(null, {token: accessToken, expires_at });
+            }, 
+            {scope: 'public_profile,email' }
+        );
+    }
+
+    private _refreshGoogleToken(callback) {
+        const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+        if (!ga) {
+            logger.debug('no gapi auth2 available');
+            callback('no gapi auth2 available', null);
+        }
+
+        ga.getAuthInstance().then((googleAuth) => {
+            if (!googleAuth) {
+                console.log('google Auth undefiend');
+                callback('google Auth undefiend', null);
+            }
+
+            const googleUser = googleAuth.currentUser.get();
+            // refresh the token
+            if (googleUser.isSignedIn()) {
+                logger.debug('refreshing the google access token');
+                googleUser.reloadAuthResponse()
+                    .then((authResponse) => {
+                        const { id_token, expires_at } = authResponse;
+                        const profile = googleUser.getBasicProfile();
+                        const user = {
+                            email: profile.getEmail(),
+                            name: profile.getName()
+                        };
+
+                        callback(null, { token: id_token, expires_at });
+                    });
+            }
+        }).catch(err => {
+            logger.debug('Failed to refresh google token', err);
+            callback('Failed to refresh google token', null);
+        });
     }
 
     private _isExpired(credentials): boolean {
@@ -289,7 +391,7 @@ export default class CognitoCredentials implements CredentialsProvider {
 
     private _setCredentialsFromFederation(federated) {
         logger.debug('set credentials from federation');
-        const { provider, token, user } = federated;
+        const { provider, token, user, expires_at } = federated;
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
@@ -297,7 +399,7 @@ export default class CognitoCredentials implements CredentialsProvider {
             'developer': 'cognito-identity.amazonaws.com'
         };
 
-        Cache.setItem('federatedInfo', { provider, token, user }, { priority: 1 });
+        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
 
         const domain = domains[provider];
         if (!domain) {
@@ -337,7 +439,7 @@ export default class CognitoCredentials implements CredentialsProvider {
         });
     }
 
-    public currentSession(config) : Promise<any> {
+    public currentSession(config?) : Promise<any> {
         let user:any;
         const that = this;
         if (!this._userPool) { return Promise.reject('No userPool'); }
