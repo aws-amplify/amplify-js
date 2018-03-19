@@ -159,7 +159,6 @@ const authOptions = {
         identityPoolId: "awsCognitoIdentityPoolId",
         mandatorySignIn: false
     }
- 
 }
 
 const authOptionsWithNoUserPoolId = {

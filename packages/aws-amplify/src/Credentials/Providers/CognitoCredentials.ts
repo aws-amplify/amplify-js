@@ -159,7 +159,7 @@ export default class CognitoCredentials implements CredentialsProvider {
                 return this._setCredentialsFromFederation({ provider, token, user });
             } else {
                 const that = this;
-                return this._currentSession()
+                return this.currentSession()
                     .then(session => that._setCredentialsFromSession(session))
                     .catch((error) => that._setCredentialsForGuest());
             }
@@ -310,7 +310,7 @@ export default class CognitoCredentials implements CredentialsProvider {
                 () => {
                     logger.debug('Load creadentials for federation user successfully', credentials);
                     that._credentials = credentials;
-                    that._credentials.authenticated = false;
+                    that._credentials.authenticated = true;
                     that._credentials_source = 'federated';
                     if (AWS && AWS.config) { AWS.config.credentials = that._credentials; }
                     that._gettingCredPromise = null;
@@ -325,7 +325,7 @@ export default class CognitoCredentials implements CredentialsProvider {
         });
     }
 
-    private _currentSession() : Promise<any> {
+    public currentSession(config) : Promise<any> {
         let user:any;
         const that = this;
         if (!this._userPool) { return Promise.reject('No userPool'); }

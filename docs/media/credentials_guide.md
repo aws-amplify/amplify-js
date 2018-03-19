@@ -9,6 +9,7 @@ AWS Amplify Credentials module helps you manage credentials. This module is basi
   - [1. Set Credentials](#1-set-credentials)
   - [2. Get Credentials](#2-get-credentials)
   - [3. Remove Credentials](#3-remove-credentials)
+  - [4. Get Current Session](#4-get-current-session)
 
 ## Installation and Configuration
 
@@ -77,4 +78,16 @@ You can call it manually by:
 import { Credentials } from 'aws-amplify';
 
 Credentials.removeCredentials();
+```
+
+### 4. Get Current Session
+
+To get the current cognito session. Note that this call only works when you signed in with AWS Cognito User Pool.
+
+```js
+import { Credentials } from 'aws-amplify';
+
+Credentials.currentSession().then(session => {
+    console.log(session);
+});
 ```

@@ -141,4 +141,30 @@ export default class CredentialsClass {
             });
         });
     }
+
+    /**
+     * Get current session with configuration
+     * @param config 
+     */
+    public currentSession(config?) {
+        let providerName = 'AWSCognito';
+        if (config && config.providerName) providerName = config.providerName;
+
+        const that = this;
+        return new Promise((res, rej) => {
+            that._pluggables.map((pluggable) => {
+                if (providerName && pluggable.getProviderName() === providerName) {
+                    pluggable.currentSession(config)
+                        .then(session => {
+                            res(session);
+                        }).catch(err => {
+                            res(null);
+                        });
+                } else {
+                    logger.debug('no provider found');
+                    res(null);
+                }
+            });
+        });
+    }
 }

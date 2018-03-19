@@ -1,4 +1,127 @@
+jest.mock('amazon-cognito-identity-js/lib/CognitoUserSession', () => {
+    const CognitoUserSession = () => {}
+
+    CognitoUserSession.prototype.CognitoUserSession = (options) => {
+        CognitoUserSession.prototype.options = options;
+        return CognitoUserSession;
+    }
+
+    CognitoUserSession.prototype.getIdToken = () => {
+        return {
+            getJwtToken: () => {
+                return null;
+            }
+        }
+    }
+
+    return CognitoUserSession;
+});
+
+jest.mock('amazon-cognito-identity-js/lib/CognitoIdToken', () => {
+    const CognitoIdToken = () => {}
+
+    CognitoIdToken.prototype.CognitoIdToken = (value) => {
+        CognitoIdToken.prototype.idToken = value;
+        return CognitoIdToken;
+    }
+
+    CognitoIdToken.prototype.getJwtToken = () => {
+        return 'jwtToken';
+    }
+
+
+    return CognitoIdToken;
+});
+
+jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
+    const CognitoUserPool = () => {};
+
+    CognitoUserPool.prototype.CognitoUserPool = (options) => {
+        CognitoUserPool.prototype.options = options;
+        return CognitoUserPool;
+    }
+
+    CognitoUserPool.prototype.getCurrentUser = () => {
+        return "currentUser";
+    }
+
+    CognitoUserPool.prototype.signUp = (username, password, signUpAttributeList, validationData, callback) => {
+        callback(null, 'signUpResult');
+    }
+
+    return CognitoUserPool;
+});
+
+jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
+    const CognitoUser = () => {}
+
+    CognitoUser.prototype.CognitoUser = (options) => {
+        CognitoUser.prototype.options = options;
+        return CognitoUser;
+    }
+
+    CognitoUser.prototype.getSession = (callback) => {
+       // throw 3;
+        callback(null, "session");
+    }
+
+    CognitoUser.prototype.getUserAttributes = (callback) => {
+        callback(null, "attributes");
+    }
+
+    CognitoUser.prototype.getAttributeVerificationCode = (attr, callback) => {
+        callback.onSuccess("success");
+    }
+
+    CognitoUser.prototype.verifyAttribute = (attr, code, callback) => {
+        callback.onSuccess("success");
+    }
+
+    CognitoUser.prototype.authenticateUser = (authenticationDetails, callback) => {
+        callback.onSuccess('session');
+    }
+
+    CognitoUser.prototype.sendMFACode = (code, callback) => {
+        callback.onSuccess('session');
+    }
+
+    CognitoUser.prototype.resendConfirmationCode = (callback) => {
+        callback(null, 'result');
+    }
+
+    CognitoUser.prototype.changePassword = (oldPassword, newPassword, callback) => {
+        callback(null, 'SUCCESS');
+    }
+
+    CognitoUser.prototype.forgotPassword = (callback) => {
+        callback.onSuccess();
+    }
+
+    CognitoUser.prototype.confirmPassword = (code, password, callback) => {
+        callback.onSuccess();
+    }
+
+    CognitoUser.prototype.signOut = () => {
+
+    }
+
+    CognitoUser.prototype.confirmRegistration = (confirmationCode, forceAliasCreation, callback) => {
+        callback(null, 'Success');
+    }
+
+    CognitoUser.prototype.completeNewPasswordChallenge = (password, requiredAttributes, callback) => {
+        callback.onSuccess('session');
+    }
+
+    CognitoUser.prototype.updateAttributes = (attributeList, callback) {
+        callback(null, 'SUCCESS');
+    }
+
+    return CognitoUser;
+});
+
 import CognitoCredentials from '../../src/Credentials/Providers/CognitoCredentials';
+import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import Cache from '../../src/Cache';
 import Auth from '../../src/Auth';
 import { AWS } from '../../src/Common';
@@ -10,8 +133,15 @@ const {
 const config = {
     cognitoRegion: 'region',
     cognitoUserPoolId: 'cognitoUserPoolId',
-    cognitoIdentityPoolId: 'cognitoIdentityPoolId'
+    cognitoIdentityPoolId: 'cognitoIdentityPoolId',
+    cognitoUserPoolWebClientId: 'cognitoUserPoolWebClientId',
+    mandatorySignIn: false
 }
+
+const userPool = new CognitoUserPool({
+    UserPoolId: config.cognitoUserPoolId,
+    ClientId: config.cognitoUserPoolWebClientId
+});
 
 describe('CognitoCredentials unit tests', () => {
     describe('configure test', () => {
@@ -36,7 +166,7 @@ describe('CognitoCredentials unit tests', () => {
     });
 
     describe('set Credentials test', () => {
-        test.only('from session', async () => {
+        test('from session', async () => {
             const cognitoCredentials = new CognitoCredentials();
             const session = {
                 getIdToken() {
@@ -97,7 +227,6 @@ describe('CognitoCredentials unit tests', () => {
                 "expireTime": null,
                 "expired": true,
                 "params": {
-                    "IdentityId": null,
                     "IdentityPoolId": "cognitoIdentityPoolId",
                 },
                 "sessionToken": undefined,
@@ -334,8 +463,63 @@ describe('CognitoCredentials unit tests', () => {
 
             const cognitoCredentials = new CognitoCredentials();
 
-            expect(await cognitoCredentials.getCredentials()).toBeNull();
+            try {
+                await cognitoCredentials.getCredentials();
+            } catch(e) {
+                expect(e).not.toBeNull();
+            }
             spyon.mockClear();
+        });
+    });
+
+    describe('currentSession', () => {
+        test('happy case', async () => {
+            const cognitoCredentials = new CognitoCredentials();
+            cognitoCredentials.configure(config);
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool
+            });
+
+            const spyon = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
+                .mockImplementationOnce(() => {
+                    return user;
+                });
+
+            expect.assertions(1);
+            expect(await cognitoCredentials.currentSession()).toBe('session');
+
+            spyon.mockClear();
+        });
+
+        test('callback failure', async () => {
+            const cognitoCredentials = new CognitoCredentials();
+            cognitoCredentials.configure(config);
+
+            const spyon = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
+                .mockImplementationOnce(() => {
+                    return null;
+                });
+
+            expect.assertions(1);
+            try {
+                await cognitoCredentials.currentSession();
+            } catch (e) {
+                expect(e).toBe('No current user');
+            }
+
+            spyon.mockClear();
+        });
+
+        test('no UserPool', async () => {
+            const cognitoCredentials = new CognitoCredentials();
+
+            expect.assertions(1);
+            try {
+                await cognitoCredentials.currentSession();
+            } catch (e) {
+                expect(e).toBe('No userPool');
+            }
         });
     });
 });

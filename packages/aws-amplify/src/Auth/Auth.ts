@@ -454,8 +454,7 @@ export default class AuthClass {
                         logger.debug(session);
                         Credentials.setCredentials({
                             session, 
-                            providerName: 'AWSCognito', 
-                            currentSession: that.currentSession
+                            providerName: 'AWSCognito'
                         });
                         that.user = user;
                         that.user_source = 'userpool';
@@ -643,19 +642,7 @@ export default class AuthClass {
      * @return - A promise resolves to session object if success
      */
     public currentSession() : Promise<any> {
-        let user:any;
-        const that = this;
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (Platform.isReactNative) {
-            return this.getSyncedUser().then(user => {
-                if (!user) { return Promise.reject('No current user'); }
-                return that.userSession(user);
-            });
-        } else {
-            user = this.userPool.getCurrentUser();
-            if (!user) { return Promise.reject('No current user'); }
-            return this.userSession(user);
-        }
+        return Credentials.currentSession();
     }
 
     /**

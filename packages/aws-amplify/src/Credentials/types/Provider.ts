@@ -28,6 +28,9 @@ export interface CredentialsProvider {
     // return compact version of the credential
     essentialCredentials(params: object): object;
 
+    // return current session
+    currentSession(config: object): Promise<any>;
+
     // return 'Credentials';
     getCategory(): string;
     
