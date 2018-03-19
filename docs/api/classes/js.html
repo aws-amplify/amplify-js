@@ -878,8 +878,14 @@ img { max-width: 100%; }
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell">
-					<strong><a href="../index.html">aws-amplify</a></strong>
+				<div class="table-cell logo">
+					<a href="../index.html">
+						<img src="https://aws.github.io/aws-amplify/amplify-theme/assets/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+					</a>
+				</div>
+				<div class="table-cell" style="">
+					<a href="/aws-amplify/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -901,7 +907,7 @@ img { max-width: 100%; }
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
-					<a href="#typedoc-main-index" class="tsd-widget menu no-caption">Menu</a>
+					<a href="/api#typedoc-main-index" class="tsd-widget menu no-caption">Menu</a>
 				</div>
 			</div>
 		</div>
@@ -914,6 +920,9 @@ img { max-width: 100%; }
 			<ul>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a href="js.html#filenametocontenttype" class="tsd-kind-icon">filename<wbr>ToContent<wbr>Type</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a href="js.html#generaterandomstring" class="tsd-kind-icon">generate<wbr>Random<wbr>String</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a href="js.html#isempty" class="tsd-kind-icon">is<wbr>Empty</a>
@@ -949,6 +958,7 @@ img { max-width: 100%; }
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.html#filenametocontenttype" class="tsd-kind-icon">filename<wbr>ToContent<wbr>Type</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.html#generaterandomstring" class="tsd-kind-icon">generate<wbr>Random<wbr>String</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.html#isempty" class="tsd-kind-icon">is<wbr>Empty</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.html#istextfile" class="tsd-kind-icon">is<wbr>Text<wbr>File</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="js.html#objectlessattributes" class="tsd-kind-icon">object<wbr>Less<wbr>Attributes</a></li>
@@ -970,7 +980,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/JS.ts#L97">Common/JS.ts:97</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/JS.ts#L97">Common/JS.ts:97</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -987,6 +997,28 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+				<a name="generaterandomstring" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> generate<wbr>Random<wbr>String</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">generate<wbr>Random<wbr>String<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/JS.ts#L115">Common/JS.ts:115</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>generate random string</p>
+							</div>
+						</div>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 				<a name="isempty" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Empty</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
@@ -996,7 +1028,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/JS.ts#L53">Common/JS.ts:53</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/JS.ts#L53">Common/JS.ts:53</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1019,7 +1051,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/JS.ts#L104">Common/JS.ts:104</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/JS.ts#L104">Common/JS.ts:104</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1042,7 +1074,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/JS.ts#L82">Common/JS.ts:82</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/JS.ts#L82">Common/JS.ts:82</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1068,7 +1100,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/36acdc9/packages/aws-amplify/src/Common/JS.ts#L57">Common/JS.ts:57</a></li>
+								<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/03afe41/packages/aws-amplify/src/Common/JS.ts#L57">Common/JS.ts:57</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
