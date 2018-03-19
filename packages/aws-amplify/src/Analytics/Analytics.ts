@@ -37,6 +37,7 @@ export default class AnalyticsClass {
     private _buffer;
     private _provider;
     private _pluggables: AnalyticsProvider[];
+    private _disabled;
 
     /**
      * Initialize Analtyics
@@ -46,6 +47,7 @@ export default class AnalyticsClass {
         this._buffer = [];
         this._config = {};
         this._pluggables = [];
+        this._disabled = false;
         // default one
 
         // events batch
@@ -77,6 +79,9 @@ export default class AnalyticsClass {
 
         this._config = conf;
 
+        if (conf['disabled']) {
+            this._disabled = true;
+        }
         this._pluggables.map((pluggable) => {
             pluggable.configure(conf);
         });
@@ -102,6 +107,20 @@ export default class AnalyticsClass {
             const config = pluggable.configure(this._config);
             return Promise.resolve(config);
         }
+    }
+
+    /**
+     * stop sending events
+     */
+    public disable() {
+        this._disabled = true;
+    }
+
+    /**
+     * start sending events
+     */
+    public enable() {
+        this._disabled = false;
     }
 
     /**
@@ -185,6 +204,10 @@ export default class AnalyticsClass {
      * Put events into buffer
      */
     private _putToBuffer(params) {
+        if (this._disabled) {
+            logger.debug('Analytics has been disabled');
+            return Promise.resolve();
+        }
         if (this._buffer.length < BUFFER_SIZE) {
             this._buffer.push(params);
             return Promise.resolve();
