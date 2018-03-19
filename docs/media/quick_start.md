@@ -200,7 +200,7 @@ To see the configuration parameters for existing AWS resources, see the *Manual 
 [Amazon Cognito]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide#manual-setup),
 [Amazon S3]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/storage_guide#manual-setup),
 [Amazon Pinpoint]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide#manual-setup),
-[Amazon API Gateway]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/api_guide/#manual-setup)
+[Amazon API Gateway]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/api_guide#manual-setup)
 {: .callout .callout--info}
 
 
