@@ -32,7 +32,6 @@ export default function withGoogle(Comp) {
                 name: profile.getName()
             };
 
-            const that = this;
             const { onStateChange } = this.props;
             return Auth.federatedSignIn('google', { token: id_token, expires_at }, user)
                 .then(credentials => {

@@ -46,7 +46,6 @@ export default function withFacebook(Comp) {
             if (!accessToken) {
                 return;
             }
-            const that = this;
 
             const fb = window.FB;
             fb.api('/me', response => {
