@@ -28,10 +28,12 @@ export default class CognitoCredentials implements CredentialsProvider {
     private _config;
     private _userPool = null;
     private _userPoolStorageSync;
+    private _gettingCredPromise;
 
     constructor(config?) {
         this._config = config? config: {};
         this._credentials = null;
+        this._gettingCredPromise = null;
     }
 
     /**
@@ -124,7 +126,10 @@ export default class CognitoCredentials implements CredentialsProvider {
             logger.debug('credentails exists and not expired');
             return Promise.resolve(cred);
         } else {
-            return this._retrieveCredentialsFromAuth();
+            if (!this._gettingCredPromise) {
+                this._gettingCredPromise = this._retrieveCredentialsFromAuth();
+            }
+            return this._gettingCredPromise;  
         } 
     }
 
@@ -222,10 +227,12 @@ export default class CognitoCredentials implements CredentialsProvider {
                     that._credentials.authenticated = false;
                     that._credentials_source = 'guest';
                     if (AWS && AWS.config) { AWS.config.credentials = that._credentials; }
+                    that._gettingCredPromise = null;
                     res(that._credentials);
                 },
                 (err) => {
                     logger.debug('Failed to load creadentials for guest', credentials);
+                    that._gettingCredPromise = null;
                     rej('Failed to load creadentials for guest');
                 }
             );
@@ -256,10 +263,12 @@ export default class CognitoCredentials implements CredentialsProvider {
                     that._credentials.authenticated = true;
                     that._credentials_source = 'userpool';
                     if (AWS && AWS.config) { AWS.config.credentials = that._credentials; }
+                    that._gettingCredPromise = null;
                     res(that._credentials);
                 },
                 (err) => {
                     logger.debug('Failed to load creadentials for userpoool user', credentials);
+                    that._gettingCredPromise = null;
                     rej('Failed to load creadentials for userpool user');
                 }
             );
@@ -304,10 +313,12 @@ export default class CognitoCredentials implements CredentialsProvider {
                     that._credentials.authenticated = false;
                     that._credentials_source = 'federated';
                     if (AWS && AWS.config) { AWS.config.credentials = that._credentials; }
+                    that._gettingCredPromise = null;
                     res(that._credentials);
                 },
                 (err) => {
                     logger.debug('Failed to load creadentials for federation user', credentials);
+                    that._gettingCredPromise = null;
                     rej('Failed to load creadentials for federation user');
                 }
             );

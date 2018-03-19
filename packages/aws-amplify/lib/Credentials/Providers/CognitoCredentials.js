@@ -47,6 +47,7 @@ var CognitoCredentials = /** @class */ (function () {
         this._userPool = null;
         this._config = config ? config : {};
         this._credentials = null;
+        this._gettingCredPromise = null;
     }
     /**
      * pass the configuration
@@ -137,7 +138,10 @@ var CognitoCredentials = /** @class */ (function () {
             return Promise.resolve(cred);
         }
         else {
-            return this._retrieveCredentialsFromAuth();
+            if (!this._gettingCredPromise) {
+                this._gettingCredPromise = this._retrieveCredentialsFromAuth();
+            }
+            return this._gettingCredPromise;
         }
     };
     /**
@@ -242,9 +246,11 @@ var CognitoCredentials = /** @class */ (function () {
                 if (Common_1.AWS && Common_1.AWS.config) {
                     Common_1.AWS.config.credentials = that._credentials;
                 }
+                that._gettingCredPromise = null;
                 res(that._credentials);
             }, function (err) {
                 logger.debug('Failed to load creadentials for guest', credentials);
+                that._gettingCredPromise = null;
                 rej('Failed to load creadentials for guest');
             });
         });
@@ -272,9 +278,11 @@ var CognitoCredentials = /** @class */ (function () {
                 if (Common_1.AWS && Common_1.AWS.config) {
                     Common_1.AWS.config.credentials = that._credentials;
                 }
+                that._gettingCredPromise = null;
                 res(that._credentials);
             }, function (err) {
                 logger.debug('Failed to load creadentials for userpoool user', credentials);
+                that._gettingCredPromise = null;
                 rej('Failed to load creadentials for userpool user');
             });
         });
@@ -312,9 +320,11 @@ var CognitoCredentials = /** @class */ (function () {
                 if (Common_1.AWS && Common_1.AWS.config) {
                     Common_1.AWS.config.credentials = that._credentials;
                 }
+                that._gettingCredPromise = null;
                 res(that._credentials);
             }, function (err) {
                 logger.debug('Failed to load creadentials for federation user', credentials);
+                that._gettingCredPromise = null;
                 rej('Failed to load creadentials for federation user');
             });
         });

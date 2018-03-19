@@ -5,6 +5,7 @@ export default class CognitoCredentials implements CredentialsProvider {
     private _config;
     private _userPool;
     private _userPoolStorageSync;
+    private _gettingCredPromise;
     constructor(config?: any);
     /**
      * pass the configuration
