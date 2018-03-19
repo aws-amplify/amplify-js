@@ -216,7 +216,6 @@ export default class CognitoCredentials implements CredentialsProvider {
         } else {
             return this._setCredentialsFromFederation({provider, token, user, expires_at});
         }
-
     }
 
     private _refreshFacebookToken(callback) {

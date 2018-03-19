@@ -32,4 +32,9 @@ export default class CredentialsClass {
      * @param {Object} config - the configuraiton
      */
     getCredentials(config?: any): Promise<{}>;
+    /**
+     * Get current session with configuration
+     * @param config
+     */
+    currentSession(config?: any): Promise<{}>;
 }

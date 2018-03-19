@@ -1,4 +1,4 @@
-import { AuthOptions } from './types';
+import { AuthOptions, FederatedResponse } from './types';
 /**
 * Provide authentication steps
 */
@@ -132,9 +132,6 @@ export default class AuthClass {
      * get the current user credentials
      */
     currentUserCredentials(): Promise<any>;
-    /**
-     * get the current credentials
-     */
     currentCredentials(): Promise<any>;
     /**
      * Initiate an attribute confirmation request
@@ -195,10 +192,11 @@ export default class AuthClass {
     /**
      * For federated login
      * @param {String} provider - federation login provider
-     * @param {Object} response - response including access_token
+     * @param {FederatedResponse} response - response should have the access token
+     * and the expiration time (the universal time)
      * @param {String} user - user info
      */
-    federatedSignIn(provider: any, response: any, user: any): Promise<{}>;
+    federatedSignIn(provider: string, response: FederatedResponse, user: object): Promise<{}>;
     /**
      * Compact version of credentials
      * @param credentials

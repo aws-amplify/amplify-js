@@ -4,6 +4,7 @@ export interface CredentialsProvider {
     getCredentials(config: object): Promise<any>;
     removeCredentials(): void;
     essentialCredentials(params: object): object;
+    currentSession(config: object): Promise<any>;
     getCategory(): string;
     getProviderName(): string;
 }

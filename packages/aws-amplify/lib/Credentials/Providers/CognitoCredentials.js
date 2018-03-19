@@ -35,6 +35,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
 var Common_1 = require("../../Common");
 var Platform_1 = require("../../Common/Platform");
 var Cache_1 = require("../../Cache");
@@ -45,9 +57,13 @@ var CognitoCredentials = /** @class */ (function () {
     function CognitoCredentials(config) {
         this._credentials_source = ''; // aws, guest, userPool, federated
         this._userPool = null;
+        this._refreshHandlers = {};
         this._config = config ? config : {};
         this._credentials = null;
         this._gettingCredPromise = null;
+        // refresh token
+        this._refreshHandlers['google'] = this._refreshGoogleToken;
+        this._refreshHandlers['facebook'] = this._refreshFacebookToken;
     }
     /**
      * pass the configuration
@@ -162,7 +178,7 @@ var CognitoCredentials = /** @class */ (function () {
     };
     CognitoCredentials.prototype._retrieveCredentialsFromAuth = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var federatedInfo, provider, token, user, that_1, e_1;
+            var federatedInfo, that_1, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -172,12 +188,12 @@ var CognitoCredentials = /** @class */ (function () {
                     case 1:
                         federatedInfo = _a.sent();
                         if (federatedInfo) {
-                            provider = federatedInfo.provider, token = federatedInfo.token, user = federatedInfo.user;
-                            return [2 /*return*/, this._setCredentialsFromFederation({ provider: provider, token: token, user: user })];
+                            // refresh the jwt token here if necessary
+                            return [2 /*return*/, this._refreshFederatedToken(federatedInfo)];
                         }
                         else {
                             that_1 = this;
-                            return [2 /*return*/, this._currentSession()
+                            return [2 /*return*/, this.currentSession()
                                     .then(function (session) { return that_1._setCredentialsFromSession(session); })
                                     .catch(function (error) { return that_1._setCredentialsForGuest(); })];
                         }
@@ -188,6 +204,90 @@ var CognitoCredentials = /** @class */ (function () {
                     case 3: return [2 /*return*/];
                 }
             });
+        });
+    };
+    CognitoCredentials.prototype._refreshFederatedToken = function (federatedInfo) {
+        var provider = federatedInfo.provider, user = federatedInfo.user;
+        var token = federatedInfo.token;
+        var expires_at = federatedInfo.expires_at;
+        var that = this;
+        logger.debug('checking if federated jwt token expired');
+        if (expires_at < new Date().getTime()) {
+            logger.debug('getting refreshed jwt token from federation provider');
+            if (that._refreshHandlers[provider]) {
+                that._refreshHandlers[provider](function (err, data) {
+                    if (err) {
+                        logger.debug('refreh federated token failed', err);
+                    }
+                    else {
+                        logger.debug('refresh federated token sucessfully', data);
+                        token = data.token;
+                        expires_at = data.expires_at;
+                        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
+                    }
+                    return that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
+                });
+            }
+            else {
+                logger.debug('no provided fedaterated token refresh handler for the provider:', provider);
+                return this._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
+            }
+        }
+        else {
+            return this._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
+        }
+    };
+    CognitoCredentials.prototype._refreshFacebookToken = function (callback) {
+        var fb = window['FB'];
+        if (!fb) {
+            logger.debug('no fb sdk available');
+            callback('no fb sdk available', null);
+        }
+        fb.login(function (fbResponse) {
+            if (!fbResponse || !fbResponse.authResponse) {
+                logger.debug('no response from facebook when refreshing the jwt token');
+                callback('no response from facebook when refreshing the jwt token', null);
+            }
+            var response = fbResponse.authResponse;
+            var accessToken = response.accessToken, expiresIn = response.expiresIn;
+            var date = new Date();
+            var expires_at = expiresIn * 1000 + date.getTime();
+            if (!accessToken) {
+                logger.debug('the jwtToken is undefined');
+                callback('the jwtToken is undefined', null);
+            }
+            callback(null, { token: accessToken, expires_at: expires_at });
+        }, { scope: 'public_profile,email' });
+    };
+    CognitoCredentials.prototype._refreshGoogleToken = function (callback) {
+        var ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+        if (!ga) {
+            logger.debug('no gapi auth2 available');
+            callback('no gapi auth2 available', null);
+        }
+        ga.getAuthInstance().then(function (googleAuth) {
+            if (!googleAuth) {
+                console.log('google Auth undefiend');
+                callback('google Auth undefiend', null);
+            }
+            var googleUser = googleAuth.currentUser.get();
+            // refresh the token
+            if (googleUser.isSignedIn()) {
+                logger.debug('refreshing the google access token');
+                googleUser.reloadAuthResponse()
+                    .then(function (authResponse) {
+                    var id_token = authResponse.id_token, expires_at = authResponse.expires_at;
+                    var profile = googleUser.getBasicProfile();
+                    var user = {
+                        email: profile.getEmail(),
+                        name: profile.getName()
+                    };
+                    callback(null, { token: id_token, expires_at: expires_at });
+                });
+            }
+        }).catch(function (err) {
+            logger.debug('Failed to refresh google token', err);
+            callback('Failed to refresh google token', null);
         });
     };
     CognitoCredentials.prototype._isExpired = function (credentials) {
@@ -289,14 +389,14 @@ var CognitoCredentials = /** @class */ (function () {
     };
     CognitoCredentials.prototype._setCredentialsFromFederation = function (federated) {
         logger.debug('set credentials from federation');
-        var provider = federated.provider, token = federated.token, user = federated.user;
+        var provider = federated.provider, token = federated.token, user = federated.user, expires_at = federated.expires_at;
         var domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
             'amazon': 'www.amazon.com',
             'developer': 'cognito-identity.amazonaws.com'
         };
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1 });
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
         var domain = domains[provider];
         if (!domain) {
             return Promise.reject(provider + ' is not supported: [google, facebook, amazon]');
@@ -315,7 +415,7 @@ var CognitoCredentials = /** @class */ (function () {
             credentials.getPromise().then(function () {
                 logger.debug('Load creadentials for federation user successfully', credentials);
                 that._credentials = credentials;
-                that._credentials.authenticated = false;
+                that._credentials.authenticated = true;
                 that._credentials_source = 'federated';
                 if (Common_1.AWS && Common_1.AWS.config) {
                     Common_1.AWS.config.credentials = that._credentials;
@@ -329,7 +429,7 @@ var CognitoCredentials = /** @class */ (function () {
             });
         });
     };
-    CognitoCredentials.prototype._currentSession = function () {
+    CognitoCredentials.prototype.currentSession = function (config) {
         var user;
         var that = this;
         if (!this._userPool) {

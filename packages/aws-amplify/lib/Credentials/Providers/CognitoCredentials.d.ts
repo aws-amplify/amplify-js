@@ -6,6 +6,7 @@ export default class CognitoCredentials implements CredentialsProvider {
     private _userPool;
     private _userPoolStorageSync;
     private _gettingCredPromise;
+    private _refreshHandlers;
     constructor(config?: any);
     /**
      * pass the configuration
@@ -47,12 +48,15 @@ export default class CognitoCredentials implements CredentialsProvider {
         authenticated: any;
     };
     private _retrieveCredentialsFromAuth();
+    private _refreshFederatedToken(federatedInfo);
+    private _refreshFacebookToken(callback);
+    private _refreshGoogleToken(callback);
     private _isExpired(credentials);
     private _refreshCredentials(credentials);
     private _setCredentialsForGuest();
     private _setCredentialsFromSession(session);
     private _setCredentialsFromFederation(federated);
-    private _currentSession();
+    currentSession(config?: any): Promise<any>;
     /**
      * Return the current user after synchornizing AsyncStorage
      * @return - A promise with the current authenticated user

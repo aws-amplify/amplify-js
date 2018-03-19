@@ -489,8 +489,7 @@ var AuthClass = /** @class */ (function () {
                     logger.debug(session);
                     Credentials_1.default.setCredentials({
                         session: session,
-                        providerName: 'AWSCognito',
-                        currentSession: that.currentSession
+                        providerName: 'AWSCognito'
                     });
                     that.user = user;
                     that.user_source = 'userpool';
@@ -705,26 +704,7 @@ var AuthClass = /** @class */ (function () {
      * @return - A promise resolves to session object if success
      */
     AuthClass.prototype.currentSession = function () {
-        var user;
-        var that = this;
-        if (!this.userPool) {
-            return Promise.reject('No userPool');
-        }
-        if (Platform_1.default.isReactNative) {
-            return this.getSyncedUser().then(function (user) {
-                if (!user) {
-                    return Promise.reject('No current user');
-                }
-                return that.userSession(user);
-            });
-        }
-        else {
-            user = this.userPool.getCurrentUser();
-            if (!user) {
-                return Promise.reject('No current user');
-            }
-            return this.userSession(user);
-        }
+        return Credentials_1.default.currentSession();
     };
     /**
      * Get the corresponding user session
@@ -750,9 +730,6 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.currentUserCredentials = function () {
         return Credentials_1.default.getCredentials();
     };
-    /**
-     * get the current credentials
-     */
     AuthClass.prototype.currentCredentials = function () {
         return Credentials_1.default.getCredentials();
     };
@@ -957,7 +934,8 @@ var AuthClass = /** @class */ (function () {
     /**
      * For federated login
      * @param {String} provider - federation login provider
-     * @param {Object} response - response including access_token
+     * @param {FederatedResponse} response - response should have the access token
+     * and the expiration time (the universal time)
      * @param {String} user - user info
      */
     AuthClass.prototype.federatedSignIn = function (provider, response, user) {

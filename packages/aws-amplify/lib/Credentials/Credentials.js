@@ -128,6 +128,32 @@ var CredentialsClass = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Get current session with configuration
+     * @param config
+     */
+    CredentialsClass.prototype.currentSession = function (config) {
+        var providerName = 'AWSCognito';
+        if (config && config.providerName)
+            providerName = config.providerName;
+        var that = this;
+        return new Promise(function (res, rej) {
+            that._pluggables.map(function (pluggable) {
+                if (providerName && pluggable.getProviderName() === providerName) {
+                    pluggable.currentSession(config)
+                        .then(function (session) {
+                        res(session);
+                    }).catch(function (err) {
+                        res(null);
+                    });
+                }
+                else {
+                    logger.debug('no provider found');
+                    res(null);
+                }
+            });
+        });
+    };
     return CredentialsClass;
 }());
 exports.default = CredentialsClass;
