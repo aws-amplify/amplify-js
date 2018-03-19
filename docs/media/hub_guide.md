@@ -1,20 +1,28 @@
+---
+---
 # Hub
 
-AWS Amplify has a lightweight Pub-Sub system called Hub. It is used to share events between modules and components.
+AWS Amplify has a lightweight Pub-Sub system called Hub. It is used to share data between modules and components with the help of event subscriptions.
 
-## Usage
+## Installation
 
-Import
+Import:
 ```js
 import { Hub } from 'aws-amplify';
 ```
 
-Dispatch an event
+## Working with the API
+
+### dispatch()
+
+You can dispatch an event with `dispatch` function:
 ```js
 Hub.dispatch('auth', { event: 'signIn', data: user }, 'Auth');
 ```
 
-Listen to a channel
+### listen()
+
+You can subscribe to a channel with `listen` function:
 ```js
 import { Hub, Logger } from 'aws-amplify';
 
@@ -25,16 +33,20 @@ class MyClass {
         Hub.listen('auth', this, 'MyListener');
     }
 
+    // Default handler for listening events
     onHubCapsule(capsule) {
-        const { channel, payload, source } = capsule;
-        logger.debug(channel, payload, source);
+        const { channel, payload } = capsule;
+        if (channel === 'auth') { onAuthEvent(payload); }
     }
 }
 ```
 
-## Channel
+In order to capture event updates, you need to implement `onHubCapsule` handler function in you listener class.
+{: .callout .callout--info}
 
-AWS Amplify Auth publish in `auth` channel when 'signIn', 'signUp', and 'signOut' happens. You may create your listener to act upon event notifications.
+### Listening Authentication Events
+
+AWS Amplify Authentication module publishes in `auth` channel when 'signIn', 'signUp', and 'signOut' events happen. You can create your listener to listen and act upon those event notifications.
 
 ```js
 import { Hub, Logger } from 'aws-amplify';
@@ -70,3 +82,8 @@ class MyClass {
     }
 }
 ```
+
+### API Reference
+
+For the complete API documentation for Hub module, visit our [API Reference](/api/classes/hubclass.html)
+{: .callout .callout--info}
