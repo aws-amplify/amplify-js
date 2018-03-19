@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { AuthOptions } from './types';
+import { AuthOptions, FederatedResponse } from './types';
 
 import {
     AWS,
@@ -1003,10 +1003,10 @@ export default class AuthClass {
     /**
      * For federated login
      * @param {String} provider - federation login provider
-     * @param {Object} response - response including access_token
+     * @param {FederatedResponse} response - response should have the access token and the expiration time (the universal time)
      * @param {String} user - user info
      */
-    public federatedSignIn(provider, response, user) {
+    public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
         const { token, expires_at } = response;
 
         this.setCredentialsFromFederation(provider, token, user);
