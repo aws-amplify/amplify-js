@@ -80,7 +80,7 @@
     "mapCoverage": true,
     "coverageThreshold": {
       "global": {
-        "branches": 74.8,
+        "branches": 74,
         "functions": 80,
         "lines": 80,
         "statements": 80

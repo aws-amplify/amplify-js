@@ -61,6 +61,11 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
     CognitoUserPool.prototype.signUp = (username, password, signUpAttributeList, validationData, callback) => {
         callback(null, 'signUpResult');
     }
+    CognitoUserPool.prototype.storage = {
+        sync: (callback) => {
+            callback(null, 'data');
+        }
+    }
 
     return CognitoUserPool;
 });
@@ -170,6 +175,11 @@ const session = new CognitoUserSession({
     AccessToken: accessToken
 });
 
+const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementation(() => {
+    return new Promise((res, rej) => {
+        res('cred');
+    });
+})
 
 describe('for react native', () => {
     describe('currentUserCredentials test', () => {
@@ -186,10 +196,9 @@ describe('for react native', () => {
                         });
                 });
             });
-            // assert
                 
-            expect.assertions(1);
-            expect(await auth.currentUserCredentials()).toBeUndefined();
+
+            expect(await auth.currentUserCredentials()).not.toBeUndefined();
 
             spyon.mockClear();
         });
