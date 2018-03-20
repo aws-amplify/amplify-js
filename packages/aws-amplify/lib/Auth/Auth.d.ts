@@ -1,4 +1,4 @@
-import { AuthOptions, FederatedResponse } from './types';
+import { AuthOptions } from './types';
 /**
 * Provide authentication steps
 */
@@ -6,13 +6,14 @@ export default class AuthClass {
     private _config;
     private _userPoolStorageSync;
     private userPool;
+    private credentials;
+    private credentials_source;
     private user;
-    private user_source;
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
      */
-    constructor(config: any);
+    constructor(config: AuthOptions);
     configure(config: any): AuthOptions;
     /**
      * Sign up with username, password and other attrbutes like phone, email
@@ -129,7 +130,8 @@ export default class AuthClass {
      */
     userSession(user: any): Promise<any>;
     /**
-     * get the current user credentials
+     * Get authenticated credentials of current user.
+     * @return - A promise resolves to be current user's credentials
      */
     currentUserCredentials(): Promise<any>;
     currentCredentials(): Promise<any>;
@@ -192,16 +194,28 @@ export default class AuthClass {
     /**
      * For federated login
      * @param {String} provider - federation login provider
-     * @param {FederatedResponse} response - response should have the access token
-     * and the expiration time (the universal time)
+     * @param {Object} response - response including access_token
      * @param {String} user - user info
      */
-    federatedSignIn(provider: string, response: FederatedResponse, user: object): Promise<{}>;
+    federatedSignIn(provider: any, response: any, user: any): Promise<any>;
     /**
      * Compact version of credentials
-     * @param credentials
+     * @param {Object} credentials
+     * @return {Object} - Credentials
      */
-    essentialCredentials(credentials: any): any;
+    essentialCredentials(credentials: any): {
+        accessKeyId: any;
+        sessionToken: any;
+        secretAccessKey: any;
+        identityId: any;
+        authenticated: any;
+    };
     private attributesToObject(attributes);
+    private setCredentialsFromFederation(provider, token, user);
+    private pickupCredentials();
+    private setCredentialsFromAWS();
+    private setCredentialsForGuest();
+    private setCredentialsFromSession(session);
+    private keepAlive();
     private createCognitoUser(username);
 }

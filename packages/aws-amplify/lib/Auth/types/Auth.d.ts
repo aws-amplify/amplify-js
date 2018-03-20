@@ -25,10 +25,3 @@ export interface MfaRequiredDetails {
     challengeName: any;
     challengeParameters: any;
 }
-/**
- * interface for federatedResponse
- */
-export interface FederatedResponse {
-    token: string;
-    expires_at: number;
-}

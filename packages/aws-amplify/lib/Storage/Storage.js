@@ -48,7 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
-var Credentials_1 = require("../Credentials");
+var Auth_1 = require("../Auth");
 var logger = new Common_1.ConsoleLogger('StorageClass');
 var dispatchStorageEvent = function (track, attrs, metrics) {
     if (track) {
@@ -313,13 +313,11 @@ var StorageClass = /** @class */ (function () {
         // will cause bug if another user logged in without refreshing page
         // if (this._options.credentials) { return Promise.resolve(true); }
         var _this = this;
-        return Credentials_1.default.getCredentials()
+        return Auth_1.default.currentCredentials()
             .then(function (credentials) {
-            if (!credentials) {
-                logger.debug('no credentials available');
+            if (!credentials)
                 return false;
-            }
-            var cred = Credentials_1.default.essentialCredentials({ credentials: credentials });
+            var cred = Auth_1.default.essentialCredentials(credentials);
             logger.debug('set credentials for storage', cred);
             _this._options.credentials = cred;
             return true;

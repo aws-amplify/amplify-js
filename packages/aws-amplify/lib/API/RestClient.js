@@ -57,9 +57,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Signer_1 = require("../Common/Signer");
 var Common_1 = require("../Common");
+var Auth_1 = require("../Auth");
 var axios_1 = require("axios");
 var Platform_1 = require("../Common/Platform");
-var Credentials_1 = require("../Credentials");
 var logger = new Common_1.ConsoleLogger('RestClient');
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -102,7 +102,8 @@ var RestClient = /** @class */ (function () {
     */
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
-            var parsed_url, params, libraryHeaders, userAgent, extraParams, isAllResponse, that;
+            var _this = this;
+            var parsed_url, params, libraryHeaders, userAgent, extraParams, isAllResponse;
             return __generator(this, function (_a) {
                 logger.debug(method + ' ' + url);
                 parsed_url = this._parseUrl(url);
@@ -133,18 +134,8 @@ var RestClient = /** @class */ (function () {
                 if (params.headers['Authorization']) {
                     return [2 /*return*/, this._request(params, isAllResponse)];
                 }
-                that = this;
-                return [2 /*return*/, Credentials_1.default.getCredentials()
-                        .then(function (credentials) {
-                        if (!credentials) {
-                            logger.debug('no credentials available');
-                            return;
-                        }
-                        that._signed(params, credentials, isAllResponse);
-                    })
-                        .catch(function (e) {
-                        logger.debug('get credentials error', e);
-                    })];
+                return [2 /*return*/, Auth_1.default.currentCredentials()
+                        .then(function (credentials) { return _this._signed(params, credentials, isAllResponse); })];
             });
         });
     };
