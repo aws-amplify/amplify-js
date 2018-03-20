@@ -1,49 +1,58 @@
+---
+---
+
 # Analytics
 
-AWS Amplify Analytics module helps you quickly collect analytics for user sessions, custom attributes or metrics.
-
-* [Installation and Configuration](#installation-and-configuration)
-  - [Automated Setup](#automated-setup)
-  - [Manual Setup](#manual-setup)
-* [Integration](#integration)
-  - [1. Collect Session Data](#1-collect-session-data)
-  - [2. Record Event](#2-record-event)
-  - [3. Record Event with Attributes](#3-record-event-with-attributes)
-  - [4. Record Event with Metrics](#4-record-event-with-metrics)
-* [Add your own plugin](#add-your-own-plugin)
+AWS Amplify Analytics module helps you to easily collect analytics data for you app. Analytics data includes user sessions and other custom events that you want to track in your app.
 
 ## Installation and Configuration
 
-Please refer to this [Guide](install_n_config.md) for general setup. Here are Analytics specific setup.
+Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. Here is how you can enable Analytics category for your app.
 
 ### Automated Setup
 
-To create a project fully functioning with the Analytics category.
+Automated Setup works with `awsmobile-cli` to create your analytics backend. After configuring your backend, you can create a project with fully functioning Analytics category.
 
-```
+```bash
 $ npm install -g awsmobile-cli
-$ cd my-app
+```
+
+You should run all `awsmobile` commands at *root folder* of your project.
+{: .callout .callout--info}
+
+In your project's *root folder*, run following command to configure and update your backend:
+
+```bash
+$ cd my-app #Change to your project's root folder
 $ awsmobile init
-$ awsmobile enable analytics
-$ awsmobile push
+$ awsmobile push #Update your backend 
 ```
 
-In your project i.e. App.js:
+*awsmobile init* will enable Analytics module by default for your backend. In case you want to enable/disable it manually, you can use:
 
+```bash
+$ awsmobile analytics enable 
 ```
+
+In your app's entry point i.e. App.js, import and load the configuration file which has been created and replaced into `/src` folder in the previous step.
+
+```js
 import Amplify, { Analytics } from 'aws-amplify';
 import aws_exports from './aws-exports';
+
 Amplify.configure(aws_exports);
 ```
 
 ### Manual Setup
+
+Manual setup enables you to use your existing Amazon Pinpoint credentials in your app:
 
 ```js
 import Amplify from 'aws-amplify';
 
 Amplify.configure({
     Analytics: {
-    // OPTIONAL -  Amazon Pinpoint App ID
+    // OPTIONAL -  Amazon Pinpoint App Client ID
         appId: 'XXXXXXXXXXabcdefghij1234567890ab',
     // OPTIONAL -  Amazon service region
         region: 'XX-XXXX-X',
@@ -54,25 +63,25 @@ Amplify.configure({
 
 ```
 
-In the above configuration you are required to pass in an Amazon Cognito Identity Pool ID so that the library can retrieve base credentials for a user even in an UnAuthenticated state. If you pass in properties in the Analytics section for Amazon Pinpoint the library will automatically track some base metrics for you without any effort on your part. 
+In the above configuration you are required to pass in an *Amazon Pinpoint App Client ID* so that the library can retrieve base credentials for a user even in an un-authenticated state. After successfully configuring your credentials, the library will automatically track some default metrics for you, without any effort on your part. 
 
-After configuration, user session metrics are automatically collected and sent to Amazon Pinpoint. To see these metrics click [here](https://console.aws.amazon.com/pinpoint/home/), or on the cli (from your project directory):
+User session analytics data is automatically collected and sent to Amazon Pinpoint. To see these data, please visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/), or run following cli command to launch AWS Mobile Hub console:
 
 ```
 $ awsmobile console
 ```
 
-Then click **Analytics**.
+On the AWS Mobile Hub console, click **Messaging and Analytics** option under 'Backend' section.
 
-## Integration
+## Working with the API
 
-### 1. Collect Session Data
+### Collect Session Data
 
-Without any additional code, the Analytics module starts collect session data. All you need to do is to configure Analytics module.
+Once configured, the Analytics module will start collecting user session data without any additional code. 
 
-### 2. Record Event
+### Recording a Custom Tracking Event
 
-To record an event, call the `record` method:
+To record a custom tracking event, call the `record` method:
 
 ```js
 import { Analytics } from 'aws-amplify';
@@ -80,9 +89,9 @@ import { Analytics } from 'aws-amplify';
 Analytics.record('albumVisit');
 ```
 
-### 3. Record Event with Attributes
+### Record a Custom Tracking Event with Attributes
 
-The `record` method lets you add additional attributes to an event. For example:
+The `record` method lets you add additional attributes to an event. For example, in order to record *artist* information with an *albumVisit* event:
 
 ```js
 import { Analytics } from 'aws-amplify';
@@ -90,9 +99,9 @@ import { Analytics } from 'aws-amplify';
 Analytics.record('albumVisit', { genre: '', artist: '' });
 ```
 
-### 4. Record Event with Metrics
+### Record Engagement Metrics
 
-Metrics can also be added to an event:
+Metrics data can also be added to an event:
 
 ```js
 import { Analytics } from 'aws-amplify';
@@ -100,8 +109,58 @@ import { Analytics } from 'aws-amplify';
 Analytics.record('albumVisit', {}, { minutesListened: 30 });
 ```
 
-## Add your own plugin
-You can write your own plugin by using the interface ```AnalyticsProvider```:
+### Record Authentication Events
+
+You can use following events to record Sign-ins, Sign-ups, and Authentication failures.
+
+```js
+import { Analytics } from 'aws-amplify';
+
+// Sign-in event
+Analytics.record('_userauth.sign_in');
+
+// Sign-up event
+Analytics.record('_userauth.sign_up');
+
+// Authentication failure event
+Analytics.record('_userauth.auth_fail');
+```
+
+### Update User Attributes
+
+In order to update User Attributes, use `updateEndpoint()` method as following:
+
+```js
+import { Analytics } from 'aws-amplify';
+
+Analytics.updateEndpoint({
+    // Customized userId
+    UserId: 'XXXXXXXXXXXX',
+    // User attributes
+    Attributes: {
+        interests: ['football', 'basketball', 'AWS']
+        // ...
+    },
+    // Custom user attributes
+    UserAttributes: {
+        hobbies: ['piano', 'hiking']
+        // ...
+    }
+})
+```
+
+### API Reference
+
+For the complete API documentation for Analytics module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/analyticsclass.html)
+{: .callout .callout--info}
+
+## Customization
+
+### Create a Custom Analytics Plugin
+You can create your custom class and plug it to Analytics module, so that any Analytics event can also be handled by your custom methods. This may be helpful when you need to integrate your app with a custom analytics backend.  
+
+In your class, just implement `AnalyticsProvider`:
+
 ```js
 import { AnalyticsProvider } from 'aws-amplify';
 
@@ -132,3 +191,6 @@ Amplify.configure({
 // use the plugin
 Amplify.addPluggable(new MyAnalyticsProvider());
 ```
+
+Please note that the default provider (Amazon Pinpoint) for the extended category (Analytics) will be in use when you call `Analytics.record()`.
+{: .callout .callout--info}

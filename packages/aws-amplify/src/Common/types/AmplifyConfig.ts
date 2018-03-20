@@ -4,4 +4,5 @@ export interface AmplifyConfig {
     API?: object;
     Storage?: object;
     Cache?: object;
+    Credentials?: object;
 }

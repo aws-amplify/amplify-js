@@ -17,6 +17,7 @@ import Storage, { StorageClass } from './Storage';
 import API, { APIClass } from './API';
 import I18n from './I18n';
 import Cache from './Cache';
+import Credentials, { CredentialsClass, CredentialsProvider } from './Credentials';
 import {
     ConsoleLogger as Logger,
     Hub,
@@ -39,15 +40,36 @@ export default class Amplify {
 
     static configure(config) {
         if (!config) { return; }
+        Credentials.configure(config);
+        Cache.configure(config);
         Auth.configure(config);
         I18n.configure(config);
         Analytics.configure(config);
         API.configure(config);
         Storage.configure(config);
-        Cache.configure(config);
-
+        
         return config;
     }
+
+    // static async asyncConfigure(config) {
+    //     if (!config) { return; }
+    //     return Credentials.configure(config).then(() => {
+    //             return Auth.configure(config);
+    //         }).then(() => {
+    //             return Analytics.configure(config);
+    //         }).then(() => {
+    //             return API.configure(config);
+    //         }).then(() => {
+    //             return Storage.configure(config);
+    //         }).then(() => {
+    //             return Cache.configure(config);
+    //         }).then(() => {
+    //             return I18n.configure(config);
+    //         }).catch((e) => {
+    //             logger.debug('error happened while setting the configuration', e);
+    //             return config;
+    //         });
+    // }
 
     static addPluggable(pluggable) {
         if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
@@ -63,6 +85,9 @@ export default class Amplify {
                 case 'Cache':
                     break;
                 case 'Storage':
+                    break;
+                case 'Credentials':
+                    Credentials.addPluggable(pluggable);
                     break;
                 default:
                     break;
@@ -80,5 +105,5 @@ Amplify.Cache = Cache;
 
 Amplify.Logger = Logger;
 
-export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
-export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider };
+export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer, Credentials };
+export { AuthClass, AnalyticsClass, APIClass, StorageClass, CredentialsClass, CredentialsProvider, AnalyticsProvider };

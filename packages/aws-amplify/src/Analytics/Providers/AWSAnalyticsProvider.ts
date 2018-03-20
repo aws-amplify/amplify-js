@@ -58,6 +58,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @param {Object} params - the params of an event
      */
     public record(params): Promise<boolean> {
+        logger.debug('record with params', params);
         const { eventName } = params;
         switch (eventName) {
             case '_session_start':
@@ -238,14 +239,13 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * Init the clients
      */
     private async _init(config) {
-        logger.debug('init clients');
+        logger.debug('init clients with config', config);
         if (!config.credentials) {
             logger.debug('no credentials provided by config, abort this init');
             return false;
         }
         if (this.mobileAnalytics 
             && this._config.credentials 
-            && this._config.credentials.sessionToken === config.credentials.sessionToken
             && this._config.credentials.identityId === config.credentials.identityId) {
             logger.debug('no change for analytics config, directly return from init');
             return true;
@@ -325,14 +325,25 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @return {Object} - The request of updating endpoint
      */
     _endpointRequest() {
-        const { clientInfo, credentials, Address, RequestId, endpointId } = this._config;
+        const { 
+            clientInfo, 
+            credentials, 
+            Address, 
+            RequestId, 
+            Attributes,
+            UserAttributes,
+            endpointId, 
+            UserId
+        } = this._config;
+
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
 
         logger.debug('demographic user id: ', user_id);
         const OptOut = this._config.OptOut? this._config.OptOut: undefined;
-        return {
+        const ret = {
             Address,
+            Attributes,
             ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || clientInfo.appVersion,
@@ -345,9 +356,11 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             RequestId,
             EffectiveDate: Address? new Date().toISOString() : undefined,
             User: { 
-                UserId: credentials.identityId
+                UserId: UserId? UserId: credentials.identityId,
+                UserAttributes
             }
         };
+        return ret;
     }
 
     /**
@@ -368,5 +381,4 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         };
         return JSON.stringify(clientContext);
     }
-
 }

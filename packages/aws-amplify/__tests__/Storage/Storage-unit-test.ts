@@ -58,9 +58,38 @@ jest.mock('../../src/Common/Builder', () => {
     };
 });
 
+jest.mock('../../src/Credentials', () => {
+    const Credentials = {
+        getCredentials(params) {
+            return new Promise((res, rej) => {
+                res({
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken',
+                    identityId: 'id'
+                });
+            });
+        },
+        setCredentials(params) {
+            return null;
+        },
+        removeCredentials(params) {
+            return null;
+        },
+        essentialCredentials(params) {
+            return params.credentials;
+        }
+    };
+
+    return {
+        default: Credentials        
+    }
+});
+
 import Storage from '../../src/Storage/Storage';
 import { Hub } from '../../src/Common';
 import Auth from '../../src/Auth/Auth';
+import Credentials from '../../src/Credentials';
 import * as S3 from 'aws-sdk/clients/s3';
 
 const options = {
@@ -103,13 +132,6 @@ describe('Storage', () => {
 
     describe('get test', async () => {
         test('get object without download', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'getSignedUrl');
 
@@ -118,17 +140,9 @@ describe('Storage', () => {
             expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "public/key"});
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('get object with tracking', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'getSignedUrl');
             const spyon2 = jest.spyOn(Hub, 'dispatch');
@@ -139,18 +153,10 @@ describe('Storage', () => {
             expect(spyon2).toBeCalledWith('storage', {attrs: {"method": "get", "result": "success"}, metrics: null}, 'Storage');
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
             spyon2.mockClear();
         });
 
         test('get object with download successfully', async() => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const options_with_download = Object.assign({}, options, {download: true});
             const storage = new Storage(options_with_download);
             const spyon = jest.spyOn(S3.prototype, 'getObject').mockImplementationOnce((params, callback) => {
@@ -162,17 +168,9 @@ describe('Storage', () => {
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": "bucket", "Key": "public/key"});
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('get object with download with failure', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const options_with_download = Object.assign({}, options, {download: true});
             const storage = new Storage(options_with_download);
             const spyon = jest.spyOn(S3.prototype, 'getObject')
@@ -188,38 +186,28 @@ describe('Storage', () => {
 
             }
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('get object with private option', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({
-                            identityId: 'id'
-                        });
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'getSignedUrl');
+            const spyon2 = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res({
+                            identityId: 'id'
+                    });
+                })
+            });
 
             expect.assertions(2);
             expect(await storage.get('key', {level: 'private'})).toBe('url');
             expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "private/id/key"});
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
+            spyon2.mockClear();
         });
 
         test('get object with expires option', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'getSignedUrl');
 
@@ -228,16 +216,14 @@ describe('Storage', () => {
             expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "public/key", "Expires": 1200});
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('credentials not ok', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        rej('err');
-                    });
-                });
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                })
+            });
 
             const storage = new Storage(options_no_cred);
 
@@ -249,49 +235,12 @@ describe('Storage', () => {
                 expect(e).not.toBeNull();
             }
 
-            curCredSpyOn.mockClear();
-        });
-
-        test('always ask for the current credentials', async () => {
-            const storage = new Storage(options);
-
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({
-                            cred: 'cred1'
-                        });
-                    });
-                });
-
-            await storage.get('key', { downloaded: false });
-
-            const curCredSpyOn2 = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({
-                            cred: 'cred2'
-                        });
-                    });
-                });
-
-            await storage.get('key', { downloaded: false });
-
-            expect(curCredSpyOn.mock.calls.length).toBe(2);
-
-            curCredSpyOn.mockClear();
+            spyon.mockClear();
         });
     });
 
     describe('put test', () => {
         test('put object succefully', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'upload');
 
@@ -304,17 +253,9 @@ describe('Storage', () => {
                 "Key": "public/key"
             });
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('put object with track', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'upload');
             const spyon2 = jest.spyOn(Hub, 'dispatch');
@@ -330,18 +271,10 @@ describe('Storage', () => {
             expect(spyon2).toBeCalledWith('storage', {attrs: {"method": "put", "result": "success"}, metrics: null}, 'Storage');
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
             spyon2.mockClear();
         });
 
         test('put object failed', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'upload')
                 .mockImplementationOnce((params, callback) => {
@@ -356,19 +289,9 @@ describe('Storage', () => {
             }
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('put object with private and contenttype specified', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({
-                            identityId: 'id'
-                        });
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'upload');
 
@@ -381,16 +304,14 @@ describe('Storage', () => {
                 "Key": "private/id/key"
             });
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('credentials not ok', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        rej('err');
-                    });
-                });
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                })
+            });
 
             const storage = new Storage(options_no_cred);
 
@@ -401,19 +322,12 @@ describe('Storage', () => {
                 expect(e).not.toBeNull();
             }
 
-            curCredSpyOn.mockClear();
+            spyon.mockClear();
         });
     });
 
     describe('remove test', () => {
         test('remove object successfully', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'deleteObject');
 
@@ -422,17 +336,9 @@ describe('Storage', () => {
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": "bucket", "Key": "public/key"});
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('remove object with track', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'deleteObject');
             const spyon2 = jest.spyOn(Hub, 'dispatch');
@@ -443,18 +349,10 @@ describe('Storage', () => {
             expect(spyon2).toBeCalledWith('storage', {attrs: {"method": "remove", "result": "success"}, metrics: null}, 'Storage');
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
             spyon2.mockClear();
         });
 
         test('remove object failed', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'deleteObject')
                 .mockImplementationOnce((params, callback) => {
@@ -469,19 +367,9 @@ describe('Storage', () => {
             }
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('remove object with private', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({
-                            identityId: 'id'
-                        });
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'deleteObject');
 
@@ -490,16 +378,14 @@ describe('Storage', () => {
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": "bucket", "Key": "private/id/key"});
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('credentials not ok', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        rej('err');
-                    });
-                });
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                })
+            });
 
             const storage = new Storage(options_no_cred);
 
@@ -510,19 +396,12 @@ describe('Storage', () => {
                 expect(e).not.toBeNull();
             }
 
-            curCredSpyOn.mockClear();
+            spyon.mockClear();
         });
     });
 
     describe('list test', () => {
         test('list object successfully', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'listObjects');
 
@@ -536,17 +415,9 @@ describe('Storage', () => {
             expect(spyon.mock.calls[0][0]).toEqual({"Bucket": 'bucket', "Prefix": "public/path"});
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('list object with track', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'listObjects');
             const spyon2 = jest.spyOn(Hub, 'dispatch');
@@ -564,18 +435,10 @@ describe('Storage', () => {
                 {attrs: {"method": "list", "result": "success"}, metrics: null}, 'Storage');
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
             spyon2.mockClear();
         });
 
         test('list object failed', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        res({});
-                    });
-                });
-
             const storage = new Storage(options);
             const spyon = jest.spyOn(S3.prototype, 'listObjects')
                 .mockImplementationOnce((params, callback) => {
@@ -590,16 +453,14 @@ describe('Storage', () => {
             }
 
             spyon.mockClear();
-            curCredSpyOn.mockClear();
         });
 
         test('credentials not ok', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                .mockImplementationOnce(() => {
-                    return new Promise((res, rej) => {
-                        rej('err');
-                    });
-                });
+            const spyon = jest.spyOn(Credentials, 'getCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                })
+            });
 
             const storage = new Storage(options_no_cred);
 
@@ -610,7 +471,7 @@ describe('Storage', () => {
                 expect(e).not.toBeNull();
             }
 
-            curCredSpyOn.mockClear();
+            spyon.mockClear();
         });
     });
 });
