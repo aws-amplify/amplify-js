@@ -113,7 +113,7 @@ Analytics.record('albumVisit', {}, { minutesListened: 30 });
 
 ### Disable/Enable Analytics
 
-You can disable/enable Analytics module by
+You can disable or enable Analytics module as follows:
 ```js
 import { Analytics } from 'aws-amplify';
 
