@@ -7,7 +7,6 @@ export default class AnalyticsClass {
     private _buffer;
     private _provider;
     private _pluggables;
-    private _disabled;
     /**
      * Initialize Analtyics
      * @param config - Configuration of the Analytics
@@ -23,14 +22,6 @@ export default class AnalyticsClass {
      * @param {Object} pluggable - an instance of the plugin
      */
     addPluggable(pluggable: AnalyticsProvider): Promise<boolean | object>;
-    /**
-     * stop sending events
-     */
-    disable(): void;
-    /**
-     * start sending events
-     */
-    enable(): void;
     /**
      * Record Session start
      * @return - A promise which resolves if buffer doesn't overflow
