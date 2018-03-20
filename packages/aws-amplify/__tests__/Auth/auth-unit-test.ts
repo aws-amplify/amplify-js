@@ -136,6 +136,9 @@ jest.mock('../../src/Credentials', () => {
         },
         removeCredentials(params) {
             return null;
+        },
+        currentSession() {
+            return;
         }
     };
 
@@ -790,50 +793,15 @@ describe('auth unit test', () => {
                 Pool: userPool
             });
 
-            const spyon = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
+            const spyon = jest.spyOn(Credentials, "currentSession")
                 .mockImplementationOnce(() => {
-                    return user;
+                    return;
                 });
 
-            expect.assertions(1);
-            expect(await auth.currentSession()).toBe('session');
+            auth.currentSession();
+            expect(spyon).toBeCalled();
 
             spyon.mockClear();
-        });
-
-        test('callback failure', async () => {
-            const auth = new Auth(authOptions);
-
-            const spyon = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
-                .mockImplementationOnce(() => {
-                    return null;
-                });
-
-            expect.assertions(1);
-            try {
-                await auth.currentSession();
-            } catch (e) {
-                expect(e).toBe('No current user');
-            }
-
-            spyon.mockClear();
-        });
-
-        test('no UserPool', async () => {
-            const auth = new Auth({
-                userPoolId: undefined,
-                userPoolWebClientId: "awsUserPoolsWebClientId",
-                region: "region",
-                identityPoolId: "awsCognitoIdentityPoolId",
-                mandatorySignIn: false
-            });
-
-            expect.assertions(1);
-            try {
-                await auth.currentSession();
-            } catch (e) {
-                expect(e).toBe('No userPool');
-            }
         });
     });
 
@@ -1440,11 +1408,8 @@ describe('auth unit test', () => {
 
             auth.federatedSignIn('google', {token: 'token', expires_at: 'expires_at'}, 'user');
 
-            expect(spyon).toBeCalledWith('federatedInfo', {
-                provider: 'google',
-                token: 'token',
-                user: 'user',
-                expires_at: 'expires_at'
+            expect(spyon).toBeCalledWith('federatedUser', {
+                user: 'user'
             },
             {
                 priority: 1

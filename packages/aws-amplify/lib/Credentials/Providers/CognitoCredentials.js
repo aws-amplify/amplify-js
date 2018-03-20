@@ -178,6 +178,7 @@ var CognitoCredentials = /** @class */ (function () {
     };
     CognitoCredentials.prototype._retrieveCredentialsFromAuth = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
             var federatedInfo, that_1, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -189,7 +190,11 @@ var CognitoCredentials = /** @class */ (function () {
                         federatedInfo = _a.sent();
                         if (federatedInfo) {
                             // refresh the jwt token here if necessary
-                            return [2 /*return*/, this._refreshFederatedToken(federatedInfo)];
+                            return [2 /*return*/, this._refreshFederatedToken(federatedInfo)
+                                    .catch(function (error) {
+                                    logger.debug('getting federated credentials failed:', error);
+                                    _this._setCredentialsForGuest();
+                                })];
                         }
                         else {
                             that_1 = this;
@@ -212,82 +217,83 @@ var CognitoCredentials = /** @class */ (function () {
         var expires_at = federatedInfo.expires_at;
         var that = this;
         logger.debug('checking if federated jwt token expired');
-        if (expires_at < new Date().getTime()) {
+        if (expires_at < new Date().getTime()
+            && typeof that._refreshHandlers[provider] === 'function') {
             logger.debug('getting refreshed jwt token from federation provider');
-            if (that._refreshHandlers[provider]) {
-                that._refreshHandlers[provider](function (err, data) {
-                    if (err) {
-                        logger.debug('refreh federated token failed', err);
-                    }
-                    else {
-                        logger.debug('refresh federated token sucessfully', data);
-                        token = data.token;
-                        expires_at = data.expires_at;
-                        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
-                    }
-                    return that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
-                });
-            }
-            else {
-                logger.debug('no provided fedaterated token refresh handler for the provider:', provider);
-                return this._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
-            }
+            return that._refreshHandlers[provider]().then(function (data) {
+                logger.debug('refresh federated token sucessfully', data);
+                token = data.token;
+                expires_at = data.expires_at;
+                Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
+                return that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
+            }).catch(function (e) {
+                return that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
+            });
         }
         else {
+            if (!that._refreshHandlers[provider]) {
+                logger.debug('no refresh hanlder for provider:', provider);
+            }
+            else
+                logger.debug('token not expired');
             return this._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
         }
     };
-    CognitoCredentials.prototype._refreshFacebookToken = function (callback) {
+    CognitoCredentials.prototype._refreshFacebookToken = function () {
         var fb = window['FB'];
         if (!fb) {
             logger.debug('no fb sdk available');
-            callback('no fb sdk available', null);
+            return Promise.reject('no fb sdk available');
         }
-        fb.login(function (fbResponse) {
-            if (!fbResponse || !fbResponse.authResponse) {
-                logger.debug('no response from facebook when refreshing the jwt token');
-                callback('no response from facebook when refreshing the jwt token', null);
-            }
-            var response = fbResponse.authResponse;
-            var accessToken = response.accessToken, expiresIn = response.expiresIn;
-            var date = new Date();
-            var expires_at = expiresIn * 1000 + date.getTime();
-            if (!accessToken) {
-                logger.debug('the jwtToken is undefined');
-                callback('the jwtToken is undefined', null);
-            }
-            callback(null, { token: accessToken, expires_at: expires_at });
-        }, { scope: 'public_profile,email' });
+        return new Promise(function (res, rej) {
+            fb.login(function (fbResponse) {
+                if (!fbResponse || !fbResponse.authResponse) {
+                    logger.debug('no response from facebook when refreshing the jwt token');
+                    rej('no response from facebook when refreshing the jwt token');
+                }
+                var response = fbResponse.authResponse;
+                var accessToken = response.accessToken, expiresIn = response.expiresIn;
+                var date = new Date();
+                var expires_at = expiresIn * 1000 + date.getTime();
+                if (!accessToken) {
+                    logger.debug('the jwtToken is undefined');
+                    rej('the jwtToken is undefined');
+                }
+                res({ token: accessToken, expires_at: expires_at });
+            }, { scope: 'public_profile,email' });
+        });
     };
-    CognitoCredentials.prototype._refreshGoogleToken = function (callback) {
+    CognitoCredentials.prototype._refreshGoogleToken = function () {
         var ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
         if (!ga) {
             logger.debug('no gapi auth2 available');
-            callback('no gapi auth2 available', null);
+            return Promise.reject('no gapi auth2 available');
         }
-        ga.getAuthInstance().then(function (googleAuth) {
-            if (!googleAuth) {
-                console.log('google Auth undefiend');
-                callback('google Auth undefiend', null);
-            }
-            var googleUser = googleAuth.currentUser.get();
-            // refresh the token
-            if (googleUser.isSignedIn()) {
-                logger.debug('refreshing the google access token');
-                googleUser.reloadAuthResponse()
-                    .then(function (authResponse) {
-                    var id_token = authResponse.id_token, expires_at = authResponse.expires_at;
-                    var profile = googleUser.getBasicProfile();
-                    var user = {
-                        email: profile.getEmail(),
-                        name: profile.getName()
-                    };
-                    callback(null, { token: id_token, expires_at: expires_at });
-                });
-            }
-        }).catch(function (err) {
-            logger.debug('Failed to refresh google token', err);
-            callback('Failed to refresh google token', null);
+        return new Promise(function (res, rej) {
+            ga.getAuthInstance().then(function (googleAuth) {
+                if (!googleAuth) {
+                    console.log('google Auth undefiend');
+                    rej('google Auth undefiend');
+                }
+                var googleUser = googleAuth.currentUser.get();
+                // refresh the token
+                if (googleUser.isSignedIn()) {
+                    logger.debug('refreshing the google access token');
+                    googleUser.reloadAuthResponse()
+                        .then(function (authResponse) {
+                        var id_token = authResponse.id_token, expires_at = authResponse.expires_at;
+                        var profile = googleUser.getBasicProfile();
+                        var user = {
+                            email: profile.getEmail(),
+                            name: profile.getName()
+                        };
+                        res({ token: id_token, expires_at: expires_at });
+                    });
+                }
+            }).catch(function (err) {
+                logger.debug('Failed to refresh google token', err);
+                rej('Failed to refresh google token');
+            });
         });
     };
     CognitoCredentials.prototype._isExpired = function (credentials) {

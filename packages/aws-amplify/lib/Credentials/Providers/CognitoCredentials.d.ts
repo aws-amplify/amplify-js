@@ -49,8 +49,8 @@ export default class CognitoCredentials implements CredentialsProvider {
     };
     private _retrieveCredentialsFromAuth();
     private _refreshFederatedToken(federatedInfo);
-    private _refreshFacebookToken(callback);
-    private _refreshGoogleToken(callback);
+    private _refreshFacebookToken();
+    private _refreshGoogleToken();
     private _isExpired(credentials);
     private _refreshCredentials(credentials);
     private _setCredentialsForGuest();
