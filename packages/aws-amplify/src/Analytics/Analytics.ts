@@ -17,9 +17,10 @@ import {
     missingConfig,
     Parser
 } from '../Common';
+
+import Credentials from '../Credentials';
 import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
 import Platform from '../Common/Platform';
-import Auth from '../Auth';
 
 import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 
@@ -98,7 +99,6 @@ export default class AnalyticsClass {
 
         if (pluggable) {
             this._pluggables.push(pluggable);
-            // pluggable.configure(this._config);
             const config = pluggable.configure(this._config);
             return Promise.resolve(config);
         }
@@ -109,6 +109,7 @@ export default class AnalyticsClass {
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async startSession() {
+        logger.debug('start Session');
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
@@ -168,6 +169,7 @@ export default class AnalyticsClass {
      * Send events from buffer
      */
     private _sendFromBuffer(params) {
+        logger.debug('flush the buffer');
         const that = this;
         this._pluggables.map((pluggable) => {
             pluggable.record(params)
@@ -198,11 +200,14 @@ export default class AnalyticsClass {
      */
     private _getCredentials() {
         const that = this;
-        return Auth.currentCredentials()
+        return Credentials.getCredentials()
             .then(credentials => {
-                if (!credentials) return false;
-                const cred = Auth.essentialCredentials(credentials);
-
+                if (!credentials) {
+                    logger.debug('no credentials available');
+                    return false;
+                }
+                const cred = Credentials.essentialCredentials({credentials});
+  
                 that._config.credentials = cred;
                 // that._config.endpointId = cred.identityId;
                 // logger.debug('set endpointId for analytics', that._config.endpointId);
