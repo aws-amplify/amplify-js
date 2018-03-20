@@ -91,7 +91,7 @@ import { Analytics } from 'aws-amplify';
 Analytics.record('albumVisit');
 ```
 
-### Record Custom Tracking Event with Attributes
+### Record a Custom Tracking Event with Attributes
 
 The `record` method lets you add additional attributes to an event. For example, in order to record *artist* information with an *albumVisit* event:
 
@@ -124,10 +124,49 @@ Analytics.disable();
 Analytics.enable();
 ```
 
+### Record Authentication Events
+
+You can use following events to record Sign-ins, Sign-ups, and Authentication failures.
+
+```js
+import { Analytics } from 'aws-amplify';
+
+// Sign-in event
+Analytics.record('_userauth.sign_in');
+
+// Sign-up event
+Analytics.record('_userauth.sign_up');
+
+// Authentication failure event
+Analytics.record('_userauth.auth_fail');
+```
+
+### Update User Attributes
+
+In order to update User Attributes, use `updateEndpoint()` method as following:
+
+```js
+import { Analytics } from 'aws-amplify';
+
+Analytics.updateEndpoint({
+    // Customized userId
+    UserId: 'XXXXXXXXXXXX',
+    // User attributes
+    Attributes: {
+        interests: ['football', 'basketball', 'AWS']
+        // ...
+    },
+    // Custom user attributes
+    UserAttributes: {
+        hobbies: ['piano', 'hiking']
+        // ...
+    }
+})
+```
 
 ### API Reference
 
-For the complete API documentation for Analytics module, visit our [API Reference](/api/classes/analyticsclass.html)
+For the complete API documentation for Analytics module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/analyticsclass.html)
 {: .callout .callout--info}
 
 ## Customization

@@ -25,6 +25,8 @@ export default class Greetings extends AuthPiece {
         super(props);
 
         this.signOut = this.signOut.bind(this);
+        this.googleSignOut = this.googleSignOut.bind(this);
+        this.facebookSignOut = this.facebookSignOut.bind(this);
         this.checkUser = this.checkUser.bind(this);
         this.onHubCapsule = this.onHubCapsule.bind(this);
 
@@ -46,9 +48,49 @@ export default class Greetings extends AuthPiece {
     }
 
     signOut() {
+        this.googleSignOut();
+        this.facebookSignOut();
         Auth.signOut()
             .then(() => this.changeState('signedOut'))
             .catch(err => { logger.error(err); this.error(err); });
+    }
+
+    googleSignOut() {
+        const auth2 = window.gapi && window.gapi.auth2? window.gapi.auth2 : null;
+        if (!auth2) {
+            return Promise.resolve(null);
+        }
+
+        auth2.getAuthInstance().then((googleAuth) => {
+            if (!googleAuth) {
+                logger.debug('google Auth undefined');
+                return Promise.resolve(null);
+            }
+
+            logger.debug('google signing out');
+            return googleAuth.signOut();
+        });
+    }
+
+    facebookSignOut() {
+        const fb = window.FB;
+        if (!fb) {
+            logger.debug('FB sdk undefined');
+            return Promise.resolve(null);
+        }
+
+        fb.getLoginStatus(response => {
+            if (response.status === 'connected') {
+                return new Promise((res, rej) => {
+                    logger.debug('facebook signing out');
+                    fb.logout(response => {
+                        res(response);
+                    });
+                });
+            } else {
+                return Promise.resolve(null);
+            }
+        });
     }
 
     checkUser() {

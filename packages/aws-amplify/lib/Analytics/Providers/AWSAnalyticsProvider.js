@@ -400,13 +400,14 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @return {Object} - The request of updating endpoint
      */
     AWSAnalyticsProvider.prototype._endpointRequest = function () {
-        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, endpointId = _a.endpointId;
+        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, Attributes = _a.Attributes, UserAttributes = _a.UserAttributes, endpointId = _a.endpointId, userId = _a.userId;
         var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         var ChannelType = Address ? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         logger.debug('demographic user id: ', user_id);
         var OptOut = this._config.OptOut ? this._config.OptOut : undefined;
-        return {
+        var ret = {
             Address: Address,
+            Attributes: Attributes,
             ChannelType: ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || clientInfo.appVersion,
@@ -419,9 +420,11 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             RequestId: RequestId,
             EffectiveDate: Address ? new Date().toISOString() : undefined,
             User: {
-                UserId: credentials.identityId
+                UserId: userId ? userId : credentials.identityId,
+                UserAttributes: UserAttributes
             }
         };
+        return ret;
     };
     /**
      * @private
