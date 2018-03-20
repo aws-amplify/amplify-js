@@ -3,7 +3,7 @@
 
 # Storage
 
-AWS Amplify Storage module gives a simple mechanism for managing user content in public or private storage buckets.
+AWS Amplify Storage module provides a simple mechanism for managing user content for your app in public or private storage buckets.
 
 ## Installation and Configuration
 
@@ -225,7 +225,7 @@ Storage.list('photos/', {level: 'private'})
 
 #### API Reference
 
-For the complete API documentation for Storage module, visit our [API Reference](/api/classes/storageclass.html)
+For the complete API documentation for Storage module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/storageclass.html)
 {: .callout .callout--info}
 
 ## Tracking Events

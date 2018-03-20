@@ -85,5 +85,5 @@ class MyClass {
 
 ### API Reference
 
-For the complete API documentation for Hub module, visit our [API Reference](/api/classes/hubclass.html)
+For the complete API documentation for Hub module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/hubclass.html)
 {: .callout .callout--info}
