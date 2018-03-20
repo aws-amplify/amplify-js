@@ -21,6 +21,7 @@ import {
 import { CredentialsProvider } from '../types';
 import Platform from '../../Common/Platform';
 import Cache from '../../Cache';
+import { FacebookOAuth, GoogleOAuth } from '../OAuth';
 import { ICognitoUserPoolData, ICognitoUserData } from 'amazon-cognito-identity-js';
 const {
     CognitoIdentityCredentials
@@ -51,8 +52,8 @@ export default class CognitoCredentials implements CredentialsProvider {
 
                 
         // refresh token
-        this._refreshHandlers['google'] = this._refreshGoogleToken;
-        this._refreshHandlers['facebook'] = this._refreshFacebookToken;
+        this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
+        this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
     }
 
     /**
@@ -191,6 +192,24 @@ export default class CognitoCredentials implements CredentialsProvider {
         }
     }
 
+    private _refreshCredentials(credentials): Promise<any> {
+        logger.debug('try to refresh credentials', credentials);
+        const cred = credentials || this._credentials;
+        if (!cred) {
+            return Promise.reject(new Error('no credentials provided for refreshing!'));
+        }
+        return new Promise((resolve,reject) => {
+            cred.refresh(err => {
+                if (err) {
+                    logger.debug('refresh credentials error', err);
+                    resolve(null);
+                } else {
+                    resolve(cred);
+                }
+            });
+        });
+    }
+
     private _refreshFederatedToken(federatedInfo) {
         const { provider, user } = federatedInfo;
         let token = federatedInfo.token;
@@ -219,73 +238,6 @@ export default class CognitoCredentials implements CredentialsProvider {
         }
     }
 
-    private _refreshFacebookToken() {
-        const fb = window['FB'];
-        if (!fb) {
-            logger.debug('no fb sdk available');
-            return Promise.reject('no fb sdk available');
-        }
-
-        return new Promise((res, rej) => {
-            fb.login(
-                fbResponse => {
-                    if (!fbResponse || !fbResponse.authResponse) {
-                        logger.debug('no response from facebook when refreshing the jwt token');
-                        rej('no response from facebook when refreshing the jwt token');
-                    }
-
-                    const response = fbResponse.authResponse;
-                    const { accessToken, expiresIn } = response;
-                    const date = new Date();
-                    const expires_at = expiresIn * 1000 + date.getTime();
-                    if (!accessToken) {
-                        logger.debug('the jwtToken is undefined');
-                        rej('the jwtToken is undefined');
-                    }
-                    res({token: accessToken, expires_at });
-                }, 
-                {scope: 'public_profile,email' }
-            );
-        });
-    }
-
-    private _refreshGoogleToken() {
-        const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
-        if (!ga) {
-            logger.debug('no gapi auth2 available');
-            return Promise.reject('no gapi auth2 available');
-        }
-
-        return new Promise((res, rej) => {
-            ga.getAuthInstance().then((googleAuth) => {
-                if (!googleAuth) {
-                    console.log('google Auth undefiend');
-                    rej('google Auth undefiend');
-                }
-
-                const googleUser = googleAuth.currentUser.get();
-                // refresh the token
-                if (googleUser.isSignedIn()) {
-                    logger.debug('refreshing the google access token');
-                    googleUser.reloadAuthResponse()
-                        .then((authResponse) => {
-                            const { id_token, expires_at } = authResponse;
-                            const profile = googleUser.getBasicProfile();
-                            const user = {
-                                email: profile.getEmail(),
-                                name: profile.getName()
-                            };
-
-                            res({ token: id_token, expires_at });
-                        });
-                }
-            }).catch(err => {
-                logger.debug('Failed to refresh google token', err);
-                rej('Failed to refresh google token');
-            });
-        });
-    }
-
     private _isExpired(credentials): boolean {
         if (!credentials) {
             logger.debug('no credentials for expiration check');
@@ -299,24 +251,6 @@ export default class CognitoCredentials implements CredentialsProvider {
             return false;
         }
         return true;
-    }
-
-    private _refreshCredentials(credentials): Promise<any> {
-        logger.debug('try to refresh credentials', credentials);
-        const cred = credentials || this._credentials;
-        if (!cred) {
-            return Promise.reject(new Error('no credentials provided for refreshing!'));
-        }
-        return new Promise((resolve,reject) => {
-            cred.refresh(err => {
-                if (err) {
-                    logger.debug('refresh credentials error', err);
-                    resolve(null);
-                } else {
-                    resolve(cred);
-                }
-            });
-        });
     }
 
     private _setCredentialsForGuest() {
