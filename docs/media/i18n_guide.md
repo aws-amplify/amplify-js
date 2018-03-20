@@ -52,5 +52,5 @@ Retrieves a phrase from the dictionary for the active language. If the phrase do
 
 ### API Reference
 
-For the complete API documentation for i18n module, visit our [API Reference](/api/classes/i18n.html)
+For the complete API documentation for i18n module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/i18n.html)
 {: .callout .callout--info}

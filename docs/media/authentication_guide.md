@@ -71,7 +71,7 @@ Amplify.configure({
 
 ### Common Authentication Use Cases
 
-AWS Amplify Authentication module exposes set of APIs to be used in any JavaScript framework. Please check [AWS Amplify API Reference](/api/classes/authclass.html) for full API list. 
+AWS Amplify Authentication module exposes set of APIs to be used in any JavaScript framework. Please check [AWS Amplify API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/authclass.html) for full API list. 
 
 Here, we provide examples for most common authentication use cases:
 
@@ -148,7 +148,7 @@ Auth.forgotPasswordSubmit(username, code, new_password)
     .catch(err => console.log(err));
 ```
 
-#### Retrive Current Session
+#### Retrieve Current Session
 
 `Auth.currentSession()` returns a `CognitoUserSession` object which contains JWT `accessToken`, `idToken`, and `refreshToken`.
 
@@ -482,7 +482,7 @@ Note: In order to work with Service Interface Objects, your Amazon Cognito users
 
 ### API Reference
 
-For the complete API documentation for Authentication module, visit our [API Reference](/api/classes/authclass.html)
+For the complete API documentation for Authentication module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/authclass.html)
 {: .callout .callout--info}
 
 ## Customization

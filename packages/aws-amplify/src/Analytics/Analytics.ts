@@ -159,7 +159,7 @@ export default class AnalyticsClass {
 
         const timestamp = new Date().getTime();
         const conf = Object.assign(this._config, config);
-        const params = {eventName: '_update_endpoint', timestamp, config: conf};
+        const params = { eventName: '_update_endpoint', timestamp, config: conf };
         return this._putToBuffer(params);
     }
 
