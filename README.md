@@ -92,7 +92,7 @@ Amplify.configure(aws_exports);
 Analytics.record('myCustomEvent');
 ```
 
-#### See our [Analytics Developer Guide](https://aws.github.io/aws-amplify/media/analytics_guide.html) for detailed information. 
+#### See our [Analytics Developer Guide](https://aws.github.io/aws-amplify/media/analytics_guide) for detailed information. 
 
 ### 2. Add Authentication to your App
 
