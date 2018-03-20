@@ -117,10 +117,10 @@ You can disable/enable Analytics module by
 ```js
 import { Analytics } from 'aws-amplify';
 
-// disable Analytics
+// to disable Analytics
 Analytics.disable();
 
-// enable Analytics
+// to enable Analytics
 Analytics.enable();
 ```
 
