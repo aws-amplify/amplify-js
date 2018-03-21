@@ -832,11 +832,14 @@ describe('auth unit test', () => {
                 Username: 'username',
                 Pool: userPool
             });
-            auth['credentials_source'] = 'federated';
-            auth['user'] = 'federated_user';
+            const spyon = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
+                return 'federated_user';
+            });
 
             expect.assertions(1);
             expect(await auth.currentAuthenticatedUser()).toBe('federated_user');
+
+            spyon.mockClear();
         });
     });
 

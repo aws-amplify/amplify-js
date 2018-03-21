@@ -116,6 +116,7 @@ export default class AuthClass {
                 this.pickupCredentials();
             }
         }
+        dispatchAuthEvent('configured', null);
         return this._config;
     }
 
@@ -642,16 +643,22 @@ export default class AuthClass {
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    public currentAuthenticatedUser(): Promise<any> {
-        const source = this.credentials_source;
-        logger.debug('get current authenticated user. source ' + source);
-        if (!source || source === 'aws' || source === 'userPool') {
-            return this.currentUserPoolUser();
+    public async currentAuthenticatedUser(): Promise<any> {
+        const federatedUser = await Cache.getItem('federatedUser');
+        if (federatedUser) {
+            this.user = federatedUser;
+            logger.debug('get current authenticated federated user', this.user);
+            return this.user;
         }
-        if (source === 'federated') {
-            return Promise.resolve(this.user);
+        else {
+            logger.debug('get current authenticated userpool user');
+            try {
+                this.user = await this.currentUserPoolUser();
+                return this.user;
+            } catch (e) {
+                return Promise.reject('not authenticated');
+            }
         }
-        return Promise.reject('not authenticated');
     }
 
     /**
@@ -661,6 +668,7 @@ export default class AuthClass {
     public currentSession() : Promise<any> {
         let user:any;
         const that = this;
+        logger.debug('getting current session');
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (Platform.isReactNative) {
             return this.getSyncedUser().then(user => {
@@ -694,6 +702,7 @@ export default class AuthClass {
      */
     public currentUserCredentials() : Promise<any> {
         const that = this;
+        logger.debug('getting current user credentials');
         if (Platform.isReactNative) {
             // asyncstorage
             return Cache.getItem('federatedInfo')
@@ -721,8 +730,10 @@ export default class AuthClass {
             } else {
                 return this.currentSession()
                     .then(session => {
+                        logger.debug('getting session success', session);
                         return this._setCredentialsFromSession(session);
                     }).catch((error) => {
+                        logger.debug('getting session failed', error);
                         return this._setCredentialsForGuest();
                     });
             }
@@ -743,17 +754,18 @@ export default class AuthClass {
                 logger.debug('refresh federated token sucessfully', data);
                 token = data.token;
                 expires_at = data.expires_at;
-                Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
-                return that._setCredentialsFromFederation(provider, token, user);
+                // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+                return that._setCredentialsFromFederation({ provider, token, user, expires_at });
             }).catch(e => {
-                return that._setCredentialsFromFederation(provider, token, user);
+                return that._setCredentialsFromFederation({ provider, token, user, expires_at });
             });
         } else {
             if (!that._refreshHandlers[provider]) {
                 logger.debug('no refresh hanlder for provider:', provider);
+            } else {
+                logger.debug('token not expired');
             }
-            else logger.debug('token not expired');
-            return this._setCredentialsFromFederation(provider, token, user);
+            return this._setCredentialsFromFederation({provider, token, user, expires_at });
         }
     }
 
@@ -816,21 +828,19 @@ export default class AuthClass {
      * @return - A promise resolved if success
      */
     public async signOut(): Promise<any> {
-        await this.currentUserCredentials();
-
+        await this.currentCredentials();
         const source = this.credentials_source;
-
         // clean out the cached stuff
         this.credentials.clearCachedId();
         // clear federatedInfo
         Cache.removeItem('federatedInfo');
+        Cache.removeItem('federatedUser');
 
         if (source === 'aws' || source === 'userPool') {
             if (!this.userPool) { return Promise.reject('No userPool'); }
-
             const user = this.userPool.getCurrentUser();
             if (!user) { return Promise.resolve(); }
-
+            logger.debug('user sign out', user);
             user.signOut();
         }
 
@@ -965,10 +975,10 @@ export default class AuthClass {
         const { token, expires_at } = response;
 
         // store it into localstorage
-        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+        // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
         const that = this;
         return new Promise((res, rej) => {
-            that._setCredentialsFromFederation(provider, token, user).then((cred) => {
+            that._setCredentialsFromFederation({ provider, token, user, expires_at }).then((cred) => {
                 dispatchAuthEvent('signIn', that.user);
                 logger.debug('federated sign in credentials', this.credentials);
                 res(cred);
@@ -1012,6 +1022,7 @@ export default class AuthClass {
     }
 
     private pickupCredentials() {
+        logger.debug('picking up credentials');
         if (!this._gettingCredPromise) {
             if (this.credentials) {
                 this._gettingCredPromise = this.keepAlive();
@@ -1030,23 +1041,7 @@ export default class AuthClass {
 
         const that = this;
         if (credentials instanceof Credentials){
-            return new Promise((res, rej) => {
-                credentials.getPromise().then(
-                    () => {
-                        logger.debug('Load credentials for guest successfully', credentials);
-                        that.credentials = credentials;
-                        that.credentials_source = 'aws';
-                        if (AWS && AWS.config) { AWS.config.credentials = that.credentials; }
-                        that._gettingCredPromise = null;
-                        res(that.credentials);
-                    },
-                    (err) => {
-                        logger.debug('Failed to load creadentials', credentials);
-                        that._gettingCredPromise = null;
-                        rej('Failed to load credentials');
-                    }
-                );
-            });
+            return this._loadCredentials(credentials, 'aws', undefined, null);
         } else {
             logger.debug('AWS.config.credentials is not an instance of AWS Credentials');
             return Promise.reject('AWS.config.credentials is not an instance of AWS Credentials');
@@ -1054,6 +1049,7 @@ export default class AuthClass {
     }
 
     private _setCredentialsForGuest() {
+        logger.debug('setting credentials for guest');
         const { identityPoolId, region, mandatorySignIn } = this._config;
         if (mandatorySignIn) {
             return Promise.reject('cannot get guest credentials when mandatory signin enabled');
@@ -1067,24 +1063,7 @@ export default class AuthClass {
         });
 
         const that = this;
-        return new Promise((res, rej) => {
-            credentials.getPromise().then(
-                () => {
-                    logger.debug('Load credentials for guest successfully', credentials);
-                    that.credentials = credentials;
-                    that.credentials.authenticated = false;
-                    that.credentials_source = 'guest';
-                    if (AWS && AWS.config) { AWS.config.credentials = that.credentials; }
-                    that._gettingCredPromise = null;
-                    res(that.credentials);
-                },
-                (err) => {
-                    logger.debug('Failed to load credentials for guest', credentials);
-                    that._gettingCredPromise = null;
-                    rej('Failed to load creadentials for guest');
-                }
-            );
-        });
+        return this._loadCredentials(credentials, 'guest', false, null);
     }
 
     private _setCredentialsFromSession(session) {
@@ -1103,28 +1082,12 @@ export default class AuthClass {
         });
 
         const that = this;
-        return new Promise((res, rej) => {
-            credentials.getPromise().then(
-                () => {
-                    logger.debug('Load credentials for userpool user successfully', credentials);
-                    that.credentials = credentials;
-                    that.credentials.authenticated = true;
-                    that.credentials_source = 'userpool';
-                    if (AWS && AWS.config) { AWS.config.credentials = that.credentials; }
-                    that._gettingCredPromise = null;
-                    res(that.credentials);
-                },
-                (err) => {
-                    logger.debug('Failed to load credentials for userpoool user', credentials);
-                    that._gettingCredPromise = null;
-                    rej('Failed to load creadentials for userpool user');
-                }
-            );
-        });
+        return this._loadCredentials(credentials, 'userPool', true, null);
     }
 
     
-    private _setCredentialsFromFederation(provider, token, user) {
+    private _setCredentialsFromFederation(params) {
+        const { provider, token, user, expires_at } = params;
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
@@ -1148,26 +1111,35 @@ export default class AuthClass {
         },  {
             region
         });
+
+        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+        return this._loadCredentials(credentials, 'federated', true, user);
+    }
+
+    private _loadCredentials(credentials, source, authenticated, rawUser) {
         const that = this;
         return new Promise((res, rej) => {
             credentials.getPromise().then(
                 () => {
-                    logger.debug('Load credentials for federation user successfully', credentials);
+                    logger.debug('Load credentials successfully', credentials);
                     that.credentials = credentials;
-                    that.credentials.authenticated = true;
-                    that.credentials_source = 'federated';
-                    if (AWS && AWS.config) { AWS.config.credentials = that.credentials; }
+                    that.credentials.authenticated = authenticated;
+                    that.credentials_source = source;
                     that._gettingCredPromise = null;
-                    that.user = Object.assign(
-                        { id: this.credentials.identityId },
-                        user
-                    );
+                    if (AWS && AWS.config) { AWS.config.credentials = that.credentials; }
+                    if (source === 'federated') {
+                        that.user = Object.assign(
+                            { id: this.credentials.identityId },
+                            rawUser
+                        );
+                        Cache.setItem('federatedUser', that.user, { priority: 1 });
+                    }
                     res(that.credentials);
                 },
                 (err) => {
-                    logger.debug('Failed to load credentials for federation user', credentials);
+                    logger.debug('Failed to load credentials', credentials);
                     that._gettingCredPromise = null;
-                    rej('Failed to load creadentials for federation user');
+                    rej('Failed to load creadentials');
                 }
             );
         });
