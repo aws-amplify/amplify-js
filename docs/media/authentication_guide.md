@@ -338,6 +338,11 @@ import { Auth } from 'aws-amplify';
 // `user` is the current Authenticated user
 Auth.setupTOTP(user).then((code) => {
     // You can directly display the `code` to the user or convert it to a QR code to be scanned
+    // for example you can produce a string which can be used to produce the QR code
+    // const str = "otpauth://totp/AWSCognito:"+ username + "?secret=" + code + "&issuer=" + issuer;
+    // and render it by
+    // import QRCode from 'qrcode.react';
+    // <QRCode value={str}/>
 });
 
 // ...
