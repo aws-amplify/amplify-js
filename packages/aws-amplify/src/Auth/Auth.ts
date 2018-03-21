@@ -112,8 +112,6 @@ export default class AuthClass {
                         }
                     });
                 });
-            } else {
-                this.pickupCredentials();
             }
         }
         dispatchAuthEvent('configured', null);
@@ -756,8 +754,6 @@ export default class AuthClass {
                 expires_at = data.expires_at;
                 // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
                 return that._setCredentialsFromFederation({ provider, token, user, expires_at });
-            }).catch(e => {
-                return that._setCredentialsFromFederation({ provider, token, user, expires_at });
             });
         } else {
             if (!that._refreshHandlers[provider]) {
@@ -1024,12 +1020,10 @@ export default class AuthClass {
     private pickupCredentials() {
         logger.debug('picking up credentials');
         if (!this._gettingCredPromise) {
-            if (this.credentials) {
-                this._gettingCredPromise = this.keepAlive();
-            } else if (AWS.config && AWS.config.credentials) {
+            if (AWS.config && AWS.config.credentials && AWS.config.credentials instanceof Credentials) {
                 this._gettingCredPromise = this._setCredentialsFromAWS();
             } else {
-                this._gettingCredPromise = this.currentUserCredentials();
+                this._gettingCredPromise = this.keepAlive();
             }
         }
 
@@ -1126,7 +1120,6 @@ export default class AuthClass {
                     that.credentials.authenticated = authenticated;
                     that.credentials_source = source;
                     that._gettingCredPromise = null;
-                    if (AWS && AWS.config) { AWS.config.credentials = that.credentials; }
                     if (source === 'federated') {
                         that.user = Object.assign(
                             { id: this.credentials.identityId },

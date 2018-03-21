@@ -1455,7 +1455,7 @@ describe('auth unit test', () => {
 
 
             expect.assertions(1);
-            expect(await auth.currentUserInfo()).toBeNull();
+            expect(await auth.currentUserInfo()).toEqual({});
         });
 
         test('no current userpool user', async () => {
