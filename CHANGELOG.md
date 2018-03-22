@@ -8,7 +8,7 @@
     * Enhancement: Binding console to console functions #458
     * Enhancement: Customize endpoint userId and attributes #437
     * Enhancement: Analytics turn on/off #479
-    * Bug Fix: Retrieving credentials only once when reloading page #486
+    * Bug Fix: Retrieving credentials only once when reloading pages #486
 * aws-amplify-react - v0.1.37@beta
     * Enhancement: adding `onError` support for withGoogle Federated login #475
 
