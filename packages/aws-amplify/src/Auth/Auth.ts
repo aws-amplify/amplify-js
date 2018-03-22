@@ -1032,12 +1032,13 @@ export default class AuthClass {
 
     private _setCredentialsFromAWS() {
         const credentials = AWS.config.credentials;
-
+        logger.debug('setting credentials from aws');
         const that = this;
         if (credentials instanceof Credentials){
             return this._loadCredentials(credentials, 'aws', undefined, null);
         } else {
             logger.debug('AWS.config.credentials is not an instance of AWS Credentials');
+            this._gettingCredPromise = null;
             return Promise.reject('AWS.config.credentials is not an instance of AWS Credentials');
         }
     }
