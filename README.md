@@ -38,8 +38,8 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 * [Examples](#example)
   - [1. Collect user session metrics.](#1-collect-user-session-metrics)
   - [2. Add Authentication](#2-add-authentication-to-your-app)
-  - [3. Sign HTTP requests](#4-sign-http-requests)
-  - [4. Upload and Download public or private content](#5-upload-and-download-public-or-private-content)
+  - [3. Sign HTTP requests](#3-sign-http-requests)
+  - [4. Upload and Download public or private content](#4-upload-and-download-public-or-private-content)
 * [Contributing](#contributing)
 
 ## Installation
