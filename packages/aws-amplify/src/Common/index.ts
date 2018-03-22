@@ -22,6 +22,7 @@ export { default as Hub } from './Hub';
 export { default as JS } from './JS';
 export { default as Signer } from './Signer';
 export { default as Parser } from './Parser';
+export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export * from './RNComponents';
 
 import Platform from './Platform';
