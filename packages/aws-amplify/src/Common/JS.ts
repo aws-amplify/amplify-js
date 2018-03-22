@@ -120,4 +120,31 @@ export default class JS {
         }
     	return result;
     }
+
+    static makeQuerablePromise(promise) {
+        if (promise.isResolved) return promise;
+
+        let isPending = true;
+        let isRejected = false;
+        let isFullfilled = false;
+
+        const result = promise.then(
+            (data) => {
+                isFullfilled = true;
+                isPending = false;
+                return data;
+            },
+            (e) => {
+                isRejected = true;
+                isPending = false;
+                throw e;
+            }
+        );
+
+        result.isFullfilled = () => { return isFullfilled; };
+        result.isPending = () => { return isPending; };
+        result.isRejected = () => { return isRejected; };
+
+        return result;
+    }
 }

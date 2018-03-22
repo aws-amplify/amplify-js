@@ -23,6 +23,7 @@ import {
 import Platform from '../Common/Platform';
 
 const logger = new Logger('Analytics');
+let startsessionRecorded = false;
 
 let _instance: AnalyticsClass = null;
 
@@ -93,6 +94,12 @@ const authEvent = (payload) => {
         case 'signIn_failure':
             Analytics.record('_userauth.auth_fail');
             break;
+        case 'configured':
+            if (!startsessionRecorded) {
+                startsessionRecorded = true;
+                Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
+            }
+            break;
     }
 };
 
@@ -110,4 +117,3 @@ const analyticsEvent = (payload) => {
 Hub.listen('auth', Analytics);
 Hub.listen('storage', Analytics);
 Hub.listen('analytics', Analytics);
-Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
