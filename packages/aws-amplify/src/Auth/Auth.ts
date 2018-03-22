@@ -20,7 +20,8 @@ import {
     Constants,
     Hub,
     FacebookOAuth,
-    GoogleOAuth
+    GoogleOAuth,
+    JS
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
@@ -723,7 +724,6 @@ export default class AuthClass {
                             });
                     }
                 }).catch((error) => {
-                    this._gettingCredPromise = null;
                     return Promise.reject(error);
                 });
         } else {
@@ -763,7 +763,6 @@ export default class AuthClass {
                 return that._setCredentialsFromFederation({ provider, token, user, expires_at });
             }).catch(e => {
                 logger.debug('refresh federated token failed', e);
-                that._gettingCredPromise = null;
                 return Promise.reject(e);
             });
         } else {
@@ -1030,12 +1029,15 @@ export default class AuthClass {
 
     private pickupCredentials() {
         logger.debug('picking up credentials');
-        if (!this._gettingCredPromise) {
+        if (!this._gettingCredPromise || !this._gettingCredPromise.isPending()) {
+            logger.debug('getting new cred promise');
             if (AWS.config && AWS.config.credentials && AWS.config.credentials instanceof Credentials) {
-                this._gettingCredPromise = this._setCredentialsFromAWS();
+                this._gettingCredPromise = JS.makeQuerablePromise(this._setCredentialsFromAWS());
             } else {
-                this._gettingCredPromise = this.keepAlive();
+                this._gettingCredPromise = JS.makeQuerablePromise(this.keepAlive());
             }
+        } else {
+            logger.debug('getting old cred promise');
         }
 
         return this._gettingCredPromise;
@@ -1049,7 +1051,6 @@ export default class AuthClass {
             return this._loadCredentials(credentials, 'aws', undefined, null);
         } else {
             logger.debug('AWS.config.credentials is not an instance of AWS Credentials');
-            this._gettingCredPromise = null;
             return Promise.reject('AWS.config.credentials is not an instance of AWS Credentials');
         }
     }
@@ -1131,7 +1132,6 @@ export default class AuthClass {
                     that.credentials = credentials;
                     that.credentials.authenticated = authenticated;
                     that.credentials_source = source;
-                    that._gettingCredPromise = null;
                     if (source === 'federated') {
                         that.user = Object.assign(
                             { id: this.credentials.identityId },
@@ -1143,7 +1143,6 @@ export default class AuthClass {
                 },
                 (err) => {
                     logger.debug('Failed to load credentials', credentials);
-                    that._gettingCredPromise = null;
                     rej('Failed to load creadentials');
                 }
             );
@@ -1154,7 +1153,6 @@ export default class AuthClass {
         const cred = this.credentials;
         if (cred && !this._isExpired(cred)) {
             logger.debug('not changed, directly return credentials');
-            this._gettingCredPromise = null;
             return Promise.resolve(cred);
         }
 
