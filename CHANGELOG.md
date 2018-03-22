@@ -9,8 +9,8 @@
     * Enhancement: Customize endpoint userId and attributes #437
     * Enhancement: Analytics turn on/off #479
     * Bug Fix: Retrieving credentials only once when reloading page #486
-* aws-amplify - v0.1.37@beta
-    * Enhancement: dding `onError` support for withGoogle Federated login #475
+* aws-amplify-react - v0.1.37@beta
+    * Enhancement: adding `onError` support for withGoogle Federated login #475
 
 ## 03/19/2018
 * aws-amplify - v0.2.11
