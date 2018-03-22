@@ -17,7 +17,6 @@ exports.AnalyticsClass = Analytics_1.default;
 var Common_1 = require("../Common");
 var Platform_1 = require("../Common/Platform");
 var logger = new Common_1.ConsoleLogger('Analytics');
-var startsessionRecorded = false;
 var _instance = null;
 if (!_instance) {
     logger.debug('Create Analytics Instance');
@@ -77,12 +76,6 @@ var authEvent = function (payload) {
         case 'signIn_failure':
             Analytics.record('_userauth.auth_fail');
             break;
-        case 'configured':
-            if (!startsessionRecorded) {
-                startsessionRecorded = true;
-                Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
-            }
-            break;
     }
 };
 var analyticsEvent = function (payload) {
@@ -98,4 +91,5 @@ var analyticsEvent = function (payload) {
 Common_1.Hub.listen('auth', Analytics);
 Common_1.Hub.listen('storage', Analytics);
 Common_1.Hub.listen('analytics', Analytics);
+Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
 //# sourceMappingURL=index.js.map

@@ -642,7 +642,13 @@ export default class AuthClass {
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
     public async currentAuthenticatedUser(): Promise<any> {
-        const federatedUser = await Cache.getItem('federatedUser');
+        let federatedUser = null;
+        try {
+            federatedUser = await Cache.getItem('federatedUser');
+        } catch (e) {
+            logger.debug('cannot load federated user from cache');
+        }
+        
         if (federatedUser) {
             this.user = federatedUser;
             logger.debug('get current authenticated federated user', this.user);
