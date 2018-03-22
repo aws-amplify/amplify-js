@@ -49,6 +49,18 @@ export class FederatedButtons extends Component {
               />
     }
 
+    cognito(cognito_auth) {
+        if (!cognito_auth) { return null; }
+        const { theme, onStateChange } = this.props;
+        return <CognitoButton
+                authData={cognito_auth.authData}
+                label={cognito_auth.label}
+                theme={theme}
+                onStateChange={onStateChange}
+              />
+    }
+
+
     render() {
         const { authState } = this.props;
         if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
@@ -56,7 +68,7 @@ export class FederatedButtons extends Component {
         const federated = this.props.federated || {};
         if (JS.isEmpty(federated)) { return null; }
 
-        const { google_client_id, facebook_app_id, amazon_client_id } = federated;
+        const { google_client_id, facebook_app_id, amazon_client_id, cognito_auth } = federated;
 
         const theme = this.props.theme || AmplifyTheme;
         return (
@@ -64,6 +76,7 @@ export class FederatedButtons extends Component {
                 {this.google(google_client_id)}
                 {this.facebook(facebook_app_id)}
                 {this.amazon(amazon_client_id)}
+                {this.cognito(cognito_auth)}
             </ActionRow>
         )
     }
