@@ -150,7 +150,7 @@ export default class StorageClass {
 
         const opt = Object.assign({}, this._options, options);
         const { bucket, region, credentials, level, track } = opt;
-        const { contentType, cacheControl, expires, metadata } = opt;
+        const { contentType, contentDisposition, cacheControl, expires, metadata } = opt;
         const type = contentType ? contentType : 'binary/octet-stream';
 
         const prefix = this._prefix(opt);
@@ -165,6 +165,7 @@ export default class StorageClass {
             ContentType: type
         };
         if (cacheControl) { params.CacheControl = cacheControl; }
+        if (contentDisposition) { params.ContentDisposition = contentDisposition; }
         if (expires) { params.Expires = expires; }
         if (metadata) { params.Metadata = metadata; }
 
