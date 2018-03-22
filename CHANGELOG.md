@@ -2,6 +2,14 @@
 <!--LATEST=0.2.8-->
 <!--ENTRYINSERT-->
 
+## 03/22/2018
+* aws-amplify - v0.2.12@beta
+    * Enhancement: Refreshing Federated jwt token on need. #191
+    * Enhancement: Binding console to console functions #458
+    * Enhancement: Customize endpoint userId and attributes #437
+* aws-amplify - v0.1.37@beta
+    * Enhancement: dding `onError` support for withGoogle Federated login #475
+
 ## 03/19/2018
 * aws-amplify - v0.2.11
     * Enhancement: Analytics customize endpointId #421
