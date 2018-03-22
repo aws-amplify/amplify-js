@@ -859,7 +859,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
             console.log(err);
           } 
           else {
-            AWS.config.credentials.params.Logins['cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>']  =        session.getIdToken().getJwtToken();
+            AWS.config.credentials.params.Logins['cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>']  = session.getIdToken().getJwtToken();
             AWS.config.credentials.refresh((err)=> {
               if(err)  {
                 console.log(err);
