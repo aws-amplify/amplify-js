@@ -63,6 +63,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      */
     _endpointRequest(): {
         Address: any;
+        Attributes: any;
         ChannelType: string;
         Demographic: {
             AppVersion: any;
@@ -76,6 +77,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         EffectiveDate: string;
         User: {
             UserId: any;
+            UserAttributes: any;
         };
     };
     /**
