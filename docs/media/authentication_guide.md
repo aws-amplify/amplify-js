@@ -337,7 +337,11 @@ import { Auth } from 'aws-amplify';
 // To setup TOTP, first you need to get a `authorization code` from Amazon Cognito
 // `user` is the current Authenticated user
 Auth.setupTOTP(user).then((code) => {
-    // You can directly display the `code` to the user or convert it to a QR code to be scanned
+    // You can directly display the `code` to the user or convert it to a QR code to be scanned.
+    // E.g., use following code sample to render a QR code with `qrcode.react` component:  
+    //      import QRCode from 'qrcode.react';
+    //      const str = "otpauth://totp/AWSCognito:"+ username + "?secret=" + code + "&issuer=" + issuer;
+    //      <QRCode value={str}/>
 });
 
 // ...
