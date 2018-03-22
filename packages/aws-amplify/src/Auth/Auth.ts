@@ -717,6 +717,7 @@ export default class AuthClass {
                             });
                     }
                 }).catch((error) => {
+                    this._gettingCredPromise = null;
                     return Promise.reject(error);
                 });
         } else {
@@ -754,6 +755,10 @@ export default class AuthClass {
                 expires_at = data.expires_at;
                 // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
                 return that._setCredentialsFromFederation({ provider, token, user, expires_at });
+            }).catch(e => {
+                logger.debug('refresh federated token failed', e);
+                that._gettingCredPromise = null;
+                return Promise.reject(e);
             });
         } else {
             if (!that._refreshHandlers[provider]) {
@@ -1143,6 +1148,7 @@ export default class AuthClass {
         const cred = this.credentials;
         if (cred && !this._isExpired(cred)) {
             logger.debug('not changed, directly return credentials');
+            this._gettingCredPromise = null;
             return Promise.resolve(cred);
         }
 
