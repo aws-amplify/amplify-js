@@ -340,7 +340,6 @@ Note: In order to work with service interface objects, your Amazon Cognito users
 You can call methods on any AWS Service interface object by passing your credentials from `Auth` to the service call constructor:
 
 ```js
-
 import Route53 from 'aws-sdk/clients/route53';
 
 ...

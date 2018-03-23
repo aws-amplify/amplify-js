@@ -254,7 +254,7 @@ In the previous example, you'll see the App is rendered even before the user is 
 With that, to control the condition for *Authenticator* to render App component, simply set `_validAuthStates` property:
 
 ```js
-    this._validAuthStates = ['signedIn'];
+this._validAuthStates = ['signedIn'];
 ```
 in the component's constructor, then implement `showComponent(theme) {}` in lieu of the typical
 `render() {}` method.
@@ -270,15 +270,15 @@ Support for React Native is in progress. Please see our[ Setup Guide for Federat
 In order to enable social sign-in in your app with Federated Identities, just add `Google client_id`, `Facebook app_id` and/or `Amazon client_id` properties to *Authenticator* component:
 
 ```jsx
-    const federated = {
-        google_client_id: '',
-        facebook_app_id: '',
-        amazon_client_id: ''
-    };
+const federated = {
+    google_client_id: '',
+    facebook_app_id: '',
+    amazon_client_id: ''
+};
 
-    return (
-        <Authenticator federated={federated}>
-    )
+return (
+    <Authenticator federated={federated}>
+)
 ```
 #### Customize UI
 
@@ -463,7 +463,6 @@ You can take specific actions when users sign-in or sign-out by subscribing auth
 You can use AWS *Service Interface Objects* to work AWS Services in authenticated State. You can call methods on any AWS Service interface object by passing your credentials from `Auth` object to the service call constructor:
 
 ```js
-
 import Route53 from 'aws-sdk/clients/route53';
 
 Auth.currentCredentials()
@@ -569,9 +568,9 @@ You can compose your own Authenticator, but you must set `hideDefault={true}`.
 For example, the following Authenticator only renders Greetings component which has a *Sign Out* button:
 
 ```jsx
-    <Authenticator hideDefault={true}>
-        <Greetings />
-    </Authenticator>
+<Authenticator hideDefault={true}>
+    <Greetings />
+</Authenticator>
 ```
 
 #### Customize Greeting message
@@ -579,12 +578,12 @@ For example, the following Authenticator only renders Greetings component which 
 The *Greetings* component has two states: signedIn, and signedOut. To customize the greeting message, set properties `inGreeting` and `outGreeting` using a string or function.
 
 ```jsx
-    <Authenticator hideDefault={true}>
-        <Greetings
-            inGreeting={(username) => 'Hello ' + username}
-            outGreeting="Please sign in..."
-        />
-    </Authenticator>
+<Authenticator hideDefault={true}>
+    <Greetings
+        inGreeting={(username) => 'Hello ' + username}
+        outGreeting="Please sign in..."
+    />
+</Authenticator>
 ```
 
 ### Customize `withAuthenticator` 
@@ -617,7 +616,6 @@ export default withAuthenticator(App, false, [
   <ConfirmSignUp/>,
   <ForgotPassword/>
 ]);
-
 ```
 
 ### Customizing Error Messages

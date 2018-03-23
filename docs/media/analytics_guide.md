@@ -57,12 +57,11 @@ Amplify.configure({
     // OPTIONAL -  Amazon service region
         region: 'XX-XXXX-X',
     // OPTIONAL -  Customized endpoint
-        endpointId: 'XXXXXXXXXXXX'
+        endpointId: 'XXXXXXXXXXXX',
     // OPTIONAL - disable Analytics if true
         disabled: false
     } 
 });
-
 ```
 
 In the above configuration you are required to pass in an *Amazon Pinpoint App Client ID* so that the library can retrieve base credentials for a user even in an un-authenticated state. After successfully configuring your credentials, the library will automatically track some default metrics for you, without any effort on your part. 
