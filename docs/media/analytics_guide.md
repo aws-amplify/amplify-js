@@ -58,6 +58,8 @@ Amplify.configure({
         region: 'XX-XXXX-X',
     // OPTIONAL -  Customized endpoint
         endpointId: 'XXXXXXXXXXXX'
+    // OPTIONAL - disable Analytics if true
+        disabled: false
     } 
 });
 
@@ -107,6 +109,19 @@ Metrics data can also be added to an event:
 import { Analytics } from 'aws-amplify';
 
 Analytics.record('albumVisit', {}, { minutesListened: 30 });
+```
+
+### Disable/Enable Analytics
+
+You can disable or enable Analytics module as follows:
+```js
+import { Analytics } from 'aws-amplify';
+
+// to disable Analytics
+Analytics.disable();
+
+// to enable Analytics
+Analytics.enable();
 ```
 
 ### Record Authentication Events

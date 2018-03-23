@@ -116,6 +116,26 @@ var JS = /** @class */ (function () {
         }
         return result;
     };
+    JS.makeQuerablePromise = function (promise) {
+        if (promise.isResolved)
+            return promise;
+        var isPending = true;
+        var isRejected = false;
+        var isFullfilled = false;
+        var result = promise.then(function (data) {
+            isFullfilled = true;
+            isPending = false;
+            return data;
+        }, function (e) {
+            isRejected = true;
+            isPending = false;
+            throw e;
+        });
+        result.isFullfilled = function () { return isFullfilled; };
+        result.isPending = function () { return isPending; };
+        result.isRejected = function () { return isRejected; };
+        return result;
+    };
     return JS;
 }());
 exports.default = JS;
