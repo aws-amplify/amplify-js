@@ -13,10 +13,11 @@
 
 import { AWS, ConsoleLogger as Logger } from '../Common';
 
-
 const logger = new Logger('Signer'),
     url = require('url'),
     crypto = AWS['util'].crypto;
+
+const DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
 
 const encrypt = function(key, src, encoding?) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
@@ -45,11 +46,11 @@ const canonical_headers = function(headers) {
         .map(function(key) {
             return {
                 key: key.toLowerCase(),
-                value: headers[key]? headers[key].trim().replace(/\s+/g, ' ') : ''
+                value: headers[key] ? headers[key].trim().replace(/\s+/g, ' ') : ''
             };
         })
         .sort(function(a, b) {
-            return a.key < b.key? -1 : 1;
+            return a.key < b.key ? -1 : 1;
         })
         .map(function(item) {
             return item.key + ':' + item.value;
@@ -87,7 +88,7 @@ CanonicalRequest =
 const canonical_request = function(request) {
     const url_info = url.parse(request.url);
     const sorted_query = url_info.query
-        ? url_info.query.split('&').sort((a,b) => a < b ? -1 : 1).join('&')
+        ? url_info.query.split('&').sort((a, b) => a < b ? -1 : 1).join('&')
         : '';
 
     return [
@@ -230,13 +231,12 @@ service_info: {
 */
 const sign = function(request, access_info, service_info = null) {
     request.headers = request.headers || {};
-    
+
     // datetime string and date string
     const dt = new Date(),
         dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''),
-        d_str = dt_str.substr(0, 8),
-        algorithm = 'AWS4-HMAC-SHA256';
-    
+        d_str = dt_str.substr(0, 8);
+
     const url_info = url.parse(request.url);
     request.headers['host'] = url_info.host;
     request.headers['x-amz-date'] = dt_str;
@@ -256,7 +256,7 @@ const sign = function(request, access_info, service_info = null) {
             serviceInfo.service
         ),
         str_to_sign = string_to_sign(
-            algorithm,
+            DEFAULT_ALGORITHM,
             request_str,
             dt_str,
             scope
@@ -264,23 +264,91 @@ const sign = function(request, access_info, service_info = null) {
 
     // Task 3: Calculate the Signature
     const signing_key = get_signing_key(
-            access_info.secret_key,
-            d_str,
-            serviceInfo
-        ),
+        access_info.secret_key,
+        d_str,
+        serviceInfo
+    ),
         signature = get_signature(signing_key, str_to_sign);
 
     // Task 4: Adding the Signing information to the Request
     const authorization_header = get_authorization_header(
-            algorithm,
-            access_info.access_key,
-            scope,
-            signed_headers(request.headers),
-            signature
-        );
+        DEFAULT_ALGORITHM,
+        access_info.access_key,
+        scope,
+        signed_headers(request.headers),
+        signature
+    );
     request.headers['Authorization'] = authorization_header;
 
     return request;
+};
+
+const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, expiration?: Number) {
+    const now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
+    const today = now.substr(0, 8);
+    const parsedUrl = url.parse(urlToSign, true, true);
+    const { host } = parsedUrl;
+    const signedHeaders = { host };
+
+    const { region, service } = serviceInfo || parse_service_info({ url: url.format(parsedUrl) });
+    const credentialScope = credential_scope(
+        today,
+        region,
+        service
+    );
+
+    const queryParams = {
+        'X-Amz-Algorithm': DEFAULT_ALGORITHM,
+        'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'),
+        'X-Amz-Date': now.substr(0, 16),
+        ...(expiration && { 'X-Amz-Expires': `${expiration}` }),
+        'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(','),
+    };
+
+    const canonicalRequest = canonical_request({
+        method: 'GET',
+        url: url.format({
+            ...parsedUrl,
+            query: {
+                ...parsedUrl.query,
+                ...queryParams
+            },
+        }),
+        headers: signedHeaders,
+    });
+
+    const stringToSign = string_to_sign(
+        DEFAULT_ALGORITHM,
+        canonicalRequest,
+        now,
+        credentialScope
+    );
+
+    const signing_key = get_signing_key(
+        accessInfo.secret_key,
+        today,
+        { region, service },
+    );
+    const signature = get_signature(signing_key, stringToSign);
+
+    const additionalQueryParams = {
+        'X-Amz-Signature': signature,
+        ...(accessInfo.session_token && { 'X-Amz-Security-Token': accessInfo.session_token }),
+    };
+
+    const result = url.format({
+        protocol: parsedUrl.protocol,
+        slashes: true,
+        hostname: parsedUrl.hostname,
+        pathname: parsedUrl.pathname,
+        query: {
+            ...parsedUrl.query,
+            ...queryParams,
+            ...additionalQueryParams,
+        }
+    });
+
+    return result;
 };
 
 /**
@@ -291,4 +359,5 @@ const sign = function(request, access_info, service_info = null) {
 */
 export default class Signer {
     static sign = sign;
+    static signUrl = signUrl;
 }
