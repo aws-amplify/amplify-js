@@ -57,8 +57,12 @@ function withGoogle(Comp) {
                     var _this2 = this;
 
                     var ga = window.gapi.auth2.getAuthInstance();
+                    var onError = this.props.onError;
+
                     ga.signIn().then(function (googleUser) {
                         return _this2.federatedSignIn(googleUser);
+                    }, function (error) {
+                        if (onError) onError(error);else throw error;
                     });
                 }
 

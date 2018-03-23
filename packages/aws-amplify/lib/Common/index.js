@@ -30,6 +30,9 @@ var Signer_1 = require("./Signer");
 exports.Signer = Signer_1.default;
 var Parser_1 = require("./Parser");
 exports.Parser = Parser_1.default;
+var OAuthHelper_1 = require("./OAuthHelper");
+exports.FacebookOAuth = OAuthHelper_1.FacebookOAuth;
+exports.GoogleOAuth = OAuthHelper_1.GoogleOAuth;
 __export(require("./RNComponents"));
 var Platform_1 = require("./Platform");
 exports.Constants = {

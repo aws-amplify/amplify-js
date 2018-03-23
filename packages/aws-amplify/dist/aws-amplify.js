@@ -96,7 +96,7 @@ AWS.util.update(AWS, {
   /**
    * @constant
    */
-  VERSION: '2.185.0',
+  VERSION: '2.198.0',
 
   /**
    * @api private
@@ -1109,7 +1109,12 @@ var util = {
   /**
    * @api private
    */
-  sharedConfigFileEnv: 'AWS_CONFIG_FILE'
+  sharedConfigFileEnv: 'AWS_CONFIG_FILE',
+
+  /**
+   * @api private
+   */
+  imdsDisabledEnv: 'AWS_EC2_METADATA_DISABLED'
 };
 
 module.exports = util;
@@ -1153,7 +1158,10 @@ var Signer_1 = __webpack_require__(108);
 exports.Signer = Signer_1.default;
 var Parser_1 = __webpack_require__(307);
 exports.Parser = Parser_1.default;
-__export(__webpack_require__(308));
+var OAuthHelper_1 = __webpack_require__(308);
+exports.FacebookOAuth = OAuthHelper_1.FacebookOAuth;
+exports.GoogleOAuth = OAuthHelper_1.GoogleOAuth;
+__export(__webpack_require__(311));
 var Platform_1 = __webpack_require__(32);
 exports.Constants = {
     'userAgent': Platform_1.default.userAgent
@@ -1229,7 +1237,7 @@ module.exports = create;
 
 
 var bind = __webpack_require__(112);
-var isBuffer = __webpack_require__(325);
+var isBuffer = __webpack_require__(328);
 
 /*global toString:true*/
 
@@ -4580,7 +4588,7 @@ module.exports = isObjectLike;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Auth_1 = __webpack_require__(317);
+var Auth_1 = __webpack_require__(320);
 exports.AuthClass = Auth_1.default;
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('Auth');
@@ -7436,9 +7444,9 @@ module.exports = { hash: hash };
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var BrowserStorageCache_1 = __webpack_require__(310);
+var BrowserStorageCache_1 = __webpack_require__(313);
 exports.BrowserStorageCache = BrowserStorageCache_1.default;
-var InMemoryCache_1 = __webpack_require__(313);
+var InMemoryCache_1 = __webpack_require__(316);
 exports.InMemoryCache = InMemoryCache_1.default;
 exports.default = BrowserStorageCache_1.default;
 
@@ -7465,8 +7473,8 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(311));
-var CacheList_1 = __webpack_require__(312);
+__export(__webpack_require__(314));
+var CacheList_1 = __webpack_require__(315);
 exports.CacheList = CacheList_1.default;
 
 
@@ -7478,7 +7486,7 @@ exports.CacheList = CacheList_1.default;
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var normalizeHeaderName = __webpack_require__(327);
+var normalizeHeaderName = __webpack_require__(330);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -15574,12 +15582,12 @@ module.exports = function bind(fn, thisArg) {
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var settle = __webpack_require__(328);
-var buildURL = __webpack_require__(330);
-var parseHeaders = __webpack_require__(331);
-var isURLSameOrigin = __webpack_require__(332);
+var settle = __webpack_require__(331);
+var buildURL = __webpack_require__(333);
+var parseHeaders = __webpack_require__(334);
+var isURLSameOrigin = __webpack_require__(335);
 var createError = __webpack_require__(114);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(333);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(336);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -15676,7 +15684,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(334);
+      var cookies = __webpack_require__(337);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -15761,7 +15769,7 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(329);
+var enhanceError = __webpack_require__(332);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -15842,13 +15850,13 @@ exports.AnalyticsClass = Analytics_1.AnalyticsClass;
 var Auth_1 = __webpack_require__(20);
 exports.Auth = Auth_1.default;
 exports.AuthClass = Auth_1.AuthClass;
-var Storage_1 = __webpack_require__(318);
+var Storage_1 = __webpack_require__(321);
 exports.Storage = Storage_1.default;
 exports.StorageClass = Storage_1.StorageClass;
-var API_1 = __webpack_require__(320);
+var API_1 = __webpack_require__(323);
 exports.API = API_1.default;
 exports.APIClass = API_1.APIClass;
-var I18n_1 = __webpack_require__(342);
+var I18n_1 = __webpack_require__(345);
 exports.I18n = I18n_1.default;
 var Cache_1 = __webpack_require__(51);
 exports.Cache = Cache_1.default;
@@ -15937,6 +15945,7 @@ exports.AnalyticsClass = Analytics_1.default;
 var Common_1 = __webpack_require__(2);
 var Platform_1 = __webpack_require__(32);
 var logger = new Common_1.ConsoleLogger('Analytics');
+var startsessionRecorded = false;
 var _instance = null;
 if (!_instance) {
     logger.debug('Create Analytics Instance');
@@ -15996,6 +16005,12 @@ var authEvent = function (payload) {
         case 'signIn_failure':
             Analytics.record('_userauth.auth_fail');
             break;
+        case 'configured':
+            if (!startsessionRecorded) {
+                startsessionRecorded = true;
+                Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
+            }
+            break;
     }
 };
 var analyticsEvent = function (payload) {
@@ -16011,7 +16026,6 @@ var analyticsEvent = function (payload) {
 Common_1.Hub.listen('auth', Analytics);
 Common_1.Hub.listen('storage', Analytics);
 Common_1.Hub.listen('analytics', Analytics);
-Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
 
 
 /***/ }),
@@ -16069,7 +16083,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = __webpack_require__(2);
-var AWSAnalyticsProvider_1 = __webpack_require__(309);
+var AWSAnalyticsProvider_1 = __webpack_require__(312);
 var Auth_1 = __webpack_require__(20);
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 // events buffer
@@ -16089,6 +16103,7 @@ var AnalyticsClass = /** @class */ (function () {
         this._buffer = [];
         this._config = {};
         this._pluggables = [];
+        this._disabled = false;
         // default one
         // events batch
         var that = this;
@@ -16112,6 +16127,9 @@ var AnalyticsClass = /** @class */ (function () {
         var clientInfo = Common_1.ClientDevice.clientInfo();
         conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
         this._config = conf;
+        if (conf['disabled']) {
+            this._disabled = true;
+        }
         this._pluggables.map(function (pluggable) {
             pluggable.configure(conf);
         });
@@ -16143,6 +16161,18 @@ var AnalyticsClass = /** @class */ (function () {
                 }
             });
         });
+    };
+    /**
+     * stop sending events
+     */
+    AnalyticsClass.prototype.disable = function () {
+        this._disabled = true;
+    };
+    /**
+     * start sending events
+     */
+    AnalyticsClass.prototype.enable = function () {
+        this._disabled = false;
     };
     /**
      * Record Session start
@@ -16255,6 +16285,10 @@ var AnalyticsClass = /** @class */ (function () {
      * Put events into buffer
      */
     AnalyticsClass.prototype._putToBuffer = function (params) {
+        if (this._disabled) {
+            logger.debug('Analytics has been disabled');
+            return Promise.resolve();
+        }
         if (this._buffer.length < BUFFER_SIZE) {
             this._buffer.push(params);
             return Promise.resolve();
@@ -31754,10 +31788,10 @@ var ConsoleLogger = /** @class */ (function () {
             // Do nothing if type is not greater than or equal to logger level (handle undefined)
             return;
         }
-        var log = console.log;
-        // if (type === 'ERROR' && console.error) { log = console.error; }
+        var log = console.log.bind(console);
+        // if (type === 'ERROR' && console.error) { log = console.error.bind(console); }
         if (type === 'WARN' && console.warn) {
-            log = console.warn;
+            log = console.warn.bind(console);
         }
         if (msg.length === 1 && typeof msg[0] === 'string') {
             var output = [
@@ -32169,6 +32203,26 @@ var JS = /** @class */ (function () {
         }
         return result;
     };
+    JS.makeQuerablePromise = function (promise) {
+        if (promise.isResolved)
+            return promise;
+        var isPending = true;
+        var isRejected = false;
+        var isFullfilled = false;
+        var result = promise.then(function (data) {
+            isFullfilled = true;
+            isPending = false;
+            return data;
+        }, function (e) {
+            isRejected = true;
+            isPending = false;
+            throw e;
+        });
+        result.isFullfilled = function () { return isFullfilled; };
+        result.isPending = function () { return isPending; };
+        result.isRejected = function () { return isRejected; };
+        return result;
+    };
     return JS;
 }());
 exports.default = JS;
@@ -32220,6 +32274,148 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+var GoogleOAuth_1 = __webpack_require__(309);
+var FacebookOAuth_1 = __webpack_require__(310);
+var GoogleOAuth = new GoogleOAuth_1.default();
+exports.GoogleOAuth = GoogleOAuth;
+var FacebookOAuth = new FacebookOAuth_1.default();
+exports.FacebookOAuth = FacebookOAuth;
+
+
+/***/ }),
+/* 309 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+var Common_1 = __webpack_require__(2);
+var logger = new Common_1.ConsoleLogger('CognitoCredentials');
+var GoogleOAuth = /** @class */ (function () {
+    function GoogleOAuth() {
+    }
+    GoogleOAuth.prototype.refreshGoogleToken = function () {
+        var ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+        if (!ga) {
+            logger.debug('no gapi auth2 available');
+            return Promise.reject('no gapi auth2 available');
+        }
+        return new Promise(function (res, rej) {
+            ga.getAuthInstance().then(function (googleAuth) {
+                if (!googleAuth) {
+                    console.log('google Auth undefiend');
+                    rej('google Auth undefiend');
+                }
+                var googleUser = googleAuth.currentUser.get();
+                // refresh the token
+                if (googleUser.isSignedIn()) {
+                    logger.debug('refreshing the google access token');
+                    googleUser.reloadAuthResponse()
+                        .then(function (authResponse) {
+                        var id_token = authResponse.id_token, expires_at = authResponse.expires_at;
+                        var profile = googleUser.getBasicProfile();
+                        var user = {
+                            email: profile.getEmail(),
+                            name: profile.getName()
+                        };
+                        res({ token: id_token, expires_at: expires_at });
+                    });
+                }
+            }).catch(function (err) {
+                logger.debug('Failed to refresh google token', err);
+                rej('Failed to refresh google token');
+            });
+        });
+    };
+    return GoogleOAuth;
+}());
+exports.default = GoogleOAuth;
+
+
+/***/ }),
+/* 310 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+var Common_1 = __webpack_require__(2);
+var logger = new Common_1.ConsoleLogger('CognitoCredentials');
+var FacebookOAuth = /** @class */ (function () {
+    function FacebookOAuth() {
+    }
+    FacebookOAuth.prototype.refreshFacebookToken = function () {
+        var fb = window['FB'];
+        if (!fb) {
+            logger.debug('no fb sdk available');
+            return Promise.reject('no fb sdk available');
+        }
+        return new Promise(function (res, rej) {
+            fb.login(function (fbResponse) {
+                if (!fbResponse || !fbResponse.authResponse) {
+                    logger.debug('no response from facebook when refreshing the jwt token');
+                    rej('no response from facebook when refreshing the jwt token');
+                }
+                var response = fbResponse.authResponse;
+                var accessToken = response.accessToken, expiresIn = response.expiresIn;
+                var date = new Date();
+                var expires_at = expiresIn * 1000 + date.getTime();
+                if (!accessToken) {
+                    logger.debug('the jwtToken is undefined');
+                    rej('the jwtToken is undefined');
+                }
+                res({ token: accessToken, expires_at: expires_at });
+            }, { scope: 'public_profile,email' });
+        });
+    };
+    return FacebookOAuth;
+}());
+exports.default = FacebookOAuth;
+
+
+/***/ }),
+/* 311 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
 var Linking = {};
 exports.Linking = Linking;
 var AppState = {
@@ -32231,7 +32427,7 @@ exports.AppState = AppState;
 
 
 /***/ }),
-/* 309 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32286,7 +32482,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 var Common_1 = __webpack_require__(2);
 var Cache_1 = __webpack_require__(51);
-var uuid_1 = __webpack_require__(314);
+var uuid_1 = __webpack_require__(317);
 var logger = new Common_1.ConsoleLogger('AWSAnalyticsProvider');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 var AWSAnalyticsProvider = /** @class */ (function () {
@@ -32637,13 +32833,14 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @return {Object} - The request of updating endpoint
      */
     AWSAnalyticsProvider.prototype._endpointRequest = function () {
-        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, endpointId = _a.endpointId;
+        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, Attributes = _a.Attributes, UserAttributes = _a.UserAttributes, endpointId = _a.endpointId, UserId = _a.UserId;
         var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         var ChannelType = Address ? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         logger.debug('demographic user id: ', user_id);
         var OptOut = this._config.OptOut ? this._config.OptOut : undefined;
-        return {
+        var ret = {
             Address: Address,
+            Attributes: Attributes,
             ChannelType: ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || clientInfo.appVersion,
@@ -32656,9 +32853,11 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             RequestId: RequestId,
             EffectiveDate: Address ? new Date().toISOString() : undefined,
             User: {
-                UserId: credentials.identityId
+                UserId: UserId ? UserId : credentials.identityId,
+                UserAttributes: UserAttributes
             }
         };
+        return ret;
     };
     /**
      * @private
@@ -32684,7 +32883,7 @@ exports.default = AWSAnalyticsProvider;
 
 
 /***/ }),
-/* 310 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33126,7 +33325,7 @@ exports.default = instance;
 
 
 /***/ }),
-/* 311 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33203,7 +33402,7 @@ function _isInteger(value) {
 
 
 /***/ }),
-/* 312 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33377,7 +33576,7 @@ exports.default = CacheList;
 
 
 /***/ }),
-/* 313 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33723,11 +33922,11 @@ exports.default = instance;
 
 
 /***/ }),
-/* 314 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var v1 = __webpack_require__(315);
-var v4 = __webpack_require__(316);
+var v1 = __webpack_require__(318);
+var v4 = __webpack_require__(319);
 
 var uuid = v4;
 uuid.v1 = v1;
@@ -33737,7 +33936,7 @@ module.exports = uuid;
 
 
 /***/ }),
-/* 315 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var rng = __webpack_require__(110);
@@ -33852,7 +34051,7 @@ module.exports = v1;
 
 
 /***/ }),
-/* 316 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var rng = __webpack_require__(110);
@@ -33887,7 +34086,7 @@ module.exports = v4;
 
 
 /***/ }),
-/* 317 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33944,7 +34143,7 @@ var Common_1 = __webpack_require__(2);
 var Platform_1 = __webpack_require__(32);
 var Cache_1 = __webpack_require__(51);
 var logger = new Common_1.ConsoleLogger('AuthClass');
-var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials;
+var CognitoIdentityCredentials = Common_1.AWS.CognitoIdentityCredentials, Credentials = Common_1.AWS.Credentials;
 var CookieStorage = Common_1.Cognito.CookieStorage, CognitoUserPool = Common_1.Cognito.CognitoUserPool, CognitoUserAttribute = Common_1.Cognito.CognitoUserAttribute, CognitoUser = Common_1.Cognito.CognitoUser, AuthenticationDetails = Common_1.Cognito.AuthenticationDetails;
 var dispatchAuthEvent = function (event, data) {
     Common_1.Hub.dispatch('auth', { event: event, data: data }, 'Auth');
@@ -33962,7 +34161,12 @@ var AuthClass = /** @class */ (function () {
         this.credentials = null;
         this.credentials_source = ''; // aws, guest, userPool, federated
         this.user = null;
+        this._refreshHandlers = {};
+        this._gettingCredPromise = null;
         this.configure(config);
+        // refresh token
+        this._refreshHandlers['google'] = Common_1.GoogleOAuth.refreshGoogleToken;
+        this._refreshHandlers['facebook'] = Common_1.FacebookOAuth.refreshFacebookToken;
         if (Common_1.AWS.config) {
             Common_1.AWS.config.update({ customUserAgent: Common_1.Constants.userAgent });
         }
@@ -34010,10 +34214,8 @@ var AuthClass = /** @class */ (function () {
                     });
                 });
             }
-            else {
-                this.pickupCredentials();
-            }
         }
+        dispatchAuthEvent('configured', null);
         return this._config;
     };
     /**
@@ -34159,10 +34361,14 @@ var AuthClass = /** @class */ (function () {
             user.authenticateUser(authDetails, {
                 onSuccess: function (session) {
                     logger.debug(session);
-                    that.setCredentialsFromSession(session);
-                    that.user = user;
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
+                    that._setCredentialsFromSession(session).then(function (cred) {
+                        that.user = user;
+                        dispatchAuthEvent('signIn', user);
+                        resolve(user);
+                    }).catch(function (e) {
+                        logger.debug('cannot get cognito credentials');
+                        reject('signin failed');
+                    });
                 },
                 onFailure: function (err) {
                     logger.debug('signIn failure', err);
@@ -34387,10 +34593,14 @@ var AuthClass = /** @class */ (function () {
             user.sendMFACode(code, {
                 onSuccess: function (session) {
                     logger.debug(session);
-                    that.setCredentialsFromSession(session);
-                    that.user = user;
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
+                    that._setCredentialsFromSession(session).then(function (cred) {
+                        that.user = user;
+                        dispatchAuthEvent('signIn', user);
+                        resolve(user);
+                    }).catch(function (e) {
+                        logger.debug('cannot get cognito credentials');
+                        reject('signin failed');
+                    });
                 },
                 onFailure: function (err) {
                     logger.debug('confirm signIn failure', err);
@@ -34408,10 +34618,14 @@ var AuthClass = /** @class */ (function () {
             user.completeNewPasswordChallenge(password, requiredAttributes, {
                 onSuccess: function (session) {
                     logger.debug(session);
-                    that.setCredentialsFromSession(session);
-                    that.user = user;
-                    dispatchAuthEvent('signIn', user);
-                    resolve(user);
+                    that._setCredentialsFromSession(session).then(function (cred) {
+                        that.user = user;
+                        dispatchAuthEvent('signIn', user);
+                        resolve(user);
+                    }).catch(function (e) {
+                        logger.debug('cannot get cognito credentials');
+                        reject('signin failed');
+                    });
                 },
                 onFailure: function (err) {
                     logger.debug('completeNewPassword failure', err);
@@ -34571,15 +34785,45 @@ var AuthClass = /** @class */ (function () {
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
     AuthClass.prototype.currentAuthenticatedUser = function () {
-        var source = this.credentials_source;
-        logger.debug('get current authenticated user. source ' + source);
-        if (!source || source === 'aws' || source === 'userPool') {
-            return this.currentUserPoolUser();
-        }
-        if (source === 'federated') {
-            return Promise.resolve(this.user);
-        }
-        return Promise.reject('not authenticated');
+        return __awaiter(this, void 0, void 0, function () {
+            var federatedUser, e_1, _a, e_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        federatedUser = null;
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, Cache_1.default.getItem('federatedUser')];
+                    case 2:
+                        federatedUser = _b.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        e_1 = _b.sent();
+                        logger.debug('cannot load federated user from cache');
+                        return [3 /*break*/, 4];
+                    case 4:
+                        if (!federatedUser) return [3 /*break*/, 5];
+                        this.user = federatedUser;
+                        logger.debug('get current authenticated federated user', this.user);
+                        return [2 /*return*/, this.user];
+                    case 5:
+                        logger.debug('get current authenticated userpool user');
+                        _b.label = 6;
+                    case 6:
+                        _b.trys.push([6, 8, , 9]);
+                        _a = this;
+                        return [4 /*yield*/, this.currentUserPoolUser()];
+                    case 7:
+                        _a.user = _b.sent();
+                        return [2 /*return*/, this.user];
+                    case 8:
+                        e_2 = _b.sent();
+                        return [2 /*return*/, Promise.reject('not authenticated')];
+                    case 9: return [2 /*return*/];
+                }
+            });
+        });
     };
     /**
      * Get current user's session
@@ -34588,6 +34832,7 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.currentSession = function () {
         var user;
         var that = this;
+        logger.debug('getting current session');
         if (!this.userPool) {
             return Promise.reject('No userPool');
         }
@@ -34631,44 +34876,75 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.currentUserCredentials = function () {
         var _this = this;
+        var that = this;
+        logger.debug('getting current user credentials');
         if (Platform_1.default.isReactNative) {
             // asyncstorage
-            var that_1 = this;
             return Cache_1.default.getItem('federatedInfo')
                 .then(function (federatedInfo) {
                 if (federatedInfo) {
-                    var provider_1 = federatedInfo.provider, token_1 = federatedInfo.token, user_1 = federatedInfo.user;
-                    return new Promise(function (resolve, reject) {
-                        that_1.setCredentialsFromFederation(provider_1, token_1, user_1);
-                        resolve();
-                    });
+                    // refresh the jwt token here if necessary
+                    return that._refreshFederatedToken(federatedInfo);
                 }
                 else {
-                    return that_1.currentSession()
-                        .then(function (session) { return that_1.setCredentialsFromSession(session); })
-                        .catch(function (error) { return that_1.setCredentialsForGuest(); });
+                    return that.currentSession()
+                        .then(function (session) {
+                        return that._setCredentialsFromSession(session);
+                    }).catch(function (error) {
+                        return that._setCredentialsForGuest();
+                    });
                 }
             }).catch(function (error) {
-                return new Promise(function (resolve, reject) {
-                    reject(error);
-                });
+                return Promise.reject(error);
             });
         }
         else {
             // first to check whether there is federation info in the local storage
             var federatedInfo = Cache_1.default.getItem('federatedInfo');
             if (federatedInfo) {
-                var provider_2 = federatedInfo.provider, token_2 = federatedInfo.token, user_2 = federatedInfo.user;
-                return new Promise(function (resolve, reject) {
-                    _this.setCredentialsFromFederation(provider_2, token_2, user_2);
-                    resolve();
-                });
+                // refresh the jwt token here if necessary
+                return this._refreshFederatedToken(federatedInfo);
             }
             else {
                 return this.currentSession()
-                    .then(function (session) { return _this.setCredentialsFromSession(session); })
-                    .catch(function (error) { return _this.setCredentialsForGuest(); });
+                    .then(function (session) {
+                    logger.debug('getting session success', session);
+                    return _this._setCredentialsFromSession(session);
+                }).catch(function (error) {
+                    logger.debug('getting session failed', error);
+                    return _this._setCredentialsForGuest();
+                });
             }
+        }
+    };
+    AuthClass.prototype._refreshFederatedToken = function (federatedInfo) {
+        var provider = federatedInfo.provider, user = federatedInfo.user;
+        var token = federatedInfo.token;
+        var expires_at = federatedInfo.expires_at;
+        var that = this;
+        logger.debug('checking if federated jwt token expired');
+        if (expires_at < new Date().getTime()
+            && typeof that._refreshHandlers[provider] === 'function') {
+            logger.debug('getting refreshed jwt token from federation provider');
+            return that._refreshHandlers[provider]().then(function (data) {
+                logger.debug('refresh federated token sucessfully', data);
+                token = data.token;
+                expires_at = data.expires_at;
+                // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+                return that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
+            }).catch(function (e) {
+                logger.debug('refresh federated token failed', e);
+                return Promise.reject(e);
+            });
+        }
+        else {
+            if (!that._refreshHandlers[provider]) {
+                logger.debug('no refresh hanlder for provider:', provider);
+            }
+            else {
+                logger.debug('token not expired');
+            }
+            return this._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
         }
     };
     AuthClass.prototype.currentCredentials = function () {
@@ -34729,10 +35005,10 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.signOut = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var source, user;
+            var source, user, that;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.currentUserCredentials()];
+                    case 0: return [4 /*yield*/, this.currentCredentials()];
                     case 1:
                         _a.sent();
                         source = this.credentials_source;
@@ -34740,6 +35016,7 @@ var AuthClass = /** @class */ (function () {
                         this.credentials.clearCachedId();
                         // clear federatedInfo
                         Cache_1.default.removeItem('federatedInfo');
+                        Cache_1.default.removeItem('federatedUser');
                         if (source === 'aws' || source === 'userPool') {
                             if (!this.userPool) {
                                 return [2 /*return*/, Promise.reject('No userPool')];
@@ -34748,13 +35025,18 @@ var AuthClass = /** @class */ (function () {
                             if (!user) {
                                 return [2 /*return*/, Promise.resolve()];
                             }
+                            logger.debug('user sign out', user);
                             user.signOut();
                         }
+                        that = this;
                         return [2 /*return*/, new Promise(function (resolve, reject) {
-                                _this.setCredentialsForGuest();
-                                dispatchAuthEvent('signOut', _this.user);
-                                _this.user = null;
-                                resolve();
+                                that._setCredentialsForGuest().then(function (cred) {
+                                    dispatchAuthEvent('signOut', _this.user);
+                                    that.user = null;
+                                    resolve();
+                                }).catch(function (e) {
+                                    reject('cannot get guest credentials');
+                                });
                             })];
                 }
             });
@@ -34887,17 +35169,25 @@ var AuthClass = /** @class */ (function () {
     /**
      * For federated login
      * @param {String} provider - federation login provider
-     * @param {Object} response - response including access_token
+     * @param {FederatedResponse} response - response should have the access token
+     * and the expiration time (the universal time)
      * @param {String} user - user info
      */
     AuthClass.prototype.federatedSignIn = function (provider, response, user) {
+        var _this = this;
         var token = response.token, expires_at = response.expires_at;
-        this.setCredentialsFromFederation(provider, token, user);
         // store it into localstorage
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user }, { priority: 1 });
-        dispatchAuthEvent('signIn', this.user);
-        logger.debug('federated sign in credentials', this.credentials);
-        return this.keepAlive();
+        // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+        var that = this;
+        return new Promise(function (res, rej) {
+            that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at }).then(function (cred) {
+                dispatchAuthEvent('signIn', that.user);
+                logger.debug('federated sign in credentials', _this.credentials);
+                res(cred);
+            }).catch(function (e) {
+                rej(e);
+            });
+        });
     };
     /**
      * Compact version of credentials
@@ -34932,7 +35222,66 @@ var AuthClass = /** @class */ (function () {
         }
         return obj;
     };
-    AuthClass.prototype.setCredentialsFromFederation = function (provider, token, user) {
+    AuthClass.prototype.pickupCredentials = function () {
+        logger.debug('picking up credentials');
+        if (!this._gettingCredPromise || !this._gettingCredPromise.isPending()) {
+            logger.debug('getting new cred promise');
+            if (Common_1.AWS.config && Common_1.AWS.config.credentials && Common_1.AWS.config.credentials instanceof Credentials) {
+                this._gettingCredPromise = Common_1.JS.makeQuerablePromise(this._setCredentialsFromAWS());
+            }
+            else {
+                this._gettingCredPromise = Common_1.JS.makeQuerablePromise(this.keepAlive());
+            }
+        }
+        else {
+            logger.debug('getting old cred promise');
+        }
+        return this._gettingCredPromise;
+    };
+    AuthClass.prototype._setCredentialsFromAWS = function () {
+        var credentials = Common_1.AWS.config.credentials;
+        logger.debug('setting credentials from aws');
+        var that = this;
+        if (credentials instanceof Credentials) {
+            return this._loadCredentials(credentials, 'aws', undefined, null);
+        }
+        else {
+            logger.debug('AWS.config.credentials is not an instance of AWS Credentials');
+            return Promise.reject('AWS.config.credentials is not an instance of AWS Credentials');
+        }
+    };
+    AuthClass.prototype._setCredentialsForGuest = function () {
+        logger.debug('setting credentials for guest');
+        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
+        if (mandatorySignIn) {
+            return Promise.reject('cannot get guest credentials when mandatory signin enabled');
+        }
+        var credentials = new CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId
+        }, {
+            region: region
+        });
+        var that = this;
+        return this._loadCredentials(credentials, 'guest', false, null);
+    };
+    AuthClass.prototype._setCredentialsFromSession = function (session) {
+        logger.debug('set credentials from session');
+        var idToken = session.getIdToken().getJwtToken();
+        var _a = this._config, region = _a.region, userPoolId = _a.userPoolId, identityPoolId = _a.identityPoolId;
+        var key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
+        var logins = {};
+        logins[key] = idToken;
+        var credentials = new CognitoIdentityCredentials({
+            IdentityPoolId: identityPoolId,
+            Logins: logins
+        }, {
+            region: region
+        });
+        var that = this;
+        return this._loadCredentials(credentials, 'userPool', true, null);
+    };
+    AuthClass.prototype._setCredentialsFromFederation = function (params) {
+        var provider = params.provider, token = params.token, user = params.user, expires_at = params.expires_at;
         var domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
@@ -34946,112 +35295,42 @@ var AuthClass = /** @class */ (function () {
         var logins = {};
         logins[domain] = token;
         var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
-        this.credentials = new Common_1.AWS.CognitoIdentityCredentials({
+        var credentials = new Common_1.AWS.CognitoIdentityCredentials({
             IdentityPoolId: identityPoolId,
             Logins: logins
         }, {
             region: region
         });
-        this.credentials.authenticated = true;
-        this.credentials_source = 'federated';
-        this.user = Object.assign({ id: this.credentials.identityId }, user);
-        if (Common_1.AWS && Common_1.AWS.config) {
-            Common_1.AWS.config.credentials = this.credentials;
-        }
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
+        return this._loadCredentials(credentials, 'federated', true, user);
     };
-    AuthClass.prototype.pickupCredentials = function () {
+    AuthClass.prototype._loadCredentials = function (credentials, source, authenticated, rawUser) {
+        var _this = this;
         var that = this;
-        if (this.credentials) {
-            return this.keepAlive();
-        }
-        else if (this.setCredentialsFromAWS()) {
-            return this.keepAlive();
-        }
-        else {
-            return this.currentUserCredentials()
-                .then(function () {
-                if (that.credentials_source === 'no credentials') {
-                    return Promise.resolve(null);
+        return new Promise(function (res, rej) {
+            credentials.getPromise().then(function () {
+                logger.debug('Load credentials successfully', credentials);
+                that.credentials = credentials;
+                that.credentials.authenticated = authenticated;
+                that.credentials_source = source;
+                if (source === 'federated') {
+                    that.user = Object.assign({ id: _this.credentials.identityId }, rawUser);
+                    Cache_1.default.setItem('federatedUser', that.user, { priority: 1 });
                 }
-                return that.keepAlive();
-            })
-                .catch(function (err) {
-                logger.debug('error when pickup', err);
-                that.setCredentialsForGuest();
-                return that.keepAlive();
+                res(that.credentials);
+            }, function (err) {
+                logger.debug('Failed to load credentials', credentials);
+                rej('Failed to load creadentials');
             });
-        }
-    };
-    AuthClass.prototype.setCredentialsFromAWS = function () {
-        if (Common_1.AWS.config && Common_1.AWS.config.credentials) {
-            this.credentials = Common_1.AWS.config.credentials;
-            this.credentials_source = 'aws';
-            return true;
-        }
-        return false;
-    };
-    AuthClass.prototype.setCredentialsForGuest = function () {
-        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
-        if (mandatorySignIn) {
-            this.credentials = null;
-            this.credentials_source = 'no credentials';
-            return;
-        }
-        var credentials = new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId
-        }, {
-            region: region
         });
-        credentials.params['IdentityId'] = null; // Cognito load IdentityId from local cache
-        this.credentials = credentials;
-        this.credentials.authenticated = false;
-        this.credentials_source = 'guest';
-    };
-    AuthClass.prototype.setCredentialsFromSession = function (session) {
-        logger.debug('set credentials from session');
-        var idToken = session.getIdToken().getJwtToken();
-        var _a = this._config, region = _a.region, userPoolId = _a.userPoolId, identityPoolId = _a.identityPoolId;
-        var key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
-        var logins = {};
-        logins[key] = idToken;
-        this.credentials = new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
-            Logins: logins
-        }, {
-            region: region
-        });
-        this.credentials.authenticated = true;
-        this.credentials_source = 'userPool';
     };
     AuthClass.prototype.keepAlive = function () {
-        if (!this.credentials) {
-            this.setCredentialsForGuest();
+        var cred = this.credentials;
+        if (cred && !this._isExpired(cred)) {
+            logger.debug('not changed, directly return credentials');
+            return Promise.resolve(cred);
         }
-        var ts = new Date().getTime();
-        var delta = 10 * 60 * 1000; // 10 minutes
-        var credentials = this.credentials;
-        var expired = credentials.expired, expireTime = credentials.expireTime;
-        if (!expired && expireTime > ts + delta) {
-            return Promise.resolve(credentials);
-        }
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            that.currentUserCredentials()
-                .then(function () {
-                credentials = that.credentials;
-                credentials.refresh(function (err) {
-                    logger.debug('changed from previous');
-                    if (err) {
-                        logger.debug('refresh credentials error', err);
-                        resolve(null);
-                    }
-                    else {
-                        resolve(credentials);
-                    }
-                });
-            })
-                .catch(function () { return resolve(null); });
-        });
+        return this.currentUserCredentials();
     };
     AuthClass.prototype.createCognitoUser = function (username) {
         var userData = {
@@ -35064,13 +35343,27 @@ var AuthClass = /** @class */ (function () {
         }
         return new CognitoUser(userData);
     };
+    AuthClass.prototype._isExpired = function (credentials) {
+        if (!credentials) {
+            logger.debug('no credentials for expiration check');
+            return true;
+        }
+        logger.debug('is this credentials expired?', credentials);
+        var ts = new Date().getTime();
+        var delta = 10 * 60 * 1000; // 10 minutes
+        var expired = credentials.expired, expireTime = credentials.expireTime;
+        if (!expired && expireTime > ts + delta) {
+            return false;
+        }
+        return true;
+    };
     return AuthClass;
 }());
 exports.default = AuthClass;
 
 
 /***/ }),
-/* 318 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35088,7 +35381,7 @@ exports.default = AuthClass;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Storage_1 = __webpack_require__(319);
+var Storage_1 = __webpack_require__(322);
 exports.StorageClass = Storage_1.default;
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('Storage');
@@ -35110,7 +35403,7 @@ exports.default = Storage;
 
 
 /***/ }),
-/* 319 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35478,7 +35771,7 @@ exports.default = StorageClass;
 
 
 /***/ }),
-/* 320 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35496,7 +35789,7 @@ exports.default = StorageClass;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var API_1 = __webpack_require__(321);
+var API_1 = __webpack_require__(324);
 exports.APIClass = API_1.default;
 var Common_1 = __webpack_require__(2);
 var logger = new Common_1.ConsoleLogger('API');
@@ -35510,7 +35803,7 @@ exports.default = API;
 
 
 /***/ }),
-/* 321 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35563,7 +35856,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var RestClient_1 = __webpack_require__(322);
+var RestClient_1 = __webpack_require__(325);
 var Auth_1 = __webpack_require__(20);
 var Logger_1 = __webpack_require__(14);
 var logger = new Logger_1.ConsoleLogger('API');
@@ -35901,7 +36194,7 @@ exports.default = APIClass;
 
 
 /***/ }),
-/* 322 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35965,7 +36258,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Signer_1 = __webpack_require__(108);
 var Common_1 = __webpack_require__(2);
 var Auth_1 = __webpack_require__(20);
-var axios_1 = __webpack_require__(323);
+var axios_1 = __webpack_require__(326);
 var Platform_1 = __webpack_require__(32);
 var logger = new Common_1.ConsoleLogger('RestClient');
 /**
@@ -36172,13 +36465,13 @@ exports.RestClient = RestClient;
 
 
 /***/ }),
-/* 323 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(324);
+module.exports = __webpack_require__(327);
 
 /***/ }),
-/* 324 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36186,7 +36479,7 @@ module.exports = __webpack_require__(324);
 
 var utils = __webpack_require__(4);
 var bind = __webpack_require__(112);
-var Axios = __webpack_require__(326);
+var Axios = __webpack_require__(329);
 var defaults = __webpack_require__(53);
 
 /**
@@ -36221,14 +36514,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(116);
-axios.CancelToken = __webpack_require__(340);
+axios.CancelToken = __webpack_require__(343);
 axios.isCancel = __webpack_require__(115);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(341);
+axios.spread = __webpack_require__(344);
 
 module.exports = axios;
 
@@ -36237,7 +36530,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 325 */
+/* 328 */
 /***/ (function(module, exports) {
 
 /*!
@@ -36264,7 +36557,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 326 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36272,8 +36565,8 @@ function isSlowBuffer (obj) {
 
 var defaults = __webpack_require__(53);
 var utils = __webpack_require__(4);
-var InterceptorManager = __webpack_require__(335);
-var dispatchRequest = __webpack_require__(336);
+var InterceptorManager = __webpack_require__(338);
+var dispatchRequest = __webpack_require__(339);
 
 /**
  * Create a new instance of Axios
@@ -36350,7 +36643,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 327 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36369,7 +36662,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 328 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36402,7 +36695,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 329 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36430,7 +36723,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 330 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36505,7 +36798,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 331 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36565,7 +36858,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 332 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36640,7 +36933,7 @@ module.exports = (
 
 
 /***/ }),
-/* 333 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36683,7 +36976,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 334 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36743,7 +37036,7 @@ module.exports = (
 
 
 /***/ }),
-/* 335 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36802,18 +37095,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 336 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var transformData = __webpack_require__(337);
+var transformData = __webpack_require__(340);
 var isCancel = __webpack_require__(115);
 var defaults = __webpack_require__(53);
-var isAbsoluteURL = __webpack_require__(338);
-var combineURLs = __webpack_require__(339);
+var isAbsoluteURL = __webpack_require__(341);
+var combineURLs = __webpack_require__(342);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -36895,7 +37188,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 337 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36922,7 +37215,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 338 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36943,7 +37236,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 339 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36964,7 +37257,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 340 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37028,7 +37321,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 341 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37062,7 +37355,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 342 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37080,7 +37373,7 @@ module.exports = function spread(callback) {
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var I18n_1 = __webpack_require__(343);
+var I18n_1 = __webpack_require__(346);
 var Logger_1 = __webpack_require__(14);
 var logger = new Logger_1.ConsoleLogger('I18n');
 var _config = null;
@@ -37173,7 +37466,7 @@ exports.default = I18n;
 
 
 /***/ }),
-/* 343 */
+/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
