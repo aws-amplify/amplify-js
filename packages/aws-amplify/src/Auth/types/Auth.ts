@@ -32,6 +32,7 @@ export interface AuthOptions {
     region?: string,
     mandatorySignIn: boolean
     cookieStorage?: ICookieStorageData,
+    hostedUIOptions?: object
 }
 
 /**

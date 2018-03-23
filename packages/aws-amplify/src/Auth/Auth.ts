@@ -16,12 +16,14 @@ import { AuthOptions, FederatedResponse } from './types';
 import {
     AWS,
     Cognito,
+    CognitoHostedUI,
     ConsoleLogger as Logger,
     Constants,
     Hub,
     FacebookOAuth,
     GoogleOAuth,
-    JS
+    JS,
+    Parser
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
@@ -53,6 +55,7 @@ export default class AuthClass {
     private _config: AuthOptions;
     private _userPoolStorageSync: Promise<any>;
     private userPool = null;
+    private _cognitoAuthClient = null;
 
     private credentials = null;
     private credentials_source = ''; // aws, guest, userPool, federated
@@ -60,6 +63,7 @@ export default class AuthClass {
 
     private _refreshHandlers = {};
     private _gettingCredPromise = null;
+    private _signedInWith
 
     /**
      * Initialize Auth with AWS configurations
@@ -79,20 +83,13 @@ export default class AuthClass {
     }
 
     configure(config) {
+        if (!config) return this._config;
         logger.debug('configure Auth');
-        let conf = config? config.Auth || config : {};
-        if (conf['aws_cognito_identity_pool_id']) {
-            conf = {
-                userPoolId: conf['aws_user_pools_id'],
-                userPoolWebClientId: conf['aws_user_pools_web_client_id'],
-                region: conf['aws_cognito_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id'],
-                mandatorySignIn: conf['aws_mandatory_sign_in'] === 'enable'? true: false
-            };
-        }
-        this._config = Object.assign({}, this._config, conf);
+        const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Auth);
+        this._config = conf;
+
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
-        const { userPoolId, userPoolWebClientId, cookieStorage } = this._config;
+        const { userPoolId, userPoolWebClientId, cookieStorage, hostedUIOptions } = this._config;
         if (userPoolId) {
             const userPoolData: ICognitoUserPoolData = {
                 UserPoolId: userPoolId,
@@ -115,6 +112,30 @@ export default class AuthClass {
                 });
             }
         }
+
+        // initiailize cognitoauth client if hosted ui options provided
+        if (hostedUIOptions) {
+            const cognitoAuthParams = Object.assign(
+                {
+                    ClientId: userPoolWebClientId,
+                    UserPoolId: userPoolId
+                },
+                hostedUIOptions
+            );
+            this._cognitoAuthClient = new CognitoHostedUI.CognitoAuth(cognitoAuthParams);
+            this._cognitoAuthClient.userhandler = {
+                    onSuccess: (result) => {
+                        logger.debug("Cognito Hosted authentication result", result);
+                    },
+                    onFailure: (err) => {
+                        logger.debug("Error in cognito hosted auth response", err);
+                    }
+                };
+            const curUrl = window.location.href;
+            this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
+            logger.debug('hostedUIOptions configured');
+        }
+
         dispatchAuthEvent('configured', null);
         return this._config;
     }
@@ -848,6 +869,9 @@ export default class AuthClass {
             if (!user) { return Promise.resolve(); }
             logger.debug('user sign out', user);
             user.signOut();
+            if (this._cognitoAuthClient) {
+                this._cognitoAuthClient.signOut();
+            }
         }
 
         const that = this;
@@ -970,7 +994,10 @@ export default class AuthClass {
         }
     }
 
-    
+    public cognitoHostedUISignIn() {
+
+        
+    }
 
     /**
      * For federated login
@@ -979,54 +1006,18 @@ export default class AuthClass {
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */
-    public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
-        if (provider === 'cognito') {
-
-            try {
-                const cognitoAuthParams = Object.assign(
-                    {
-                        'ClientId': this._config['userPoolWebClientId'],
-                        'UserPoolId': this._config['userPoolId']
-                    }, 
-                    this._config['cognitoAuth']
-                );
-                logger.debug('CognitoAuth params: ',cognitoAuthParams);
-                const curUrl = window.location.href;
-                this.cognitoAuth = new CognitoAuth.CognitoAuth(cognitoAuthParams);
-                return new Promise((resolve, reject) => {
-                    that.cognitoAuth.userhandler = {
-                    	onSuccess: (result) => {
-                    		logger.debug("Cognito Hosted authentication result", result);
-                    		that.setCredentialsFromSession(result);
-                    		resolve(result);
-                    	},
-                    	onFailure: (err) => {
-                    		logger.debug("Error in cognito hosted auth response", err);
-                    		reject(err);
-                    	}
-                    };
-                    that.cognitoAuth.parseCognitoWebResponse(curUrl);
-                });
-            } catch(error) {
-                logger.debug("Error parsing cognito hosted authentication response", error);
-        		return Promise.reject(error);
-            }
-
-
-        } else {
-            const { token, expires_at } = response;
-            const that = this;
-            return new Promise((res, rej) => {
-                that._setCredentialsFromFederation({ provider, token, user, expires_at }).then((cred) => {
-                    dispatchAuthEvent('signIn', that.user);
-                    logger.debug('federated sign in credentials', this.credentials);
-                    res(cred);
-                }).catch(e => {
-                    rej(e);
-                });
+public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
+        const { token, expires_at } = response;
+        const that = this;
+        return new Promise((res, rej) => {
+            that._setCredentialsFromFederation({ provider, token, user, expires_at }).then((cred) => {
+                dispatchAuthEvent('signIn', that.user);
+                logger.debug('federated sign in credentials', this.credentials);
+                res(cred);
+            }).catch(e => {
+                rej(e);
             });
-        }
-        
+        });    
     }
 
     /**

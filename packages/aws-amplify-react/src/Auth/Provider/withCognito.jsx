@@ -14,15 +14,22 @@ export default function withCognito(Comp) {
             this.state = {};
         }
 
+        componentDidMount() {
+            
+        }
+
         signIn() {
+            const config = Auth.configure();
             const { 
                 AppWebDomain,  
                 RedirectUriSignIn, 
-                RedirectUriSignOut } = Auth.getConfig('cognitoAuth');
-            const clientId = Auth.getConfig('userPoolWebClientId');
+                RedirectUriSignOut } = config.hostedUIOptions;
+            const clientId = config.userPoolWebClientId;
             const responseType = 'token';
             const url = 'https://' + AppWebDomain + '/login?redirect_uri=' + RedirectUriSignIn + '&response_type=' + responseType + '&client_id=' + clientId;
             window.location.assign(url);
+
+            
         }
 
         render() {

@@ -104,6 +104,27 @@ var FederatedButtons = exports.FederatedButtons = function (_Component) {
             return amazon;
         }()
     }, {
+        key: 'cognito',
+        value: function () {
+            function cognito(cognito_auth) {
+                if (!cognito_auth) {
+                    return null;
+                }
+                var _props4 = this.props,
+                    theme = _props4.theme,
+                    onStateChange = _props4.onStateChange;
+
+                return _react2['default'].createElement(_Provider.CognitoButton, {
+                    authData: cognito_auth.authData,
+                    label: cognito_auth.label,
+                    theme: theme,
+                    onStateChange: onStateChange
+                });
+            }
+
+            return cognito;
+        }()
+    }, {
         key: 'render',
         value: function () {
             function render() {
@@ -120,7 +141,8 @@ var FederatedButtons = exports.FederatedButtons = function (_Component) {
 
                 var google_client_id = federated.google_client_id,
                     facebook_app_id = federated.facebook_app_id,
-                    amazon_client_id = federated.amazon_client_id;
+                    amazon_client_id = federated.amazon_client_id,
+                    cognito_auth = federated.cognito_auth;
 
 
                 var theme = this.props.theme || _AmplifyTheme2['default'];
@@ -129,7 +151,8 @@ var FederatedButtons = exports.FederatedButtons = function (_Component) {
                     { theme: theme },
                     this.google(google_client_id),
                     this.facebook(facebook_app_id),
-                    this.amazon(amazon_client_id)
+                    this.amazon(amazon_client_id),
+                    this.cognito(cognito_auth)
                 );
             }
 
@@ -153,10 +176,10 @@ var FederatedSignIn = function (_Component2) {
         key: 'render',
         value: function () {
             function render() {
-                var _props4 = this.props,
-                    federated = _props4.federated,
-                    authState = _props4.authState,
-                    onStateChange = _props4.onStateChange;
+                var _props5 = this.props,
+                    federated = _props5.federated,
+                    authState = _props5.authState,
+                    onStateChange = _props5.onStateChange;
 
                 if (!federated) {
                     logger.debug('federated prop is empty. show nothing');

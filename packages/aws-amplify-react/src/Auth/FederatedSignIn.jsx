@@ -10,7 +10,8 @@ import {
 import {
     GoogleButton,
     FacebookButton,
-    AmazonButton
+    AmazonButton,
+    CognitoButton
 } from './Provider';
 
 const logger = new Logger('FederatedSignIn');
