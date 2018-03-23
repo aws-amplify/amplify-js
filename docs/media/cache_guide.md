@@ -58,7 +58,6 @@ Cache.getItem(key[, options]);
   Retrieves an item from the cache. It will return null if the item doesn’t exist or it has expired.
 
 ```js
-
 // Standard case
 Cache.getItem('key');
 
