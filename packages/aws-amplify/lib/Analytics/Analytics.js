@@ -68,6 +68,7 @@ var AnalyticsClass = /** @class */ (function () {
         this._buffer = [];
         this._config = {};
         this._pluggables = [];
+        this._disabled = false;
         // default one
         // events batch
         var that = this;
@@ -91,6 +92,9 @@ var AnalyticsClass = /** @class */ (function () {
         var clientInfo = Common_1.ClientDevice.clientInfo();
         conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
         this._config = conf;
+        if (conf['disabled']) {
+            this._disabled = true;
+        }
         this._pluggables.map(function (pluggable) {
             pluggable.configure(conf);
         });
@@ -122,6 +126,18 @@ var AnalyticsClass = /** @class */ (function () {
                 }
             });
         });
+    };
+    /**
+     * stop sending events
+     */
+    AnalyticsClass.prototype.disable = function () {
+        this._disabled = true;
+    };
+    /**
+     * start sending events
+     */
+    AnalyticsClass.prototype.enable = function () {
+        this._disabled = false;
     };
     /**
      * Record Session start
@@ -234,6 +250,10 @@ var AnalyticsClass = /** @class */ (function () {
      * Put events into buffer
      */
     AnalyticsClass.prototype._putToBuffer = function (params) {
+        if (this._disabled) {
+            logger.debug('Analytics has been disabled');
+            return Promise.resolve();
+        }
         if (this._buffer.length < BUFFER_SIZE) {
             this._buffer.push(params);
             return Promise.resolve();
