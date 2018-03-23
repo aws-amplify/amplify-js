@@ -970,6 +970,8 @@ export default class AuthClass {
         }
     }
 
+    
+
     /**
      * For federated login
      * @param {String} provider - federation login provider
@@ -978,20 +980,53 @@ export default class AuthClass {
      * @param {String} user - user info
      */
     public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
-        const { token, expires_at } = response;
+        if (provider === 'cognito') {
 
-        // store it into localstorage
-        // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
-        const that = this;
-        return new Promise((res, rej) => {
-            that._setCredentialsFromFederation({ provider, token, user, expires_at }).then((cred) => {
-                dispatchAuthEvent('signIn', that.user);
-                logger.debug('federated sign in credentials', this.credentials);
-                res(cred);
-            }).catch(e => {
-                rej(e);
+            try {
+                const cognitoAuthParams = Object.assign(
+                    {
+                        'ClientId': this._config['userPoolWebClientId'],
+                        'UserPoolId': this._config['userPoolId']
+                    }, 
+                    this._config['cognitoAuth']
+                );
+                logger.debug('CognitoAuth params: ',cognitoAuthParams);
+                const curUrl = window.location.href;
+                this.cognitoAuth = new CognitoAuth.CognitoAuth(cognitoAuthParams);
+                return new Promise((resolve, reject) => {
+                    that.cognitoAuth.userhandler = {
+                    	onSuccess: (result) => {
+                    		logger.debug("Cognito Hosted authentication result", result);
+                    		that.setCredentialsFromSession(result);
+                    		resolve(result);
+                    	},
+                    	onFailure: (err) => {
+                    		logger.debug("Error in cognito hosted auth response", err);
+                    		reject(err);
+                    	}
+                    };
+                    that.cognitoAuth.parseCognitoWebResponse(curUrl);
+                });
+            } catch(error) {
+                logger.debug("Error parsing cognito hosted authentication response", error);
+        		return Promise.reject(error);
+            }
+
+
+        } else {
+            const { token, expires_at } = response;
+            const that = this;
+            return new Promise((res, rej) => {
+                that._setCredentialsFromFederation({ provider, token, user, expires_at }).then((cred) => {
+                    dispatchAuthEvent('signIn', that.user);
+                    logger.debug('federated sign in credentials', this.credentials);
+                    res(cred);
+                }).catch(e => {
+                    rej(e);
+                });
             });
-        });
+        }
+        
     }
 
     /**

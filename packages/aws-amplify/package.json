@@ -55,6 +55,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
+    "amazon-cognito-auth-js": "^1.1.4",
     "amazon-cognito-identity-js": "^2.0.0",
     "aws-sdk": "2.198.0",
     "axios": "^0.17.0",
