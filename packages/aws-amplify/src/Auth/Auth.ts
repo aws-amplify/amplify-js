@@ -853,11 +853,14 @@ export default class AuthClass {
         const that = this;
         return new Promise((resolve, reject) => {
             that._setCredentialsForGuest().then((cred) => {
-                dispatchAuthEvent('signOut', this.user);
+                dispatchAuthEvent('signOut', that.user);
                 that.user = null;
                 resolve();
             }).catch((e) => {
-                reject('cannot get guest credentials');
+                logger.debug('cannot load guest credentials for unauthenticated user');
+                dispatchAuthEvent('signOut', that.user);
+                that.user = null;
+                resolve();
             });
         });
     }
