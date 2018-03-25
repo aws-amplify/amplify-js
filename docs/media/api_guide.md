@@ -124,7 +124,6 @@ let myInit = { // OPTIONAL
 API.get(apiName, path, myInit).then(response => {
     // Add your code here
 });
-
 ```
 
 Note: To get the full response from the resulting API call, set `response` to `true` in the `init` object.
@@ -158,7 +157,6 @@ let myInit = {
 API.post(apiName, path, myInit).then(response => {
     // Add your code here
 });
-
 ```
 
 Example with async/await
@@ -190,7 +188,6 @@ let myInit = {
 API.put(apiName, path, myInit).then(response => {
     // Add your code here
 });
-
 ```
 
 Example with async/await
@@ -221,7 +218,6 @@ let myInit = { // OPTIONAL
 API.del(apiName, path, myInit).then(response => {
     // Add your code here
 });
-
 ```
 
 Example with async/await
@@ -250,7 +246,6 @@ let myInit = { // OPTIONAL
 API.head(apiName, path, myInit).then(response => {
     // Add your code here
 });
-
 ```
 
 Example with async/await
