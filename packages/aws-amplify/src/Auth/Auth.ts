@@ -984,7 +984,7 @@ export default class AuthClass {
         const { token, expires_at } = response;
 
         // store it into localstorage
-        // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
         const that = this;
         return new Promise((res, rej) => {
             that._setCredentialsFromFederation({ provider, token, user, expires_at }).then((cred) => {
