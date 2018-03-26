@@ -193,6 +193,39 @@ const federated = {
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
 
+You can also manually call ```Auth.federatedSignIn``` as the sign-in method for federation users. 
+
+For example:
+```js
+import { Auth } from 'aws-amplify';
+
+// for Google Users
+const ga = window.gapi.auth2.getAuthInstance();
+ga.signIn().then(googleUser => {
+    const { id_token, expires_at } = googleUser.getAuthResponse();
+    const profile = googleUser.getBasicProfile();
+    const user = {
+        email: profile.getEmail(),
+        name: profile.getName()
+    };
+
+    return Auth.federatedSignIn(
+        // 'google', 'facebook', 'amazon' or 'developer'
+        'google',
+        { 
+            // the JWT token
+            token: id_token, 
+            // the expiration time
+            expires_at 
+        },
+        // a user object
+        user
+    ).then(() => {
+        // ...
+    });
+});
+```
+
  NOTE: Federated Identity HOCs are not yet available on React Native.
  {: .callout .callout--info}
 
