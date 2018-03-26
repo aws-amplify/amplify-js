@@ -17,9 +17,7 @@ import {
     Text, 
     TextInput, 
     Button, 
-    TouchableHighlight,
-    TouchableWithoutFeedback,
-    Keyboard 
+    TouchableHighlight
 } from 'react-native';
 import {
     Auth,
@@ -101,29 +99,27 @@ export default class SignIn extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <View style={theme.section}>
-                    <Header theme={theme}>{I18n.get('Sign In')}</Header>
-                    <View style={theme.sectionBody}>
-                        <Username
-                            theme={theme}
-                            onChangeText={(text) => this.setState({ username: text })}
-                        />
-                        <Password
-                            theme={theme}
-                            onChangeText={(text) => this.setState({ password: text })}
-                        />
-                        <Button
-                            title={I18n.get('Sign In')}
-                            style={theme.button}
-                            onPress={this.signIn}
-                            disabled={!this.state.username || !this.state.password}
-                        />
-                    </View>
-                    <Footer theme={theme} onStateChange={this.changeState} />
-                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+            <View style={theme.section}>
+                <Header theme={theme}>{I18n.get('Sign In')}</Header>
+                <View style={theme.sectionBody}>
+                    <Username
+                        theme={theme}
+                        onChangeText={(text) => this.setState({ username: text })}
+                    />
+                    <Password
+                        theme={theme}
+                        onChangeText={(text) => this.setState({ password: text })}
+                    />
+                    <Button
+                        title={I18n.get('Sign In')}
+                        style={theme.button}
+                        onPress={this.signIn}
+                        disabled={!this.state.username || !this.state.password}
+                    />
                 </View>
-            </TouchableWithoutFeedback>
+                <Footer theme={theme} onStateChange={this.changeState} />
+                <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+            </View>
         );
     }
 }
