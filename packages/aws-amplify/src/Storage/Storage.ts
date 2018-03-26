@@ -57,7 +57,7 @@ export default class StorageClass {
      * @param {Object} config - Configuration of the Storage
      * @return {Object} - Current configuration
      */
-    configure(options) {
+    configure(options?) {
         logger.debug('configure Storage');
         let opt = options ? options.Storage || options : {};
 
@@ -79,7 +79,7 @@ export default class StorageClass {
     * @param {Object} [options] - { level : private|public }
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
-    public async get(key: string, options): Promise<Object> {
+    public async get(key: string, options?): Promise<Object> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
@@ -144,7 +144,7 @@ export default class StorageClass {
      * @param {Object} [options] - { level : private|public, contentType: MIME Types }
      * @return - promise resolves to object on success
      */
-    public async put(key: string, object, options = {}): Promise<Object> {
+    public async put(key: string, object, options?): Promise<Object> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
@@ -198,7 +198,7 @@ export default class StorageClass {
      * @param {Object} [options] - { level : private|public }
      * @return - Promise resolves upon successful removal of the object
      */
-    public async remove(key: string, options): Promise<any> {
+    public async remove(key: string, options?): Promise<any> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
@@ -240,7 +240,7 @@ export default class StorageClass {
      * @param {Object} [options] - { level : private|public }
      * @return - Promise resolves to list of keys for all objects in path
      */
-    public async list(path, options): Promise<any> {
+    public async list(path, options?): Promise<any> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
