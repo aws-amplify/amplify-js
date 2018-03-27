@@ -179,7 +179,7 @@ Now, your app will have complete flows for user sign-in and registration. Since 
 
 #### Enabling Federated Identities
 
-You can enable federated Identity login by specifying *federated* option. Here is a configuration enabling social login with multiple providers:
+You can enable federated Identity login by specifying *federated* option. Here is a configuration for enabling social login with multiple providers:
 
 ```js
 const AppWithAuth = withAuthenticator(App);
@@ -191,6 +191,39 @@ const federated = {
 };
 
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
+```
+
+You can also initiate a federated signin process by calling `Auth.federatedSignIn()` medhod in your code:  
+
+```js
+import { Auth } from 'aws-amplify';
+
+// Retrieve active Google user session
+const ga = window.gapi.auth2.getAuthInstance();
+ga.signIn().then(googleUser => {
+    const { id_token, expires_at } = googleUser.getAuthResponse();
+    const profile = googleUser.getBasicProfile();
+    const user = {
+        email: profile.getEmail(),
+        name: profile.getName()
+    };
+
+    // Initiate federated sign-in with Google user
+    return Auth.federatedSignIn(
+        // 'google', 'facebook', 'amazon' or 'developer'
+        'google',
+        { 
+            // the JWT token
+            token: id_token, 
+            // the expiration time
+            expires_at 
+        },
+        // a user object
+        user
+    ).then(() => {
+        // ...
+    });
+});
 ```
 
  NOTE: Federated Identity HOCs are not yet available on React Native.
