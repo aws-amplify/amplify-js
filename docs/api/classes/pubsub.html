@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RestClientOptions | aws-amplify</title>
+	<title>PubSub | aws-amplify</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -916,19 +916,22 @@ img { max-width: 100%; }
 <nav class="tsd-navigation secondary">
 	<ul>
 		<li class="current tsd-kind-class">
-			<a href="restclientoptions.html" class="tsd-kind-icon">Rest<wbr>Client<wbr>Options</a>
+			<a href="pubsub.html" class="tsd-kind-icon">Pub<wbr>Sub</a>
 			<ul>
 				<li class=" tsd-kind-constructor tsd-parent-kind-class">
-					<a href="restclientoptions.html#constructor" class="tsd-kind-icon">constructor</a>
+					<a href="pubsub.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-class">
-					<a href="restclientoptions.html#credentials" class="tsd-kind-icon">credentials</a>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="pubsub.html#addpluggable" class="tsd-kind-icon">add<wbr>Pluggable</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-class">
-					<a href="restclientoptions.html#credentials_key" class="tsd-kind-icon">credentials_<wbr>key</a>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="pubsub.html#configure" class="tsd-kind-icon">configure</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-class">
-					<a href="restclientoptions.html#headers" class="tsd-kind-icon">headers</a>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="pubsub.html#publish" class="tsd-kind-icon">publish</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="pubsub.html#subscribe" class="tsd-kind-icon">subscribe</a>
 				</li>
 			</ul>
 		</li>
@@ -936,18 +939,11 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
-		<section class="tsd-panel tsd-comment">
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>RestClient instance options</p>
-				</div>
-			</div>
-		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">RestClientOptions</span>
+					<span class="target">PubSub</span>
 				</li>
 			</ul>
 		</section>
@@ -958,15 +954,16 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Constructors</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="restclientoptions.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="pubsub.html#constructor" class="tsd-kind-icon">constructor</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
-						<h3>Properties</h3>
+						<h3>Methods</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-class"><a href="restclientoptions.html#credentials" class="tsd-kind-icon">credentials</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-class"><a href="restclientoptions.html#credentials_key" class="tsd-kind-icon">credentials_<wbr>key</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-class"><a href="restclientoptions.html#headers" class="tsd-kind-icon">headers</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="pubsub.html#addpluggable" class="tsd-kind-icon">add<wbr>Pluggable</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="pubsub.html#configure" class="tsd-kind-icon">configure</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="pubsub.html#publish" class="tsd-kind-icon">publish</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="pubsub.html#subscribe" class="tsd-kind-icon">subscribe</a></li>
 						</ul>
 					</section>
 				</div>
@@ -978,68 +975,154 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Rest<wbr>Client<wbr>Options<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="restclientoptions.html" class="tsd-signature-type">RestClientOptions</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Pub<wbr>Sub<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/pubsuboptions.html" class="tsd-signature-type">PubSubOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pubsub.html" class="tsd-signature-type">PubSub</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/393ca50/packages/aws-amplify/src/API/types/index.ts#L29">API/types/index.ts:29</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/393ca50/packages/aws-amplify/src/PubSub/PubSub.ts#L25">PubSub/PubSub.ts:25</a></li>
 							</ul>
 						</aside>
-						<h4 class="tsd-returns-title">Returns <a href="restclientoptions.html" class="tsd-signature-type">RestClientOptions</a></h4>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Initialize PubSub with AWS configurations</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>options: <a href="../interfaces/pubsuboptions.html" class="tsd-signature-type">PubSubOptions</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Configuration object for PubSub</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="pubsub.html" class="tsd-signature-type">PubSub</a></h4>
 					</li>
 				</ul>
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
-			<h2>Properties</h2>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-				<a name="credentials" class="tsd-anchor"></a>
-				<h3>credentials</h3>
-				<div class="tsd-signature tsd-kind-icon">credentials<span class="tsd-signature-symbol">:</span> <a href="awscredentials.html" class="tsd-signature-type">AWSCredentials</a></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/393ca50/packages/aws-amplify/src/API/types/index.ts#L19">API/types/index.ts:19</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>AWS credentials</p>
-					</div>
-				</div>
+			<h2>Methods</h2>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="addpluggable" class="tsd-anchor"></a>
+				<h3>add<wbr>Pluggable</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">add<wbr>Pluggable<span class="tsd-signature-symbol">(</span>pluggable<span class="tsd-signature-symbol">: </span><a href="../interfaces/pubsubprovider.html" class="tsd-signature-type">PubSubProvider</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/393ca50/packages/aws-amplify/src/PubSub/PubSub.ts#L59">PubSub/PubSub.ts:59</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>add plugin into Analytics category</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>pluggable: <a href="../interfaces/pubsubprovider.html" class="tsd-signature-type">PubSubProvider</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>an instance of the plugin</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-				<a name="credentials_key" class="tsd-anchor"></a>
-				<h3>credentials_<wbr>key</h3>
-				<div class="tsd-signature tsd-kind-icon">credentials_<wbr>key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/393ca50/packages/aws-amplify/src/API/types/index.ts#L26">API/types/index.ts:26</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Lookup key of AWS credentials.
-							If credentials not provided then lookup from sessionStorage.
-						Default &#39;awsCredentials&#39;</p>
-					</div>
-				</div>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="configure" class="tsd-anchor"></a>
+				<h3>configure</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/pubsuboptions.html" class="tsd-signature-type">PubSubOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/393ca50/packages/aws-amplify/src/PubSub/PubSub.ts#L44">PubSub/PubSub.ts:44</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Configure PubSub part with configurations</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>options: <a href="../interfaces/pubsuboptions.html" class="tsd-signature-type">PubSubOptions</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						<ul>
+							<li>The current configuration</li>
+						</ul>
+					</li>
+				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-				<a name="headers" class="tsd-anchor"></a>
-				<h3>headers</h3>
-				<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/393ca50/packages/aws-amplify/src/API/types/index.ts#L29">API/types/index.ts:29</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Additional headers for all requests send by this client. e.g. user-agent</p>
-					</div>
-				</div>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="publish" class="tsd-anchor"></a>
+				<h3>publish</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">publish<span class="tsd-signature-symbol">(</span>topics<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/providertoptions.html" class="tsd-signature-type">ProvidertOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/393ca50/packages/aws-amplify/src/PubSub/PubSub.ts#L69">PubSub/PubSub.ts:69</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>topics: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>msg: <span class="tsd-signature-type">any</span></h5>
+							</li>
+							<li>
+								<h5>options: <a href="../interfaces/providertoptions.html" class="tsd-signature-type">ProvidertOptions</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="subscribe" class="tsd-anchor"></a>
+				<h3>subscribe</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">subscribe<span class="tsd-signature-symbol">(</span>topics<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/providertoptions.html" class="tsd-signature-type">ProvidertOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/393ca50/packages/aws-amplify/src/PubSub/PubSub.ts#L73">PubSub/PubSub.ts:73</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>topics: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>options: <a href="../interfaces/providertoptions.html" class="tsd-signature-type">ProvidertOptions</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
 			</section>
 		</section>
 		<footer class="with-border-bottom">
