@@ -2,7 +2,7 @@
 ---
 # Hub
 
-AWS Amplify has a lightweight Pub-Sub system called Hub. It is used to share data between modules and components with the help of event subscriptions.
+AWS Amplify has a lightweight local PubSub system called Hub. It is used to share data between modules and components with the help of event subscriptions.
 
 ## Installation
 
