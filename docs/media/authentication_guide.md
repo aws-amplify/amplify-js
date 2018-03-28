@@ -224,7 +224,7 @@ ga.signIn().then(googleUser => {
 });
 ```
 
-Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenId. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `open.lalala.com`.
+Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenId. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `open.your-openid-provider.com`.
 
  NOTE: Federated Identity HOCs are not yet available on React Native.
  {: .callout .callout--info}
