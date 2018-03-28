@@ -192,7 +192,7 @@ const federated = {
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
 
-You can also initiate a federated signin process by calling `Auth.federatedSignIn()` medhod in your code:  
+You can also initiate a federated signin process by calling `Auth.federatedSignIn()` medhod with a specific identity provider in your code:  
 
 ```js
 import { Auth } from 'aws-amplify';
@@ -207,9 +207,8 @@ ga.signIn().then(googleUser => {
         name: profile.getName()
     };
 
-    // Initiate federated sign-in with Google user
     return Auth.federatedSignIn(
-        // 'google', 'facebook', 'amazon', 'developer' or specify the url of your federated provider
+        // Initiate federated sign-in with Google identity provider 
         'google',
         { 
             // the JWT token
@@ -224,6 +223,8 @@ ga.signIn().then(googleUser => {
     });
 });
 ```
+
+Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenId. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `open.lalala.com`.
 
  NOTE: Federated Identity HOCs are not yet available on React Native.
  {: .callout .callout--info}
