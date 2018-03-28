@@ -32710,28 +32710,33 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     };
     AWSAnalyticsProvider.prototype._updateEndpoint = function (params) {
         return __awaiter(this, void 0, void 0, function () {
-            var timestamp, config, initClients, _a, appId, region, credentials, cacheKey, endpointId, request, update_params, that;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var timestamp, config, initClients, _a, appId, region, credentials, endpointId, cacheKey, request, update_params, _b, _c, that;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         timestamp = params.timestamp, config = params.config;
                         return [4 /*yield*/, this._init(config)];
                     case 1:
-                        initClients = _b.sent();
+                        initClients = _d.sent();
                         if (!initClients)
                             return [2 /*return*/, false];
                         this._config = Object.assign(this._config, config);
-                        _a = this._config, appId = _a.appId, region = _a.region, credentials = _a.credentials;
+                        _a = this._config, appId = _a.appId, region = _a.region, credentials = _a.credentials, endpointId = _a.endpointId;
                         cacheKey = this.getProviderName() + '_' + appId;
+                        request = this._endpointRequest();
+                        _b = {
+                            ApplicationId: appId
+                        };
+                        _c = endpointId;
+                        if (_c) return [3 /*break*/, 3];
                         return [4 /*yield*/, this._getEndpointId(cacheKey)];
                     case 2:
-                        endpointId = _b.sent();
-                        request = this._endpointRequest();
-                        update_params = {
-                            ApplicationId: appId,
-                            EndpointId: endpointId,
-                            EndpointRequest: request
-                        };
+                        _c = (_d.sent());
+                        _d.label = 3;
+                    case 3:
+                        update_params = (_b.EndpointId = _c,
+                            _b.EndpointRequest = request,
+                            _b);
                         that = this;
                         logger.debug('updateEndpoint with params: ', update_params);
                         return [2 /*return*/, new Promise(function (res, rej) {
