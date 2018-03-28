@@ -166,6 +166,7 @@ export default class AuthClass {
      * @return - A promise resolved if success
      */
     signOut(): Promise<any>;
+    private cleanCachedItems();
     /**
      * Change a password for an authenticated user
      * @param {Object} user - The CognitoUser object
