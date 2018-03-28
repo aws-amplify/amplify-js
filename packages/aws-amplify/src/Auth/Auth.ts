@@ -838,11 +838,9 @@ export default class AuthClass {
      */
     public async signOut(): Promise<any> {
         try {
-            await this.currentCredentials();
-            this.credentials.clearCachedId();
             await this.cleanCachedItems();
         } catch (e) {
-            logger.debug('failed to clear cached items', e);
+            logger.debug('failed to clear cached items');
         }
 
         const source = this.credentials_source;
@@ -871,6 +869,18 @@ export default class AuthClass {
     }
 
     private async cleanCachedItems() {
+        // clear cognito cached items
+        const { identityPoolId, region } = this._config;
+        if (identityPoolId) {
+            const credentials = new CognitoIdentityCredentials(
+            {
+                IdentityPoolId: identityPoolId
+            },  {
+                region
+            });
+            credentials.clearCachedId();
+        }
+        
         // clear federatedInfo
         await Cache.removeItem('federatedInfo');
         await Cache.removeItem('federatedUser');
