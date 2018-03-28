@@ -707,7 +707,7 @@ export default class AuthClass {
      */
     public currentUserCredentials() : Promise<any> {
         const that = this;
-        logger.debug('getting current user credentials');
+        logger.debug('getting current user credential');
         if (Platform.isReactNative) {
             // asyncstorage
             return Cache.getItem('federatedInfo')
