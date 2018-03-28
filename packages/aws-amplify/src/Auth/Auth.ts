@@ -873,7 +873,7 @@ export default class AuthClass {
         const { identityPoolId, region } = this._config;
         if (identityPoolId) {
             const credentials = new CognitoIdentityCredentials(
-            {
+                {
                 IdentityPoolId: identityPoolId
             },  {
                 region
