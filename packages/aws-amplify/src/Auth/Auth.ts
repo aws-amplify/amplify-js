@@ -872,6 +872,7 @@ export default class AuthClass {
         // clear cognito cached items
         const { identityPoolId, region } = this._config;
         if (identityPoolId) {
+            // work around for cognito js sdk to ensure clearCacheId works
             const credentials = new CognitoIdentityCredentials(
                 {
                 IdentityPoolId: identityPoolId
