@@ -12,7 +12,10 @@ export default class AuthClass {
     private user;
     private _refreshHandlers;
     private _gettingCredPromise;
+<<<<<<< HEAD
     private _signedInWith;
+=======
+>>>>>>> upstream/master
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -168,6 +171,7 @@ export default class AuthClass {
      * @return - A promise resolved if success
      */
     signOut(): Promise<any>;
+    private cleanCachedItems();
     /**
      * Change a password for an authenticated user
      * @param {Object} user - The CognitoUser object

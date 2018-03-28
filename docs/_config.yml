@@ -107,8 +107,8 @@ exclude: [ 'README.md', 'CHANGELOG.md' ]
 permalink: /:title
 
 category_list:
-    - category: Modules
-      title: Modules
+    - category: CloudConnectivity
+      title: Cloud Connectivity
       subs:
         - title: Analytics 
           excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
@@ -141,15 +141,15 @@ category_list:
             - title: OAuth 2.0 ,
               url: https://aws.amazon.com/cognito/
             - title: Custom Plugin
-              url:   
-        - title: Storage 
-          excerpt: A simple mechanism for managing user content in public or private storage.
+              url:  
+        - title: PubSub 
+          excerpt: Connect your app to message-oriented middleware on the cloud.
           cta: Read more
-          class: aws-icon-ps-60-file-box
-          url: '/media/storage_guide'   
+          class: aws-icon-ps-60-circular-circuit
+          url: '/media/pub_sub_guide'   
           services:
-              - title: AWS S3
-                url: https://aws.amazon.com/s3/
+              - title: AWS Pinpoint
+                url: https://aws.amazon.com/pinpoint/ 
         - title: Push Notifications 
           excerpt: Push notifications with campaign analytics and targeting.
           cta: Read more
@@ -158,6 +158,14 @@ category_list:
           services:
               - title: AWS Pinpoint
                 url: https://aws.amazon.com/pinpoint/
+        - title: Storage 
+          excerpt: A simple mechanism for managing user content in public or private storage.
+          cta: Read more
+          class: aws-icon-ps-60-file-box
+          url: '/media/storage_guide'   
+          services:
+              - title: AWS S3
+                url: https://aws.amazon.com/s3/
     -  category: Utilities
        title: Utilities
        subs:

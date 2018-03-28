@@ -117,6 +117,7 @@ var AuthClass = /** @class */ (function () {
                 });
             }
         }
+<<<<<<< HEAD
         // initiailize cognitoauth client if hosted ui options provided
         if (hostedUIOptions) {
             var cognitoAuthParams = Object.assign({
@@ -136,6 +137,8 @@ var AuthClass = /** @class */ (function () {
             this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
             logger.debug('hostedUIOptions configured');
         }
+=======
+>>>>>>> upstream/master
         dispatchAuthEvent('configured', null);
         return this._config;
     };
@@ -798,7 +801,11 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.currentUserCredentials = function () {
         var _this = this;
         var that = this;
+<<<<<<< HEAD
         logger.debug('getting current user credentials');
+=======
+        logger.debug('getting current user credential');
+>>>>>>> upstream/master
         if (Platform_1.default.isReactNative) {
             // asyncstorage
             return Cache_1.default.getItem('federatedInfo')
@@ -835,6 +842,43 @@ var AuthClass = /** @class */ (function () {
                     logger.debug('getting session failed', error);
                     return _this._setCredentialsForGuest();
                 });
+<<<<<<< HEAD
+=======
+            }
+        }
+    };
+    AuthClass.prototype._refreshFederatedToken = function (federatedInfo) {
+        var _this = this;
+        var provider = federatedInfo.provider, user = federatedInfo.user;
+        var token = federatedInfo.token;
+        var expires_at = federatedInfo.expires_at;
+        var that = this;
+        logger.debug('checking if federated jwt token expired');
+        if (expires_at < new Date().getTime()
+            && typeof that._refreshHandlers[provider] === 'function') {
+            logger.debug('getting refreshed jwt token from federation provider');
+            return that._refreshHandlers[provider]().then(function (data) {
+                logger.debug('refresh federated token sucessfully', data);
+                token = data.token;
+                expires_at = data.expires_at;
+                // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+                return that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
+            }).catch(function (e) {
+                logger.debug('refresh federated token failed', e);
+                _this.cleanCachedItems();
+                return Promise.reject('refreshing federation token failed: ' + e);
+            });
+        }
+        else {
+            if (!that._refreshHandlers[provider]) {
+                logger.debug('no refresh hanlder for provider:', provider);
+                this.cleanCachedItems();
+                return Promise.reject('no refresh hanlder for provider');
+            }
+            else {
+                logger.debug('token not expired');
+                return this._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
+>>>>>>> upstream/master
             }
         }
     };
@@ -925,43 +969,104 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.signOut = function () {
         return __awaiter(this, void 0, void 0, function () {
+<<<<<<< HEAD
             var _this = this;
             var source, user, that;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.currentCredentials()];
+=======
+            var e_3, source, user, that;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.cleanCachedItems()];
+>>>>>>> upstream/master
                     case 1:
                         _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        e_3 = _a.sent();
+                        logger.debug('failed to clear cached items');
+                        return [3 /*break*/, 3];
+                    case 3:
                         source = this.credentials_source;
+<<<<<<< HEAD
                         // clean out the cached stuff
                         this.credentials.clearCachedId();
                         // clear federatedInfo
                         Cache_1.default.removeItem('federatedInfo');
                         Cache_1.default.removeItem('federatedUser');
+=======
+>>>>>>> upstream/master
                         if (source === 'aws' || source === 'userPool') {
                             if (!this.userPool) {
                                 return [2 /*return*/, Promise.reject('No userPool')];
                             }
                             user = this.userPool.getCurrentUser();
-                            if (!user) {
-                                return [2 /*return*/, Promise.resolve()];
+                            if (user) {
+                                logger.debug('user sign out', user);
+                                user.signOut();
                             }
+<<<<<<< HEAD
                             logger.debug('user sign out', user);
                             user.signOut();
                             if (this._cognitoAuthClient) {
                                 this._cognitoAuthClient.signOut();
                             }
+=======
+>>>>>>> upstream/master
                         }
                         that = this;
                         return [2 /*return*/, new Promise(function (resolve, reject) {
                                 that._setCredentialsForGuest().then(function (cred) {
+<<<<<<< HEAD
                                     dispatchAuthEvent('signOut', _this.user);
                                     that.user = null;
                                     resolve();
                                 }).catch(function (e) {
                                     reject('cannot get guest credentials');
+=======
+                                    dispatchAuthEvent('signOut', that.user);
+                                    that.user = null;
+                                    resolve();
+                                }).catch(function (e) {
+                                    logger.debug('cannot load guest credentials for unauthenticated user');
+                                    dispatchAuthEvent('signOut', that.user);
+                                    that.user = null;
+                                    resolve();
+>>>>>>> upstream/master
                                 });
                             })];
+                }
+            });
+        });
+    };
+    AuthClass.prototype.cleanCachedItems = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, identityPoolId, region, mandatorySignIn, credentials;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
+                        if (identityPoolId) {
+                            credentials = new CognitoIdentityCredentials({
+                                IdentityPoolId: identityPoolId
+                            }, {
+                                region: region
+                            });
+                            credentials.clearCachedId();
+                        }
+                        // clear federatedInfo
+                        return [4 /*yield*/, Cache_1.default.removeItem('federatedInfo')];
+                    case 1:
+                        // clear federatedInfo
+                        _b.sent();
+                        return [4 /*yield*/, Cache_1.default.removeItem('federatedUser')];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/];
                 }
             });
         });
@@ -1102,6 +1207,11 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.federatedSignIn = function (provider, response, user) {
         var _this = this;
         var token = response.token, expires_at = response.expires_at;
+<<<<<<< HEAD
+=======
+        // store it into localstorage
+        // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+>>>>>>> upstream/master
         var that = this;
         return new Promise(function (res, rej) {
             that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at }).then(function (cred) {
@@ -1212,9 +1322,16 @@ var AuthClass = /** @class */ (function () {
             'amazon': 'www.amazon.com',
             'developer': 'cognito-identity.amazonaws.com'
         };
+<<<<<<< HEAD
         var domain = domains[provider];
         if (!domain) {
             return Promise.reject(provider + ' is not supported: [google, facebook, amazon, developer]');
+=======
+        // Use custom provider url instead of the predefined ones
+        var domain = domains[provider] || provider;
+        if (!domain) {
+            return Promise.reject('You must specify a federated provider');
+>>>>>>> upstream/master
         }
         var logins = {};
         logins[domain] = token;

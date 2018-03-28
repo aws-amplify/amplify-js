@@ -47,7 +47,7 @@ I18n.putVocabularies(dict);
 Retrieves a phrase from the dictionary for the active language. If the phrase does not have an entry in dictionary, the original parameter value will be returned.
 
 ```js
-    I18n.get('Sign In');
+I18n.get('Sign In');
 ```
 
 ### API Reference

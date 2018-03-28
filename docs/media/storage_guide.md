@@ -39,7 +39,7 @@ Manual setup enables you to use your existing Amazon Cognito and Amazon S3 crede
 ```js
 import Amplify from 'aws-amplify';
 
-Amplify.configure(
+Amplify.configure({
     Auth: {
         identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
         region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
@@ -50,7 +50,7 @@ Amplify.configure(
         bucket: '', //REQUIRED -  Amazon S3 bucket
         region: 'XX-XXXX-X', //OPTIONAL -  Amazon service region
     }
-);
+});
 
 ```
 
