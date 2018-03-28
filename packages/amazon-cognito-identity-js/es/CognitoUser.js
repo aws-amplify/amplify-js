@@ -223,9 +223,7 @@ var CognitoUser = function () {
   };
 
   /**
-   * PRIVATE ONLY: This is an internal only method and should not
-   * be directly called by the consumers.
-   * It calls the AuthenticationHelper for SRP related
+   * This is used for authenticating the user. it calls the AuthenticationHelper for SRP related
    * stuff
    * @param {AuthenticationDetails} authDetails Contains the authentication data
    * @param {object} callback Result callback map.
