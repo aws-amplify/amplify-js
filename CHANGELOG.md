@@ -2,6 +2,21 @@
 <!--LATEST=0.2.8-->
 <!--ENTRYINSERT-->
 
+## 03/28/2018
+* aws-amplify - v0.2.13
+    * Enhancement: Refreshing Federated jwt token on need. #191
+    * Enhancement: Binding console to console functions #458
+    * Enhancement: Customize endpoint userId and attributes #437
+    * Enhancement: Analytics turn on/off #479
+    * Enhancement: Add params.ContentDisposition to Storage.put() #501
+    * Enhancement: Make Storage operations options optional #527
+    * Enhaneement: Adding custom federated auth provider #540
+    * Feature: Initial implementation of PubSub category #460
+    * Bug Fix: Retrieving credentials only once when reloading pages #486
+    * Bug Fix: Sign out fix #511
+* aws-amplify-react - v0.1.37@beta
+    * Enhancement: adding `onError` support for withGoogle Federated login #475
+
 ## 03/22/2018
 * aws-amplify - v0.2.12@beta
     * Enhancement: Refreshing Federated jwt token on need. #191
