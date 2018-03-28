@@ -29,7 +29,7 @@ In your app's entry point i.e. App.js, import and load the configuration file `a
 
 ```js
 import Amplify, { Auth } from 'aws-amplify';
-import aws_exports from './aws-exports';
+import aws_exports from './aws-exports'; // specify the location of aws-exports.js file on your project
 Amplify.configure(aws_exports);
 ```
 
@@ -78,7 +78,6 @@ Here, we provide examples for most common authentication use cases:
 #### Sign In
 ```js
 import { Auth } from 'aws-amplify';
-import './aws-exports' // <-- use this if you used the cli to bootstrap your project
 
 Auth.signIn(username, password)
     .then(user => console.log(user))
@@ -210,7 +209,7 @@ ga.signIn().then(googleUser => {
 
     // Initiate federated sign-in with Google user
     return Auth.federatedSignIn(
-        // 'google', 'facebook', 'amazon' or 'developer'
+        // 'google', 'facebook', 'amazon', 'developer' or specify the url of your federated provider
         'google',
         { 
             // the JWT token
