@@ -3,7 +3,7 @@
 <!--ENTRYINSERT-->
 
 ## 03/28/2018
-* aws-amplify - v0.2.13
+* aws-amplify - v0.2.14
     * Enhancement: Refreshing Federated jwt token on need. #191
     * Enhancement: Binding console to console functions #458
     * Enhancement: Customize endpoint userId and attributes #437
