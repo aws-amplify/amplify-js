@@ -3,7 +3,7 @@
 <!--ENTRYINSERT-->
 
 ## 03/28/2018
-* aws-amplify - v0.2.13
+* aws-amplify - v0.2.14
     * Enhancement: Refreshing Federated jwt token on need. #191
     * Enhancement: Binding console to console functions #458
     * Enhancement: Customize endpoint userId and attributes #437
@@ -15,7 +15,7 @@
     * Bug Fix: Retrieving credentials only once when reloading pages #486
     * Bug Fix: Sign out fix #511
     * Bug Fix: Credentials expired case handle #528
-* aws-amplify-react - v0.1.37@beta
+* aws-amplify-react - v0.1.38
     * Enhancement: adding `onError` support for withGoogle Federated login #475
 
 ## 03/22/2018
