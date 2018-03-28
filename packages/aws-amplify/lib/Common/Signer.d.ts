@@ -6,4 +6,5 @@
 */
 export default class Signer {
     static sign: (request: any, access_info: any, service_info?: any) => any;
+    static signUrl: (urlToSign: String, accessInfo: any, serviceInfo?: any, expiration?: Number) => any;
 }
