@@ -29,7 +29,7 @@ In your app's entry point i.e. App.js, import and load the configuration file `a
 
 ```js
 import Amplify, { Auth } from 'aws-amplify';
-import aws_exports from './aws-exports';
+import aws_exports from './aws-exports'; // specify the location of aws-exports.js file on your project
 Amplify.configure(aws_exports);
 ```
 
@@ -78,7 +78,6 @@ Here, we provide examples for most common authentication use cases:
 #### Sign In
 ```js
 import { Auth } from 'aws-amplify';
-import './aws-exports' // <-- use this if you used the cli to bootstrap your project
 
 Auth.signIn(username, password)
     .then(user => console.log(user))
@@ -193,7 +192,7 @@ const federated = {
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
 
-You can also initiate a federated signin process by calling `Auth.federatedSignIn()` medhod in your code:  
+You can also initiate a federated signin process by calling `Auth.federatedSignIn()` method with a specific identity provider in your code:  
 
 ```js
 import { Auth } from 'aws-amplify';
@@ -208,9 +207,8 @@ ga.signIn().then(googleUser => {
         name: profile.getName()
     };
 
-    // Initiate federated sign-in with Google user
     return Auth.federatedSignIn(
-        // 'google', 'facebook', 'amazon' or 'developer'
+        // Initiate federated sign-in with Google identity provider 
         'google',
         { 
             // the JWT token
@@ -225,6 +223,8 @@ ga.signIn().then(googleUser => {
     });
 });
 ```
+
+Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenId. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `accounts.your-openid-provider.com`.
 
  NOTE: Federated Identity HOCs are not yet available on React Native.
  {: .callout .callout--info}

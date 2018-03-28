@@ -1105,9 +1105,10 @@ export default class AuthClass {
             'developer': 'cognito-identity.amazonaws.com'
         };
 
-        const domain = domains[provider];
+        // Use custom provider url instead of the predefined ones
+        const domain = domains[provider] || provider;
         if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook, amazon, developer]');
+            return Promise.reject('You must specify a federated provider');
         }
 
         const logins = {};
