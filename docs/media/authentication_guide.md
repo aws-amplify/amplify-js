@@ -29,7 +29,7 @@ In your app's entry point i.e. App.js, import and load the configuration file `a
 
 ```js
 import Amplify, { Auth } from 'aws-amplify';
-import aws_exports from './aws-exports';
+import aws_exports from './aws-exports'; // specify the location of aws-exports.js file on your project
 Amplify.configure(aws_exports);
 ```
 
@@ -78,7 +78,6 @@ Here, we provide examples for most common authentication use cases:
 #### Sign In
 ```js
 import { Auth } from 'aws-amplify';
-import './aws-exports' // <-- use this if you used the cli to bootstrap your project
 
 Auth.signIn(username, password)
     .then(user => console.log(user))
@@ -179,7 +178,7 @@ Now, your app will have complete flows for user sign-in and registration. Since 
 
 #### Enabling Federated Identities
 
-You can enable federated Identity login by specifying *federated* option. Here is a configuration enabling social login with multiple providers:
+You can enable federated Identity login by specifying *federated* option. Here is a configuration for enabling social login with multiple providers:
 
 ```js
 const AppWithAuth = withAuthenticator(App);
@@ -192,6 +191,40 @@ const federated = {
 
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
+
+You can also initiate a federated signin process by calling `Auth.federatedSignIn()` method with a specific identity provider in your code:  
+
+```js
+import { Auth } from 'aws-amplify';
+
+// Retrieve active Google user session
+const ga = window.gapi.auth2.getAuthInstance();
+ga.signIn().then(googleUser => {
+    const { id_token, expires_at } = googleUser.getAuthResponse();
+    const profile = googleUser.getBasicProfile();
+    const user = {
+        email: profile.getEmail(),
+        name: profile.getName()
+    };
+
+    return Auth.federatedSignIn(
+        // Initiate federated sign-in with Google identity provider 
+        'google',
+        { 
+            // the JWT token
+            token: id_token, 
+            // the expiration time
+            expires_at 
+        },
+        // a user object
+        user
+    ).then(() => {
+        // ...
+    });
+});
+```
+
+Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenId. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `accounts.your-openid-provider.com`.
 
  NOTE: Federated Identity HOCs are not yet available on React Native.
  {: .callout .callout--info}

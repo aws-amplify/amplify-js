@@ -849,6 +849,30 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 	    });
   ```
 
+**Use case 32.** Handling expiration of the Id Token. 
+
+  ```js
+      refresh_token = session.getRefreshToken(); // receive session from calling cognitoUser.getSession()
+      if (AWS.config.credentials.needsRefresh()) {
+        cognitoUser.refreshSession(refresh_token, (err, session) => {
+          if(err) {
+            console.log(err);
+          } 
+          else {
+            AWS.config.credentials.params.Logins['cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>']  = session.getIdToken().getJwtToken();
+            AWS.config.credentials.refresh((err)=> {
+              if(err)  {
+                console.log(err);
+              }
+              else{
+                console.log("TOKEN SUCCESSFULLY UPDATED");
+              }
+            });
+          }
+        });
+      }
+  ```  
+
 ## Network Configuration
 The Amazon Cognito Identity JavaScript SDK will make requests to the following endpoints
 * For Amazon Cognito User Pool service request handling: "https://cognito-idp.us-east-1.amazonaws.com"
