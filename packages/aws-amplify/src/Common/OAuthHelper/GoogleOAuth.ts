@@ -46,6 +46,8 @@ export default class GoogleOAuth {
 
                             res({ token: id_token, expires_at });
                         });
+                } else {
+                    rej('User is not signed in with Google');
                 }
             }).catch(err => {
                 logger.debug('Failed to refresh google token', err);

@@ -21,14 +21,14 @@ export default class StorageClass {
      * @param {Object} config - Configuration of the Storage
      * @return {Object} - Current configuration
      */
-    configure(options: any): any;
+    configure(options?: any): any;
     /**
     * Get a presigned URL of the file
     * @param {String} key - key of the object
     * @param {Object} [options] - { level : private|public }
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
-    get(key: string, options: any): Promise<Object>;
+    get(key: string, options?: any): Promise<Object>;
     /**
      * Put a file in S3 bucket specified to configure method
      * @param {Stirng} key - key of the object
@@ -36,21 +36,21 @@ export default class StorageClass {
      * @param {Object} [options] - { level : private|public, contentType: MIME Types }
      * @return - promise resolves to object on success
      */
-    put(key: string, object: any, options?: {}): Promise<Object>;
+    put(key: string, object: any, options?: any): Promise<Object>;
     /**
      * Remove the object for specified key
      * @param {String} key - key of the object
      * @param {Object} [options] - { level : private|public }
      * @return - Promise resolves upon successful removal of the object
      */
-    remove(key: string, options: any): Promise<any>;
+    remove(key: string, options?: any): Promise<any>;
     /**
      * List bucket objects relative to the level and prefix specified
      * @param {String} path - the path that contains objects
      * @param {Object} [options] - { level : private|public }
      * @return - Promise resolves to list of keys for all objects in path
      */
-    list(path: any, options: any): Promise<any>;
+    list(path: any, options?: any): Promise<any>;
     /**
      * @private
      */

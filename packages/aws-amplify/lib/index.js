@@ -24,6 +24,8 @@ exports.StorageClass = Storage_1.StorageClass;
 var API_1 = require("./API");
 exports.API = API_1.default;
 exports.APIClass = API_1.APIClass;
+var PubSub_1 = require("./PubSub");
+exports.PubSub = PubSub_1.default;
 var I18n_1 = require("./I18n");
 exports.I18n = I18n_1.default;
 var Cache_1 = require("./Cache");
@@ -48,6 +50,7 @@ var Amplify = /** @class */ (function () {
         API_1.default.configure(config);
         Storage_1.default.configure(config);
         Cache_1.default.configure(config);
+        PubSub_1.default.configure(config);
         return config;
     };
     Amplify.addPluggable = function (pluggable) {
@@ -65,6 +68,9 @@ var Amplify = /** @class */ (function () {
                     break;
                 case 'Storage':
                     break;
+                case 'PubSub':
+                    PubSub_1.default.addPluggable(pluggable);
+                    break;
                 default:
                     break;
             }
@@ -76,6 +82,7 @@ var Amplify = /** @class */ (function () {
     Amplify.Storage = null;
     Amplify.I18n = null;
     Amplify.Cache = null;
+    Amplify.PubSub = null;
     Amplify.Logger = null;
     return Amplify;
 }());
@@ -86,5 +93,6 @@ Amplify.API = API_1.default;
 Amplify.Storage = Storage_1.default;
 Amplify.I18n = I18n_1.default;
 Amplify.Cache = Cache_1.default;
+Amplify.PubSub = PubSub_1.default;
 Amplify.Logger = Common_1.ConsoleLogger;
 //# sourceMappingURL=index.js.map
