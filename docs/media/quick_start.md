@@ -357,5 +357,5 @@ Auth.currentCredentials()
 ```
 
 Full API Documentation for service interface objects is available [here](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html).
-
+{: .callout .callout--info}
  
