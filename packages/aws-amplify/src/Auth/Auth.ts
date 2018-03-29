@@ -115,6 +115,7 @@ export default class AuthClass {
 
         // initiailize cognitoauth client if hosted ui options provided
         if (hostedUIOptions) {
+            const that = this;
             const cognitoAuthParams = Object.assign(
                 {
                     ClientId: userPoolWebClientId,
@@ -125,7 +126,9 @@ export default class AuthClass {
             this._cognitoAuthClient = new CognitoHostedUI.CognitoAuth(cognitoAuthParams);
             this._cognitoAuthClient.userhandler = {
                     onSuccess: (result) => {
-                        logger.debug("Cognito Hosted authentication result", result);
+                        that.user = that.userPool.getCurrentUser();
+                        dispatchAuthEvent('signIn', that.user);
+                        logger.debug("Cognito Hosted authentication result", result, that.user);
                     },
                     onFailure: (err) => {
                         logger.debug("Error in cognito hosted auth response", err);
