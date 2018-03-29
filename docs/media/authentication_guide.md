@@ -5,7 +5,7 @@ layout: default
 
 # Authentication
 
-AWS Amplify Authentication module provides Authentication APIs and building blocks for developers who want to create user authentication experiences. 
+AWS Amplify Authentication module provides Authentication APIs and building blocks for developers who want to create user authentication experiences.
 
 Depending on your needs, you can integrate Authentication module at different levels. You can use use pre-build UI components for common sign-in/registration scenarios, or you can create your own custom user experience with the API.
 
@@ -22,7 +22,7 @@ $ npm install -g awsmobile-cli
 $ cd my-app #Change to your project's root folder
 $ awsmobile init
 $ awsmobile user-signin enable
-$ awsmobile push #Update your backend 
+$ awsmobile push #Update your backend
 ```
 
 In your app's entry point i.e. App.js, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.
@@ -71,7 +71,7 @@ Amplify.configure({
 
 ### Common Authentication Use Cases
 
-AWS Amplify Authentication module exposes set of APIs to be used in any JavaScript framework. Please check [AWS Amplify API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/authclass.html) for full API list. 
+AWS Amplify Authentication module exposes set of APIs to be used in any JavaScript framework. Please check [AWS Amplify API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/authclass.html) for full API list.
 
 Here, we provide examples for most common authentication use cases:
 
@@ -295,8 +295,8 @@ in the component's constructor, then implement `showComponent(theme) {}` in lieu
 ### Federated Identities (Social Sign-in)
 
 **Availibility Note**
-Currently, our federated identity components only support Google, Facebook and Amazon identities, and works with React. 
-Support for React Native is in progress. Please see our[ Setup Guide for Federated Identities]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/federated_identity_setup). 
+Currently, our federated identity components only support Google, Facebook and Amazon identities, and works with React.
+Support for React Native is in progress. Please see our[ Setup Guide for Federated Identities]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/federated_identity_setup).
 {: .callout .callout--info}
 
 
@@ -315,7 +315,7 @@ return (
 ```
 #### Customize UI
 
-In order to customize the UI for Federated Identities sign-in, you can use `withFederated` component. The following code shows how you customize the login buttons and the layout for social sign-in. 
+In order to customize the UI for Federated Identities sign-in, you can use `withFederated` component. The following code shows how you customize the login buttons and the layout for social sign-in.
 
 ```jsx
 import { withFederated } from 'aws-amplify-react';
@@ -354,7 +354,7 @@ There is also `withGoogle`, `withFacebook`, `withAmazon` components, in case you
 
 ### Enabling MFA (Multi-Factor Authentication)
 
-Multi-factor authentication (MFA) increases security for your app by adding an authentication method and not relying solely on username (or alias) and password. AWS Amplify uses Amazon Cognito to provide MFA. Please see [Amazon Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html) for more information about setting up MFA in Amazon Cognito. 
+Multi-factor authentication (MFA) increases security for your app by adding an authentication method and not relying solely on username (or alias) and password. AWS Amplify uses Amazon Cognito to provide MFA. Please see [Amazon Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html) for more information about setting up MFA in Amazon Cognito.
 
 Once you enable MFA on Amazon Cognito, you can configure your app to work with MFA.
 
@@ -382,7 +382,7 @@ Auth.setupTOTP(user).then((code) => {
 // Then you will have your TOTP account in your TOTP-generating app (like Google Authenticator)
 // Use the generated one-time password to verify the setup
 Auth.verifyTotpToken(user, challengeAnswer).then(() => {
-    
+
     // don't forget to set TOTP as the preferred MFA method
     Auth.setPreferredMFA(user, 'TOTP');
     // ...
@@ -457,9 +457,9 @@ Auth.signUp({
     'attributes': {
         'email': 'me@domain.com',
         'phone_number': '+12128601234', // E.164 number convention
-        'first_name': 'Jane',
-        'last_name': 'Doe',
-        'nick_name': 'Jane'
+        'given_name': 'Jane',
+        'family_name': 'Doe',
+        'nickname': 'Jane'
     }
 });
 ```
@@ -475,7 +475,7 @@ You can update user attributes:
 ```js
 let result = await Auth.updateUserAttributes(user, {
     'email': 'me@anotherdomain.com',
-    'last_name': 'Lastname'
+    'family_name': 'Lastname'
 });
 console.log(result); // SUCCESS
 ```
@@ -574,8 +574,8 @@ const AlwaysOn = (props) => {
 }
 
 handleAuthStateChange(state) {
-    if (state === 'signedIn') { 
-        /* Do something when the user has signed-in */ 
+    if (state === 'signedIn') {
+        /* Do something when the user has signed-in */
     }
 }
 
@@ -619,7 +619,7 @@ The *Greetings* component has two states: signedIn, and signedOut. To customize 
 </Authenticator>
 ```
 
-### Customize `withAuthenticator` 
+### Customize `withAuthenticator`
 
 The `withAuthenticator` HOC gives you some nice default authentication screens out-of-box. If you want to
 use your own components rather then provided default components, you can pass the list of customized components to `withAuthenticator`:
