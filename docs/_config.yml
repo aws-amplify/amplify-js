@@ -121,7 +121,7 @@ category_list:
             - title: AWS Kinesis,
               url: https://aws.amazon.com/kinesis/
             - title: Custom Plugin
-              url: 
+              url: https://aws.github.io/aws-amplify/media/analytics_guide#create-a-custom-analytics-plugin
         - title: API 
           excerpt: A simple and secure solution for making HTTP requests.
           cta: Read more
@@ -148,8 +148,10 @@ category_list:
           class: aws-icon-ps-60-circular-circuit
           url: '/media/pub_sub_guide'   
           services:
-              - title: AWS Pinpoint
-                url: https://aws.amazon.com/pinpoint/ 
+              - title: Generic MQTT ,
+                url: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html#mqtt
+              - title: AWS IoT (Coming soon)
+                url: https://aws.amazon.com/iot/
         - title: Push Notifications 
           excerpt: Push notifications with campaign analytics and targeting.
           cta: Read more
@@ -174,7 +176,7 @@ category_list:
           cta: Read more
           url: '/media/cache_guide'  
         - title: Hub  
-          excerpt: A lightweight Pub-Sub system.
+          excerpt: A lightweight local event bus for your app.
           cta: Read more
           url: '/media/hub_guide' 
         - title: I18n  
