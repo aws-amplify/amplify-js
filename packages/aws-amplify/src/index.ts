@@ -15,6 +15,7 @@ import Analytics, { AnalyticsClass, AnalyticsProvider } from './Analytics';
 import Auth, { AuthClass } from './Auth';
 import Storage, { StorageClass } from './Storage';
 import API, { APIClass } from './API';
+import PubSub from './PubSub';
 import I18n from './I18n';
 import Cache from './Cache';
 import {
@@ -34,6 +35,7 @@ export default class Amplify {
     static Storage: StorageClass = null;
     static I18n = null;
     static Cache = null;
+    static PubSub = null;
 
     static Logger = null;
 
@@ -45,6 +47,7 @@ export default class Amplify {
         API.configure(config);
         Storage.configure(config);
         Cache.configure(config);
+        PubSub.configure(config);
 
         return config;
     }
@@ -64,6 +67,9 @@ export default class Amplify {
                     break;
                 case 'Storage':
                     break;
+                case 'PubSub':
+                    PubSub.addPluggable(pluggable);
+                    break;
                 default:
                     break;
             }
@@ -77,8 +83,9 @@ Amplify.API = API;
 Amplify.Storage = Storage;
 Amplify.I18n = I18n;
 Amplify.Cache = Cache;
+Amplify.PubSub = PubSub;
 
 Amplify.Logger = Logger;
 
-export { Auth, Analytics, Storage, API, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
+export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
 export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider };

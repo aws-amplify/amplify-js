@@ -4,6 +4,9 @@ import S3Image from '../../src/Storage/S3Image';
 import React from 'react';
 import { Storage, JS } from 'aws-amplify';
 
+const timespy = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => {
+    return 0
+});
 describe('S3Album test', () => {
     describe('render test', () => {
         test('render correctly if has images and texts', () => {

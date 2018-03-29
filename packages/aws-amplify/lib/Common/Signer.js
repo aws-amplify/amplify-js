@@ -11,9 +11,18 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
 var logger = new Common_1.ConsoleLogger('Signer'), url = require('url'), crypto = Common_1.AWS['util'].crypto;
+var DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
 var encrypt = function (key, src, encoding) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
 };
@@ -208,7 +217,7 @@ var sign = function (request, access_info, service_info) {
     if (service_info === void 0) { service_info = null; }
     request.headers = request.headers || {};
     // datetime string and date string
-    var dt = new Date(), dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''), d_str = dt_str.substr(0, 8), algorithm = 'AWS4-HMAC-SHA256';
+    var dt = new Date(), dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''), d_str = dt_str.substr(0, 8);
     var url_info = url.parse(request.url);
     request.headers['host'] = url_info.host;
     request.headers['x-amz-date'] = dt_str;
@@ -219,13 +228,40 @@ var sign = function (request, access_info, service_info) {
     var request_str = canonical_request(request);
     logger.debug(request_str);
     // Task 2: Create a String to Sign
-    var serviceInfo = service_info || parse_service_info(request), scope = credential_scope(d_str, serviceInfo.region, serviceInfo.service), str_to_sign = string_to_sign(algorithm, request_str, dt_str, scope);
+    var serviceInfo = service_info || parse_service_info(request), scope = credential_scope(d_str, serviceInfo.region, serviceInfo.service), str_to_sign = string_to_sign(DEFAULT_ALGORITHM, request_str, dt_str, scope);
     // Task 3: Calculate the Signature
     var signing_key = get_signing_key(access_info.secret_key, d_str, serviceInfo), signature = get_signature(signing_key, str_to_sign);
     // Task 4: Adding the Signing information to the Request
-    var authorization_header = get_authorization_header(algorithm, access_info.access_key, scope, signed_headers(request.headers), signature);
+    var authorization_header = get_authorization_header(DEFAULT_ALGORITHM, access_info.access_key, scope, signed_headers(request.headers), signature);
     request.headers['Authorization'] = authorization_header;
     return request;
+};
+var signUrl = function (urlToSign, accessInfo, serviceInfo, expiration) {
+    var now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
+    var today = now.substr(0, 8);
+    var parsedUrl = url.parse(urlToSign, true, true);
+    var host = parsedUrl.host;
+    var signedHeaders = { host: host };
+    var _a = serviceInfo || parse_service_info({ url: url.format(parsedUrl) }), region = _a.region, service = _a.service;
+    var credentialScope = credential_scope(today, region, service);
+    var queryParams = __assign({ 'X-Amz-Algorithm': DEFAULT_ALGORITHM, 'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'), 'X-Amz-Date': now.substr(0, 16) }, (expiration && { 'X-Amz-Expires': "" + expiration }), { 'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(',') });
+    var canonicalRequest = canonical_request({
+        method: 'GET',
+        url: url.format(__assign({}, parsedUrl, { query: __assign({}, parsedUrl.query, queryParams) })),
+        headers: signedHeaders,
+    });
+    var stringToSign = string_to_sign(DEFAULT_ALGORITHM, canonicalRequest, now, credentialScope);
+    var signing_key = get_signing_key(accessInfo.secret_key, today, { region: region, service: service });
+    var signature = get_signature(signing_key, stringToSign);
+    var additionalQueryParams = __assign({ 'X-Amz-Signature': signature }, (accessInfo.session_token && { 'X-Amz-Security-Token': accessInfo.session_token }));
+    var result = url.format({
+        protocol: parsedUrl.protocol,
+        slashes: true,
+        hostname: parsedUrl.hostname,
+        pathname: parsedUrl.pathname,
+        query: __assign({}, parsedUrl.query, queryParams, additionalQueryParams)
+    });
+    return result;
 };
 /**
 * AWS request signer.
@@ -237,6 +273,7 @@ var Signer = /** @class */ (function () {
     function Signer() {
     }
     Signer.sign = sign;
+    Signer.signUrl = signUrl;
     return Signer;
 }());
 exports.default = Signer;

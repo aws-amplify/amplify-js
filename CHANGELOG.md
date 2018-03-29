@@ -2,6 +2,49 @@
 <!--LATEST=0.2.8-->
 <!--ENTRYINSERT-->
 
+## 03/28/2018
+* aws-amplify - v0.2.14
+    * Enhancement: Refreshing Federated jwt token on need. #191
+    * Enhancement: Binding console to console functions #458
+    * Enhancement: Customize endpoint userId and attributes #437
+    * Enhancement: Analytics turn on/off #479
+    * Enhancement: Add params.ContentDisposition to Storage.put() #501
+    * Enhancement: Make Storage operations options optional #527
+    * Enhaneement: Adding custom federated auth provider #540
+    * Feature: Initial implementation of PubSub category #460
+    * Bug Fix: Retrieving credentials only once when reloading pages #486
+    * Bug Fix: Sign out fix #511
+    * Bug Fix: Credentials expired case handle #528
+* aws-amplify-react - v0.1.38
+    * Enhancement: adding `onError` support for withGoogle Federated login #475
+
+## 03/22/2018
+* aws-amplify - v0.2.12@beta
+    * Enhancement: Refreshing Federated jwt token on need. #191
+    * Enhancement: Binding console to console functions #458
+    * Enhancement: Customize endpoint userId and attributes #437
+    * Enhancement: Analytics turn on/off #479
+    * Bug Fix: Retrieving credentials only once when reloading pages #486
+* aws-amplify-react - v0.1.37@beta
+    * Enhancement: adding `onError` support for withGoogle Federated login #475
+
+## 03/19/2018
+* aws-amplify - v0.2.11
+    * Enhancement: Analytics customize endpointId #421
+    * Enhancement: Auth TOTP #407
+    * Enhancement: Add support for developer authenticated strategies #425
+    * Enhancement: Generate declaration file #381
+    * Enhancement: Cognito cookie storage #398
+    * Feature: Analytics plugin #236
+* aws-amplify-react - v0.1.36
+    * Enhancement: Make options parameter optional in Storage.put #406
+    * Enhancement: Auth TOTP #407
+    * Bug Fix: Fix issue #357 for authenticator hidedefault #400
+* aws-amplify-react-native - v0.2.7
+    * Bug Fix: asyncStorageCache #412
+* amazon-cognito-identity-js - v2.0.2
+    * Enhancement: Missing types fix #454
+
 ## 03/12/2018
 * aws-amplify - v0.2.10@beta
     * Enhancement: Analytics customize endpointId #421

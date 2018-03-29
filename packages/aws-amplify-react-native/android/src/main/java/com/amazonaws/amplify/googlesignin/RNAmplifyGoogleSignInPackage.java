@@ -18,7 +18,7 @@ public class RNAmplifyGoogleSigninPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new RNGoogleSigninModule(reactContext));
+        modules.add(new RNAmplifyGoogleSigninModule(reactContext));
         return modules;
     }
 
