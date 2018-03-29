@@ -29,12 +29,12 @@ export class FederatedButtons extends Component {
         }
 
         const { theme, onStateChange } = this.props;
-        return <GoogleButton
-                google_ios_client_id={google_ios_client_id}
-                google_web_client_id={google_web_client_id}
-                theme={theme}
-                onStateChange={onStateChange}
-                />
+        return React.createElement(GoogleButton, {
+            google_ios_client_id: google_ios_client_id,
+            google_web_client_id: google_web_client_id,
+            theme: theme,
+            onStateChange: onStateChange
+        });
     }
 
     render() {
@@ -51,11 +51,11 @@ export class FederatedButtons extends Component {
         const { google_web_client_id, google_ios_client_id } = federated;
 
         const theme = this.props.theme || AmplifyTheme;
-        return (
-            <ActionRow theme={theme}>
-            {this.google(google_web_client_id, google_ios_client_id)}
-            </ActionRow>
-            );
+        return React.createElement(
+            ActionRow,
+            { theme: theme },
+            this.google(google_web_client_id, google_ios_client_id)
+        );
     }
 }
 
@@ -71,17 +71,19 @@ export default class FederatedSignIn extends Component {
         }
         console.log('FACEBOOK /Google LOGIN FACEBOOK ID signin render');
         const theme = this.props.theme || AmplifyTheme;
-        return (
-            <FormSection theme={theme}>
-                <SectionBody theme={theme}>
-                    <FederatedButtons
-                        federated={federated}
-                        theme={theme}
-                        authState={authState}
-                        onStateChange={onStateChange}
-                    />
-                </SectionBody>
-            </FormSection>
+        return React.createElement(
+            FormSection,
+            { theme: theme },
+            React.createElement(
+                SectionBody,
+                { theme: theme },
+                React.createElement(FederatedButtons, {
+                    federated: federated,
+                    theme: theme,
+                    authState: authState,
+                    onStateChange: onStateChange
+                })
+            )
         );
     }
-} 
+}
