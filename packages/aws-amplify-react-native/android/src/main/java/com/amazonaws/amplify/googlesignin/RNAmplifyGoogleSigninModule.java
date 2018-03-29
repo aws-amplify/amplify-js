@@ -1,4 +1,4 @@
-package com.awsamazon.amplify.googlesignin;
+package com.amazonaws.amplify.googlesignin;
 
 import android.accounts.Account;
 import android.app.Activity;
@@ -36,20 +36,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class RNAmplifyGoogleSigninModule extends ReactContextBaseJavaModule {
+public class RNAmplifyGoogleSignInModule extends ReactContextBaseJavaModule {
     private GoogleApiClient _apiClient;
 
     public static final int RC_SIGN_IN = 9001;
 
-    public RNAmplifyGoogleSigninModule(final ReactApplicationContext reactContext) {
+    public RNAmplifyGoogleSignInModule(final ReactApplicationContext reactContext) {
         super(reactContext);
-        reactContext.addActivityEventListener(new RNAmplifyGoogleSigninActivityEventListener());
+        reactContext.addActivityEventListener(new RNAmplifyGoogleSignInActivityEventListener());
     }
 
-    private class RNAmplifyGoogleSigninActivityEventListener extends BaseActivityEventListener {
+    private class RNAmplifyGoogleSignInActivityEventListener extends BaseActivityEventListener {
         @Override
         public void onActivityResult(Activity activity, final int requestCode, final int resultCode, final Intent intent) {
-            if (requestCode == RNAmplifyGoogleSigninModule.RC_SIGN_IN) {
+            if (requestCode == RNAmplifyGoogleSignInModule.RC_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(intent);
                 handleSignInResult(result, false);
             }
@@ -58,7 +58,7 @@ public class RNAmplifyGoogleSigninModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "RNAmplifyGoogleSignin";
+        return "RNAmplifyGoogleSignIn";
     }
 
   
