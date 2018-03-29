@@ -7,7 +7,7 @@ layout: default
 
 AWS Amplify Authentication module provides Authentication APIs and building blocks for developers who want to create user authentication experiences. 
 
-Depending on your needs, you can integrate Authentication module at different levels. You can use use pre-build UI components for common sing-in/registration scenarios, or you can create your own custom user experience with the API.
+Depending on your needs, you can integrate Authentication module at different levels. You can use use pre-build UI components for common sign-in/registration scenarios, or you can create your own custom user experience with the API.
 
 ## Installation and Configuration
 
