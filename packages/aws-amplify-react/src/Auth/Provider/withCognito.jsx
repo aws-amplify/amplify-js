@@ -23,13 +23,11 @@ export default function withCognito(Comp) {
             const { 
                 AppWebDomain,  
                 RedirectUriSignIn, 
-                RedirectUriSignOut } = config.hostedUIOptions;
+                RedirectUriSignOut,
+                ResponseType } = config.hostedUIOptions;
             const clientId = config.userPoolWebClientId;
-            const responseType = 'token';
-            const url = 'https://' + AppWebDomain + '/login?redirect_uri=' + RedirectUriSignIn + '&response_type=' + responseType + '&client_id=' + clientId;
-            window.location.assign(url);
-
-            
+            const url = 'https://' + AppWebDomain + '/login?redirect_uri=' + RedirectUriSignIn + '&response_type=' + ResponseType + '&client_id=' + clientId;
+            window.location.assign(url);            
         }
 
         render() {

@@ -33,3 +33,11 @@ export interface FederatedResponse {
     token: string;
     expires_at: number;
 }
+export interface hostedUIOptions {
+    AppWebDomain: string;
+    TokenScopesArray: Array<string>;
+    RedirectUriSignIn: string;
+    RedirectUriSignOut: string;
+    AdvancedSecurityDataCollectionFlag: boolean;
+    ResponseType: string;
+}

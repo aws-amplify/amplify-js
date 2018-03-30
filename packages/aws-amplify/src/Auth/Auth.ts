@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { AuthOptions, FederatedResponse } from './types';
+import { AuthOptions, FederatedResponse, hostedUIOptions } from './types';
 
 import {
     AWS,
@@ -123,19 +123,33 @@ export default class AuthClass {
                 },
                 hostedUIOptions
             );
+            const type = hostedUIOptions['ResponseType'];
             this._cognitoAuthClient = new CognitoHostedUI.CognitoAuth(cognitoAuthParams);
             this._cognitoAuthClient.userhandler = {
-                    onSuccess: (result) => {
-                        that.user = that.userPool.getCurrentUser();
-                        dispatchAuthEvent('signIn', that.user);
-                        logger.debug("Cognito Hosted authentication result", result, that.user);
-                    },
-                    onFailure: (err) => {
-                        logger.debug("Error in cognito hosted auth response", err);
-                    }
-                };
-            const curUrl = window.location.href;
-            this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
+                // user signed in
+                onSuccess: (result) => {
+                    that.user = that.userPool.getCurrentUser();
+                    logger.debug("Cognito Hosted authentication result", result);
+                    that.currentSession().then((session) => {
+                        that._setCredentialsFromSession(session).then((cred) => {
+                            logger.debug('sign in succefully with', cred);
+                            dispatchAuthEvent('signIn', that.user);
+                        });
+                    });
+                   
+                },
+                onFailure: (err) => {
+                    logger.debug("Error in cognito hosted auth response", err);
+                }
+            };
+            // if not logged in, try to parse the url.
+            this.currentAuthenticatedUser().then(() => {
+                logger.debug('user already logged in');
+            }).catch(e => {
+                logger.debug('not logged in, try to parse the url');
+                const curUrl = window.location.href;
+                this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
+            })
             logger.debug('hostedUIOptions configured');
         }
 
@@ -667,6 +681,7 @@ export default class AuthClass {
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
     public async currentAuthenticatedUser(): Promise<any> {
+        logger.debug('getting current authenticted user');
         let federatedUser = null;
         try {
             federatedUser = await Cache.getItem('federatedUser');
@@ -697,16 +712,22 @@ export default class AuthClass {
     public currentSession() : Promise<any> {
         let user:any;
         const that = this;
-        logger.debug('getting current session');
+        logger.debug('Getting current session');
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (Platform.isReactNative) {
             return this.getSyncedUser().then(user => {
-                if (!user) { return Promise.reject('No current user'); }
+                if (!user) { 
+                    logger.debug('Failed to get user from user pool');
+                    return Promise.reject('No current user'); 
+                }
                 return that.userSession(user);
             });
         } else {
             user = this.userPool.getCurrentUser();
-            if (!user) { return Promise.reject('No current user'); }
+            if (!user) {
+                logger.debug('Failed to get user from user pool');
+                return Promise.reject('No current user'); 
+            }
             return this.userSession(user);
         }
     }
@@ -718,9 +739,15 @@ export default class AuthClass {
      */
     public userSession(user) : Promise<any> {
         return new Promise((resolve, reject) => {
-            logger.debug(user);
+            logger.debug('Getting the session from this user:', user);
             user.getSession(function(err, session) {
-                if (err) { reject(err); } else { resolve(session); }
+                if (err) { 
+                    logger.debug('Failed to get the session from user', user);
+                    reject(err); 
+                } else {
+                    logger.debug('Succeed to get the user session', session);
+                    resolve(session); 
+                }
             });
         });
     }
@@ -731,7 +758,7 @@ export default class AuthClass {
      */
     public currentUserCredentials() : Promise<any> {
         const that = this;
-        logger.debug('getting current user credential');
+        logger.debug('Getting current user credentials');
         if (Platform.isReactNative) {
             // asyncstorage
             return Cache.getItem('federatedInfo')
@@ -770,6 +797,7 @@ export default class AuthClass {
     }
 
     private _refreshFederatedToken(federatedInfo) {
+        logger.debug('Getting federated credentials');
         const { provider, user } = federatedInfo;
         let token = federatedInfo.token;
         let expires_at = federatedInfo.expires_at;
@@ -803,6 +831,7 @@ export default class AuthClass {
     }
 
     public currentCredentials(): Promise<any> {
+        logger.debug('getting current credntials');
         return this.pickupCredentials();
     }
 
@@ -1204,12 +1233,14 @@ public federatedSignIn(provider: string, response: FederatedResponse, user: obje
     }
 
     private keepAlive() {
+        logger.debug('checking if credentials exists and not expired');
         const cred = this.credentials;
         if (cred && !this._isExpired(cred)) {
-            logger.debug('not changed, directly return credentials');
+            logger.debug('credentials not changed and not expired, directly return');
             return Promise.resolve(cred);
         }
 
+        logger.debug('need to get a new credential or refresh the existing one');
         return this.currentUserCredentials();
     }
 

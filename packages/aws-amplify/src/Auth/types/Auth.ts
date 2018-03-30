@@ -52,3 +52,12 @@ export interface FederatedResponse {
     // the universal time when token expired
     expires_at: number
 }
+
+export interface hostedUIOptions {
+    AppWebDomain : string,
+	TokenScopesArray : Array<string>,
+	RedirectUriSignIn : string,
+	RedirectUriSignOut : string,
+    AdvancedSecurityDataCollectionFlag : boolean
+    ResponseType: string
+}
