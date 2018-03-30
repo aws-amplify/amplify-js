@@ -32,6 +32,7 @@ export interface AuthOptions {
     region?: string,
     mandatorySignIn: boolean
     cookieStorage?: ICookieStorageData,
+    refreshHandlers?: Object
 }
 
 /**
@@ -50,4 +51,6 @@ export interface FederatedResponse {
     token: string,
     // the universal time when token expired
     expires_at: number
+    // the identityId for developer authenticated identities
+    identity_id: string,
 }
