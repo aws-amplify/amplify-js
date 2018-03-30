@@ -33,6 +33,7 @@ import {
     ErrorRow 
 } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
+import { FederatedButtons } from './FederatedSignIn';
 
 const logger = new Logger('SignIn');
 
@@ -98,6 +99,7 @@ export default class SignIn extends AuthPiece {
     }
 
     showComponent(theme) {
+        const {federated, authState, onStateChange} = this.props;
         return (
             <View style={theme.section}>
                 <Header theme={theme}>{I18n.get('Sign In')}</Header>
@@ -115,6 +117,12 @@ export default class SignIn extends AuthPiece {
                         style={theme.button}
                         onPress={this.signIn}
                         disabled={!this.state.username || !this.state.password}
+                    />
+                    <FederatedButtons
+                        federated={federated}
+                        theme={theme}
+                        authState={authState}
+                        onStateChange={onStateChange}
                     />
                 </View>
                 <Footer theme={theme} onStateChange={this.changeState} />

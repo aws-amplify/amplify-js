@@ -57,6 +57,8 @@ export default class Authenticator extends React.Component {
             authData: props.authData
         };
 
+        this.handleAuthEvent = this.handleAuthEvent.bind(this);
+        this.errorRenderer = this.errorRenderer.bind(this);
         this.handleStateChange = this.handleStateChange.bind(this);
         this.checkUser = this.checkUser.bind(this);
     }
@@ -87,6 +89,27 @@ export default class Authenticator extends React.Component {
                 Analytics.record('_userauth.sign_up');
                 break;
         }
+    }
+
+    handleAuthEvent(state, event) {
+        if (event.type === 'error') {
+            const map = this.props.errorMessage || AmplifyMessageMap;
+            const message = typeof map === 'string' ? map : map(event.data);
+            this.setState({ error: message });
+        }
+    }
+
+    errorRenderer(err) {
+        const theme = this.props.theme || AmplifyTheme;
+        return React.createElement(
+            ErrorSection,
+            { theme: theme },
+            React.createElement(
+                SectionBody,
+                { theme: theme },
+                err
+            )
+        );
     }
 
     checkUser() {

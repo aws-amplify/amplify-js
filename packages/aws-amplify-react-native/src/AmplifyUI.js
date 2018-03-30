@@ -12,9 +12,9 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, TouchableHighlight } from 'react-native';
+import { View, Text, TextInput, TouchableHighlight, Button } from 'react-native';
 
-import { I18n } from 'aws-amplify';
+import { I18n, JS } from 'aws-amplify';
 
 export const Username = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -108,3 +108,52 @@ export const ErrorRow = (props) => {
         </View>
     )
 }
+
+export const ActionRow = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    const style = propStyle(props, theme.actionRow);
+    const p = JS.objectLessAttributes(props, 'theme');
+    return (
+        <View {...p}  style={style}>
+            {props.children}
+        </View>
+    )
+}
+
+export const propStyle = (props, themeStyle) => {
+    const { id, style } = props;
+    const styl = Object.assign({}, style, themeStyle);
+    if (!id) { return styl; }
+
+    const selector = '#' + id;
+    Object.assign(styl, styl[selector]);
+    return styl;
+}
+
+export const beforeAfter = (el) => {
+    const style = el.props.style || {};
+    const { before, after } = style;
+    if (!before && !after) { return el; }
+
+    return (
+        <span style={{position: 'relative'}}>
+            {before? <span style={before}>{before.content}</span> : null}
+            {el}
+            {after? <span style={after}>{after.content}</span> : null}
+        </span>
+    )
+}
+
+export const SignInButton = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    const style = propStyle(props, theme.signInButton);
+    const p = JS.objectLessAttributes(props, 'theme');
+
+    return (
+        <Button {...p} className="amplify-signin-button" style={style}>
+            {props.children}
+        </Button>
+    )
+}
+
+

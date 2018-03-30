@@ -25,6 +25,7 @@ import ForgotPassword from './ForgotPassword';
 import RequireNewPassword from './RequireNewPassword';
 import VerifyContact from './VerifyContact';
 import Greetings from './Greetings';
+import {FederatedButtons, FederatedSignIn} from './FederatedSignIn';
 
 const logger = new Logger('auth components');
 
@@ -39,7 +40,9 @@ export {
     Loading,
     RequireNewPassword,
     VerifyContact,
-    Greetings
+    Greetings,
+    FederatedSignIn,
+    FederatedButtons
 };
 
 export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = []) {

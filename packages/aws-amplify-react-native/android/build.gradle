@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.google.gms:google-services:3.1.1'
+        classpath 'com.google.gms:google-services:3.0.0'
     }
 }
 
@@ -16,6 +16,7 @@ allprojects {
         maven {
             url 'https://maven.google.com'
         }
+        maven { url "$projectDir/../node_modules/react-native/android" }
     }
 }
 
@@ -51,6 +52,7 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:11.8.0'
     compile 'com.google.firebase:firebase-core:11.8.0'
     compile 'com.firebase:firebase-jobdispatcher:0.6.0'
+    compile 'com.google.android.gms:play-services-auth:11.8.0'
 
     compile('com.amazonaws:aws-android-sdk-auth-core:2.6.+@aar') {
         transitive = false;
