@@ -2,6 +2,10 @@
 <!--LATEST=0.2.8-->
 <!--ENTRYINSERT-->
 
+## 03/30/2018
+* amazon-cognito-identity-js - v2.0.3
+    * Bug Fix: missing es folder in npm package
+    
 ## 03/28/2018
 * aws-amplify - v0.2.14
     * Enhancement: Refreshing Federated jwt token on need. #191
