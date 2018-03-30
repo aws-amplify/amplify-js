@@ -1,101 +1,123 @@
+---
+---
+
 # Push Notifications
 
-AWS Amplify Push Notifications module allows you to utilize push notifications and supports Amazon Pinpoint campaigns and targeting.
+AWS Amplify Push Notifications module allows you to integrate push notifications in your app with Amazon Pinpoint targeting and campaign management support.
 
-This guide shows an example of sending notifications using Amazon Pinpoint. This service can monitor your app usage, send campaigns to a segment of users based on attributes and demographics, and collect metrics based on push notification interaction using custom events. In order to use Amazon Pinpoint it is required to setup credentials (keys or certificates) for the platform of choice (Android and/or iOS).
+Push Notifications are currently supported only for *React Native*.
+{: .callout .callout--info}
 
-The instructions are split for [Android](android) and [iOS](ios) and can be used on the same React Nastive project. Testing Push Notifications requires a real device (does not work on a simulator/emulator).
-
-* [Installation and Configuration](#installation-and-configuration)
-    - [Setup for Android device](#setup-for-android-device)
-    - [Setup for IOS device](#setup-for-ios-device)
-* [React Native Integration](#integration)
+This guide provides a step-by-step introduction to start working with push notifications in React Native with Amazon Pinpoint. Amazon Pinpoint helps you to monitor your app's usage, create messaging campaigns targeted to specific user segments or demographics, and collect interaction metrics with push notifications. 
 
 ## Installation and Configuration
 
-### Setup for Android device
+Setup instructions are provided for Android and iOS, and configuration for both platforms can be included on the same React Native project. 
 
-First, make sure you have a [Firebase](https://console.firebase.google.com) project and app setup. 
+### Requirements
+1. In order to use Amazon Pinpoint you need to setup credentials (keys or certificates) for your targeted mobile platform; e.g.:Android and/or iOS.
+2. Testing Push Notifications requires a physical device, because simulators or emulators wont' be able to handle push notifications.
+3. Push Notification module is integrated with [AWS Amplify Analytics module]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide) to be able to track notifications. Make sure that you have configured the Analytics module in your app before configuring Push Notification module.
+3. For setting up iOS push notifications, you need to download and install Xcode from [Apple Developer Center](https://developer.apple.com/xcode/).
 
-1. [Set up Android push notifications](https://docs.aws.amazon.com/pinpoint/latest/developerguide/mobile-push-android.html)
-    
-2. [Add your API key and Sender ID to AWS Pinpoint](https://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started-android-mobilehub.html)
+### Setup for Android devices
 
-3. Create and link a React Native app:
+1. Make sure you have a [Firebase Project](https://console.firebase.google.com) and app setup. 
 
-```js
+2. Set up Android push notifications in Amazon Pinpoint Console. [Click here for instructions](https://docs.aws.amazon.com/pinpoint/latest/developerguide/mobile-push-android.html).
+
+3. Add your API key and Sender ID to AWS Pinpoint Console. [Click here for instructions](https://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started-android-mobilehub.html).
+
+4. Create and link a React Native app:
+```bash
 $ react-native init myapp
 $ cd myapp
-$ npm install aws-amplify --save
-$ npm install aws-amplify-react-native --save
+$ npm install aws-amplify --save && npm install aws-amplify-react-native --save
 $ react-native link aws-amplify-react-native
+$ react-native link amazon-cognito-identity-js #if you did not link it
 ```
+That would install required npm modules and link React Native binaries.
 
-4. Open ```android/build.gradle```
+5. Enable your app in Firebase. To do that, follow those steps:
+ - Visit the [Firebase console](https://console.firebase.google.com), and click the Gear icon next to **Project Overview** and click **Project Settings** Remember, if you don't have an existing project, you need to create one in order to continue
+ - Click **Add App**, if you have an existing app you can skip this step
+ - Choose **Add Firebase to your Android App**
+ - Add your package name i.e. **com.myProjectName** and click **Register App**
+ - Download  `google-services.json` file and copy it under your `android/app` project folder.
+ Note: Please make sure you have this file in place or you won't pass the build process.
+6. Open ```android/build.gradle```
     - Add ```classpath 'com.google.gms:google-services:3.1.1'``` in the ```dependencies``` under ```buildscript```:
         ```gradle
         dependencies {
-                classpath 'com.android.tools.build:gradle:2.2.3'
-                classpath 'com.google.gms:google-services:3.1.1'
-                // NOTE: Do not place your application dependencies here; they belong
-                // in the individual module build.gradle files
+            classpath 'com.android.tools.build:gradle:2.2.3'
+            classpath 'com.google.gms:google-services:3.1.1'  
+
+            // NOTE: Do not place your application dependencies here; they belong
+            // in the individual module build.gradle files
+        }
+```
+Also update maven `url` as the following under  `allprojects` > `repositories`. Revise `allprojects` to be:
+```gradle
+    allprojects {
+        repositories {
+            mavenLocal()
+            jcenter()
+            maven {
+                // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+                url "$rootDir/../node_modules/react-native/android"
             }
-        ```
-
-    - Add the following code  into ```repositories``` under ```allprojects```
-        ```gradle
-        maven {
-                url 'https://maven.google.com'
+            maven {
+                url "https://maven.google.com"
             }
-        ```
-
-5. Open ```android/app/build.gradle``` and add ```apply plugin: 'com.google.gms.google-services'``` to the bottom of the file.
-
-6. Open ```android/app/src/main/AndroidManifest.xml``` and add the following into ```application```
+        }
+    }
+```
+7. Open `android/app/build.gradle` file and add following configuration to the bottom of the file.
+```gradle
+apply plugin: 'com.google.gms.google-services'
+``` 
+8. Open `android/app/src/main/AndroidManifest.xml` file and add the following configuration into `application` element.
 ```xml
-    <application ...>
-    <!-- Add the following>
-        <!-- [START firebase_service] -->
-        <service
-            android:name="com.amazonaws.amplify.pushnotification.RNPushNotificationMessagingService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-        <!-- [END firebase_service] -->
-        <!-- [START firebase_iid_service] -->
-        <service
-            android:name="com.amazonaws.amplify.pushnotification.RNPushNotificationDeviceIDService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
-        <receiver
-            android:name="com.amazonaws.amplify.pushnotification.modules.RNPushNotificationBroadcastReceiver"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="com.amazonaws.amplify.pushnotification.NOTIFICATION_OPENED"/>
-            </intent-filter>
-        </receiver>
+    <application ... >
+
+        <!--[START Push notification config -->
+            <!-- [START firebase_service] -->
+            <service
+                android:name="com.amazonaws.amplify.pushnotification.RNPushNotificationMessagingService">
+                <intent-filter>
+                    <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                </intent-filter>
+            </service>
+            <!-- [END firebase_service] -->
+            <!-- [START firebase_iid_service] -->
+            <service
+                android:name="com.amazonaws.amplify.pushnotification.RNPushNotificationDeviceIDService">
+                <intent-filter>
+                    <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                </intent-filter>
+            </service>
+            <receiver
+                android:name="com.amazonaws.amplify.pushnotification.modules.RNPushNotificationBroadcastReceiver"
+                android:exported="false" >
+                <intent-filter>
+                    <action android:name="com.amazonaws.amplify.pushnotification.NOTIFICATION_OPENED"/>
+                </intent-filter>
+            </receiver>
+        <!-- [END Push notification config -->
+
     </application>
 ```
-
-7. Add your firebase app to your firebase project:
- - Visit the [Firebase](https://console.firebase.google.com) console and click the Gear icon next to "Project Overview" and click "Project Settings"
- - Click "Add App"
- - Choose "Add Firebase to your Android App"
- - Add your package name i.e. com.myProjectName
- - Download the `google-services.json` file to `android/app`
- 
-8. [Integrate with JavaScript](#integration) into your React Native app code.
- 
-9. Run your app with ```yarn/npm run android``` or appropriate run command.
+9. Configure Push Notification module for your app as shown in [Configure your App](#configure-your-app) section.
+10. Run your app with `yarn` or with an appropriate run command.
+```bash
+  $ yarn/npm run android
+```
 
 ### Setup for IOS device
 
-1. [Setup iOS Push Notifications and create a p12 certificate](https://docs.aws.amazon.com/pinpoint/latest/developerguide/apns-setup.html)
+1. Setup iOS Push Notifications and create a p12 certificate as instructed here in [Amazon Pinpoint Developer Guide](https://docs.aws.amazon.com/pinpoint/latest/developerguide/apns-setup.html).
  
-2. [Add p12 certificate to Amazon Pinpoint](https://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started-ios-mobilehub.html)
+2. Add your p12 certificate to AWS Mobile Hub console as instructed here in [Amazon Pinpoint Developer Guide](https://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started-ios-mobilehub.html).
 
 3. Create and link a React Native app:
 ```js
@@ -107,16 +129,16 @@ $ npm install aws-amplify-react-native --save
 $ react-native link aws-amplify-react-native
 ```
 
-4. open ```ios/myapp.xcodeproj```:
+4. Open `ios/myapp.xcodeproj` project file with Xcode.
 
-5. [Manually link the PushNotificationIOS library](https://facebook.github.io/react-native/docs/linking-libraries-ios.html#manual-linking) Manual link steps 1 and 2. (Step 3 not required)
+5. Using Xcode, **manually link** the `PushNotificationIOS` library to your project. Please follow those steps in [React Native developer Documentation](https://facebook.github.io/react-native/docs/linking-libraries-ios.html#manual-linking) (Step 3 is not required)
 
-6. Add the following code at the top on the file ```AppDelegate.m```
-```c
+6. Add the following code at the top on the file `AppDelegate.m`
+```
 #import <React/RCTPushNotificationManager.h>
 ```
 
-7. And then in your ```AppDelegate``` implementation file add the following:
+7. And then in your `AppDelegate` implementation add the following code:
 ```c
 // Required to register for notifications
  - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
@@ -146,31 +168,39 @@ $ react-native link aws-amplify-react-native
  }
  ```
 
-8. Update General App settings
+8. Update General App settings:
  - Make sure you have logged in with your Apple Developer account on Xcode
  - Set bundle identifier (with the one you create on your Apple Developer Account)
- - Unselect Automatically manage signing 
+ - Unselect **Automatically manage signing** under **Signing** section
  - On Signing (Debug, Release) set the provisioning profile (created on your Apple Developer Account)
  
-<img src="./identifiers.gif" style="display: block;height: auto;width: 100%;"/>
+    *Following screencast shows the required app settings in Xcode:*
+    <img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/identifiers.gif" style="display: block;height: auto;width: 100%;"/>
 
-9. Setup capabilities on your App and enable Push Notifications and Background Modes. On Background Modes select Remote notifications.
- 
-<img src="./capabilities.gif" style="display: block;height: auto;width: 100%;"/>
+9. Setup capabilities on your App and enable **Push Notifications** and **Background Modes**. On Background Modes select **Remote notifications**.
 
-10. [Integrate with JavaScript](#integration) into your React Native app code.
+    *Following screencast shows the required app settings in Xcode:*
+    <img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/capabilities.gif" style="display: block;height: auto;width: 100%;"/>
+
+10. Configure Push Notification module for your app as shown in [Configure your App](#configure-your-app) section.
 
 11. Run your app
- - On Xcode select your device and run by first using as Executable appName.app and this install the App on your device but it won't run (is ok, trust me)
- - On Product>Schema>Edit Schema on Run>Info tab on Executable section select Ask on Launch.
- - Click run button and select your app from the list.
- - In case it fails to build, try clean the project shift + command + k
+ - On Xcode, select your device and run it first using as *Executable appName.app*. This will install the App on your device but it won't run it.
+ - Select **Ask on Launch** for *Executable* option on menu chain *Product > Schema > Edit Scheme > Run > Info*.
+ - Click *Run* button and select your app from the list.
+ - In case the build fails, try cleaning the project with *shift + command + k*.
 
-<img src="./runningApp.gif" style="display: block;height: auto;width: 100%;"/>
+    *Following screencast shows the required app settings in Xcode:*
+    <img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/runningApp.gif" style="display: block;height: auto;width: 100%;"/>
 
-## Integration
+### Configure your App
 
-First import the ```PushNotification``` module and configure it. Make sure that you have configured the ```Analytics``` module before.
+Push Notification module is integrated with `Analytics` module to be able to track notifications. Make sure that you have configured the Analytics module in your app before configuring Push Notification module.  
+
+If you don't have Analytics already enabled, see our [Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide) to add Analytics to your app.
+{: .callout .callout--info}
+
+First, import `PushNotification` module and configure it with `PushNotification.configure()`.
 
 ```js
 import { PushNotificationIOS } from 'react-native';
@@ -180,7 +210,7 @@ import { PushNotification } from 'aws-amplify-react-native';
 // PushNotification need to work with Analytics
 Amplify.configure({
     Analytics: {
-        // ...
+        // You configuration will come here...
     }
 });
 
@@ -193,7 +223,7 @@ PushNotification.configure({
 });
 ```
 
-You can also call configure by using aws-exports.js file
+You can also use `aws-exports.js` file in case you have set up your backend with AWS Mobile Hub.
 
 ```js
 import { PushNotificationIOS } from 'react-native';
@@ -207,8 +237,9 @@ Amplify.configure(aws_exports);
 PushNotification.configure(aws_exports);
 ```
 
+## Working with the API
 
-Retrieve the registration token and notification data by using:
+You can use `onNotification` and `onRegister` event handlers to work with push notifications in your app. The following code shows how you can retrieve the notification data and registration token:
 
 ```js
 // get the notification data
@@ -226,3 +257,6 @@ PushNotification.onRegister((token) => {
 });
 ```
 
+
+## Testing Push Notifications 
+Now, you can create messaging campaigns and send push notifications to your app with Amazon Pinpoint! Just follow these instructions on [Amazon Pinpoint Developer Guide](https://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started-sampletest.html) for the next steps.

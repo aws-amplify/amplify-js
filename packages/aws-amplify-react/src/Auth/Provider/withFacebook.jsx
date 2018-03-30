@@ -46,7 +46,7 @@ export default function withFacebook(Comp) {
             if (!accessToken) {
                 return;
             }
-            
+
             const fb = window.FB;
             fb.api('/me', response => {
                 const user = {
@@ -54,7 +54,7 @@ export default function withFacebook(Comp) {
                 }
 
                 Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
-                    .then(crednetials => {
+                    .then(credentials => {
                         if (onStateChange) {
                             onStateChange('signedIn');
                         }

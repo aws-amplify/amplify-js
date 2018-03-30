@@ -70,6 +70,8 @@ export class HubClass {
                 logger.warn('error dispatching ' + channel + ' event to ' + listener.name);
             }
         });
+
+        this.bus.pop();
     }
 }
 

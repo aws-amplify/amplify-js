@@ -1,4 +1,4 @@
-import { AuthOptions } from './types';
+import { AuthOptions, FederatedResponse } from './types';
 /**
 * Provide authentication steps
 */
@@ -9,6 +9,8 @@ export default class AuthClass {
     private credentials;
     private credentials_source;
     private user;
+    private _refreshHandlers;
+    private _gettingCredPromise;
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -39,15 +41,53 @@ export default class AuthClass {
      * Sign in
      * @param {String} username - The username to be signed in
      * @param {String} password - The password of the username
-     * @return - A promise resolves the CognitoUser object if success or mfa required
+     * @return - A promise resolves the CognitoUser
      */
     signIn(username: string, password: string): Promise<any>;
+    /**
+     * get user current preferred mfa option
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves the current preferred mfa option if success
+     */
+    getMFAOptions(user: any): Promise<any>;
+    /**
+     * set preferred MFA method
+     * @param {CognitoUser} user - the current Cognito user
+     * @param {string} mfaMethod - preferred mfa method
+     * @return - A promise resolve if success
+     */
+    setPreferredMFA(user: any, mfaMethod: string): Promise<any>;
+    /**
+     * diable SMS
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves is success
+     */
+    disableSMS(user: any): Promise<any>;
+    /**
+     * enable SMS
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves is success
+     */
+    enableSMS(user: any): Promise<{}>;
+    /**
+     * Setup TOTP
+     * @param {CognitoUser} user - the current user
+     * @return - A promise resolves with the secret code if success
+     */
+    setupTOTP(user: any): Promise<{}>;
+    /**
+     * verify TOTP setup
+     * @param {CognitoUser} user - the current user
+     * @param {string} challengeAnswer - challenge answer
+     * @return - A promise resolves is success
+     */
+    verifyTotpToken(user: any, challengeAnswer: any): Promise<{}>;
     /**
      * Send MFA code to confirm sign in
      * @param {Object} user - The CognitoUser object
      * @param {String} code - The confirmation code
      */
-    confirmSignIn(user: any, code: string): Promise<any>;
+    confirmSignIn(user: any, code: string, mfaType: string | null): Promise<any>;
     completeNewPassword(user: any, password: string, requiredAttributes: any): Promise<any>;
     /**
      * Update an authenticated users' attributes
@@ -96,6 +136,7 @@ export default class AuthClass {
      * @return - A promise resolves to be current user's credentials
      */
     currentUserCredentials(): Promise<any>;
+    private _refreshFederatedToken(federatedInfo);
     currentCredentials(): Promise<any>;
     /**
      * Initiate an attribute confirmation request
@@ -125,6 +166,7 @@ export default class AuthClass {
      * @return - A promise resolved if success
      */
     signOut(): Promise<any>;
+    private cleanCachedItems();
     /**
      * Change a password for an authenticated user
      * @param {Object} user - The CognitoUser object
@@ -156,10 +198,11 @@ export default class AuthClass {
     /**
      * For federated login
      * @param {String} provider - federation login provider
-     * @param {Object} response - response including access_token
+     * @param {FederatedResponse} response - response should have the access token
+     * and the expiration time (the universal time)
      * @param {String} user - user info
      */
-    federatedSignIn(provider: any, response: any, user: any): Promise<any>;
+    federatedSignIn(provider: string, response: FederatedResponse, user: object): Promise<{}>;
     /**
      * Compact version of credentials
      * @param {Object} credentials
@@ -173,10 +216,13 @@ export default class AuthClass {
         authenticated: any;
     };
     private attributesToObject(attributes);
-    private setCredentialsFromFederation(provider, token, user);
     private pickupCredentials();
-    private setCredentialsFromAWS();
-    private setCredentialsForGuest();
-    private setCredentialsFromSession(session);
+    private _setCredentialsFromAWS();
+    private _setCredentialsForGuest();
+    private _setCredentialsFromSession(session);
+    private _setCredentialsFromFederation(params);
+    private _loadCredentials(credentials, source, authenticated, rawUser);
     private keepAlive();
+    private createCognitoUser(username);
+    private _isExpired(credentials);
 }

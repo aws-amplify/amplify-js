@@ -1,0 +1,16 @@
+/**
+ * Lists (tools/_lists.scss)
+ */
+
+/* ----- Horizontal list ----- */
+@mixin list-horizontal {
+	li {
+		float: left;
+		padding: 0;
+		margin-bottom: 0;
+
+		&::before {
+			display: none;
+		}
+	}
+}

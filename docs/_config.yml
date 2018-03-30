@@ -1,4 +1,29 @@
-theme: jekyll-theme-midnight
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+title: AWS Amplify Developer Documentation
+email: your-email@example.com
+description: >- # this means to ignore newlines until "baseurl:"
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com 
+github:
+  repository_url: https://github.com/aws/aws-amplify/edit/master/docs/
+
 show_downloads: "true"
 include: 
 - api
@@ -7,3 +32,172 @@ include:
 - api/enums
 - api/interfaces
 - api/modules
+
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
+
+# Build settings
+markdown: kramdown
+kramdown:
+  parse_block_html: true
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+future: true  
+
+
+# Amplify theme settings
+amplify:
+    baseurl: /aws-amplify # Since the site is deployed under https://aws.github.io/aws-amplify
+    color_theme:  # Available themes: blue (default), green, purple, red and yellow
+    header:
+        logo:
+            text: AWS Amplify
+            image: true
+        nav:
+            - item_name: Quick Start
+              item_url: '/media/quick_start'
+            - item_name: Docs
+              item_url: '/media/developer_guide'
+            - item_name: API
+              item_url: '/api/'
+            - item_name: Github
+              item_icon: github
+              item_external_url: 'https://github.com/aws/aws-amplify'
+    footer:
+        content:
+            logo:
+                text: AWS Amplify is supported by Amazon Web Services
+                image: true
+            copyright: © 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+        social_list:
+            - network_name: gitter
+              profile_url: 'https://gitter.im/AWS-Amplify/Lobby/'
+            - network_name: twitter
+              profile_url: 'https://twitter.com/search?q=%23awsamplify&src=typd'
+            - network_name: github
+              profile_url: 'https://github.com/aws/aws-amplify'
+            - network_name: youtube
+              profile_url: 'https://www.youtube.com/watch?v=vAjf3lyjf8c'
+              
+    google_analytics:
+        tracking_code: # Add your Google Analytics tracking code to activate Google Analytics
+    comments:
+        disqus_forum_shortname: 'aws-amplify' # Add your disqus forum shortname to activate comments
+
+# SASS settings
+sass:
+    sass_dir: ./amplify-theme/_sass
+    style: :compressed
+
+# Jekyll settings
+layouts_dir: ./amplify-theme/_layouts
+includes_dir: ./amplify-theme/_includes
+exclude: [ 'README.md', 'CHANGELOG.md' ]
+permalink: /:title
+
+category_list:
+    - category: CloudConnectivity
+      title: Cloud Connectivity
+      subs:
+        - title: Analytics 
+          excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
+          cta: Read more
+          class: aws-icon-ps-60-pie-bar-charts 
+          url: '/media/analytics_guide'
+          services:
+            - title: AWS Pinpoint,
+              url: https://aws.amazon.com/pinpoint/
+            - title: AWS Kinesis,
+              url: https://aws.amazon.com/kinesis/
+            - title: Custom Plugin
+              url: https://aws.github.io/aws-amplify/media/analytics_guide#create-a-custom-analytics-plugin
+        - title: API 
+          excerpt: A simple and secure solution for making HTTP requests.
+          cta: Read more
+          class: aws-icon-ps-60-database-server
+          url: '/media/api_guide'    
+          services:
+            - title: AWS API Gateway
+              url: https://aws.amazon.com/api-gateway
+        - title: Authentication
+          excerpt:  Authentication APIs with pre-built UI components for your app.  
+          cta: Read more
+          class: aws-icon-ps-60-shield-circle
+          url: '/media/authentication_guide'
+          services:
+            - title: AWS Cognito ,
+              url: https://aws.amazon.com/cognito/
+            - title: OAuth 2.0 ,
+              url: https://aws.amazon.com/cognito/
+            - title: Custom Plugin
+              url:  
+        - title: PubSub 
+          excerpt: Connect your app to message-oriented middleware on the cloud.
+          cta: Read more
+          class: aws-icon-ps-60-circular-circuit
+          url: '/media/pub_sub_guide'   
+          services:
+              - title: Generic MQTT ,
+                url: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html#mqtt
+              - title: AWS IoT (Coming soon)
+                url: https://aws.amazon.com/iot/
+        - title: Push Notifications 
+          excerpt: Push notifications with campaign analytics and targeting.
+          cta: Read more
+          class: aws-icon-ps-60-bubble-gear
+          url: '/media/push_notifications_setup'   
+          services:
+              - title: AWS Pinpoint
+                url: https://aws.amazon.com/pinpoint/
+        - title: Storage 
+          excerpt: A simple mechanism for managing user content in public or private storage.
+          cta: Read more
+          class: aws-icon-ps-60-file-box
+          url: '/media/storage_guide'   
+          services:
+              - title: AWS S3
+                url: https://aws.amazon.com/s3/
+    -  category: Utilities
+       title: Utilities
+       subs:
+        - title: Cache 
+          excerpt: A generic LRU cache for storing data with priority and expiration settings. 
+          cta: Read more
+          url: '/media/cache_guide'  
+        - title: Hub  
+          excerpt: A lightweight local event bus for your app.
+          cta: Read more
+          url: '/media/hub_guide' 
+        - title: I18n  
+          excerpt: A lightweight internationalization solution.
+          cta: Read more
+          url: '/media/i18n_guide'  
+        - title: Logger  
+          excerpt: Console logging utility.
+          cta: Read more
+          url: '/media/logger_guide'  
+    -  category: CLI
+       title: CLI
+       subs:
+        - title: AWS Mobile CLI
+          excerpt: A CLI to create and manage your app's backend. 
+          cta: Read more
+          url: '/media/cli_guide'       
+
+defaults:
+  -
+    scope:
+      path: "" # an empty string here means all files in the project
+    values:
+      layout: "default"

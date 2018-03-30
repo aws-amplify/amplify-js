@@ -12,6 +12,7 @@
  */
 
 import AnalyticsClass from './Analytics';
+import { AnalyticsProvider } from './types';
 
 import {
     ConsoleLogger as Logger,
@@ -22,16 +23,19 @@ import {
 import Platform from '../Common/Platform';
 
 const logger = new Logger('Analytics');
+let startsessionRecorded = false;
 
 let _instance: AnalyticsClass = null;
 
 if (!_instance) {
     logger.debug('Create Analytics Instance');
-    _instance = new AnalyticsClass(null);
+    _instance = new AnalyticsClass();
 }
 
 const Analytics = _instance;
 export default Analytics;
+export { AnalyticsProvider };
+export { AnalyticsClass };
 
 // listen on app state change
 const dispatchAppStateEvent = (event, data) => {
@@ -59,6 +63,11 @@ Analytics.onHubCapsule = (capsule) => {
         case 'storage':
             storageEvent(payload);
             break;
+        case 'analytics':
+            analyticsEvent(payload);
+            break;
+        default:
+            break;
     }
 };
 
@@ -75,20 +84,36 @@ const authEvent = (payload) => {
 
     switch(event) {
         case 'signIn':
-            Analytics.restart();
             Analytics.record('_userauth.sign_in');
             break;
         case 'signUp':
             Analytics.record('_userauth.sign_up');
             break;
         case 'signOut':
-            Analytics.restart();
             break;
         case 'signIn_failure':
             Analytics.record('_userauth.auth_fail');
             break;
+        case 'configured':
+            if (!startsessionRecorded) {
+                startsessionRecorded = true;
+                Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
+            }
+            break;
     }
+};
+
+const analyticsEvent = (payload) => {
+    const { eventType } = payload;
+    if (!eventType) return;
+
+     switch(eventType) {
+         case 'session_start':
+             Analytics.startSession();
+             break;
+     }
 };
 
 Hub.listen('auth', Analytics);
 Hub.listen('storage', Analytics);
+Hub.listen('analytics', Analytics);

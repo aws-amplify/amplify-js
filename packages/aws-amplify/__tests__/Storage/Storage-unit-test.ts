@@ -52,6 +52,12 @@ jest.mock('aws-sdk/clients/s3', () => {
     return S3;
 });
 
+jest.mock('../../src/Common/Builder', () => {
+    return {
+        default: null
+    };
+});
+
 import Storage from '../../src/Storage/Storage';
 import { Hub } from '../../src/Common';
 import Auth from '../../src/Auth/Auth';

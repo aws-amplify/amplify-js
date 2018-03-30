@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include site-head.html %}
+	</head>
+	<body class="{{ site.amplify.color_theme }} error-404">
+		<div class="align-container">
+			<div class="align-inner">
+				<h1 class="error-404__title">{{ page.page_content.title }}</h1>
+				{% if page.page_content.message %}
+					<p>{{ page.page_content.message }}</p>
+				{% endif %}
+				<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="btn btn--dark btn--rounded btn--w-icon btn--w-icon-left">
+					<i class="icon icon--home"></i>
+					Go back home
+				</a>
+			</div><!-- /.align-inner -->
+		</div><!-- /.align-container -->
+	</body>
+</html>
