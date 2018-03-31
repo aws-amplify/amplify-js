@@ -446,6 +446,26 @@ class App extends Component {
 export default withAuthenticator(App, true);
 ```
 
+### Custom Authorization Flows and Passwordless Login
+
+You can use custom authorization flows to implement passwordless logins. To initiate a custom authorization flow call `signIn` without a password. You can customize the authentication flow for the User Pool using Lambda triggers. To respond to a custom challenge use the `sendCustomChallengeAnswer` method.
+
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.signIn(username)
+    .then(user => {
+        if (user.challengeName === 'CUSTOM_CHALLENGE') {
+            Auth.sendCustomChallengeAnswer(user, answer)
+                .then(user => console.log(user))
+                .catch(err => console.log(err));
+        } else {
+            console.log(user);
+        }
+    })
+    .catch(err => console.log(err));
+```
+
 ### Working with User Attributes
 
 You can pass user attributes during sign up:
