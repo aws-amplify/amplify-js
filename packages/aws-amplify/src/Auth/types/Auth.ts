@@ -52,5 +52,5 @@ export interface FederatedResponse {
     // the universal time when token expired
     expires_at: number
     // the identityId for developer authenticated identities
-    identity_id: string,
+    identity_id?: string,
 }
