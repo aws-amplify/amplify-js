@@ -47,7 +47,7 @@ const dispatchAuthEvent = (event, data) => {
 };
 
 /**
-* Provide authentication step
+* Provide authentication steps
 */
 export default class AuthClass {
     private _config: AuthOptions;
