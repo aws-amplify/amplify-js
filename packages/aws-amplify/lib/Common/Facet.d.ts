@@ -3,5 +3,4 @@ import * as AWS from 'aws-sdk/global';
 import * as Cognito from 'amazon-cognito-identity-js';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
 import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
-import * as CognitoHostedUI from 'amazon-cognito-auth-js';
-export { AWS, S3, Cognito, Pinpoint, MobileAnalytics, CognitoHostedUI };
+export { AWS, S3, Cognito, Pinpoint, MobileAnalytics };
