@@ -31,7 +31,7 @@ After running the CLI commands, you should see a basic React application running
 
 If you have an existing React Native application you can skip this section, but note the we have a [linking requirement](#linking-native-libraries-for-react-native) that may apply to your app.
 
-[Create React Native App (CRNA)](https://github.com/react-community/create-react-native-app) is a command line utility to crate Create React Native apps with no build configuration. Run following commands to install CRNA and create your app:
+[Create React Native App (CRNA)](https://github.com/react-community/create-react-native-app) is a command line utility to Create React Native apps with no build configuration. Run following commands to install CRNA and create your app:
 
 ```bash
 $ npm install -g create-react-native-app
@@ -357,5 +357,5 @@ Auth.currentCredentials()
 ```
 
 Full API Documentation for service interface objects is available [here](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html).
-
+{: .callout .callout--info}
  

@@ -1221,7 +1221,7 @@ export default class AuthClass {
                 },
                 (err) => {
                     logger.debug('Failed to load credentials', credentials);
-                    rej('Failed to load creadentials');
+                    rej(err);
                 }
             );
         });
