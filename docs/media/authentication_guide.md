@@ -352,6 +352,94 @@ const federated = {
 
 There is also `withGoogle`, `withFacebook`, `withAmazon` components, in case you need to customize a single provider.
 
+### Cognito Hosted UI
+
+Cognito hosted UI provides general availability of a Built-in Customizable User Experience for Sign-in, OAuth 2.0 Support, and Federation with Facebook, Login with Amazon, Google, and SAML providers for User Pools.
+
+#### Setup your Cognito App Client
+
+First you need to setup your App Client in the Cognito User Pool console.
+
+* Go to: App integration -> App client settings
+    * Select Identity Providers
+    * Input your Callback URL and Sign out URL.
+    * Select OAuth Flows (Authorization code grant is the recommended choice for security reasons)
+    * Choose OAuth Scopes
+
+* Go to: App integration -> Domain name
+    * Input the domain prefix for sign-up and sign-in pages hosted by Cognito
+
+To add federation provider
+
+* Go to: Federation -> Identity providers
+    * Select the federated identity provider
+    * Input required configuration like App Id, App secret, Authorized scope
+    * Set the Oauth Redirected URI in your Facebook/Google app's setting page to:
+
+        ```https://your-domain-prefix.auth.us-east-1.amazoncognito.com/oauth2/idpresponse```
+
+* Go to Federation -> Attribute mapping
+    * Map Federation Provider attributes to corresponding User pool attributes. Please make sure at least Email is correctly mapped.
+
+* Don't forget to select this provider in the App client settings
+#### Integrate it into your App
+
+* You need to pass your hosted ui options into Amplify:
+```js
+import Amplify from 'aws-amplify';
+
+const hostedUIOptions = {
+    AppWebDomain : 'your-domain-prefix.auth.us-east-1.amazoncognito.com', // Domain name
+    TokenScopesArray : ['phone', 'email', 'profile', 'openid', 'aws.cognito.signin.user.admin'], // Authorized scopes,
+    RedirectUriSignIn : 'http://localhost:3000/', // Callback URL
+    RedirectUriSignOut : 'http://localhost:3000/', // Sign out URL
+    AdvancedSecurityDataCollectionFlag : true, // indicating if the data collection is enabled to support cognito   advanced security features. By default, this flag is set to true.
+    ResponseType: 'code' // 'code' for Authorization code grant, 'token' for Implicit grant
+}
+
+Amplify.configure({
+    Auth: {
+        // other configurations...
+        // ....
+        hostedUIOptions: hostedUIOptions
+    },
+    // ...
+});
+```
+
+* If you are using ```aws-amplify-react```:
+    * You will see a button ```Sign in with AWS``` showed up in your login page when you are using the HOC ```withAuthenticator``` or using the ```Authenticator``` component.
+    * You can also import the HOC provided and wrap your own component with it, for example:
+    ```jsx
+        import { withCognito } from 'aws-amplify-react';
+
+        class MyComp extends React.Component {
+            // ...
+            render() {
+                return(
+                    <SignInButton onClick={props.cognitoSignIn}>
+                    </SignInButton>
+                )
+            }
+        }
+
+        export default withCognito(MyComp);
+    ```
+
+* If you are NOT using ```aws-amplify-react```:
+    * you need to construct the url yourself:
+    ```js
+    const config = Auth.configure();
+    const { 
+        AppWebDomain,  
+        RedirectUriSignIn, 
+        RedirectUriSignOut,
+        ResponseType } = config.hostedUIOptions;
+    const clientId = config.userPoolWebClientId;
+    const url = 'https://' + AppWebDomain + '/login?redirect_uri=' + RedirectUriSignIn + '&response_type=' + ResponseType + '&client_id=' + clientId;
+    window.location.assign(url);          
+    ```
+    
 ### Enabling MFA (Multi-Factor Authentication)
 
 Multi-factor authentication (MFA) increases security for your app by adding an authentication method and not relying solely on username (or alias) and password. AWS Amplify uses Amazon Cognito to provide MFA. Please see [Amazon Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html) for more information about setting up MFA in Amazon Cognito. 

@@ -6,13 +6,11 @@ export default class AuthClass {
     private _config;
     private _userPoolStorageSync;
     private userPool;
-    private _cognitoAuthClient;
     private credentials;
     private credentials_source;
     private user;
     private _refreshHandlers;
     private _gettingCredPromise;
-    private _signedInWith;
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -197,7 +195,6 @@ export default class AuthClass {
      * @return {Object }- current User's information
      */
     currentUserInfo(): Promise<any>;
-    cognitoHostedUISignIn(): void;
     /**
      * For federated login
      * @param {String} provider - federation login provider

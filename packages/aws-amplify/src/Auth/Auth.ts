@@ -36,6 +36,8 @@ const {
     Credentials
 } = AWS;
 
+const { CognitoAuth } = CognitoHostedUI;
+
 const {
     CookieStorage,
     CognitoUserPool,
@@ -63,7 +65,6 @@ export default class AuthClass {
 
     private _refreshHandlers = {};
     private _gettingCredPromise = null;
-    private _signedInWith
 
     /**
      * Initialize Auth with AWS configurations
@@ -124,7 +125,7 @@ export default class AuthClass {
                 hostedUIOptions
             );
             const type = hostedUIOptions['ResponseType'];
-            this._cognitoAuthClient = new CognitoHostedUI.CognitoAuth(cognitoAuthParams);
+            this._cognitoAuthClient = new CognitoAuth(cognitoAuthParams);
             this._cognitoAuthClient.userhandler = {
                 // user signed in
                 onSuccess: (result) => {
@@ -136,7 +137,6 @@ export default class AuthClass {
                             dispatchAuthEvent('signIn', that.user);
                         });
                     });
-                   
                 },
                 onFailure: (err) => {
                     logger.debug("Error in cognito hosted auth response", err);
@@ -149,7 +149,7 @@ export default class AuthClass {
                 logger.debug('not logged in, try to parse the url');
                 const curUrl = window.location.href;
                 this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
-            })
+            });
             logger.debug('hostedUIOptions configured');
         }
 
@@ -1050,11 +1050,6 @@ export default class AuthClass {
         }
     }
 
-    public cognitoHostedUISignIn() {
-
-        
-    }
-
     /**
      * For federated login
      * @param {String} provider - federation login provider
@@ -1062,7 +1057,7 @@ export default class AuthClass {
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */
-public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
+    public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
         const { token, expires_at } = response;
         const that = this;
         return new Promise((res, rej) => {

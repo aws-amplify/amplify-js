@@ -14,10 +14,6 @@ export default function withCognito(Comp) {
             this.state = {};
         }
 
-        componentDidMount() {
-            
-        }
-
         signIn() {
             const config = Auth.configure();
             const { 

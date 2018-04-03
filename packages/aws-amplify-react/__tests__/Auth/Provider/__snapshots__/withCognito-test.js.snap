@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`withCognito test render test render correctly 1`] = `
+<MockComp
+  cognitoSignIn={[Function]}
+/>
+`;
