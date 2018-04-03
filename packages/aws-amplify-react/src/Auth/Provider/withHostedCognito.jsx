@@ -4,9 +4,9 @@ import { Auth, Logger } from 'aws-amplify';
 import AmplifyTheme from '../../AmplifyTheme';
 import { SignInButton } from '../../AmplifyUI';
 
-const logger = new Logger('withCognito');
+const logger = new Logger('withHostedCognito');
 
-export default function withCognito(Comp) {
+export default function withHostedCognito(Comp) {
     return class extends Component {
         constructor(props) {
             super(props);
@@ -28,7 +28,7 @@ export default function withCognito(Comp) {
 
         render() {
             return (
-                <Comp {...this.props} cognitoSignIn={this.signIn} />
+                <Comp {...this.props} hostedCognitoSignIn={this.signIn} />
             )
         }
     }
@@ -36,12 +36,12 @@ export default function withCognito(Comp) {
 
 const Button = (props) => (
     <SignInButton
-        id="cognito_signin_btn"
-        onClick={props.cognitoSignIn}
+        id="hostedCognito_signin_btn"
+        onClick={props.hostedCognitoSignIn}
         theme={props.theme || AmplifyTheme}
     >
         {props.label || 'Sign in with AWS'}
     </SignInButton>
 )
 
-export const CognitoButton = withCognito(Button);
+export const HostedCognitoButton = withHostedCognito(Button);

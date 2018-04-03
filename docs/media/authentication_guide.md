@@ -411,19 +411,19 @@ Amplify.configure({
     * You will see a button ```Sign in with AWS``` showed up in your login page when you are using the HOC ```withAuthenticator``` or using the ```Authenticator``` component.
     * You can also import the HOC provided and wrap your own component with it, for example:
     ```jsx
-        import { withCognito } from 'aws-amplify-react';
+        import { withHostedCognito } from 'aws-amplify-react';
 
         class MyComp extends React.Component {
             // ...
             render() {
                 return(
-                    <SignInButton onClick={props.cognitoSignIn}>
+                    <SignInButton onClick={props.hostedCognitoSignIn}>
                     </SignInButton>
                 )
             }
         }
 
-        export default withCognito(MyComp);
+        export default withHostedCognito(MyComp);
     ```
 
 * If you are NOT using ```aws-amplify-react```:

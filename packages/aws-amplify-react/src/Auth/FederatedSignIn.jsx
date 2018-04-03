@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Logger, JS } from 'aws-amplify';
+import { Logger, JS, Auth } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
@@ -11,7 +11,7 @@ import {
     GoogleButton,
     FacebookButton,
     AmazonButton,
-    CognitoButton
+    HostedCognitoButton
 } from './Provider';
 
 const logger = new Logger('FederatedSignIn');
@@ -50,12 +50,12 @@ export class FederatedButtons extends Component {
               />
     }
 
-    cognito(cognito_auth) {
-        if (!cognito_auth) { return null; }
+    hostedCognito(cognito_auth) {
+        const config = Auth.configure();
+        if (!config.hostedUIOptions) { return null; }
         const { theme, onStateChange } = this.props;
-        return <CognitoButton
-                authData={cognito_auth.authData}
-                label={cognito_auth.label}
+        return <HostedCognitoButton
+                label={cognito_auth? cognito_auth.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
               />
@@ -77,7 +77,7 @@ export class FederatedButtons extends Component {
                 {this.google(google_client_id)}
                 {this.facebook(facebook_app_id)}
                 {this.amazon(amazon_client_id)}
-                {this.cognito(cognito_auth)}
+                {this.hostedCognito(cognito_auth)}
             </ActionRow>
         )
     }
