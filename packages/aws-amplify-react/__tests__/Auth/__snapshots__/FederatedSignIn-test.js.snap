@@ -252,6 +252,7 @@ exports[`FederatedButtons test render test render with correct authState 1`] = `
   <_class
     facebook_app_id="facebook_app_id"
   />
+  <_class />
 </ActionRow>
 `;
 
@@ -500,6 +501,7 @@ exports[`FederatedButtons test render test render with correct authState and onl
   <_class
     google_client_id="google_client_id"
   />
+  <_class />
 </ActionRow>
 `;
 
@@ -748,6 +750,7 @@ exports[`FederatedButtons test render test render with correct authState and onl
   <_class
     facebook_app_id="facebook_app_id"
   />
+  <_class />
 </ActionRow>
 `;
 

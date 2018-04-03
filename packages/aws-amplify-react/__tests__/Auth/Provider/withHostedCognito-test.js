@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import withCognito, { CognitoButton } from '../../../src/Auth/Provider/withCognito';
+import withHostedCognito, { HostedCognitoButton } from '../../../src/Auth/Provider/withHostedCognito';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
 import { Auth } from 'aws-amplify';
 
-describe('withCognito test', () => {
+describe('withHostedCognito test', () => {
     describe('render test', () => {
         test('render correctly', () => {
             const MockComp = class extends Component {
@@ -12,7 +12,7 @@ describe('withCognito test', () => {
                 }
             }
 
-            const Comp = withCognito(MockComp);
+            const Comp = withHostedCognito(MockComp);
             const wrapper = shallow(<Comp/>);
             expect(wrapper).toMatchSnapshot();
         });
@@ -37,7 +37,7 @@ describe('withCognito test', () => {
                     userPoolWebClientId: 'userPoolWebClientId'
                 }
             })
-            const Comp = withCognito(MockComp);
+            const Comp = withHostedCognito(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
