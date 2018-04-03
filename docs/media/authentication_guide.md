@@ -269,7 +269,7 @@ export default AppWithAuth;
 
 #### Example: Show your App Only After User Sign-in
 
-In the previous example, you'll see the App is rendered even before the user is signed-in. In order to change this behaivour, you can use *Authenticator* properties. When inside `Authenticator`, the App component will receive those properties.
+In the previous example, you'll see the App is rendered even before the user is signed-in. In order to change this behaviour, you can use *Authenticator* properties. When inside `Authenticator`, the App component will receive those properties.
 
 **authState** is the current authentication state (a string):
 ```
