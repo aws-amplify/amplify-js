@@ -162,6 +162,46 @@ Storage.put('test.txt', 'Private Content', {
 .catch(err => console.log(err));
 ```
 
+Upload an image from browser:
+```js
+class S3ImageUpload extends React.Component {
+    function onChange(e) {
+        const file = e.target.files[0];
+        Storage.put('example.png', file, {
+            contentType: 'image/png'
+        })
+        .then (result => console.log(result))
+        .catch(err => console.log(err));
+    }
+
+    render() {
+        return ()
+            <input
+                type="file" accept='image/png'
+                onChange={(e) => this.onChange(e)}
+            />
+        )
+    }
+}
+```
+
+Upload an image from react-native app:
+```js
+import RNFetchBlob from 'react-native-fetch-blob';
+
+readFile(filePath) {
+    return RNFetchBlob.fs.readFile(filePath, 'base64').then(data => new Buffer(data, 'base64'));
+}
+
+readFile(imagePath).then(buffer => {
+    Storage.put(key, buffer, {
+        contentType: imageType
+    })
+}).catch(e => {
+    console.log(e);
+});
+```
+
 #### Get
 
 Retrieves a publicly accessible URL for data stored.
