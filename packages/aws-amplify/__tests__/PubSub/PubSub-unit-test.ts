@@ -33,7 +33,7 @@ describe('PubSub', () => {
             const pubsub = new PubSub({});
             
             const options = {
-                api: 'myapi'
+                key: 'value'
             }
 
             const config = pubsub.configure(options);
