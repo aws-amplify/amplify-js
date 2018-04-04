@@ -56,24 +56,12 @@ Amplify.configure({
                 // This can be any call to your backend, but two things are required:
                 // 1. Your backend needs to return the response from getOpenIdTokenForDeveloperIdentity, per AWS docs.
                 // 2. Your client needs to resolve the handler with the appropriate data structure, as with the Object below.
-                //
-                // In short, this should look very similar to how you handle the call to Auth.federatedSignIn.
+                // ...In short, this should look very similar to how you handle the call to Auth.federatedSignIn.
                 return new Promise((resolve, reject) => {
-                    API.get(
-                        YOUR_BACKEND_REFRESH_TOKEN_API_NAME,
-                        YOUR_QUERY_STRING_IDENTIFYING_USER_TO_REFRESH)
+                    API.get(YOUR_BACKEND_REFRESH_TOKEN_API_NAME, YOUR_QUERY_STRING_IDENTIFYING_USER_TO_REFRESH))
+                        .then( (results) => { resolve({token: results.Token, expires_at: results.Expires, identity_id: results.IdentityId}) } )
                     )
-                        .then(
-                            ({results}) => {
-                                resolve({
-                                    token: results.Token,
-                                    expires_at: results.Expires,
-                                    identity_id: results.IdentityId
-                                })
-                        },
-                        (err) => {reject(err)}
-                    )
-                });
+                })
             }
         },
     // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
