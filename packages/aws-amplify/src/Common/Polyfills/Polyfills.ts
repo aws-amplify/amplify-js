@@ -14,8 +14,8 @@
 (<any>global).window = (<any>global).window || {
     setTimeout,
     clearTimeout,
-    WebSocket: global.WebSocket,
-    ArrayBuffer: global.ArrayBuffer,
+    WebSocket: (<any>global).WebSocket,
+    ArrayBuffer: (<any>global).ArrayBuffer,
     addEventListener(){ },
     navigator: { onLine: true }
 };
