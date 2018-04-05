@@ -445,6 +445,31 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
 
+        test('happy case using custom storage', async () => {
+            const spyon = jest.spyOn(CognitoUser.prototype, 'authenticateUser')
+                .mockImplementationOnce((authenticationDetails, callback) => {
+                    callback.onSuccess(session);
+                });
+
+            const customStorage = {
+                getItem: jest.fn(),
+                setItem: jest.fn(),
+                removeItem: jest.fn(),
+                clear: jest.fn()
+            };
+            const auth = new Auth({ ...authOptions, storage: customStorage });
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool,
+                Storage: customStorage
+            });
+
+            expect.assertions(1);
+            expect(await auth.signIn('username', 'password')).toEqual(user);
+
+            spyon.mockClear();
+        });
+
         test('onFailure', async () => {
             const spyon = jest.spyOn(CognitoUser.prototype, "authenticateUser")
                 .mockImplementationOnce((authenticationDetails, callback) => {

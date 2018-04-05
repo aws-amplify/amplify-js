@@ -92,13 +92,15 @@ export default class AuthClass {
         }
         this._config = Object.assign({}, this._config, conf);
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
-        const { userPoolId, userPoolWebClientId, cookieStorage } = this._config;
+        const { userPoolId, userPoolWebClientId, cookieStorage, storage } = this._config;
         if (userPoolId) {
             const userPoolData: ICognitoUserPoolData = {
                 UserPoolId: userPoolId,
                 ClientId: userPoolWebClientId,
             };
-            if (cookieStorage) {
+            if (storage) {
+                userPoolData.Storage = storage;
+            } else if (cookieStorage) {
                 userPoolData.Storage = new CookieStorage(cookieStorage);
             }
             this.userPool = new CognitoUserPool(userPoolData);
@@ -1189,12 +1191,8 @@ export default class AuthClass {
         const userData: ICognitoUserData = {
             Username: username,
             Pool: this.userPool,
+            Storage: this.userPool.storage,
         };
-
-        const { cookieStorage } = this._config;
-        if (cookieStorage) {
-            userData.Storage = new CookieStorage(cookieStorage);
-        }
 
         return new CognitoUser(userData);
     }
