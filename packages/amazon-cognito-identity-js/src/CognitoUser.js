@@ -197,7 +197,7 @@ export default class CognitoUser {
   authenticateUser(authDetails, callback) {
     if (this.authenticationFlowType === 'USER_PASSWORD_AUTH') {
       return this.authenticateUserPlainUsernamePassword(authDetails, callback);
-    } else if (this.authenticationFlowType === 'USER_SRP_AUTH') {
+    } else if (this.authenticationFlowType === 'USER_SRP_AUTH' || this.authenticationFlowType == 'CUSTOM_AUTH') {
       return this.authenticateUserDefaultAuth(authDetails, callback);
     }
     return callback.onFailure(new Error('Authentication flow type is invalid.'));
