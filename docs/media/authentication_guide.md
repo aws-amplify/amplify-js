@@ -379,7 +379,7 @@ To add federation provider
         ```https://your-domain-prefix.auth.us-east-1.amazoncognito.com/oauth2/idpresponse```
 
 * Go to Federation -> Attribute mapping
-    * Map Federation Provider attributes to corresponding User pool attributes. Please make sure at least Email is correctly mapped.
+    * Map Federation Provider attributes to corresponding User pool attributes. For example, if the ```email``` attribute is required in your User Pool setting, please make sure you have ```email``` in your authorized scopes and map it correctly into the User Pool.
 
 * Don't forget to select this provider in the App client settings
 #### Integrate it into your App
@@ -417,8 +417,9 @@ Amplify.configure({
             // ...
             render() {
                 return(
-                    <SignInButton onClick={props.hostedCognitoSignIn}>
-                    </SignInButton>
+                    <button onClick={this.props.hostedCognitoSignIn}>
+                        Sign in with AWS
+                    </button>
                 )
             }
         }

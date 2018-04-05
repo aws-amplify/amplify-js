@@ -51,8 +51,7 @@ export class FederatedButtons extends Component {
     }
 
     hostedCognito(cognito_auth) {
-        const config = Auth.configure();
-        if (!config.hostedUIOptions) { return null; }
+        if (!cognito_auth) { return null;}
         const { theme, onStateChange } = this.props;
         return <HostedCognitoButton
                 label={cognito_auth? cognito_auth.label : undefined}
@@ -67,6 +66,11 @@ export class FederatedButtons extends Component {
         if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
 
         const federated = this.props.federated || {};
+        const config = Auth.configure();
+        if (config.hostedUIOptions) {
+            federated.cognito_auth = federated.cognito_auth?
+                Object.assign(federated.cognito_auth, config.hostedUIOptions) : config.hostedUIOptions;
+        }
         if (JS.isEmpty(federated)) { return null; }
 
         const { google_client_id, facebook_app_id, amazon_client_id, cognito_auth } = federated;
@@ -85,14 +89,21 @@ export class FederatedButtons extends Component {
 
 export default class FederatedSignIn extends Component {
     render() {
-        const { federated, authState, onStateChange } = this.props;
+        
+        const { authState, onStateChange } = this.props;
+        let federated = this.props.federated || {};
+        const config = Auth.configure();
+        if (config.hostedUIOptions) {
+            federated.cognito_auth = Object.assign(federated.cognito_auth, config.hostedUIOptions);
+        }
+
         if (!federated) {
             logger.debug('federated prop is empty. show nothing');
             logger.debug('federated={google_client_id: , facebook_app_id: , amazon_client_id}');
             return null;
         }
         if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
-
+        logger.debug('federated Config is', federated);
         const theme = this.props.theme || AmplifyTheme;
         return (
             <FormSection theme={theme}>
