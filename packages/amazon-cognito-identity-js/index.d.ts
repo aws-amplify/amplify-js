@@ -30,6 +30,17 @@ declare module "amazon-cognito-identity-js" {
         Storage?: ICognitoStorage;
     }
 
+    export interface ICognitoAuthenticateCallbacks {
+        onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void,
+        onFailure: (err: Error) => void,
+        newPasswordRequired?: (userAttributes: any, requiredAttributes: any) => void,
+        mfaRequired?: (challengeName: any, challengeParameters: any) => void,
+        totpRequired?: (challengeName: any, challengeParameters: any) => void,
+        customChallenge?: (challengeParameters: any) => void,
+        mfaSetup?: (challengeName: any, challengeParameters: any) => void,
+        selectMFAType?: (challengeName: any, challengeParameters: any) => void
+    }
+
     export class CognitoUser {
         constructor(data: ICognitoUserData);
 
@@ -43,18 +54,10 @@ declare module "amazon-cognito-identity-js" {
         public getSession(callback: Function): any;
         public refreshSession(refreshToken: CognitoRefreshToken, callback: NodeCallback<any, any>): void;
         public authenticateUser(authenticationDetails: AuthenticationDetails,
-                                callbacks: {
-                                    onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void,
-                                    onFailure: (err: any) => void,
-                                    newPasswordRequired?: (userAttributes: any, requiredAttributes: any) => void,
-                                    mfaRequired?: (challengeName: any, challengeParameters: any) => void,
-                                    totpRequired?: (challengeName: any, challengeParameters: any) => void,
-                                    customChallenge?: (challengeParameters: any) => void,
-                                    mfaSetup?: (challengeName: any, challengeParameters: any) => void,
-                                    selectMFAType?: (challengeName: any, challengeParameters: any) => void
-                                }): void;
+                                callbacks: ICognitoAuthenticateCallbacks): void;
         public confirmRegistration(code: string, forceAliasCreation: boolean, callback: NodeCallback<any, any>): void;
-        public sendCustomChallengeAnswer(answerChallenge: any, callback:NodeCallback<any, any>):void;
+        public sendCustomChallengeAnswer(answerChallenge: any,
+                                         callbacks: ICognitoAuthenticateCallbacks): void;
         public resendConfirmationCode(callback: NodeCallback<Error, "SUCCESS">): void;
         public changePassword(oldPassword: string, newPassword: string, callback: NodeCallback<Error, "SUCCESS">): void;
         public forgotPassword(callbacks: { onSuccess: (data: any) => void, onFailure: (err: Error) => void, inputVerificationCode?: (data: any) => void }): void;
@@ -106,7 +109,7 @@ declare module "amazon-cognito-identity-js" {
         UserMFASettingList: string[];
         Username: string;
     }
-    
+
     export interface ICognitoUserAttributeData {
         Name: string;
         Value: string;
