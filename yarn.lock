@@ -189,9 +189,9 @@ align-text@^0.1.1, align-text@^0.1.3:
     longest "^1.0.1"
     repeat-string "^1.5.2"
 
-amazon-cognito-auth-js@^1.1.4:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/amazon-cognito-auth-js/-/amazon-cognito-auth-js-1.1.6.tgz#8fbdeea5c713d59f432d72e9ae45f069464b2cad"
+amazon-cognito-auth-js@^1.1.8:
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/amazon-cognito-auth-js/-/amazon-cognito-auth-js-1.1.8.tgz#3b2eebaae557abbcbde7ef44fd869ee76b7d099a"
 
 amdefine@>=0.0.4:
   version "1.0.1"

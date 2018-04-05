@@ -693,8 +693,7 @@ export default class AuthClass {
             this.user = federatedUser;
             logger.debug('get current authenticated federated user', this.user);
             return this.user;
-        }
-        else {
+        } else {
             logger.debug('get current authenticated userpool user');
             try {
                 this.user = await this.currentUserPoolUser();
@@ -746,7 +745,22 @@ export default class AuthClass {
                     reject(err); 
                 } else {
                     logger.debug('Succeed to get the user session', session);
-                    resolve(session); 
+                    // check if session is expired
+                    if (!session.isValid()) {
+                        const refreshToken = session.getRefreshToken();
+                        logger.debug('Session is not valid, refreshing session with refreshToken', refreshToken);
+                        user.refreshSession(refreshToken, (err, newSession) => {
+                            if (err) {
+                                logger.debug('Refresh Cognito Session failed', err);
+                                reject(err);
+                            }
+                            logger.debug('Refresh Cognito Session success', newSession);
+                            resolve(newSession);
+                        });
+                    } else {
+                        logger.debug('Session is valid, directly return this session');
+                        resolve(session); 
+                    }
                 }
             });
         });
