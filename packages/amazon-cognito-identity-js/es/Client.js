@@ -63,6 +63,13 @@ var Client = function () {
       };
       return callback(error);
     }).catch(function () {
+      if (!response) {
+        return callback({
+          code: 418,
+          name: '418',
+          message: 'No response',
+        })
+      }
       // Taken from aws-sdk-js/lib/protocol/json.js
       var code = (response.headers.get('x-amzn-errortype') || 'UnknownError').split(':')[0];
       var error = {
