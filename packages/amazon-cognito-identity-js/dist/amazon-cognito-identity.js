@@ -3709,7 +3709,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  /**
-	   * This is used for authenticating the user. it calls the AuthenticationHelper for SRP related
+	   * PRIVATE ONLY: This is an internal only method and should not
+	   * be directly called by the consumers.
+	   * It calls the AuthenticationHelper for SRP related
 	   * stuff
 	   * @param {AuthenticationDetails} authDetails Contains the authentication data
 	   * @param {object} callback Result callback map.
@@ -4523,6 +4525,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      return callback(null, userData.MFAOptions);
+	    });
+	    return undefined;
+	  };
+
+	  /**
+	   * This is used by an authenticated users to get the userData
+	   * @param {nodeCallback<UserData>} callback Called on success or error.
+	   * @returns {void}
+	   */
+
+
+	  CognitoUser.prototype.getUserData = function getUserData(callback) {
+	    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+	      return callback(new Error('User is not authenticated'), null);
+	    }
+
+	    this.client.request('GetUser', {
+	      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+	    }, function (err, userData) {
+	      if (err) {
+	        return callback(err, null);
+	      }
+
+	      return callback(null, userData);
 	    });
 	    return undefined;
 	  };

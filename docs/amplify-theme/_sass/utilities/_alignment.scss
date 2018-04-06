@@ -1,0 +1,30 @@
+/**
+ * Alignment (utilities/_alignment.scss)
+ */
+
+/* ----- Vertical alignment ----- */
+.align-container {
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+
+.align-inner {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.align-inner--top {
+	vertical-align: top;
+}
+
+.align-inner--bottom {
+	vertical-align: bottom;
+}
+
+/* ----- Horizontal alignment ----- */
+.align-right {
+	@media (min-width: $screen-sm-min) {
+		text-align: right;
+	}
+}

@@ -57,8 +57,12 @@ function withGoogle(Comp) {
                     var _this2 = this;
 
                     var ga = window.gapi.auth2.getAuthInstance();
+                    var onError = this.props.onError;
+
                     ga.signIn().then(function (googleUser) {
                         return _this2.federatedSignIn(googleUser);
+                    }, function (error) {
+                        if (onError) onError(error);else throw error;
                     });
                 }
 
@@ -80,7 +84,7 @@ function withGoogle(Comp) {
 
                     var onStateChange = this.props.onStateChange;
 
-                    return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user).then(function (crednetials) {
+                    return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user).then(function (credentials) {
                         if (onStateChange) {
                             onStateChange('signedIn');
                         }

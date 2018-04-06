@@ -1,0 +1,67 @@
+{% if site.amplify.header.nav %}
+	<div class="offcanvas visible-xs">
+		<ul class="offcanvas__nav">
+			{% for item in site.amplify.header.nav %}
+				<li>
+					{% if item.item_external_url %}
+						<a href="{{ item.item_external_url }}">
+							 {{ item.item_name }}   
+						</a>
+					{% else %}
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
+							{{ item.item_name }}
+						</a>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ul><!-- /.offcanvas__nav -->
+	</div><!-- /.offcanvas -->
+{% endif %}
+ 
+{% if site.amplify.header.logo.text or site.amplify.header.logo.image or site.amplify.header.nav %}
+	<header class="site-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12">
+					{% if site.amplify.header.logo.text %}
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
+							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
+							{{ site.amplify.header.logo.text }}
+						</a>
+					{% elsif site.amplify.header.logo.image %}
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
+							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
+						</a><!-- /.site-header__logo -->
+					{% endif %}
+					{% if site.amplify.header.nav %}
+						<ul class="site-header__nav hidden-xs">
+							{% for item in site.amplify.header.nav %}
+								<li>
+									{% if item.item_external_url %}
+										<a href="{{ item.item_external_url }}">
+											{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
+											{{ item.item_name }}
+										</a>
+									{% else %}
+										<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
+											{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
+											{{ item.item_name }}
+										</a>
+									{% endif %}
+								</li>
+							{% endfor %}
+							<li class="site-search">
+								<a> <input placeholder="Search..." type="text" id='search-input'/> </a>
+							</li>
+						</ul><!-- /.site-header__nav -->
+						<button class="offcanvas-toggle visible-xs">
+							<span></span>
+							<span></span>
+							<span></span>
+						</button><!-- /.offcanvas-toggle -->
+					{% endif %}
+				</div><!-- /.col -->
+			</div><!-- /.row -->
+		</div><!-- /.container -->
+	</header><!-- /.site-header -->
+{% endif %}

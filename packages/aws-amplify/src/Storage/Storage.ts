@@ -57,9 +57,9 @@ export default class StorageClass {
      * @param {Object} config - Configuration of the Storage
      * @return {Object} - Current configuration
      */
-    configure(options) {
+    configure(options?) {
         logger.debug('configure Storage');
-        let opt = options? options.Storage || options : {};
+        let opt = options ? options.Storage || options : {};
 
         if (options['aws_user_files_s3_bucket']) {
             opt = {
@@ -79,7 +79,7 @@ export default class StorageClass {
     * @param {Object} [options] - { level : private|public }
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
-    public async get(key: string, options) :Promise<Object> {
+    public async get(key: string, options?): Promise<Object> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
@@ -96,10 +96,10 @@ export default class StorageClass {
             Key: final_key
         };
 
-        if(download === true) {
+        if (download === true) {
             return new Promise<any>((res, rej) => {
                 s3.getObject(params, (err, data) => {
-                    if(err) {
+                    if (err) {
                         dispatchStorageEvent(
                             track,
                             { method: 'get', result: 'failed' },
@@ -109,7 +109,7 @@ export default class StorageClass {
                         dispatchStorageEvent(
                             track,
                             { method: 'get', result: 'success' },
-                            { fileSize: Number(data.Body['length'])});
+                            { fileSize: Number(data.Body['length']) });
                         res(data);
                     }
                 });
@@ -144,14 +144,14 @@ export default class StorageClass {
      * @param {Object} [options] - { level : private|public, contentType: MIME Types }
      * @return - promise resolves to object on success
      */
-    public async put(key:string, object, options): Promise<Object> {
+    public async put(key: string, object, options?): Promise<Object> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._options, options);
         const { bucket, region, credentials, level, track } = opt;
-        const { contentType, cacheControl, expires, metadata } = opt;
-        const type = contentType? contentType: 'binary/octet-stream';
+        const { contentType, contentDisposition, cacheControl, expires, metadata } = opt;
+        const type = contentType ? contentType : 'binary/octet-stream';
 
         const prefix = this._prefix(opt);
         const final_key = prefix + key;
@@ -165,18 +165,19 @@ export default class StorageClass {
             ContentType: type
         };
         if (cacheControl) { params.CacheControl = cacheControl; }
+        if (contentDisposition) { params.ContentDisposition = contentDisposition; }
         if (expires) { params.Expires = expires; }
         if (metadata) { params.Metadata = metadata; }
 
         return new Promise<Object>((res, rej) => {
             s3.upload(params, (err, data) => {
-                if(err) {
+                if (err) {
                     logger.warn("error uploading", err);
                     dispatchStorageEvent(
                         track,
                         { method: 'put', result: 'failed' },
                         null);
-                    rej (err);
+                    rej(err);
                 } else {
                     logger.debug('upload result', data);
                     dispatchStorageEvent(
@@ -197,7 +198,7 @@ export default class StorageClass {
      * @param {Object} [options] - { level : private|public }
      * @return - Promise resolves upon successful removal of the object
      */
-    public async remove(key: string, options) :Promise<any> {
+    public async remove(key: string, options?): Promise<any> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
@@ -215,8 +216,8 @@ export default class StorageClass {
         };
 
         return new Promise<any>((res, rej) => {
-            s3.deleteObject(params, (err,data) => {
-                if(err){
+            s3.deleteObject(params, (err, data) => {
+                if (err) {
                     dispatchStorageEvent(
                         track,
                         { method: 'remove', result: 'failed' },
@@ -239,7 +240,7 @@ export default class StorageClass {
      * @param {Object} [options] - { level : private|public }
      * @return - Promise resolves to list of keys for all objects in path
      */
-    public async list(path, options) : Promise<any> {
+    public async list(path, options?): Promise<any> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
@@ -258,7 +259,7 @@ export default class StorageClass {
 
         return new Promise<any>((res, rej) => {
             s3.listObjects(params, (err, data) => {
-                if(err) {
+                if (err) {
                     logger.warn('list error', err);
                     dispatchStorageEvent(
                         track,
@@ -313,13 +314,13 @@ export default class StorageClass {
      */
     private _prefix(options) {
         const { credentials, level } = options;
-        switch(level) {
-          case 'private':
-            return `private/${credentials.identityId}/`;
-          case 'protected':
-            return `protected/${credentials.identityId}/`;
-          default:
-            return 'public/';
+        switch (level) {
+            case 'private':
+                return `private/${credentials.identityId}/`;
+            case 'protected':
+                return `protected/${credentials.identityId}/`;
+            default:
+                return 'public/';
         }
     }
 
@@ -332,7 +333,7 @@ export default class StorageClass {
             region,
             credentials
         });
-        return  new S3({
+        return new S3({
             apiVersion: '2006-03-01',
             params: { Bucket: bucket },
             region

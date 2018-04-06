@@ -95,7 +95,7 @@ var StorageClass = /** @class */ (function () {
     */
     StorageClass.prototype.get = function (key, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, opt, bucket, region, credentials, level, download, track, prefix, final_key, s3, params;
+            var credentialsOK, opt, bucket, region, credentials, level, download, track, expires, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._ensureCredentials()];
@@ -105,7 +105,7 @@ var StorageClass = /** @class */ (function () {
                             return [2 /*return*/, Promise.reject('No credentials')];
                         }
                         opt = Object.assign({}, this._options, options);
-                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, download = opt.download, track = opt.track;
+                        bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, download = opt.download, track = opt.track, expires = opt.expires;
                         prefix = this._prefix(opt);
                         final_key = prefix + key;
                         s3 = this._createS3(opt);
@@ -127,6 +127,9 @@ var StorageClass = /** @class */ (function () {
                                         }
                                     });
                                 })];
+                        }
+                        if (expires) {
+                            params.Expires = expires;
                         }
                         return [2 /*return*/, new Promise(function (res, rej) {
                                 try {
@@ -153,7 +156,7 @@ var StorageClass = /** @class */ (function () {
      */
     StorageClass.prototype.put = function (key, object, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, opt, bucket, region, credentials, level, track, contentType, cacheControl, expires, metadata, type, prefix, final_key, s3, params;
+            var credentialsOK, opt, bucket, region, credentials, level, track, contentType, contentDisposition, cacheControl, expires, metadata, type, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._ensureCredentials()];
@@ -164,7 +167,7 @@ var StorageClass = /** @class */ (function () {
                         }
                         opt = Object.assign({}, this._options, options);
                         bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, track = opt.track;
-                        contentType = opt.contentType, cacheControl = opt.cacheControl, expires = opt.expires, metadata = opt.metadata;
+                        contentType = opt.contentType, contentDisposition = opt.contentDisposition, cacheControl = opt.cacheControl, expires = opt.expires, metadata = opt.metadata;
                         type = contentType ? contentType : 'binary/octet-stream';
                         prefix = this._prefix(opt);
                         final_key = prefix + key;
@@ -178,6 +181,9 @@ var StorageClass = /** @class */ (function () {
                         };
                         if (cacheControl) {
                             params.CacheControl = cacheControl;
+                        }
+                        if (contentDisposition) {
+                            params.ContentDisposition = contentDisposition;
                         }
                         if (expires) {
                             params.Expires = expires;

@@ -1,0 +1,15 @@
+image: ruby:2.3
+
+variables:
+  JEKYLL_ENV: production
+
+pages:
+  stage: deploy
+  script:
+  - gem install jekyll
+  - jekyll build -d public/
+  artifacts:
+    paths:
+    - public
+  only:
+  - master

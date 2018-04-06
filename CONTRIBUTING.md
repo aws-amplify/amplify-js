@@ -15,6 +15,8 @@ You should open an issue to discuss your pull request, unless it's a trivial cha
 
 Pull requests should generally be opened against **master**.
 
+Only include ***src*** files in your PR. Don't include any build files i.e. dist/ or lib/. These will be built upon publish to npm and when a release is created on GitHub.
+
 ## Tests
 
 Please ensure that your change still passes unit tests, and ideally integration/UI tests. It's OK if you're still working on tests at the time that you submit, but be prepared to be asked about them. Wherever possible, pull requests should contain tests as appropriate. Bugfixes should contain tests that exercise the corrected behavior (i.e., the test should fail without the bugfix and pass with it), and new features should be accompanied by tests exercising the feature.

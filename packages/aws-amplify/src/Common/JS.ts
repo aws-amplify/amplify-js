@@ -108,4 +108,43 @@ export default class JS {
                 'application/xml' === type ||
                 'application/sh' === type);
     }
+
+    /**
+     * generate random string
+     */
+    static generateRandomString() {
+        let result = '';
+        const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    	for (let i = 32; i > 0; i -= 1) {
+            result += chars[Math.floor(Math.random() * chars.length)];
+        }
+    	return result;
+    }
+
+    static makeQuerablePromise(promise) {
+        if (promise.isResolved) return promise;
+
+        let isPending = true;
+        let isRejected = false;
+        let isFullfilled = false;
+
+        const result = promise.then(
+            (data) => {
+                isFullfilled = true;
+                isPending = false;
+                return data;
+            },
+            (e) => {
+                isRejected = true;
+                isPending = false;
+                throw e;
+            }
+        );
+
+        result.isFullfilled = () => { return isFullfilled; };
+        result.isPending = () => { return isPending; };
+        result.isRejected = () => { return isRejected; };
+
+        return result;
+    }
 }
