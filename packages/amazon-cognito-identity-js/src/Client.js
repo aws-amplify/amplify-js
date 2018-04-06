@@ -23,7 +23,7 @@ export default class Client {
     const headers = {
       'Content-Type': 'application/x-amz-json-1.1',
       'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
-      'X-Amz-User-Agent': this.userAgent
+      'X-Amz-User-Agent': this.userAgent,
     };
 
     const options = {
@@ -63,31 +63,29 @@ export default class Client {
         return callback(error);
       })
       .catch(err => {
-        let code = 'UnknownError', error = {};
+        let error = { code: 'UnknownError', message: 'Unkown error' };
 
         // first check if we have a service error
-        if ( response && response.headers && response.headers.get('x-amzn-errortype') ) {
+        if (response && response.headers && response.headers.get('x-amzn-errortype')) {
           try {
-              code = (response.headers.get('x-amz-errortype')).split(':')[0];
-              error = {
-                  code,
-                  name: code,
-                  statusCode: response.status,
-                  message: (response.status) ? response.status.toString() : null,
-                };
-          } catch( error ) { 
-              // pass through so it doesn't get swallowed if we can't parse it 
-          }
-        // otherwise check error
-        } else if ( err instanceof Error ) {
+            const code = (response.headers.get('x-amz-errortype')).split(':')[0];
             error = {
-                code: err.name,
-                name: err.name,
-                message: err.message
+              code,
+              name: code,
+              statusCode: response.status,
+              message: (response.status) ? response.status.toString() : null,
             };
+          } catch (ex) {
+              // pass through so it doesn't get swallowed if we can't parse it
+          }
+        // otherwise check if error is Network error
+        } else if (err instanceof Error && err.message === 'Network error') {
+          error = {
+            code: err.name,
+            name: err.name,
+            message: err.message,
+          };
         // finally case will return 'UnknownError'
-        } else {
-            error = { code };
         }
         return callback(error);
       });
