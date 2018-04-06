@@ -356,6 +356,8 @@ There is also `withGoogle`, `withFacebook`, `withAmazon` components, in case you
 
 Cognito hosted UI provides general availability of a Built-in Customizable User Experience for Sign-in, OAuth 2.0 Support, and Federation with Facebook, Login with Amazon, Google, and SAML providers for User Pools.
 
+Note: this feature is only supported with aws-amplify@^0.2.15 and aws-amplify-react@^0.1.39
+
 #### Setup your Cognito App Client
 
 First you need to setup your App Client in the Cognito User Pool console.
@@ -382,6 +384,7 @@ To add federation provider
     * Map Federation Provider attributes to corresponding User pool attributes. For example, if the ```email``` attribute is required in your User Pool setting, please make sure you have ```email``` in your authorized scopes and map it correctly into the User Pool.
 
 * Don't forget to select this provider in the App client settings
+
 #### Integrate it into your App
 
 * You need to pass your hosted ui options into Amplify:
