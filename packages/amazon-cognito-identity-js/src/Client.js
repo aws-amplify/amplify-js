@@ -56,7 +56,7 @@ export default class Client {
         return callback(error);
       })
       .catch(err => {
-        if(err){
+        if (err) {
           return callback(err);
         }
         // Taken from aws-sdk-js/lib/protocol/json.js
