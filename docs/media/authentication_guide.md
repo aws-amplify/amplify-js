@@ -373,6 +373,8 @@ First you need to setup your App Client in the Cognito User Pool console.
 
 To add federation provider
 
+Note: Before you doing this, make sure your Cognito User Pool doesn't set ```phone_number``` as required attribute. Because providers like Google won't grant the permission to Cognito to get the users' phone number from it.
+
 * Go to: Federation -> Identity providers
     * Select the federated identity provider
     * Input required configuration like App Id, App secret, Authorized scope
