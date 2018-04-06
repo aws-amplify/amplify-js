@@ -55,7 +55,10 @@ export default class Client {
         };
         return callback(error);
       })
-      .catch(() => {
+      .catch((err) => {
+        if(err){
+          return callback(err);
+        }
         // Taken from aws-sdk-js/lib/protocol/json.js
         const code = (response.headers.get('x-amzn-errortype') || 'UnknownError').split(':')[0];
         const error = {
