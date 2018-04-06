@@ -94,7 +94,7 @@ export default class FederatedSignIn extends Component {
         let federated = this.props.federated || {};
         const config = Auth.configure();
         if (config.hostedUIOptions) {
-            federated.cognito_auth = Object.assign(federated.cognito_auth, config.hostedUIOptions);
+            federated.cognito_auth = Object.assign({}, federated.cognito_auth, config.hostedUIOptions);
         }
 
         if (!federated) {

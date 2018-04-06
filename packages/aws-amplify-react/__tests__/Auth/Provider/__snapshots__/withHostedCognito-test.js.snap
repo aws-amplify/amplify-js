@@ -5,3 +5,9 @@ exports[`withHostedCognito test render test render correctly 1`] = `
   hostedCognitoSignIn={[Function]}
 />
 `;
+
+exports[`withHostedCognito test render test render correctly with hosted cognito button 1`] = `
+<Button
+  hostedCognitoSignIn={[Function]}
+/>
+`;

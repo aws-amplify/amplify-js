@@ -16,6 +16,11 @@ describe('withHostedCognito test', () => {
             const wrapper = shallow(<Comp/>);
             expect(wrapper).toMatchSnapshot();
         });
+
+        test('render correctly with hosted cognito button', () => {
+            const wrapper = shallow(<HostedCognitoButton/>);
+            expect(wrapper).toMatchSnapshot();
+        });
     });
 
     describe('signIn test', () => {

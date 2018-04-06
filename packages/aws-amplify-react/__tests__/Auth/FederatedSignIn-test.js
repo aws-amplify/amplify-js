@@ -14,7 +14,7 @@ describe('FederatedSignIn test', () => {
             const wrapper = shallow(<FederatedSignIn/>);
 
             wrapper.setProps({
-                federated: true,
+                federated: {},
                 authState: 'signIn',
                 onStateChange: jest.fn()
             });
@@ -25,7 +25,7 @@ describe('FederatedSignIn test', () => {
             const wrapper = shallow(<FederatedSignIn/>);
 
             wrapper.setProps({
-                federated: true,
+                federated: {},
                 authState: 'signedIn',
                 onStateChange: jest.fn()
             });
@@ -36,7 +36,7 @@ describe('FederatedSignIn test', () => {
             const wrapper = shallow(<FederatedSignIn/>);
 
             wrapper.setProps({
-                federated: false,
+                federated: undefined,
                 authState: 'signIn',
                 onStateChange: jest.fn()
             });
