@@ -55,7 +55,7 @@ export default class Client {
         };
         return callback(error);
       })
-      .catch((err) => {
+      .catch(err => {
         if(err){
           return callback(err);
         }
