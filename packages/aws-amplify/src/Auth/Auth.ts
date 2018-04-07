@@ -977,8 +977,17 @@ export default class AuthClass {
                 const attributes = await this.userAttributes(user);
                 const userAttrs:object = this.attributesToObject(attributes);
 
+                // check if the credentials is in the memory
+                if (!this.credentials) {
+                    try {
+                        await this.currentCredentials();
+                    } catch (e) {
+                        logger.debug('Failed to retrieve credentials while getting current user info', e);
+                    }
+                }
+
                 const info = {
-                    'id': this.credentials.identityId,
+                    'id': this.credentials? this.credentials.identityId : undefined,
                     'username': user.username,
                     'attributes': userAttrs
                 };
