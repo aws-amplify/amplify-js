@@ -1624,11 +1624,6 @@ describe('auth unit test', () => {
 
             const spyon2 = jest.spyOn(Auth.prototype, 'userAttributes')
                 .mockImplementationOnce(() => {
-                    auth['credentials'] = new CognitoIdentityCredentials({
-                        IdentityPoolId: 'identityPoolId',
-                        IdentityId: 'identityId'
-                    });
-                    auth['credentials']['identityId'] = 'identityId';
                     return new Promise((res, rej)=> {
                         res([
                             {Name: 'email', Value: 'email'},
@@ -1639,6 +1634,13 @@ describe('auth unit test', () => {
                         ]);
                     });
                 });
+
+            const spyon3 = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                auth['credentials'] = {
+                    identityId: 'identityId'
+                }
+                return Promise.resolve();
+            });
 
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toEqual({
