@@ -63,6 +63,7 @@ export default class Client {
         return callback(error);
       })
       .catch(err => {
+        // default to return 'UnknownError'
         let error = { code: 'UnknownError', message: 'Unkown error' };
 
         // first check if we have a service error
@@ -85,7 +86,6 @@ export default class Client {
             name: err.name,
             message: err.message,
           };
-        // finally case will return 'UnknownError'
         }
         return callback(error);
       });
