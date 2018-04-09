@@ -59,7 +59,12 @@ Amplify.configure({
     // OPTIONAL -  Customized endpoint
         endpointId: 'XXXXXXXXXXXX',
     // OPTIONAL - disable Analytics if true
-        disabled: false
+        disabled: false,
+    // OPTIONAL - configure the Analytics buffer 
+        interval: 5000, // the default time interval to flush the buffer
+        bufferSize: 1000, // size of the buffer
+        maxSizePerFlush: 100, // max size of per flush
+        resendLimits: 5 // event resendeng limits
     } 
 });
 ```
