@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 117);
+/******/ 	return __webpack_require__(__webpack_require__.s = 119);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -80,7 +80,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /**
  * The main AWS namespace
  */
-var AWS = { util: __webpack_require__(1) };
+var AWS = { util: __webpack_require__(2) };
 
 /**
  * @api private
@@ -118,7 +118,7 @@ AWS.util.update(AWS, {
    * @api private
    */
   XML: {
-    Builder: __webpack_require__(124),
+    Builder: __webpack_require__(126),
     Parser: null // conditionally set based on environment
   },
 
@@ -136,7 +136,7 @@ AWS.util.update(AWS, {
   Model: {
     Api: __webpack_require__(81),
     Operation: __webpack_require__(82),
-    Shape: __webpack_require__(15),
+    Shape: __webpack_require__(16),
     Paginator: __webpack_require__(83),
     ResourceWaiter: __webpack_require__(84)
   },
@@ -144,20 +144,20 @@ AWS.util.update(AWS, {
   /**
    * @api private
    */
-  apiLoader: __webpack_require__(231)
+  apiLoader: __webpack_require__(233)
 });
 
-__webpack_require__(232);
-__webpack_require__(235);
+__webpack_require__(234);
+__webpack_require__(237);
 
 __webpack_require__(87);
 __webpack_require__(88);
-__webpack_require__(236);
-__webpack_require__(240);
+__webpack_require__(238);
 __webpack_require__(242);
-__webpack_require__(243);
 __webpack_require__(244);
-__webpack_require__(250);
+__webpack_require__(245);
+__webpack_require__(246);
+__webpack_require__(252);
 
 /**
  * @readonly
@@ -179,6 +179,65 @@ AWS.events = new AWS.SequentialExecutor();
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+var Facet_1 = __webpack_require__(54);
+var Logger_1 = __webpack_require__(10);
+__export(__webpack_require__(54));
+var ClientDevice_1 = __webpack_require__(305);
+exports.ClientDevice = ClientDevice_1.default;
+__export(__webpack_require__(10));
+__export(__webpack_require__(307));
+var Hub_1 = __webpack_require__(107);
+exports.Hub = Hub_1.default;
+var JS_1 = __webpack_require__(308);
+exports.JS = JS_1.default;
+var Signer_1 = __webpack_require__(108);
+exports.Signer = Signer_1.default;
+var Parser_1 = __webpack_require__(309);
+exports.Parser = Parser_1.default;
+var OAuthHelper_1 = __webpack_require__(310);
+exports.FacebookOAuth = OAuthHelper_1.FacebookOAuth;
+exports.GoogleOAuth = OAuthHelper_1.GoogleOAuth;
+__export(__webpack_require__(313));
+var Platform_1 = __webpack_require__(32);
+exports.Constants = {
+    'userAgent': Platform_1.default.userAgent
+};
+var logger = new Logger_1.ConsoleLogger('Common');
+if (Facet_1.AWS['util']) {
+    Facet_1.AWS['util'].userAgent = function () {
+        return exports.Constants.userAgent;
+    };
+}
+else if (Facet_1.AWS.config) {
+    Facet_1.AWS.config.update({ 'customUserAgent': exports.Constants.userAgent });
+}
+else {
+    logger.warn('No AWS.config');
+}
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process, setImmediate) {/* eslint guard-for-in:0 */
@@ -993,7 +1052,7 @@ var util = {
    */
   isDualstackAvailable: function isDualstackAvailable(service) {
     if (!service) return false;
-    var metadata = __webpack_require__(251);
+    var metadata = __webpack_require__(253);
     if (typeof service !== 'string') service = service.serviceIdentifier;
     if (typeof service !== 'string' || !metadata.hasOwnProperty(service)) return false;
     return !!metadata[service].dualstackAvailable;
@@ -1062,7 +1121,7 @@ var util = {
    */
   uuid: {
     v4: function uuidV4() {
-      return __webpack_require__(252).v4();
+      return __webpack_require__(254).v4();
     }
   },
 
@@ -1119,73 +1178,14 @@ var util = {
 
 module.exports = util;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(121).setImmediate))
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-var Facet_1 = __webpack_require__(54);
-var Logger_1 = __webpack_require__(14);
-__export(__webpack_require__(54));
-var ClientDevice_1 = __webpack_require__(303);
-exports.ClientDevice = ClientDevice_1.default;
-__export(__webpack_require__(14));
-__export(__webpack_require__(305));
-var Hub_1 = __webpack_require__(107);
-exports.Hub = Hub_1.default;
-var JS_1 = __webpack_require__(306);
-exports.JS = JS_1.default;
-var Signer_1 = __webpack_require__(108);
-exports.Signer = Signer_1.default;
-var Parser_1 = __webpack_require__(307);
-exports.Parser = Parser_1.default;
-var OAuthHelper_1 = __webpack_require__(308);
-exports.FacebookOAuth = OAuthHelper_1.FacebookOAuth;
-exports.GoogleOAuth = OAuthHelper_1.GoogleOAuth;
-__export(__webpack_require__(311));
-var Platform_1 = __webpack_require__(32);
-exports.Constants = {
-    'userAgent': Platform_1.default.userAgent
-};
-var logger = new Logger_1.ConsoleLogger('Common');
-if (Facet_1.AWS['util']) {
-    Facet_1.AWS['util'].userAgent = function () {
-        return exports.Constants.userAgent;
-    };
-}
-else if (Facet_1.AWS.config) {
-    Facet_1.AWS.config.update({ 'customUserAgent': exports.Constants.userAgent });
-}
-else {
-    logger.warn('No AWS.config');
-}
-
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(123).setImmediate))
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseAssign = __webpack_require__(152),
-    baseCreate = __webpack_require__(153);
+var baseAssign = __webpack_require__(154),
+    baseCreate = __webpack_require__(155);
 
 /**
  * Creates an object that inherits from the `prototype` object. If a
@@ -1236,8 +1236,8 @@ module.exports = create;
 "use strict";
 
 
-var bind = __webpack_require__(112);
-var isBuffer = __webpack_require__(328);
+var bind = __webpack_require__(113);
+var isBuffer = __webpack_require__(329);
 
 /*global toString:true*/
 
@@ -1623,9 +1623,9 @@ module.exports = isArray;
 
 
 
-var base64 = __webpack_require__(257)
-var ieee754 = __webpack_require__(258)
-var isArray = __webpack_require__(259)
+var base64 = __webpack_require__(259)
+var ieee754 = __webpack_require__(260)
+var isArray = __webpack_require__(261)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -3403,7 +3403,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
 
 /***/ }),
 /* 8 */
@@ -3422,6 +3422,58 @@ module.exports = root;
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(__webpack_require__(304));
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -3611,11 +3663,11 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsNative = __webpack_require__(127),
-    getValue = __webpack_require__(132);
+var baseIsNative = __webpack_require__(129),
+    getValue = __webpack_require__(134);
 
 /**
  * Gets the native function at `key` of `object`.
@@ -3634,13 +3686,13 @@ module.exports = getNative;
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(process) {var util = __webpack_require__(1);
+/* WEBPACK VAR INJECTION */(function(process) {var util = __webpack_require__(2);
 
 // browser specific modules
-util.crypto.lib = __webpack_require__(255);
+util.crypto.lib = __webpack_require__(257);
 util.Buffer = __webpack_require__(7).Buffer;
 util.url = __webpack_require__(93);
 util.querystring = __webpack_require__(94);
@@ -3651,16 +3703,16 @@ module.exports = AWS;
 
 __webpack_require__(85);
 __webpack_require__(86);
-__webpack_require__(267);
-__webpack_require__(271);
-__webpack_require__(272);
-__webpack_require__(277);
+__webpack_require__(269);
+__webpack_require__(273);
+__webpack_require__(274);
+__webpack_require__(279);
 
 // Load the DOMParser XML parser
-AWS.XML.Parser = __webpack_require__(278);
+AWS.XML.Parser = __webpack_require__(280);
 
 // Load the XHR HttpClient
-__webpack_require__(279);
+__webpack_require__(281);
 
 if (typeof process === 'undefined') {
   process = {
@@ -3668,37 +3720,10 @@ if (typeof process === 'undefined') {
   };
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -3710,7 +3735,7 @@ module.exports = g;
 
   isFunction = __webpack_require__(22);
 
-  isEmpty = __webpack_require__(154);
+  isEmpty = __webpack_require__(156);
 
   XMLElement = null;
 
@@ -3737,8 +3762,8 @@ module.exports = g;
         XMLComment = __webpack_require__(79);
         XMLDeclaration = __webpack_require__(67);
         XMLDocType = __webpack_require__(80);
-        XMLRaw = __webpack_require__(229);
-        XMLText = __webpack_require__(230);
+        XMLRaw = __webpack_require__(231);
+        XMLText = __webpack_require__(232);
       }
     }
 
@@ -4035,7 +4060,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4052,20 +4077,27 @@ module.exports = g;
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(302));
+var Auth_1 = __webpack_require__(321);
+exports.AuthClass = Auth_1.default;
+var Common_1 = __webpack_require__(1);
+var logger = new Common_1.ConsoleLogger('Auth');
+var _instance = null;
+if (!_instance) {
+    logger.debug('Create Auth Instance');
+    _instance = new Auth_1.default(null);
+}
+var Auth = _instance;
+exports.default = Auth;
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Collection = __webpack_require__(56);
 
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 
 function property(obj, name, value) {
   if (value !== null && value !== undefined) {
@@ -4419,12 +4451,12 @@ module.exports = Shape;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(23),
-    getRawTag = __webpack_require__(128),
-    objectToString = __webpack_require__(129);
+    getRawTag = __webpack_require__(130),
+    objectToString = __webpack_require__(131);
 
 /** `Object#toString` result references. */
 var nullTag = '[object Null]',
@@ -4453,7 +4485,7 @@ module.exports = baseGetTag;
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isFunction = __webpack_require__(22),
@@ -4492,12 +4524,12 @@ module.exports = isArrayLike;
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayLikeKeys = __webpack_require__(141),
+var arrayLikeKeys = __webpack_require__(143),
     baseKeys = __webpack_require__(66),
-    isArrayLike = __webpack_require__(17);
+    isArrayLike = __webpack_require__(18);
 
 /**
  * Creates an array of the own enumerable property names of `object`.
@@ -4535,7 +4567,7 @@ module.exports = keys;
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 /**
@@ -4570,42 +4602,10 @@ module.exports = isObjectLike;
 
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Auth_1 = __webpack_require__(320);
-exports.AuthClass = Auth_1.default;
-var Common_1 = __webpack_require__(2);
-var logger = new Common_1.ConsoleLogger('Auth');
-var _instance = null;
-if (!_instance) {
-    logger.debug('Create Auth Instance');
-    _instance = new Auth_1.default(null);
-}
-var Auth = _instance;
-exports.default = Auth;
-
-
-/***/ }),
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 
 function populateMethod(req) {
   req.httpRequest.method = req.service.api.operations[req.operation].httpMethod;
@@ -4754,7 +4754,7 @@ module.exports = {
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(16),
+var baseGetTag = __webpack_require__(17),
     isObject = __webpack_require__(5);
 
 /** `Object#toString` result references. */
@@ -4852,11 +4852,11 @@ module.exports = eq;
 /* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var listCacheClear = __webpack_require__(170),
-    listCacheDelete = __webpack_require__(171),
-    listCacheGet = __webpack_require__(172),
-    listCacheHas = __webpack_require__(173),
-    listCacheSet = __webpack_require__(174);
+var listCacheClear = __webpack_require__(172),
+    listCacheDelete = __webpack_require__(173),
+    listCacheGet = __webpack_require__(174),
+    listCacheHas = __webpack_require__(175),
+    listCacheSet = __webpack_require__(176);
 
 /**
  * Creates an list cache object.
@@ -4917,7 +4917,7 @@ module.exports = assocIndexOf;
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10);
+var getNative = __webpack_require__(12);
 
 /* Built-in method references that are verified to be native. */
 var nativeCreate = getNative(Object, 'create');
@@ -4929,7 +4929,7 @@ module.exports = nativeCreate;
 /* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isKeyable = __webpack_require__(188);
+var isKeyable = __webpack_require__(190);
 
 /**
  * Gets the data for `map`.
@@ -5048,18 +5048,18 @@ module.exports = exports = {
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(13);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
 
 apiLoader.services['sts'] = {};
 AWS.STS = Service.defineService('sts', ['2011-06-15']);
-__webpack_require__(268);
+__webpack_require__(270);
 Object.defineProperty(apiLoader.services['sts'], '2011-06-15', {
   get: function get() {
-    var model = __webpack_require__(269);
-    model.paginators = __webpack_require__(270).pagination;
+    var model = __webpack_require__(271);
+    model.paginators = __webpack_require__(272).pagination;
     return model;
   },
   enumerable: true,
@@ -5115,7 +5115,7 @@ exports.default = Platform;
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 var JsonBuilder = __webpack_require__(34);
 var JsonParser = __webpack_require__(35);
 
@@ -5188,7 +5188,7 @@ module.exports = {
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 
 function JsonBuilder() { }
 
@@ -5250,7 +5250,7 @@ module.exports = JsonBuilder;
 /* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 
 function JsonParser() { }
 
@@ -5403,10 +5403,13 @@ var reIsUint = /^(?:0|[1-9]\d*)$/;
  * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
  */
 function isIndex(value, length) {
+  var type = typeof value;
   length = length == null ? MAX_SAFE_INTEGER : length;
+
   return !!length &&
-    (typeof value == 'number' || reIsUint.test(value)) &&
-    (value > -1 && value % 1 == 0 && value < length);
+    (type == 'number' ||
+      (type != 'symbol' && reIsUint.test(value))) &&
+        (value > -1 && value % 1 == 0 && value < length);
 }
 
 module.exports = isIndex;
@@ -5440,8 +5443,8 @@ module.exports = isPrototype;
 /* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsArguments = __webpack_require__(143),
-    isObjectLike = __webpack_require__(19);
+var baseIsArguments = __webpack_require__(145),
+    isObjectLike = __webpack_require__(20);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -5483,7 +5486,7 @@ module.exports = isArguments;
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var root = __webpack_require__(8),
-    stubFalse = __webpack_require__(144);
+    stubFalse = __webpack_require__(146);
 
 /** Detect free variable `exports`. */
 var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
@@ -5555,9 +5558,9 @@ module.exports = function(module) {
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsTypedArray = __webpack_require__(145),
-    baseUnary = __webpack_require__(146),
-    nodeUtil = __webpack_require__(147);
+var baseIsTypedArray = __webpack_require__(147),
+    baseUnary = __webpack_require__(148),
+    nodeUtil = __webpack_require__(149);
 
 /* Node.js helper references. */
 var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
@@ -5588,7 +5591,7 @@ module.exports = isTypedArray;
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(12),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -5601,11 +5604,11 @@ module.exports = Map;
 /* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mapCacheClear = __webpack_require__(180),
-    mapCacheDelete = __webpack_require__(187),
-    mapCacheGet = __webpack_require__(189),
-    mapCacheHas = __webpack_require__(190),
-    mapCacheSet = __webpack_require__(191);
+var mapCacheClear = __webpack_require__(182),
+    mapCacheDelete = __webpack_require__(189),
+    mapCacheGet = __webpack_require__(191),
+    mapCacheHas = __webpack_require__(192),
+    mapCacheSet = __webpack_require__(193);
 
 /**
  * Creates a map cache object to store key-value pairs.
@@ -5674,8 +5677,8 @@ module.exports = isKey;
 /* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(16),
-    isObjectLike = __webpack_require__(19);
+var baseGetTag = __webpack_require__(17),
+    isObjectLike = __webpack_require__(20);
 
 /** `Object#toString` result references. */
 var symbolTag = '[object Symbol]';
@@ -7444,9 +7447,9 @@ module.exports = { hash: hash };
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var BrowserStorageCache_1 = __webpack_require__(313);
+var BrowserStorageCache_1 = __webpack_require__(315);
 exports.BrowserStorageCache = BrowserStorageCache_1.default;
-var InMemoryCache_1 = __webpack_require__(316);
+var InMemoryCache_1 = __webpack_require__(318);
 exports.InMemoryCache = InMemoryCache_1.default;
 exports.default = BrowserStorageCache_1.default;
 
@@ -7473,8 +7476,8 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(314));
-var CacheList_1 = __webpack_require__(315);
+__export(__webpack_require__(316));
+var CacheList_1 = __webpack_require__(317);
 exports.CacheList = CacheList_1.default;
 
 
@@ -7486,7 +7489,7 @@ exports.CacheList = CacheList_1.default;
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var normalizeHeaderName = __webpack_require__(330);
+var normalizeHeaderName = __webpack_require__(331);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -7502,10 +7505,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(113);
+    adapter = __webpack_require__(114);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(113);
+    adapter = __webpack_require__(114);
   }
   return adapter;
 }
@@ -7576,7 +7579,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ }),
 /* 54 */
@@ -7598,15 +7601,15 @@ module.exports = defaults;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 // import * as AWS from 'aws-sdk/global';
-var S3 = __webpack_require__(120);
+var S3 = __webpack_require__(122);
 exports.S3 = S3;
-var AWS = __webpack_require__(286);
+var AWS = __webpack_require__(288);
 exports.AWS = AWS;
-var Cognito = __webpack_require__(287);
+var Cognito = __webpack_require__(289);
 exports.Cognito = Cognito;
-var Pinpoint = __webpack_require__(298);
+var Pinpoint = __webpack_require__(300);
 exports.Pinpoint = Pinpoint;
-var MobileAnalytics = __webpack_require__(300);
+var MobileAnalytics = __webpack_require__(302);
 exports.MobileAnalytics = MobileAnalytics;
 
 
@@ -7615,9 +7618,9 @@ exports.MobileAnalytics = MobileAnalytics;
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-var util = __webpack_require__(1);
-var QueryParamSerializer = __webpack_require__(123);
-var Shape = __webpack_require__(15);
+var util = __webpack_require__(2);
+var QueryParamSerializer = __webpack_require__(125);
+var Shape = __webpack_require__(16);
 
 function buildRequest(req) {
   var operation = req.service.api.operations[req.operation];
@@ -7724,7 +7727,7 @@ module.exports = {
 /* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var memoizedProperty = __webpack_require__(1).memoizedProperty;
+var memoizedProperty = __webpack_require__(2).memoizedProperty;
 
 function memoize(name, value, fn, nameTr) {
   memoizedProperty(this, nameTr(name), function() {
@@ -7750,7 +7753,7 @@ module.exports = Collection;
 /* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 var Rest = __webpack_require__(21);
 var Json = __webpack_require__(33);
 var JsonBuilder = __webpack_require__(34);
@@ -7839,7 +7842,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 var Rest = __webpack_require__(21);
 
 function populateBody(req) {
@@ -8005,7 +8008,7 @@ module.exports = baseAssignValue;
 /* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10);
+var getNative = __webpack_require__(12);
 
 var defineProperty = (function() {
   try {
@@ -8027,7 +8030,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 module.exports = freeGlobal;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
 
 /***/ }),
 /* 63 */
@@ -8112,7 +8115,7 @@ module.exports = copyObject;
 /***/ (function(module, exports, __webpack_require__) {
 
 var eq = __webpack_require__(24),
-    isArrayLike = __webpack_require__(17),
+    isArrayLike = __webpack_require__(18),
     isIndex = __webpack_require__(38),
     isObject = __webpack_require__(5);
 
@@ -8148,7 +8151,7 @@ module.exports = isIterateeCall;
 /***/ (function(module, exports, __webpack_require__) {
 
 var isPrototype = __webpack_require__(39),
-    nativeKeys = __webpack_require__(148);
+    nativeKeys = __webpack_require__(150);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -8193,7 +8196,7 @@ module.exports = baseKeys;
 
   isObject = __webpack_require__(5);
 
-  XMLNode = __webpack_require__(13);
+  XMLNode = __webpack_require__(14);
 
   module.exports = XMLDeclaration = (function(superClass) {
     extend(XMLDeclaration, superClass);
@@ -8254,12 +8257,12 @@ module.exports = baseKeys;
 /* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var DataView = __webpack_require__(155),
+var DataView = __webpack_require__(157),
     Map = __webpack_require__(44),
-    Promise = __webpack_require__(156),
-    Set = __webpack_require__(157),
-    WeakMap = __webpack_require__(158),
-    baseGetTag = __webpack_require__(16),
+    Promise = __webpack_require__(158),
+    Set = __webpack_require__(159),
+    WeakMap = __webpack_require__(160),
+    baseGetTag = __webpack_require__(17),
     toSource = __webpack_require__(63);
 
 /** `Object#toString` result references. */
@@ -8330,11 +8333,11 @@ module.exports = getTag;
 
   isFunction = __webpack_require__(22);
 
-  every = __webpack_require__(159);
+  every = __webpack_require__(161);
 
-  XMLNode = __webpack_require__(13);
+  XMLNode = __webpack_require__(14);
 
-  XMLAttribute = __webpack_require__(224);
+  XMLAttribute = __webpack_require__(226);
 
   XMLProcessingInstruction = __webpack_require__(77);
 
@@ -8537,11 +8540,11 @@ module.exports = getTag;
 /***/ (function(module, exports, __webpack_require__) {
 
 var ListCache = __webpack_require__(25),
-    stackClear = __webpack_require__(175),
-    stackDelete = __webpack_require__(176),
-    stackGet = __webpack_require__(177),
-    stackHas = __webpack_require__(178),
-    stackSet = __webpack_require__(179);
+    stackClear = __webpack_require__(177),
+    stackDelete = __webpack_require__(178),
+    stackGet = __webpack_require__(179),
+    stackHas = __webpack_require__(180),
+    stackSet = __webpack_require__(181);
 
 /**
  * Creates a stack cache object to store key-value pairs.
@@ -8569,8 +8572,8 @@ module.exports = Stack;
 /* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsEqualDeep = __webpack_require__(192),
-    isObjectLike = __webpack_require__(19);
+var baseIsEqualDeep = __webpack_require__(194),
+    isObjectLike = __webpack_require__(20);
 
 /**
  * The base implementation of `_.isEqual` which supports partial comparisons
@@ -8603,9 +8606,9 @@ module.exports = baseIsEqual;
 /* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var SetCache = __webpack_require__(193),
-    arraySome = __webpack_require__(196),
-    cacheHas = __webpack_require__(197);
+var SetCache = __webpack_require__(195),
+    arraySome = __webpack_require__(198),
+    cacheHas = __webpack_require__(199);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1,
@@ -8771,8 +8774,8 @@ module.exports = baseGet;
 
 var isArray = __webpack_require__(6),
     isKey = __webpack_require__(46),
-    stringToPath = __webpack_require__(212),
-    toString = __webpack_require__(215);
+    stringToPath = __webpack_require__(214),
+    toString = __webpack_require__(217);
 
 /**
  * Casts `value` to a path array if it's not one.
@@ -8861,7 +8864,7 @@ module.exports = castPath;
 
   create = __webpack_require__(3);
 
-  XMLNode = __webpack_require__(13);
+  XMLNode = __webpack_require__(14);
 
   module.exports = XMLCData = (function(superClass) {
     extend(XMLCData, superClass);
@@ -8916,7 +8919,7 @@ module.exports = castPath;
 
   create = __webpack_require__(3);
 
-  XMLNode = __webpack_require__(13);
+  XMLNode = __webpack_require__(14);
 
   module.exports = XMLComment = (function(superClass) {
     extend(XMLComment, superClass);
@@ -8975,13 +8978,13 @@ module.exports = castPath;
 
   XMLComment = __webpack_require__(79);
 
-  XMLDTDAttList = __webpack_require__(225);
+  XMLDTDAttList = __webpack_require__(227);
 
-  XMLDTDEntity = __webpack_require__(226);
+  XMLDTDEntity = __webpack_require__(228);
 
-  XMLDTDElement = __webpack_require__(227);
+  XMLDTDElement = __webpack_require__(229);
 
-  XMLDTDNotation = __webpack_require__(228);
+  XMLDTDNotation = __webpack_require__(230);
 
   XMLProcessingInstruction = __webpack_require__(77);
 
@@ -9159,11 +9162,11 @@ module.exports = castPath;
 
 var Collection = __webpack_require__(56);
 var Operation = __webpack_require__(82);
-var Shape = __webpack_require__(15);
+var Shape = __webpack_require__(16);
 var Paginator = __webpack_require__(83);
 var ResourceWaiter = __webpack_require__(84);
 
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 var property = util.property;
 var memoizedProperty = util.memoizedProperty;
 
@@ -9226,9 +9229,9 @@ module.exports = Api;
 /* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Shape = __webpack_require__(15);
+var Shape = __webpack_require__(16);
 
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 var property = util.property;
 var memoizedProperty = util.memoizedProperty;
 
@@ -9306,7 +9309,7 @@ module.exports = Operation;
 /* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var property = __webpack_require__(1).property;
+var property = __webpack_require__(2).property;
 
 function Paginator(name, paginator) {
   property(this, 'inputToken', paginator.input_token);
@@ -9323,7 +9326,7 @@ module.exports = Paginator;
 /* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 var property = util.property;
 
 function ResourceWaiter(name, waiter, options) {
@@ -10444,7 +10447,7 @@ if (!rng) {
 
 module.exports = rng;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
 
 /***/ }),
 /* 92 */
@@ -10503,8 +10506,8 @@ module.exports = bytesToUuid;
 
 
 
-var punycode = __webpack_require__(263);
-var util = __webpack_require__(264);
+var punycode = __webpack_require__(265);
+var util = __webpack_require__(266);
 
 exports.parse = urlParse;
 exports.resolve = urlResolve;
@@ -11221,8 +11224,8 @@ Url.prototype.parseHost = function() {
 "use strict";
 
 
-exports.decode = exports.parse = __webpack_require__(265);
-exports.encode = exports.stringify = __webpack_require__(266);
+exports.decode = exports.parse = __webpack_require__(267);
+exports.encode = exports.stringify = __webpack_require__(268);
 
 
 /***/ }),
@@ -11588,10 +11591,10 @@ exports.default = AuthenticationHelper;
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(7).Buffer
-var sha = __webpack_require__(289)
-var sha256 = __webpack_require__(290)
-var rng = __webpack_require__(291)
-var md5 = __webpack_require__(292)
+var sha = __webpack_require__(291)
+var sha256 = __webpack_require__(292)
+var rng = __webpack_require__(293)
+var md5 = __webpack_require__(294)
 
 var algorithms = {
   sha1: sha,
@@ -13071,7 +13074,9 @@ var CognitoUser = function () {
   };
 
   /**
-   * This is used for authenticating the user. it calls the AuthenticationHelper for SRP related
+   * PRIVATE ONLY: This is an internal only method and should not
+   * be directly called by the consumers.
+   * It calls the AuthenticationHelper for SRP related
    * stuff
    * @param {AuthenticationDetails} authDetails Contains the authentication data
    * @param {object} callback Result callback map.
@@ -15060,7 +15065,7 @@ exports.default = StorageHelper;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Logger_1 = __webpack_require__(14);
+var Logger_1 = __webpack_require__(10);
 var logger = new Logger_1.ConsoleLogger('Hub');
 var HubClass = /** @class */ (function () {
     function HubClass(name) {
@@ -15140,9 +15145,18 @@ exports.default = Hub;
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var logger = new Common_1.ConsoleLogger('Signer'), url = __webpack_require__(93), crypto = Common_1.AWS['util'].crypto;
+var DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
 var encrypt = function (key, src, encoding) {
     return crypto.lib.createHmac('sha256', key).update(src, 'utf8').digest(encoding);
 };
@@ -15337,7 +15351,7 @@ var sign = function (request, access_info, service_info) {
     if (service_info === void 0) { service_info = null; }
     request.headers = request.headers || {};
     // datetime string and date string
-    var dt = new Date(), dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''), d_str = dt_str.substr(0, 8), algorithm = 'AWS4-HMAC-SHA256';
+    var dt = new Date(), dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''), d_str = dt_str.substr(0, 8);
     var url_info = url.parse(request.url);
     request.headers['host'] = url_info.host;
     request.headers['x-amz-date'] = dt_str;
@@ -15348,13 +15362,40 @@ var sign = function (request, access_info, service_info) {
     var request_str = canonical_request(request);
     logger.debug(request_str);
     // Task 2: Create a String to Sign
-    var serviceInfo = service_info || parse_service_info(request), scope = credential_scope(d_str, serviceInfo.region, serviceInfo.service), str_to_sign = string_to_sign(algorithm, request_str, dt_str, scope);
+    var serviceInfo = service_info || parse_service_info(request), scope = credential_scope(d_str, serviceInfo.region, serviceInfo.service), str_to_sign = string_to_sign(DEFAULT_ALGORITHM, request_str, dt_str, scope);
     // Task 3: Calculate the Signature
     var signing_key = get_signing_key(access_info.secret_key, d_str, serviceInfo), signature = get_signature(signing_key, str_to_sign);
     // Task 4: Adding the Signing information to the Request
-    var authorization_header = get_authorization_header(algorithm, access_info.access_key, scope, signed_headers(request.headers), signature);
+    var authorization_header = get_authorization_header(DEFAULT_ALGORITHM, access_info.access_key, scope, signed_headers(request.headers), signature);
     request.headers['Authorization'] = authorization_header;
     return request;
+};
+var signUrl = function (urlToSign, accessInfo, serviceInfo, expiration) {
+    var now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
+    var today = now.substr(0, 8);
+    var parsedUrl = url.parse(urlToSign, true, true);
+    var host = parsedUrl.host;
+    var signedHeaders = { host: host };
+    var _a = serviceInfo || parse_service_info({ url: url.format(parsedUrl) }), region = _a.region, service = _a.service;
+    var credentialScope = credential_scope(today, region, service);
+    var queryParams = __assign({ 'X-Amz-Algorithm': DEFAULT_ALGORITHM, 'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'), 'X-Amz-Date': now.substr(0, 16) }, (expiration && { 'X-Amz-Expires': "" + expiration }), { 'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(',') });
+    var canonicalRequest = canonical_request({
+        method: 'GET',
+        url: url.format(__assign({}, parsedUrl, { query: __assign({}, parsedUrl.query, queryParams) })),
+        headers: signedHeaders,
+    });
+    var stringToSign = string_to_sign(DEFAULT_ALGORITHM, canonicalRequest, now, credentialScope);
+    var signing_key = get_signing_key(accessInfo.secret_key, today, { region: region, service: service });
+    var signature = get_signature(signing_key, stringToSign);
+    var additionalQueryParams = __assign({ 'X-Amz-Signature': signature }, (accessInfo.session_token && { 'X-Amz-Security-Token': accessInfo.session_token }));
+    var result = url.format({
+        protocol: parsedUrl.protocol,
+        slashes: true,
+        hostname: parsedUrl.hostname,
+        pathname: parsedUrl.pathname,
+        query: __assign({}, parsedUrl.query, queryParams, additionalQueryParams)
+    });
+    return result;
 };
 /**
 * AWS request signer.
@@ -15366,6 +15407,7 @@ var Signer = /** @class */ (function () {
     function Signer() {
     }
     Signer.sign = sign;
+    Signer.signUrl = signUrl;
     return Signer;
 }());
 exports.default = Signer;
@@ -15391,7 +15433,7 @@ exports.default = Signer;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = __webpack_require__(52);
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var logger = new Common_1.ConsoleLogger('StorageCache');
 /**
  * Initialization of the cache
@@ -15491,6 +15533,20 @@ exports.default = StorageCache;
 
 /***/ }),
 /* 110 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var v1 = __webpack_require__(319);
+var v4 = __webpack_require__(320);
+
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+
+module.exports = uuid;
+
+
+/***/ }),
+/* 111 */
 /***/ (function(module, exports) {
 
 // Unique ID creation requires a high quality random # generator.  In the
@@ -15528,7 +15584,7 @@ if (getRandomValues) {
 
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports) {
 
 /**
@@ -15557,7 +15613,7 @@ module.exports = bytesToUuid;
 
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15575,19 +15631,19 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var settle = __webpack_require__(331);
-var buildURL = __webpack_require__(333);
-var parseHeaders = __webpack_require__(334);
-var isURLSameOrigin = __webpack_require__(335);
-var createError = __webpack_require__(114);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(336);
+var settle = __webpack_require__(332);
+var buildURL = __webpack_require__(334);
+var parseHeaders = __webpack_require__(335);
+var isURLSameOrigin = __webpack_require__(336);
+var createError = __webpack_require__(115);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(337);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -15684,7 +15740,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(337);
+      var cookies = __webpack_require__(338);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -15760,16 +15816,16 @@ module.exports = function xhrAdapter(config) {
   });
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var enhanceError = __webpack_require__(332);
+var enhanceError = __webpack_require__(333);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -15788,7 +15844,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15800,7 +15856,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15826,7 +15882,14 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 117 */
+/* 118 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(348).Observable;
+
+
+/***/ }),
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15844,23 +15907,25 @@ module.exports = Cancel;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Analytics_1 = __webpack_require__(118);
+var Analytics_1 = __webpack_require__(120);
 exports.Analytics = Analytics_1.default;
 exports.AnalyticsClass = Analytics_1.AnalyticsClass;
-var Auth_1 = __webpack_require__(20);
+var Auth_1 = __webpack_require__(15);
 exports.Auth = Auth_1.default;
 exports.AuthClass = Auth_1.AuthClass;
-var Storage_1 = __webpack_require__(321);
+var Storage_1 = __webpack_require__(322);
 exports.Storage = Storage_1.default;
 exports.StorageClass = Storage_1.StorageClass;
-var API_1 = __webpack_require__(323);
+var API_1 = __webpack_require__(324);
 exports.API = API_1.default;
 exports.APIClass = API_1.APIClass;
-var I18n_1 = __webpack_require__(345);
+var PubSub_1 = __webpack_require__(346);
+exports.PubSub = PubSub_1.default;
+var I18n_1 = __webpack_require__(353);
 exports.I18n = I18n_1.default;
 var Cache_1 = __webpack_require__(51);
 exports.Cache = Cache_1.default;
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 exports.Logger = Common_1.ConsoleLogger;
 exports.Hub = Common_1.Hub;
 exports.JS = Common_1.JS;
@@ -15880,6 +15945,7 @@ var Amplify = /** @class */ (function () {
         API_1.default.configure(config);
         Storage_1.default.configure(config);
         Cache_1.default.configure(config);
+        PubSub_1.default.configure(config);
         return config;
     };
     Amplify.addPluggable = function (pluggable) {
@@ -15897,6 +15963,9 @@ var Amplify = /** @class */ (function () {
                     break;
                 case 'Storage':
                     break;
+                case 'PubSub':
+                    PubSub_1.default.addPluggable(pluggable);
+                    break;
                 default:
                     break;
             }
@@ -15908,6 +15977,7 @@ var Amplify = /** @class */ (function () {
     Amplify.Storage = null;
     Amplify.I18n = null;
     Amplify.Cache = null;
+    Amplify.PubSub = null;
     Amplify.Logger = null;
     return Amplify;
 }());
@@ -15918,11 +15988,12 @@ Amplify.API = API_1.default;
 Amplify.Storage = Storage_1.default;
 Amplify.I18n = I18n_1.default;
 Amplify.Cache = Cache_1.default;
+Amplify.PubSub = PubSub_1.default;
 Amplify.Logger = Common_1.ConsoleLogger;
 
 
 /***/ }),
-/* 118 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15940,9 +16011,9 @@ Amplify.Logger = Common_1.ConsoleLogger;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Analytics_1 = __webpack_require__(119);
+var Analytics_1 = __webpack_require__(121);
 exports.AnalyticsClass = Analytics_1.default;
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var Platform_1 = __webpack_require__(32);
 var logger = new Common_1.ConsoleLogger('Analytics');
 var startsessionRecorded = false;
@@ -16029,7 +16100,7 @@ Common_1.Hub.listen('analytics', Analytics);
 
 
 /***/ }),
-/* 119 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16082,9 +16153,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = __webpack_require__(2);
-var AWSAnalyticsProvider_1 = __webpack_require__(312);
-var Auth_1 = __webpack_require__(20);
+var Common_1 = __webpack_require__(1);
+var AWSAnalyticsProvider_1 = __webpack_require__(314);
+var Auth_1 = __webpack_require__(15);
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 // events buffer
 var BUFFER_SIZE = 1000;
@@ -16324,22 +16395,22 @@ exports.default = AnalyticsClass;
 
 
 /***/ }),
-/* 120 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(13);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
 
 apiLoader.services['s3'] = {};
 AWS.S3 = Service.defineService('s3', ['2006-03-01']);
-__webpack_require__(281);
+__webpack_require__(283);
 Object.defineProperty(apiLoader.services['s3'], '2006-03-01', {
   get: function get() {
-    var model = __webpack_require__(283);
-    model.paginators = __webpack_require__(284).pagination;
-    model.waiters = __webpack_require__(285).waiters;
+    var model = __webpack_require__(285);
+    model.paginators = __webpack_require__(286).pagination;
+    model.waiters = __webpack_require__(287).waiters;
     return model;
   },
   enumerable: true,
@@ -16350,10 +16421,10 @@ module.exports = AWS.S3;
 
 
 /***/ }),
-/* 121 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var apply = Function.prototype.apply;
+/* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
 
 // DOM APIs, for completeness
 
@@ -16403,13 +16474,21 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(122);
-exports.setImmediate = setImmediate;
-exports.clearImmediate = clearImmediate;
+__webpack_require__(124);
+// On some exotic environments, it's not clear which object `setimmeidate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
 
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
 
 /***/ }),
-/* 122 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -16599,13 +16678,13 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(11)))
 
 /***/ }),
-/* 123 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(1);
+var util = __webpack_require__(2);
 
 function QueryParamSerializer() {
 }
@@ -16689,11 +16768,11 @@ module.exports = QueryParamSerializer;
 
 
 /***/ }),
-/* 124 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(1);
-var builder = __webpack_require__(125);
+var util = __webpack_require__(2);
+var builder = __webpack_require__(127);
 
 function XmlBuilder() { }
 
@@ -16781,16 +16860,16 @@ module.exports = XmlBuilder;
 
 
 /***/ }),
-/* 125 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
 (function() {
   var XMLBuilder, assign;
 
-  assign = __webpack_require__(126);
+  assign = __webpack_require__(128);
 
-  XMLBuilder = __webpack_require__(150);
+  XMLBuilder = __webpack_require__(152);
 
   module.exports.create = function(name, xmldec, doctype, options) {
     options = assign({}, xmldec, doctype, options);
@@ -16801,15 +16880,15 @@ module.exports = XmlBuilder;
 
 
 /***/ }),
-/* 126 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assignValue = __webpack_require__(59),
     copyObject = __webpack_require__(64),
-    createAssigner = __webpack_require__(133),
-    isArrayLike = __webpack_require__(17),
+    createAssigner = __webpack_require__(135),
+    isArrayLike = __webpack_require__(18),
     isPrototype = __webpack_require__(39),
-    keys = __webpack_require__(18);
+    keys = __webpack_require__(19);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -16865,11 +16944,11 @@ module.exports = assign;
 
 
 /***/ }),
-/* 127 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isFunction = __webpack_require__(22),
-    isMasked = __webpack_require__(130),
+    isMasked = __webpack_require__(132),
     isObject = __webpack_require__(5),
     toSource = __webpack_require__(63);
 
@@ -16918,7 +16997,7 @@ module.exports = baseIsNative;
 
 
 /***/ }),
-/* 128 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(23);
@@ -16970,7 +17049,7 @@ module.exports = getRawTag;
 
 
 /***/ }),
-/* 129 */
+/* 131 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -16998,10 +17077,10 @@ module.exports = objectToString;
 
 
 /***/ }),
-/* 130 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var coreJsData = __webpack_require__(131);
+var coreJsData = __webpack_require__(133);
 
 /** Used to detect methods masquerading as native. */
 var maskSrcKey = (function() {
@@ -17024,7 +17103,7 @@ module.exports = isMasked;
 
 
 /***/ }),
-/* 131 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var root = __webpack_require__(8);
@@ -17036,7 +17115,7 @@ module.exports = coreJsData;
 
 
 /***/ }),
-/* 132 */
+/* 134 */
 /***/ (function(module, exports) {
 
 /**
@@ -17055,10 +17134,10 @@ module.exports = getValue;
 
 
 /***/ }),
-/* 133 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseRest = __webpack_require__(134),
+var baseRest = __webpack_require__(136),
     isIterateeCall = __webpack_require__(65);
 
 /**
@@ -17098,12 +17177,12 @@ module.exports = createAssigner;
 
 
 /***/ }),
-/* 134 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var identity = __webpack_require__(36),
-    overRest = __webpack_require__(135),
-    setToString = __webpack_require__(137);
+    overRest = __webpack_require__(137),
+    setToString = __webpack_require__(139);
 
 /**
  * The base implementation of `_.rest` which doesn't validate or coerce arguments.
@@ -17121,10 +17200,10 @@ module.exports = baseRest;
 
 
 /***/ }),
-/* 135 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var apply = __webpack_require__(136);
+var apply = __webpack_require__(138);
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
@@ -17163,7 +17242,7 @@ module.exports = overRest;
 
 
 /***/ }),
-/* 136 */
+/* 138 */
 /***/ (function(module, exports) {
 
 /**
@@ -17190,11 +17269,11 @@ module.exports = apply;
 
 
 /***/ }),
-/* 137 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseSetToString = __webpack_require__(138),
-    shortOut = __webpack_require__(140);
+var baseSetToString = __webpack_require__(140),
+    shortOut = __webpack_require__(142);
 
 /**
  * Sets the `toString` method of `func` to return `string`.
@@ -17210,10 +17289,10 @@ module.exports = setToString;
 
 
 /***/ }),
-/* 138 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var constant = __webpack_require__(139),
+var constant = __webpack_require__(141),
     defineProperty = __webpack_require__(61),
     identity = __webpack_require__(36);
 
@@ -17238,7 +17317,7 @@ module.exports = baseSetToString;
 
 
 /***/ }),
-/* 139 */
+/* 141 */
 /***/ (function(module, exports) {
 
 /**
@@ -17270,7 +17349,7 @@ module.exports = constant;
 
 
 /***/ }),
-/* 140 */
+/* 142 */
 /***/ (function(module, exports) {
 
 /** Used to detect hot functions by number of calls within a span of milliseconds. */
@@ -17313,10 +17392,10 @@ module.exports = shortOut;
 
 
 /***/ }),
-/* 141 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseTimes = __webpack_require__(142),
+var baseTimes = __webpack_require__(144),
     isArguments = __webpack_require__(40),
     isArray = __webpack_require__(6),
     isBuffer = __webpack_require__(41),
@@ -17368,7 +17447,7 @@ module.exports = arrayLikeKeys;
 
 
 /***/ }),
-/* 142 */
+/* 144 */
 /***/ (function(module, exports) {
 
 /**
@@ -17394,11 +17473,11 @@ module.exports = baseTimes;
 
 
 /***/ }),
-/* 143 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(16),
-    isObjectLike = __webpack_require__(19);
+var baseGetTag = __webpack_require__(17),
+    isObjectLike = __webpack_require__(20);
 
 /** `Object#toString` result references. */
 var argsTag = '[object Arguments]';
@@ -17418,7 +17497,7 @@ module.exports = baseIsArguments;
 
 
 /***/ }),
-/* 144 */
+/* 146 */
 /***/ (function(module, exports) {
 
 /**
@@ -17442,12 +17521,12 @@ module.exports = stubFalse;
 
 
 /***/ }),
-/* 145 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetTag = __webpack_require__(16),
+var baseGetTag = __webpack_require__(17),
     isLength = __webpack_require__(37),
-    isObjectLike = __webpack_require__(19);
+    isObjectLike = __webpack_require__(20);
 
 /** `Object#toString` result references. */
 var argsTag = '[object Arguments]',
@@ -17508,7 +17587,7 @@ module.exports = baseIsTypedArray;
 
 
 /***/ }),
-/* 146 */
+/* 148 */
 /***/ (function(module, exports) {
 
 /**
@@ -17528,7 +17607,7 @@ module.exports = baseUnary;
 
 
 /***/ }),
-/* 147 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var freeGlobal = __webpack_require__(62);
@@ -17557,10 +17636,10 @@ module.exports = nodeUtil;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module)))
 
 /***/ }),
-/* 148 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var overArg = __webpack_require__(149);
+var overArg = __webpack_require__(151);
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeKeys = overArg(Object.keys, Object);
@@ -17569,7 +17648,7 @@ module.exports = nativeKeys;
 
 
 /***/ }),
-/* 149 */
+/* 151 */
 /***/ (function(module, exports) {
 
 /**
@@ -17590,14 +17669,14 @@ module.exports = overArg;
 
 
 /***/ }),
-/* 150 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
 (function() {
   var XMLBuilder, XMLDeclaration, XMLDocType, XMLElement, XMLStringifier;
 
-  XMLStringifier = __webpack_require__(151);
+  XMLStringifier = __webpack_require__(153);
 
   XMLDeclaration = __webpack_require__(67);
 
@@ -17665,7 +17744,7 @@ module.exports = overArg;
 
 
 /***/ }),
-/* 151 */
+/* 153 */
 /***/ (function(module, exports) {
 
 // Generated by CoffeeScript 1.9.1
@@ -17841,11 +17920,11 @@ module.exports = overArg;
 
 
 /***/ }),
-/* 152 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var copyObject = __webpack_require__(64),
-    keys = __webpack_require__(18);
+    keys = __webpack_require__(19);
 
 /**
  * The base implementation of `_.assign` without support for multiple sources
@@ -17864,7 +17943,7 @@ module.exports = baseAssign;
 
 
 /***/ }),
-/* 153 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(5);
@@ -17900,14 +17979,14 @@ module.exports = baseCreate;
 
 
 /***/ }),
-/* 154 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseKeys = __webpack_require__(66),
     getTag = __webpack_require__(68),
     isArguments = __webpack_require__(40),
     isArray = __webpack_require__(6),
-    isArrayLike = __webpack_require__(17),
+    isArrayLike = __webpack_require__(18),
     isBuffer = __webpack_require__(41),
     isPrototype = __webpack_require__(39),
     isTypedArray = __webpack_require__(43);
@@ -17983,10 +18062,10 @@ module.exports = isEmpty;
 
 
 /***/ }),
-/* 155 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(12),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -17996,10 +18075,10 @@ module.exports = DataView;
 
 
 /***/ }),
-/* 156 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(12),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -18009,10 +18088,10 @@ module.exports = Promise;
 
 
 /***/ }),
-/* 157 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(12),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -18022,10 +18101,10 @@ module.exports = Set;
 
 
 /***/ }),
-/* 158 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getNative = __webpack_require__(10),
+var getNative = __webpack_require__(12),
     root = __webpack_require__(8);
 
 /* Built-in method references that are verified to be native. */
@@ -18035,12 +18114,12 @@ module.exports = WeakMap;
 
 
 /***/ }),
-/* 159 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayEvery = __webpack_require__(160),
-    baseEvery = __webpack_require__(161),
-    baseIteratee = __webpack_require__(167),
+var arrayEvery = __webpack_require__(162),
+    baseEvery = __webpack_require__(163),
+    baseIteratee = __webpack_require__(169),
     isArray = __webpack_require__(6),
     isIterateeCall = __webpack_require__(65);
 
@@ -18097,7 +18176,7 @@ module.exports = every;
 
 
 /***/ }),
-/* 160 */
+/* 162 */
 /***/ (function(module, exports) {
 
 /**
@@ -18126,10 +18205,10 @@ module.exports = arrayEvery;
 
 
 /***/ }),
-/* 161 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseEach = __webpack_require__(162);
+var baseEach = __webpack_require__(164);
 
 /**
  * The base implementation of `_.every` without support for iteratee shorthands.
@@ -18153,11 +18232,11 @@ module.exports = baseEvery;
 
 
 /***/ }),
-/* 162 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseForOwn = __webpack_require__(163),
-    createBaseEach = __webpack_require__(166);
+var baseForOwn = __webpack_require__(165),
+    createBaseEach = __webpack_require__(168);
 
 /**
  * The base implementation of `_.forEach` without support for iteratee shorthands.
@@ -18173,11 +18252,11 @@ module.exports = baseEach;
 
 
 /***/ }),
-/* 163 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseFor = __webpack_require__(164),
-    keys = __webpack_require__(18);
+var baseFor = __webpack_require__(166),
+    keys = __webpack_require__(19);
 
 /**
  * The base implementation of `_.forOwn` without support for iteratee shorthands.
@@ -18195,10 +18274,10 @@ module.exports = baseForOwn;
 
 
 /***/ }),
-/* 164 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var createBaseFor = __webpack_require__(165);
+var createBaseFor = __webpack_require__(167);
 
 /**
  * The base implementation of `baseForOwn` which iterates over `object`
@@ -18217,7 +18296,7 @@ module.exports = baseFor;
 
 
 /***/ }),
-/* 165 */
+/* 167 */
 /***/ (function(module, exports) {
 
 /**
@@ -18248,10 +18327,10 @@ module.exports = createBaseFor;
 
 
 /***/ }),
-/* 166 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isArrayLike = __webpack_require__(17);
+var isArrayLike = __webpack_require__(18);
 
 /**
  * Creates a `baseEach` or `baseEachRight` function.
@@ -18286,14 +18365,14 @@ module.exports = createBaseEach;
 
 
 /***/ }),
-/* 167 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseMatches = __webpack_require__(168),
-    baseMatchesProperty = __webpack_require__(210),
+var baseMatches = __webpack_require__(170),
+    baseMatchesProperty = __webpack_require__(212),
     identity = __webpack_require__(36),
     isArray = __webpack_require__(6),
-    property = __webpack_require__(221);
+    property = __webpack_require__(223);
 
 /**
  * The base implementation of `_.iteratee`.
@@ -18323,11 +18402,11 @@ module.exports = baseIteratee;
 
 
 /***/ }),
-/* 168 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsMatch = __webpack_require__(169),
-    getMatchData = __webpack_require__(209),
+var baseIsMatch = __webpack_require__(171),
+    getMatchData = __webpack_require__(211),
     matchesStrictComparable = __webpack_require__(74);
 
 /**
@@ -18351,7 +18430,7 @@ module.exports = baseMatches;
 
 
 /***/ }),
-/* 169 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Stack = __webpack_require__(70),
@@ -18419,7 +18498,7 @@ module.exports = baseIsMatch;
 
 
 /***/ }),
-/* 170 */
+/* 172 */
 /***/ (function(module, exports) {
 
 /**
@@ -18438,7 +18517,7 @@ module.exports = listCacheClear;
 
 
 /***/ }),
-/* 171 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assocIndexOf = __webpack_require__(26);
@@ -18479,7 +18558,7 @@ module.exports = listCacheDelete;
 
 
 /***/ }),
-/* 172 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assocIndexOf = __webpack_require__(26);
@@ -18504,7 +18583,7 @@ module.exports = listCacheGet;
 
 
 /***/ }),
-/* 173 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assocIndexOf = __webpack_require__(26);
@@ -18526,7 +18605,7 @@ module.exports = listCacheHas;
 
 
 /***/ }),
-/* 174 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assocIndexOf = __webpack_require__(26);
@@ -18558,7 +18637,7 @@ module.exports = listCacheSet;
 
 
 /***/ }),
-/* 175 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var ListCache = __webpack_require__(25);
@@ -18579,7 +18658,7 @@ module.exports = stackClear;
 
 
 /***/ }),
-/* 176 */
+/* 178 */
 /***/ (function(module, exports) {
 
 /**
@@ -18603,7 +18682,7 @@ module.exports = stackDelete;
 
 
 /***/ }),
-/* 177 */
+/* 179 */
 /***/ (function(module, exports) {
 
 /**
@@ -18623,7 +18702,7 @@ module.exports = stackGet;
 
 
 /***/ }),
-/* 178 */
+/* 180 */
 /***/ (function(module, exports) {
 
 /**
@@ -18643,7 +18722,7 @@ module.exports = stackHas;
 
 
 /***/ }),
-/* 179 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var ListCache = __webpack_require__(25),
@@ -18683,10 +18762,10 @@ module.exports = stackSet;
 
 
 /***/ }),
-/* 180 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Hash = __webpack_require__(181),
+var Hash = __webpack_require__(183),
     ListCache = __webpack_require__(25),
     Map = __webpack_require__(44);
 
@@ -18710,14 +18789,14 @@ module.exports = mapCacheClear;
 
 
 /***/ }),
-/* 181 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var hashClear = __webpack_require__(182),
-    hashDelete = __webpack_require__(183),
-    hashGet = __webpack_require__(184),
-    hashHas = __webpack_require__(185),
-    hashSet = __webpack_require__(186);
+var hashClear = __webpack_require__(184),
+    hashDelete = __webpack_require__(185),
+    hashGet = __webpack_require__(186),
+    hashHas = __webpack_require__(187),
+    hashSet = __webpack_require__(188);
 
 /**
  * Creates a hash object.
@@ -18748,7 +18827,7 @@ module.exports = Hash;
 
 
 /***/ }),
-/* 182 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var nativeCreate = __webpack_require__(27);
@@ -18769,7 +18848,7 @@ module.exports = hashClear;
 
 
 /***/ }),
-/* 183 */
+/* 185 */
 /***/ (function(module, exports) {
 
 /**
@@ -18792,7 +18871,7 @@ module.exports = hashDelete;
 
 
 /***/ }),
-/* 184 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var nativeCreate = __webpack_require__(27);
@@ -18828,7 +18907,7 @@ module.exports = hashGet;
 
 
 /***/ }),
-/* 185 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var nativeCreate = __webpack_require__(27);
@@ -18857,7 +18936,7 @@ module.exports = hashHas;
 
 
 /***/ }),
-/* 186 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var nativeCreate = __webpack_require__(27);
@@ -18886,7 +18965,7 @@ module.exports = hashSet;
 
 
 /***/ }),
-/* 187 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getMapData = __webpack_require__(28);
@@ -18910,7 +18989,7 @@ module.exports = mapCacheDelete;
 
 
 /***/ }),
-/* 188 */
+/* 190 */
 /***/ (function(module, exports) {
 
 /**
@@ -18931,7 +19010,7 @@ module.exports = isKeyable;
 
 
 /***/ }),
-/* 189 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getMapData = __webpack_require__(28);
@@ -18953,7 +19032,7 @@ module.exports = mapCacheGet;
 
 
 /***/ }),
-/* 190 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getMapData = __webpack_require__(28);
@@ -18975,7 +19054,7 @@ module.exports = mapCacheHas;
 
 
 /***/ }),
-/* 191 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getMapData = __webpack_require__(28);
@@ -19003,13 +19082,13 @@ module.exports = mapCacheSet;
 
 
 /***/ }),
-/* 192 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Stack = __webpack_require__(70),
     equalArrays = __webpack_require__(72),
-    equalByTag = __webpack_require__(198),
-    equalObjects = __webpack_require__(202),
+    equalByTag = __webpack_require__(200),
+    equalObjects = __webpack_require__(204),
     getTag = __webpack_require__(68),
     isArray = __webpack_require__(6),
     isBuffer = __webpack_require__(41),
@@ -19092,12 +19171,12 @@ module.exports = baseIsEqualDeep;
 
 
 /***/ }),
-/* 193 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var MapCache = __webpack_require__(45),
-    setCacheAdd = __webpack_require__(194),
-    setCacheHas = __webpack_require__(195);
+    setCacheAdd = __webpack_require__(196),
+    setCacheHas = __webpack_require__(197);
 
 /**
  *
@@ -19125,7 +19204,7 @@ module.exports = SetCache;
 
 
 /***/ }),
-/* 194 */
+/* 196 */
 /***/ (function(module, exports) {
 
 /** Used to stand-in for `undefined` hash values. */
@@ -19150,7 +19229,7 @@ module.exports = setCacheAdd;
 
 
 /***/ }),
-/* 195 */
+/* 197 */
 /***/ (function(module, exports) {
 
 /**
@@ -19170,7 +19249,7 @@ module.exports = setCacheHas;
 
 
 /***/ }),
-/* 196 */
+/* 198 */
 /***/ (function(module, exports) {
 
 /**
@@ -19199,7 +19278,7 @@ module.exports = arraySome;
 
 
 /***/ }),
-/* 197 */
+/* 199 */
 /***/ (function(module, exports) {
 
 /**
@@ -19218,15 +19297,15 @@ module.exports = cacheHas;
 
 
 /***/ }),
-/* 198 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(23),
-    Uint8Array = __webpack_require__(199),
+    Uint8Array = __webpack_require__(201),
     eq = __webpack_require__(24),
     equalArrays = __webpack_require__(72),
-    mapToArray = __webpack_require__(200),
-    setToArray = __webpack_require__(201);
+    mapToArray = __webpack_require__(202),
+    setToArray = __webpack_require__(203);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1,
@@ -19336,7 +19415,7 @@ module.exports = equalByTag;
 
 
 /***/ }),
-/* 199 */
+/* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var root = __webpack_require__(8);
@@ -19348,7 +19427,7 @@ module.exports = Uint8Array;
 
 
 /***/ }),
-/* 200 */
+/* 202 */
 /***/ (function(module, exports) {
 
 /**
@@ -19372,7 +19451,7 @@ module.exports = mapToArray;
 
 
 /***/ }),
-/* 201 */
+/* 203 */
 /***/ (function(module, exports) {
 
 /**
@@ -19396,10 +19475,10 @@ module.exports = setToArray;
 
 
 /***/ }),
-/* 202 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getAllKeys = __webpack_require__(203);
+var getAllKeys = __webpack_require__(205);
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG = 1;
@@ -19491,12 +19570,12 @@ module.exports = equalObjects;
 
 
 /***/ }),
-/* 203 */
+/* 205 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGetAllKeys = __webpack_require__(204),
-    getSymbols = __webpack_require__(206),
-    keys = __webpack_require__(18);
+var baseGetAllKeys = __webpack_require__(206),
+    getSymbols = __webpack_require__(208),
+    keys = __webpack_require__(19);
 
 /**
  * Creates an array of own enumerable property names and symbols of `object`.
@@ -19513,10 +19592,10 @@ module.exports = getAllKeys;
 
 
 /***/ }),
-/* 204 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayPush = __webpack_require__(205),
+var arrayPush = __webpack_require__(207),
     isArray = __webpack_require__(6);
 
 /**
@@ -19539,7 +19618,7 @@ module.exports = baseGetAllKeys;
 
 
 /***/ }),
-/* 205 */
+/* 207 */
 /***/ (function(module, exports) {
 
 /**
@@ -19565,11 +19644,11 @@ module.exports = arrayPush;
 
 
 /***/ }),
-/* 206 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arrayFilter = __webpack_require__(207),
-    stubArray = __webpack_require__(208);
+var arrayFilter = __webpack_require__(209),
+    stubArray = __webpack_require__(210);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -19601,7 +19680,7 @@ module.exports = getSymbols;
 
 
 /***/ }),
-/* 207 */
+/* 209 */
 /***/ (function(module, exports) {
 
 /**
@@ -19632,7 +19711,7 @@ module.exports = arrayFilter;
 
 
 /***/ }),
-/* 208 */
+/* 210 */
 /***/ (function(module, exports) {
 
 /**
@@ -19661,11 +19740,11 @@ module.exports = stubArray;
 
 
 /***/ }),
-/* 209 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isStrictComparable = __webpack_require__(73),
-    keys = __webpack_require__(18);
+    keys = __webpack_require__(19);
 
 /**
  * Gets the property names, values, and compare flags of `object`.
@@ -19691,12 +19770,12 @@ module.exports = getMatchData;
 
 
 /***/ }),
-/* 210 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseIsEqual = __webpack_require__(71),
-    get = __webpack_require__(211),
-    hasIn = __webpack_require__(218),
+    get = __webpack_require__(213),
+    hasIn = __webpack_require__(220),
     isKey = __webpack_require__(46),
     isStrictComparable = __webpack_require__(73),
     matchesStrictComparable = __webpack_require__(74),
@@ -19730,7 +19809,7 @@ module.exports = baseMatchesProperty;
 
 
 /***/ }),
-/* 211 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGet = __webpack_require__(75);
@@ -19769,14 +19848,13 @@ module.exports = get;
 
 
 /***/ }),
-/* 212 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var memoizeCapped = __webpack_require__(213);
+var memoizeCapped = __webpack_require__(215);
 
 /** Used to match property names within property paths. */
-var reLeadingDot = /^\./,
-    rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
 
 /** Used to match backslashes in property paths. */
 var reEscapeChar = /\\(\\)?/g;
@@ -19790,11 +19868,11 @@ var reEscapeChar = /\\(\\)?/g;
  */
 var stringToPath = memoizeCapped(function(string) {
   var result = [];
-  if (reLeadingDot.test(string)) {
+  if (string.charCodeAt(0) === 46 /* . */) {
     result.push('');
   }
-  string.replace(rePropName, function(match, number, quote, string) {
-    result.push(quote ? string.replace(reEscapeChar, '$1') : (number || match));
+  string.replace(rePropName, function(match, number, quote, subString) {
+    result.push(quote ? subString.replace(reEscapeChar, '$1') : (number || match));
   });
   return result;
 });
@@ -19803,10 +19881,10 @@ module.exports = stringToPath;
 
 
 /***/ }),
-/* 213 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var memoize = __webpack_require__(214);
+var memoize = __webpack_require__(216);
 
 /** Used as the maximum memoize cache size. */
 var MAX_MEMOIZE_SIZE = 500;
@@ -19835,7 +19913,7 @@ module.exports = memoizeCapped;
 
 
 /***/ }),
-/* 214 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var MapCache = __webpack_require__(45);
@@ -19914,10 +19992,10 @@ module.exports = memoize;
 
 
 /***/ }),
-/* 215 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseToString = __webpack_require__(216);
+var baseToString = __webpack_require__(218);
 
 /**
  * Converts `value` to a string. An empty string is returned for `null`
@@ -19948,11 +20026,11 @@ module.exports = toString;
 
 
 /***/ }),
-/* 216 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Symbol = __webpack_require__(23),
-    arrayMap = __webpack_require__(217),
+    arrayMap = __webpack_require__(219),
     isArray = __webpack_require__(6),
     isSymbol = __webpack_require__(47);
 
@@ -19991,7 +20069,7 @@ module.exports = baseToString;
 
 
 /***/ }),
-/* 217 */
+/* 219 */
 /***/ (function(module, exports) {
 
 /**
@@ -20018,11 +20096,11 @@ module.exports = arrayMap;
 
 
 /***/ }),
-/* 218 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseHasIn = __webpack_require__(219),
-    hasPath = __webpack_require__(220);
+var baseHasIn = __webpack_require__(221),
+    hasPath = __webpack_require__(222);
 
 /**
  * Checks if `path` is a direct or inherited property of `object`.
@@ -20058,7 +20136,7 @@ module.exports = hasIn;
 
 
 /***/ }),
-/* 219 */
+/* 221 */
 /***/ (function(module, exports) {
 
 /**
@@ -20077,7 +20155,7 @@ module.exports = baseHasIn;
 
 
 /***/ }),
-/* 220 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var castPath = __webpack_require__(76),
@@ -20122,11 +20200,11 @@ module.exports = hasPath;
 
 
 /***/ }),
-/* 221 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseProperty = __webpack_require__(222),
-    basePropertyDeep = __webpack_require__(223),
+var baseProperty = __webpack_require__(224),
+    basePropertyDeep = __webpack_require__(225),
     isKey = __webpack_require__(46),
     toKey = __webpack_require__(29);
 
@@ -20160,7 +20238,7 @@ module.exports = property;
 
 
 /***/ }),
-/* 222 */
+/* 224 */
 /***/ (function(module, exports) {
 
 /**
@@ -20180,7 +20258,7 @@ module.exports = baseProperty;
 
 
 /***/ }),
-/* 223 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGet = __webpack_require__(75);
@@ -20202,7 +20280,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 224 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20240,7 +20318,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 225 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20314,7 +20392,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 226 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20404,7 +20482,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 227 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20456,7 +20534,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 228 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20518,7 +20596,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 229 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20529,7 +20607,7 @@ module.exports = basePropertyDeep;
 
   create = __webpack_require__(3);
 
-  XMLNode = __webpack_require__(13);
+  XMLNode = __webpack_require__(14);
 
   module.exports = XMLRaw = (function(superClass) {
     extend(XMLRaw, superClass);
@@ -20573,7 +20651,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 230 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Generated by CoffeeScript 1.9.1
@@ -20584,7 +20662,7 @@ module.exports = basePropertyDeep;
 
   create = __webpack_require__(3);
 
-  XMLNode = __webpack_require__(13);
+  XMLNode = __webpack_require__(14);
 
   module.exports = XMLText = (function(superClass) {
     extend(XMLText, superClass);
@@ -20628,7 +20706,7 @@ module.exports = basePropertyDeep;
 
 
 /***/ }),
-/* 231 */
+/* 233 */
 /***/ (function(module, exports) {
 
 function apiLoader(svc, version) {
@@ -20649,12 +20727,12 @@ module.exports = apiLoader;
 
 
 /***/ }),
-/* 232 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
 var Api = __webpack_require__(81);
-var regionConfig = __webpack_require__(233);
+var regionConfig = __webpack_require__(235);
 var inherit = AWS.util.inherit;
 var clientCount = 0;
 
@@ -21263,11 +21341,11 @@ module.exports = AWS.Service;
 
 
 /***/ }),
-/* 233 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(1);
-var regionConfig = __webpack_require__(234);
+var util = __webpack_require__(2);
+var regionConfig = __webpack_require__(236);
 
 function generateRegionPrefix(region) {
   if (!region) return null;
@@ -21338,13 +21416,13 @@ module.exports = configureEndpoint;
 
 
 /***/ }),
-/* 234 */
+/* 236 */
 /***/ (function(module, exports) {
 
 module.exports = {"rules":{"*/*":{"endpoint":"{service}.{region}.amazonaws.com"},"cn-*/*":{"endpoint":"{service}.{region}.amazonaws.com.cn"},"*/budgets":"globalSSL","*/cloudfront":"globalSSL","*/iam":"globalSSL","*/sts":"globalSSL","*/importexport":{"endpoint":"{service}.amazonaws.com","signatureVersion":"v2","globalEndpoint":true},"*/route53":{"endpoint":"https://{service}.amazonaws.com","signatureVersion":"v3https","globalEndpoint":true},"*/waf":"globalSSL","us-gov-*/iam":"globalGovCloud","us-gov-*/sts":{"endpoint":"{service}.{region}.amazonaws.com"},"us-gov-west-1/s3":"s3signature","us-west-1/s3":"s3signature","us-west-2/s3":"s3signature","eu-west-1/s3":"s3signature","ap-southeast-1/s3":"s3signature","ap-southeast-2/s3":"s3signature","ap-northeast-1/s3":"s3signature","sa-east-1/s3":"s3signature","us-east-1/s3":{"endpoint":"{service}.amazonaws.com","signatureVersion":"s3"},"us-east-1/sdb":{"endpoint":"{service}.amazonaws.com","signatureVersion":"v2"},"*/sdb":{"endpoint":"{service}.{region}.amazonaws.com","signatureVersion":"v2"}},"patterns":{"globalSSL":{"endpoint":"https://{service}.amazonaws.com","globalEndpoint":true},"globalGovCloud":{"endpoint":"{service}.us-gov.amazonaws.com"},"s3signature":{"endpoint":"{service}.{region}.amazonaws.com","signatureVersion":"s3"}}}
 
 /***/ }),
-/* 235 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -21890,7 +21968,7 @@ AWS.config = new AWS.Config();
 
 
 /***/ }),
-/* 236 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -22414,7 +22492,7 @@ AWS.EventListeners = {
           var inputShape = req.service.api.operations[req.operation].input;
           censoredParams = filterSensitiveLog(inputShape, req.params);
         }
-        var params = __webpack_require__(237).inspect(censoredParams, true, null);
+        var params = __webpack_require__(239).inspect(censoredParams, true, null);
         var message = '';
         if (ansi) message += '\x1B[33m';
         message += '[AWS ' + req.service.serviceIdentifier + ' ' + status;
@@ -22473,7 +22551,7 @@ AWS.EventListeners = {
 
 
 /***/ }),
-/* 237 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -23001,7 +23079,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(238);
+exports.isBuffer = __webpack_require__(240);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -23045,7 +23123,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(239);
+exports.inherits = __webpack_require__(241);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -23063,10 +23141,10 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(11)))
 
 /***/ }),
-/* 238 */
+/* 240 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -23077,7 +23155,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 239 */
+/* 241 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -23106,11 +23184,11 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 240 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {var AWS = __webpack_require__(0);
-var AcceptorStateMachine = __webpack_require__(241);
+var AcceptorStateMachine = __webpack_require__(243);
 var inherit = AWS.util.inherit;
 var domain = AWS.util.domain;
 var jmespath = __webpack_require__(48);
@@ -23915,10 +23993,10 @@ AWS.util.addPromises(AWS.Request);
 
 AWS.util.mixin(AWS.Request, AWS.SequentialExecutor);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ }),
-/* 241 */
+/* 243 */
 /***/ (function(module, exports) {
 
 function AcceptorStateMachine(states, state) {
@@ -23966,7 +24044,7 @@ module.exports = AcceptorStateMachine;
 
 
 /***/ }),
-/* 242 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -24173,7 +24251,7 @@ AWS.Response = inherit({
 
 
 /***/ }),
-/* 243 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -24383,7 +24461,7 @@ AWS.ResourceWaiter = inherit({
 
 
 /***/ }),
-/* 244 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -24418,16 +24496,16 @@ AWS.Signers.RequestSigner.getVersion = function getVersion(version) {
   throw new Error('Unknown signing version ' + version);
 };
 
-__webpack_require__(245);
-__webpack_require__(89);
-__webpack_require__(246);
 __webpack_require__(247);
+__webpack_require__(89);
 __webpack_require__(248);
 __webpack_require__(249);
+__webpack_require__(250);
+__webpack_require__(251);
 
 
 /***/ }),
-/* 245 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -24478,7 +24556,7 @@ module.exports = AWS.Signers.V2;
 
 
 /***/ }),
-/* 246 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -24506,7 +24584,7 @@ module.exports = AWS.Signers.V3Https;
 
 
 /***/ }),
-/* 247 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -24723,7 +24801,7 @@ module.exports = AWS.Signers.V4;
 
 
 /***/ }),
-/* 248 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -24901,7 +24979,7 @@ module.exports = AWS.Signers.S3;
 
 
 /***/ }),
-/* 249 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -25023,7 +25101,7 @@ module.exports = AWS.Signers.Presign;
 
 
 /***/ }),
-/* 250 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -25287,17 +25365,17 @@ AWS.ParamValidator = AWS.util.inherit({
 
 
 /***/ }),
-/* 251 */
+/* 253 */
 /***/ (function(module, exports) {
 
 module.exports = {"acm":{"name":"ACM","cors":true},"apigateway":{"name":"APIGateway","cors":true},"applicationautoscaling":{"prefix":"application-autoscaling","name":"ApplicationAutoScaling","cors":true},"appstream":{"name":"AppStream"},"autoscaling":{"name":"AutoScaling","cors":true},"batch":{"name":"Batch"},"budgets":{"name":"Budgets"},"clouddirectory":{"name":"CloudDirectory"},"cloudformation":{"name":"CloudFormation","cors":true},"cloudfront":{"name":"CloudFront","versions":["2013-05-12*","2013-11-11*","2014-05-31*","2014-10-21*","2014-11-06*","2015-04-17*","2015-07-27*","2015-09-17*","2016-01-13*","2016-01-28*","2016-08-01*","2016-08-20*","2016-09-07*","2016-09-29*","2016-11-25*"],"cors":true},"cloudhsm":{"name":"CloudHSM","cors":true},"cloudsearch":{"name":"CloudSearch"},"cloudsearchdomain":{"name":"CloudSearchDomain"},"cloudtrail":{"name":"CloudTrail","cors":true},"cloudwatch":{"prefix":"monitoring","name":"CloudWatch","cors":true},"cloudwatchevents":{"prefix":"events","name":"CloudWatchEvents","versions":["2014-02-03*"],"cors":true},"cloudwatchlogs":{"prefix":"logs","name":"CloudWatchLogs","cors":true},"codebuild":{"name":"CodeBuild"},"codecommit":{"name":"CodeCommit","cors":true},"codedeploy":{"name":"CodeDeploy","cors":true},"codepipeline":{"name":"CodePipeline","cors":true},"cognitoidentity":{"prefix":"cognito-identity","name":"CognitoIdentity","cors":true},"cognitoidentityserviceprovider":{"prefix":"cognito-idp","name":"CognitoIdentityServiceProvider","cors":true},"cognitosync":{"prefix":"cognito-sync","name":"CognitoSync","cors":true},"configservice":{"prefix":"config","name":"ConfigService","cors":true},"cur":{"name":"CUR","cors":true},"datapipeline":{"name":"DataPipeline"},"devicefarm":{"name":"DeviceFarm","cors":true},"directconnect":{"name":"DirectConnect","cors":true},"directoryservice":{"prefix":"ds","name":"DirectoryService"},"discovery":{"name":"Discovery"},"dms":{"name":"DMS"},"dynamodb":{"name":"DynamoDB","cors":true},"dynamodbstreams":{"prefix":"streams.dynamodb","name":"DynamoDBStreams","cors":true},"ec2":{"name":"EC2","versions":["2013-06-15*","2013-10-15*","2014-02-01*","2014-05-01*","2014-06-15*","2014-09-01*","2014-10-01*","2015-03-01*","2015-04-15*","2015-10-01*","2016-04-01*","2016-09-15*"],"cors":true},"ecr":{"name":"ECR","cors":true},"ecs":{"name":"ECS","cors":true},"efs":{"prefix":"elasticfilesystem","name":"EFS","cors":true},"elasticache":{"name":"ElastiCache","versions":["2012-11-15*","2014-03-24*","2014-07-15*","2014-09-30*"],"cors":true},"elasticbeanstalk":{"name":"ElasticBeanstalk","cors":true},"elb":{"prefix":"elasticloadbalancing","name":"ELB","cors":true},"elbv2":{"prefix":"elasticloadbalancingv2","name":"ELBv2","cors":true},"emr":{"prefix":"elasticmapreduce","name":"EMR","cors":true},"es":{"name":"ES"},"elastictranscoder":{"name":"ElasticTranscoder","cors":true},"firehose":{"name":"Firehose","cors":true},"gamelift":{"name":"GameLift","cors":true},"glacier":{"name":"Glacier"},"health":{"name":"Health"},"iam":{"name":"IAM"},"importexport":{"name":"ImportExport"},"inspector":{"name":"Inspector","versions":["2015-08-18*"],"cors":true},"iot":{"name":"Iot","cors":true},"iotdata":{"prefix":"iot-data","name":"IotData","cors":true},"kinesis":{"name":"Kinesis","cors":true},"kinesisanalytics":{"name":"KinesisAnalytics"},"kms":{"name":"KMS","cors":true},"lambda":{"name":"Lambda","cors":true},"lexruntime":{"prefix":"runtime.lex","name":"LexRuntime","cors":true},"lightsail":{"name":"Lightsail"},"machinelearning":{"name":"MachineLearning","cors":true},"marketplacecommerceanalytics":{"name":"MarketplaceCommerceAnalytics","cors":true},"marketplacemetering":{"prefix":"meteringmarketplace","name":"MarketplaceMetering"},"mturk":{"prefix":"mturk-requester","name":"MTurk","cors":true},"mobileanalytics":{"name":"MobileAnalytics","cors":true},"opsworks":{"name":"OpsWorks","cors":true},"opsworkscm":{"name":"OpsWorksCM"},"organizations":{"name":"Organizations"},"pinpoint":{"name":"Pinpoint"},"polly":{"name":"Polly","cors":true},"rds":{"name":"RDS","versions":["2014-09-01*"],"cors":true},"redshift":{"name":"Redshift","cors":true},"rekognition":{"name":"Rekognition","cors":true},"resourcegroupstaggingapi":{"name":"ResourceGroupsTaggingAPI"},"route53":{"name":"Route53","cors":true},"route53domains":{"name":"Route53Domains","cors":true},"s3":{"name":"S3","dualstackAvailable":true,"cors":true},"servicecatalog":{"name":"ServiceCatalog","cors":true},"ses":{"prefix":"email","name":"SES","cors":true},"shield":{"name":"Shield"},"simpledb":{"prefix":"sdb","name":"SimpleDB"},"sms":{"name":"SMS"},"snowball":{"name":"Snowball"},"sns":{"name":"SNS","cors":true},"sqs":{"name":"SQS","cors":true},"ssm":{"name":"SSM","cors":true},"storagegateway":{"name":"StorageGateway","cors":true},"stepfunctions":{"prefix":"states","name":"StepFunctions"},"sts":{"name":"STS","cors":true},"support":{"name":"Support"},"swf":{"name":"SWF"},"xray":{"name":"XRay"},"waf":{"name":"WAF","cors":true},"wafregional":{"prefix":"waf-regional","name":"WAFRegional"},"workdocs":{"name":"WorkDocs","cors":true},"workspaces":{"name":"WorkSpaces"},"codestar":{"name":"CodeStar"},"lexmodelbuildingservice":{"prefix":"lex-models","name":"LexModelBuildingService","cors":true},"marketplaceentitlementservice":{"prefix":"entitlement.marketplace","name":"MarketplaceEntitlementService"},"athena":{"name":"Athena"},"greengrass":{"name":"Greengrass"},"dax":{"name":"DAX"},"migrationhub":{"prefix":"AWSMigrationHub","name":"MigrationHub"},"cloudhsmv2":{"name":"CloudHSMV2"},"glue":{"name":"Glue"},"mobile":{"name":"Mobile"},"pricing":{"name":"Pricing"},"costexplorer":{"prefix":"ce","name":"CostExplorer"},"mediaconvert":{"name":"MediaConvert"},"medialive":{"name":"MediaLive"},"mediapackage":{"name":"MediaPackage"},"mediastore":{"name":"MediaStore"},"mediastoredata":{"prefix":"mediastore-data","name":"MediaStoreData"},"appsync":{"name":"AppSync"},"guardduty":{"name":"GuardDuty"},"mq":{"name":"MQ"},"comprehend":{"name":"Comprehend"},"iotjobsdataplane":{"prefix":"iot-jobs-data","name":"IoTJobsDataPlane"},"kinesisvideoarchivedmedia":{"prefix":"kinesis-video-archived-media","name":"KinesisVideoArchivedMedia"},"kinesisvideomedia":{"prefix":"kinesis-video-media","name":"KinesisVideoMedia"},"kinesisvideo":{"name":"KinesisVideo"},"sagemakerruntime":{"prefix":"runtime.sagemaker","name":"SageMakerRuntime"},"sagemaker":{"name":"SageMaker"},"translate":{"name":"Translate"},"resourcegroups":{"prefix":"resource-groups","name":"ResourceGroups"},"alexaforbusiness":{"name":"AlexaForBusiness"},"cloud9":{"name":"Cloud9"},"serverlessapplicationrepository":{"prefix":"serverlessrepo","name":"ServerlessApplicationRepository"},"servicediscovery":{"name":"ServiceDiscovery"},"workmail":{"name":"WorkMail"},"autoscalingplans":{"prefix":"autoscaling-plans","name":"AutoScalingPlans"},"transcribeservice":{"prefix":"transcribe","name":"TranscribeService"}}
 
 /***/ }),
-/* 252 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var v1 = __webpack_require__(253);
-var v4 = __webpack_require__(254);
+var v1 = __webpack_require__(255);
+var v4 = __webpack_require__(256);
 
 var uuid = v4;
 uuid.v1 = v1;
@@ -25307,7 +25385,7 @@ module.exports = uuid;
 
 
 /***/ }),
-/* 253 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var rng = __webpack_require__(91);
@@ -25413,7 +25491,7 @@ module.exports = v1;
 
 
 /***/ }),
-/* 254 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var rng = __webpack_require__(91);
@@ -25448,13 +25526,13 @@ module.exports = v4;
 
 
 /***/ }),
-/* 255 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Hmac = __webpack_require__(256);
-var Md5 = __webpack_require__(260);
-var Sha1 = __webpack_require__(261);
-var Sha256 = __webpack_require__(262);
+var Hmac = __webpack_require__(258);
+var Md5 = __webpack_require__(262);
+var Sha1 = __webpack_require__(263);
+var Sha256 = __webpack_require__(264);
 
 module.exports = exports = {
     createHash: function createHash(alg) {
@@ -25488,7 +25566,7 @@ module.exports = exports = {
 
 
 /***/ }),
-/* 256 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var hashUtils = __webpack_require__(30);
@@ -25556,7 +25634,7 @@ function bufferFromSecret(hashCtor, secret) {
 
 
 /***/ }),
-/* 257 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25677,7 +25755,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 258 */
+/* 260 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -25767,7 +25845,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 259 */
+/* 261 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -25778,7 +25856,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 260 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var hashUtils = __webpack_require__(30);
@@ -25963,7 +26041,7 @@ function ii(a, b, c, d, x, s, t) {
 
 
 /***/ }),
-/* 261 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(7).Buffer;
@@ -26132,7 +26210,7 @@ Sha1.prototype.processBlock = function processBlock() {
 
 
 /***/ }),
-/* 262 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Buffer = __webpack_require__(7).Buffer;
@@ -26374,7 +26452,7 @@ Sha256.prototype.hashBuffer = function () {
 
 
 /***/ }),
-/* 263 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/punycode v1.4.1 by @mathias */
@@ -26910,10 +26988,10 @@ Sha256.prototype.hashBuffer = function () {
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module), __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(42)(module), __webpack_require__(9)))
 
 /***/ }),
-/* 264 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26936,7 +27014,7 @@ module.exports = {
 
 
 /***/ }),
-/* 265 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27027,7 +27105,7 @@ var isArray = Array.isArray || function (xs) {
 
 
 /***/ }),
-/* 266 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27119,7 +27197,7 @@ var objectKeys = Object.keys || function (obj) {
 
 
 /***/ }),
-/* 267 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -27245,7 +27323,7 @@ AWS.TemporaryCredentials = AWS.util.inherit(AWS.Credentials, {
 
 
 /***/ }),
-/* 268 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -27298,19 +27376,19 @@ AWS.util.update(AWS.STS.prototype, {
 
 
 /***/ }),
-/* 269 */
+/* 271 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":"2.0","metadata":{"apiVersion":"2011-06-15","endpointPrefix":"sts","globalEndpoint":"sts.amazonaws.com","protocol":"query","serviceAbbreviation":"AWS STS","serviceFullName":"AWS Security Token Service","signatureVersion":"v4","uid":"sts-2011-06-15","xmlNamespace":"https://sts.amazonaws.com/doc/2011-06-15/"},"operations":{"AssumeRole":{"input":{"type":"structure","required":["RoleArn","RoleSessionName"],"members":{"RoleArn":{},"RoleSessionName":{},"Policy":{},"DurationSeconds":{"type":"integer"},"ExternalId":{},"SerialNumber":{},"TokenCode":{}}},"output":{"resultWrapper":"AssumeRoleResult","type":"structure","members":{"Credentials":{"shape":"Sa"},"AssumedRoleUser":{"shape":"Sf"},"PackedPolicySize":{"type":"integer"}}}},"AssumeRoleWithSAML":{"input":{"type":"structure","required":["RoleArn","PrincipalArn","SAMLAssertion"],"members":{"RoleArn":{},"PrincipalArn":{},"SAMLAssertion":{},"Policy":{},"DurationSeconds":{"type":"integer"}}},"output":{"resultWrapper":"AssumeRoleWithSAMLResult","type":"structure","members":{"Credentials":{"shape":"Sa"},"AssumedRoleUser":{"shape":"Sf"},"PackedPolicySize":{"type":"integer"},"Subject":{},"SubjectType":{},"Issuer":{},"Audience":{},"NameQualifier":{}}}},"AssumeRoleWithWebIdentity":{"input":{"type":"structure","required":["RoleArn","RoleSessionName","WebIdentityToken"],"members":{"RoleArn":{},"RoleSessionName":{},"WebIdentityToken":{},"ProviderId":{},"Policy":{},"DurationSeconds":{"type":"integer"}}},"output":{"resultWrapper":"AssumeRoleWithWebIdentityResult","type":"structure","members":{"Credentials":{"shape":"Sa"},"SubjectFromWebIdentityToken":{},"AssumedRoleUser":{"shape":"Sf"},"PackedPolicySize":{"type":"integer"},"Provider":{},"Audience":{}}}},"DecodeAuthorizationMessage":{"input":{"type":"structure","required":["EncodedMessage"],"members":{"EncodedMessage":{}}},"output":{"resultWrapper":"DecodeAuthorizationMessageResult","type":"structure","members":{"DecodedMessage":{}}}},"GetCallerIdentity":{"input":{"type":"structure","members":{}},"output":{"resultWrapper":"GetCallerIdentityResult","type":"structure","members":{"UserId":{},"Account":{},"Arn":{}}}},"GetFederationToken":{"input":{"type":"structure","required":["Name"],"members":{"Name":{},"Policy":{},"DurationSeconds":{"type":"integer"}}},"output":{"resultWrapper":"GetFederationTokenResult","type":"structure","members":{"Credentials":{"shape":"Sa"},"FederatedUser":{"type":"structure","required":["FederatedUserId","Arn"],"members":{"FederatedUserId":{},"Arn":{}}},"PackedPolicySize":{"type":"integer"}}}},"GetSessionToken":{"input":{"type":"structure","members":{"DurationSeconds":{"type":"integer"},"SerialNumber":{},"TokenCode":{}}},"output":{"resultWrapper":"GetSessionTokenResult","type":"structure","members":{"Credentials":{"shape":"Sa"}}}}},"shapes":{"Sa":{"type":"structure","required":["AccessKeyId","SecretAccessKey","SessionToken","Expiration"],"members":{"AccessKeyId":{},"SecretAccessKey":{},"SessionToken":{},"Expiration":{"type":"timestamp"}}},"Sf":{"type":"structure","required":["AssumedRoleId","Arn"],"members":{"AssumedRoleId":{},"Arn":{}}}}}
 
 /***/ }),
-/* 270 */
+/* 272 */
 /***/ (function(module, exports) {
 
 module.exports = {"pagination":{}}
 
 /***/ }),
-/* 271 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -27426,11 +27504,11 @@ AWS.WebIdentityCredentials = AWS.util.inherit(AWS.Credentials, {
 
 
 /***/ }),
-/* 272 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-var CognitoIdentity = __webpack_require__(273);
+var CognitoIdentity = __webpack_require__(275);
 var STS = __webpack_require__(31);
 
 /**
@@ -27809,21 +27887,21 @@ AWS.CognitoIdentityCredentials = AWS.util.inherit(AWS.Credentials, {
 
 
 /***/ }),
-/* 273 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(13);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
 
 apiLoader.services['cognitoidentity'] = {};
 AWS.CognitoIdentity = Service.defineService('cognitoidentity', ['2014-06-30']);
-__webpack_require__(274);
+__webpack_require__(276);
 Object.defineProperty(apiLoader.services['cognitoidentity'], '2014-06-30', {
   get: function get() {
-    var model = __webpack_require__(275);
-    model.paginators = __webpack_require__(276).pagination;
+    var model = __webpack_require__(277);
+    model.paginators = __webpack_require__(278).pagination;
     return model;
   },
   enumerable: true,
@@ -27834,7 +27912,7 @@ module.exports = AWS.CognitoIdentity;
 
 
 /***/ }),
-/* 274 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -27855,19 +27933,19 @@ AWS.util.update(AWS.CognitoIdentity.prototype, {
 
 
 /***/ }),
-/* 275 */
+/* 277 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":"2.0","metadata":{"apiVersion":"2014-06-30","endpointPrefix":"cognito-identity","jsonVersion":"1.1","protocol":"json","serviceFullName":"Amazon Cognito Identity","signatureVersion":"v4","targetPrefix":"AWSCognitoIdentityService","uid":"cognito-identity-2014-06-30"},"operations":{"CreateIdentityPool":{"input":{"type":"structure","required":["IdentityPoolName","AllowUnauthenticatedIdentities"],"members":{"IdentityPoolName":{},"AllowUnauthenticatedIdentities":{"type":"boolean"},"SupportedLoginProviders":{"shape":"S4"},"DeveloperProviderName":{},"OpenIdConnectProviderARNs":{"shape":"S8"},"CognitoIdentityProviders":{"shape":"Sa"},"SamlProviderARNs":{"shape":"Sf"}}},"output":{"shape":"Sg"}},"DeleteIdentities":{"input":{"type":"structure","required":["IdentityIdsToDelete"],"members":{"IdentityIdsToDelete":{"type":"list","member":{}}}},"output":{"type":"structure","members":{"UnprocessedIdentityIds":{"type":"list","member":{"type":"structure","members":{"IdentityId":{},"ErrorCode":{}}}}}}},"DeleteIdentityPool":{"input":{"type":"structure","required":["IdentityPoolId"],"members":{"IdentityPoolId":{}}}},"DescribeIdentity":{"input":{"type":"structure","required":["IdentityId"],"members":{"IdentityId":{}}},"output":{"shape":"Sr"}},"DescribeIdentityPool":{"input":{"type":"structure","required":["IdentityPoolId"],"members":{"IdentityPoolId":{}}},"output":{"shape":"Sg"}},"GetCredentialsForIdentity":{"input":{"type":"structure","required":["IdentityId"],"members":{"IdentityId":{},"Logins":{"shape":"Sw"},"CustomRoleArn":{}}},"output":{"type":"structure","members":{"IdentityId":{},"Credentials":{"type":"structure","members":{"AccessKeyId":{},"SecretKey":{},"SessionToken":{},"Expiration":{"type":"timestamp"}}}}}},"GetId":{"input":{"type":"structure","required":["IdentityPoolId"],"members":{"AccountId":{},"IdentityPoolId":{},"Logins":{"shape":"Sw"}}},"output":{"type":"structure","members":{"IdentityId":{}}}},"GetIdentityPoolRoles":{"input":{"type":"structure","required":["IdentityPoolId"],"members":{"IdentityPoolId":{}}},"output":{"type":"structure","members":{"IdentityPoolId":{},"Roles":{"shape":"S18"},"RoleMappings":{"shape":"S1a"}}}},"GetOpenIdToken":{"input":{"type":"structure","required":["IdentityId"],"members":{"IdentityId":{},"Logins":{"shape":"Sw"}}},"output":{"type":"structure","members":{"IdentityId":{},"Token":{}}}},"GetOpenIdTokenForDeveloperIdentity":{"input":{"type":"structure","required":["IdentityPoolId","Logins"],"members":{"IdentityPoolId":{},"IdentityId":{},"Logins":{"shape":"Sw"},"TokenDuration":{"type":"long"}}},"output":{"type":"structure","members":{"IdentityId":{},"Token":{}}}},"ListIdentities":{"input":{"type":"structure","required":["IdentityPoolId","MaxResults"],"members":{"IdentityPoolId":{},"MaxResults":{"type":"integer"},"NextToken":{},"HideDisabled":{"type":"boolean"}}},"output":{"type":"structure","members":{"IdentityPoolId":{},"Identities":{"type":"list","member":{"shape":"Sr"}},"NextToken":{}}}},"ListIdentityPools":{"input":{"type":"structure","required":["MaxResults"],"members":{"MaxResults":{"type":"integer"},"NextToken":{}}},"output":{"type":"structure","members":{"IdentityPools":{"type":"list","member":{"type":"structure","members":{"IdentityPoolId":{},"IdentityPoolName":{}}}},"NextToken":{}}}},"LookupDeveloperIdentity":{"input":{"type":"structure","required":["IdentityPoolId"],"members":{"IdentityPoolId":{},"IdentityId":{},"DeveloperUserIdentifier":{},"MaxResults":{"type":"integer"},"NextToken":{}}},"output":{"type":"structure","members":{"IdentityId":{},"DeveloperUserIdentifierList":{"type":"list","member":{}},"NextToken":{}}}},"MergeDeveloperIdentities":{"input":{"type":"structure","required":["SourceUserIdentifier","DestinationUserIdentifier","DeveloperProviderName","IdentityPoolId"],"members":{"SourceUserIdentifier":{},"DestinationUserIdentifier":{},"DeveloperProviderName":{},"IdentityPoolId":{}}},"output":{"type":"structure","members":{"IdentityId":{}}}},"SetIdentityPoolRoles":{"input":{"type":"structure","required":["IdentityPoolId","Roles"],"members":{"IdentityPoolId":{},"Roles":{"shape":"S18"},"RoleMappings":{"shape":"S1a"}}}},"UnlinkDeveloperIdentity":{"input":{"type":"structure","required":["IdentityId","IdentityPoolId","DeveloperProviderName","DeveloperUserIdentifier"],"members":{"IdentityId":{},"IdentityPoolId":{},"DeveloperProviderName":{},"DeveloperUserIdentifier":{}}}},"UnlinkIdentity":{"input":{"type":"structure","required":["IdentityId","Logins","LoginsToRemove"],"members":{"IdentityId":{},"Logins":{"shape":"Sw"},"LoginsToRemove":{"shape":"Ss"}}}},"UpdateIdentityPool":{"input":{"shape":"Sg"},"output":{"shape":"Sg"}}},"shapes":{"S4":{"type":"map","key":{},"value":{}},"S8":{"type":"list","member":{}},"Sa":{"type":"list","member":{"type":"structure","members":{"ProviderName":{},"ClientId":{},"ServerSideTokenCheck":{"type":"boolean"}}}},"Sf":{"type":"list","member":{}},"Sg":{"type":"structure","required":["IdentityPoolId","IdentityPoolName","AllowUnauthenticatedIdentities"],"members":{"IdentityPoolId":{},"IdentityPoolName":{},"AllowUnauthenticatedIdentities":{"type":"boolean"},"SupportedLoginProviders":{"shape":"S4"},"DeveloperProviderName":{},"OpenIdConnectProviderARNs":{"shape":"S8"},"CognitoIdentityProviders":{"shape":"Sa"},"SamlProviderARNs":{"shape":"Sf"}}},"Sr":{"type":"structure","members":{"IdentityId":{},"Logins":{"shape":"Ss"},"CreationDate":{"type":"timestamp"},"LastModifiedDate":{"type":"timestamp"}}},"Ss":{"type":"list","member":{}},"Sw":{"type":"map","key":{},"value":{}},"S18":{"type":"map","key":{},"value":{}},"S1a":{"type":"map","key":{},"value":{"type":"structure","required":["Type"],"members":{"Type":{},"AmbiguousRoleResolution":{},"RulesConfiguration":{"type":"structure","required":["Rules"],"members":{"Rules":{"type":"list","member":{"type":"structure","required":["Claim","MatchType","Value","RoleARN"],"members":{"Claim":{},"MatchType":{},"Value":{},"RoleARN":{}}}}}}}}}}}
 
 /***/ }),
-/* 276 */
+/* 278 */
 /***/ (function(module, exports) {
 
 module.exports = {"pagination":{}}
 
 /***/ }),
-/* 277 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -27962,11 +28040,11 @@ AWS.SAMLCredentials = AWS.util.inherit(AWS.Credentials, {
 
 
 /***/ }),
-/* 278 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var util = __webpack_require__(1);
-var Shape = __webpack_require__(15);
+var util = __webpack_require__(2);
+var Shape = __webpack_require__(16);
 
 function DomXmlParser() { }
 
@@ -28154,11 +28232,11 @@ module.exports = DomXmlParser;
 
 
 /***/ }),
-/* 279 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
-var EventEmitter = __webpack_require__(280).EventEmitter;
+var EventEmitter = __webpack_require__(282).EventEmitter;
 __webpack_require__(87);
 
 /**
@@ -28296,7 +28374,7 @@ AWS.HttpClient.streamsApiVersion = 1;
 
 
 /***/ }),
-/* 280 */
+/* 282 */
 /***/ (function(module, exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
@@ -28604,14 +28682,14 @@ function isUndefined(arg) {
 
 
 /***/ }),
-/* 281 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
 var v4Credentials = __webpack_require__(90);
 
 // Pull in managed upload extension
-__webpack_require__(282);
+__webpack_require__(284);
 
 /**
  * @api private
@@ -29680,7 +29758,7 @@ AWS.util.update(AWS.S3.prototype, {
 
 
 /***/ }),
-/* 282 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var AWS = __webpack_require__(0);
@@ -30396,28 +30474,28 @@ module.exports = AWS.S3.ManagedUpload;
 
 
 /***/ }),
-/* 283 */
+/* 285 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":"2.0","metadata":{"apiVersion":"2006-03-01","checksumFormat":"md5","endpointPrefix":"s3","globalEndpoint":"s3.amazonaws.com","protocol":"rest-xml","serviceAbbreviation":"Amazon S3","serviceFullName":"Amazon Simple Storage Service","serviceId":"S3","signatureVersion":"s3","timestampFormat":"rfc822","uid":"s3-2006-03-01"},"operations":{"AbortMultipartUpload":{"http":{"method":"DELETE","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key","UploadId"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"UploadId":{"location":"querystring","locationName":"uploadId"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"CompleteMultipartUpload":{"http":{"requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key","UploadId"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"MultipartUpload":{"locationName":"CompleteMultipartUpload","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"Parts":{"locationName":"Part","type":"list","member":{"type":"structure","members":{"ETag":{},"PartNumber":{"type":"integer"}}},"flattened":true}}},"UploadId":{"location":"querystring","locationName":"uploadId"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}},"payload":"MultipartUpload"},"output":{"type":"structure","members":{"Location":{},"Bucket":{},"Key":{},"Expiration":{"location":"header","locationName":"x-amz-expiration"},"ETag":{},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"CopyObject":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","CopySource","Key"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"Bucket":{"location":"uri","locationName":"Bucket"},"CacheControl":{"location":"header","locationName":"Cache-Control"},"ContentDisposition":{"location":"header","locationName":"Content-Disposition"},"ContentEncoding":{"location":"header","locationName":"Content-Encoding"},"ContentLanguage":{"location":"header","locationName":"Content-Language"},"ContentType":{"location":"header","locationName":"Content-Type"},"CopySource":{"location":"header","locationName":"x-amz-copy-source"},"CopySourceIfMatch":{"location":"header","locationName":"x-amz-copy-source-if-match"},"CopySourceIfModifiedSince":{"location":"header","locationName":"x-amz-copy-source-if-modified-since","type":"timestamp"},"CopySourceIfNoneMatch":{"location":"header","locationName":"x-amz-copy-source-if-none-match"},"CopySourceIfUnmodifiedSince":{"location":"header","locationName":"x-amz-copy-source-if-unmodified-since","type":"timestamp"},"Expires":{"location":"header","locationName":"Expires","type":"timestamp"},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"},"Key":{"location":"uri","locationName":"Key"},"Metadata":{"shape":"S11","location":"headers","locationName":"x-amz-meta-"},"MetadataDirective":{"location":"header","locationName":"x-amz-metadata-directive"},"TaggingDirective":{"location":"header","locationName":"x-amz-tagging-directive"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"StorageClass":{"location":"header","locationName":"x-amz-storage-class"},"WebsiteRedirectLocation":{"location":"header","locationName":"x-amz-website-redirect-location"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"CopySourceSSECustomerAlgorithm":{"location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-algorithm"},"CopySourceSSECustomerKey":{"shape":"S1c","location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-key"},"CopySourceSSECustomerKeyMD5":{"location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-key-MD5"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"Tagging":{"location":"header","locationName":"x-amz-tagging"}}},"output":{"type":"structure","members":{"CopyObjectResult":{"type":"structure","members":{"ETag":{},"LastModified":{"type":"timestamp"}}},"Expiration":{"location":"header","locationName":"x-amz-expiration"},"CopySourceVersionId":{"location":"header","locationName":"x-amz-copy-source-version-id"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}},"payload":"CopyObjectResult"},"alias":"PutObjectCopy"},"CreateBucket":{"http":{"method":"PUT","requestUri":"/{Bucket}"},"input":{"type":"structure","required":["Bucket"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"Bucket":{"location":"uri","locationName":"Bucket"},"CreateBucketConfiguration":{"locationName":"CreateBucketConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"LocationConstraint":{}}},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWrite":{"location":"header","locationName":"x-amz-grant-write"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"}},"payload":"CreateBucketConfiguration"},"output":{"type":"structure","members":{"Location":{"location":"header","locationName":"Location"}}},"alias":"PutBucket"},"CreateMultipartUpload":{"http":{"requestUri":"/{Bucket}/{Key+}?uploads"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"Bucket":{"location":"uri","locationName":"Bucket"},"CacheControl":{"location":"header","locationName":"Cache-Control"},"ContentDisposition":{"location":"header","locationName":"Content-Disposition"},"ContentEncoding":{"location":"header","locationName":"Content-Encoding"},"ContentLanguage":{"location":"header","locationName":"Content-Language"},"ContentType":{"location":"header","locationName":"Content-Type"},"Expires":{"location":"header","locationName":"Expires","type":"timestamp"},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"},"Key":{"location":"uri","locationName":"Key"},"Metadata":{"shape":"S11","location":"headers","locationName":"x-amz-meta-"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"StorageClass":{"location":"header","locationName":"x-amz-storage-class"},"WebsiteRedirectLocation":{"location":"header","locationName":"x-amz-website-redirect-location"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"Tagging":{"location":"header","locationName":"x-amz-tagging"}}},"output":{"type":"structure","members":{"AbortDate":{"location":"header","locationName":"x-amz-abort-date","type":"timestamp"},"AbortRuleId":{"location":"header","locationName":"x-amz-abort-rule-id"},"Bucket":{"locationName":"Bucket"},"Key":{},"UploadId":{},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}},"alias":"InitiateMultipartUpload"},"DeleteBucket":{"http":{"method":"DELETE","requestUri":"/{Bucket}"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketAnalyticsConfiguration":{"http":{"method":"DELETE","requestUri":"/{Bucket}?analytics"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}}},"DeleteBucketCors":{"http":{"method":"DELETE","requestUri":"/{Bucket}?cors"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketEncryption":{"http":{"method":"DELETE","requestUri":"/{Bucket}?encryption"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketInventoryConfiguration":{"http":{"method":"DELETE","requestUri":"/{Bucket}?inventory"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}}},"DeleteBucketLifecycle":{"http":{"method":"DELETE","requestUri":"/{Bucket}?lifecycle"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketMetricsConfiguration":{"http":{"method":"DELETE","requestUri":"/{Bucket}?metrics"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}}},"DeleteBucketPolicy":{"http":{"method":"DELETE","requestUri":"/{Bucket}?policy"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketReplication":{"http":{"method":"DELETE","requestUri":"/{Bucket}?replication"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketTagging":{"http":{"method":"DELETE","requestUri":"/{Bucket}?tagging"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteBucketWebsite":{"http":{"method":"DELETE","requestUri":"/{Bucket}?website"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"DeleteObject":{"http":{"method":"DELETE","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"MFA":{"location":"header","locationName":"x-amz-mfa"},"VersionId":{"location":"querystring","locationName":"versionId"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"DeleteMarker":{"location":"header","locationName":"x-amz-delete-marker","type":"boolean"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"DeleteObjectTagging":{"http":{"method":"DELETE","requestUri":"/{Bucket}/{Key+}?tagging"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"VersionId":{"location":"querystring","locationName":"versionId"}}},"output":{"type":"structure","members":{"VersionId":{"location":"header","locationName":"x-amz-version-id"}}}},"DeleteObjects":{"http":{"requestUri":"/{Bucket}?delete"},"input":{"type":"structure","required":["Bucket","Delete"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Delete":{"locationName":"Delete","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","required":["Objects"],"members":{"Objects":{"locationName":"Object","type":"list","member":{"type":"structure","required":["Key"],"members":{"Key":{},"VersionId":{}}},"flattened":true},"Quiet":{"type":"boolean"}}},"MFA":{"location":"header","locationName":"x-amz-mfa"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}},"payload":"Delete"},"output":{"type":"structure","members":{"Deleted":{"type":"list","member":{"type":"structure","members":{"Key":{},"VersionId":{},"DeleteMarker":{"type":"boolean"},"DeleteMarkerVersionId":{}}},"flattened":true},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"},"Errors":{"locationName":"Error","type":"list","member":{"type":"structure","members":{"Key":{},"VersionId":{},"Code":{},"Message":{}}},"flattened":true}}},"alias":"DeleteMultipleObjects"},"GetBucketAccelerateConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?accelerate"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Status":{}}}},"GetBucketAcl":{"http":{"method":"GET","requestUri":"/{Bucket}?acl"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Owner":{"shape":"S2v"},"Grants":{"shape":"S2y","locationName":"AccessControlList"}}}},"GetBucketAnalyticsConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?analytics"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}},"output":{"type":"structure","members":{"AnalyticsConfiguration":{"shape":"S37"}},"payload":"AnalyticsConfiguration"}},"GetBucketCors":{"http":{"method":"GET","requestUri":"/{Bucket}?cors"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"CORSRules":{"shape":"S3n","locationName":"CORSRule"}}}},"GetBucketEncryption":{"http":{"method":"GET","requestUri":"/{Bucket}?encryption"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"ServerSideEncryptionConfiguration":{"shape":"S40"}},"payload":"ServerSideEncryptionConfiguration"}},"GetBucketInventoryConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?inventory"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}},"output":{"type":"structure","members":{"InventoryConfiguration":{"shape":"S46"}},"payload":"InventoryConfiguration"}},"GetBucketLifecycle":{"http":{"method":"GET","requestUri":"/{Bucket}?lifecycle"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Rules":{"shape":"S4m","locationName":"Rule"}}},"deprecated":true},"GetBucketLifecycleConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?lifecycle"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Rules":{"shape":"S51","locationName":"Rule"}}}},"GetBucketLocation":{"http":{"method":"GET","requestUri":"/{Bucket}?location"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"LocationConstraint":{}}}},"GetBucketLogging":{"http":{"method":"GET","requestUri":"/{Bucket}?logging"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"LoggingEnabled":{"shape":"S5b"}}}},"GetBucketMetricsConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?metrics"},"input":{"type":"structure","required":["Bucket","Id"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"}}},"output":{"type":"structure","members":{"MetricsConfiguration":{"shape":"S5j"}},"payload":"MetricsConfiguration"}},"GetBucketNotification":{"http":{"method":"GET","requestUri":"/{Bucket}?notification"},"input":{"shape":"S5m"},"output":{"shape":"S5n"},"deprecated":true},"GetBucketNotificationConfiguration":{"http":{"method":"GET","requestUri":"/{Bucket}?notification"},"input":{"shape":"S5m"},"output":{"shape":"S5y"}},"GetBucketPolicy":{"http":{"method":"GET","requestUri":"/{Bucket}?policy"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Policy":{}},"payload":"Policy"}},"GetBucketReplication":{"http":{"method":"GET","requestUri":"/{Bucket}?replication"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"ReplicationConfiguration":{"shape":"S6h"}},"payload":"ReplicationConfiguration"}},"GetBucketRequestPayment":{"http":{"method":"GET","requestUri":"/{Bucket}?requestPayment"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Payer":{}}}},"GetBucketTagging":{"http":{"method":"GET","requestUri":"/{Bucket}?tagging"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","required":["TagSet"],"members":{"TagSet":{"shape":"S3d"}}}},"GetBucketVersioning":{"http":{"method":"GET","requestUri":"/{Bucket}?versioning"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"Status":{},"MFADelete":{"locationName":"MfaDelete"}}}},"GetBucketWebsite":{"http":{"method":"GET","requestUri":"/{Bucket}?website"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"output":{"type":"structure","members":{"RedirectAllRequestsTo":{"shape":"S75"},"IndexDocument":{"shape":"S78"},"ErrorDocument":{"shape":"S7a"},"RoutingRules":{"shape":"S7b"}}}},"GetObject":{"http":{"method":"GET","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"IfMatch":{"location":"header","locationName":"If-Match"},"IfModifiedSince":{"location":"header","locationName":"If-Modified-Since","type":"timestamp"},"IfNoneMatch":{"location":"header","locationName":"If-None-Match"},"IfUnmodifiedSince":{"location":"header","locationName":"If-Unmodified-Since","type":"timestamp"},"Key":{"location":"uri","locationName":"Key"},"Range":{"location":"header","locationName":"Range"},"ResponseCacheControl":{"location":"querystring","locationName":"response-cache-control"},"ResponseContentDisposition":{"location":"querystring","locationName":"response-content-disposition"},"ResponseContentEncoding":{"location":"querystring","locationName":"response-content-encoding"},"ResponseContentLanguage":{"location":"querystring","locationName":"response-content-language"},"ResponseContentType":{"location":"querystring","locationName":"response-content-type"},"ResponseExpires":{"location":"querystring","locationName":"response-expires","type":"timestamp"},"VersionId":{"location":"querystring","locationName":"versionId"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"PartNumber":{"location":"querystring","locationName":"partNumber","type":"integer"}}},"output":{"type":"structure","members":{"Body":{"streaming":true,"type":"blob"},"DeleteMarker":{"location":"header","locationName":"x-amz-delete-marker","type":"boolean"},"AcceptRanges":{"location":"header","locationName":"accept-ranges"},"Expiration":{"location":"header","locationName":"x-amz-expiration"},"Restore":{"location":"header","locationName":"x-amz-restore"},"LastModified":{"location":"header","locationName":"Last-Modified","type":"timestamp"},"ContentLength":{"location":"header","locationName":"Content-Length","type":"long"},"ETag":{"location":"header","locationName":"ETag"},"MissingMeta":{"location":"header","locationName":"x-amz-missing-meta","type":"integer"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"CacheControl":{"location":"header","locationName":"Cache-Control"},"ContentDisposition":{"location":"header","locationName":"Content-Disposition"},"ContentEncoding":{"location":"header","locationName":"Content-Encoding"},"ContentLanguage":{"location":"header","locationName":"Content-Language"},"ContentRange":{"location":"header","locationName":"Content-Range"},"ContentType":{"location":"header","locationName":"Content-Type"},"Expires":{"location":"header","locationName":"Expires","type":"timestamp"},"WebsiteRedirectLocation":{"location":"header","locationName":"x-amz-website-redirect-location"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"Metadata":{"shape":"S11","location":"headers","locationName":"x-amz-meta-"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"StorageClass":{"location":"header","locationName":"x-amz-storage-class"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"},"ReplicationStatus":{"location":"header","locationName":"x-amz-replication-status"},"PartsCount":{"location":"header","locationName":"x-amz-mp-parts-count","type":"integer"},"TagCount":{"location":"header","locationName":"x-amz-tagging-count","type":"integer"}},"payload":"Body"}},"GetObjectAcl":{"http":{"method":"GET","requestUri":"/{Bucket}/{Key+}?acl"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"VersionId":{"location":"querystring","locationName":"versionId"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"Owner":{"shape":"S2v"},"Grants":{"shape":"S2y","locationName":"AccessControlList"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"GetObjectTagging":{"http":{"method":"GET","requestUri":"/{Bucket}/{Key+}?tagging"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"VersionId":{"location":"querystring","locationName":"versionId"}}},"output":{"type":"structure","required":["TagSet"],"members":{"VersionId":{"location":"header","locationName":"x-amz-version-id"},"TagSet":{"shape":"S3d"}}}},"GetObjectTorrent":{"http":{"method":"GET","requestUri":"/{Bucket}/{Key+}?torrent"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"Body":{"streaming":true,"type":"blob"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}},"payload":"Body"}},"HeadBucket":{"http":{"method":"HEAD","requestUri":"/{Bucket}"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}}},"HeadObject":{"http":{"method":"HEAD","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"IfMatch":{"location":"header","locationName":"If-Match"},"IfModifiedSince":{"location":"header","locationName":"If-Modified-Since","type":"timestamp"},"IfNoneMatch":{"location":"header","locationName":"If-None-Match"},"IfUnmodifiedSince":{"location":"header","locationName":"If-Unmodified-Since","type":"timestamp"},"Key":{"location":"uri","locationName":"Key"},"Range":{"location":"header","locationName":"Range"},"VersionId":{"location":"querystring","locationName":"versionId"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"PartNumber":{"location":"querystring","locationName":"partNumber","type":"integer"}}},"output":{"type":"structure","members":{"DeleteMarker":{"location":"header","locationName":"x-amz-delete-marker","type":"boolean"},"AcceptRanges":{"location":"header","locationName":"accept-ranges"},"Expiration":{"location":"header","locationName":"x-amz-expiration"},"Restore":{"location":"header","locationName":"x-amz-restore"},"LastModified":{"location":"header","locationName":"Last-Modified","type":"timestamp"},"ContentLength":{"location":"header","locationName":"Content-Length","type":"long"},"ETag":{"location":"header","locationName":"ETag"},"MissingMeta":{"location":"header","locationName":"x-amz-missing-meta","type":"integer"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"CacheControl":{"location":"header","locationName":"Cache-Control"},"ContentDisposition":{"location":"header","locationName":"Content-Disposition"},"ContentEncoding":{"location":"header","locationName":"Content-Encoding"},"ContentLanguage":{"location":"header","locationName":"Content-Language"},"ContentType":{"location":"header","locationName":"Content-Type"},"Expires":{"location":"header","locationName":"Expires","type":"timestamp"},"WebsiteRedirectLocation":{"location":"header","locationName":"x-amz-website-redirect-location"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"Metadata":{"shape":"S11","location":"headers","locationName":"x-amz-meta-"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"StorageClass":{"location":"header","locationName":"x-amz-storage-class"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"},"ReplicationStatus":{"location":"header","locationName":"x-amz-replication-status"},"PartsCount":{"location":"header","locationName":"x-amz-mp-parts-count","type":"integer"}}}},"ListBucketAnalyticsConfigurations":{"http":{"method":"GET","requestUri":"/{Bucket}?analytics"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContinuationToken":{"location":"querystring","locationName":"continuation-token"}}},"output":{"type":"structure","members":{"IsTruncated":{"type":"boolean"},"ContinuationToken":{},"NextContinuationToken":{},"AnalyticsConfigurationList":{"locationName":"AnalyticsConfiguration","type":"list","member":{"shape":"S37"},"flattened":true}}}},"ListBucketInventoryConfigurations":{"http":{"method":"GET","requestUri":"/{Bucket}?inventory"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContinuationToken":{"location":"querystring","locationName":"continuation-token"}}},"output":{"type":"structure","members":{"ContinuationToken":{},"InventoryConfigurationList":{"locationName":"InventoryConfiguration","type":"list","member":{"shape":"S46"},"flattened":true},"IsTruncated":{"type":"boolean"},"NextContinuationToken":{}}}},"ListBucketMetricsConfigurations":{"http":{"method":"GET","requestUri":"/{Bucket}?metrics"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContinuationToken":{"location":"querystring","locationName":"continuation-token"}}},"output":{"type":"structure","members":{"IsTruncated":{"type":"boolean"},"ContinuationToken":{},"NextContinuationToken":{},"MetricsConfigurationList":{"locationName":"MetricsConfiguration","type":"list","member":{"shape":"S5j"},"flattened":true}}}},"ListBuckets":{"http":{"method":"GET"},"output":{"type":"structure","members":{"Buckets":{"type":"list","member":{"locationName":"Bucket","type":"structure","members":{"Name":{},"CreationDate":{"type":"timestamp"}}}},"Owner":{"shape":"S2v"}}},"alias":"GetService"},"ListMultipartUploads":{"http":{"method":"GET","requestUri":"/{Bucket}?uploads"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Delimiter":{"location":"querystring","locationName":"delimiter"},"EncodingType":{"location":"querystring","locationName":"encoding-type"},"KeyMarker":{"location":"querystring","locationName":"key-marker"},"MaxUploads":{"location":"querystring","locationName":"max-uploads","type":"integer"},"Prefix":{"location":"querystring","locationName":"prefix"},"UploadIdMarker":{"location":"querystring","locationName":"upload-id-marker"}}},"output":{"type":"structure","members":{"Bucket":{},"KeyMarker":{},"UploadIdMarker":{},"NextKeyMarker":{},"Prefix":{},"Delimiter":{},"NextUploadIdMarker":{},"MaxUploads":{"type":"integer"},"IsTruncated":{"type":"boolean"},"Uploads":{"locationName":"Upload","type":"list","member":{"type":"structure","members":{"UploadId":{},"Key":{},"Initiated":{"type":"timestamp"},"StorageClass":{},"Owner":{"shape":"S2v"},"Initiator":{"shape":"S97"}}},"flattened":true},"CommonPrefixes":{"shape":"S98"},"EncodingType":{}}}},"ListObjectVersions":{"http":{"method":"GET","requestUri":"/{Bucket}?versions"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Delimiter":{"location":"querystring","locationName":"delimiter"},"EncodingType":{"location":"querystring","locationName":"encoding-type"},"KeyMarker":{"location":"querystring","locationName":"key-marker"},"MaxKeys":{"location":"querystring","locationName":"max-keys","type":"integer"},"Prefix":{"location":"querystring","locationName":"prefix"},"VersionIdMarker":{"location":"querystring","locationName":"version-id-marker"}}},"output":{"type":"structure","members":{"IsTruncated":{"type":"boolean"},"KeyMarker":{},"VersionIdMarker":{},"NextKeyMarker":{},"NextVersionIdMarker":{},"Versions":{"locationName":"Version","type":"list","member":{"type":"structure","members":{"ETag":{},"Size":{"type":"integer"},"StorageClass":{},"Key":{},"VersionId":{},"IsLatest":{"type":"boolean"},"LastModified":{"type":"timestamp"},"Owner":{"shape":"S2v"}}},"flattened":true},"DeleteMarkers":{"locationName":"DeleteMarker","type":"list","member":{"type":"structure","members":{"Owner":{"shape":"S2v"},"Key":{},"VersionId":{},"IsLatest":{"type":"boolean"},"LastModified":{"type":"timestamp"}}},"flattened":true},"Name":{},"Prefix":{},"Delimiter":{},"MaxKeys":{"type":"integer"},"CommonPrefixes":{"shape":"S98"},"EncodingType":{}}},"alias":"GetBucketObjectVersions"},"ListObjects":{"http":{"method":"GET","requestUri":"/{Bucket}"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Delimiter":{"location":"querystring","locationName":"delimiter"},"EncodingType":{"location":"querystring","locationName":"encoding-type"},"Marker":{"location":"querystring","locationName":"marker"},"MaxKeys":{"location":"querystring","locationName":"max-keys","type":"integer"},"Prefix":{"location":"querystring","locationName":"prefix"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"IsTruncated":{"type":"boolean"},"Marker":{},"NextMarker":{},"Contents":{"shape":"S9q"},"Name":{},"Prefix":{},"Delimiter":{},"MaxKeys":{"type":"integer"},"CommonPrefixes":{"shape":"S98"},"EncodingType":{}}},"alias":"GetBucket"},"ListObjectsV2":{"http":{"method":"GET","requestUri":"/{Bucket}?list-type=2"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Delimiter":{"location":"querystring","locationName":"delimiter"},"EncodingType":{"location":"querystring","locationName":"encoding-type"},"MaxKeys":{"location":"querystring","locationName":"max-keys","type":"integer"},"Prefix":{"location":"querystring","locationName":"prefix"},"ContinuationToken":{"location":"querystring","locationName":"continuation-token"},"FetchOwner":{"location":"querystring","locationName":"fetch-owner","type":"boolean"},"StartAfter":{"location":"querystring","locationName":"start-after"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"IsTruncated":{"type":"boolean"},"Contents":{"shape":"S9q"},"Name":{},"Prefix":{},"Delimiter":{},"MaxKeys":{"type":"integer"},"CommonPrefixes":{"shape":"S98"},"EncodingType":{},"KeyCount":{"type":"integer"},"ContinuationToken":{},"NextContinuationToken":{},"StartAfter":{}}}},"ListParts":{"http":{"method":"GET","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key","UploadId"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"MaxParts":{"location":"querystring","locationName":"max-parts","type":"integer"},"PartNumberMarker":{"location":"querystring","locationName":"part-number-marker","type":"integer"},"UploadId":{"location":"querystring","locationName":"uploadId"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"AbortDate":{"location":"header","locationName":"x-amz-abort-date","type":"timestamp"},"AbortRuleId":{"location":"header","locationName":"x-amz-abort-rule-id"},"Bucket":{},"Key":{},"UploadId":{},"PartNumberMarker":{"type":"integer"},"NextPartNumberMarker":{"type":"integer"},"MaxParts":{"type":"integer"},"IsTruncated":{"type":"boolean"},"Parts":{"locationName":"Part","type":"list","member":{"type":"structure","members":{"PartNumber":{"type":"integer"},"LastModified":{"type":"timestamp"},"ETag":{},"Size":{"type":"integer"}}},"flattened":true},"Initiator":{"shape":"S97"},"Owner":{"shape":"S2v"},"StorageClass":{},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"PutBucketAccelerateConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?accelerate"},"input":{"type":"structure","required":["Bucket","AccelerateConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"AccelerateConfiguration":{"locationName":"AccelerateConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"Status":{}}}},"payload":"AccelerateConfiguration"}},"PutBucketAcl":{"http":{"method":"PUT","requestUri":"/{Bucket}?acl"},"input":{"type":"structure","required":["Bucket"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"AccessControlPolicy":{"shape":"Sa8","locationName":"AccessControlPolicy","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}},"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWrite":{"location":"header","locationName":"x-amz-grant-write"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"}},"payload":"AccessControlPolicy"}},"PutBucketAnalyticsConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?analytics"},"input":{"type":"structure","required":["Bucket","Id","AnalyticsConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"},"AnalyticsConfiguration":{"shape":"S37","locationName":"AnalyticsConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"AnalyticsConfiguration"}},"PutBucketCors":{"http":{"method":"PUT","requestUri":"/{Bucket}?cors"},"input":{"type":"structure","required":["Bucket","CORSConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"CORSConfiguration":{"locationName":"CORSConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","required":["CORSRules"],"members":{"CORSRules":{"shape":"S3n","locationName":"CORSRule"}}},"ContentMD5":{"location":"header","locationName":"Content-MD5"}},"payload":"CORSConfiguration"}},"PutBucketEncryption":{"http":{"method":"PUT","requestUri":"/{Bucket}?encryption"},"input":{"type":"structure","required":["Bucket","ServerSideEncryptionConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"ServerSideEncryptionConfiguration":{"shape":"S40","locationName":"ServerSideEncryptionConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"ServerSideEncryptionConfiguration"}},"PutBucketInventoryConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?inventory"},"input":{"type":"structure","required":["Bucket","Id","InventoryConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"},"InventoryConfiguration":{"shape":"S46","locationName":"InventoryConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"InventoryConfiguration"}},"PutBucketLifecycle":{"http":{"method":"PUT","requestUri":"/{Bucket}?lifecycle"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"LifecycleConfiguration":{"locationName":"LifecycleConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","required":["Rules"],"members":{"Rules":{"shape":"S4m","locationName":"Rule"}}}},"payload":"LifecycleConfiguration"},"deprecated":true},"PutBucketLifecycleConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?lifecycle"},"input":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"LifecycleConfiguration":{"locationName":"LifecycleConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","required":["Rules"],"members":{"Rules":{"shape":"S51","locationName":"Rule"}}}},"payload":"LifecycleConfiguration"}},"PutBucketLogging":{"http":{"method":"PUT","requestUri":"/{Bucket}?logging"},"input":{"type":"structure","required":["Bucket","BucketLoggingStatus"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"BucketLoggingStatus":{"locationName":"BucketLoggingStatus","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"LoggingEnabled":{"shape":"S5b"}}},"ContentMD5":{"location":"header","locationName":"Content-MD5"}},"payload":"BucketLoggingStatus"}},"PutBucketMetricsConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?metrics"},"input":{"type":"structure","required":["Bucket","Id","MetricsConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Id":{"location":"querystring","locationName":"id"},"MetricsConfiguration":{"shape":"S5j","locationName":"MetricsConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"MetricsConfiguration"}},"PutBucketNotification":{"http":{"method":"PUT","requestUri":"/{Bucket}?notification"},"input":{"type":"structure","required":["Bucket","NotificationConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"NotificationConfiguration":{"shape":"S5n","locationName":"NotificationConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"NotificationConfiguration"},"deprecated":true},"PutBucketNotificationConfiguration":{"http":{"method":"PUT","requestUri":"/{Bucket}?notification"},"input":{"type":"structure","required":["Bucket","NotificationConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"NotificationConfiguration":{"shape":"S5y","locationName":"NotificationConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"NotificationConfiguration"}},"PutBucketPolicy":{"http":{"method":"PUT","requestUri":"/{Bucket}?policy"},"input":{"type":"structure","required":["Bucket","Policy"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"ConfirmRemoveSelfBucketAccess":{"location":"header","locationName":"x-amz-confirm-remove-self-bucket-access","type":"boolean"},"Policy":{}},"payload":"Policy"}},"PutBucketReplication":{"http":{"method":"PUT","requestUri":"/{Bucket}?replication"},"input":{"type":"structure","required":["Bucket","ReplicationConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"ReplicationConfiguration":{"shape":"S6h","locationName":"ReplicationConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"ReplicationConfiguration"}},"PutBucketRequestPayment":{"http":{"method":"PUT","requestUri":"/{Bucket}?requestPayment"},"input":{"type":"structure","required":["Bucket","RequestPaymentConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"RequestPaymentConfiguration":{"locationName":"RequestPaymentConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","required":["Payer"],"members":{"Payer":{}}}},"payload":"RequestPaymentConfiguration"}},"PutBucketTagging":{"http":{"method":"PUT","requestUri":"/{Bucket}?tagging"},"input":{"type":"structure","required":["Bucket","Tagging"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"Tagging":{"shape":"Sau","locationName":"Tagging","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"Tagging"}},"PutBucketVersioning":{"http":{"method":"PUT","requestUri":"/{Bucket}?versioning"},"input":{"type":"structure","required":["Bucket","VersioningConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"MFA":{"location":"header","locationName":"x-amz-mfa"},"VersioningConfiguration":{"locationName":"VersioningConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"MFADelete":{"locationName":"MfaDelete"},"Status":{}}}},"payload":"VersioningConfiguration"}},"PutBucketWebsite":{"http":{"method":"PUT","requestUri":"/{Bucket}?website"},"input":{"type":"structure","required":["Bucket","WebsiteConfiguration"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"WebsiteConfiguration":{"locationName":"WebsiteConfiguration","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"ErrorDocument":{"shape":"S7a"},"IndexDocument":{"shape":"S78"},"RedirectAllRequestsTo":{"shape":"S75"},"RoutingRules":{"shape":"S7b"}}}},"payload":"WebsiteConfiguration"}},"PutObject":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"Body":{"streaming":true,"type":"blob"},"Bucket":{"location":"uri","locationName":"Bucket"},"CacheControl":{"location":"header","locationName":"Cache-Control"},"ContentDisposition":{"location":"header","locationName":"Content-Disposition"},"ContentEncoding":{"location":"header","locationName":"Content-Encoding"},"ContentLanguage":{"location":"header","locationName":"Content-Language"},"ContentLength":{"location":"header","locationName":"Content-Length","type":"long"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"ContentType":{"location":"header","locationName":"Content-Type"},"Expires":{"location":"header","locationName":"Expires","type":"timestamp"},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"},"Key":{"location":"uri","locationName":"Key"},"Metadata":{"shape":"S11","location":"headers","locationName":"x-amz-meta-"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"StorageClass":{"location":"header","locationName":"x-amz-storage-class"},"WebsiteRedirectLocation":{"location":"header","locationName":"x-amz-website-redirect-location"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"Tagging":{"location":"header","locationName":"x-amz-tagging"}},"payload":"Body"},"output":{"type":"structure","members":{"Expiration":{"location":"header","locationName":"x-amz-expiration"},"ETag":{"location":"header","locationName":"ETag"},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"VersionId":{"location":"header","locationName":"x-amz-version-id"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"PutObjectAcl":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}?acl"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"ACL":{"location":"header","locationName":"x-amz-acl"},"AccessControlPolicy":{"shape":"Sa8","locationName":"AccessControlPolicy","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}},"Bucket":{"location":"uri","locationName":"Bucket"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"GrantFullControl":{"location":"header","locationName":"x-amz-grant-full-control"},"GrantRead":{"location":"header","locationName":"x-amz-grant-read"},"GrantReadACP":{"location":"header","locationName":"x-amz-grant-read-acp"},"GrantWrite":{"location":"header","locationName":"x-amz-grant-write"},"GrantWriteACP":{"location":"header","locationName":"x-amz-grant-write-acp"},"Key":{"location":"uri","locationName":"Key"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"},"VersionId":{"location":"querystring","locationName":"versionId"}},"payload":"AccessControlPolicy"},"output":{"type":"structure","members":{"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"PutObjectTagging":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}?tagging"},"input":{"type":"structure","required":["Bucket","Key","Tagging"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"VersionId":{"location":"querystring","locationName":"versionId"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"Tagging":{"shape":"Sau","locationName":"Tagging","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"}}},"payload":"Tagging"},"output":{"type":"structure","members":{"VersionId":{"location":"header","locationName":"x-amz-version-id"}}}},"RestoreObject":{"http":{"requestUri":"/{Bucket}/{Key+}?restore"},"input":{"type":"structure","required":["Bucket","Key"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"Key":{"location":"uri","locationName":"Key"},"VersionId":{"location":"querystring","locationName":"versionId"},"RestoreRequest":{"locationName":"RestoreRequest","xmlNamespace":{"uri":"http://s3.amazonaws.com/doc/2006-03-01/"},"type":"structure","members":{"Days":{"type":"integer"},"GlacierJobParameters":{"type":"structure","required":["Tier"],"members":{"Tier":{}}},"Type":{},"Tier":{},"Description":{},"SelectParameters":{"type":"structure","required":["InputSerialization","ExpressionType","Expression","OutputSerialization"],"members":{"InputSerialization":{"type":"structure","members":{"CSV":{"type":"structure","members":{"FileHeaderInfo":{},"Comments":{},"QuoteEscapeCharacter":{},"RecordDelimiter":{},"FieldDelimiter":{},"QuoteCharacter":{}}}}},"ExpressionType":{},"Expression":{},"OutputSerialization":{"type":"structure","members":{"CSV":{"type":"structure","members":{"QuoteFields":{},"QuoteEscapeCharacter":{},"RecordDelimiter":{},"FieldDelimiter":{},"QuoteCharacter":{}}}}}}},"OutputLocation":{"type":"structure","members":{"S3":{"type":"structure","required":["BucketName","Prefix"],"members":{"BucketName":{},"Prefix":{},"Encryption":{"type":"structure","required":["EncryptionType"],"members":{"EncryptionType":{},"KMSKeyId":{"shape":"Sj"},"KMSContext":{}}},"CannedACL":{},"AccessControlList":{"shape":"S2y"},"Tagging":{"shape":"Sau"},"UserMetadata":{"type":"list","member":{"locationName":"MetadataEntry","type":"structure","members":{"Name":{},"Value":{}}}},"StorageClass":{}}}}}}},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}},"payload":"RestoreRequest"},"output":{"type":"structure","members":{"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"},"RestoreOutputPath":{"location":"header","locationName":"x-amz-restore-output-path"}}},"alias":"PostObjectRestore"},"UploadPart":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","Key","PartNumber","UploadId"],"members":{"Body":{"streaming":true,"type":"blob"},"Bucket":{"location":"uri","locationName":"Bucket"},"ContentLength":{"location":"header","locationName":"Content-Length","type":"long"},"ContentMD5":{"location":"header","locationName":"Content-MD5"},"Key":{"location":"uri","locationName":"Key"},"PartNumber":{"location":"querystring","locationName":"partNumber","type":"integer"},"UploadId":{"location":"querystring","locationName":"uploadId"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}},"payload":"Body"},"output":{"type":"structure","members":{"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"ETag":{"location":"header","locationName":"ETag"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}}}},"UploadPartCopy":{"http":{"method":"PUT","requestUri":"/{Bucket}/{Key+}"},"input":{"type":"structure","required":["Bucket","CopySource","Key","PartNumber","UploadId"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"},"CopySource":{"location":"header","locationName":"x-amz-copy-source"},"CopySourceIfMatch":{"location":"header","locationName":"x-amz-copy-source-if-match"},"CopySourceIfModifiedSince":{"location":"header","locationName":"x-amz-copy-source-if-modified-since","type":"timestamp"},"CopySourceIfNoneMatch":{"location":"header","locationName":"x-amz-copy-source-if-none-match"},"CopySourceIfUnmodifiedSince":{"location":"header","locationName":"x-amz-copy-source-if-unmodified-since","type":"timestamp"},"CopySourceRange":{"location":"header","locationName":"x-amz-copy-source-range"},"Key":{"location":"uri","locationName":"Key"},"PartNumber":{"location":"querystring","locationName":"partNumber","type":"integer"},"UploadId":{"location":"querystring","locationName":"uploadId"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKey":{"shape":"S19","location":"header","locationName":"x-amz-server-side-encryption-customer-key"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"CopySourceSSECustomerAlgorithm":{"location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-algorithm"},"CopySourceSSECustomerKey":{"shape":"S1c","location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-key"},"CopySourceSSECustomerKeyMD5":{"location":"header","locationName":"x-amz-copy-source-server-side-encryption-customer-key-MD5"},"RequestPayer":{"location":"header","locationName":"x-amz-request-payer"}}},"output":{"type":"structure","members":{"CopySourceVersionId":{"location":"header","locationName":"x-amz-copy-source-version-id"},"CopyPartResult":{"type":"structure","members":{"ETag":{},"LastModified":{"type":"timestamp"}}},"ServerSideEncryption":{"location":"header","locationName":"x-amz-server-side-encryption"},"SSECustomerAlgorithm":{"location":"header","locationName":"x-amz-server-side-encryption-customer-algorithm"},"SSECustomerKeyMD5":{"location":"header","locationName":"x-amz-server-side-encryption-customer-key-MD5"},"SSEKMSKeyId":{"shape":"Sj","location":"header","locationName":"x-amz-server-side-encryption-aws-kms-key-id"},"RequestCharged":{"location":"header","locationName":"x-amz-request-charged"}},"payload":"CopyPartResult"}}},"shapes":{"Sj":{"type":"string","sensitive":true},"S11":{"type":"map","key":{},"value":{}},"S19":{"type":"blob","sensitive":true},"S1c":{"type":"blob","sensitive":true},"S2v":{"type":"structure","members":{"DisplayName":{},"ID":{}}},"S2y":{"type":"list","member":{"locationName":"Grant","type":"structure","members":{"Grantee":{"shape":"S30"},"Permission":{}}}},"S30":{"type":"structure","required":["Type"],"members":{"DisplayName":{},"EmailAddress":{},"ID":{},"Type":{"locationName":"xsi:type","xmlAttribute":true},"URI":{}},"xmlNamespace":{"prefix":"xsi","uri":"http://www.w3.org/2001/XMLSchema-instance"}},"S37":{"type":"structure","required":["Id","StorageClassAnalysis"],"members":{"Id":{},"Filter":{"type":"structure","members":{"Prefix":{},"Tag":{"shape":"S3a"},"And":{"type":"structure","members":{"Prefix":{},"Tags":{"shape":"S3d","flattened":true,"locationName":"Tag"}}}}},"StorageClassAnalysis":{"type":"structure","members":{"DataExport":{"type":"structure","required":["OutputSchemaVersion","Destination"],"members":{"OutputSchemaVersion":{},"Destination":{"type":"structure","required":["S3BucketDestination"],"members":{"S3BucketDestination":{"type":"structure","required":["Format","Bucket"],"members":{"Format":{},"BucketAccountId":{},"Bucket":{},"Prefix":{}}}}}}}}}}},"S3a":{"type":"structure","required":["Key","Value"],"members":{"Key":{},"Value":{}}},"S3d":{"type":"list","member":{"shape":"S3a","locationName":"Tag"}},"S3n":{"type":"list","member":{"type":"structure","required":["AllowedMethods","AllowedOrigins"],"members":{"AllowedHeaders":{"locationName":"AllowedHeader","type":"list","member":{},"flattened":true},"AllowedMethods":{"locationName":"AllowedMethod","type":"list","member":{},"flattened":true},"AllowedOrigins":{"locationName":"AllowedOrigin","type":"list","member":{},"flattened":true},"ExposeHeaders":{"locationName":"ExposeHeader","type":"list","member":{},"flattened":true},"MaxAgeSeconds":{"type":"integer"}}},"flattened":true},"S40":{"type":"structure","required":["Rules"],"members":{"Rules":{"locationName":"Rule","type":"list","member":{"type":"structure","members":{"ApplyServerSideEncryptionByDefault":{"type":"structure","required":["SSEAlgorithm"],"members":{"SSEAlgorithm":{},"KMSMasterKeyID":{"shape":"Sj"}}}}},"flattened":true}}},"S46":{"type":"structure","required":["Destination","IsEnabled","Id","IncludedObjectVersions","Schedule"],"members":{"Destination":{"type":"structure","required":["S3BucketDestination"],"members":{"S3BucketDestination":{"type":"structure","required":["Bucket","Format"],"members":{"AccountId":{},"Bucket":{},"Format":{},"Prefix":{},"Encryption":{"type":"structure","members":{"SSES3":{"locationName":"SSE-S3","type":"structure","members":{}},"SSEKMS":{"locationName":"SSE-KMS","type":"structure","required":["KeyId"],"members":{"KeyId":{"shape":"Sj"}}}}}}}}},"IsEnabled":{"type":"boolean"},"Filter":{"type":"structure","required":["Prefix"],"members":{"Prefix":{}}},"Id":{},"IncludedObjectVersions":{},"OptionalFields":{"type":"list","member":{"locationName":"Field"}},"Schedule":{"type":"structure","required":["Frequency"],"members":{"Frequency":{}}}}},"S4m":{"type":"list","member":{"type":"structure","required":["Prefix","Status"],"members":{"Expiration":{"shape":"S4o"},"ID":{},"Prefix":{},"Status":{},"Transition":{"shape":"S4t"},"NoncurrentVersionTransition":{"shape":"S4v"},"NoncurrentVersionExpiration":{"shape":"S4w"},"AbortIncompleteMultipartUpload":{"shape":"S4x"}}},"flattened":true},"S4o":{"type":"structure","members":{"Date":{"shape":"S4p"},"Days":{"type":"integer"},"ExpiredObjectDeleteMarker":{"type":"boolean"}}},"S4p":{"type":"timestamp","timestampFormat":"iso8601"},"S4t":{"type":"structure","members":{"Date":{"shape":"S4p"},"Days":{"type":"integer"},"StorageClass":{}}},"S4v":{"type":"structure","members":{"NoncurrentDays":{"type":"integer"},"StorageClass":{}}},"S4w":{"type":"structure","members":{"NoncurrentDays":{"type":"integer"}}},"S4x":{"type":"structure","members":{"DaysAfterInitiation":{"type":"integer"}}},"S51":{"type":"list","member":{"type":"structure","required":["Status"],"members":{"Expiration":{"shape":"S4o"},"ID":{},"Prefix":{"deprecated":true},"Filter":{"type":"structure","members":{"Prefix":{},"Tag":{"shape":"S3a"},"And":{"type":"structure","members":{"Prefix":{},"Tags":{"shape":"S3d","flattened":true,"locationName":"Tag"}}}}},"Status":{},"Transitions":{"locationName":"Transition","type":"list","member":{"shape":"S4t"},"flattened":true},"NoncurrentVersionTransitions":{"locationName":"NoncurrentVersionTransition","type":"list","member":{"shape":"S4v"},"flattened":true},"NoncurrentVersionExpiration":{"shape":"S4w"},"AbortIncompleteMultipartUpload":{"shape":"S4x"}}},"flattened":true},"S5b":{"type":"structure","members":{"TargetBucket":{},"TargetGrants":{"type":"list","member":{"locationName":"Grant","type":"structure","members":{"Grantee":{"shape":"S30"},"Permission":{}}}},"TargetPrefix":{}}},"S5j":{"type":"structure","required":["Id"],"members":{"Id":{},"Filter":{"type":"structure","members":{"Prefix":{},"Tag":{"shape":"S3a"},"And":{"type":"structure","members":{"Prefix":{},"Tags":{"shape":"S3d","flattened":true,"locationName":"Tag"}}}}}}},"S5m":{"type":"structure","required":["Bucket"],"members":{"Bucket":{"location":"uri","locationName":"Bucket"}}},"S5n":{"type":"structure","members":{"TopicConfiguration":{"type":"structure","members":{"Id":{},"Events":{"shape":"S5q","locationName":"Event"},"Event":{"deprecated":true},"Topic":{}}},"QueueConfiguration":{"type":"structure","members":{"Id":{},"Event":{"deprecated":true},"Events":{"shape":"S5q","locationName":"Event"},"Queue":{}}},"CloudFunctionConfiguration":{"type":"structure","members":{"Id":{},"Event":{"deprecated":true},"Events":{"shape":"S5q","locationName":"Event"},"CloudFunction":{},"InvocationRole":{}}}}},"S5q":{"type":"list","member":{},"flattened":true},"S5y":{"type":"structure","members":{"TopicConfigurations":{"locationName":"TopicConfiguration","type":"list","member":{"type":"structure","required":["TopicArn","Events"],"members":{"Id":{},"TopicArn":{"locationName":"Topic"},"Events":{"shape":"S5q","locationName":"Event"},"Filter":{"shape":"S61"}}},"flattened":true},"QueueConfigurations":{"locationName":"QueueConfiguration","type":"list","member":{"type":"structure","required":["QueueArn","Events"],"members":{"Id":{},"QueueArn":{"locationName":"Queue"},"Events":{"shape":"S5q","locationName":"Event"},"Filter":{"shape":"S61"}}},"flattened":true},"LambdaFunctionConfigurations":{"locationName":"CloudFunctionConfiguration","type":"list","member":{"type":"structure","required":["LambdaFunctionArn","Events"],"members":{"Id":{},"LambdaFunctionArn":{"locationName":"CloudFunction"},"Events":{"shape":"S5q","locationName":"Event"},"Filter":{"shape":"S61"}}},"flattened":true}}},"S61":{"type":"structure","members":{"Key":{"locationName":"S3Key","type":"structure","members":{"FilterRules":{"locationName":"FilterRule","type":"list","member":{"type":"structure","members":{"Name":{},"Value":{}}},"flattened":true}}}}},"S6h":{"type":"structure","required":["Role","Rules"],"members":{"Role":{},"Rules":{"locationName":"Rule","type":"list","member":{"type":"structure","required":["Prefix","Status","Destination"],"members":{"ID":{},"Prefix":{},"Status":{},"SourceSelectionCriteria":{"type":"structure","members":{"SseKmsEncryptedObjects":{"type":"structure","required":["Status"],"members":{"Status":{}}}}},"Destination":{"type":"structure","required":["Bucket"],"members":{"Bucket":{},"Account":{},"StorageClass":{},"AccessControlTranslation":{"type":"structure","required":["Owner"],"members":{"Owner":{}}},"EncryptionConfiguration":{"type":"structure","members":{"ReplicaKmsKeyID":{}}}}}}},"flattened":true}}},"S75":{"type":"structure","required":["HostName"],"members":{"HostName":{},"Protocol":{}}},"S78":{"type":"structure","required":["Suffix"],"members":{"Suffix":{}}},"S7a":{"type":"structure","required":["Key"],"members":{"Key":{}}},"S7b":{"type":"list","member":{"locationName":"RoutingRule","type":"structure","required":["Redirect"],"members":{"Condition":{"type":"structure","members":{"HttpErrorCodeReturnedEquals":{},"KeyPrefixEquals":{}}},"Redirect":{"type":"structure","members":{"HostName":{},"HttpRedirectCode":{},"Protocol":{},"ReplaceKeyPrefixWith":{},"ReplaceKeyWith":{}}}}}},"S97":{"type":"structure","members":{"ID":{},"DisplayName":{}}},"S98":{"type":"list","member":{"type":"structure","members":{"Prefix":{}}},"flattened":true},"S9q":{"type":"list","member":{"type":"structure","members":{"Key":{},"LastModified":{"type":"timestamp"},"ETag":{},"Size":{"type":"integer"},"StorageClass":{},"Owner":{"shape":"S2v"}}},"flattened":true},"Sa8":{"type":"structure","members":{"Grants":{"shape":"S2y","locationName":"AccessControlList"},"Owner":{"shape":"S2v"}}},"Sau":{"type":"structure","required":["TagSet"],"members":{"TagSet":{"shape":"S3d"}}}}}
 
 /***/ }),
-/* 284 */
+/* 286 */
 /***/ (function(module, exports) {
 
 module.exports = {"pagination":{"ListBuckets":{"result_key":"Buckets"},"ListMultipartUploads":{"input_token":["KeyMarker","UploadIdMarker"],"limit_key":"MaxUploads","more_results":"IsTruncated","output_token":["NextKeyMarker","NextUploadIdMarker"],"result_key":["Uploads","CommonPrefixes"]},"ListObjectVersions":{"input_token":["KeyMarker","VersionIdMarker"],"limit_key":"MaxKeys","more_results":"IsTruncated","output_token":["NextKeyMarker","NextVersionIdMarker"],"result_key":["Versions","DeleteMarkers","CommonPrefixes"]},"ListObjects":{"input_token":"Marker","limit_key":"MaxKeys","more_results":"IsTruncated","output_token":"NextMarker || Contents[-1].Key","result_key":["Contents","CommonPrefixes"]},"ListObjectsV2":{"input_token":"ContinuationToken","limit_key":"MaxKeys","output_token":"NextContinuationToken","result_key":["Contents","CommonPrefixes"]},"ListParts":{"input_token":"PartNumberMarker","limit_key":"MaxParts","more_results":"IsTruncated","output_token":"NextPartNumberMarker","result_key":"Parts"}}}
 
 /***/ }),
-/* 285 */
+/* 287 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":2,"waiters":{"BucketExists":{"delay":5,"operation":"HeadBucket","maxAttempts":20,"acceptors":[{"expected":200,"matcher":"status","state":"success"},{"expected":301,"matcher":"status","state":"success"},{"expected":403,"matcher":"status","state":"success"},{"expected":404,"matcher":"status","state":"retry"}]},"BucketNotExists":{"delay":5,"operation":"HeadBucket","maxAttempts":20,"acceptors":[{"expected":404,"matcher":"status","state":"success"}]},"ObjectExists":{"delay":5,"operation":"HeadObject","maxAttempts":20,"acceptors":[{"expected":200,"matcher":"status","state":"success"},{"expected":404,"matcher":"status","state":"retry"}]},"ObjectNotExists":{"delay":5,"operation":"HeadObject","maxAttempts":20,"acceptors":[{"expected":404,"matcher":"status","state":"success"}]}}}
 
 /***/ }),
-/* 286 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(13);
 
 var AWS = __webpack_require__(0);
 if (typeof window !== 'undefined') window.AWS = AWS;
@@ -30425,7 +30503,7 @@ if (true) module.exports = AWS;
 if (typeof self !== 'undefined') self.AWS = AWS;
 
 /***/ }),
-/* 287 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30435,7 +30513,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _AuthenticationDetails = __webpack_require__(288);
+var _AuthenticationDetails = __webpack_require__(290);
 
 Object.defineProperty(exports, 'AuthenticationDetails', {
   enumerable: true,
@@ -30498,7 +30576,7 @@ Object.defineProperty(exports, 'CognitoUserAttribute', {
   }
 });
 
-var _CognitoUserPool = __webpack_require__(293);
+var _CognitoUserPool = __webpack_require__(295);
 
 Object.defineProperty(exports, 'CognitoUserPool', {
   enumerable: true,
@@ -30516,7 +30594,7 @@ Object.defineProperty(exports, 'CognitoUserSession', {
   }
 });
 
-var _CookieStorage = __webpack_require__(296);
+var _CookieStorage = __webpack_require__(298);
 
 Object.defineProperty(exports, 'CookieStorage', {
   enumerable: true,
@@ -30537,7 +30615,7 @@ Object.defineProperty(exports, 'DateHelper', {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
-/* 288 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30632,7 +30710,7 @@ var AuthenticationDetails = function () {
 exports.default = AuthenticationDetails;
 
 /***/ }),
-/* 289 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -30739,7 +30817,7 @@ module.exports = function sha1(buf) {
 
 
 /***/ }),
-/* 290 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -30824,7 +30902,7 @@ module.exports = function sha256(buf) {
 
 
 /***/ }),
-/* 291 */
+/* 293 */
 /***/ (function(module, exports) {
 
 // Original code adapted from Robert Kieffer.
@@ -30861,7 +30939,7 @@ module.exports = function sha256(buf) {
 
 
 /***/ }),
-/* 292 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -31030,7 +31108,7 @@ module.exports = function md5(buf) {
 
 
 /***/ }),
-/* 293 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31040,7 +31118,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Client = __webpack_require__(294);
+var _Client = __webpack_require__(296);
 
 var _Client2 = _interopRequireDefault(_Client);
 
@@ -31245,7 +31323,7 @@ var CognitoUserPool = function () {
 exports.default = CognitoUserPool;
 
 /***/ }),
-/* 294 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31255,7 +31333,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _UserAgent = __webpack_require__(295);
+var _UserAgent = __webpack_require__(297);
 
 var _UserAgent2 = _interopRequireDefault(_UserAgent);
 
@@ -31346,7 +31424,7 @@ var Client = function () {
 exports.default = Client;
 
 /***/ }),
-/* 295 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31364,7 +31442,7 @@ function UserAgent() {}
 UserAgent.prototype.userAgent = 'aws-amplify/0.1.x js';
 
 /***/ }),
-/* 296 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31374,7 +31452,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _jsCookie = __webpack_require__(297);
+var _jsCookie = __webpack_require__(299);
 
 var Cookies = _interopRequireWildcard(_jsCookie);
 
@@ -31481,7 +31559,7 @@ var CookieStorage = function () {
 exports.default = CookieStorage;
 
 /***/ }),
-/* 297 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -31656,10 +31734,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 /***/ }),
-/* 298 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(13);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -31668,7 +31746,7 @@ apiLoader.services['pinpoint'] = {};
 AWS.Pinpoint = Service.defineService('pinpoint', ['2016-12-01']);
 Object.defineProperty(apiLoader.services['pinpoint'], '2016-12-01', {
   get: function get() {
-    var model = __webpack_require__(299);
+    var model = __webpack_require__(301);
     return model;
   },
   enumerable: true,
@@ -31679,16 +31757,16 @@ module.exports = AWS.Pinpoint;
 
 
 /***/ }),
-/* 299 */
+/* 301 */
 /***/ (function(module, exports) {
 
 module.exports = {"metadata":{"apiVersion":"2016-12-01","endpointPrefix":"pinpoint","signingName":"mobiletargeting","serviceFullName":"Amazon Pinpoint","protocol":"rest-json","jsonVersion":"1.1","uid":"pinpoint-2016-12-01","signatureVersion":"v4"},"operations":{"CreateApp":{"http":{"requestUri":"/v1/apps","responseCode":201},"input":{"type":"structure","members":{"CreateApplicationRequest":{"type":"structure","members":{"Name":{}}}},"required":["CreateApplicationRequest"],"payload":"CreateApplicationRequest"},"output":{"type":"structure","members":{"ApplicationResponse":{"shape":"S5"}},"required":["ApplicationResponse"],"payload":"ApplicationResponse"}},"CreateCampaign":{"http":{"requestUri":"/v1/apps/{application-id}/campaigns","responseCode":201},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"WriteCampaignRequest":{"shape":"S7"}},"required":["ApplicationId","WriteCampaignRequest"],"payload":"WriteCampaignRequest"},"output":{"type":"structure","members":{"CampaignResponse":{"shape":"Sn"}},"required":["CampaignResponse"],"payload":"CampaignResponse"}},"CreateImportJob":{"http":{"requestUri":"/v1/apps/{application-id}/jobs/import","responseCode":201},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"ImportJobRequest":{"type":"structure","members":{"DefineSegment":{"type":"boolean"},"ExternalId":{},"Format":{},"RegisterEndpoints":{"type":"boolean"},"RoleArn":{},"S3Url":{},"SegmentId":{},"SegmentName":{}}}},"required":["ApplicationId","ImportJobRequest"],"payload":"ImportJobRequest"},"output":{"type":"structure","members":{"ImportJobResponse":{"shape":"Sw"}},"required":["ImportJobResponse"],"payload":"ImportJobResponse"}},"CreateSegment":{"http":{"requestUri":"/v1/apps/{application-id}/segments","responseCode":201},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"WriteSegmentRequest":{"shape":"S11"}},"required":["ApplicationId","WriteSegmentRequest"],"payload":"WriteSegmentRequest"},"output":{"type":"structure","members":{"SegmentResponse":{"shape":"S1f"}},"required":["SegmentResponse"],"payload":"SegmentResponse"}},"DeleteAdmChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/adm","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ADMChannelResponse":{"shape":"S1l"}},"required":["ADMChannelResponse"],"payload":"ADMChannelResponse"}},"DeleteApnsChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/apns","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSChannelResponse":{"shape":"S1o"}},"required":["APNSChannelResponse"],"payload":"APNSChannelResponse"}},"DeleteApnsSandboxChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/apns_sandbox","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSSandboxChannelResponse":{"shape":"S1r"}},"required":["APNSSandboxChannelResponse"],"payload":"APNSSandboxChannelResponse"}},"DeleteApnsVoipChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/apns_voip","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSVoipChannelResponse":{"shape":"S1u"}},"required":["APNSVoipChannelResponse"],"payload":"APNSVoipChannelResponse"}},"DeleteApnsVoipSandboxChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/apns_voip_sandbox","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSVoipSandboxChannelResponse":{"shape":"S1x"}},"required":["APNSVoipSandboxChannelResponse"],"payload":"APNSVoipSandboxChannelResponse"}},"DeleteApp":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ApplicationResponse":{"shape":"S5"}},"required":["ApplicationResponse"],"payload":"ApplicationResponse"}},"DeleteBaiduChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/baidu","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"BaiduChannelResponse":{"shape":"S22"}},"required":["BaiduChannelResponse"],"payload":"BaiduChannelResponse"}},"DeleteCampaign":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"}},"required":["CampaignId","ApplicationId"]},"output":{"type":"structure","members":{"CampaignResponse":{"shape":"Sn"}},"required":["CampaignResponse"],"payload":"CampaignResponse"}},"DeleteEmailChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/email","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"EmailChannelResponse":{"shape":"S27"}},"required":["EmailChannelResponse"],"payload":"EmailChannelResponse"}},"DeleteEventStream":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/eventstream","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"EventStream":{"shape":"S2a"}},"required":["EventStream"],"payload":"EventStream"}},"DeleteGcmChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/gcm","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"GCMChannelResponse":{"shape":"S2d"}},"required":["GCMChannelResponse"],"payload":"GCMChannelResponse"}},"DeleteSegment":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/segments/{segment-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SegmentId":{"location":"uri","locationName":"segment-id"}},"required":["SegmentId","ApplicationId"]},"output":{"type":"structure","members":{"SegmentResponse":{"shape":"S1f"}},"required":["SegmentResponse"],"payload":"SegmentResponse"}},"DeleteSmsChannel":{"http":{"method":"DELETE","requestUri":"/v1/apps/{application-id}/channels/sms","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"SMSChannelResponse":{"shape":"S2i"}},"required":["SMSChannelResponse"],"payload":"SMSChannelResponse"}},"GetAdmChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/adm","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ADMChannelResponse":{"shape":"S1l"}},"required":["ADMChannelResponse"],"payload":"ADMChannelResponse"}},"GetApnsChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/apns","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSChannelResponse":{"shape":"S1o"}},"required":["APNSChannelResponse"],"payload":"APNSChannelResponse"}},"GetApnsSandboxChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/apns_sandbox","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSSandboxChannelResponse":{"shape":"S1r"}},"required":["APNSSandboxChannelResponse"],"payload":"APNSSandboxChannelResponse"}},"GetApnsVoipChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/apns_voip","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSVoipChannelResponse":{"shape":"S1u"}},"required":["APNSVoipChannelResponse"],"payload":"APNSVoipChannelResponse"}},"GetApnsVoipSandboxChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/apns_voip_sandbox","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"APNSVoipSandboxChannelResponse":{"shape":"S1x"}},"required":["APNSVoipSandboxChannelResponse"],"payload":"APNSVoipSandboxChannelResponse"}},"GetApp":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ApplicationResponse":{"shape":"S5"}},"required":["ApplicationResponse"],"payload":"ApplicationResponse"}},"GetApplicationSettings":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/settings","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ApplicationSettingsResource":{"shape":"S2x"}},"required":["ApplicationSettingsResource"],"payload":"ApplicationSettingsResource"}},"GetApps":{"http":{"method":"GET","requestUri":"/v1/apps","responseCode":200},"input":{"type":"structure","members":{"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}}},"output":{"type":"structure","members":{"ApplicationsResponse":{"type":"structure","members":{"Item":{"type":"list","member":{"shape":"S5"}},"NextToken":{}}}},"required":["ApplicationsResponse"],"payload":"ApplicationsResponse"}},"GetBaiduChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/baidu","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"BaiduChannelResponse":{"shape":"S22"}},"required":["BaiduChannelResponse"],"payload":"BaiduChannelResponse"}},"GetCampaign":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"}},"required":["CampaignId","ApplicationId"]},"output":{"type":"structure","members":{"CampaignResponse":{"shape":"Sn"}},"required":["CampaignResponse"],"payload":"CampaignResponse"}},"GetCampaignActivities":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}/activities","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}},"required":["ApplicationId","CampaignId"]},"output":{"type":"structure","members":{"ActivitiesResponse":{"type":"structure","members":{"Item":{"type":"list","member":{"type":"structure","members":{"ApplicationId":{},"CampaignId":{},"End":{},"Id":{},"Result":{},"ScheduledStart":{},"Start":{},"State":{},"SuccessfulEndpointCount":{"type":"integer"},"TimezonesCompletedCount":{"type":"integer"},"TimezonesTotalCount":{"type":"integer"},"TotalEndpointCount":{"type":"integer"},"TreatmentId":{}}}}}}},"required":["ActivitiesResponse"],"payload":"ActivitiesResponse"}},"GetCampaignVersion":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}/versions/{version}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"},"Version":{"location":"uri","locationName":"version"}},"required":["Version","ApplicationId","CampaignId"]},"output":{"type":"structure","members":{"CampaignResponse":{"shape":"Sn"}},"required":["CampaignResponse"],"payload":"CampaignResponse"}},"GetCampaignVersions":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}/versions","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}},"required":["ApplicationId","CampaignId"]},"output":{"type":"structure","members":{"CampaignsResponse":{"shape":"S3f"}},"required":["CampaignsResponse"],"payload":"CampaignsResponse"}},"GetCampaigns":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/campaigns","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"CampaignsResponse":{"shape":"S3f"}},"required":["CampaignsResponse"],"payload":"CampaignsResponse"}},"GetEmailChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/email","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"EmailChannelResponse":{"shape":"S27"}},"required":["EmailChannelResponse"],"payload":"EmailChannelResponse"}},"GetEndpoint":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/endpoints/{endpoint-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"EndpointId":{"location":"uri","locationName":"endpoint-id"}},"required":["ApplicationId","EndpointId"]},"output":{"type":"structure","members":{"EndpointResponse":{"type":"structure","members":{"Address":{},"ApplicationId":{},"Attributes":{"shape":"S3o"},"ChannelType":{},"CohortId":{},"CreationDate":{},"Demographic":{"shape":"S3q"},"EffectiveDate":{},"EndpointStatus":{},"Id":{},"Location":{"shape":"S3r"},"Metrics":{"shape":"S3t"},"OptOut":{},"RequestId":{},"User":{"shape":"S3u"}}}},"required":["EndpointResponse"],"payload":"EndpointResponse"}},"GetEventStream":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/eventstream","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"EventStream":{"shape":"S2a"}},"required":["EventStream"],"payload":"EventStream"}},"GetGcmChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/gcm","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"GCMChannelResponse":{"shape":"S2d"}},"required":["GCMChannelResponse"],"payload":"GCMChannelResponse"}},"GetImportJob":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/jobs/import/{job-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"JobId":{"location":"uri","locationName":"job-id"}},"required":["ApplicationId","JobId"]},"output":{"type":"structure","members":{"ImportJobResponse":{"shape":"Sw"}},"required":["ImportJobResponse"],"payload":"ImportJobResponse"}},"GetImportJobs":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/jobs/import","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"ImportJobsResponse":{"shape":"S43"}},"required":["ImportJobsResponse"],"payload":"ImportJobsResponse"}},"GetSegment":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/segments/{segment-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SegmentId":{"location":"uri","locationName":"segment-id"}},"required":["SegmentId","ApplicationId"]},"output":{"type":"structure","members":{"SegmentResponse":{"shape":"S1f"}},"required":["SegmentResponse"],"payload":"SegmentResponse"}},"GetSegmentImportJobs":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/segments/{segment-id}/jobs/import","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"SegmentId":{"location":"uri","locationName":"segment-id"},"Token":{"location":"querystring","locationName":"token"}},"required":["SegmentId","ApplicationId"]},"output":{"type":"structure","members":{"ImportJobsResponse":{"shape":"S43"}},"required":["ImportJobsResponse"],"payload":"ImportJobsResponse"}},"GetSegmentVersion":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/segments/{segment-id}/versions/{version}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SegmentId":{"location":"uri","locationName":"segment-id"},"Version":{"location":"uri","locationName":"version"}},"required":["SegmentId","Version","ApplicationId"]},"output":{"type":"structure","members":{"SegmentResponse":{"shape":"S1f"}},"required":["SegmentResponse"],"payload":"SegmentResponse"}},"GetSegmentVersions":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/segments/{segment-id}/versions","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"SegmentId":{"location":"uri","locationName":"segment-id"},"Token":{"location":"querystring","locationName":"token"}},"required":["SegmentId","ApplicationId"]},"output":{"type":"structure","members":{"SegmentsResponse":{"shape":"S4d"}},"required":["SegmentsResponse"],"payload":"SegmentsResponse"}},"GetSegments":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/segments","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"PageSize":{"location":"querystring","locationName":"page-size"},"Token":{"location":"querystring","locationName":"token"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"SegmentsResponse":{"shape":"S4d"}},"required":["SegmentsResponse"],"payload":"SegmentsResponse"}},"GetSmsChannel":{"http":{"method":"GET","requestUri":"/v1/apps/{application-id}/channels/sms","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId"]},"output":{"type":"structure","members":{"SMSChannelResponse":{"shape":"S2i"}},"required":["SMSChannelResponse"],"payload":"SMSChannelResponse"}},"PutEventStream":{"http":{"requestUri":"/v1/apps/{application-id}/eventstream","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"WriteEventStream":{"type":"structure","members":{"DestinationStreamArn":{},"RoleArn":{}}}},"required":["ApplicationId","WriteEventStream"],"payload":"WriteEventStream"},"output":{"type":"structure","members":{"EventStream":{"shape":"S2a"}},"required":["EventStream"],"payload":"EventStream"}},"SendMessages":{"http":{"requestUri":"/v1/apps/{application-id}/messages","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"MessageRequest":{"type":"structure","members":{"Addresses":{"type":"map","key":{},"value":{"type":"structure","members":{"BodyOverride":{},"ChannelType":{},"Context":{"shape":"S4q"},"RawContent":{},"Substitutions":{"shape":"S3o"},"TitleOverride":{}}}},"Context":{"shape":"S4q"},"Endpoints":{"shape":"S4r"},"MessageConfiguration":{"shape":"S4t"}}}},"required":["ApplicationId","MessageRequest"],"payload":"MessageRequest"},"output":{"type":"structure","members":{"MessageResponse":{"type":"structure","members":{"ApplicationId":{},"EndpointResult":{"shape":"S53"},"RequestId":{},"Result":{"type":"map","key":{},"value":{"type":"structure","members":{"DeliveryStatus":{},"StatusCode":{"type":"integer"},"StatusMessage":{},"UpdatedToken":{}}}}}}},"required":["MessageResponse"],"payload":"MessageResponse"}},"SendUsersMessages":{"http":{"requestUri":"/v1/apps/{application-id}/users-messages","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SendUsersMessageRequest":{"type":"structure","members":{"Context":{"shape":"S4q"},"MessageConfiguration":{"shape":"S4t"},"Users":{"shape":"S4r"}}}},"required":["ApplicationId","SendUsersMessageRequest"],"payload":"SendUsersMessageRequest"},"output":{"type":"structure","members":{"SendUsersMessageResponse":{"type":"structure","members":{"ApplicationId":{},"RequestId":{},"Result":{"type":"map","key":{},"value":{"shape":"S53"}}}}},"required":["SendUsersMessageResponse"],"payload":"SendUsersMessageResponse"}},"UpdateAdmChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/adm","responseCode":200},"input":{"type":"structure","members":{"ADMChannelRequest":{"type":"structure","members":{"ClientId":{},"ClientSecret":{},"Enabled":{"type":"boolean"}}},"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId","ADMChannelRequest"],"payload":"ADMChannelRequest"},"output":{"type":"structure","members":{"ADMChannelResponse":{"shape":"S1l"}},"required":["ADMChannelResponse"],"payload":"ADMChannelResponse"}},"UpdateApnsChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/apns","responseCode":200},"input":{"type":"structure","members":{"APNSChannelRequest":{"type":"structure","members":{"BundleId":{},"Certificate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"PrivateKey":{},"TeamId":{},"TokenKey":{},"TokenKeyId":{}}},"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId","APNSChannelRequest"],"payload":"APNSChannelRequest"},"output":{"type":"structure","members":{"APNSChannelResponse":{"shape":"S1o"}},"required":["APNSChannelResponse"],"payload":"APNSChannelResponse"}},"UpdateApnsSandboxChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/apns_sandbox","responseCode":200},"input":{"type":"structure","members":{"APNSSandboxChannelRequest":{"type":"structure","members":{"BundleId":{},"Certificate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"PrivateKey":{},"TeamId":{},"TokenKey":{},"TokenKeyId":{}}},"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId","APNSSandboxChannelRequest"],"payload":"APNSSandboxChannelRequest"},"output":{"type":"structure","members":{"APNSSandboxChannelResponse":{"shape":"S1r"}},"required":["APNSSandboxChannelResponse"],"payload":"APNSSandboxChannelResponse"}},"UpdateApnsVoipChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/apns_voip","responseCode":200},"input":{"type":"structure","members":{"APNSVoipChannelRequest":{"type":"structure","members":{"BundleId":{},"Certificate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"PrivateKey":{},"TeamId":{},"TokenKey":{},"TokenKeyId":{}}},"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId","APNSVoipChannelRequest"],"payload":"APNSVoipChannelRequest"},"output":{"type":"structure","members":{"APNSVoipChannelResponse":{"shape":"S1u"}},"required":["APNSVoipChannelResponse"],"payload":"APNSVoipChannelResponse"}},"UpdateApnsVoipSandboxChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/apns_voip_sandbox","responseCode":200},"input":{"type":"structure","members":{"APNSVoipSandboxChannelRequest":{"type":"structure","members":{"BundleId":{},"Certificate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"PrivateKey":{},"TeamId":{},"TokenKey":{},"TokenKeyId":{}}},"ApplicationId":{"location":"uri","locationName":"application-id"}},"required":["ApplicationId","APNSVoipSandboxChannelRequest"],"payload":"APNSVoipSandboxChannelRequest"},"output":{"type":"structure","members":{"APNSVoipSandboxChannelResponse":{"shape":"S1x"}},"required":["APNSVoipSandboxChannelResponse"],"payload":"APNSVoipSandboxChannelResponse"}},"UpdateApplicationSettings":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/settings","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"WriteApplicationSettingsRequest":{"type":"structure","members":{"Limits":{"shape":"Sl"},"QuietTime":{"shape":"Sj"}}}},"required":["ApplicationId","WriteApplicationSettingsRequest"],"payload":"WriteApplicationSettingsRequest"},"output":{"type":"structure","members":{"ApplicationSettingsResource":{"shape":"S2x"}},"required":["ApplicationSettingsResource"],"payload":"ApplicationSettingsResource"}},"UpdateBaiduChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/baidu","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"BaiduChannelRequest":{"type":"structure","members":{"ApiKey":{},"Enabled":{"type":"boolean"},"SecretKey":{}}}},"required":["ApplicationId","BaiduChannelRequest"],"payload":"BaiduChannelRequest"},"output":{"type":"structure","members":{"BaiduChannelResponse":{"shape":"S22"}},"required":["BaiduChannelResponse"],"payload":"BaiduChannelResponse"}},"UpdateCampaign":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/campaigns/{campaign-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"CampaignId":{"location":"uri","locationName":"campaign-id"},"WriteCampaignRequest":{"shape":"S7"}},"required":["CampaignId","ApplicationId","WriteCampaignRequest"],"payload":"WriteCampaignRequest"},"output":{"type":"structure","members":{"CampaignResponse":{"shape":"Sn"}},"required":["CampaignResponse"],"payload":"CampaignResponse"}},"UpdateEmailChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/email","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"EmailChannelRequest":{"type":"structure","members":{"Enabled":{"type":"boolean"},"FromAddress":{},"Identity":{},"RoleArn":{}}}},"required":["ApplicationId","EmailChannelRequest"],"payload":"EmailChannelRequest"},"output":{"type":"structure","members":{"EmailChannelResponse":{"shape":"S27"}},"required":["EmailChannelResponse"],"payload":"EmailChannelResponse"}},"UpdateEndpoint":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/endpoints/{endpoint-id}","responseCode":202},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"EndpointId":{"location":"uri","locationName":"endpoint-id"},"EndpointRequest":{"type":"structure","members":{"Address":{},"Attributes":{"shape":"S3o"},"ChannelType":{},"Demographic":{"shape":"S3q"},"EffectiveDate":{},"EndpointStatus":{},"Location":{"shape":"S3r"},"Metrics":{"shape":"S3t"},"OptOut":{},"RequestId":{},"User":{"shape":"S3u"}}}},"required":["ApplicationId","EndpointId","EndpointRequest"],"payload":"EndpointRequest"},"output":{"type":"structure","members":{"MessageBody":{"shape":"S66"}},"required":["MessageBody"],"payload":"MessageBody"}},"UpdateEndpointsBatch":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/endpoints","responseCode":202},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"EndpointBatchRequest":{"type":"structure","members":{"Item":{"type":"list","member":{"type":"structure","members":{"Address":{},"Attributes":{"shape":"S3o"},"ChannelType":{},"Demographic":{"shape":"S3q"},"EffectiveDate":{},"EndpointStatus":{},"Id":{},"Location":{"shape":"S3r"},"Metrics":{"shape":"S3t"},"OptOut":{},"RequestId":{},"User":{"shape":"S3u"}}}}}}},"required":["ApplicationId","EndpointBatchRequest"],"payload":"EndpointBatchRequest"},"output":{"type":"structure","members":{"MessageBody":{"shape":"S66"}},"required":["MessageBody"],"payload":"MessageBody"}},"UpdateGcmChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/gcm","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"GCMChannelRequest":{"type":"structure","members":{"ApiKey":{},"Enabled":{"type":"boolean"}}}},"required":["ApplicationId","GCMChannelRequest"],"payload":"GCMChannelRequest"},"output":{"type":"structure","members":{"GCMChannelResponse":{"shape":"S2d"}},"required":["GCMChannelResponse"],"payload":"GCMChannelResponse"}},"UpdateSegment":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/segments/{segment-id}","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SegmentId":{"location":"uri","locationName":"segment-id"},"WriteSegmentRequest":{"shape":"S11"}},"required":["SegmentId","ApplicationId","WriteSegmentRequest"],"payload":"WriteSegmentRequest"},"output":{"type":"structure","members":{"SegmentResponse":{"shape":"S1f"}},"required":["SegmentResponse"],"payload":"SegmentResponse"}},"UpdateSmsChannel":{"http":{"method":"PUT","requestUri":"/v1/apps/{application-id}/channels/sms","responseCode":200},"input":{"type":"structure","members":{"ApplicationId":{"location":"uri","locationName":"application-id"},"SMSChannelRequest":{"type":"structure","members":{"Enabled":{"type":"boolean"},"SenderId":{},"ShortCode":{}}}},"required":["ApplicationId","SMSChannelRequest"],"payload":"SMSChannelRequest"},"output":{"type":"structure","members":{"SMSChannelResponse":{"shape":"S2i"}},"required":["SMSChannelResponse"],"payload":"SMSChannelResponse"}}},"shapes":{"S5":{"type":"structure","members":{"Id":{},"Name":{}}},"S7":{"type":"structure","members":{"AdditionalTreatments":{"type":"list","member":{"type":"structure","members":{"MessageConfiguration":{"shape":"Sa"},"Schedule":{"shape":"Sh"},"SizePercent":{"type":"integer"},"TreatmentDescription":{},"TreatmentName":{}}}},"Description":{},"HoldoutPercent":{"type":"integer"},"IsPaused":{"type":"boolean"},"Limits":{"shape":"Sl"},"MessageConfiguration":{"shape":"Sa"},"Name":{},"Schedule":{"shape":"Sh"},"SegmentId":{},"SegmentVersion":{"type":"integer"},"TreatmentDescription":{},"TreatmentName":{}}},"Sa":{"type":"structure","members":{"ADMMessage":{"shape":"Sb"},"APNSMessage":{"shape":"Sb"},"BaiduMessage":{"shape":"Sb"},"DefaultMessage":{"shape":"Sb"},"EmailMessage":{"type":"structure","members":{"Body":{},"FromAddress":{},"HtmlBody":{},"Title":{}}},"GCMMessage":{"shape":"Sb"},"SMSMessage":{"type":"structure","members":{"Body":{},"MessageType":{},"SenderId":{}}}}},"Sb":{"type":"structure","members":{"Action":{},"Body":{},"ImageIconUrl":{},"ImageSmallIconUrl":{},"ImageUrl":{},"JsonBody":{},"MediaUrl":{},"RawContent":{},"SilentPush":{"type":"boolean"},"Title":{},"Url":{}}},"Sh":{"type":"structure","members":{"EndTime":{},"Frequency":{},"IsLocalTime":{"type":"boolean"},"QuietTime":{"shape":"Sj"},"StartTime":{},"Timezone":{}}},"Sj":{"type":"structure","members":{"End":{},"Start":{}}},"Sl":{"type":"structure","members":{"Daily":{"type":"integer"},"MaximumDuration":{"type":"integer"},"MessagesPerSecond":{"type":"integer"},"Total":{"type":"integer"}}},"Sn":{"type":"structure","members":{"AdditionalTreatments":{"type":"list","member":{"type":"structure","members":{"Id":{},"MessageConfiguration":{"shape":"Sa"},"Schedule":{"shape":"Sh"},"SizePercent":{"type":"integer"},"State":{"shape":"Sq"},"TreatmentDescription":{},"TreatmentName":{}}}},"ApplicationId":{},"CreationDate":{},"DefaultState":{"shape":"Sq"},"Description":{},"HoldoutPercent":{"type":"integer"},"Id":{},"IsPaused":{"type":"boolean"},"LastModifiedDate":{},"Limits":{"shape":"Sl"},"MessageConfiguration":{"shape":"Sa"},"Name":{},"Schedule":{"shape":"Sh"},"SegmentId":{},"SegmentVersion":{"type":"integer"},"State":{"shape":"Sq"},"TreatmentDescription":{},"TreatmentName":{},"Version":{"type":"integer"}}},"Sq":{"type":"structure","members":{"CampaignStatus":{}}},"Sw":{"type":"structure","members":{"ApplicationId":{},"CompletedPieces":{"type":"integer"},"CompletionDate":{},"CreationDate":{},"Definition":{"type":"structure","members":{"DefineSegment":{"type":"boolean"},"ExternalId":{},"Format":{},"RegisterEndpoints":{"type":"boolean"},"RoleArn":{},"S3Url":{},"SegmentId":{},"SegmentName":{}}},"FailedPieces":{"type":"integer"},"Failures":{"shape":"Sy"},"Id":{},"JobStatus":{},"TotalFailures":{"type":"integer"},"TotalPieces":{"type":"integer"},"TotalProcessed":{"type":"integer"},"Type":{}}},"Sy":{"type":"list","member":{}},"S11":{"type":"structure","members":{"Dimensions":{"shape":"S12"},"Name":{}}},"S12":{"type":"structure","members":{"Attributes":{"shape":"S13"},"Behavior":{"type":"structure","members":{"Recency":{"type":"structure","members":{"Duration":{},"RecencyType":{}}}}},"Demographic":{"type":"structure","members":{"AppVersion":{"shape":"S1b"},"Channel":{"shape":"S1b"},"DeviceType":{"shape":"S1b"},"Make":{"shape":"S1b"},"Model":{"shape":"S1b"},"Platform":{"shape":"S1b"}}},"Location":{"type":"structure","members":{"Country":{"shape":"S1b"}}},"UserAttributes":{"shape":"S13"}}},"S13":{"type":"map","key":{},"value":{"type":"structure","members":{"AttributeType":{},"Values":{"shape":"Sy"}}}},"S1b":{"type":"structure","members":{"DimensionType":{},"Values":{"shape":"Sy"}}},"S1f":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Dimensions":{"shape":"S12"},"Id":{},"ImportDefinition":{"type":"structure","members":{"ChannelCounts":{"type":"map","key":{},"value":{"type":"integer"}},"ExternalId":{},"Format":{},"RoleArn":{},"S3Url":{},"Size":{"type":"integer"}}},"LastModifiedDate":{},"Name":{},"SegmentType":{},"Version":{"type":"integer"}}},"S1l":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S1o":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"HasTokenKey":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S1r":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"HasTokenKey":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S1u":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"HasTokenKey":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S1x":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"DefaultAuthenticationMethod":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"HasTokenKey":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S22":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Credential":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S27":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Enabled":{"type":"boolean"},"FromAddress":{},"HasCredential":{"type":"boolean"},"Id":{},"Identity":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"RoleArn":{},"Version":{"type":"integer"}}},"S2a":{"type":"structure","members":{"ApplicationId":{},"DestinationStreamArn":{},"ExternalId":{},"LastModifiedDate":{},"LastUpdatedBy":{},"RoleArn":{}}},"S2d":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Credential":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"Version":{"type":"integer"}}},"S2i":{"type":"structure","members":{"ApplicationId":{},"CreationDate":{},"Enabled":{"type":"boolean"},"HasCredential":{"type":"boolean"},"Id":{},"IsArchived":{"type":"boolean"},"LastModifiedBy":{},"LastModifiedDate":{},"Platform":{},"SenderId":{},"ShortCode":{},"Version":{"type":"integer"}}},"S2x":{"type":"structure","members":{"ApplicationId":{},"LastModifiedDate":{},"Limits":{"shape":"Sl"},"QuietTime":{"shape":"Sj"}}},"S3f":{"type":"structure","members":{"Item":{"type":"list","member":{"shape":"Sn"}},"NextToken":{}}},"S3o":{"type":"map","key":{},"value":{"shape":"Sy"}},"S3q":{"type":"structure","members":{"AppVersion":{},"Locale":{},"Make":{},"Model":{},"ModelVersion":{},"Platform":{},"PlatformVersion":{},"Timezone":{}}},"S3r":{"type":"structure","members":{"City":{},"Country":{},"Latitude":{"type":"double"},"Longitude":{"type":"double"},"PostalCode":{},"Region":{}}},"S3t":{"type":"map","key":{},"value":{"type":"double"}},"S3u":{"type":"structure","members":{"UserAttributes":{"shape":"S3o"},"UserId":{}}},"S43":{"type":"structure","members":{"Item":{"type":"list","member":{"shape":"Sw"}},"NextToken":{}}},"S4d":{"type":"structure","members":{"Item":{"type":"list","member":{"shape":"S1f"}},"NextToken":{}}},"S4q":{"type":"map","key":{},"value":{}},"S4r":{"type":"map","key":{},"value":{"type":"structure","members":{"BodyOverride":{},"Context":{"shape":"S4q"},"RawContent":{},"Substitutions":{"shape":"S3o"},"TitleOverride":{}}}},"S4t":{"type":"structure","members":{"ADMMessage":{"type":"structure","members":{"Action":{},"Body":{},"ConsolidationKey":{},"Data":{"shape":"S4q"},"ExpiresAfter":{},"IconReference":{},"ImageIconUrl":{},"ImageUrl":{},"MD5":{},"RawContent":{},"SilentPush":{"type":"boolean"},"SmallImageIconUrl":{},"Sound":{},"Substitutions":{"shape":"S3o"},"Title":{},"Url":{}}},"APNSMessage":{"type":"structure","members":{"Action":{},"Badge":{"type":"integer"},"Body":{},"Category":{},"CollapseId":{},"Data":{"shape":"S4q"},"MediaUrl":{},"PreferredAuthenticationMethod":{},"Priority":{},"RawContent":{},"SilentPush":{"type":"boolean"},"Sound":{},"Substitutions":{"shape":"S3o"},"ThreadId":{},"TimeToLive":{"type":"integer"},"Title":{},"Url":{}}},"BaiduMessage":{"type":"structure","members":{"Action":{},"Body":{},"Data":{"shape":"S4q"},"IconReference":{},"ImageIconUrl":{},"ImageUrl":{},"RawContent":{},"SilentPush":{"type":"boolean"},"SmallImageIconUrl":{},"Sound":{},"Substitutions":{"shape":"S3o"},"Title":{},"Url":{}}},"DefaultMessage":{"type":"structure","members":{"Body":{},"Substitutions":{"shape":"S3o"}}},"DefaultPushNotificationMessage":{"type":"structure","members":{"Action":{},"Body":{},"Data":{"shape":"S4q"},"SilentPush":{"type":"boolean"},"Substitutions":{"shape":"S3o"},"Title":{},"Url":{}}},"GCMMessage":{"type":"structure","members":{"Action":{},"Body":{},"CollapseKey":{},"Data":{"shape":"S4q"},"IconReference":{},"ImageIconUrl":{},"ImageUrl":{},"Priority":{},"RawContent":{},"RestrictedPackageName":{},"SilentPush":{"type":"boolean"},"SmallImageIconUrl":{},"Sound":{},"Substitutions":{"shape":"S3o"},"TimeToLive":{"type":"integer"},"Title":{},"Url":{}}},"SMSMessage":{"type":"structure","members":{"Body":{},"MessageType":{},"SenderId":{},"Substitutions":{"shape":"S3o"}}}}},"S53":{"type":"map","key":{},"value":{"type":"structure","members":{"Address":{},"DeliveryStatus":{},"StatusCode":{"type":"integer"},"StatusMessage":{},"UpdatedToken":{}}}},"S66":{"type":"structure","members":{"Message":{},"RequestID":{}}}}}
 
 /***/ }),
-/* 300 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(13);
 var AWS = __webpack_require__(0);
 var Service = AWS.Service;
 var apiLoader = AWS.apiLoader;
@@ -31697,7 +31775,7 @@ apiLoader.services['mobileanalytics'] = {};
 AWS.MobileAnalytics = Service.defineService('mobileanalytics', ['2014-06-05']);
 Object.defineProperty(apiLoader.services['mobileanalytics'], '2014-06-05', {
   get: function get() {
-    var model = __webpack_require__(301);
+    var model = __webpack_require__(303);
     return model;
   },
   enumerable: true,
@@ -31708,13 +31786,13 @@ module.exports = AWS.MobileAnalytics;
 
 
 /***/ }),
-/* 301 */
+/* 303 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":"2.0","metadata":{"apiVersion":"2014-06-05","endpointPrefix":"mobileanalytics","serviceFullName":"Amazon Mobile Analytics","signatureVersion":"v4","protocol":"rest-json"},"operations":{"PutEvents":{"http":{"requestUri":"/2014-06-05/events","responseCode":202},"input":{"type":"structure","required":["events","clientContext"],"members":{"events":{"type":"list","member":{"type":"structure","required":["eventType","timestamp"],"members":{"eventType":{},"timestamp":{},"session":{"type":"structure","members":{"id":{},"duration":{"type":"long"},"startTimestamp":{},"stopTimestamp":{}}},"version":{},"attributes":{"type":"map","key":{},"value":{}},"metrics":{"type":"map","key":{},"value":{"type":"double"}}}}},"clientContext":{"location":"header","locationName":"x-amz-Client-Context"},"clientContextEncoding":{"location":"header","locationName":"x-amz-Client-Context-Encoding"}}}}},"shapes":{}}
 
 /***/ }),
-/* 302 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31911,7 +31989,7 @@ exports.ConsoleLogger = ConsoleLogger;
 
 
 /***/ }),
-/* 303 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31929,7 +32007,7 @@ exports.ConsoleLogger = ConsoleLogger;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Browser = __webpack_require__(304);
+var Browser = __webpack_require__(306);
 var ClientDevice = /** @class */ (function () {
     function ClientDevice() {
     }
@@ -31945,7 +32023,7 @@ exports.default = ClientDevice;
 
 
 /***/ }),
-/* 304 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31964,7 +32042,7 @@ exports.default = ClientDevice;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Hub_1 = __webpack_require__(107);
-var Logger_1 = __webpack_require__(14);
+var Logger_1 = __webpack_require__(10);
 var logger = new Logger_1.ConsoleLogger('ClientDevice_Browser');
 function clientInfo() {
     if (typeof window === 'undefined') {
@@ -32056,7 +32134,7 @@ if (typeof window !== 'undefined') {
 
 
 /***/ }),
-/* 305 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32081,7 +32159,7 @@ exports.invalidParameter = invalidParameter;
 
 
 /***/ }),
-/* 306 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32229,7 +32307,7 @@ exports.default = JS;
 
 
 /***/ }),
-/* 307 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32256,7 +32334,7 @@ exports.default = Parser;
 
 
 /***/ }),
-/* 308 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32274,8 +32352,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-var GoogleOAuth_1 = __webpack_require__(309);
-var FacebookOAuth_1 = __webpack_require__(310);
+var GoogleOAuth_1 = __webpack_require__(311);
+var FacebookOAuth_1 = __webpack_require__(312);
 var GoogleOAuth = new GoogleOAuth_1.default();
 exports.GoogleOAuth = GoogleOAuth;
 var FacebookOAuth = new FacebookOAuth_1.default();
@@ -32283,7 +32361,7 @@ exports.FacebookOAuth = FacebookOAuth;
 
 
 /***/ }),
-/* 309 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32301,7 +32379,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var logger = new Common_1.ConsoleLogger('CognitoCredentials');
 var GoogleOAuth = /** @class */ (function () {
     function GoogleOAuth() {
@@ -32333,6 +32411,9 @@ var GoogleOAuth = /** @class */ (function () {
                         res({ token: id_token, expires_at: expires_at });
                     });
                 }
+                else {
+                    rej('User is not signed in with Google');
+                }
             }).catch(function (err) {
                 logger.debug('Failed to refresh google token', err);
                 rej('Failed to refresh google token');
@@ -32345,7 +32426,7 @@ exports.default = GoogleOAuth;
 
 
 /***/ }),
-/* 310 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32363,7 +32444,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var logger = new Common_1.ConsoleLogger('CognitoCredentials');
 var FacebookOAuth = /** @class */ (function () {
     function FacebookOAuth() {
@@ -32398,7 +32479,7 @@ exports.default = FacebookOAuth;
 
 
 /***/ }),
-/* 311 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32427,7 +32508,7 @@ exports.AppState = AppState;
 
 
 /***/ }),
-/* 312 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32480,9 +32561,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var Cache_1 = __webpack_require__(51);
-var uuid_1 = __webpack_require__(317);
+var uuid_1 = __webpack_require__(110);
 var logger = new Common_1.ConsoleLogger('AWSAnalyticsProvider');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 var AWSAnalyticsProvider = /** @class */ (function () {
@@ -32629,28 +32710,33 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     };
     AWSAnalyticsProvider.prototype._updateEndpoint = function (params) {
         return __awaiter(this, void 0, void 0, function () {
-            var timestamp, config, initClients, _a, appId, region, credentials, cacheKey, endpointId, request, update_params, that;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var timestamp, config, initClients, _a, appId, region, credentials, endpointId, cacheKey, request, update_params, _b, _c, that;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         timestamp = params.timestamp, config = params.config;
                         return [4 /*yield*/, this._init(config)];
                     case 1:
-                        initClients = _b.sent();
+                        initClients = _d.sent();
                         if (!initClients)
                             return [2 /*return*/, false];
                         this._config = Object.assign(this._config, config);
-                        _a = this._config, appId = _a.appId, region = _a.region, credentials = _a.credentials;
+                        _a = this._config, appId = _a.appId, region = _a.region, credentials = _a.credentials, endpointId = _a.endpointId;
                         cacheKey = this.getProviderName() + '_' + appId;
+                        request = this._endpointRequest();
+                        _b = {
+                            ApplicationId: appId
+                        };
+                        _c = endpointId;
+                        if (_c) return [3 /*break*/, 3];
                         return [4 /*yield*/, this._getEndpointId(cacheKey)];
                     case 2:
-                        endpointId = _b.sent();
-                        request = this._endpointRequest();
-                        update_params = {
-                            ApplicationId: appId,
-                            EndpointId: endpointId,
-                            EndpointRequest: request
-                        };
+                        _c = (_d.sent());
+                        _d.label = 3;
+                    case 3:
+                        update_params = (_b.EndpointId = _c,
+                            _b.EndpointRequest = request,
+                            _b);
                         that = this;
                         logger.debug('updateEndpoint with params: ', update_params);
                         return [2 /*return*/, new Promise(function (res, rej) {
@@ -32883,7 +32969,7 @@ exports.default = AWSAnalyticsProvider;
 
 
 /***/ }),
-/* 313 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32913,7 +32999,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = __webpack_require__(52);
 var StorageCache_1 = __webpack_require__(109);
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var logger = new Common_1.ConsoleLogger('Cache');
 /**
  * Customized storage based on the SessionStorage or LocalStorage with LRU implemented
@@ -33325,7 +33411,7 @@ exports.default = instance;
 
 
 /***/ }),
-/* 314 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33402,7 +33488,7 @@ function _isInteger(value) {
 
 
 /***/ }),
-/* 315 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33576,7 +33662,7 @@ exports.default = CacheList;
 
 
 /***/ }),
-/* 316 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33606,7 +33692,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = __webpack_require__(52);
 var StorageCache_1 = __webpack_require__(109);
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var logger = new Common_1.ConsoleLogger('InMemoryCache');
 /**
  * provide an object as the in-memory cache
@@ -33922,25 +34008,11 @@ exports.default = instance;
 
 
 /***/ }),
-/* 317 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var v1 = __webpack_require__(318);
-var v4 = __webpack_require__(319);
-
-var uuid = v4;
-uuid.v1 = v1;
-uuid.v4 = v4;
-
-module.exports = uuid;
-
-
-/***/ }),
-/* 318 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var rng = __webpack_require__(110);
-var bytesToUuid = __webpack_require__(111);
+var rng = __webpack_require__(111);
+var bytesToUuid = __webpack_require__(112);
 
 // **`v1()` - Generate time-based UUID**
 //
@@ -34051,11 +34123,11 @@ module.exports = v1;
 
 
 /***/ }),
-/* 319 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(110);
-var bytesToUuid = __webpack_require__(111);
+var rng = __webpack_require__(111);
+var bytesToUuid = __webpack_require__(112);
 
 function v4(options, buf, offset) {
   var i = buf && offset || 0;
@@ -34086,7 +34158,7 @@ module.exports = v4;
 
 
 /***/ }),
-/* 320 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34139,7 +34211,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var Platform_1 = __webpack_require__(32);
 var Cache_1 = __webpack_require__(51);
 var logger = new Common_1.ConsoleLogger('AuthClass');
@@ -34877,7 +34949,7 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.currentUserCredentials = function () {
         var _this = this;
         var that = this;
-        logger.debug('getting current user credentials');
+        logger.debug('getting current user credential');
         if (Platform_1.default.isReactNative) {
             // asyncstorage
             return Cache_1.default.getItem('federatedInfo')
@@ -34918,6 +34990,7 @@ var AuthClass = /** @class */ (function () {
         }
     };
     AuthClass.prototype._refreshFederatedToken = function (federatedInfo) {
+        var _this = this;
         var provider = federatedInfo.provider, user = federatedInfo.user;
         var token = federatedInfo.token;
         var expires_at = federatedInfo.expires_at;
@@ -34934,17 +35007,20 @@ var AuthClass = /** @class */ (function () {
                 return that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
             }).catch(function (e) {
                 logger.debug('refresh federated token failed', e);
-                return Promise.reject(e);
+                _this.cleanCachedItems();
+                return Promise.reject('refreshing federation token failed: ' + e);
             });
         }
         else {
             if (!that._refreshHandlers[provider]) {
                 logger.debug('no refresh hanlder for provider:', provider);
+                this.cleanCachedItems();
+                return Promise.reject('no refresh hanlder for provider');
             }
             else {
                 logger.debug('token not expired');
+                return this._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
             }
-            return this._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
         }
     };
     AuthClass.prototype.currentCredentials = function () {
@@ -35004,40 +35080,72 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.signOut = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            var source, user, that;
+            var e_3, source, user, that;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.currentCredentials()];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.cleanCachedItems()];
                     case 1:
                         _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        e_3 = _a.sent();
+                        logger.debug('failed to clear cached items');
+                        return [3 /*break*/, 3];
+                    case 3:
                         source = this.credentials_source;
-                        // clean out the cached stuff
-                        this.credentials.clearCachedId();
-                        // clear federatedInfo
-                        Cache_1.default.removeItem('federatedInfo');
-                        Cache_1.default.removeItem('federatedUser');
                         if (source === 'aws' || source === 'userPool') {
                             if (!this.userPool) {
                                 return [2 /*return*/, Promise.reject('No userPool')];
                             }
                             user = this.userPool.getCurrentUser();
-                            if (!user) {
-                                return [2 /*return*/, Promise.resolve()];
+                            if (user) {
+                                logger.debug('user sign out', user);
+                                user.signOut();
                             }
-                            logger.debug('user sign out', user);
-                            user.signOut();
                         }
                         that = this;
                         return [2 /*return*/, new Promise(function (resolve, reject) {
                                 that._setCredentialsForGuest().then(function (cred) {
-                                    dispatchAuthEvent('signOut', _this.user);
+                                    dispatchAuthEvent('signOut', that.user);
                                     that.user = null;
                                     resolve();
                                 }).catch(function (e) {
-                                    reject('cannot get guest credentials');
+                                    logger.debug('cannot load guest credentials for unauthenticated user');
+                                    dispatchAuthEvent('signOut', that.user);
+                                    that.user = null;
+                                    resolve();
                                 });
                             })];
+                }
+            });
+        });
+    };
+    AuthClass.prototype.cleanCachedItems = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, identityPoolId, region, mandatorySignIn, credentials;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
+                        if (identityPoolId) {
+                            credentials = new CognitoIdentityCredentials({
+                                IdentityPoolId: identityPoolId
+                            }, {
+                                region: region
+                            });
+                            credentials.clearCachedId();
+                        }
+                        // clear federatedInfo
+                        return [4 /*yield*/, Cache_1.default.removeItem('federatedInfo')];
+                    case 1:
+                        // clear federatedInfo
+                        _b.sent();
+                        return [4 /*yield*/, Cache_1.default.removeItem('federatedUser')];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/];
                 }
             });
         });
@@ -35288,9 +35396,10 @@ var AuthClass = /** @class */ (function () {
             'amazon': 'www.amazon.com',
             'developer': 'cognito-identity.amazonaws.com'
         };
-        var domain = domains[provider];
+        // Use custom provider url instead of the predefined ones
+        var domain = domains[provider] || provider;
         if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook, amazon, developer]');
+            return Promise.reject('You must specify a federated provider');
         }
         var logins = {};
         logins[domain] = token;
@@ -35363,7 +35472,7 @@ exports.default = AuthClass;
 
 
 /***/ }),
-/* 321 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35381,9 +35490,9 @@ exports.default = AuthClass;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Storage_1 = __webpack_require__(322);
+var Storage_1 = __webpack_require__(323);
 exports.StorageClass = Storage_1.default;
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var logger = new Common_1.ConsoleLogger('Storage');
 var _instance = null;
 if (!_instance) {
@@ -35403,7 +35512,7 @@ exports.default = Storage;
 
 
 /***/ }),
-/* 322 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35456,8 +35565,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = __webpack_require__(2);
-var Auth_1 = __webpack_require__(20);
+var Common_1 = __webpack_require__(1);
+var Auth_1 = __webpack_require__(15);
 var logger = new Common_1.ConsoleLogger('StorageClass');
 var dispatchStorageEvent = function (track, attrs, metrics) {
     if (track) {
@@ -35564,9 +35673,8 @@ var StorageClass = /** @class */ (function () {
      * @return - promise resolves to object on success
      */
     StorageClass.prototype.put = function (key, object, options) {
-        if (options === void 0) { options = {}; }
         return __awaiter(this, void 0, void 0, function () {
-            var credentialsOK, opt, bucket, region, credentials, level, track, contentType, cacheControl, expires, metadata, type, prefix, final_key, s3, params;
+            var credentialsOK, opt, bucket, region, credentials, level, track, contentType, contentDisposition, cacheControl, expires, metadata, type, prefix, final_key, s3, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._ensureCredentials()];
@@ -35577,7 +35685,7 @@ var StorageClass = /** @class */ (function () {
                         }
                         opt = Object.assign({}, this._options, options);
                         bucket = opt.bucket, region = opt.region, credentials = opt.credentials, level = opt.level, track = opt.track;
-                        contentType = opt.contentType, cacheControl = opt.cacheControl, expires = opt.expires, metadata = opt.metadata;
+                        contentType = opt.contentType, contentDisposition = opt.contentDisposition, cacheControl = opt.cacheControl, expires = opt.expires, metadata = opt.metadata;
                         type = contentType ? contentType : 'binary/octet-stream';
                         prefix = this._prefix(opt);
                         final_key = prefix + key;
@@ -35591,6 +35699,9 @@ var StorageClass = /** @class */ (function () {
                         };
                         if (cacheControl) {
                             params.CacheControl = cacheControl;
+                        }
+                        if (contentDisposition) {
+                            params.ContentDisposition = contentDisposition;
                         }
                         if (expires) {
                             params.Expires = expires;
@@ -35771,7 +35882,7 @@ exports.default = StorageClass;
 
 
 /***/ }),
-/* 323 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35789,9 +35900,9 @@ exports.default = StorageClass;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var API_1 = __webpack_require__(324);
+var API_1 = __webpack_require__(325);
 exports.APIClass = API_1.default;
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var logger = new Common_1.ConsoleLogger('API');
 var _instance = null;
 if (!_instance) {
@@ -35803,7 +35914,7 @@ exports.default = API;
 
 
 /***/ }),
-/* 324 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35856,9 +35967,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var RestClient_1 = __webpack_require__(325);
-var Auth_1 = __webpack_require__(20);
-var Logger_1 = __webpack_require__(14);
+var RestClient_1 = __webpack_require__(326);
+var Auth_1 = __webpack_require__(15);
+var Logger_1 = __webpack_require__(10);
 var logger = new Logger_1.ConsoleLogger('API');
 /**
  * Export Cloud Logic APIs
@@ -36194,7 +36305,7 @@ exports.default = APIClass;
 
 
 /***/ }),
-/* 325 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36256,9 +36367,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Signer_1 = __webpack_require__(108);
-var Common_1 = __webpack_require__(2);
-var Auth_1 = __webpack_require__(20);
-var axios_1 = __webpack_require__(326);
+var Common_1 = __webpack_require__(1);
+var Auth_1 = __webpack_require__(15);
+var axios_1 = __webpack_require__(327);
 var Platform_1 = __webpack_require__(32);
 var logger = new Common_1.ConsoleLogger('RestClient');
 /**
@@ -36465,21 +36576,21 @@ exports.RestClient = RestClient;
 
 
 /***/ }),
-/* 326 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(327);
+module.exports = __webpack_require__(328);
 
 /***/ }),
-/* 327 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var bind = __webpack_require__(112);
-var Axios = __webpack_require__(329);
+var bind = __webpack_require__(113);
+var Axios = __webpack_require__(330);
 var defaults = __webpack_require__(53);
 
 /**
@@ -36513,15 +36624,15 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(116);
-axios.CancelToken = __webpack_require__(343);
-axios.isCancel = __webpack_require__(115);
+axios.Cancel = __webpack_require__(117);
+axios.CancelToken = __webpack_require__(344);
+axios.isCancel = __webpack_require__(116);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(344);
+axios.spread = __webpack_require__(345);
 
 module.exports = axios;
 
@@ -36530,7 +36641,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 328 */
+/* 329 */
 /***/ (function(module, exports) {
 
 /*!
@@ -36557,7 +36668,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 329 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36565,8 +36676,8 @@ function isSlowBuffer (obj) {
 
 var defaults = __webpack_require__(53);
 var utils = __webpack_require__(4);
-var InterceptorManager = __webpack_require__(338);
-var dispatchRequest = __webpack_require__(339);
+var InterceptorManager = __webpack_require__(339);
+var dispatchRequest = __webpack_require__(340);
 
 /**
  * Create a new instance of Axios
@@ -36643,7 +36754,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 330 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36662,13 +36773,13 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 331 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var createError = __webpack_require__(114);
+var createError = __webpack_require__(115);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -36695,7 +36806,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 332 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36723,7 +36834,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 333 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36798,7 +36909,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 334 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36858,7 +36969,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 335 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36933,7 +37044,7 @@ module.exports = (
 
 
 /***/ }),
-/* 336 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36976,7 +37087,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 337 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37036,7 +37147,7 @@ module.exports = (
 
 
 /***/ }),
-/* 338 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37095,18 +37206,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 339 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var transformData = __webpack_require__(340);
-var isCancel = __webpack_require__(115);
+var transformData = __webpack_require__(341);
+var isCancel = __webpack_require__(116);
 var defaults = __webpack_require__(53);
-var isAbsoluteURL = __webpack_require__(341);
-var combineURLs = __webpack_require__(342);
+var isAbsoluteURL = __webpack_require__(342);
+var combineURLs = __webpack_require__(343);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -37188,7 +37299,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 340 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37215,7 +37326,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 341 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37236,7 +37347,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 342 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37257,13 +37368,13 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 343 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Cancel = __webpack_require__(116);
+var Cancel = __webpack_require__(117);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -37321,7 +37432,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 344 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37355,7 +37466,3592 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 345 */
+/* 346 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+var PubSub_1 = __webpack_require__(347);
+var Common_1 = __webpack_require__(1);
+var logger = new Common_1.ConsoleLogger('PubSub');
+var _instance = null;
+if (!_instance) {
+    logger.debug('Create PubSub Instance');
+    _instance = new PubSub_1.default(null);
+}
+var PubSub = _instance;
+exports.default = PubSub;
+__export(__webpack_require__(349));
+
+
+/***/ }),
+/* 347 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var Observable = __webpack_require__(118);
+var Logger_1 = __webpack_require__(10);
+var logger = new Logger_1.ConsoleLogger('PubSub');
+var PubSub = /** @class */ (function () {
+    /**
+     * Initialize PubSub with AWS configurations
+     *
+     * @param {PubSubOptions} options - Configuration object for PubSub
+     */
+    function PubSub(options) {
+        this._options = options;
+        logger.debug('PubSub Options', this._options);
+        this._pluggables = [];
+    }
+    /**
+     * Configure PubSub part with configurations
+     *
+     * @param {PubSubOptions} config - Configuration for PubSub
+     * @return {Object} - The current configuration
+     */
+    PubSub.prototype.configure = function (options) {
+        var _this = this;
+        var opt = options ? options.PubSub || options : {};
+        logger.debug('configure PubSub', { opt: opt });
+        this._options = Object.assign({}, this._options, opt);
+        this._pluggables.map(function (pluggable) { return pluggable.configure(_this._options); });
+        return this._options;
+    };
+    /**
+     * add plugin into Analytics category
+     * @param {Object} pluggable - an instance of the plugin
+     */
+    PubSub.prototype.addPluggable = function (pluggable) {
+        return __awaiter(this, void 0, void 0, function () {
+            var config;
+            return __generator(this, function (_a) {
+                if (pluggable) {
+                    this._pluggables.push(pluggable);
+                    config = pluggable.configure(this._options);
+                    return [2 /*return*/, config];
+                }
+                return [2 /*return*/];
+            });
+        });
+    };
+    PubSub.prototype.publish = function (topics, msg, options) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this._pluggables.map(function (provider) { return provider.publish(topics, msg, options); })];
+            });
+        });
+    };
+    PubSub.prototype.subscribe = function (topics, options) {
+        var _this = this;
+        logger.debug('subscribe options', options);
+        return new Observable(function (observer) {
+            var observables = _this._pluggables.map(function (provider) { return ({
+                provider: provider,
+                observable: provider.subscribe(topics, options),
+            }); });
+            var subscriptions = observables.map(function (_a) {
+                var provider = _a.provider, observable = _a.observable;
+                return observable.subscribe({
+                    start: console.error,
+                    next: function (value) { return observer.next({ provider: provider, value: value }); },
+                    error: function (error) { return observer.error({ provider: provider, error: error }); },
+                });
+            });
+            return function () { return subscriptions.forEach(function (subscription) { return subscription.unsubscribe(); }); };
+        });
+    };
+    return PubSub;
+}());
+exports.default = PubSub;
+
+
+/***/ }),
+/* 348 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// === Symbol Support ===
+
+var hasSymbols = function () {
+  return typeof Symbol === 'function';
+};
+var hasSymbol = function (name) {
+  return hasSymbols() && Boolean(Symbol[name]);
+};
+var getSymbol = function (name) {
+  return hasSymbol(name) ? Symbol[name] : '@@' + name;
+};
+
+if (hasSymbols() && !hasSymbol('observable')) {
+  Symbol.observable = Symbol('observable');
+}
+
+// === Abstract Operations ===
+
+function getMethod(obj, key) {
+  var value = obj[key];
+
+  if (value == null) return undefined;
+
+  if (typeof value !== 'function') throw new TypeError(value + ' is not a function');
+
+  return value;
+}
+
+function getSpecies(obj) {
+  var ctor = obj.constructor;
+  if (ctor !== undefined) {
+    ctor = ctor[getSymbol('species')];
+    if (ctor === null) {
+      ctor = undefined;
+    }
+  }
+  return ctor !== undefined ? ctor : Observable;
+}
+
+function isObservable(x) {
+  return x instanceof Observable; // SPEC: Brand check
+}
+
+function hostReportError(e) {
+  if (hostReportError.log) {
+    hostReportError.log(e);
+  } else {
+    setTimeout(function () {
+      throw e;
+    });
+  }
+}
+
+function enqueue(fn) {
+  Promise.resolve().then(function () {
+    try {
+      fn();
+    } catch (e) {
+      hostReportError(e);
+    }
+  });
+}
+
+function cleanupSubscription(subscription) {
+  var cleanup = subscription._cleanup;
+  if (cleanup === undefined) return;
+
+  subscription._cleanup = undefined;
+
+  if (!cleanup) {
+    return;
+  }
+
+  try {
+    if (typeof cleanup === 'function') {
+      cleanup();
+    } else {
+      var unsubscribe = getMethod(cleanup, 'unsubscribe');
+      if (unsubscribe) {
+        unsubscribe.call(cleanup);
+      }
+    }
+  } catch (e) {
+    hostReportError(e);
+  }
+}
+
+function closeSubscription(subscription) {
+  subscription._observer = undefined;
+  subscription._queue = undefined;
+  subscription._state = 'closed';
+}
+
+function flushSubscription(subscription) {
+  var queue = subscription._queue;
+  if (!queue) {
+    return;
+  }
+  subscription._queue = undefined;
+  subscription._state = 'ready';
+  for (var i = 0; i < queue.length; ++i) {
+    notifySubscription(subscription, queue[i].type, queue[i].value);
+    if (subscription._state === 'closed') break;
+  }
+}
+
+function notifySubscription(subscription, type, value) {
+  subscription._state = 'running';
+
+  var observer = subscription._observer;
+
+  try {
+    var m = getMethod(observer, type);
+    switch (type) {
+      case 'next':
+        if (m) m.call(observer, value);
+        break;
+      case 'error':
+        closeSubscription(subscription);
+        if (m) m.call(observer, value);else throw value;
+        break;
+      case 'complete':
+        closeSubscription(subscription);
+        if (m) m.call(observer);
+        break;
+    }
+  } catch (e) {
+    hostReportError(e);
+  }
+
+  if (subscription._state === 'closed') cleanupSubscription(subscription);else if (subscription._state === 'running') subscription._state = 'ready';
+}
+
+function onNotify(subscription, type, value) {
+  if (subscription._state === 'closed') return;
+
+  if (subscription._state === 'buffering') {
+    subscription._queue.push({ type: type, value: value });
+    return;
+  }
+
+  if (subscription._state !== 'ready') {
+    subscription._state = 'buffering';
+    subscription._queue = [{ type: type, value: value }];
+    enqueue(function () {
+      return flushSubscription(subscription);
+    });
+    return;
+  }
+
+  notifySubscription(subscription, type, value);
+}
+
+var Subscription = function () {
+  function Subscription(observer, subscriber) {
+    _classCallCheck(this, Subscription);
+
+    // ASSERT: observer is an object
+    // ASSERT: subscriber is callable
+
+    this._cleanup = undefined;
+    this._observer = observer;
+    this._queue = undefined;
+    this._state = 'initializing';
+
+    var subscriptionObserver = new SubscriptionObserver(this);
+
+    try {
+      this._cleanup = subscriber.call(undefined, subscriptionObserver);
+    } catch (e) {
+      subscriptionObserver.error(e);
+    }
+
+    if (this._state === 'initializing') this._state = 'ready';
+  }
+
+  _createClass(Subscription, [{
+    key: 'unsubscribe',
+    value: function unsubscribe() {
+      if (this._state !== 'closed') {
+        closeSubscription(this);
+        cleanupSubscription(this);
+      }
+    }
+  }, {
+    key: 'closed',
+    get: function () {
+      return this._state === 'closed';
+    }
+  }]);
+
+  return Subscription;
+}();
+
+var SubscriptionObserver = function () {
+  function SubscriptionObserver(subscription) {
+    _classCallCheck(this, SubscriptionObserver);
+
+    this._subscription = subscription;
+  }
+
+  _createClass(SubscriptionObserver, [{
+    key: 'next',
+    value: function next(value) {
+      onNotify(this._subscription, 'next', value);
+    }
+  }, {
+    key: 'error',
+    value: function error(value) {
+      onNotify(this._subscription, 'error', value);
+    }
+  }, {
+    key: 'complete',
+    value: function complete() {
+      onNotify(this._subscription, 'complete');
+    }
+  }, {
+    key: 'closed',
+    get: function () {
+      return this._subscription._state === 'closed';
+    }
+  }]);
+
+  return SubscriptionObserver;
+}();
+
+var Observable = exports.Observable = function () {
+  function Observable(subscriber) {
+    _classCallCheck(this, Observable);
+
+    if (!(this instanceof Observable)) throw new TypeError('Observable cannot be called as a function');
+
+    if (typeof subscriber !== 'function') throw new TypeError('Observable initializer must be a function');
+
+    this._subscriber = subscriber;
+  }
+
+  _createClass(Observable, [{
+    key: 'subscribe',
+    value: function subscribe(observer) {
+      if (typeof observer !== 'object' || observer === null) {
+        observer = {
+          next: observer,
+          error: arguments[1],
+          complete: arguments[2]
+        };
+      }
+      return new Subscription(observer, this._subscriber);
+    }
+  }, {
+    key: 'forEach',
+    value: function forEach(fn) {
+      var _this = this;
+
+      return new Promise(function (resolve, reject) {
+        if (typeof fn !== 'function') {
+          reject(new TypeError(fn + ' is not a function'));
+          return;
+        }
+
+        function done() {
+          subscription.unsubscribe();
+          resolve();
+        }
+
+        var subscription = _this.subscribe({
+          next: function (value) {
+            try {
+              fn(value, done);
+            } catch (e) {
+              reject(e);
+              subscription.unsubscribe();
+            }
+          },
+
+          error: reject,
+          complete: resolve
+        });
+      });
+    }
+  }, {
+    key: 'map',
+    value: function map(fn) {
+      var _this2 = this;
+
+      if (typeof fn !== 'function') throw new TypeError(fn + ' is not a function');
+
+      var C = getSpecies(this);
+
+      return new C(function (observer) {
+        return _this2.subscribe({
+          next: function (value) {
+            try {
+              value = fn(value);
+            } catch (e) {
+              return observer.error(e);
+            }
+            observer.next(value);
+          },
+          error: function (e) {
+            observer.error(e);
+          },
+          complete: function () {
+            observer.complete();
+          }
+        });
+      });
+    }
+  }, {
+    key: 'filter',
+    value: function filter(fn) {
+      var _this3 = this;
+
+      if (typeof fn !== 'function') throw new TypeError(fn + ' is not a function');
+
+      var C = getSpecies(this);
+
+      return new C(function (observer) {
+        return _this3.subscribe({
+          next: function (value) {
+            try {
+              if (!fn(value)) return;
+            } catch (e) {
+              return observer.error(e);
+            }
+            observer.next(value);
+          },
+          error: function (e) {
+            observer.error(e);
+          },
+          complete: function () {
+            observer.complete();
+          }
+        });
+      });
+    }
+  }, {
+    key: 'reduce',
+    value: function reduce(fn) {
+      var _this4 = this;
+
+      if (typeof fn !== 'function') throw new TypeError(fn + ' is not a function');
+
+      var C = getSpecies(this);
+      var hasSeed = arguments.length > 1;
+      var hasValue = false;
+      var seed = arguments[1];
+      var acc = seed;
+
+      return new C(function (observer) {
+        return _this4.subscribe({
+          next: function (value) {
+            var first = !hasValue;
+            hasValue = true;
+
+            if (!first || hasSeed) {
+              try {
+                acc = fn(acc, value);
+              } catch (e) {
+                return observer.error(e);
+              }
+            } else {
+              acc = value;
+            }
+          },
+          error: function (e) {
+            observer.error(e);
+          },
+          complete: function () {
+            if (!hasValue && !hasSeed) return observer.error(new TypeError('Cannot reduce an empty sequence'));
+
+            observer.next(acc);
+            observer.complete();
+          }
+        });
+      });
+    }
+  }, {
+    key: 'concat',
+    value: function concat() {
+      var _this5 = this;
+
+      for (var _len = arguments.length, sources = Array(_len), _key = 0; _key < _len; _key++) {
+        sources[_key] = arguments[_key];
+      }
+
+      var C = getSpecies(this);
+
+      return new C(function (observer) {
+        var subscription = void 0;
+
+        function startNext(next) {
+          subscription = next.subscribe({
+            next: function (v) {
+              observer.next(v);
+            },
+            error: function (e) {
+              observer.error(e);
+            },
+            complete: function () {
+              if (sources.length === 0) {
+                subscription = undefined;
+                observer.complete();
+              } else {
+                startNext(C.from(sources.shift()));
+              }
+            }
+          });
+        }
+
+        startNext(_this5);
+
+        return function () {
+          if (subscription) {
+            subscription = undefined;
+            subscription.unsubscribe();
+          }
+        };
+      });
+    }
+  }, {
+    key: 'flatMap',
+    value: function flatMap(fn) {
+      var _this6 = this;
+
+      if (typeof fn !== 'function') throw new TypeError(fn + ' is not a function');
+
+      var C = getSpecies(this);
+
+      return new C(function (observer) {
+        var subscriptions = [];
+
+        var outer = _this6.subscribe({
+          next: function (value) {
+            if (fn) {
+              try {
+                value = fn(value);
+              } catch (e) {
+                return observer.error(e);
+              }
+            }
+
+            var inner = C.from(value).subscribe({
+              next: function (value) {
+                observer.next(value);
+              },
+              error: function (e) {
+                observer.error(e);
+              },
+              complete: function () {
+                var i = subscriptions.indexOf(inner);
+                if (i >= 0) subscriptions.splice(i, 1);
+                completeIfDone();
+              }
+            });
+
+            subscriptions.push(inner);
+          },
+          error: function (e) {
+            observer.error(e);
+          },
+          complete: function () {
+            completeIfDone();
+          }
+        });
+
+        function completeIfDone() {
+          if (outer.closed && subscriptions.length === 0) observer.complete();
+        }
+
+        return function () {
+          subscriptions.forEach(function (s) {
+            return s.unsubscribe();
+          });
+          outer.unsubscribe();
+        };
+      });
+    }
+  }, {
+    key: getSymbol('observable'),
+    value: function () {
+      return this;
+    }
+  }], [{
+    key: 'from',
+    value: function from(x) {
+      var C = typeof this === 'function' ? this : Observable;
+
+      if (x == null) throw new TypeError(x + ' is not an object');
+
+      var method = getMethod(x, getSymbol('observable'));
+      if (method) {
+        var observable = method.call(x);
+
+        if (Object(observable) !== observable) throw new TypeError(observable + ' is not an object');
+
+        if (isObservable(observable) && observable.constructor === C) return observable;
+
+        return new C(function (observer) {
+          return observable.subscribe(observer);
+        });
+      }
+
+      if (hasSymbol('iterator')) {
+        method = getMethod(x, getSymbol('iterator'));
+        if (method) {
+          return new C(function (observer) {
+            enqueue(function () {
+              if (observer.closed) return;
+              var _iteratorNormalCompletion = true;
+              var _didIteratorError = false;
+              var _iteratorError = undefined;
+
+              try {
+                for (var _iterator = method.call(x)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                  var item = _step.value;
+
+                  observer.next(item);
+                  if (observer.closed) return;
+                }
+              } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                  }
+                } finally {
+                  if (_didIteratorError) {
+                    throw _iteratorError;
+                  }
+                }
+              }
+
+              observer.complete();
+            });
+          });
+        }
+      }
+
+      if (Array.isArray(x)) {
+        return new C(function (observer) {
+          enqueue(function () {
+            if (observer.closed) return;
+            for (var i = 0; i < x.length; ++i) {
+              observer.next(x[i]);
+              if (observer.closed) return;
+            }
+            observer.complete();
+          });
+        });
+      }
+
+      throw new TypeError(x + ' is not observable');
+    }
+  }, {
+    key: 'of',
+    value: function of() {
+      for (var _len2 = arguments.length, items = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        items[_key2] = arguments[_key2];
+      }
+
+      var C = typeof this === 'function' ? this : Observable;
+
+      return new C(function (observer) {
+        enqueue(function () {
+          if (observer.closed) return;
+          for (var i = 0; i < items.length; ++i) {
+            observer.next(items[i]);
+            if (observer.closed) return;
+          }
+          observer.complete();
+        });
+      });
+    }
+  }, {
+    key: getSymbol('species'),
+    get: function () {
+      return this;
+    }
+  }]);
+
+  return Observable;
+}();
+
+if (hasSymbols()) {
+  Object.defineProperty(Observable, Symbol('extensions'), {
+    value: {
+      symbol: getSymbol('observable'),
+      hostReportError: hostReportError
+    },
+    configurabe: true
+  });
+}
+
+/***/ }),
+/* 349 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+var MqttOverWSProvider_1 = __webpack_require__(350);
+var Auth_1 = __webpack_require__(15);
+var Common_1 = __webpack_require__(1);
+var SERVICE_NAME = 'iotdevicegateway';
+var AWSIoTProvider = /** @class */ (function (_super) {
+    __extends(AWSIoTProvider, _super);
+    function AWSIoTProvider() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Object.defineProperty(AWSIoTProvider.prototype, "region", {
+        get: function () { return this.options.aws_pubsub_region; },
+        enumerable: true,
+        configurable: true
+    });
+    AWSIoTProvider.prototype.getProviderName = function () { return 'AWSIoTProvider'; };
+    Object.defineProperty(AWSIoTProvider.prototype, "endpoint", {
+        get: function () {
+            var _this = this;
+            return (function () { return __awaiter(_this, void 0, void 0, function () {
+                var endpoint, serviceInfo, _a, access_key, secret_key, session_token, result;
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0:
+                            endpoint = this.options.aws_pubsub_endpoint;
+                            serviceInfo = {
+                                service: SERVICE_NAME,
+                                region: this.region
+                            };
+                            return [4 /*yield*/, Auth_1.default.currentCredentials()];
+                        case 1:
+                            _a = _b.sent(), access_key = _a.accessKeyId, secret_key = _a.secretAccessKey, session_token = _a.sessionToken;
+                            result = Common_1.Signer.signUrl(endpoint, { access_key: access_key, secret_key: secret_key, session_token: session_token }, serviceInfo);
+                            return [2 /*return*/, result];
+                    }
+                });
+            }); })();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return AWSIoTProvider;
+}(MqttOverWSProvider_1.MqttOverWSProvider));
+exports.AWSIoTProvider = AWSIoTProvider;
+
+
+/***/ }),
+/* 350 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+var paho_mqtt_1 = __webpack_require__(351);
+var uuid_1 = __webpack_require__(110);
+var Observable = __webpack_require__(118);
+global.Paho = global.Paho || { MQTT: { Client: paho_mqtt_1.Client, Message: paho_mqtt_1.Message } };
+var PubSubProvider_1 = __webpack_require__(352);
+var Logger_1 = __webpack_require__(10);
+var logger = new Logger_1.ConsoleLogger('MqttOverWSProvider');
+var ClientsQueue = /** @class */ (function () {
+    function ClientsQueue() {
+        this.promises = new Map();
+        this.map = new Map();
+    }
+    ClientsQueue.prototype.get = function (clientId, clientFactory) {
+        return __awaiter(this, void 0, void 0, function () {
+            var client, promise;
+            return __generator(this, function (_a) {
+                client = this.map.get(clientId);
+                if (client) {
+                    return [2 /*return*/, client];
+                }
+                promise = this.promises.get(clientId);
+                if (promise) {
+                    return [2 /*return*/, promise];
+                }
+                promise = clientFactory(clientId);
+                this.promises.set(clientId, promise);
+                return [2 /*return*/, promise];
+            });
+        });
+    };
+    return ClientsQueue;
+}());
+var MqttOverWSProvider = /** @class */ (function (_super) {
+    __extends(MqttOverWSProvider, _super);
+    function MqttOverWSProvider(options) {
+        if (options === void 0) { options = {}; }
+        var _this = _super.call(this, __assign({}, options, { clientId: options.clientId || uuid_1.v4() })) || this;
+        _this.clientsQueue = new ClientsQueue();
+        _this._topicObservers = new Map();
+        return _this;
+    }
+    Object.defineProperty(MqttOverWSProvider.prototype, "clientId", {
+        get: function () { return this.options.clientId; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(MqttOverWSProvider.prototype, "endpoint", {
+        get: function () { return this.options.aws_pubsub_endpoint; },
+        enumerable: true,
+        configurable: true
+    });
+    MqttOverWSProvider.prototype.getProviderName = function () { return 'MqttOverWSProvider'; };
+    MqttOverWSProvider.prototype.newClient = function (_a) {
+        var url = _a.url, clientId = _a.clientId;
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var client;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        logger.debug('Creating new MQTT client', clientId);
+                        client = new paho_mqtt_1.Client(url, clientId);
+                        // client.trace = (...args) => logger.debug(clientId, ...args);
+                        client.onMessageArrived = function (_a) {
+                            var topic = _a.destinationName, msg = _a.payloadString;
+                            _this._onMessage(topic, msg);
+                        };
+                        client.onConnectionLost = logger.warn.bind(logger);
+                        return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                client.connect({
+                                    useSSL: true,
+                                    mqttVersion: 3,
+                                    onSuccess: function () { return resolve(client); },
+                                    onFailure: reject,
+                                });
+                            })];
+                    case 1:
+                        _b.sent();
+                        return [2 /*return*/, client];
+                }
+            });
+        });
+    };
+    MqttOverWSProvider.prototype.connect = function (clientId, options) {
+        if (options === void 0) { options = {}; }
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.clientsQueue.get(clientId, function (clientId) { return _this.newClient(__assign({}, options, { clientId: clientId })); })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    MqttOverWSProvider.prototype.publish = function (topics, msg) {
+        return __awaiter(this, void 0, void 0, function () {
+            var targetTopics, message, url, client;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        targetTopics = [].concat(topics);
+                        message = JSON.stringify(msg);
+                        return [4 /*yield*/, this.endpoint];
+                    case 1:
+                        url = _a.sent();
+                        return [4 /*yield*/, this.connect(this.clientId, { url: url })];
+                    case 2:
+                        client = _a.sent();
+                        logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
+                        targetTopics.forEach(function (topic) { return client.send(topic, message); });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    MqttOverWSProvider.prototype._onMessage = function (topic, msg) {
+        try {
+            var observersForTopic = this._topicObservers.get(topic) || new Set();
+            var parsedMessage_1 = JSON.parse(msg);
+            observersForTopic.forEach(function (observer) { return observer.next(parsedMessage_1); });
+        }
+        catch (error) {
+            logger.warn('Error handling message', error, msg);
+        }
+    };
+    MqttOverWSProvider.prototype.subscribe = function (topics, options) {
+        var _this = this;
+        if (options === void 0) { options = {}; }
+        var targetTopics = [].concat(topics);
+        logger.debug('Subscribing to topic(s)', targetTopics.join(','));
+        return new Observable(function (observer) {
+            targetTopics.forEach(function (topic) {
+                var observersForTopic = _this._topicObservers.get(topic);
+                if (!observersForTopic) {
+                    observersForTopic = new Set();
+                    _this._topicObservers.set(topic, observersForTopic);
+                }
+                observersForTopic.add(observer);
+            });
+            var client;
+            (function () { return __awaiter(_this, void 0, void 0, function () {
+                var _a, url, _b, clientId, _c;
+                return __generator(this, function (_d) {
+                    switch (_d.label) {
+                        case 0:
+                            _a = options.url;
+                            if (!(_a === void 0)) return [3 /*break*/, 2];
+                            return [4 /*yield*/, this.endpoint];
+                        case 1:
+                            _c = _d.sent();
+                            return [3 /*break*/, 3];
+                        case 2:
+                            _c = _a;
+                            _d.label = 3;
+                        case 3:
+                            url = _c, _b = options.clientId, clientId = _b === void 0 ? this.clientId : _b;
+                            return [4 /*yield*/, this.connect(clientId, { url: url })];
+                        case 4:
+                            client = _d.sent();
+                            targetTopics.forEach(function (topic) { return client.subscribe(topic); });
+                            return [2 /*return*/];
+                    }
+                });
+            }); })();
+            return function () {
+                logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
+                if (client) {
+                    targetTopics.forEach(function (topic) {
+                        client.unsubscribe(topic);
+                    });
+                }
+                return null;
+            };
+        });
+    };
+    return MqttOverWSProvider;
+}(PubSubProvider_1.AbstractPubSubProvider));
+exports.MqttOverWSProvider = MqttOverWSProvider;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+
+/***/ }),
+/* 351 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*******************************************************************************
+ * Copyright (c) 2013 IBM Corp.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v1.0 which accompany this distribution.
+ *
+ * The Eclipse Public License is available at
+ *    http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *   http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *    Andrew Banks - initial API and implementation and initial documentation
+ *******************************************************************************/
+
+
+// Only expose a single object name in the global namespace.
+// Everything must go through this module. Global Paho.MQTT module
+// only has a single public function, client, which returns
+// a Paho.MQTT client object given connection details.
+
+/**
+ * Send and receive messages using web browsers.
+ * <p>
+ * This programming interface lets a JavaScript client application use the MQTT V3.1 or
+ * V3.1.1 protocol to connect to an MQTT-supporting messaging server.
+ *
+ * The function supported includes:
+ * <ol>
+ * <li>Connecting to and disconnecting from a server. The server is identified by its host name and port number.
+ * <li>Specifying options that relate to the communications link with the server,
+ * for example the frequency of keep-alive heartbeats, and whether SSL/TLS is required.
+ * <li>Subscribing to and receiving messages from MQTT Topics.
+ * <li>Publishing messages to MQTT Topics.
+ * </ol>
+ * <p>
+ * The API consists of two main objects:
+ * <dl>
+ * <dt><b>{@link Paho.MQTT.Client}</b></dt>
+ * <dd>This contains methods that provide the functionality of the API,
+ * including provision of callbacks that notify the application when a message
+ * arrives from or is delivered to the messaging server,
+ * or when the status of its connection to the messaging server changes.</dd>
+ * <dt><b>{@link Paho.MQTT.Message}</b></dt>
+ * <dd>This encapsulates the payload of the message along with various attributes
+ * associated with its delivery, in particular the destination to which it has
+ * been (or is about to be) sent.</dd>
+ * </dl>
+ * <p>
+ * The programming interface validates parameters passed to it, and will throw
+ * an Error containing an error message intended for developer use, if it detects
+ * an error with any parameter.
+ * <p>
+ * Example:
+ *
+ * <code><pre>
+client = new Paho.MQTT.Client(location.hostname, Number(location.port), "clientId");
+client.onConnectionLost = onConnectionLost;
+client.onMessageArrived = onMessageArrived;
+client.connect({onSuccess:onConnect});
+
+function onConnect() {
+  // Once a connection has been made, make a subscription and send a message.
+  console.log("onConnect");
+  client.subscribe("/World");
+  message = new Paho.MQTT.Message("Hello");
+  message.destinationName = "/World";
+  client.send(message);
+};
+function onConnectionLost(responseObject) {
+  if (responseObject.errorCode !== 0)
+	console.log("onConnectionLost:"+responseObject.errorMessage);
+};
+function onMessageArrived(message) {
+  console.log("onMessageArrived:"+message.payloadString);
+  client.disconnect();
+};
+ * </pre></code>
+ * @namespace Paho.MQTT
+ */
+
+/* jshint shadow:true */
+(function ExportLibrary(root, factory) {
+	if(true){
+		module.exports = factory();
+	} else if (typeof define === 'function' && define.amd){
+		define(factory);
+	} else if (typeof exports === 'object'){
+		exports = factory();
+	} else {
+		if (typeof root.Paho === 'undefined'){
+			root.Paho = {};
+		}
+		root.Paho.MQTT = factory();
+	}
+})(this, function LibraryFactory(){
+
+
+var PahoMQTT = (function (global) {
+
+	// Private variables below, these are only visible inside the function closure
+	// which is used to define the module.
+
+	var version = "@VERSION@";
+	var buildLevel = "@BUILDLEVEL@";
+
+	/**
+	 * Unique message type identifiers, with associated
+	 * associated integer values.
+	 * @private
+	 */
+	var MESSAGE_TYPE = {
+		CONNECT: 1,
+		CONNACK: 2,
+		PUBLISH: 3,
+		PUBACK: 4,
+		PUBREC: 5,
+		PUBREL: 6,
+		PUBCOMP: 7,
+		SUBSCRIBE: 8,
+		SUBACK: 9,
+		UNSUBSCRIBE: 10,
+		UNSUBACK: 11,
+		PINGREQ: 12,
+		PINGRESP: 13,
+		DISCONNECT: 14
+	};
+
+	// Collection of utility methods used to simplify module code
+	// and promote the DRY pattern.
+
+	/**
+	 * Validate an object's parameter names to ensure they
+	 * match a list of expected variables name for this option
+	 * type. Used to ensure option object passed into the API don't
+	 * contain erroneous parameters.
+	 * @param {Object} obj - User options object
+	 * @param {Object} keys - valid keys and types that may exist in obj.
+	 * @throws {Error} Invalid option parameter found.
+	 * @private
+	 */
+	var validate = function(obj, keys) {
+		for (var key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				if (keys.hasOwnProperty(key)) {
+					if (typeof obj[key] !== keys[key])
+					   throw new Error(format(ERROR.INVALID_TYPE, [typeof obj[key], key]));
+				} else {
+					var errorStr = "Unknown property, " + key + ". Valid properties are:";
+					for (var validKey in keys)
+						if (keys.hasOwnProperty(validKey))
+							errorStr = errorStr+" "+validKey;
+					throw new Error(errorStr);
+				}
+			}
+		}
+	};
+
+	/**
+	 * Return a new function which runs the user function bound
+	 * to a fixed scope.
+	 * @param {function} User function
+	 * @param {object} Function scope
+	 * @return {function} User function bound to another scope
+	 * @private
+	 */
+	var scope = function (f, scope) {
+		return function () {
+			return f.apply(scope, arguments);
+		};
+	};
+
+	/**
+	 * Unique message type identifiers, with associated
+	 * associated integer values.
+	 * @private
+	 */
+	var ERROR = {
+		OK: {code:0, text:"AMQJSC0000I OK."},
+		CONNECT_TIMEOUT: {code:1, text:"AMQJSC0001E Connect timed out."},
+		SUBSCRIBE_TIMEOUT: {code:2, text:"AMQJS0002E Subscribe timed out."},
+		UNSUBSCRIBE_TIMEOUT: {code:3, text:"AMQJS0003E Unsubscribe timed out."},
+		PING_TIMEOUT: {code:4, text:"AMQJS0004E Ping timed out."},
+		INTERNAL_ERROR: {code:5, text:"AMQJS0005E Internal error. Error Message: {0}, Stack trace: {1}"},
+		CONNACK_RETURNCODE: {code:6, text:"AMQJS0006E Bad Connack return code:{0} {1}."},
+		SOCKET_ERROR: {code:7, text:"AMQJS0007E Socket error:{0}."},
+		SOCKET_CLOSE: {code:8, text:"AMQJS0008I Socket closed."},
+		MALFORMED_UTF: {code:9, text:"AMQJS0009E Malformed UTF data:{0} {1} {2}."},
+		UNSUPPORTED: {code:10, text:"AMQJS0010E {0} is not supported by this browser."},
+		INVALID_STATE: {code:11, text:"AMQJS0011E Invalid state {0}."},
+		INVALID_TYPE: {code:12, text:"AMQJS0012E Invalid type {0} for {1}."},
+		INVALID_ARGUMENT: {code:13, text:"AMQJS0013E Invalid argument {0} for {1}."},
+		UNSUPPORTED_OPERATION: {code:14, text:"AMQJS0014E Unsupported operation."},
+		INVALID_STORED_DATA: {code:15, text:"AMQJS0015E Invalid data in local storage key={0} value={1}."},
+		INVALID_MQTT_MESSAGE_TYPE: {code:16, text:"AMQJS0016E Invalid MQTT message type {0}."},
+		MALFORMED_UNICODE: {code:17, text:"AMQJS0017E Malformed Unicode string:{0} {1}."},
+		BUFFER_FULL: {code:18, text:"AMQJS0018E Message buffer is full, maximum buffer size: {0}."},
+	};
+
+	/** CONNACK RC Meaning. */
+	var CONNACK_RC = {
+		0:"Connection Accepted",
+		1:"Connection Refused: unacceptable protocol version",
+		2:"Connection Refused: identifier rejected",
+		3:"Connection Refused: server unavailable",
+		4:"Connection Refused: bad user name or password",
+		5:"Connection Refused: not authorized"
+	};
+
+	/**
+	 * Format an error message text.
+	 * @private
+	 * @param {error} ERROR.KEY value above.
+	 * @param {substitutions} [array] substituted into the text.
+	 * @return the text with the substitutions made.
+	 */
+	var format = function(error, substitutions) {
+		var text = error.text;
+		if (substitutions) {
+		  var field,start;
+		  for (var i=0; i<substitutions.length; i++) {
+			field = "{"+i+"}";
+			start = text.indexOf(field);
+			if(start > 0) {
+				var part1 = text.substring(0,start);
+				var part2 = text.substring(start+field.length);
+				text = part1+substitutions[i]+part2;
+			}
+		  }
+		}
+		return text;
+	};
+
+	//MQTT protocol and version          6    M    Q    I    s    d    p    3
+	var MqttProtoIdentifierv3 = [0x00,0x06,0x4d,0x51,0x49,0x73,0x64,0x70,0x03];
+	//MQTT proto/version for 311         4    M    Q    T    T    4
+	var MqttProtoIdentifierv4 = [0x00,0x04,0x4d,0x51,0x54,0x54,0x04];
+
+	/**
+	 * Construct an MQTT wire protocol message.
+	 * @param type MQTT packet type.
+	 * @param options optional wire message attributes.
+	 *
+	 * Optional properties
+	 *
+	 * messageIdentifier: message ID in the range [0..65535]
+	 * payloadMessage:	Application Message - PUBLISH only
+	 * connectStrings:	array of 0 or more Strings to be put into the CONNECT payload
+	 * topics:			array of strings (SUBSCRIBE, UNSUBSCRIBE)
+	 * requestQoS:		array of QoS values [0..2]
+	 *
+	 * "Flag" properties
+	 * cleanSession:	true if present / false if absent (CONNECT)
+	 * willMessage:  	true if present / false if absent (CONNECT)
+	 * isRetained:		true if present / false if absent (CONNECT)
+	 * userName:		true if present / false if absent (CONNECT)
+	 * password:		true if present / false if absent (CONNECT)
+	 * keepAliveInterval:	integer [0..65535]  (CONNECT)
+	 *
+	 * @private
+	 * @ignore
+	 */
+	var WireMessage = function (type, options) {
+		this.type = type;
+		for (var name in options) {
+			if (options.hasOwnProperty(name)) {
+				this[name] = options[name];
+			}
+		}
+	};
+
+	WireMessage.prototype.encode = function() {
+		// Compute the first byte of the fixed header
+		var first = ((this.type & 0x0f) << 4);
+
+		/*
+		 * Now calculate the length of the variable header + payload by adding up the lengths
+		 * of all the component parts
+		 */
+
+		var remLength = 0;
+		var topicStrLength = [];
+		var destinationNameLength = 0;
+		var willMessagePayloadBytes;
+
+		// if the message contains a messageIdentifier then we need two bytes for that
+		if (this.messageIdentifier !== undefined)
+			remLength += 2;
+
+		switch(this.type) {
+			// If this a Connect then we need to include 12 bytes for its header
+			case MESSAGE_TYPE.CONNECT:
+				switch(this.mqttVersion) {
+					case 3:
+						remLength += MqttProtoIdentifierv3.length + 3;
+						break;
+					case 4:
+						remLength += MqttProtoIdentifierv4.length + 3;
+						break;
+				}
+
+				remLength += UTF8Length(this.clientId) + 2;
+				if (this.willMessage !== undefined) {
+					remLength += UTF8Length(this.willMessage.destinationName) + 2;
+					// Will message is always a string, sent as UTF-8 characters with a preceding length.
+					willMessagePayloadBytes = this.willMessage.payloadBytes;
+					if (!(willMessagePayloadBytes instanceof Uint8Array))
+						willMessagePayloadBytes = new Uint8Array(payloadBytes);
+					remLength += willMessagePayloadBytes.byteLength +2;
+				}
+				if (this.userName !== undefined)
+					remLength += UTF8Length(this.userName) + 2;
+				if (this.password !== undefined)
+					remLength += UTF8Length(this.password) + 2;
+			break;
+
+			// Subscribe, Unsubscribe can both contain topic strings
+			case MESSAGE_TYPE.SUBSCRIBE:
+				first |= 0x02; // Qos = 1;
+				for ( var i = 0; i < this.topics.length; i++) {
+					topicStrLength[i] = UTF8Length(this.topics[i]);
+					remLength += topicStrLength[i] + 2;
+				}
+				remLength += this.requestedQos.length; // 1 byte for each topic's Qos
+				// QoS on Subscribe only
+				break;
+
+			case MESSAGE_TYPE.UNSUBSCRIBE:
+				first |= 0x02; // Qos = 1;
+				for ( var i = 0; i < this.topics.length; i++) {
+					topicStrLength[i] = UTF8Length(this.topics[i]);
+					remLength += topicStrLength[i] + 2;
+				}
+				break;
+
+			case MESSAGE_TYPE.PUBREL:
+				first |= 0x02; // Qos = 1;
+				break;
+
+			case MESSAGE_TYPE.PUBLISH:
+				if (this.payloadMessage.duplicate) first |= 0x08;
+				first  = first |= (this.payloadMessage.qos << 1);
+				if (this.payloadMessage.retained) first |= 0x01;
+				destinationNameLength = UTF8Length(this.payloadMessage.destinationName);
+				remLength += destinationNameLength + 2;
+				var payloadBytes = this.payloadMessage.payloadBytes;
+				remLength += payloadBytes.byteLength;
+				if (payloadBytes instanceof ArrayBuffer)
+					payloadBytes = new Uint8Array(payloadBytes);
+				else if (!(payloadBytes instanceof Uint8Array))
+					payloadBytes = new Uint8Array(payloadBytes.buffer);
+				break;
+
+			case MESSAGE_TYPE.DISCONNECT:
+				break;
+
+			default:
+				break;
+		}
+
+		// Now we can allocate a buffer for the message
+
+		var mbi = encodeMBI(remLength);  // Convert the length to MQTT MBI format
+		var pos = mbi.length + 1;        // Offset of start of variable header
+		var buffer = new ArrayBuffer(remLength + pos);
+		var byteStream = new Uint8Array(buffer);    // view it as a sequence of bytes
+
+		//Write the fixed header into the buffer
+		byteStream[0] = first;
+		byteStream.set(mbi,1);
+
+		// If this is a PUBLISH then the variable header starts with a topic
+		if (this.type == MESSAGE_TYPE.PUBLISH)
+			pos = writeString(this.payloadMessage.destinationName, destinationNameLength, byteStream, pos);
+		// If this is a CONNECT then the variable header contains the protocol name/version, flags and keepalive time
+
+		else if (this.type == MESSAGE_TYPE.CONNECT) {
+			switch (this.mqttVersion) {
+				case 3:
+					byteStream.set(MqttProtoIdentifierv3, pos);
+					pos += MqttProtoIdentifierv3.length;
+					break;
+				case 4:
+					byteStream.set(MqttProtoIdentifierv4, pos);
+					pos += MqttProtoIdentifierv4.length;
+					break;
+			}
+			var connectFlags = 0;
+			if (this.cleanSession)
+				connectFlags = 0x02;
+			if (this.willMessage !== undefined ) {
+				connectFlags |= 0x04;
+				connectFlags |= (this.willMessage.qos<<3);
+				if (this.willMessage.retained) {
+					connectFlags |= 0x20;
+				}
+			}
+			if (this.userName !== undefined)
+				connectFlags |= 0x80;
+			if (this.password !== undefined)
+				connectFlags |= 0x40;
+			byteStream[pos++] = connectFlags;
+			pos = writeUint16 (this.keepAliveInterval, byteStream, pos);
+		}
+
+		// Output the messageIdentifier - if there is one
+		if (this.messageIdentifier !== undefined)
+			pos = writeUint16 (this.messageIdentifier, byteStream, pos);
+
+		switch(this.type) {
+			case MESSAGE_TYPE.CONNECT:
+				pos = writeString(this.clientId, UTF8Length(this.clientId), byteStream, pos);
+				if (this.willMessage !== undefined) {
+					pos = writeString(this.willMessage.destinationName, UTF8Length(this.willMessage.destinationName), byteStream, pos);
+					pos = writeUint16(willMessagePayloadBytes.byteLength, byteStream, pos);
+					byteStream.set(willMessagePayloadBytes, pos);
+					pos += willMessagePayloadBytes.byteLength;
+
+				}
+			if (this.userName !== undefined)
+				pos = writeString(this.userName, UTF8Length(this.userName), byteStream, pos);
+			if (this.password !== undefined)
+				pos = writeString(this.password, UTF8Length(this.password), byteStream, pos);
+			break;
+
+			case MESSAGE_TYPE.PUBLISH:
+				// PUBLISH has a text or binary payload, if text do not add a 2 byte length field, just the UTF characters.
+				byteStream.set(payloadBytes, pos);
+
+				break;
+
+//    	    case MESSAGE_TYPE.PUBREC:
+//    	    case MESSAGE_TYPE.PUBREL:
+//    	    case MESSAGE_TYPE.PUBCOMP:
+//    	    	break;
+
+			case MESSAGE_TYPE.SUBSCRIBE:
+				// SUBSCRIBE has a list of topic strings and request QoS
+				for (var i=0; i<this.topics.length; i++) {
+					pos = writeString(this.topics[i], topicStrLength[i], byteStream, pos);
+					byteStream[pos++] = this.requestedQos[i];
+				}
+				break;
+
+			case MESSAGE_TYPE.UNSUBSCRIBE:
+				// UNSUBSCRIBE has a list of topic strings
+				for (var i=0; i<this.topics.length; i++)
+					pos = writeString(this.topics[i], topicStrLength[i], byteStream, pos);
+				break;
+
+			default:
+				// Do nothing.
+		}
+
+		return buffer;
+	};
+
+	function decodeMessage(input,pos) {
+	    var startingPos = pos;
+		var first = input[pos];
+		var type = first >> 4;
+		var messageInfo = first &= 0x0f;
+		pos += 1;
+
+
+		// Decode the remaining length (MBI format)
+
+		var digit;
+		var remLength = 0;
+		var multiplier = 1;
+		do {
+			if (pos == input.length) {
+			    return [null,startingPos];
+			}
+			digit = input[pos++];
+			remLength += ((digit & 0x7F) * multiplier);
+			multiplier *= 128;
+		} while ((digit & 0x80) !== 0);
+
+		var endPos = pos+remLength;
+		if (endPos > input.length) {
+		    return [null,startingPos];
+		}
+
+		var wireMessage = new WireMessage(type);
+		switch(type) {
+			case MESSAGE_TYPE.CONNACK:
+				var connectAcknowledgeFlags = input[pos++];
+				if (connectAcknowledgeFlags & 0x01)
+					wireMessage.sessionPresent = true;
+				wireMessage.returnCode = input[pos++];
+				break;
+
+			case MESSAGE_TYPE.PUBLISH:
+				var qos = (messageInfo >> 1) & 0x03;
+
+				var len = readUint16(input, pos);
+				pos += 2;
+				var topicName = parseUTF8(input, pos, len);
+				pos += len;
+				// If QoS 1 or 2 there will be a messageIdentifier
+				if (qos > 0) {
+					wireMessage.messageIdentifier = readUint16(input, pos);
+					pos += 2;
+				}
+
+				var message = new Paho.MQTT.Message(input.subarray(pos, endPos));
+				if ((messageInfo & 0x01) == 0x01)
+					message.retained = true;
+				if ((messageInfo & 0x08) == 0x08)
+					message.duplicate =  true;
+				message.qos = qos;
+				message.destinationName = topicName;
+				wireMessage.payloadMessage = message;
+				break;
+
+			case  MESSAGE_TYPE.PUBACK:
+			case  MESSAGE_TYPE.PUBREC:
+			case  MESSAGE_TYPE.PUBREL:
+			case  MESSAGE_TYPE.PUBCOMP:
+			case  MESSAGE_TYPE.UNSUBACK:
+				wireMessage.messageIdentifier = readUint16(input, pos);
+				break;
+
+			case  MESSAGE_TYPE.SUBACK:
+				wireMessage.messageIdentifier = readUint16(input, pos);
+				pos += 2;
+				wireMessage.returnCode = input.subarray(pos, endPos);
+				break;
+
+			default:
+				break;
+		}
+
+		return [wireMessage,endPos];
+	}
+
+	function writeUint16(input, buffer, offset) {
+		buffer[offset++] = input >> 8;      //MSB
+		buffer[offset++] = input % 256;     //LSB
+		return offset;
+	}
+
+	function writeString(input, utf8Length, buffer, offset) {
+		offset = writeUint16(utf8Length, buffer, offset);
+		stringToUTF8(input, buffer, offset);
+		return offset + utf8Length;
+	}
+
+	function readUint16(buffer, offset) {
+		return 256*buffer[offset] + buffer[offset+1];
+	}
+
+	/**
+	 * Encodes an MQTT Multi-Byte Integer
+	 * @private
+	 */
+	function encodeMBI(number) {
+		var output = new Array(1);
+		var numBytes = 0;
+
+		do {
+			var digit = number % 128;
+			number = number >> 7;
+			if (number > 0) {
+				digit |= 0x80;
+			}
+			output[numBytes++] = digit;
+		} while ( (number > 0) && (numBytes<4) );
+
+		return output;
+	}
+
+	/**
+	 * Takes a String and calculates its length in bytes when encoded in UTF8.
+	 * @private
+	 */
+	function UTF8Length(input) {
+		var output = 0;
+		for (var i = 0; i<input.length; i++)
+		{
+			var charCode = input.charCodeAt(i);
+				if (charCode > 0x7FF)
+				   {
+					  // Surrogate pair means its a 4 byte character
+					  if (0xD800 <= charCode && charCode <= 0xDBFF)
+						{
+						  i++;
+						  output++;
+						}
+				   output +=3;
+				   }
+			else if (charCode > 0x7F)
+				output +=2;
+			else
+				output++;
+		}
+		return output;
+	}
+
+	/**
+	 * Takes a String and writes it into an array as UTF8 encoded bytes.
+	 * @private
+	 */
+	function stringToUTF8(input, output, start) {
+		var pos = start;
+		for (var i = 0; i<input.length; i++) {
+			var charCode = input.charCodeAt(i);
+
+			// Check for a surrogate pair.
+			if (0xD800 <= charCode && charCode <= 0xDBFF) {
+				var lowCharCode = input.charCodeAt(++i);
+				if (isNaN(lowCharCode)) {
+					throw new Error(format(ERROR.MALFORMED_UNICODE, [charCode, lowCharCode]));
+				}
+				charCode = ((charCode - 0xD800)<<10) + (lowCharCode - 0xDC00) + 0x10000;
+
+			}
+
+			if (charCode <= 0x7F) {
+				output[pos++] = charCode;
+			} else if (charCode <= 0x7FF) {
+				output[pos++] = charCode>>6  & 0x1F | 0xC0;
+				output[pos++] = charCode     & 0x3F | 0x80;
+			} else if (charCode <= 0xFFFF) {
+				output[pos++] = charCode>>12 & 0x0F | 0xE0;
+				output[pos++] = charCode>>6  & 0x3F | 0x80;
+				output[pos++] = charCode     & 0x3F | 0x80;
+			} else {
+				output[pos++] = charCode>>18 & 0x07 | 0xF0;
+				output[pos++] = charCode>>12 & 0x3F | 0x80;
+				output[pos++] = charCode>>6  & 0x3F | 0x80;
+				output[pos++] = charCode     & 0x3F | 0x80;
+			}
+		}
+		return output;
+	}
+
+	function parseUTF8(input, offset, length) {
+		var output = "";
+		var utf16;
+		var pos = offset;
+
+		while (pos < offset+length)
+		{
+			var byte1 = input[pos++];
+			if (byte1 < 128)
+				utf16 = byte1;
+			else
+			{
+				var byte2 = input[pos++]-128;
+				if (byte2 < 0)
+					throw new Error(format(ERROR.MALFORMED_UTF, [byte1.toString(16), byte2.toString(16),""]));
+				if (byte1 < 0xE0)             // 2 byte character
+					utf16 = 64*(byte1-0xC0) + byte2;
+				else
+				{
+					var byte3 = input[pos++]-128;
+					if (byte3 < 0)
+						throw new Error(format(ERROR.MALFORMED_UTF, [byte1.toString(16), byte2.toString(16), byte3.toString(16)]));
+					if (byte1 < 0xF0)        // 3 byte character
+						utf16 = 4096*(byte1-0xE0) + 64*byte2 + byte3;
+								else
+								{
+								   var byte4 = input[pos++]-128;
+								   if (byte4 < 0)
+						throw new Error(format(ERROR.MALFORMED_UTF, [byte1.toString(16), byte2.toString(16), byte3.toString(16), byte4.toString(16)]));
+								   if (byte1 < 0xF8)        // 4 byte character
+										   utf16 = 262144*(byte1-0xF0) + 4096*byte2 + 64*byte3 + byte4;
+					   else                     // longer encodings are not supported
+						throw new Error(format(ERROR.MALFORMED_UTF, [byte1.toString(16), byte2.toString(16), byte3.toString(16), byte4.toString(16)]));
+								}
+				}
+			}
+
+				if (utf16 > 0xFFFF)   // 4 byte character - express as a surrogate pair
+				  {
+					 utf16 -= 0x10000;
+					 output += String.fromCharCode(0xD800 + (utf16 >> 10)); // lead character
+					 utf16 = 0xDC00 + (utf16 & 0x3FF);  // trail character
+				  }
+			output += String.fromCharCode(utf16);
+		}
+		return output;
+	}
+
+	/**
+	 * Repeat keepalive requests, monitor responses.
+	 * @ignore
+	 */
+	var Pinger = function(client, window, keepAliveInterval) {
+		this._client = client;
+		this._window = window;
+		this._keepAliveInterval = keepAliveInterval*1000;
+		this.isReset = false;
+
+		var pingReq = new WireMessage(MESSAGE_TYPE.PINGREQ).encode();
+
+		var doTimeout = function (pinger) {
+			return function () {
+				return doPing.apply(pinger);
+			};
+		};
+
+		/** @ignore */
+		var doPing = function() {
+			if (!this.isReset) {
+				this._client._trace("Pinger.doPing", "Timed out");
+				this._client._disconnected( ERROR.PING_TIMEOUT.code , format(ERROR.PING_TIMEOUT));
+			} else {
+				this.isReset = false;
+				this._client._trace("Pinger.doPing", "send PINGREQ");
+				this._client.socket.send(pingReq);
+				this.timeout = this._window.setTimeout(doTimeout(this), this._keepAliveInterval);
+			}
+		};
+
+		this.reset = function() {
+			this.isReset = true;
+			this._window.clearTimeout(this.timeout);
+			if (this._keepAliveInterval > 0)
+				this.timeout = setTimeout(doTimeout(this), this._keepAliveInterval);
+		};
+
+		this.cancel = function() {
+			this._window.clearTimeout(this.timeout);
+		};
+	 };
+
+	/**
+	 * Monitor request completion.
+	 * @ignore
+	 */
+	var Timeout = function(client, window, timeoutSeconds, action, args) {
+		this._window = window;
+		if (!timeoutSeconds)
+			timeoutSeconds = 30;
+
+		var doTimeout = function (action, client, args) {
+			return function () {
+				return action.apply(client, args);
+			};
+		};
+		this.timeout = setTimeout(doTimeout(action, client, args), timeoutSeconds * 1000);
+
+		this.cancel = function() {
+			this._window.clearTimeout(this.timeout);
+		};
+	};
+
+	/*
+	 * Internal implementation of the Websockets MQTT V3.1 client.
+	 *
+	 * @name Paho.MQTT.ClientImpl @constructor
+	 * @param {String} host the DNS nameof the webSocket host.
+	 * @param {Number} port the port number for that host.
+	 * @param {String} clientId the MQ client identifier.
+	 */
+	var ClientImpl = function (uri, host, port, path, clientId) {
+		// Check dependencies are satisfied in this browser.
+		if (!("WebSocket" in global && global.WebSocket !== null)) {
+			throw new Error(format(ERROR.UNSUPPORTED, ["WebSocket"]));
+		}
+		if (!("localStorage" in global && global.localStorage !== null)) {
+			throw new Error(format(ERROR.UNSUPPORTED, ["localStorage"]));
+		}
+		if (!("ArrayBuffer" in global && global.ArrayBuffer !== null)) {
+			throw new Error(format(ERROR.UNSUPPORTED, ["ArrayBuffer"]));
+		}
+		this._trace("Paho.MQTT.Client", uri, host, port, path, clientId);
+
+		this.host = host;
+		this.port = port;
+		this.path = path;
+		this.uri = uri;
+		this.clientId = clientId;
+		this._wsuri = null;
+
+		// Local storagekeys are qualified with the following string.
+		// The conditional inclusion of path in the key is for backward
+		// compatibility to when the path was not configurable and assumed to
+		// be /mqtt
+		this._localKey=host+":"+port+(path!="/mqtt"?":"+path:"")+":"+clientId+":";
+
+		// Create private instance-only message queue
+		// Internal queue of messages to be sent, in sending order.
+		this._msg_queue = [];
+		this._buffered_msg_queue = [];
+
+		// Messages we have sent and are expecting a response for, indexed by their respective message ids.
+		this._sentMessages = {};
+
+		// Messages we have received and acknowleged and are expecting a confirm message for
+		// indexed by their respective message ids.
+		this._receivedMessages = {};
+
+		// Internal list of callbacks to be executed when messages
+		// have been successfully sent over web socket, e.g. disconnect
+		// when it doesn't have to wait for ACK, just message is dispatched.
+		this._notify_msg_sent = {};
+
+		// Unique identifier for SEND messages, incrementing
+		// counter as messages are sent.
+		this._message_identifier = 1;
+
+		// Used to determine the transmission sequence of stored sent messages.
+		this._sequence = 0;
+
+
+		// Load the local state, if any, from the saved version, only restore state relevant to this client.
+		for (var key in localStorage)
+			if (   key.indexOf("Sent:"+this._localKey) === 0 || key.indexOf("Received:"+this._localKey) === 0)
+			this.restore(key);
+	};
+
+	// Messaging Client public instance members.
+	ClientImpl.prototype.host = null;
+	ClientImpl.prototype.port = null;
+	ClientImpl.prototype.path = null;
+	ClientImpl.prototype.uri = null;
+	ClientImpl.prototype.clientId = null;
+
+	// Messaging Client private instance members.
+	ClientImpl.prototype.socket = null;
+	/* true once we have received an acknowledgement to a CONNECT packet. */
+	ClientImpl.prototype.connected = false;
+	/* The largest message identifier allowed, may not be larger than 2**16 but
+	 * if set smaller reduces the maximum number of outbound messages allowed.
+	 */
+	ClientImpl.prototype.maxMessageIdentifier = 65536;
+	ClientImpl.prototype.connectOptions = null;
+	ClientImpl.prototype.hostIndex = null;
+	ClientImpl.prototype.onConnected = null;
+	ClientImpl.prototype.onConnectionLost = null;
+	ClientImpl.prototype.onMessageDelivered = null;
+	ClientImpl.prototype.onMessageArrived = null;
+	ClientImpl.prototype.traceFunction = null;
+	ClientImpl.prototype._msg_queue = null;
+	ClientImpl.prototype._buffered_msg_queue = null;
+	ClientImpl.prototype._connectTimeout = null;
+	/* The sendPinger monitors how long we allow before we send data to prove to the server that we are alive. */
+	ClientImpl.prototype.sendPinger = null;
+	/* The receivePinger monitors how long we allow before we require evidence that the server is alive. */
+	ClientImpl.prototype.receivePinger = null;
+	ClientImpl.prototype._reconnectInterval = 1; // Reconnect Delay, starts at 1 second
+	ClientImpl.prototype._reconnecting = false;
+	ClientImpl.prototype._reconnectTimeout = null;
+	ClientImpl.prototype.disconnectedPublishing = false;
+	ClientImpl.prototype.disconnectedBufferSize = 5000;
+
+	ClientImpl.prototype.receiveBuffer = null;
+
+	ClientImpl.prototype._traceBuffer = null;
+	ClientImpl.prototype._MAX_TRACE_ENTRIES = 100;
+
+	ClientImpl.prototype.connect = function (connectOptions) {
+		var connectOptionsMasked = this._traceMask(connectOptions, "password");
+		this._trace("Client.connect", connectOptionsMasked, this.socket, this.connected);
+
+		if (this.connected)
+			throw new Error(format(ERROR.INVALID_STATE, ["already connected"]));
+		if (this.socket)
+			throw new Error(format(ERROR.INVALID_STATE, ["already connected"]));
+
+		if (this._reconnecting) {
+			// connect() function is called while reconnect is in progress.
+			// Terminate the auto reconnect process to use new connect options.
+			this._reconnectTimeout.cancel();
+			this._reconnectTimeout = null;
+			this._reconnecting = false;
+		}
+
+		this.connectOptions = connectOptions;
+		this._reconnectInterval = 1;
+		this._reconnecting = false;
+		if (connectOptions.uris) {
+			this.hostIndex = 0;
+			this._doConnect(connectOptions.uris[0]);
+		} else {
+			this._doConnect(this.uri);
+		}
+
+	};
+
+	ClientImpl.prototype.subscribe = function (filter, subscribeOptions) {
+		this._trace("Client.subscribe", filter, subscribeOptions);
+
+		if (!this.connected)
+			throw new Error(format(ERROR.INVALID_STATE, ["not connected"]));
+
+		var wireMessage = new WireMessage(MESSAGE_TYPE.SUBSCRIBE);
+		wireMessage.topics=[filter];
+		if (subscribeOptions.qos !== undefined)
+			wireMessage.requestedQos = [subscribeOptions.qos];
+		else
+			wireMessage.requestedQos = [0];
+
+		if (subscribeOptions.onSuccess) {
+			wireMessage.onSuccess = function(grantedQos) {subscribeOptions.onSuccess({invocationContext:subscribeOptions.invocationContext,grantedQos:grantedQos});};
+		}
+
+		if (subscribeOptions.onFailure) {
+			wireMessage.onFailure = function(errorCode) {subscribeOptions.onFailure({invocationContext:subscribeOptions.invocationContext,errorCode:errorCode, errorMessage:format(errorCode)});};
+		}
+
+		if (subscribeOptions.timeout) {
+			wireMessage.timeOut = new Timeout(this, window, subscribeOptions.timeout, subscribeOptions.onFailure,
+						[{invocationContext:subscribeOptions.invocationContext,
+						errorCode:ERROR.SUBSCRIBE_TIMEOUT.code,
+						errorMessage:format(ERROR.SUBSCRIBE_TIMEOUT)}]);
+		}
+
+		// All subscriptions return a SUBACK.
+		this._requires_ack(wireMessage);
+		this._schedule_message(wireMessage);
+	};
+
+	/** @ignore */
+	ClientImpl.prototype.unsubscribe = function(filter, unsubscribeOptions) {
+		this._trace("Client.unsubscribe", filter, unsubscribeOptions);
+
+		if (!this.connected)
+		   throw new Error(format(ERROR.INVALID_STATE, ["not connected"]));
+
+		var wireMessage = new WireMessage(MESSAGE_TYPE.UNSUBSCRIBE);
+		wireMessage.topics = [filter];
+
+		if (unsubscribeOptions.onSuccess) {
+			wireMessage.callback = function() {unsubscribeOptions.onSuccess({invocationContext:unsubscribeOptions.invocationContext});};
+		}
+		if (unsubscribeOptions.timeout) {
+			wireMessage.timeOut = new Timeout(this, window, unsubscribeOptions.timeout, unsubscribeOptions.onFailure,
+					  [{invocationContext:unsubscribeOptions.invocationContext,
+						errorCode:ERROR.UNSUBSCRIBE_TIMEOUT.code,
+						errorMessage:format(ERROR.UNSUBSCRIBE_TIMEOUT)}]);
+		}
+
+		// All unsubscribes return a SUBACK.
+		this._requires_ack(wireMessage);
+		this._schedule_message(wireMessage);
+	};
+
+	ClientImpl.prototype.send = function (message) {
+		this._trace("Client.send", message);
+
+		wireMessage = new WireMessage(MESSAGE_TYPE.PUBLISH);
+		wireMessage.payloadMessage = message;
+
+		if (this.connected) {
+			// Mark qos 1 & 2 message as "ACK required"
+			// For qos 0 message, invoke onMessageDelivered callback if there is one.
+			// Then schedule the message.
+			if (message.qos > 0) {
+			this._requires_ack(wireMessage);
+			} else if (this.onMessageDelivered) {
+			this._notify_msg_sent[wireMessage] = this.onMessageDelivered(wireMessage.payloadMessage);
+			}
+		this._schedule_message(wireMessage);
+		} else {
+			// Currently disconnected, will not schedule this message
+			// Check if reconnecting is in progress and disconnected publish is enabled.
+			if (this._reconnecting && this.disconnectedPublishing) {
+				// Check the limit which include the "required ACK" messages
+				var messageCount = Object.keys(this._sentMessages).length + this._buffered_msg_queue.length;
+				if (messageCount > this.disconnectedBufferSize) {
+					throw new Error(format(ERROR.BUFFER_FULL, [this.disconnectedBufferSize]));
+				} else {
+					if (message.qos > 0) {
+						// Mark this message as "ACK required"
+						this._requires_ack(wireMessage);
+					} else {
+						wireMessage.sequence = ++this._sequence;
+						this._buffered_msg_queue.push(wireMessage);
+					}
+				}
+			} else {
+				throw new Error(format(ERROR.INVALID_STATE, ["not connected"]));
+			}
+		}
+	};
+
+	ClientImpl.prototype.disconnect = function () {
+		this._trace("Client.disconnect");
+
+		if (this._reconnecting) {
+			// disconnect() function is called while reconnect is in progress.
+			// Terminate the auto reconnect process.
+			this._reconnectTimeout.cancel();
+			this._reconnectTimeout = null;
+			this._reconnecting = false;
+		}
+
+		if (!this.socket)
+			throw new Error(format(ERROR.INVALID_STATE, ["not connecting or connected"]));
+
+		wireMessage = new WireMessage(MESSAGE_TYPE.DISCONNECT);
+
+		// Run the disconnected call back as soon as the message has been sent,
+		// in case of a failure later on in the disconnect processing.
+		// as a consequence, the _disconected call back may be run several times.
+		this._notify_msg_sent[wireMessage] = scope(this._disconnected, this);
+
+		this._schedule_message(wireMessage);
+	};
+
+	ClientImpl.prototype.getTraceLog = function () {
+		if ( this._traceBuffer !== null ) {
+			this._trace("Client.getTraceLog", new Date());
+			this._trace("Client.getTraceLog in flight messages", this._sentMessages.length);
+			for (var key in this._sentMessages)
+				this._trace("_sentMessages ",key, this._sentMessages[key]);
+			for (var key in this._receivedMessages)
+				this._trace("_receivedMessages ",key, this._receivedMessages[key]);
+
+			return this._traceBuffer;
+		}
+	};
+
+	ClientImpl.prototype.startTrace = function () {
+		if ( this._traceBuffer === null ) {
+			this._traceBuffer = [];
+		}
+		this._trace("Client.startTrace", new Date(), version);
+	};
+
+	ClientImpl.prototype.stopTrace = function () {
+		delete this._traceBuffer;
+	};
+
+	ClientImpl.prototype._doConnect = function (wsurl) {
+		// When the socket is open, this client will send the CONNECT WireMessage using the saved parameters.
+		if (this.connectOptions.useSSL) {
+		    var uriParts = wsurl.split(":");
+		    uriParts[0] = "wss";
+		    wsurl = uriParts.join(":");
+		}
+		this._wsuri = wsurl;
+		this.connected = false;
+
+
+
+		if (this.connectOptions.mqttVersion < 4) {
+			this.socket = new WebSocket(wsurl, ["mqttv3.1"]);
+		} else {
+			this.socket = new WebSocket(wsurl, ["mqtt"]);
+		}
+		this.socket.binaryType = 'arraybuffer';
+		this.socket.onopen = scope(this._on_socket_open, this);
+		this.socket.onmessage = scope(this._on_socket_message, this);
+		this.socket.onerror = scope(this._on_socket_error, this);
+		this.socket.onclose = scope(this._on_socket_close, this);
+
+		this.sendPinger = new Pinger(this, window, this.connectOptions.keepAliveInterval);
+		this.receivePinger = new Pinger(this, window, this.connectOptions.keepAliveInterval);
+		if (this._connectTimeout) {
+			this._connectTimeout.cancel();
+			this._connectTimeout = null;
+		}
+		this._connectTimeout = new Timeout(this, window, this.connectOptions.timeout, this._disconnected,  [ERROR.CONNECT_TIMEOUT.code, format(ERROR.CONNECT_TIMEOUT)]);
+	};
+
+
+	// Schedule a new message to be sent over the WebSockets
+	// connection. CONNECT messages cause WebSocket connection
+	// to be started. All other messages are queued internally
+	// until this has happened. When WS connection starts, process
+	// all outstanding messages.
+	ClientImpl.prototype._schedule_message = function (message) {
+		this._msg_queue.push(message);
+		// Process outstanding messages in the queue if we have an  open socket, and have received CONNACK.
+		if (this.connected) {
+			this._process_queue();
+		}
+	};
+
+	ClientImpl.prototype.store = function(prefix, wireMessage) {
+		var storedMessage = {type:wireMessage.type, messageIdentifier:wireMessage.messageIdentifier, version:1};
+
+		switch(wireMessage.type) {
+		  case MESSAGE_TYPE.PUBLISH:
+			  if(wireMessage.pubRecReceived)
+				  storedMessage.pubRecReceived = true;
+
+			  // Convert the payload to a hex string.
+			  storedMessage.payloadMessage = {};
+			  var hex = "";
+			  var messageBytes = wireMessage.payloadMessage.payloadBytes;
+			  for (var i=0; i<messageBytes.length; i++) {
+				if (messageBytes[i] <= 0xF)
+				  hex = hex+"0"+messageBytes[i].toString(16);
+				else
+				  hex = hex+messageBytes[i].toString(16);
+			  }
+			  storedMessage.payloadMessage.payloadHex = hex;
+
+			  storedMessage.payloadMessage.qos = wireMessage.payloadMessage.qos;
+			  storedMessage.payloadMessage.destinationName = wireMessage.payloadMessage.destinationName;
+			  if (wireMessage.payloadMessage.duplicate)
+				  storedMessage.payloadMessage.duplicate = true;
+			  if (wireMessage.payloadMessage.retained)
+				  storedMessage.payloadMessage.retained = true;
+
+			  // Add a sequence number to sent messages.
+			  if ( prefix.indexOf("Sent:") === 0 ) {
+				  if ( wireMessage.sequence === undefined )
+					  wireMessage.sequence = ++this._sequence;
+				  storedMessage.sequence = wireMessage.sequence;
+			  }
+			  break;
+
+			default:
+				throw Error(format(ERROR.INVALID_STORED_DATA, [key, storedMessage]));
+		}
+		localStorage.setItem(prefix+this._localKey+wireMessage.messageIdentifier, JSON.stringify(storedMessage));
+	};
+
+	ClientImpl.prototype.restore = function(key) {
+		var value = localStorage.getItem(key);
+		var storedMessage = JSON.parse(value);
+
+		var wireMessage = new WireMessage(storedMessage.type, storedMessage);
+
+		switch(storedMessage.type) {
+		  case MESSAGE_TYPE.PUBLISH:
+			  // Replace the payload message with a Message object.
+			  var hex = storedMessage.payloadMessage.payloadHex;
+			  var buffer = new ArrayBuffer((hex.length)/2);
+			  var byteStream = new Uint8Array(buffer);
+			  var i = 0;
+			  while (hex.length >= 2) {
+				  var x = parseInt(hex.substring(0, 2), 16);
+				  hex = hex.substring(2, hex.length);
+				  byteStream[i++] = x;
+			  }
+			  var payloadMessage = new Paho.MQTT.Message(byteStream);
+
+			  payloadMessage.qos = storedMessage.payloadMessage.qos;
+			  payloadMessage.destinationName = storedMessage.payloadMessage.destinationName;
+			  if (storedMessage.payloadMessage.duplicate)
+				  payloadMessage.duplicate = true;
+			  if (storedMessage.payloadMessage.retained)
+				  payloadMessage.retained = true;
+			  wireMessage.payloadMessage = payloadMessage;
+
+			  break;
+
+			default:
+			  throw Error(format(ERROR.INVALID_STORED_DATA, [key, value]));
+		}
+
+		if (key.indexOf("Sent:"+this._localKey) === 0) {
+			wireMessage.payloadMessage.duplicate = true;
+			this._sentMessages[wireMessage.messageIdentifier] = wireMessage;
+		} else if (key.indexOf("Received:"+this._localKey) === 0) {
+			this._receivedMessages[wireMessage.messageIdentifier] = wireMessage;
+		}
+	};
+
+	ClientImpl.prototype._process_queue = function () {
+		var message = null;
+		// Process messages in order they were added
+		var fifo = this._msg_queue.reverse();
+
+		// Send all queued messages down socket connection
+		while ((message = fifo.pop())) {
+			this._socket_send(message);
+			// Notify listeners that message was successfully sent
+			if (this._notify_msg_sent[message]) {
+				this._notify_msg_sent[message]();
+				delete this._notify_msg_sent[message];
+			}
+		}
+	};
+
+	/**
+	 * Expect an ACK response for this message. Add message to the set of in progress
+	 * messages and set an unused identifier in this message.
+	 * @ignore
+	 */
+	ClientImpl.prototype._requires_ack = function (wireMessage) {
+		var messageCount = Object.keys(this._sentMessages).length;
+		if (messageCount > this.maxMessageIdentifier)
+			throw Error ("Too many messages:"+messageCount);
+
+		while(this._sentMessages[this._message_identifier] !== undefined) {
+			this._message_identifier++;
+		}
+		wireMessage.messageIdentifier = this._message_identifier;
+		this._sentMessages[wireMessage.messageIdentifier] = wireMessage;
+		if (wireMessage.type === MESSAGE_TYPE.PUBLISH) {
+			this.store("Sent:", wireMessage);
+		}
+		if (this._message_identifier === this.maxMessageIdentifier) {
+			this._message_identifier = 1;
+		}
+	};
+
+	/**
+	 * Called when the underlying websocket has been opened.
+	 * @ignore
+	 */
+	ClientImpl.prototype._on_socket_open = function () {
+		// Create the CONNECT message object.
+		var wireMessage = new WireMessage(MESSAGE_TYPE.CONNECT, this.connectOptions);
+		wireMessage.clientId = this.clientId;
+		this._socket_send(wireMessage);
+	};
+
+	/**
+	 * Called when the underlying websocket has received a complete packet.
+	 * @ignore
+	 */
+	ClientImpl.prototype._on_socket_message = function (event) {
+		this._trace("Client._on_socket_message", event.data);
+		var messages = this._deframeMessages(event.data);
+		for (var i = 0; i < messages.length; i+=1) {
+		    this._handleMessage(messages[i]);
+		}
+	};
+
+	ClientImpl.prototype._deframeMessages = function(data) {
+		var byteArray = new Uint8Array(data);
+		var messages = [];
+	    if (this.receiveBuffer) {
+	        var newData = new Uint8Array(this.receiveBuffer.length+byteArray.length);
+	        newData.set(this.receiveBuffer);
+	        newData.set(byteArray,this.receiveBuffer.length);
+	        byteArray = newData;
+	        delete this.receiveBuffer;
+	    }
+		try {
+		    var offset = 0;
+		    while(offset < byteArray.length) {
+		        var result = decodeMessage(byteArray,offset);
+		        var wireMessage = result[0];
+		        offset = result[1];
+		        if (wireMessage !== null) {
+		            messages.push(wireMessage);
+		        } else {
+		            break;
+		        }
+		    }
+		    if (offset < byteArray.length) {
+		    	this.receiveBuffer = byteArray.subarray(offset);
+		    }
+		} catch (error) {
+			var errorStack = ((error.hasOwnProperty('stack') == 'undefined') ? error.stack.toString() : "No Error Stack Available");
+			this._disconnected(ERROR.INTERNAL_ERROR.code , format(ERROR.INTERNAL_ERROR, [error.message,errorStack]));
+			return;
+		}
+		return messages;
+	};
+
+	ClientImpl.prototype._handleMessage = function(wireMessage) {
+
+		this._trace("Client._handleMessage", wireMessage);
+
+		try {
+			switch(wireMessage.type) {
+			case MESSAGE_TYPE.CONNACK:
+				this._connectTimeout.cancel();
+				if (this._reconnectTimeout)
+					this._reconnectTimeout.cancel();
+
+				// If we have started using clean session then clear up the local state.
+				if (this.connectOptions.cleanSession) {
+					for (var key in this._sentMessages) {
+						var sentMessage = this._sentMessages[key];
+						localStorage.removeItem("Sent:"+this._localKey+sentMessage.messageIdentifier);
+					}
+					this._sentMessages = {};
+
+					for (var key in this._receivedMessages) {
+						var receivedMessage = this._receivedMessages[key];
+						localStorage.removeItem("Received:"+this._localKey+receivedMessage.messageIdentifier);
+					}
+					this._receivedMessages = {};
+				}
+				// Client connected and ready for business.
+				if (wireMessage.returnCode === 0) {
+
+					this.connected = true;
+					// Jump to the end of the list of uris and stop looking for a good host.
+
+					if (this.connectOptions.uris)
+            this.hostIndex = this.connectOptions.uris.length;
+
+				} else {
+					this._disconnected(ERROR.CONNACK_RETURNCODE.code , format(ERROR.CONNACK_RETURNCODE, [wireMessage.returnCode, CONNACK_RC[wireMessage.returnCode]]));
+					break;
+				}
+
+				// Resend messages.
+				var sequencedMessages = [];
+				for (var msgId in this._sentMessages) {
+					if (this._sentMessages.hasOwnProperty(msgId))
+						sequencedMessages.push(this._sentMessages[msgId]);
+				}
+
+				// Also schedule qos 0 buffered messages if any
+				if (this._buffered_msg_queue.length > 0) {
+					var msg = null;
+					var fifo = this._buffered_msg_queue.reverse();
+					while ((msg = fifo.pop())) {
+						sequencedMessages.push(msg);
+						if (this.onMessageDelivered)
+							this._notify_msg_sent[msg] = this.onMessageDelivered(msg.payloadMessage);
+					}
+				}
+
+				// Sort sentMessages into the original sent order.
+				var sequencedMessages = sequencedMessages.sort(function(a,b) {return a.sequence - b.sequence;} );
+				for (var i=0, len=sequencedMessages.length; i<len; i++) {
+					var sentMessage = sequencedMessages[i];
+					if (sentMessage.type == MESSAGE_TYPE.PUBLISH && sentMessage.pubRecReceived) {
+						var pubRelMessage = new WireMessage(MESSAGE_TYPE.PUBREL, {messageIdentifier:sentMessage.messageIdentifier});
+						this._schedule_message(pubRelMessage);
+					} else {
+						this._schedule_message(sentMessage);
+				}
+				}
+
+				// Execute the connectOptions.onSuccess callback if there is one.
+        // Will also now return if this connection was the result of an automatic
+        // reconnect and which URI was successfully connected to.
+				if (this.connectOptions.onSuccess) {
+					this.connectOptions.onSuccess({invocationContext:this.connectOptions.invocationContext});
+				}
+
+				var reconnected = false;
+				if (this._reconnecting) {
+					reconnected = true;
+					this._reconnectInterval = 1;
+					this._reconnecting = false;
+				}
+
+				// Execute the onConnected callback if there is one.
+				this._connected(reconnected, this._wsuri);
+
+				// Process all queued messages now that the connection is established.
+				this._process_queue();
+				break;
+
+			case MESSAGE_TYPE.PUBLISH:
+				this._receivePublish(wireMessage);
+				break;
+
+			case MESSAGE_TYPE.PUBACK:
+				var sentMessage = this._sentMessages[wireMessage.messageIdentifier];
+				 // If this is a re flow of a PUBACK after we have restarted receivedMessage will not exist.
+				if (sentMessage) {
+					delete this._sentMessages[wireMessage.messageIdentifier];
+					localStorage.removeItem("Sent:"+this._localKey+wireMessage.messageIdentifier);
+					if (this.onMessageDelivered)
+						this.onMessageDelivered(sentMessage.payloadMessage);
+				}
+				break;
+
+			case MESSAGE_TYPE.PUBREC:
+				var sentMessage = this._sentMessages[wireMessage.messageIdentifier];
+				// If this is a re flow of a PUBREC after we have restarted receivedMessage will not exist.
+				if (sentMessage) {
+					sentMessage.pubRecReceived = true;
+					var pubRelMessage = new WireMessage(MESSAGE_TYPE.PUBREL, {messageIdentifier:wireMessage.messageIdentifier});
+					this.store("Sent:", sentMessage);
+					this._schedule_message(pubRelMessage);
+				}
+				break;
+
+			case MESSAGE_TYPE.PUBREL:
+				var receivedMessage = this._receivedMessages[wireMessage.messageIdentifier];
+				localStorage.removeItem("Received:"+this._localKey+wireMessage.messageIdentifier);
+				// If this is a re flow of a PUBREL after we have restarted receivedMessage will not exist.
+				if (receivedMessage) {
+					this._receiveMessage(receivedMessage);
+					delete this._receivedMessages[wireMessage.messageIdentifier];
+				}
+				// Always flow PubComp, we may have previously flowed PubComp but the server lost it and restarted.
+				var pubCompMessage = new WireMessage(MESSAGE_TYPE.PUBCOMP, {messageIdentifier:wireMessage.messageIdentifier});
+				this._schedule_message(pubCompMessage);
+
+
+				break;
+
+			case MESSAGE_TYPE.PUBCOMP:
+				var sentMessage = this._sentMessages[wireMessage.messageIdentifier];
+				delete this._sentMessages[wireMessage.messageIdentifier];
+				localStorage.removeItem("Sent:"+this._localKey+wireMessage.messageIdentifier);
+				if (this.onMessageDelivered)
+					this.onMessageDelivered(sentMessage.payloadMessage);
+				break;
+
+			case MESSAGE_TYPE.SUBACK:
+				var sentMessage = this._sentMessages[wireMessage.messageIdentifier];
+				if (sentMessage) {
+					if(sentMessage.timeOut)
+						sentMessage.timeOut.cancel();
+					// This will need to be fixed when we add multiple topic support
+          			if (wireMessage.returnCode[0] === 0x80) {
+						if (sentMessage.onFailure) {
+							sentMessage.onFailure(wireMessage.returnCode);
+						}
+					} else if (sentMessage.onSuccess) {
+						sentMessage.onSuccess(wireMessage.returnCode);
+					}
+					delete this._sentMessages[wireMessage.messageIdentifier];
+				}
+				break;
+
+			case MESSAGE_TYPE.UNSUBACK:
+				var sentMessage = this._sentMessages[wireMessage.messageIdentifier];
+				if (sentMessage) {
+					if (sentMessage.timeOut)
+						sentMessage.timeOut.cancel();
+					if (sentMessage.callback) {
+						sentMessage.callback();
+					}
+					delete this._sentMessages[wireMessage.messageIdentifier];
+				}
+
+				break;
+
+			case MESSAGE_TYPE.PINGRESP:
+				/* The sendPinger or receivePinger may have sent a ping, the receivePinger has already been reset. */
+				this.sendPinger.reset();
+				break;
+
+			case MESSAGE_TYPE.DISCONNECT:
+				// Clients do not expect to receive disconnect packets.
+				this._disconnected(ERROR.INVALID_MQTT_MESSAGE_TYPE.code , format(ERROR.INVALID_MQTT_MESSAGE_TYPE, [wireMessage.type]));
+				break;
+
+			default:
+				this._disconnected(ERROR.INVALID_MQTT_MESSAGE_TYPE.code , format(ERROR.INVALID_MQTT_MESSAGE_TYPE, [wireMessage.type]));
+			}
+		} catch (error) {
+			var errorStack = ((error.hasOwnProperty('stack') == 'undefined') ? error.stack.toString() : "No Error Stack Available");
+			this._disconnected(ERROR.INTERNAL_ERROR.code , format(ERROR.INTERNAL_ERROR, [error.message,errorStack]));
+			return;
+		}
+	};
+
+	/** @ignore */
+	ClientImpl.prototype._on_socket_error = function (error) {
+		if (!this._reconnecting) {
+		this._disconnected(ERROR.SOCKET_ERROR.code , format(ERROR.SOCKET_ERROR, [error.data]));
+		}
+	};
+
+	/** @ignore */
+	ClientImpl.prototype._on_socket_close = function () {
+		if (!this._reconnecting) {
+		this._disconnected(ERROR.SOCKET_CLOSE.code , format(ERROR.SOCKET_CLOSE));
+		}
+	};
+
+	/** @ignore */
+	ClientImpl.prototype._socket_send = function (wireMessage) {
+
+		if (wireMessage.type == 1) {
+			var wireMessageMasked = this._traceMask(wireMessage, "password");
+			this._trace("Client._socket_send", wireMessageMasked);
+		}
+		else this._trace("Client._socket_send", wireMessage);
+
+		this.socket.send(wireMessage.encode());
+		/* We have proved to the server we are alive. */
+		this.sendPinger.reset();
+	};
+
+	/** @ignore */
+	ClientImpl.prototype._receivePublish = function (wireMessage) {
+		switch(wireMessage.payloadMessage.qos) {
+			case "undefined":
+			case 0:
+				this._receiveMessage(wireMessage);
+				break;
+
+			case 1:
+				var pubAckMessage = new WireMessage(MESSAGE_TYPE.PUBACK, {messageIdentifier:wireMessage.messageIdentifier});
+				this._schedule_message(pubAckMessage);
+				this._receiveMessage(wireMessage);
+				break;
+
+			case 2:
+				this._receivedMessages[wireMessage.messageIdentifier] = wireMessage;
+				this.store("Received:", wireMessage);
+				var pubRecMessage = new WireMessage(MESSAGE_TYPE.PUBREC, {messageIdentifier:wireMessage.messageIdentifier});
+				this._schedule_message(pubRecMessage);
+
+				break;
+
+			default:
+				throw Error("Invaild qos="+wireMmessage.payloadMessage.qos);
+		}
+	};
+
+	/** @ignore */
+	ClientImpl.prototype._receiveMessage = function (wireMessage) {
+		if (this.onMessageArrived) {
+			this.onMessageArrived(wireMessage.payloadMessage);
+		}
+	};
+
+	/**
+	 * Client has connected.
+	 * @param {reconnect} [boolean] indicate if this was a result of reconnect operation.
+	 * @param {uri} [string] fully qualified WebSocket URI of the server.
+	 */
+	ClientImpl.prototype._connected = function (reconnect, uri) {
+		// Execute the onConnected callback if there is one.
+		if (this.onConnected)
+			this.onConnected(reconnect, uri);
+	};
+
+	/**
+	 * Attempts to reconnect the client to the server.
+   * For each reconnect attempt, will double the reconnect interval
+   * up to 128 seconds.
+	 */
+	ClientImpl.prototype._reconnect = function () {
+		this._trace("Client._reconnect");
+		if (!this.connected) {
+			this._reconnecting = true;
+			this.sendPinger.cancel();
+			this.receivePinger.cancel();
+			if (this._reconnectInterval < 128)
+				this._reconnectInterval = this._reconnectInterval * 2;
+			if (this.connectOptions.uris) {
+				this.hostIndex = 0;
+				this._doConnect(this.connectOptions.uris[0]);
+			} else {
+				this._doConnect(this.uri);
+			}
+		}
+	};
+
+	/**
+	 * Client has disconnected either at its own request or because the server
+	 * or network disconnected it. Remove all non-durable state.
+	 * @param {errorCode} [number] the error number.
+	 * @param {errorText} [string] the error text.
+	 * @ignore
+	 */
+	ClientImpl.prototype._disconnected = function (errorCode, errorText) {
+		this._trace("Client._disconnected", errorCode, errorText);
+
+		if (errorCode !== undefined && this._reconnecting) {
+      //Continue automatic reconnect process
+  		this._reconnectTimeout = new Timeout(this, window, this._reconnectInterval, this._reconnect);
+			return;
+		}
+
+		this.sendPinger.cancel();
+		this.receivePinger.cancel();
+		if (this._connectTimeout) {
+			this._connectTimeout.cancel();
+			this._connectTimeout = null;
+		}
+
+		// Clear message buffers.
+		this._msg_queue = [];
+		this._buffered_msg_queue = [];
+		this._notify_msg_sent = {};
+
+		if (this.socket) {
+			// Cancel all socket callbacks so that they cannot be driven again by this socket.
+			this.socket.onopen = null;
+			this.socket.onmessage = null;
+			this.socket.onerror = null;
+			this.socket.onclose = null;
+			if (this.socket.readyState === 1)
+				this.socket.close();
+			delete this.socket;
+		}
+
+		if (this.connectOptions.uris && this.hostIndex < this.connectOptions.uris.length-1) {
+			// Try the next host.
+			this.hostIndex++;
+			this._doConnect(this.connectOptions.uris[this.hostIndex]);
+		} else {
+
+			if (errorCode === undefined) {
+				errorCode = ERROR.OK.code;
+				errorText = format(ERROR.OK);
+			}
+
+			// Run any application callbacks last as they may attempt to reconnect and hence create a new socket.
+			if (this.connected) {
+				this.connected = false;
+				// Execute the connectionLostCallback if there is one, and we were connected.
+				if (this.onConnectionLost) {
+					this.onConnectionLost({errorCode:errorCode, errorMessage:errorText, reconnect:this.connectOptions.reconnect, uri:this._wsuri});
+				}
+				if (errorCode !== ERROR.OK.code && this.connectOptions.reconnect) {
+					// Start automatic reconnect process for the very first time since last successful connect.
+					this._reconnectInterval = 1;
+					this._reconnect();
+					return;
+				}
+			} else {
+				// Otherwise we never had a connection, so indicate that the connect has failed.
+				if (this.connectOptions.mqttVersion === 4 && this.connectOptions.mqttVersionExplicit === false) {
+					this._trace("Failed to connect V4, dropping back to V3");
+					this.connectOptions.mqttVersion = 3;
+					if (this.connectOptions.uris) {
+						this.hostIndex = 0;
+						this._doConnect(this.connectOptions.uris[0]);
+					} else {
+						this._doConnect(this.uri);
+					}
+				} else if(this.connectOptions.onFailure) {
+					this.connectOptions.onFailure({invocationContext:this.connectOptions.invocationContext, errorCode:errorCode, errorMessage:errorText});
+				}
+			}
+		}
+	};
+
+	/** @ignore */
+	ClientImpl.prototype._trace = function () {
+		// Pass trace message back to client's callback function
+		if (this.traceFunction) {
+			for (var i in arguments)
+			{
+				if (typeof arguments[i] !== "undefined")
+					arguments.splice(i, 1, JSON.stringify(arguments[i]));
+			}
+			var record = Array.prototype.slice.call(arguments).join("");
+			this.traceFunction ({severity: "Debug", message: record	});
+		}
+
+		//buffer style trace
+		if ( this._traceBuffer !== null ) {
+			for (var i = 0, max = arguments.length; i < max; i++) {
+				if ( this._traceBuffer.length == this._MAX_TRACE_ENTRIES ) {
+					this._traceBuffer.shift();
+				}
+				if (i === 0) this._traceBuffer.push(arguments[i]);
+				else if (typeof arguments[i] === "undefined" ) this._traceBuffer.push(arguments[i]);
+				else this._traceBuffer.push("  "+JSON.stringify(arguments[i]));
+		   }
+		}
+	};
+
+	/** @ignore */
+	ClientImpl.prototype._traceMask = function (traceObject, masked) {
+		var traceObjectMasked = {};
+		for (var attr in traceObject) {
+			if (traceObject.hasOwnProperty(attr)) {
+				if (attr == masked)
+					traceObjectMasked[attr] = "******";
+				else
+					traceObjectMasked[attr] = traceObject[attr];
+			}
+		}
+		return traceObjectMasked;
+	};
+
+	// ------------------------------------------------------------------------
+	// Public Programming interface.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * The JavaScript application communicates to the server using a {@link Paho.MQTT.Client} object.
+	 * <p>
+	 * Most applications will create just one Client object and then call its connect() method,
+	 * however applications can create more than one Client object if they wish.
+	 * In this case the combination of host, port and clientId attributes must be different for each Client object.
+	 * <p>
+	 * The send, subscribe and unsubscribe methods are implemented as asynchronous JavaScript methods
+	 * (even though the underlying protocol exchange might be synchronous in nature).
+	 * This means they signal their completion by calling back to the application,
+	 * via Success or Failure callback functions provided by the application on the method in question.
+	 * Such callbacks are called at most once per method invocation and do not persist beyond the lifetime
+	 * of the script that made the invocation.
+	 * <p>
+	 * In contrast there are some callback functions, most notably <i>onMessageArrived</i>,
+	 * that are defined on the {@link Paho.MQTT.Client} object.
+	 * These may get called multiple times, and aren't directly related to specific method invocations made by the client.
+	 *
+	 * @name Paho.MQTT.Client
+	 *
+	 * @constructor
+	 *
+	 * @param {string} host - the address of the messaging server, as a fully qualified WebSocket URI, as a DNS name or dotted decimal IP address.
+	 * @param {number} port - the port number to connect to - only required if host is not a URI
+	 * @param {string} path - the path on the host to connect to - only used if host is not a URI. Default: '/mqtt'.
+	 * @param {string} clientId - the Messaging client identifier, between 1 and 23 characters in length.
+	 *
+	 * @property {string} host - <i>read only</i> the server's DNS hostname or dotted decimal IP address.
+	 * @property {number} port - <i>read only</i> the server's port.
+	 * @property {string} path - <i>read only</i> the server's path.
+	 * @property {string} clientId - <i>read only</i> used when connecting to the server.
+	 * @property {function} onConnectionLost - called when a connection has been lost.
+	 *                            after a connect() method has succeeded.
+	 *                            Establish the call back used when a connection has been lost. The connection may be
+	 *                            lost because the client initiates a disconnect or because the server or network
+	 *                            cause the client to be disconnected. The disconnect call back may be called without
+	 *                            the connectionComplete call back being invoked if, for example the client fails to
+	 *                            connect.
+	 *                            A single response object parameter is passed to the onConnectionLost callback containing the following fields:
+	 *                            <ol>
+	 *                            <li>errorCode
+	 *                            <li>errorMessage
+	 *                            </ol>
+	 * @property {function} onMessageDelivered - called when a message has been delivered.
+	 *                            All processing that this Client will ever do has been completed. So, for example,
+	 *                            in the case of a Qos=2 message sent by this client, the PubComp flow has been received from the server
+	 *                            and the message has been removed from persistent storage before this callback is invoked.
+	 *                            Parameters passed to the onMessageDelivered callback are:
+	 *                            <ol>
+	 *                            <li>{@link Paho.MQTT.Message} that was delivered.
+	 *                            </ol>
+	 * @property {function} onMessageArrived - called when a message has arrived in this Paho.MQTT.client.
+	 *                            Parameters passed to the onMessageArrived callback are:
+	 *                            <ol>
+	 *                            <li>{@link Paho.MQTT.Message} that has arrived.
+	 *                            </ol>
+	 * @property {function} onConnected - called when a connection is successfully made to the server.
+	 *                                  after a connect() method.
+	 *                                  Parameters passed to the onConnected callback are:
+	 *                                  <ol>
+	 *                                  <li>reconnect (boolean) - If true, the connection was the result of a reconnect.</li>
+	 *                                  <li>URI (string) - The URI used to connect to the server.</li>
+	 *                                  </ol>
+	 * @property {boolean} disconnectedPublishing - if set, will enable disconnected publishing in
+	 *                                            in the event that the connection to the server is lost.
+	 * @property {number} disconnectedBufferSize - Used to set the maximum number of messages that the disconnected
+	 *                                             buffer will hold before rejecting new messages. Default size: 5000 messages
+	 * @property {function} trace - called whenever trace is called. TODO
+	 */
+	var Client = function (host, port, path, clientId) {
+
+	    var uri;
+
+		if (typeof host !== "string")
+			throw new Error(format(ERROR.INVALID_TYPE, [typeof host, "host"]));
+
+	    if (arguments.length == 2) {
+	        // host: must be full ws:// uri
+	        // port: clientId
+	        clientId = port;
+	        uri = host;
+	        var match = uri.match(/^(wss?):\/\/((\[(.+)\])|([^\/]+?))(:(\d+))?(\/.*)$/);
+	        if (match) {
+	            host = match[4]||match[2];
+	            port = parseInt(match[7]);
+	            path = match[8];
+	        } else {
+	            throw new Error(format(ERROR.INVALID_ARGUMENT,[host,"host"]));
+	        }
+	    } else {
+	        if (arguments.length == 3) {
+				clientId = path;
+				path = "/mqtt";
+			}
+			if (typeof port !== "number" || port < 0)
+				throw new Error(format(ERROR.INVALID_TYPE, [typeof port, "port"]));
+			if (typeof path !== "string")
+				throw new Error(format(ERROR.INVALID_TYPE, [typeof path, "path"]));
+
+			var ipv6AddSBracket = (host.indexOf(":") !== -1 && host.slice(0,1) !== "[" && host.slice(-1) !== "]");
+			uri = "ws://"+(ipv6AddSBracket?"["+host+"]":host)+":"+port+path;
+		}
+
+		var clientIdLength = 0;
+		for (var i = 0; i<clientId.length; i++) {
+			var charCode = clientId.charCodeAt(i);
+			if (0xD800 <= charCode && charCode <= 0xDBFF)  {
+				 i++; // Surrogate pair.
+			}
+			clientIdLength++;
+		}
+		if (typeof clientId !== "string" || clientIdLength > 65535)
+			throw new Error(format(ERROR.INVALID_ARGUMENT, [clientId, "clientId"]));
+
+		var client = new ClientImpl(uri, host, port, path, clientId);
+		this._getHost =  function() { return host; };
+		this._setHost = function() { throw new Error(format(ERROR.UNSUPPORTED_OPERATION)); };
+
+		this._getPort = function() { return port; };
+		this._setPort = function() { throw new Error(format(ERROR.UNSUPPORTED_OPERATION)); };
+
+		this._getPath = function() { return path; };
+		this._setPath = function() { throw new Error(format(ERROR.UNSUPPORTED_OPERATION)); };
+
+		this._getURI = function() { return uri; };
+		this._setURI = function() { throw new Error(format(ERROR.UNSUPPORTED_OPERATION)); };
+
+		this._getClientId = function() { return client.clientId; };
+		this._setClientId = function() { throw new Error(format(ERROR.UNSUPPORTED_OPERATION)); };
+
+		this._getOnConnected = function() { return client.onConnected; };
+		this._setOnConnected = function(newOnConnected) {
+			if (typeof newOnConnected === "function")
+				client.onConnected = newOnConnected;
+			else
+				throw new Error(format(ERROR.INVALID_TYPE, [typeof newOnConnected, "onConnected"]));
+		};
+
+		this._getDisconnectedPublishing = function() { return client.disconnectedPublishing; };
+		this._setDisconnectedPublishing = function(newDisconnectedPublishing) {
+			client.disconnectedPublishing = newDisconnectedPublishing;
+		};
+
+		this._getDisconnectedBufferSize = function() { return client.disconnectedBufferSize; };
+		this._setDisconnectedBufferSize = function(newDisconnectedBufferSize) {
+			client.disconnectedBufferSize = newDisconnectedBufferSize;
+		};
+
+		this._getOnConnectionLost = function() { return client.onConnectionLost; };
+		this._setOnConnectionLost = function(newOnConnectionLost) {
+			if (typeof newOnConnectionLost === "function")
+				client.onConnectionLost = newOnConnectionLost;
+			else
+				throw new Error(format(ERROR.INVALID_TYPE, [typeof newOnConnectionLost, "onConnectionLost"]));
+		};
+
+		this._getOnMessageDelivered = function() { return client.onMessageDelivered; };
+		this._setOnMessageDelivered = function(newOnMessageDelivered) {
+			if (typeof newOnMessageDelivered === "function")
+				client.onMessageDelivered = newOnMessageDelivered;
+			else
+				throw new Error(format(ERROR.INVALID_TYPE, [typeof newOnMessageDelivered, "onMessageDelivered"]));
+		};
+
+		this._getOnMessageArrived = function() { return client.onMessageArrived; };
+		this._setOnMessageArrived = function(newOnMessageArrived) {
+			if (typeof newOnMessageArrived === "function")
+				client.onMessageArrived = newOnMessageArrived;
+			else
+				throw new Error(format(ERROR.INVALID_TYPE, [typeof newOnMessageArrived, "onMessageArrived"]));
+		};
+
+		this._getTrace = function() { return client.traceFunction; };
+		this._setTrace = function(trace) {
+			if(typeof trace === "function"){
+				client.traceFunction = trace;
+			}else{
+				throw new Error(format(ERROR.INVALID_TYPE, [typeof trace, "onTrace"]));
+			}
+		};
+
+		/**
+		 * Connect this Messaging client to its server.
+		 *
+		 * @name Paho.MQTT.Client#connect
+		 * @function
+		 * @param {object} connectOptions - Attributes used with the connection.
+		 * @param {number} connectOptions.timeout - If the connect has not succeeded within this
+		 *                    number of seconds, it is deemed to have failed.
+		 *                    The default is 30 seconds.
+		 * @param {string} connectOptions.userName - Authentication username for this connection.
+		 * @param {string} connectOptions.password - Authentication password for this connection.
+		 * @param {Paho.MQTT.Message} connectOptions.willMessage - sent by the server when the client
+		 *                    disconnects abnormally.
+		 * @param {number} connectOptions.keepAliveInterval - the server disconnects this client if
+		 *                    there is no activity for this number of seconds.
+		 *                    The default value of 60 seconds is assumed if not set.
+		 * @param {boolean} connectOptions.cleanSession - if true(default) the client and server
+		 *                    persistent state is deleted on successful connect.
+		 * @param {boolean} connectOptions.useSSL - if present and true, use an SSL Websocket connection.
+		 * @param {object} connectOptions.invocationContext - passed to the onSuccess callback or onFailure callback.
+		 * @param {function} connectOptions.onSuccess - called when the connect acknowledgement
+		 *                    has been received from the server.
+		 * A single response object parameter is passed to the onSuccess callback containing the following fields:
+		 * <ol>
+		 * <li>invocationContext as passed in to the onSuccess method in the connectOptions.
+		 * </ol>
+     * @param {function} connectOptions.onFailure - called when the connect request has failed or timed out.
+		 * A single response object parameter is passed to the onFailure callback containing the following fields:
+		 * <ol>
+		 * <li>invocationContext as passed in to the onFailure method in the connectOptions.
+		 * <li>errorCode a number indicating the nature of the error.
+		 * <li>errorMessage text describing the error.
+		 * </ol>
+     * @param {array} connectOptions.hosts - If present this contains either a set of hostnames or fully qualified
+		 * WebSocket URIs (ws://iot.eclipse.org:80/ws), that are tried in order in place
+		 * of the host and port paramater on the construtor. The hosts are tried one at at time in order until
+		 * one of then succeeds.
+     * @param {array} connectOptions.ports - If present the set of ports matching the hosts. If hosts contains URIs, this property
+		 * is not used.
+     * @param {boolean} connectOptions.reconnect - Sets whether the client will automatically attempt to reconnect
+     * to the server if the connection is lost.
+     *<ul>
+     *<li>If set to false, the client will not attempt to automatically reconnect to the server in the event that the
+     * connection is lost.</li>
+     *<li>If set to true, in the event that the connection is lost, the client will attempt to reconnect to the server.
+     * It will initially wait 1 second before it attempts to reconnect, for every failed reconnect attempt, the delay
+     * will double until it is at 2 minutes at which point the delay will stay at 2 minutes.</li>
+     *</ul>
+     * @param {number} connectOptions.mqttVersion - The version of MQTT to use to connect to the MQTT Broker.
+     *<ul>
+     *<li>3 - MQTT V3.1</li>
+     *<li>4 - MQTT V3.1.1</li>
+     *</ul>
+     * @param {boolean} connectOptions.mqttVersionExplicit - If set to true, will force the connection to use the
+     * selected MQTT Version or will fail to connect.
+     * @param {array} connectOptions.uris - If present, should contain a list of fully qualified WebSocket uris
+     * (e.g. ws://iot.eclipse.org:80/ws), that are tried in order in place of the host and port parameter of the construtor.
+     * The uris are tried one at a time in order until one of them succeeds. Do not use this in conjunction with hosts as
+     * the hosts array will be converted to uris and will overwrite this property.
+		 * @throws {InvalidState} If the client is not in disconnected state. The client must have received connectionLost
+		 * or disconnected before calling connect for a second or subsequent time.
+		 */
+		this.connect = function (connectOptions) {
+			connectOptions = connectOptions || {} ;
+			validate(connectOptions,  {timeout:"number",
+									   userName:"string",
+									   password:"string",
+									   willMessage:"object",
+									   keepAliveInterval:"number",
+									   cleanSession:"boolean",
+									   useSSL:"boolean",
+									   invocationContext:"object",
+									   onSuccess:"function",
+									   onFailure:"function",
+									   hosts:"object",
+									   ports:"object",
+									   reconnect:"boolean",
+									   mqttVersion:"number",
+									   mqttVersionExplicit:"boolean",
+									   uris: "object"});
+
+			// If no keep alive interval is set, assume 60 seconds.
+			if (connectOptions.keepAliveInterval === undefined)
+				connectOptions.keepAliveInterval = 60;
+
+			if (connectOptions.mqttVersion > 4 || connectOptions.mqttVersion < 3) {
+				throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.mqttVersion, "connectOptions.mqttVersion"]));
+			}
+
+			if (connectOptions.mqttVersion === undefined) {
+				connectOptions.mqttVersionExplicit = false;
+				connectOptions.mqttVersion = 4;
+			} else {
+				connectOptions.mqttVersionExplicit = true;
+			}
+
+			//Check that if password is set, so is username
+			if (connectOptions.password !== undefined && connectOptions.userName === undefined)
+				throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.password, "connectOptions.password"]));
+
+			if (connectOptions.willMessage) {
+				if (!(connectOptions.willMessage instanceof Message))
+					throw new Error(format(ERROR.INVALID_TYPE, [connectOptions.willMessage, "connectOptions.willMessage"]));
+				// The will message must have a payload that can be represented as a string.
+				// Cause the willMessage to throw an exception if this is not the case.
+				connectOptions.willMessage.stringPayload = null;
+
+				if (typeof connectOptions.willMessage.destinationName === "undefined")
+					throw new Error(format(ERROR.INVALID_TYPE, [typeof connectOptions.willMessage.destinationName, "connectOptions.willMessage.destinationName"]));
+			}
+			if (typeof connectOptions.cleanSession === "undefined")
+				connectOptions.cleanSession = true;
+			if (connectOptions.hosts) {
+
+				if (!(connectOptions.hosts instanceof Array) )
+					throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.hosts, "connectOptions.hosts"]));
+				if (connectOptions.hosts.length <1 )
+					throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.hosts, "connectOptions.hosts"]));
+
+				var usingURIs = false;
+				for (var i = 0; i<connectOptions.hosts.length; i++) {
+					if (typeof connectOptions.hosts[i] !== "string")
+						throw new Error(format(ERROR.INVALID_TYPE, [typeof connectOptions.hosts[i], "connectOptions.hosts["+i+"]"]));
+					if (/^(wss?):\/\/((\[(.+)\])|([^\/]+?))(:(\d+))?(\/.*)$/.test(connectOptions.hosts[i])) {
+						if (i === 0) {
+							usingURIs = true;
+						} else if (!usingURIs) {
+							throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.hosts[i], "connectOptions.hosts["+i+"]"]));
+						}
+					} else if (usingURIs) {
+						throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.hosts[i], "connectOptions.hosts["+i+"]"]));
+					}
+				}
+
+				if (!usingURIs) {
+					if (!connectOptions.ports)
+						throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.ports, "connectOptions.ports"]));
+					if (!(connectOptions.ports instanceof Array) )
+						throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.ports, "connectOptions.ports"]));
+					if (connectOptions.hosts.length !== connectOptions.ports.length)
+						throw new Error(format(ERROR.INVALID_ARGUMENT, [connectOptions.ports, "connectOptions.ports"]));
+
+					connectOptions.uris = [];
+
+					for (var i = 0; i<connectOptions.hosts.length; i++) {
+						if (typeof connectOptions.ports[i] !== "number" || connectOptions.ports[i] < 0)
+							throw new Error(format(ERROR.INVALID_TYPE, [typeof connectOptions.ports[i], "connectOptions.ports["+i+"]"]));
+						var host = connectOptions.hosts[i];
+						var port = connectOptions.ports[i];
+
+						var ipv6 = (host.indexOf(":") !== -1);
+						uri = "ws://"+(ipv6?"["+host+"]":host)+":"+port+path;
+						connectOptions.uris.push(uri);
+					}
+				} else {
+					connectOptions.uris = connectOptions.hosts;
+				}
+			}
+
+			client.connect(connectOptions);
+		};
+
+		/**
+		 * Subscribe for messages, request receipt of a copy of messages sent to the destinations described by the filter.
+		 *
+		 * @name Paho.MQTT.Client#subscribe
+		 * @function
+		 * @param {string} filter describing the destinations to receive messages from.
+		 * <br>
+		 * @param {object} subscribeOptions - used to control the subscription
+		 *
+		 * @param {number} subscribeOptions.qos - the maiximum qos of any publications sent
+		 *                                  as a result of making this subscription.
+		 * @param {object} subscribeOptions.invocationContext - passed to the onSuccess callback
+		 *                                  or onFailure callback.
+		 * @param {function} subscribeOptions.onSuccess - called when the subscribe acknowledgement
+		 *                                  has been received from the server.
+		 *                                  A single response object parameter is passed to the onSuccess callback containing the following fields:
+		 *                                  <ol>
+		 *                                  <li>invocationContext if set in the subscribeOptions.
+		 *                                  </ol>
+		 * @param {function} subscribeOptions.onFailure - called when the subscribe request has failed or timed out.
+		 *                                  A single response object parameter is passed to the onFailure callback containing the following fields:
+		 *                                  <ol>
+		 *                                  <li>invocationContext - if set in the subscribeOptions.
+		 *                                  <li>errorCode - a number indicating the nature of the error.
+		 *                                  <li>errorMessage - text describing the error.
+		 *                                  </ol>
+		 * @param {number} subscribeOptions.timeout - which, if present, determines the number of
+		 *                                  seconds after which the onFailure calback is called.
+		 *                                  The presence of a timeout does not prevent the onSuccess
+		 *                                  callback from being called when the subscribe completes.
+		 * @throws {InvalidState} if the client is not in connected state.
+		 */
+		this.subscribe = function (filter, subscribeOptions) {
+			if (typeof filter !== "string")
+				throw new Error("Invalid argument:"+filter);
+			subscribeOptions = subscribeOptions || {} ;
+			validate(subscribeOptions,  {qos:"number",
+										 invocationContext:"object",
+										 onSuccess:"function",
+										 onFailure:"function",
+										 timeout:"number"
+										});
+			if (subscribeOptions.timeout && !subscribeOptions.onFailure)
+				throw new Error("subscribeOptions.timeout specified with no onFailure callback.");
+			if (typeof subscribeOptions.qos !== "undefined" && !(subscribeOptions.qos === 0 || subscribeOptions.qos === 1 || subscribeOptions.qos === 2 ))
+				throw new Error(format(ERROR.INVALID_ARGUMENT, [subscribeOptions.qos, "subscribeOptions.qos"]));
+			client.subscribe(filter, subscribeOptions);
+		};
+
+		/**
+		 * Unsubscribe for messages, stop receiving messages sent to destinations described by the filter.
+		 *
+		 * @name Paho.MQTT.Client#unsubscribe
+		 * @function
+		 * @param {string} filter - describing the destinations to receive messages from.
+		 * @param {object} unsubscribeOptions - used to control the subscription
+		 * @param {object} unsubscribeOptions.invocationContext - passed to the onSuccess callback
+		                                      or onFailure callback.
+		 * @param {function} unsubscribeOptions.onSuccess - called when the unsubscribe acknowledgement has been received from the server.
+		 *                                    A single response object parameter is passed to the
+		 *                                    onSuccess callback containing the following fields:
+		 *                                    <ol>
+		 *                                    <li>invocationContext - if set in the unsubscribeOptions.
+		 *                                    </ol>
+		 * @param {function} unsubscribeOptions.onFailure called when the unsubscribe request has failed or timed out.
+		 *                                    A single response object parameter is passed to the onFailure callback containing the following fields:
+		 *                                    <ol>
+		 *                                    <li>invocationContext - if set in the unsubscribeOptions.
+		 *                                    <li>errorCode - a number indicating the nature of the error.
+		 *                                    <li>errorMessage - text describing the error.
+		 *                                    </ol>
+		 * @param {number} unsubscribeOptions.timeout - which, if present, determines the number of seconds
+		 *                                    after which the onFailure callback is called. The presence of
+		 *                                    a timeout does not prevent the onSuccess callback from being
+		 *                                    called when the unsubscribe completes
+		 * @throws {InvalidState} if the client is not in connected state.
+		 */
+		this.unsubscribe = function (filter, unsubscribeOptions) {
+			if (typeof filter !== "string")
+				throw new Error("Invalid argument:"+filter);
+			unsubscribeOptions = unsubscribeOptions || {} ;
+			validate(unsubscribeOptions,  {invocationContext:"object",
+										   onSuccess:"function",
+										   onFailure:"function",
+										   timeout:"number"
+										  });
+			if (unsubscribeOptions.timeout && !unsubscribeOptions.onFailure)
+				throw new Error("unsubscribeOptions.timeout specified with no onFailure callback.");
+			client.unsubscribe(filter, unsubscribeOptions);
+		};
+
+		/**
+		 * Send a message to the consumers of the destination in the Message.
+		 *
+		 * @name Paho.MQTT.Client#send
+		 * @function
+		 * @param {string|Paho.MQTT.Message} topic - <b>mandatory</b> The name of the destination to which the message is to be sent.
+		 * 					   - If it is the only parameter, used as Paho.MQTT.Message object.
+		 * @param {String|ArrayBuffer} payload - The message data to be sent.
+		 * @param {number} qos The Quality of Service used to deliver the message.
+		 * 		<dl>
+		 * 			<dt>0 Best effort (default).
+		 *     			<dt>1 At least once.
+		 *     			<dt>2 Exactly once.
+		 * 		</dl>
+		 * @param {Boolean} retained If true, the message is to be retained by the server and delivered
+		 *                     to both current and future subscriptions.
+		 *                     If false the server only delivers the message to current subscribers, this is the default for new Messages.
+		 *                     A received message has the retained boolean set to true if the message was published
+		 *                     with the retained boolean set to true
+		 *                     and the subscrption was made after the message has been published.
+		 * @throws {InvalidState} if the client is not connected.
+		 */
+		this.send = function (topic,payload,qos,retained) {
+			var message ;
+
+			if(arguments.length === 0){
+				throw new Error("Invalid argument."+"length");
+
+			}else if(arguments.length == 1) {
+
+				if (!(topic instanceof Message) && (typeof topic !== "string"))
+					throw new Error("Invalid argument:"+ typeof topic);
+
+				message = topic;
+				if (typeof message.destinationName === "undefined")
+					throw new Error(format(ERROR.INVALID_ARGUMENT,[message.destinationName,"Message.destinationName"]));
+				client.send(message);
+
+			}else {
+				//parameter checking in Message object
+				message = new Message(payload);
+				message.destinationName = topic;
+				if(arguments.length >= 3)
+					message.qos = qos;
+				if(arguments.length >= 4)
+					message.retained = retained;
+				client.send(message);
+			}
+		};
+
+		/**
+		 * Publish a message to the consumers of the destination in the Message.
+		 * Synonym for Paho.Mqtt.Client#send
+		 *
+		 * @name Paho.MQTT.Client#publish
+		 * @function
+		 * @param {string|Paho.MQTT.Message} topic - <b>mandatory</b> The name of the topic to which the message is to be published.
+		 * 					   - If it is the only parameter, used as Paho.MQTT.Message object.
+		 * @param {String|ArrayBuffer} payload - The message data to be published.
+		 * @param {number} qos The Quality of Service used to deliver the message.
+		 * 		<dl>
+		 * 			<dt>0 Best effort (default).
+		 *     			<dt>1 At least once.
+		 *     			<dt>2 Exactly once.
+		 * 		</dl>
+		 * @param {Boolean} retained If true, the message is to be retained by the server and delivered
+		 *                     to both current and future subscriptions.
+		 *                     If false the server only delivers the message to current subscribers, this is the default for new Messages.
+		 *                     A received message has the retained boolean set to true if the message was published
+		 *                     with the retained boolean set to true
+		 *                     and the subscrption was made after the message has been published.
+		 * @throws {InvalidState} if the client is not connected.
+		 */
+		 this.publish = function(topic,payload,qos,retained) {
+			 console.log("Publising message to: ", topic);
+			 var message ;
+
+ 			if(arguments.length === 0){
+ 				throw new Error("Invalid argument."+"length");
+
+ 			}else if(arguments.length == 1) {
+
+ 				if (!(topic instanceof Message) && (typeof topic !== "string"))
+ 					throw new Error("Invalid argument:"+ typeof topic);
+
+ 				message = topic;
+ 				if (typeof message.destinationName === "undefined")
+ 					throw new Error(format(ERROR.INVALID_ARGUMENT,[message.destinationName,"Message.destinationName"]));
+ 				client.send(message);
+
+ 			}else {
+ 				//parameter checking in Message object
+ 				message = new Message(payload);
+ 				message.destinationName = topic;
+ 				if(arguments.length >= 3)
+ 					message.qos = qos;
+ 				if(arguments.length >= 4)
+ 					message.retained = retained;
+ 				client.send(message);
+ 			}
+		};
+
+		/**
+		 * Normal disconnect of this Messaging client from its server.
+		 *
+		 * @name Paho.MQTT.Client#disconnect
+		 * @function
+		 * @throws {InvalidState} if the client is already disconnected.
+		 */
+		this.disconnect = function () {
+			client.disconnect();
+		};
+
+		/**
+		 * Get the contents of the trace log.
+		 *
+		 * @name Paho.MQTT.Client#getTraceLog
+		 * @function
+		 * @return {Object[]} tracebuffer containing the time ordered trace records.
+		 */
+		this.getTraceLog = function () {
+			return client.getTraceLog();
+		};
+
+		/**
+		 * Start tracing.
+		 *
+		 * @name Paho.MQTT.Client#startTrace
+		 * @function
+		 */
+		this.startTrace = function () {
+			client.startTrace();
+		};
+
+		/**
+		 * Stop tracing.
+		 *
+		 * @name Paho.MQTT.Client#stopTrace
+		 * @function
+		 */
+		this.stopTrace = function () {
+			client.stopTrace();
+		};
+
+		this.isConnected = function() {
+			return client.connected;
+		};
+	};
+
+	Client.prototype = {
+		get host() { return this._getHost(); },
+		set host(newHost) { this._setHost(newHost); },
+
+		get port() { return this._getPort(); },
+		set port(newPort) { this._setPort(newPort); },
+
+		get path() { return this._getPath(); },
+		set path(newPath) { this._setPath(newPath); },
+
+		get clientId() { return this._getClientId(); },
+		set clientId(newClientId) { this._setClientId(newClientId); },
+
+		get onConnected() { return this._getOnConnected(); },
+		set onConnected(newOnConnected) { this._setOnConnected(newOnConnected); },
+
+		get disconnectedPublishing() { return this._getDisconnectedPublishing(); },
+		set disconnectedPublishing(newDisconnectedPublishing) { this._setDisconnectedPublishing(newDisconnectedPublishing); },
+
+		get disconnectedBufferSize() { return this._getDisconnectedBufferSize(); },
+		set disconnectedBufferSize(newDisconnectedBufferSize) { this._setDisconnectedBufferSize(newDisconnectedBufferSize); },
+
+		get onConnectionLost() { return this._getOnConnectionLost(); },
+		set onConnectionLost(newOnConnectionLost) { this._setOnConnectionLost(newOnConnectionLost); },
+
+		get onMessageDelivered() { return this._getOnMessageDelivered(); },
+		set onMessageDelivered(newOnMessageDelivered) { this._setOnMessageDelivered(newOnMessageDelivered); },
+
+		get onMessageArrived() { return this._getOnMessageArrived(); },
+		set onMessageArrived(newOnMessageArrived) { this._setOnMessageArrived(newOnMessageArrived); },
+
+		get trace() { return this._getTrace(); },
+		set trace(newTraceFunction) { this._setTrace(newTraceFunction); }
+
+	};
+
+	/**
+	 * An application message, sent or received.
+	 * <p>
+	 * All attributes may be null, which implies the default values.
+	 *
+	 * @name Paho.MQTT.Message
+	 * @constructor
+	 * @param {String|ArrayBuffer} payload The message data to be sent.
+	 * <p>
+	 * @property {string} payloadString <i>read only</i> The payload as a string if the payload consists of valid UTF-8 characters.
+	 * @property {ArrayBuffer} payloadBytes <i>read only</i> The payload as an ArrayBuffer.
+	 * <p>
+	 * @property {string} destinationName <b>mandatory</b> The name of the destination to which the message is to be sent
+	 *                    (for messages about to be sent) or the name of the destination from which the message has been received.
+	 *                    (for messages received by the onMessage function).
+	 * <p>
+	 * @property {number} qos The Quality of Service used to deliver the message.
+	 * <dl>
+	 *     <dt>0 Best effort (default).
+	 *     <dt>1 At least once.
+	 *     <dt>2 Exactly once.
+	 * </dl>
+	 * <p>
+	 * @property {Boolean} retained If true, the message is to be retained by the server and delivered
+	 *                     to both current and future subscriptions.
+	 *                     If false the server only delivers the message to current subscribers, this is the default for new Messages.
+	 *                     A received message has the retained boolean set to true if the message was published
+	 *                     with the retained boolean set to true
+	 *                     and the subscrption was made after the message has been published.
+	 * <p>
+	 * @property {Boolean} duplicate <i>read only</i> If true, this message might be a duplicate of one which has already been received.
+	 *                     This is only set on messages received from the server.
+	 *
+	 */
+	var Message = function (newPayload) {
+		var payload;
+		if (   typeof newPayload === "string" ||
+		newPayload instanceof ArrayBuffer ||
+		newPayload instanceof Int8Array   ||
+		newPayload instanceof Uint8Array  ||
+		newPayload instanceof Int16Array  ||
+		newPayload instanceof Uint16Array ||
+		newPayload instanceof Int32Array  ||
+		newPayload instanceof Uint32Array ||
+		newPayload instanceof Float32Array ||
+		newPayload instanceof Float64Array
+		   ) {
+			payload = newPayload;
+		} else {
+			throw (format(ERROR.INVALID_ARGUMENT, [newPayload, "newPayload"]));
+		}
+
+		this._getPayloadString = function () {
+			if (typeof payload === "string")
+				return payload;
+			else
+				return parseUTF8(payload, 0, payload.length);
+		};
+
+		this._getPayloadBytes = function() {
+			if (typeof payload === "string") {
+				var buffer = new ArrayBuffer(UTF8Length(payload));
+				var byteStream = new Uint8Array(buffer);
+				stringToUTF8(payload, byteStream, 0);
+
+				return byteStream;
+			} else {
+				return payload;
+			}
+		};
+
+		var destinationName;
+		this._getDestinationName = function() { return destinationName; };
+		this._setDestinationName = function(newDestinationName) {
+			if (typeof newDestinationName === "string")
+				destinationName = newDestinationName;
+			else
+				throw new Error(format(ERROR.INVALID_ARGUMENT, [newDestinationName, "newDestinationName"]));
+		};
+
+		var qos = 0;
+		this._getQos = function() { return qos; };
+		this._setQos = function(newQos) {
+			if (newQos === 0 || newQos === 1 || newQos === 2 )
+				qos = newQos;
+			else
+				throw new Error("Invalid argument:"+newQos);
+		};
+
+		var retained = false;
+		this._getRetained = function() { return retained; };
+		this._setRetained = function(newRetained) {
+			if (typeof newRetained === "boolean")
+				retained = newRetained;
+			else
+				throw new Error(format(ERROR.INVALID_ARGUMENT, [newRetained, "newRetained"]));
+		};
+
+		var duplicate = false;
+		this._getDuplicate = function() { return duplicate; };
+		this._setDuplicate = function(newDuplicate) { duplicate = newDuplicate; };
+	};
+
+	Message.prototype = {
+		get payloadString() { return this._getPayloadString(); },
+		get payloadBytes() { return this._getPayloadBytes(); },
+
+		get destinationName() { return this._getDestinationName(); },
+		set destinationName(newDestinationName) { this._setDestinationName(newDestinationName); },
+
+		get topic() { return this._getDestinationName(); },
+		set topic(newTopic) { this._setDestinationName(newTopic); },
+
+		get qos() { return this._getQos(); },
+		set qos(newQos) { this._setQos(newQos); },
+
+		get retained() { return this._getRetained(); },
+		set retained(newRetained) { this._setRetained(newRetained); },
+
+		get duplicate() { return this._getDuplicate(); },
+		set duplicate(newDuplicate) { this._setDuplicate(newDuplicate); }
+	};
+
+	// Module contents.
+	return {
+		Client: Client,
+		Message: Message
+	};
+})(window);
+return PahoMQTT;
+});
+
+
+/***/ }),
+/* 352 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var Common_1 = __webpack_require__(1);
+var logger = new Common_1.ConsoleLogger('AbstractPubSubProvider');
+var AbstractPubSubProvider = /** @class */ (function () {
+    function AbstractPubSubProvider(options) {
+        if (options === void 0) { options = {}; }
+        this._config = options;
+    }
+    AbstractPubSubProvider.prototype.configure = function (config) {
+        if (config === void 0) { config = {}; }
+        this._config = __assign({}, config, this._config);
+        logger.debug("configure " + this.getProviderName(), this._config);
+        return this.options;
+    };
+    AbstractPubSubProvider.prototype.getCategory = function () { return 'PubSub'; };
+    Object.defineProperty(AbstractPubSubProvider.prototype, "options", {
+        get: function () { return __assign({}, this._config); },
+        enumerable: true,
+        configurable: true
+    });
+    return AbstractPubSubProvider;
+}());
+exports.AbstractPubSubProvider = AbstractPubSubProvider;
+
+
+/***/ }),
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37373,8 +41069,8 @@ module.exports = function spread(callback) {
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var I18n_1 = __webpack_require__(346);
-var Logger_1 = __webpack_require__(14);
+var I18n_1 = __webpack_require__(354);
+var Logger_1 = __webpack_require__(10);
 var logger = new Logger_1.ConsoleLogger('I18n');
 var _config = null;
 var _i18n = null;
@@ -37466,7 +41162,7 @@ exports.default = I18n;
 
 
 /***/ }),
-/* 346 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37484,7 +41180,7 @@ exports.default = I18n;
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = __webpack_require__(2);
+var Common_1 = __webpack_require__(1);
 var logger = new Common_1.ConsoleLogger('I18n');
 /**
  * Language transition class

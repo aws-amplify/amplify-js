@@ -707,7 +707,7 @@ export default class AuthClass {
      */
     public currentUserCredentials() : Promise<any> {
         const that = this;
-        logger.debug('getting current user credentials');
+        logger.debug('getting current user credential');
         if (Platform.isReactNative) {
             // asyncstorage
             return Cache.getItem('federatedInfo')
@@ -763,15 +763,18 @@ export default class AuthClass {
                 return that._setCredentialsFromFederation({ provider, token, user, expires_at });
             }).catch(e => {
                 logger.debug('refresh federated token failed', e);
-                return Promise.reject(e);
+                this.cleanCachedItems();
+                return Promise.reject('refreshing federation token failed: ' + e);
             });
         } else {
             if (!that._refreshHandlers[provider]) {
                 logger.debug('no refresh hanlder for provider:', provider);
+                this.cleanCachedItems();
+                return Promise.reject('no refresh hanlder for provider');
             } else {
                 logger.debug('token not expired');
+                return this._setCredentialsFromFederation({provider, token, user, expires_at });
             }
-            return this._setCredentialsFromFederation({provider, token, user, expires_at });
         }
     }
 
@@ -834,20 +837,20 @@ export default class AuthClass {
      * @return - A promise resolved if success
      */
     public async signOut(): Promise<any> {
-        await this.currentCredentials();
-        const source = this.credentials_source;
-        // clean out the cached stuff
-        this.credentials.clearCachedId();
-        // clear federatedInfo
-        Cache.removeItem('federatedInfo');
-        Cache.removeItem('federatedUser');
+        try {
+            await this.cleanCachedItems();
+        } catch (e) {
+            logger.debug('failed to clear cached items');
+        }
 
+        const source = this.credentials_source;
         if (source === 'aws' || source === 'userPool') {
             if (!this.userPool) { return Promise.reject('No userPool'); }
             const user = this.userPool.getCurrentUser();
-            if (!user) { return Promise.resolve(); }
-            logger.debug('user sign out', user);
-            user.signOut();
+            if (user) {
+                logger.debug('user sign out', user);
+                user.signOut();
+            }
         }
 
         const that = this;
@@ -863,6 +866,25 @@ export default class AuthClass {
                 resolve();
             });
         });
+    }
+
+    private async cleanCachedItems() {
+        // clear cognito cached item
+        const { identityPoolId, region, mandatorySignIn } = this._config;
+        if (identityPoolId) {
+            // work around for cognito js sdk to ensure clearCacheId works
+            const credentials = new CognitoIdentityCredentials(
+                {
+                IdentityPoolId: identityPoolId
+            },  {
+                region
+            });
+            credentials.clearCachedId();
+        }
+        
+        // clear federatedInfo
+        await Cache.removeItem('federatedInfo');
+        await Cache.removeItem('federatedUser');
     }
 
     /**
@@ -955,8 +977,17 @@ export default class AuthClass {
                 const attributes = await this.userAttributes(user);
                 const userAttrs:object = this.attributesToObject(attributes);
 
+                // check if the credentials is in the memory
+                if (!this.credentials) {
+                    try {
+                        await this.currentCredentials();
+                    } catch (e) {
+                        logger.debug('Failed to retrieve credentials while getting current user info', e);
+                    }
+                }
+
                 const info = {
-                    'id': this.credentials.identityId,
+                    'id': this.credentials? this.credentials.identityId : undefined,
                     'username': user.username,
                     'attributes': userAttrs
                 };
@@ -1105,9 +1136,10 @@ export default class AuthClass {
             'developer': 'cognito-identity.amazonaws.com'
         };
 
-        const domain = domains[provider];
+        // Use custom provider url instead of the predefined ones
+        const domain = domains[provider] || provider;
         if (!domain) {
-            return Promise.reject(provider + ' is not supported: [google, facebook, amazon, developer]');
+            return Promise.reject('You must specify a federated provider');
         }
 
         const logins = {};
@@ -1146,7 +1178,7 @@ export default class AuthClass {
                 },
                 (err) => {
                     logger.debug('Failed to load credentials', credentials);
-                    rej('Failed to load creadentials');
+                    rej(err);
                 }
             );
         });
