@@ -12,12 +12,12 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    Text, 
-    TextInput, 
-    Button, 
-    TouchableHighlight 
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    TouchableHighlight
 } from 'react-native';
 import {
     Auth,
@@ -25,16 +25,19 @@ import {
     Logger
 } from 'aws-amplify';
 import AuthPiece from './AuthPiece';
-import { 
-    Username, 
-    Password, 
-    LinkCell, 
-    Header, 
-    ErrorRow 
+import {
+    Username,
+    Password,
+    LinkCell,
+    Header,
+    ErrorRow
 } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
+import DimissKeyboardHOC from './DimissKeyboardHOC';
 
 const logger = new Logger('SignIn');
+
+const Dimiss = DimissKeyboardHOC(View);
 
 const Footer = (props) => {
     const { theme, onStateChange } = props;
@@ -99,7 +102,7 @@ export default class SignIn extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <View style={theme.section}>
+            <DimissView style={theme.section}>
                 <Header theme={theme}>{I18n.get('Sign In')}</Header>
                 <View style={theme.sectionBody}>
                     <Username
@@ -119,7 +122,7 @@ export default class SignIn extends AuthPiece {
                 </View>
                 <Footer theme={theme} onStateChange={this.changeState} />
                 <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-            </View>
+            </DimissView>
         );
     }
 }
