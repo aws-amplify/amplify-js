@@ -26,10 +26,10 @@ import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 const logger = new Logger('AnalyticsClass');
 
 // events buffer
-const BUFFER_SIZE = 1000;
-const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-const interval = 5*1000; // 5s
-const RESEND_LIMIT = 5;
+// let buffer_size = 1000;
+// let MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
+// let INTERVAL = 5 * 1000; // 5s
+// let RESEND_LIMIT = 5;
 /**
 * Provide mobile analytics client functions
 */
@@ -39,6 +39,7 @@ export default class AnalyticsClass {
     private _provider;
     private _pluggables: AnalyticsProvider[];
     private _disabled;
+    private _timer;
 
     /**
      * Initialize Analtyics
@@ -46,18 +47,27 @@ export default class AnalyticsClass {
      */
     constructor() {
         this._buffer = [];
-        this._config = {};
+        this._config = {
+            clientInfo: ClientDevice.clientInfo(),
+            bufferSize: 1000,
+            maxSizePerFlush: 100,
+            interval: 5 * 1000,
+            resendLimits: 5
+        };
         this._pluggables = [];
         this._disabled = false;
-        // default one
+        this._setTimer();
+    }
+    
+    private _setTimer() {
+        if (this._timer) clearInterval(this._timer);
 
-        // events batch
         const that = this;
+        const { maxSizePerFlush, interval } = this._config;
 
-        // flush event buffer
-        setInterval(
+        this._timer = setInterval(
             () => {
-                const size = this._buffer.length < MAX_SIZE_PER_FLUSH ? this._buffer.length : MAX_SIZE_PER_FLUSH;
+                const size = that._buffer.length < maxSizePerFlush ? that._buffer.length : maxSizePerFlush;
                 for (let i = 0; i < size; i += 1) {
                     const params = this._buffer.shift();
                     that._sendFromBuffer(params);
@@ -75,14 +85,15 @@ export default class AnalyticsClass {
         const amplifyConfig = Parser.parseMobilehubConfig(config);
         const conf = Object.assign({}, this._config, amplifyConfig.Analytics);
 
-        const clientInfo:any = ClientDevice.clientInfo();
-        conf['clientInfo'] = conf['client_info']? conf['client_info'] : clientInfo;
-
         this._config = conf;
 
         if (conf['disabled']) {
             this._disabled = true;
         }
+        if (conf['interval'] || conf['maxSizePerFlush']) {
+            this._setTimer();
+        }
+
         this._pluggables.map((pluggable) => {
             pluggable.configure(conf);
         });
@@ -133,7 +144,8 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = { eventName: '_session_start', timestamp, config: this._config, resendLimits: RESEND_LIMIT };
+        const { resendLimits } = this._config;
+        const params = { eventName: '_session_start', timestamp, config: this._config, resendLimits };
         return this._putToBuffer(params);
     }
 
@@ -152,7 +164,8 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = { eventName: '_session_stop', timestamp, config: this._config, resendLimits: RESEND_LIMIT };
+        const { resendLimits } = this._config;
+        const params = { eventName: '_session_stop', timestamp, config: this._config, resendLimits };
         return this._putToBuffer(params);
     }
 
@@ -168,7 +181,8 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = { eventName, attributes, metrics, timestamp, config: this._config, resendLimits: RESEND_LIMIT };
+        const { resendLimits } = this._config;
+        const params = { eventName, attributes, metrics, timestamp, config: this._config, resendLimits };
         return this._putToBuffer(params);
     }
 
@@ -178,7 +192,8 @@ export default class AnalyticsClass {
 
         const timestamp = new Date().getTime();
         const conf = Object.assign(this._config, config);
-        const params = { eventName: '_update_endpoint', timestamp, config: conf, resendLimits: RESEND_LIMIT };
+        const { resendLimits } = this._config;
+        const params = { eventName: '_update_endpoint', timestamp, config: conf, resendLimits };
         return this._putToBuffer(params);
     }
 
@@ -208,11 +223,12 @@ export default class AnalyticsClass {
      * Put events into buffer
      */
     private _putToBuffer(params) {
+        const { bufferSize } = this._config;
         if (this._disabled) {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
         }
-        if (this._buffer.length < BUFFER_SIZE) {
+        if (this._buffer.length < bufferSize) {
             this._buffer.push(params);
             return Promise.resolve();
         }
