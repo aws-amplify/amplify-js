@@ -127,7 +127,14 @@ export default class Greetings extends AuthPiece {
     userGreetings(theme) {
         const user = this.state.authData;
         const greeting = this.props.inGreeting || this.inGreeting;
-        const name = user.name || user.username;
+        // get name from attributes first
+        const nameFromAttr = user.attributes? 
+            (user.attributes.name || 
+            (user.attributes.given_name? 
+                (user.attributes.given_name + ' ' + user.attributes.family_name) : undefined))
+            : undefined;
+
+        const name = nameFromAttr || user.name || user.username;
         const message = (typeof greeting === 'function')? greeting(name) : greeting;
         return (
             <span>

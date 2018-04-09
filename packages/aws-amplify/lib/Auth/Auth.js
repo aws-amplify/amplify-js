@@ -694,20 +694,20 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.currentAuthenticatedUser = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var federatedUser, e_1, _a, e_2;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var federatedUser, e_1, user, attributes, e_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         federatedUser = null;
-                        _b.label = 1;
+                        _a.label = 1;
                     case 1:
-                        _b.trys.push([1, 3, , 4]);
+                        _a.trys.push([1, 3, , 4]);
                         return [4 /*yield*/, Cache_1.default.getItem('federatedUser')];
                     case 2:
-                        federatedUser = _b.sent();
+                        federatedUser = _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        e_1 = _b.sent();
+                        e_1 = _a.sent();
                         logger.debug('cannot load federated user from cache');
                         return [3 /*break*/, 4];
                     case 4:
@@ -717,18 +717,21 @@ var AuthClass = /** @class */ (function () {
                         return [2 /*return*/, this.user];
                     case 5:
                         logger.debug('get current authenticated userpool user');
-                        _b.label = 6;
+                        _a.label = 6;
                     case 6:
-                        _b.trys.push([6, 8, , 9]);
-                        _a = this;
+                        _a.trys.push([6, 9, , 10]);
                         return [4 /*yield*/, this.currentUserPoolUser()];
                     case 7:
-                        _a.user = _b.sent();
-                        return [2 /*return*/, this.user];
+                        user = _a.sent();
+                        return [4 /*yield*/, this.userAttributes(user)];
                     case 8:
-                        e_2 = _b.sent();
+                        attributes = _a.sent();
+                        this.user = Object.assign({}, user, { attributes: attributes });
+                        return [2 /*return*/, this.user];
+                    case 9:
+                        e_2 = _a.sent();
                         return [2 /*return*/, Promise.reject('not authenticated')];
-                    case 9: return [2 /*return*/];
+                    case 10: return [2 /*return*/];
                 }
             });
         });
@@ -1265,7 +1268,7 @@ var AuthClass = /** @class */ (function () {
                 res(that.credentials);
             }, function (err) {
                 logger.debug('Failed to load credentials', credentials);
-                rej('Failed to load creadentials');
+                rej(err);
             });
         });
     };
