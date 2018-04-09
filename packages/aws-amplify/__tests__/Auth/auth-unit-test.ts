@@ -1432,6 +1432,13 @@ describe('auth unit test', () => {
                     });
                 });
 
+            const spyon3 = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                auth['credentials'] = {
+                    identityId: 'identityId'
+                }
+                return Promise.resolve();
+            });
+
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toEqual({
                 username: 'username',

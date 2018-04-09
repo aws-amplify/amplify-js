@@ -4,9 +4,9 @@
 
 AWS Amplify PubSub module provides connectivity with cloud-based message-oriented middleware. You can use PubSub to pass messages between your app instances and your app's backend for creating real-time interactive experiences.
 
-PubSub is available with **Generic MQTT Over WebSocket Provider** and AWS IoT *(Coming soon)*. 
+PubSub is available with **AWS IoT** and **Generic MQTT Over WebSocket Provider**. 
 
-When you use AWS IoT, AWS Amplify PubSub module will automatically sign your HTTP requests when sending your messages.
+With AWS IoT, AWS Amplify PubSub module automatically signs your HTTP requests when sending your messages.
 {: .callout .callout--info}
 
 ## Installation and Configuration
