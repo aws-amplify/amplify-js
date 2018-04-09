@@ -1,4 +1,4 @@
-# aws-amlify-angular
+# aws-amplify-angular
 AWS Amplify Angular Components
 
 ## Getting Started

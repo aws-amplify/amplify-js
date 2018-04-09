@@ -19,12 +19,11 @@ export class AmplifyService {
   private _analytics: AnalyticsClass;
   private _storage: StorageClass;
   private _api: APIClass;
+  private _cache: any;
+  private _pubsub: any;
 
   private _authState = new Subject<AuthState>();
   authStateChange$ = this._authState.asObservable();
-
-  private _networkState = new Subject<string>();
-  networkStateChange$ = this._networkState.asObservable();
 
   constructor() {
     authDecorator(this._authState);
@@ -33,36 +32,17 @@ export class AmplifyService {
     this._analytics = Amplify.Analytics;
     this._storage = Amplify.Storage;
     this._api = Amplify.API;
-
-    this.listenNetwork();
-    this.onNetworkStateChange = this.onNetworkStateChange.bind(this);
+    this._cache = Amplify.Cache;
+    this._pubsub = Amplify.PubSub;
   }
 
   auth(): AuthClass { return this._auth; }
   analytics(): AnalyticsClass { return this._analytics; }
   storage(): StorageClass { return this._storage; }
   api(): APIClass { return this._api; }
+  cache(): any { return this._cache; }
+  pubsub(): any { return this._pubsub; }
 
   authState() { return this._authState; }
   setAuthState(state: AuthState) { this._authState.next(state); }
-
-  onNetworkStateChange() {
-    if (typeof window === 'undefined') {
-      logger.warn('there is no window object');
-      return;
-    }
-
-    const online = window.navigator && window.navigator.onLine;
-    this._networkState.next(online? 'online' : 'offline');
-  }
-
-  listenNetwork() {
-    if (typeof window === 'undefined') {
-      logger.warn('there is no window object');
-      return;
-    }
-
-    window.addEventListener('online', this.onNetworkStateChange);
-    window.addEventListener('offline', this.onNetworkStateChange);
-  }
 }
