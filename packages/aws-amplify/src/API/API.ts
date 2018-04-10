@@ -10,6 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { OperationDefinitionNode } from 'graphql';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
@@ -19,6 +20,7 @@ import { RestClient as RestClass } from './RestClient';
 
 import Auth from '../Auth';
 import { ConsoleLogger as Logger } from '../Common/Logger';
+import { GraphQLOptions, GraphQLResult } from './types';
 
 const logger = new Logger('API');
 
@@ -293,7 +295,31 @@ export default class APIClass {
         return headers;
     }
 
-    async graphql({ query: queryStr, variables }) {
+    /**
+     * Executes a GraphQL operation
+     *
+     * @param {GraphQLOptions} GraphQL Options
+     * @returns {Promise<GraphQLResult> | Observable<object>}
+     */
+    graphql({ query, variables = {} }: GraphQLOptions) {
+
+        const doc = parse(query);
+
+        const [operationDef = {},] = doc.definitions.filter(def => def.kind === 'OperationDefinition');
+        const { operation: operationType } = operationDef as OperationDefinitionNode;
+
+        switch (operationType) {
+            case 'query':
+            case 'mutation':
+                return this._graphql({ query, variables });
+            case 'subscription':
+                return this._graphqlSubscribe({ query, variables });
+        }
+
+        throw new Error(`invalid operation type: ${operationType}`);
+    }
+
+    private async _graphql({ query: queryStr, variables }: GraphQLOptions): Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
         }
@@ -336,7 +362,7 @@ export default class APIClass {
         return response;
     }
 
-    graphqlSubscribe({ query, variables }) {
+    private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
         return new Observable(observer => {
 
             let handle = null;
@@ -344,7 +370,7 @@ export default class APIClass {
             (async () => {
                 const {
                     extensions: { subscription }
-                } = await this.graphql({ query, variables });
+                } = await this._graphql({ query, variables });
 
                 const { newSubscriptions } = subscription;
 
