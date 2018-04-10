@@ -353,10 +353,7 @@ export default class APIClass {
         const { errors } = response;
 
         if (errors && errors.length) {
-            const error = new Error(errors.map(err => `${err.errorType}: ${err.message}`).join('\n'));
-            (<any>error).errors = errors;
-
-            throw error;
+            throw response;
         }
 
         return response;

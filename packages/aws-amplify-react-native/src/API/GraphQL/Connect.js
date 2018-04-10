@@ -24,6 +24,7 @@ export default class Connect extends Component {
         return {
             loading: false,
             data: {},
+            errors: [],
             mutation: () => console.warn('Not implemented'),
         };
     }
@@ -39,16 +40,24 @@ export default class Connect extends Component {
             onSubscriptionMsg = () => null
         } = this.props;
 
-        let { data, mutation: mutationProp } = this.getDefaultState();
+        let { data, mutation: mutationProp, errors } = this.getDefaultState();
 
         const hasValidQuery = query && getOperationType(query) === 'query';
         const hasValidMutation = mutation && getOperationType(mutation) === 'mutation';
         const hasValidSubscription = subscription && getOperationType(subscription.query) === 'subscription';
 
         if (hasValidQuery) {
-            const response = await API.graphql({ query, variables });
+            try {
+                data = null;
 
-            data = response.data;
+                const response = await API.graphql({ query, variables });
+
+                data = response.data;
+            } catch (err) {
+                data = err.data;
+                errors = err.errors;
+            }
+
         }
 
         if (hasValidMutation) {
@@ -77,7 +86,7 @@ export default class Connect extends Component {
             });
         }
 
-        this.setState({ data, mutation: mutationProp, loading: false });
+        this.setState({ data, errors, mutation: mutationProp, loading: false });
     }
 
     _unsubscribe() {
@@ -116,8 +125,8 @@ export default class Connect extends Component {
     }
 
     render() {
-        const { data, loading, mutation } = this.state;
+        const { data, loading, mutation, errors } = this.state;
 
-        return this.props.children({ data, loading, mutation }) || null;
+        return this.props.children({ data, errors, loading, mutation }) || null;
     }
 }
