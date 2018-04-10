@@ -292,7 +292,7 @@ this._validAuthStates = ['signedIn'];
 in the component's constructor, then implement `showComponent(theme) {}` in lieu of the typical
 `render() {}` method.
 
-### Federated Identities (Social Sign-in)
+### Using Federated Identities (Social Sign-in)
 
 **Availibility Note**
 Currently, our federated identity components only support Google, Facebook and Amazon identities, and works with React.
@@ -352,54 +352,69 @@ const federated = {
 
 There is also `withGoogle`, `withFacebook`, `withAmazon` components, in case you need to customize a single provider.
 
-### Cognito Hosted UI
 
-Cognito hosted UI provides general availability of a Built-in Customizable User Experience for Sign-in, OAuth 2.0 Support, and Federation with Facebook, Login with Amazon, Google, and SAML providers for User Pools.
 
-Note: this feature is only supported with aws-amplify@^0.2.15 and aws-amplify-react@^0.1.39
+### Using Amazon Cognito Hosted UI
+
+Amazon Cognito provides a customizable user experience via the hosted UI. The hosted UI supports OAuth 2.0 and Federated Identities with Facebook, Amazon, Google, and SAML providers.
+
+Note: Amazon Cognito hosted UI feature is supported with *aws-amplify@^0.2.15* and *aws-amplify-react@^0.1.39* versions.
+{: .callout .callout--info}
 
 #### Setup your Cognito App Client
 
-First you need to setup your App Client in the Cognito User Pool console.
+To start using hosted UI, first, you need to setup your App Client in the Amazon Cognito console.
 
-* Go to: App integration -> App client settings
-    * Select Identity Providers
-    * Input your Callback URL and Sign out URL.
-    * Select OAuth Flows (Authorization code grant is the recommended choice for security reasons)
-    * Choose OAuth Scopes
+To setup App Client;
+- Go to [Amazon Cognito Console](https://aws.amazon.com/cognito/).
+- Click *User Pools* on the top menu to select a User Pool or create a new one.
+- Click *App integration*  and *App client settings* on the left menu.
+- Select *Enabled Identity Providers* and enter *Callback URL(s)* and *Sign out URL(s)* fields.
+- Under the *OAuth 2.0* section, select an OAuth Flow. *Authorization code grant* is the recommended choice for security reasons.
+- Choose item(s) from *OAuth Scopes*.
+- Click 'Save Changes'
 
-* Go to: App integration -> Domain name
-    * Input the domain prefix for sign-up and sign-in pages hosted by Cognito
+To enable the domain for your hosted UI;
 
-To add federation provider
+- On the left menu, go to  *App integration* > *Domain name*.
+- In the *Domain prefix* section, enter the prefix for the pages that will be hosted by Amazon Cognito.
 
-Note: Before you doing this, make sure your Cognito User Pool doesn't set ```phone_number``` as required attribute. Because providers like Google won't grant the permission to Cognito to get the users' phone number from it.
+You can also enable Federated Identities for your hosted UI;  
 
-* Go to: Federation -> Identity providers
-    * Select the federated identity provider
-    * Input required configuration like App Id, App secret, Authorized scope
-    * Set the Oauth Redirected URI in your Facebook/Google app's setting page to:
+- Go to *Federation* > *Identity providers*
+- Select an *Identity provider* and enter required credentials for the identity provider. (e.g., App Id, App secret, Authorized scope)
+- In the settings page for your selected identity provider (Facebook, Google, etc.),  set *Oauth Redirected URI* to `https://your-domain-prefix.auth.us-east 1.amazoncognito.com/oauth2/idpresponse` (*your-domain-prefix* is the domain prefix you have entered in previously).
+- To retrieve user attributes from your identity provider, go to *Federation* > *Attribute mapping*. Here, you can map Federation Provider attributes to corresponding User pool attributes. 
 
-        ```https://your-domain-prefix.auth.us-east-1.amazoncognito.com/oauth2/idpresponse```
+If  *email* attribute is a required field in your Cognito User Pool settings, please make sure that you have selected *email* in your Authorized Scopes, and you have mapped it correctly to your User Pool attributes.
+{: .callout .callout-info}
 
-* Go to Federation -> Attribute mapping
-    * Map Federation Provider attributes to corresponding User pool attributes. For example, if the ```email``` attribute is required in your User Pool setting, please make sure you have ```email``` in your authorized scopes and map it correctly into the User Pool.
+#### Configuring the Hosted UI
 
-* Don't forget to select this provider in the App client settings
+To configure your application for hosted UI, you need to use *hosted UI* options:
 
-#### Integrate it into your App
-
-* You need to pass your hosted ui options into Amplify:
 ```js
 import Amplify from 'aws-amplify';
 
 const hostedUIOptions = {
-    AppWebDomain : 'your-domain-prefix.auth.us-east-1.amazoncognito.com', // Domain name
-    TokenScopesArray : ['phone', 'email', 'profile', 'openid', 'aws.cognito.signin.user.admin'], // Authorized scopes,
-    RedirectUriSignIn : 'http://localhost:3000/', // Callback URL
-    RedirectUriSignOut : 'http://localhost:3000/', // Sign out URL
-    AdvancedSecurityDataCollectionFlag : true, // indicating if the data collection is enabled to support cognito   advanced security features. By default, this flag is set to true.
-    ResponseType: 'code' // 'code' for Authorization code grant, 'token' for Implicit grant
+    // Domain name
+    AppWebDomain : 'your-domain-prefix.auth.us-east-1.amazoncognito.com', 
+    
+    // Authorized scopes
+    TokenScopesArray : ['phone', 'email', 'profile', 'openid','aws.cognito.signin.user.admin'], 
+
+    // Callback URL
+    RedirectUriSignIn : 'http://localhost:3000/', 
+    
+    // Sign out URL
+    RedirectUriSignOut : 'http://localhost:3000/',
+
+    // Indicates if the data collection is enabled to support Cognito advanced security features. By default, this flag is set to true.
+    AdvancedSecurityDataCollectionFlag : true, 
+
+    // 'code' for Authorization code grant, 
+    // 'token' for Implicit grant
+    ResponseType: 'code'
 }
 
 Amplify.configure({
@@ -412,39 +427,49 @@ Amplify.configure({
 });
 ```
 
-* If you are using ```aws-amplify-react```:
-    * You will see a button ```Sign in with AWS``` showed up in your login page when you are using the HOC ```withAuthenticator``` or using the ```Authenticator``` component.
-    * You can also import the HOC provided and wrap your own component with it, for example:
-    ```jsx
-        import { withHostedCognito } from 'aws-amplify-react';
+#### Launching the Hosted UI
 
-        class MyComp extends React.Component {
-            // ...
-            render() {
-                return(
-                    <button onClick={this.props.hostedCognitoSignIn}>
-                        Sign in with AWS
-                    </button>
-                )
-            }
-        }
+To invoke the browser to display the hosted UI, you need to construct the URL in your app;
 
-        export default withHostedCognito(MyComp);
-    ```
+```js
+const config = Auth.configure();
+const { 
+    AppWebDomain,  
+    RedirectUriSignIn, 
+    RedirectUriSignOut,
+    ResponseType } = config.hostedUIOptions;
 
-* If you are NOT using ```aws-amplify-react```:
-    * you need to construct the url yourself:
-    ```js
-    const config = Auth.configure();
-    const { 
-        AppWebDomain,  
-        RedirectUriSignIn, 
-        RedirectUriSignOut,
-        ResponseType } = config.hostedUIOptions;
-    const clientId = config.userPoolWebClientId;
-    const url = 'https://' + AppWebDomain + '/login?redirect_uri=' + RedirectUriSignIn + '&response_type=' + ResponseType + '&client_id=' + clientId;
-    window.location.assign(url);          
-    ```
+const clientId = config.userPoolWebClientId;
+const url = 'https://' + AppWebDomain + '/login?redirect_uri=' + RedirectUriSignIn + '&response_type=' + ResponseType + '&client_id=' + clientId;
+
+// Launch hosted UI
+window.location.assign(url);
+
+```
+
+#### Launching the Hosted UI in React 
+
+With React, you can simply use `withHostedAuthenticator` HOC to launch the hosted UI experience. Just wrap your app's main component with our HOC:
+
+```js
+import { withHostedAuthenticator } from 'aws-amplify-react';
+
+class MyApp extends React.Component {
+    // ...
+    render() {
+        return(
+            <button onClick={this.props.hostedCognitoSignIn}>
+                Sign in with AWS
+            </button>
+        )
+    }
+}
+
+export default withHostedAuthenticator(MyApp);
+```
+
+While using `aws-amplify-react`, *Sign in with Amazon* button will appear in your login page when you work with *withAuthenticator* HOC or *Authenticator* component.
+ 
     
 ### Enabling MFA (Multi-Factor Authentication)
 
