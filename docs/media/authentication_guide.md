@@ -449,23 +449,23 @@ window.location.assign(url);
 
 #### Launching the Hosted UI in React 
 
-With React, you can simply use `withHostedAuthenticator` HOC to launch the hosted UI experience. Just wrap your app's main component with our HOC:
+With React, you can simply use `withOAuth` HOC to launch the hosted UI experience. Just wrap your app's main component with our HOC:
 
 ```js
-import { withHostedAuthenticator } from 'aws-amplify-react';
+import { withOAuth } from 'aws-amplify-react';
 
 class MyApp extends React.Component {
     // ...
     render() {
         return(
-            <button onClick={this.props.hostedCognitoSignIn}>
+            <button onClick={this.props.OAuthSignIn}>
                 Sign in with AWS
             </button>
         )
     }
 }
 
-export default withHostedAuthenticator(MyApp);
+export default withOAuth(MyApp);
 ```
 
 While using `aws-amplify-react`, *Sign in with Amazon* button will appear in your login page when you work with *withAuthenticator* HOC or *Authenticator* component.

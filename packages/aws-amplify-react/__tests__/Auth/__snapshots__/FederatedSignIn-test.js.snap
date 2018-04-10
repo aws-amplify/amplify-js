@@ -1487,7 +1487,7 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
       authState="signIn"
       federated={
         Object {
-          "cognito_auth": Object {},
+          "OAuth_config": Object {},
         }
       }
       onStateChange={[MockFunction]}
@@ -2222,7 +2222,7 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
       authState="signIn"
       federated={
         Object {
-          "cognito_auth": Object {},
+          "OAuth_config": Object {},
         }
       }
       onStateChange={[MockFunction]}

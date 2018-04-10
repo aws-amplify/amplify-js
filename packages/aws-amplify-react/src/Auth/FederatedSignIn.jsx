@@ -11,7 +11,7 @@ import {
     GoogleButton,
     FacebookButton,
     AmazonButton,
-    HostedCognitoButton
+    OAuthButton
 } from './Provider';
 
 const logger = new Logger('FederatedSignIn');
@@ -50,16 +50,15 @@ export class FederatedButtons extends Component {
               />
     }
 
-    hostedCognito(cognito_auth) {
-        if (!cognito_auth) { return null;}
+    OAuth(OAuth_config) {
+        if (!OAuth_config) { return null;}
         const { theme, onStateChange } = this.props;
-        return <HostedCognitoButton
-                label={cognito_auth? cognito_auth.label : undefined}
+        return <OAuthButton
+                label={OAuth_config? OAuth_config.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
               />
     }
-
 
     render() {
         const { authState } = this.props;
@@ -68,12 +67,11 @@ export class FederatedButtons extends Component {
         const federated = this.props.federated || {};
         const config = Auth.configure();
         if (config.hostedUIOptions) {
-            federated.cognito_auth = federated.cognito_auth?
-                Object.assign(federated.cognito_auth, config.hostedUIOptions) : config.hostedUIOptions;
+            federated.OAuth_config = Object.assign({}, federated.OAuth_config, config.hostedUIOptions);
         }
         if (JS.isEmpty(federated)) { return null; }
 
-        const { google_client_id, facebook_app_id, amazon_client_id, cognito_auth } = federated;
+        const { google_client_id, facebook_app_id, amazon_client_id, OAuth_config } = federated;
 
         const theme = this.props.theme || AmplifyTheme;
         return (
@@ -81,7 +79,7 @@ export class FederatedButtons extends Component {
                 {this.google(google_client_id)}
                 {this.facebook(facebook_app_id)}
                 {this.amazon(amazon_client_id)}
-                {this.hostedCognito(cognito_auth)}
+                {this.OAuth(OAuth_config)}
             </ActionRow>
         )
     }
@@ -94,7 +92,7 @@ export default class FederatedSignIn extends Component {
         let federated = this.props.federated || {};
         const config = Auth.configure();
         if (config.hostedUIOptions) {
-            federated.cognito_auth = Object.assign({}, federated.cognito_auth, config.hostedUIOptions);
+            federated.OAuth_config = Object.assign({}, federated.OAuth_config, config.hostedUIOptions);
         }
 
         if (!federated) {
