@@ -66,6 +66,10 @@ export default class APIClass {
             });
         }
 
+        if (opt.graphql_headers && typeof opt.graphql_headers !== 'function') {
+            logger.warn('graphql_headers should be a function');
+        }
+
         this._options = Object.assign({}, this._options, opt);
 
         this.createInstance();
@@ -269,11 +273,6 @@ export default class APIClass {
         const credentialsOK = await this._ensureCredentials();
 
         switch (authenticationType) {
-            case 'NONE':
-                headers = {
-                    Authorization: null,
-                };
-                break;
             case 'API_KEY':
                 headers = {
                     Authorization: null,
@@ -288,6 +287,11 @@ export default class APIClass {
 
                 headers = {
                     Authorization: session.getAccessToken().getJwtToken()
+                };
+                break;
+            default:
+                headers = {
+                    Authorization: null,
                 };
                 break;
         }
@@ -326,13 +330,17 @@ export default class APIClass {
 
         const {
             aws_appsync_region: region,
-            aws_appsync_graphqlEndpoint: graphqlEndpoint
+            aws_appsync_graphqlEndpoint: graphqlEndpoint,
+            graphql_headers = () => ({})
         } = this._options;
-
-        const headers = await this._headerBasedAuth();
 
         const doc = parse(queryStr);
         const query = print(doc);
+
+        const headers = {
+            ...await this._headerBasedAuth(),
+            ...graphql_headers({ query: doc, variables })
+        };
 
         const body = {
             query,
