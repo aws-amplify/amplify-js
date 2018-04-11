@@ -16,7 +16,7 @@
     clearTimeout,
     WebSocket: (<any>global).WebSocket,
     ArrayBuffer: (<any>global).ArrayBuffer,
-    addEventListener(){ },
+    addEventListener(listener){ return listener; },
     navigator: { onLine: true }
 };
 (<any>global).localStorage = (<any>global).localStorage || {
