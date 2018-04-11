@@ -11,25 +11,16 @@
  * and limitations under the License.
  */
 
+
+import InMemoryCache from '../../Cache/InMemoryCache';
+
 (<any>global).window = (<any>global).window || {
     setTimeout,
     clearTimeout,
     WebSocket: (<any>global).WebSocket,
     ArrayBuffer: (<any>global).ArrayBuffer,
-    addEventListener(listener){ return listener; },
+    addEventListener(){ },
     navigator: { onLine: true }
 };
-(<any>global).localStorage = (<any>global).localStorage || {
-    store: {},
-    getItem(key){
-        if (this.store[key]) {
-            return this.store[key];
-        }
-        return null;
-    },
-    setItem(key, value){
-        this.store[key] = value;
-    },
-    removeItem(key){ delete this.store[key]; }
-};
+(<any>global).localStorage = (<any>global).localStorage || InMemoryCache;
 
