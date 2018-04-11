@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View } from 'react-native';
+import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { 
     Auth, 
     Analytics,
@@ -133,9 +133,11 @@ export default class Authenticator extends React.Component {
                 });
             });
         return (
-            <View style={theme.container}>
-                {children}
-            </View>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.container}>
+                    {children}
+                </View>
+            </TouchableWithoutFeedback>
         );
     }
 }
