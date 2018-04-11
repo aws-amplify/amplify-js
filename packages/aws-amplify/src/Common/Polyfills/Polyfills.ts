@@ -14,13 +14,17 @@
 
 import InMemoryCache from '../../Cache/InMemoryCache';
 
-(<any>global).window = (<any>global).window || {
-    setTimeout,
-    clearTimeout,
-    WebSocket: (<any>global).WebSocket,
-    ArrayBuffer: (<any>global).ArrayBuffer,
-    addEventListener(){ },
-    navigator: { onLine: true }
-};
-(<any>global).localStorage = (<any>global).localStorage || InMemoryCache;
+if (!(<any>global).window) {
+    (<any>global).window = {
+        setTimeout,
+        clearTimeout,
+        WebSocket: (<any>global).WebSocket,
+        ArrayBuffer: (<any>global).ArrayBuffer,
+        addEventListener(){ },
+        navigator: { onLine: true }
+    };
+}
+if (!(<any>global).localStorage){
+    (<any>global).localStorage = InMemoryCache;
+}
 
