@@ -24,7 +24,6 @@ if (!(<any>global).window) {
         navigator: { onLine: true }
     };
 }
-if (!(<any>global).localStorage){
+if (!(<any>global).localStorage) {
     (<any>global).localStorage = InMemoryCache;
 }
-
