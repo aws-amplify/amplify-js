@@ -330,15 +330,17 @@ export default class APIClass {
 
         const {
             aws_appsync_region: region,
-            aws_appsync_graphqlEndpoint: graphqlEndpoint,
-            graphql_headers = () => ({})
+            aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
+            graphql_headers = () => ({}),
+            graphql_endpoint: customGraphqlEndpoint,
         } = this._options;
 
         const doc = parse(queryStr);
         const query = print(doc);
 
         const headers = {
-            ...await this._headerBasedAuth(),
+            ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
+            ...(customGraphqlEndpoint && { Authorization: null }),
             ...graphql_headers({ query: doc, variables })
         };
 
@@ -356,7 +358,9 @@ export default class APIClass {
             }
         };
 
-        const response = await this._api.post(graphqlEndpoint, init);
+        const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
+
+        const response = await this._api.post(endpoint, init);
 
         const { errors } = response;
 
