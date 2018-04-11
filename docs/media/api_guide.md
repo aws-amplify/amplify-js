@@ -112,6 +112,9 @@ The following code sample assumes you have used Automated Setup.
 
 To invoke an endpoint, you need to set `apiName`, `path` and `headers` parameters, and each method returns a Promise.
 
+Under the hood, aws-amplify use [Axios](https://github.com/axios/axios), so API status code response > 299 are thrown as an exception.
+If you need to handle errors managed by your API, work with the `error.response` object.
+
 ### **GET**
 
 ```js
@@ -123,6 +126,8 @@ let myInit = { // OPTIONAL
 }
 API.get(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -156,6 +161,8 @@ let myInit = {
 
 API.post(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -187,6 +194,8 @@ let myInit = {
 
 API.put(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -217,6 +226,8 @@ let myInit = { // OPTIONAL
 
 API.del(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
