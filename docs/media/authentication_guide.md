@@ -404,10 +404,10 @@ const hostedUIOptions = {
     TokenScopesArray : ['phone', 'email', 'profile', 'openid','aws.cognito.signin.user.admin'], 
 
     // Callback URL
-    RedirectUriSignIn : 'http://localhost:3000/', 
+    RedirectUriSignIn : 'http://www.example.com/signin', 
     
     // Sign out URL
-    RedirectUriSignOut : 'http://localhost:3000/',
+    RedirectUriSignOut : 'http://www.example.com/signout',
 
     // Indicates if the data collection is enabled to support Cognito advanced security features. By default, this flag is set to true.
     AdvancedSecurityDataCollectionFlag : true, 
@@ -466,10 +466,7 @@ class MyApp extends React.Component {
 }
 
 export default withOAuth(MyApp);
-```
-
-While using `aws-amplify-react`, *Sign in with Amazon* button will appear in your login page when you work with *withAuthenticator* HOC or *Authenticator* component.
- 
+``` 
     
 ### Enabling MFA (Multi-Factor Authentication)
 
