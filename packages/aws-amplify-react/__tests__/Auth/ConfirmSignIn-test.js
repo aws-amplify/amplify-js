@@ -62,7 +62,7 @@ describe('ConfirmSignIn', () => {
             expect.assertions(3);
             expect(spyon.mock.calls[0][0]).toBe('user');
             expect(spyon.mock.calls[0][1]).toBe('123456');
-            expect(spyon2).toBeCalledWith('signedIn');
+            expect(spyon2).toBeCalledWith('signedIn', 'user');
 
             spyon.mockClear();
             spyon2.mockClear();
