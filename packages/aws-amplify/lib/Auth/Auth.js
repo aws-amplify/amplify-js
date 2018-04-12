@@ -849,9 +849,9 @@ var AuthClass = /** @class */ (function () {
         }
         else {
             if (!that._refreshHandlers[provider]) {
-                logger.debug('no refresh hanlder for provider:', provider);
+                logger.debug('no refresh handler for provider:', provider);
                 this.cleanCachedItems();
-                return Promise.reject('no refresh hanlder for provider');
+                return Promise.reject('no refresh handler for provider');
             }
             else {
                 logger.debug('token not expired');
@@ -1070,12 +1070,12 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.currentUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var source, user, attributes, userAttrs, info, err_1, user;
+            var source, user, attributes, userAttrs, e_4, info, err_1, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         source = this.credentials_source;
-                        if (!(!source || source === 'aws' || source === 'userPool')) return [3 /*break*/, 5];
+                        if (!(!source || source === 'aws' || source === 'userPool')) return [3 /*break*/, 9];
                         return [4 /*yield*/, this.currentUserPoolUser()
                                 .catch(function (err) { return logger.debug(err); })];
                     case 1:
@@ -1085,22 +1085,35 @@ var AuthClass = /** @class */ (function () {
                         }
                         _a.label = 2;
                     case 2:
-                        _a.trys.push([2, 4, , 5]);
+                        _a.trys.push([2, 8, , 9]);
                         return [4 /*yield*/, this.userAttributes(user)];
                     case 3:
                         attributes = _a.sent();
                         userAttrs = this.attributesToObject(attributes);
+                        if (!!this.credentials) return [3 /*break*/, 7];
+                        _a.label = 4;
+                    case 4:
+                        _a.trys.push([4, 6, , 7]);
+                        return [4 /*yield*/, this.currentCredentials()];
+                    case 5:
+                        _a.sent();
+                        return [3 /*break*/, 7];
+                    case 6:
+                        e_4 = _a.sent();
+                        logger.debug('Failed to retrieve credentials while getting current user info', e_4);
+                        return [3 /*break*/, 7];
+                    case 7:
                         info = {
-                            'id': this.credentials.identityId,
+                            'id': this.credentials ? this.credentials.identityId : undefined,
                             'username': user.username,
                             'attributes': userAttrs
                         };
                         return [2 /*return*/, info];
-                    case 4:
+                    case 8:
                         err_1 = _a.sent();
                         logger.debug('currentUserInfo error', err_1);
                         return [2 /*return*/, {}];
-                    case 5:
+                    case 9:
                         if (source === 'federated') {
                             user = this.user;
                             return [2 /*return*/, user ? user : {}];
@@ -1265,7 +1278,7 @@ var AuthClass = /** @class */ (function () {
                 res(that.credentials);
             }, function (err) {
                 logger.debug('Failed to load credentials', credentials);
-                rej('Failed to load creadentials');
+                rej(err);
             });
         });
     };

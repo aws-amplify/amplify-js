@@ -71,7 +71,7 @@ var RequireNewPassword = function (_AuthPiece) {
                     if (user.challengeName === 'SMS_MFA') {
                         _this2.changeState('confirmSignIn', user);
                     } else {
-                        _this2.changeState('signedIn');
+                        _this2.changeState('signedIn', user);
                     }
                 })['catch'](function (err) {
                     return _this2.error(err);
