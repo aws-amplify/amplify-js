@@ -23,4 +23,6 @@ var Pinpoint = require("aws-sdk/clients/pinpoint");
 exports.Pinpoint = Pinpoint;
 var MobileAnalytics = require("aws-sdk/clients/mobileanalytics");
 exports.MobileAnalytics = MobileAnalytics;
+var CognitoHostedUI = require("amazon-cognito-auth-js");
+exports.CognitoHostedUI = CognitoHostedUI;
 //# sourceMappingURL=Facet.js.map

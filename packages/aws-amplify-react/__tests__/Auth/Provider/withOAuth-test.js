@@ -31,13 +31,13 @@ describe('withOAuth test', () => {
                 }
             }
 
-            const spyon = jest.spyOn(Auth, 'configure').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
                 return {
-                    hostedUIOptions: {
-                        AppWebDomain: 'domain',
-                        RedirectUriSignIn: 'redirectUriSignIn',
-                        RedirectUriSignOut: 'redirectUriSignOut',
-                        ResponseType: 'responseType'
+                    oauth: {
+                        domain: 'domain',
+                        redirectSignIn: 'redirectUriSignIn',
+                        redirectSignOut: 'redirectUriSignOut',
+                        responseType: 'responseType'
                     },
                     userPoolWebClientId: 'userPoolWebClientId'
                 }

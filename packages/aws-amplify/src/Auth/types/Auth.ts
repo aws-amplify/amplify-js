@@ -32,7 +32,7 @@ export interface AuthOptions {
     region?: string,
     mandatorySignIn: boolean
     cookieStorage?: ICookieStorageData,
-    hostedUIOptions?: object
+    oauth?: OAuth
 }
 
 /**
@@ -53,11 +53,11 @@ export interface FederatedResponse {
     expires_at: number
 }
 
-export interface hostedUIOptions {
-    AppWebDomain : string,
-	TokenScopesArray : Array<string>,
-	RedirectUriSignIn : string,
-	RedirectUriSignOut : string,
-    AdvancedSecurityDataCollectionFlag : boolean
-    ResponseType: string
+export interface OAuth {
+    domain : string,
+	scope : Array<string>,
+	redirectSignIn : string,
+	redirectSignOut : string,
+    responseType: string,
+    customAttrs?: object
 }

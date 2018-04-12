@@ -50,11 +50,11 @@ export class FederatedButtons extends Component {
               />
     }
 
-    OAuth(OAuth_config) {
-        if (!OAuth_config) { return null;}
+    OAuth(oauth_config) {
+        if (!oauth_config) { return null;}
         const { theme, onStateChange } = this.props;
         return <OAuthButton
-                label={OAuth_config? OAuth_config.label : undefined}
+                label={oauth_config? oauth_config.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
               />
@@ -66,12 +66,13 @@ export class FederatedButtons extends Component {
 
         const federated = this.props.federated || {};
         const config = Auth.configure();
-        if (config.hostedUIOptions) {
-            federated.OAuth_config = Object.assign({}, federated.OAuth_config, config.hostedUIOptions);
+        if (config.oauth) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
         }
+
         if (JS.isEmpty(federated)) { return null; }
 
-        const { google_client_id, facebook_app_id, amazon_client_id, OAuth_config } = federated;
+        const { google_client_id, facebook_app_id, amazon_client_id, oauth_config } = federated;
 
         const theme = this.props.theme || AmplifyTheme;
         return (
@@ -79,7 +80,7 @@ export class FederatedButtons extends Component {
                 {this.google(google_client_id)}
                 {this.facebook(facebook_app_id)}
                 {this.amazon(amazon_client_id)}
-                {this.OAuth(OAuth_config)}
+                {this.OAuth(oauth_config)}
             </ActionRow>
         )
     }
@@ -87,12 +88,11 @@ export class FederatedButtons extends Component {
 
 export default class FederatedSignIn extends Component {
     render() {
-        
         const { authState, onStateChange } = this.props;
         let federated = this.props.federated || {};
         const config = Auth.configure();
-        if (config.hostedUIOptions) {
-            federated.OAuth_config = Object.assign({}, federated.OAuth_config, config.hostedUIOptions);
+        if (config.oauth) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
         }
 
         if (!federated) {

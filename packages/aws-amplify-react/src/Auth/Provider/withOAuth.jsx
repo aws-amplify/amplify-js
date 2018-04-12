@@ -11,18 +11,23 @@ export default function withOAuth(Comp, options) {
         constructor(props) {
             super(props);
             this.signIn = this.signIn.bind(this);
-            this.state = {};
         }
 
         signIn() {
-            const config = Auth.configure();
+            const config = this.props.oauth_config || options || Auth.configure().oauth;
+            logger.debug('withOAuth configuration', config);
             const { 
-                AppWebDomain,  
-                RedirectUriSignIn, 
-                RedirectUriSignOut,
-                ResponseType } = config.hostedUIOptions;
-            const clientId = config.userPoolWebClientId;
-            const url = 'https://' + AppWebDomain + '/login?redirect_uri=' + RedirectUriSignIn + '&response_type=' + ResponseType + '&client_id=' + clientId;
+                domain,  
+                redirectSignIn,
+                redirectSignOut,
+                responseType
+            } = config;
+
+            const customAttrs = config.customAttrs || {};
+            const url = 'https://' + domain 
+                + '/login?redirect_uri=' + redirectSignIn 
+                + '&response_type=' + responseType 
+                + '&client_id=' + (customAttrs.ClientId || Auth.configure().userPoolWebClientId);
             window.location.assign(url);            
         }
 

@@ -391,37 +391,40 @@ If  *email* attribute is a required field in your Cognito User Pool settings, pl
 
 #### Configuring the Hosted UI
 
-To configure your application for hosted UI, you need to use *hosted UI* options:
+To configure your application for hosted UI, you need to use *oauth* options:
 
 ```js
 import Amplify from 'aws-amplify';
 
-const hostedUIOptions = {
+const oauth = {
     // Domain name
-    AppWebDomain : 'your-domain-prefix.auth.us-east-1.amazoncognito.com', 
+    domain : 'your-domain-prefix.auth.us-east-1.amazoncognito.com', 
     
     // Authorized scopes
-    TokenScopesArray : ['phone', 'email', 'profile', 'openid','aws.cognito.signin.user.admin'], 
+    scope : ['phone', 'email', 'profile', 'openid','aws.cognito.signin.user.admin'], 
 
     // Callback URL
-    RedirectUriSignIn : 'http://localhost:3000/', 
+    redirectSignIn : 'http://localhost:3000/', 
     
     // Sign out URL
-    RedirectUriSignOut : 'http://localhost:3000/',
-
-    // Indicates if the data collection is enabled to support Cognito advanced security features. By default, this flag is set to true.
-    AdvancedSecurityDataCollectionFlag : true, 
+    redirectSignOut : 'http://localhost:3000/',
 
     // 'code' for Authorization code grant, 
     // 'token' for Implicit grant
-    ResponseType: 'code'
-}
+    responseType: 'code'
+
+    // optional, for Cognito hosted ui specified options
+    customAttrs: {
+        // Indicates if the data collection is enabled to support Cognito advanced security features. By default, this flag is set to true.
+        AdvancedSecurityDataCollectionFlag : true
+    }
+}
 
 Amplify.configure({
     Auth: {
         // other configurations...
         // ....
-        hostedUIOptions: hostedUIOptions
+        oauth: oauth
     },
     // ...
 });
@@ -434,13 +437,13 @@ To invoke the browser to display the hosted UI, you need to construct the URL in
 ```js
 const config = Auth.configure();
 const { 
-    AppWebDomain,  
-    RedirectUriSignIn, 
-    RedirectUriSignOut,
-    ResponseType } = config.hostedUIOptions;
+    domain,  
+    redirectSignIn, 
+    redirectSignOut,
+    responseType } = config.oauth;
 
 const clientId = config.userPoolWebClientId;
-const url = 'https://' + AppWebDomain + '/login?redirect_uri=' + RedirectUriSignIn + '&response_type=' + ResponseType + '&client_id=' + clientId;
+const url = 'https://' + domain + '/login?redirect_uri=' + redirectSignIn + '&response_type=' + responseType + '&client_id=' + clientId;
 
 // Launch hosted UI
 window.location.assign(url);

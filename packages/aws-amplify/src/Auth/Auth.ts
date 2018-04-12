@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { AuthOptions, FederatedResponse, hostedUIOptions } from './types';
+import { AuthOptions, FederatedResponse } from './types';
 
 import {
     AWS,
@@ -90,7 +90,7 @@ export default class AuthClass {
         this._config = conf;
 
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
-        const { userPoolId, userPoolWebClientId, cookieStorage, hostedUIOptions } = this._config;
+        const { userPoolId, userPoolWebClientId, cookieStorage, oauth } = this._config;
         if (userPoolId) {
             const userPoolData: ICognitoUserPoolData = {
                 UserPoolId: userPoolId,
@@ -115,16 +115,23 @@ export default class AuthClass {
         }
 
         // initiailize cognitoauth client if hosted ui options provided
-        if (hostedUIOptions) {
+        if (oauth) {
             const that = this;
+
             const cognitoAuthParams = Object.assign(
                 {
                     ClientId: userPoolWebClientId,
-                    UserPoolId: userPoolId
+                    UserPoolId: userPoolId,
+                    AppWebDomain: oauth.domain,
+                    TokenScopesArray: oauth.scope,
+                    RedirectUriSignIn: oauth.redirectSignIn,
+                    RedirectUriSignOut: oauth.redirectSignOut,
+                    ResponseType: oauth.responseType
                 },
-                hostedUIOptions
+                oauth.customAttrs
             );
-            const type = hostedUIOptions['ResponseType'];
+
+            logger.debug('cognito auth params', cognitoAuthParams);
             this._cognitoAuthClient = new CognitoAuth(cognitoAuthParams);
             this._cognitoAuthClient.userhandler = {
                 // user signed in
@@ -150,7 +157,6 @@ export default class AuthClass {
                 const curUrl = window.location.href;
                 this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
             });
-            logger.debug('hostedUIOptions configured');
         }
 
         dispatchAuthEvent('configured', null);

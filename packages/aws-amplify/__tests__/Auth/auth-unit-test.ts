@@ -1955,7 +1955,7 @@ describe('auth unit test', () => {
 
     describe('hosted ui test', () => {
         test('happy case', () => {
-            const hostedUIOptions = {};
+            const oauth = {};
 
             const authOptions = {
                 Auth: {
@@ -1963,7 +1963,7 @@ describe('auth unit test', () => {
                     userPoolWebClientId: "awsUserPoolsWebClientId",
                     region: "region",
                     identityPoolId: "awsCognitoIdentityPoolId",
-                    hostedUIOptions
+                    oauth
                 }
             };
             const spyon = jest.spyOn(Auth.prototype, 'currentAuthenticatedUser').mockImplementationOnce(() => {
