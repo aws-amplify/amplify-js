@@ -70,7 +70,7 @@ var ConfirmSignIn = function (_AuthPiece) {
 
                 var mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
                 _awsAmplify.Auth.confirmSignIn(user, code, mfaType).then(function () {
-                    return _this2.changeState('signedIn');
+                    return _this2.changeState('signedIn', user);
                 })['catch'](function (err) {
                     return _this2.error(err);
                 });

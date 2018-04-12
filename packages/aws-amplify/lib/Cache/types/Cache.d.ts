@@ -36,6 +36,7 @@ export interface CacheConfig {
     /** default priority number put on cached items */
     defaultPriority?: number;
     storage?: Storage;
+    Cache?: Cache;
 }
 export interface CacheItem {
     key: string;
