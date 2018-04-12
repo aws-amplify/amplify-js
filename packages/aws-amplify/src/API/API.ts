@@ -341,7 +341,7 @@ export default class APIClass {
         const headers = {
             ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
             ...(customGraphqlEndpoint && { Authorization: null }),
-            ...graphql_headers({ query: doc, variables })
+            ... await graphql_headers({ query: doc, variables })
         };
 
         const body = {
