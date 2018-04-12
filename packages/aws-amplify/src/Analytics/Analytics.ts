@@ -152,7 +152,7 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = { eventName: '_session_stop', timestamp, config: this._config, resendLimits: RESEND_LIMIT };
+        const params = { eventName: '_session_stop', timestamp, config: this._config };
         return this._putToBuffer(params);
     }
 
@@ -168,7 +168,7 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = { eventName, attributes, metrics, timestamp, config: this._config, resendLimits: RESEND_LIMIT };
+        const params = { eventName, attributes, metrics, timestamp, config: this._config };
         return this._putToBuffer(params);
     }
 
@@ -178,7 +178,7 @@ export default class AnalyticsClass {
 
         const timestamp = new Date().getTime();
         const conf = Object.assign(this._config, config);
-        const params = { eventName: '_update_endpoint', timestamp, config: conf, resendLimits: RESEND_LIMIT };
+        const params = { eventName: '_update_endpoint', timestamp, config: conf };
         return this._putToBuffer(params);
     }
 
@@ -193,6 +193,8 @@ export default class AnalyticsClass {
             pluggable.record(params)
                 .then(success => {
                     if (!success) {
+                        params.resendLimits = typeof params.resendLimits === 'number' ? 
+                            params.resendLimits : RESEND_LIMIT;
                         if (params.resendLimits > 0) {
                             params.resendLimits -= 1;
                             that._putToBuffer(params);
