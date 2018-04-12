@@ -37686,15 +37686,19 @@ __webpack_require__(349);
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var InMemoryCache_1 = __webpack_require__(110);
-global.window = global.window || {
-    setTimeout: setTimeout,
-    clearTimeout: clearTimeout,
-    WebSocket: global.WebSocket,
-    ArrayBuffer: global.ArrayBuffer,
-    addEventListener: function () { },
-    navigator: { onLine: true }
-};
-global.localStorage = global.localStorage || InMemoryCache_1.default;
+if (!global.window) {
+    global.window = {
+        setTimeout: setTimeout,
+        clearTimeout: clearTimeout,
+        WebSocket: global.WebSocket,
+        ArrayBuffer: global.ArrayBuffer,
+        addEventListener: function () { },
+        navigator: { onLine: true }
+    };
+}
+if (!global.localStorage) {
+    global.localStorage = InMemoryCache_1.default;
+}
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
