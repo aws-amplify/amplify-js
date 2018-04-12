@@ -167,14 +167,14 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
 
         this._config = Object.assign(this._config, config);
 
-        const { appId, region, credentials } = this._config;
+        const { appId, region, credentials, endpointId } = this._config;
         const cacheKey = this.getProviderName() + '_' + appId;
-        const endpointId = await this._getEndpointId(cacheKey);
+        // const endpointId = endpointId? endpointId : await this._getEndpointId(cacheKey);
 
         const request = this._endpointRequest();
         const update_params = {
             ApplicationId: appId,
-            EndpointId: endpointId,
+            EndpointId: endpointId || await this._getEndpointId(cacheKey),
             EndpointRequest: request
         };
 
@@ -325,14 +325,25 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @return {Object} - The request of updating endpoint
      */
     _endpointRequest() {
-        const { clientInfo, credentials, Address, RequestId, endpointId } = this._config;
+        const { 
+            clientInfo, 
+            credentials, 
+            Address, 
+            RequestId, 
+            Attributes,
+            UserAttributes,
+            endpointId, 
+            UserId
+        } = this._config;
+
         const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
 
         logger.debug('demographic user id: ', user_id);
         const OptOut = this._config.OptOut? this._config.OptOut: undefined;
-        return {
+        const ret = {
             Address,
+            Attributes,
             ChannelType,
             Demographic: {
                 AppVersion: this._config.appVersion || clientInfo.appVersion,
@@ -345,9 +356,11 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             RequestId,
             EffectiveDate: Address? new Date().toISOString() : undefined,
             User: { 
-                UserId: credentials.identityId
+                UserId: UserId? UserId: credentials.identityId,
+                UserAttributes
             }
         };
+        return ret;
     }
 
     /**
@@ -368,5 +381,4 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         };
         return JSON.stringify(clientContext);
     }
-
 }

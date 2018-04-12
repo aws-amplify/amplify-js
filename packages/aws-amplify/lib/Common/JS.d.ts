@@ -8,4 +8,5 @@ export default class JS {
      * generate random string
      */
     static generateRandomString(): string;
+    static makeQuerablePromise(promise: any): any;
 }
