@@ -502,7 +502,9 @@ class App extends React.Component {
 
         return (
             <Connect query={graphqlOperation(ListEvents)}>
-                { listEvents }
+                {({ data: { listEvents } }) => (
+                    <AllEvents events={listEvents.items} />
+                )}
             </Connect>
         )
     }
@@ -521,15 +523,27 @@ Also, you can use `subscription` and `onSubscriptionMsg` attributes to enable su
           onSubscriptionMsg={(prev, { subscribeToEventComments }) => {
             console.log ( subscribeToEventComments);
             return prev; }}>
+    {({ data: { listEvents } }) => (
+        <AllEvents events={listEvents ? listEvents.items : []} />
+    )}
  </Connect>
 
 ```
 
+For mutations, a `mutation` function will be provided in the render prop function. This function returns a promise that resolves with the result of the GraphQL mutation.
 
-
-
-
-
+```js
+class CreateEvent extends React.Component {
+  // ...
+  // This component calls its onCreate prop to trigger the mutation
+  // ...
+}
+<Connect mutation={graphqlOperation(Operations.CreateEvent)}>
+  {({ mutation }) => (
+      <CreateEvent onCreate={mutation} />
+  )}
+</Connect>
+```
 
 
 
