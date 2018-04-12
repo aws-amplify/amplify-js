@@ -37,7 +37,7 @@ export default class Connect extends Component {
             query: { query, variables = {} } = {},
             mutation: { query: mutation, mutationVariables = {} } = {},
             subscription,
-            onSubscriptionMsg = () => null
+            onSubscriptionMsg = (prevData) => prevData,
         } = this.props;
 
         let { data, mutation: mutationProp, errors } = this.getDefaultState();
@@ -45,6 +45,10 @@ export default class Connect extends Component {
         const hasValidQuery = query && getOperationType(query) === 'query';
         const hasValidMutation = mutation && getOperationType(mutation) === 'mutation';
         const hasValidSubscription = subscription && getOperationType(subscription.query) === 'subscription';
+
+        if (!hasValidQuery && !hasValidMutation && !hasValidSubscription) {
+            console.warn('No query, mutation or subscription was specified');
+        }
 
         if (hasValidQuery) {
             try {
@@ -57,7 +61,6 @@ export default class Connect extends Component {
                 data = err.data;
                 errors = err.errors;
             }
-
         }
 
         if (hasValidMutation) {
@@ -72,18 +75,20 @@ export default class Connect extends Component {
         if (hasValidSubscription) {
             const { query: subsQuery, variables: subsVars } = subscription;
 
-            const observable = API.graphql({ query: subsQuery, variables: subsVars });
+            try {
+                const observable = API.graphql({ query: subsQuery, variables: subsVars });
 
-            this.subSubscription = observable.subscribe({
-                // start: (...args) => console.warn('hey there', ...args), // TODO: implement this
-                next: ({ value: { data } }) => {
-                    const { data: prevData } = this.state;
-                    const newData = onSubscriptionMsg(prevData, data);
-                    this.setState({ data: newData });
-                },
-                error: err => console.log(err),
-                complete: () => console.log(arguments),
-            });
+                this.subSubscription = observable.subscribe({
+                    next: ({ value: { data } }) => {
+                        const { data: prevData } = this.state;
+                        const newData = onSubscriptionMsg(prevData, data);
+                        this.setState({ data: newData });
+                    },
+                    error: err => console.error(err),
+                });
+            } catch (err) {
+                errors = err.errors;
+            }
         }
 
         this.setState({ data, errors, mutation: mutationProp, loading: false });
@@ -91,7 +96,7 @@ export default class Connect extends Component {
 
     _unsubscribe() {
         if (this.subSubscription) {
-            this.subSubscription.unsubscribe()
+            this.subSubscription.unsubscribe();
         };
     }
 
@@ -103,7 +108,7 @@ export default class Connect extends Component {
         this._unsubscribe();
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         const { loading } = this.state;
 
         const { query: newQueryObj, mutation: newMutationObj } = this.props;

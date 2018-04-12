@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { OperationDefinitionNode } from 'graphql';
+import { OperationDefinitionNode, GraphQLError } from 'graphql';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
@@ -66,8 +66,9 @@ export default class APIClass {
             });
         }
 
-        if (opt.graphql_headers && typeof opt.graphql_headers !== 'function') {
+        if (typeof opt.graphql_headers !== 'undefined' && typeof opt.graphql_headers !== 'function') {
             logger.warn('graphql_headers should be a function');
+            opt.graphql_headers = undefined;
         }
 
         this._options = Object.assign({}, this._options, opt);
@@ -360,7 +361,26 @@ export default class APIClass {
 
         const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
 
-        const response = await this._api.post(endpoint, init);
+        if (!endpoint) {
+            const error = new GraphQLError('No graphql endpoint provided.');
+
+            throw {
+                data: {},
+                errors: [error],
+            };
+        }
+
+        let response;
+        try {
+            response = await this._api.post(endpoint, init);
+        } catch (err) {
+            response = {
+                data: {},
+                errors: [
+                    new GraphQLError(err.message);
+                ]
+            };
+        }
 
         const { errors } = response;
 
