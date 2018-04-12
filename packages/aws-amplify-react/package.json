@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest --coverage --updateSnapshot",
-    "build": "babel src --presets babel-preset-react --out-dir dist --copy-files",
+    "build": "babel src --presets babel-preset-env --out-dir dist --copy-files",
+    "watch": "babel src --presets babel-preset-env --out-dir dist --copy-files --watch",
     "build-with-test": "npm test && npm run build"
   },
   "devDependencies": {
@@ -47,6 +48,7 @@
     }
   },
   "dependencies": {
-    "qrcode.react": "^0.8.0"
+    "qrcode.react": "^0.8.0",
+    "regenerator-runtime": "^0.11.1"
   }
 }

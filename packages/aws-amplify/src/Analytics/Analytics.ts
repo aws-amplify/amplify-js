@@ -29,6 +29,7 @@ const logger = new Logger('AnalyticsClass');
 const BUFFER_SIZE = 1000;
 const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
 const interval = 5*1000; // 5s
+const RESEND_LIMIT = 5;
 /**
 * Provide mobile analytics client functions
 */
@@ -132,7 +133,7 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = {eventName: '_session_start', timestamp, config: this._config};
+        const params = { eventName: '_session_start', timestamp, config: this._config };
         return this._putToBuffer(params);
     }
 
@@ -151,7 +152,7 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = {eventName: '_session_stop', timestamp, config: this._config};
+        const params = { eventName: '_session_stop', timestamp, config: this._config };
         return this._putToBuffer(params);
     }
 
@@ -167,7 +168,7 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = {eventName, attributes, metrics, timestamp, config: this._config};
+        const params = { eventName, attributes, metrics, timestamp, config: this._config };
         return this._putToBuffer(params);
     }
 
@@ -192,7 +193,16 @@ export default class AnalyticsClass {
             pluggable.record(params)
                 .then(success => {
                     if (!success) {
-                        that._putToBuffer(params);
+                        params.resendLimits = typeof params.resendLimits === 'number' ? 
+                            params.resendLimits : RESEND_LIMIT;
+                        if (params.resendLimits > 0) {
+                            logger.debug(
+                                `resending event ${params.eventName} with ${params.resendLimits} retry times left`);
+                            params.resendLimits -= 1;
+                            that._putToBuffer(params);
+                        } else {
+                            logger.debug(`retry times used up for event ${params.eventName}`);
+                        }
                     }
                 });
         });
