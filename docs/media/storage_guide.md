@@ -228,6 +228,26 @@ Storage.list('photos/', {level: 'private'})
 For the complete API documentation for Storage module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/storageclass.html)
 {: .callout .callout--info}
 
+## Customized Path Prefix
+
+You can customize the path prefix by:
+```js
+const customPrefix: {
+    public: 'myPublicPrefix/',
+    protected: 'myProtectedPrefix/',
+    private: 'myPrivatePrefix/'
+};
+
+Storage.put('test.txt', 'Hello', {
+    customPrefix: customPrefix,
+    // ...
+})
+.then (result => console.log(result))
+.catch(err => console.log(err));
+```
+
+Also you need to setup your corresponding IAM role and your bucket permissions manually to make it work.
+
 ## Tracking Events
 
 You can enable automatic tracking of storage events such as uploads and downloads, by setting `{ track: true }` when calling the Storage API. 
