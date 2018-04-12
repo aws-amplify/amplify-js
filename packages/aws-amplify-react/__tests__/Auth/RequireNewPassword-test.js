@@ -106,7 +106,7 @@ describe('RequireNewPassword test', () => {
                                         'password', 
                                         'requiredAttributes');
 
-            expect(spyon2).toBeCalledWith('signedIn');
+            expect(spyon2).toBeCalledWith('signedIn', 'user');
             spyon.mockClear();
         });
 

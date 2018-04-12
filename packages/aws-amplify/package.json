@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify",
-  "version": "0.2.12",
+  "version": "0.2.15",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -84,7 +84,7 @@
     "mapCoverage": true,
     "coverageThreshold": {
       "global": {
-        "branches": 74,
+        "branches": 73,
         "functions": 80,
         "lines": 80,
         "statements": 80
