@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import APIClass from './API';
+import APIClass, { graphqlOperation } from './API';
 
 import { ConsoleLogger as Logger } from '../Common';
 
@@ -26,4 +26,4 @@ if (!_instance) {
 
 const API = _instance;
 export default API;
-export { APIClass };
+export { APIClass, graphqlOperation };

@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest --coverage",
     "build": "npm run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
+    "watch": "npm run clean && babel src --presets babel-preset-react --out-dir dist --copy-files --watch",
     "generate-docs": "rimraf docs && jsdoc -c ./jsDoc.config.json --readme ../../media/api_reference_home.md ./src -r  -d ./docs",
     "clean": "rimraf dist"
   },
