@@ -377,7 +377,7 @@ export default class APIClass {
             response = {
                 data: {},
                 errors: [
-                    new GraphQLError(err.message);
+                    new GraphQLError(err.message)
                 ]
             };
         }
