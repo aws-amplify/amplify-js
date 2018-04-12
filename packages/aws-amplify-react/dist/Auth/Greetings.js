@@ -106,12 +106,12 @@ var Greetings = function (_AuthPiece) {
         key: 'googleSignOut',
         value: function () {
             function googleSignOut() {
-                var auth2 = window.gapi && window.gapi.auth2 ? window.gapi.auth2 : null;
-                if (!auth2) {
+                var authInstance = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
+                if (!authInstance) {
                     return Promise.resolve(null);
                 }
 
-                auth2.getAuthInstance().then(function (googleAuth) {
+                authInstance.then(function (googleAuth) {
                     if (!googleAuth) {
                         logger.debug('google Auth undefined');
                         return Promise.resolve(null);

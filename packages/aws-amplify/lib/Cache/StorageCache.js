@@ -102,7 +102,7 @@ var StorageCache = /** @class */ (function () {
         if (config.keyPrefix) {
             logger.warn("Don't try to configure keyPrefix!");
         }
-        this.config = Object.assign({}, this.config, config);
+        this.config = Object.assign({}, this.config, config, config.Cache);
         this.checkConfig();
         return this.config;
     };
