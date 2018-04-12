@@ -274,31 +274,42 @@ To learn more about GraphQL, please visit [GraphQL website](http://graphql.org/l
 
 ### Configuration for GraphQL Server
 
-To access a GraphQL API with your app, you need to configure endpoint URL in your app's configuration. Add the following line to your configuration:
+To access a GraphQL API with your app, you need to configure endpoint URL in your app's configuration. Add the following line to your setup:
 
 ```js
 
-let myAppConfig= {
-
-    // ... Other Configuration   
-
-    graphql_endpoint: 'https:/www.example.com/my-graphql-endpoint',
-
-    // Send custom headers with your request
-    // It should be a function returning your custom header values
-    graphql_headers: () => {
-        return {'Authorization':'XXXXXXXXXXXXXXX'}
-    }
-    
-}
-
+import Amplify, { API } from "aws-amplify";
+import aws_config from "./aws-exports";
+ 
+// Considering you have an existing aws-exports.js configuration file 
 Amplify.configure(aws_config);
 
+// Configure a custom GraphQL endpoint
+Amplify.configure({
+  API: {
+    graphql_endpoint: 'https:/www.example.com/my-graphql-endpoint'
+  }
+});
+
+```
+
+#### Set Custom Request Headers  
+
+When working with a GraphQL endpoint, you will need to set request headers for authorization purposes. This is done by passing a `graphql_headers` function into the configuration:
+
+```js
+Amplify.configure({
+  API: {
+    graphql_headers: async () => ({
+      'My-Custom-Header': 'my value'
+    })
+  }
+});
 ```
 
 ### Configuration for AWS AppSync
 
-AWS AppSync is a cloud based fully-managed GraphQL service that is integrated with AWS Amplify API category and command line tools with AWS Mobile CLI.
+AWS AppSync is a cloud-based fully-managed GraphQL service that is integrated with AWS Amplify API category and command line tools with AWS Mobile CLI.
 
 To create an AWS AppSync API, please visit [AWS AppSync Console](https://aws.amazon.com/appsync/) or visit [AWS AppSync Developer Guide](https://docs.aws.amazon.com/appsync/latest/devguide/welcome.html).
 {: .callout .callout--info}
@@ -311,7 +322,7 @@ After creating your AWS AppSync API, following command will enable AppSync Graph
 $ awsmobile appsync enable
 ```
 
-AWS AppSync supports multiple authorization types, which are AWS Identity and Access Management (IAM), Amazon Cognito User Pool and API key. To configure auth type, use following command:
+AWS AppSync supports multiple authorization types, which are AWS Identity and Access Management (IAM), Amazon Cognito User Pool and API key. To configure auth type, use the following command:
 
 ```bash
 $ awsmobile appsync configure
@@ -324,9 +335,9 @@ $ awsmobile appsync configure
   AMAZON_COGNITO_USER_POOLS 
 ```
 
-Enabling AppSync will create a local folder which you can find AppSync configuration files under `/awsmobilejs/backend/appsync` folder that is automatically synced with AppSync when you run a `awsmobile push` command.
+Enabling AppSync will create a local folder which you can find AppSync configuration files under `/awsmobilejs/backend/appsync` folder that is automatically synced with AppSync when you run `awsmobile push` command.
 
-Note: AWS AppSync API keys expire 7 days after creation, and using API_KEY authentication is only suggested for development.
+Note: AWS AppSync API keys expire seven days after creation, and using API_KEY authentication is only suggested for development.
 {: .callout .callout--info}
 
 Import your auto updated `aws-exports.js` file to configure your app:
@@ -356,11 +367,11 @@ Amplify.configure(aws_config);
 
 ### Using GraphQL Client
 
-AWS Amplify API category provides a GraphQL client for working with queries, mutations and subscriptions.
+AWS Amplify API category provides a GraphQL client for working with queries, mutations, and subscriptions.
 
 #### Query Declarations
 
-You can declare GraphQL queries with standard GraphQL query syntax. To learn more about GraphQL queries please visit [GraphQL Developer Documentation](http://graphql.org/learn/queries/). 
+You can declare GraphQL queries with standard GraphQL query syntax. To learn more about GraphQL queries, please visit [GraphQL Developer Documentation](http://graphql.org/learn/queries/). 
 
 ```js
 const ListEvents = `query ListEvents {
@@ -398,6 +409,16 @@ Running a GraphQL query is simple. Define your query and execute it with `API.gr
 ```js
 import Amplify, { API, graphqlOperation } from "aws-amplify";
 
+const ListEvents = `query ListEvents {
+  listEvents {
+    items {
+      id
+      where
+      description
+    }
+  }
+}`;
+
 const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
     getEvent(id: $id) {
         id
@@ -411,7 +432,10 @@ const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
     }
 }`;
 
-// Query, with a variable
+// Simple query
+const allEvents = await API.graphql({ ListEvents });
+
+// Query using a parameter
 const oneEvent = await API.graphql(graphqlOperation(GetEvent, { id: 'some id' }));
 console.log(oneEvent);
 
@@ -490,6 +514,15 @@ class App extends React.Component {
 
     render() {
 
+        const ListView = ({ events }) => (
+            <div>
+                <h3>All events</h3>
+                <ul>
+                    {events.map(event => <li key={event.id}>{event.name} ({event.id})</li>)}
+                </ul>
+            </div>
+        );
+
         const ListEvents = `query ListEvents {
             listEvents {
                 items {
@@ -503,7 +536,7 @@ class App extends React.Component {
         return (
             <Connect query={graphqlOperation(ListEvents)}>
                 {({ data: { listEvents } }) => (
-                    <AllEvents events={listEvents.items} />
+                    <ListView events={listEvents.items} />
                 )}
             </Connect>
         )
@@ -530,7 +563,7 @@ Also, you can use `subscription` and `onSubscriptionMsg` attributes to enable su
 
 ```
 
-For mutations, a `mutation` function will be provided in the render prop function. This function returns a promise that resolves with the result of the GraphQL mutation.
+For mutations, a `mutation` function needs to be provided with `Connect` component. `mutation` returns a promise that resolves with the result of the GraphQL mutation.
 
 ```js
 class CreateEvent extends React.Component {
@@ -544,9 +577,6 @@ class CreateEvent extends React.Component {
   )}
 </Connect>
 ```
-
-
-
 
 --- 
 
