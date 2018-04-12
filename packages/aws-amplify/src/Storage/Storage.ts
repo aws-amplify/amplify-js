@@ -316,8 +316,8 @@ export default class StorageClass {
         const { credentials, level } = options;
 
         const customPrefix = options.customPrefix || {};
-        const privatePath = customPrefix.private || `private/${credentials.identityId}/`;
-        const protectedPath = customPrefix.protected || `protected/${credentials.identityId}/`;
+        const privatePath = (customPrefix.private || 'private/') + credentials.identityId + '/';
+        const protectedPath = (customPrefix.protected || 'protected/') + credentials.identityId + '/';
         const publicPath = customPrefix.public || 'public/';
 
         switch (level) {

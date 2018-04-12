@@ -247,6 +247,43 @@ Storage.put('test.txt', 'Hello', {
 ```
 
 Also you need to setup your corresponding IAM role and your bucket permissions manually to make it work.
+For exmaple, if you want to enable read, write and delete operation for all the objects under path ```myPublicPrefix/```, you need to declare it in your IAM policy:
+```xml
+"Statement": [
+    {
+        "Effect": "Allow",
+        "Action": [
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:DeleteObject"
+        ],
+        "Resource": [
+            "arn:aws:s3:::your-s3-bucket/myPublicPrefix/*",
+        ]
+    }
+]
+```
+
+Or if you want to have customized private path prefix like ```myPrivatePrefix/```, you need to add it into your IAM policy like:
+```xml
+"Statement": [
+    {
+        "Effect": "Allow",
+        "Action": [
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:DeleteObject"
+        ],
+        "Resource": [
+            "arn:aws:s3:::your-s3-bucket/myPublicPrefix/*",
+            "arn:aws:s3:::your-s3-bucket/myPrivatePrefix/${cognito-identity.amazonaws.com:sub}/*"
+        ]
+    }
+]
+```
+This ensures only the authenticated user has the access into the objects under the path.
+
+
 
 ## Tracking Events
 
