@@ -29,6 +29,7 @@ const logger = new Logger('AnalyticsClass');
 const BUFFER_SIZE = 1000;
 const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
 const interval = 5*1000; // 5s
+const RESEND_LIMIT = 5;
 /**
 * Provide mobile analytics client functions
 */
@@ -132,7 +133,7 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = {eventName: '_session_start', timestamp, config: this._config};
+        const params = { eventName: '_session_start', timestamp, config: this._config, resendLimits: RESEND_LIMIT };
         return this._putToBuffer(params);
     }
 
@@ -151,7 +152,7 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = {eventName: '_session_stop', timestamp, config: this._config};
+        const params = { eventName: '_session_stop', timestamp, config: this._config, resendLimits: RESEND_LIMIT };
         return this._putToBuffer(params);
     }
 
@@ -167,7 +168,7 @@ export default class AnalyticsClass {
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = {eventName, attributes, metrics, timestamp, config: this._config};
+        const params = { eventName, attributes, metrics, timestamp, config: this._config, resendLimits: RESEND_LIMIT };
         return this._putToBuffer(params);
     }
 
@@ -177,7 +178,7 @@ export default class AnalyticsClass {
 
         const timestamp = new Date().getTime();
         const conf = Object.assign(this._config, config);
-        const params = { eventName: '_update_endpoint', timestamp, config: conf };
+        const params = { eventName: '_update_endpoint', timestamp, config: conf, resendLimits: RESEND_LIMIT };
         return this._putToBuffer(params);
     }
 
@@ -192,7 +193,10 @@ export default class AnalyticsClass {
             pluggable.record(params)
                 .then(success => {
                     if (!success) {
-                        that._putToBuffer(params);
+                        if (params.resendLimits > 0) {
+                            params.resendLimits -= 1;
+                            that._putToBuffer(params);
+                        }
                     }
                 });
         });
