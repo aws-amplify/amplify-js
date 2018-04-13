@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest --coverage --updateSnapshot",
-    "build": "babel src --presets babel-preset-env --out-dir dist --copy-files",
-    "watch": "babel src --presets babel-preset-env --out-dir dist --copy-files --watch",
-    "build-with-test": "npm test && npm run build"
+    "build": "npm run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
+    "build-with-test": "npm test && npm run build",
+    "clean": "rimraf dist"
   },
   "devDependencies": {
     "aws-amplify": "^0.2.14",
