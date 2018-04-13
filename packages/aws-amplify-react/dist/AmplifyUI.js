@@ -28,13 +28,13 @@ var _AmplifyTheme = require('./AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Container = exports.Container = function Container(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.container);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-container', style: style }),
         props.children
@@ -42,9 +42,9 @@ var Container = exports.Container = function Container(props) {
 };
 
 var FormContainer = exports.FormContainer = function FormContainer(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.formContainer);
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         { className: 'amplify-form-container', style: style },
         props.children
@@ -52,12 +52,12 @@ var FormContainer = exports.FormContainer = function FormContainer(props) {
 };
 
 var FormSection = exports.FormSection = function FormSection(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.formSection);
-    return _react2['default'].createElement(
+    return _react2.default.createElement(
         FormContainer,
         { theme: theme },
-        beforeAfter(_react2['default'].createElement(
+        beforeAfter(_react2.default.createElement(
             'div',
             { className: 'amplify-form-section', style: style },
             props.children
@@ -66,13 +66,13 @@ var FormSection = exports.FormSection = function FormSection(props) {
 };
 
 var ErrorSection = exports.ErrorSection = function ErrorSection(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.errorSection);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-error-section', style: style }),
-        _react2['default'].createElement(
+        _react2.default.createElement(
             ErrorSectionContent,
             null,
             props.children
@@ -81,9 +81,9 @@ var ErrorSection = exports.ErrorSection = function ErrorSection(props) {
 };
 
 var ErrorSectionContent = exports.ErrorSectionContent = function ErrorSectionContent(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.errorSectionContent);
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'span',
         { className: 'amplify-error-section-content', style: style },
         props.children
@@ -91,13 +91,13 @@ var ErrorSectionContent = exports.ErrorSectionContent = function ErrorSectionCon
 };
 
 var SectionHeader = exports.SectionHeader = function SectionHeader(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.sectionHeader);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-section-header', style: style }),
-        _react2['default'].createElement(
+        _react2.default.createElement(
             SectionHeaderContent,
             { theme: theme },
             props.children
@@ -106,9 +106,9 @@ var SectionHeader = exports.SectionHeader = function SectionHeader(props) {
 };
 
 var SectionHeaderContent = exports.SectionHeaderContent = function SectionHeaderContent(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.sectionHeaderContent);
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'span',
         { className: 'amplify-section-header-content', style: style },
         props.children
@@ -116,13 +116,13 @@ var SectionHeaderContent = exports.SectionHeaderContent = function SectionHeader
 };
 
 var SectionFooter = exports.SectionFooter = function SectionFooter(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.sectionFooter);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-section-footer', style: style }),
-        _react2['default'].createElement(
+        _react2.default.createElement(
             SectionFooterContent,
             null,
             props.children
@@ -131,9 +131,9 @@ var SectionFooter = exports.SectionFooter = function SectionFooter(props) {
 };
 
 var SectionFooterContent = exports.SectionFooterContent = function SectionFooterContent(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.sectionFooterContent);
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'span',
         { className: 'amplify-section-footer-content', style: style },
         props.children
@@ -141,10 +141,10 @@ var SectionFooterContent = exports.SectionFooterContent = function SectionFooter
 };
 
 var SectionBody = exports.SectionBody = function SectionBody(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.sectionBody);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-section-body', style: style }),
         props.children
@@ -152,10 +152,10 @@ var SectionBody = exports.SectionBody = function SectionBody(props) {
 };
 
 var ActionRow = exports.ActionRow = function ActionRow(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.actionRow);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-action-row', style: style }),
         props.children
@@ -163,10 +163,10 @@ var ActionRow = exports.ActionRow = function ActionRow(props) {
 };
 
 var FormRow = exports.FormRow = function FormRow(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.formRow);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-form-row', style: style }),
         props.children
@@ -174,13 +174,13 @@ var FormRow = exports.FormRow = function FormRow(props) {
 };
 
 var InputRow = exports.InputRow = function InputRow(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.input);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return _react2['default'].createElement(
+    return _react2.default.createElement(
         FormRow,
         { theme: theme },
-        beforeAfter(_react2['default'].createElement('input', _extends({}, p, {
+        beforeAfter(_react2.default.createElement('input', _extends({}, p, {
             className: 'amplify-input',
             style: style
         })))
@@ -189,14 +189,14 @@ var InputRow = exports.InputRow = function InputRow(props) {
 
 var RadioRow = exports.RadioRow = function RadioRow(props) {
     var id = props.id || '_' + props.value;
-    var theme = props.theme || _AmplifyTheme2['default'];
-    return _react2['default'].createElement(
+    var theme = props.theme || _AmplifyTheme2.default;
+    return _react2.default.createElement(
         FormRow,
         { theme: theme },
-        _react2['default'].createElement(Radio, _extends({}, props, {
+        _react2.default.createElement(Radio, _extends({}, props, {
             id: id
         })),
-        _react2['default'].createElement(
+        _react2.default.createElement(
             Label,
             {
                 htmlFor: id,
@@ -208,10 +208,10 @@ var RadioRow = exports.RadioRow = function RadioRow(props) {
 };
 
 var Radio = exports.Radio = function Radio(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.radio);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement('input', _extends({}, p, {
+    return beforeAfter(_react2.default.createElement('input', _extends({}, p, {
         type: 'radio',
         className: 'amplify-radio',
         style: style
@@ -220,14 +220,14 @@ var Radio = exports.Radio = function Radio(props) {
 
 var CheckboxRow = exports.CheckboxRow = function CheckboxRow(props) {
     var id = props.id || '_' + props.name;
-    var theme = props.theme || _AmplifyTheme2['default'];
-    return _react2['default'].createElement(
+    var theme = props.theme || _AmplifyTheme2.default;
+    return _react2.default.createElement(
         FormRow,
         { theme: theme },
-        _react2['default'].createElement(Checkbox, _extends({}, props, {
+        _react2.default.createElement(Checkbox, _extends({}, props, {
             id: id
         })),
-        _react2['default'].createElement(
+        _react2.default.createElement(
             Label,
             {
                 htmlFor: id,
@@ -239,10 +239,10 @@ var CheckboxRow = exports.CheckboxRow = function CheckboxRow(props) {
 };
 
 var Checkbox = exports.Checkbox = function Checkbox(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.checkbox);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement('input', _extends({}, p, {
+    return beforeAfter(_react2.default.createElement('input', _extends({}, p, {
         type: 'checkbox',
         className: 'amplify-checkbox',
         style: style
@@ -250,11 +250,11 @@ var Checkbox = exports.Checkbox = function Checkbox(props) {
 };
 
 var MessageRow = exports.MessageRow = function MessageRow(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
-    return _react2['default'].createElement(
+    var theme = props.theme || _AmplifyTheme2.default;
+    return _react2.default.createElement(
         FormRow,
         { theme: theme },
-        _react2['default'].createElement(
+        _react2.default.createElement(
             MessageContent,
             { theme: theme },
             props.children
@@ -263,8 +263,8 @@ var MessageRow = exports.MessageRow = function MessageRow(props) {
 };
 
 var MessageContent = exports.MessageContent = function MessageContent(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
-    return beforeAfter(_react2['default'].createElement(
+    var theme = props.theme || _AmplifyTheme2.default;
+    return beforeAfter(_react2.default.createElement(
         'span',
         { className: 'amplify-message-content', style: theme.messageContent },
         props.children
@@ -272,22 +272,22 @@ var MessageContent = exports.MessageContent = function MessageContent(props) {
 };
 
 var ButtonRow = exports.ButtonRow = function ButtonRow(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
-    return beforeAfter(_react2['default'].createElement(
+    var theme = props.theme || _AmplifyTheme2.default;
+    return beforeAfter(_react2.default.createElement(
         'div',
         { className: 'amplify-action-row', style: theme.actionRow },
-        _react2['default'].createElement(Button, props)
+        _react2.default.createElement(Button, props)
     ));
 };
 
 var Button = exports.Button = function Button(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.button);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'button',
         _extends({}, p, { className: 'amplify-button', style: style }),
-        _react2['default'].createElement(
+        _react2.default.createElement(
             ButtonContent,
             { theme: theme },
             props.children
@@ -296,8 +296,8 @@ var Button = exports.Button = function Button(props) {
 };
 
 var ButtonContent = exports.ButtonContent = function ButtonContent(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
-    return beforeAfter(_react2['default'].createElement(
+    var theme = props.theme || _AmplifyTheme2.default;
+    return beforeAfter(_react2.default.createElement(
         'span',
         { className: 'amplify-button-content', style: theme.buttonContent },
         props.children
@@ -305,11 +305,11 @@ var ButtonContent = exports.ButtonContent = function ButtonContent(props) {
 };
 
 var SignInButton = exports.SignInButton = function SignInButton(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.signInButton);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
 
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'button',
         _extends({}, p, { className: 'amplify-signin-button', style: style }),
         props.children
@@ -317,10 +317,10 @@ var SignInButton = exports.SignInButton = function SignInButton(props) {
 };
 
 var Link = exports.Link = function Link(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.a);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'a',
         _extends({}, p, { className: 'amplify-a', style: style }),
         props.children
@@ -328,10 +328,10 @@ var Link = exports.Link = function Link(props) {
 };
 
 var Label = exports.Label = function Label(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.label);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'label',
         _extends({}, p, { className: 'amplify-label', style: style }),
         props.children
@@ -339,10 +339,10 @@ var Label = exports.Label = function Label(props) {
 };
 
 var Space = exports.Space = function Space(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.space);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'span',
         _extends({}, p, { className: 'amplify-space', style: style }),
         props.children
@@ -350,10 +350,10 @@ var Space = exports.Space = function Space(props) {
 };
 
 var NavBar = exports.NavBar = function NavBar(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.navBar);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-nav-bar', style: style }),
         props.children
@@ -361,10 +361,10 @@ var NavBar = exports.NavBar = function NavBar(props) {
 };
 
 var Nav = exports.Nav = function Nav(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.nav);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-nav', style: style }),
         props.children
@@ -372,10 +372,10 @@ var Nav = exports.Nav = function Nav(props) {
 };
 
 var NavRight = exports.NavRight = function NavRight(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.navRight);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-nav-right', style: style }),
         props.children
@@ -383,10 +383,10 @@ var NavRight = exports.NavRight = function NavRight(props) {
 };
 
 var NavItem = exports.NavItem = function NavItem(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.navItem);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'div',
         _extends({}, p, { className: 'amplify-nav-item', style: style }),
         props.children
@@ -394,13 +394,13 @@ var NavItem = exports.NavItem = function NavItem(props) {
 };
 
 var NavButton = exports.NavButton = function NavButton(props) {
-    var theme = props.theme || _AmplifyTheme2['default'];
+    var theme = props.theme || _AmplifyTheme2.default;
     var style = propStyle(props, theme.navButton);
     var p = _awsAmplify.JS.objectLessAttributes(props, 'theme');
-    return beforeAfter(_react2['default'].createElement(
+    return beforeAfter(_react2.default.createElement(
         'button',
         _extends({}, p, { className: 'amplify-nav-button', style: style }),
-        beforeAfter(_react2['default'].createElement(
+        beforeAfter(_react2.default.createElement(
             'span',
             { style: theme.navButtonContent },
             props.children
@@ -417,16 +417,16 @@ var beforeAfter = exports.beforeAfter = function beforeAfter(el) {
         return el;
     }
 
-    return _react2['default'].createElement(
+    return _react2.default.createElement(
         'span',
         { style: { position: 'relative' } },
-        before ? _react2['default'].createElement(
+        before ? _react2.default.createElement(
             'span',
             { style: before },
             before.content
         ) : null,
         el,
-        after ? _react2['default'].createElement(
+        after ? _react2.default.createElement(
             'span',
             { style: after },
             after.content

@@ -9,7 +9,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports['default'] = withGoogle;
+exports.default = withGoogle;
 
 var _react = require('react');
 
@@ -23,7 +23,7 @@ var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../../AmplifyUI');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -52,99 +52,75 @@ function withGoogle(Comp) {
 
         _createClass(_class, [{
             key: 'signIn',
-            value: function () {
-                function signIn() {
-                    var _this2 = this;
+            value: function signIn() {
+                var _this2 = this;
 
-                    var ga = window.gapi.auth2.getAuthInstance();
-                    var onError = this.props.onError;
+                var ga = window.gapi.auth2.getAuthInstance();
+                var onError = this.props.onError;
 
-                    ga.signIn().then(function (googleUser) {
-                        return _this2.federatedSignIn(googleUser);
-                    }, function (error) {
-                        if (onError) onError(error);else throw error;
-                    });
-                }
-
-                return signIn;
-            }()
+                ga.signIn().then(function (googleUser) {
+                    return _this2.federatedSignIn(googleUser);
+                }, function (error) {
+                    if (onError) onError(error);else throw error;
+                });
+            }
         }, {
             key: 'federatedSignIn',
-            value: function () {
-                function federatedSignIn(googleUser) {
-                    var _googleUser$getAuthRe = googleUser.getAuthResponse(),
-                        id_token = _googleUser$getAuthRe.id_token,
-                        expires_at = _googleUser$getAuthRe.expires_at;
+            value: function federatedSignIn(googleUser) {
+                var _googleUser$getAuthRe = googleUser.getAuthResponse(),
+                    id_token = _googleUser$getAuthRe.id_token,
+                    expires_at = _googleUser$getAuthRe.expires_at;
 
-                    var profile = googleUser.getBasicProfile();
-                    var user = {
-                        email: profile.getEmail(),
-                        name: profile.getName()
-                    };
+                var profile = googleUser.getBasicProfile();
+                var user = {
+                    email: profile.getEmail(),
+                    name: profile.getName()
+                };
 
-                    var onStateChange = this.props.onStateChange;
+                var onStateChange = this.props.onStateChange;
 
-                    return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user).then(function (credentials) {
-                        if (onStateChange) {
-                            onStateChange('signedIn');
-                        }
-                    });
-                }
-
-                return federatedSignIn;
-            }()
+                return _awsAmplify.Auth.federatedSignIn('google', { token: id_token, expires_at: expires_at }, user).then(function (credentials) {
+                    if (onStateChange) {
+                        onStateChange('signedIn');
+                    }
+                });
+            }
         }, {
             key: 'componentDidMount',
-            value: function () {
-                function componentDidMount() {
-                    this.createScript();
-                }
-
-                return componentDidMount;
-            }()
+            value: function componentDidMount() {
+                this.createScript();
+            }
         }, {
             key: 'createScript',
-            value: function () {
-                function createScript() {
-                    var script = document.createElement('script');
-                    script.src = 'https://apis.google.com/js/platform.js';
-                    script.async = true;
-                    script.onload = this.initGapi;
-                    document.body.appendChild(script);
-                }
-
-                return createScript;
-            }()
+            value: function createScript() {
+                var script = document.createElement('script');
+                script.src = 'https://apis.google.com/js/platform.js';
+                script.async = true;
+                script.onload = this.initGapi;
+                document.body.appendChild(script);
+            }
         }, {
             key: 'initGapi',
-            value: function () {
-                function initGapi() {
-                    logger.debug('init gapi');
+            value: function initGapi() {
+                logger.debug('init gapi');
 
-                    var that = this;
-                    var google_client_id = this.props.google_client_id;
+                var that = this;
+                var google_client_id = this.props.google_client_id;
 
-                    var g = window.gapi;
-                    g.load('auth2', function () {
-                        g.auth2.init({
-                            client_id: google_client_id,
-                            scope: 'profile email openid'
-                        });
+                var g = window.gapi;
+                g.load('auth2', function () {
+                    g.auth2.init({
+                        client_id: google_client_id,
+                        scope: 'profile email openid'
                     });
-                }
-
-                return initGapi;
-            }()
+                });
+            }
         }, {
             key: 'render',
-            value: function () {
-                function render() {
-                    var ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
-                    return _react2['default'].createElement(Comp, _extends({}, this.props, { ga: ga, googleSignIn: this.signIn }));
-                }
-
-                return render;
-            }()
+            value: function render() {
+                var ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
+                return _react2.default.createElement(Comp, _extends({}, this.props, { ga: ga, googleSignIn: this.signIn }));
+            }
         }]);
 
         return _class;
@@ -152,12 +128,12 @@ function withGoogle(Comp) {
 }
 
 var Button = function Button(props) {
-    return _react2['default'].createElement(
+    return _react2.default.createElement(
         _AmplifyUI.SignInButton,
         {
             id: 'google_signin_btn',
             onClick: props.googleSignIn,
-            theme: props.theme || _AmplifyTheme2['default']
+            theme: props.theme || _AmplifyTheme2.default
         },
         'Sign In with Google'
     );

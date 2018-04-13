@@ -22,7 +22,7 @@ var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -68,238 +68,190 @@ var Greetings = function (_AuthPiece) {
 
     _createClass(Greetings, [{
         key: 'componentDidMount',
-        value: function () {
-            function componentDidMount() {
-                this._isMounted = true;
-                this.checkUser();
-            }
-
-            return componentDidMount;
-        }()
+        value: function componentDidMount() {
+            this._isMounted = true;
+            this.checkUser();
+        }
     }, {
         key: 'componentWillUnmount',
-        value: function () {
-            function componentWillUnmount() {
-                this._isMounted = false;
-            }
-
-            return componentWillUnmount;
-        }()
+        value: function componentWillUnmount() {
+            this._isMounted = false;
+        }
     }, {
         key: 'signOut',
-        value: function () {
-            function signOut() {
-                var _this2 = this;
+        value: function signOut() {
+            var _this2 = this;
 
-                this.googleSignOut();
-                this.facebookSignOut();
-                _awsAmplify.Auth.signOut().then(function () {
-                    return _this2.changeState('signedOut');
-                })['catch'](function (err) {
-                    logger.error(err);_this2.error(err);
-                });
-            }
-
-            return signOut;
-        }()
+            this.googleSignOut();
+            this.facebookSignOut();
+            _awsAmplify.Auth.signOut().then(function () {
+                return _this2.changeState('signedOut');
+            }).catch(function (err) {
+                logger.error(err);_this2.error(err);
+            });
+        }
     }, {
         key: 'googleSignOut',
-        value: function () {
-            function googleSignOut() {
-                var auth2 = window.gapi && window.gapi.auth2 ? window.gapi.auth2 : null;
-                if (!auth2) {
+        value: function googleSignOut() {
+            var authInstance = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
+            if (!authInstance) {
+                return Promise.resolve(null);
+            }
+
+            authInstance.then(function (googleAuth) {
+                if (!googleAuth) {
+                    logger.debug('google Auth undefined');
                     return Promise.resolve(null);
                 }
 
-                auth2.getAuthInstance().then(function (googleAuth) {
-                    if (!googleAuth) {
-                        logger.debug('google Auth undefined');
-                        return Promise.resolve(null);
-                    }
-
-                    logger.debug('google signing out');
-                    return googleAuth.signOut();
-                });
-            }
-
-            return googleSignOut;
-        }()
+                logger.debug('google signing out');
+                return googleAuth.signOut();
+            });
+        }
     }, {
         key: 'facebookSignOut',
-        value: function () {
-            function facebookSignOut() {
-                var fb = window.FB;
-                if (!fb) {
-                    logger.debug('FB sdk undefined');
+        value: function facebookSignOut() {
+            var fb = window.FB;
+            if (!fb) {
+                logger.debug('FB sdk undefined');
+                return Promise.resolve(null);
+            }
+
+            fb.getLoginStatus(function (response) {
+                if (response.status === 'connected') {
+                    return new Promise(function (res, rej) {
+                        logger.debug('facebook signing out');
+                        fb.logout(function (response) {
+                            res(response);
+                        });
+                    });
+                } else {
                     return Promise.resolve(null);
                 }
-
-                fb.getLoginStatus(function (response) {
-                    if (response.status === 'connected') {
-                        return new Promise(function (res, rej) {
-                            logger.debug('facebook signing out');
-                            fb.logout(function (response) {
-                                res(response);
-                            });
-                        });
-                    } else {
-                        return Promise.resolve(null);
-                    }
-                });
-            }
-
-            return facebookSignOut;
-        }()
+            });
+        }
     }, {
         key: 'checkUser',
-        value: function () {
-            function checkUser() {
-                var _this3 = this;
+        value: function checkUser() {
+            var _this3 = this;
 
-                var that = this;
-                var authState = this.state.authState;
+            var that = this;
+            var authState = this.state.authState;
 
-                return _awsAmplify.Auth.currentAuthenticatedUser().then(function (user) {
-                    if (!that._isMounted) {
-                        return;
-                    }
-                    if (authState !== 'signedIn') {
-                        _this3.setState({
-                            authState: 'signedIn',
-                            authData: user
-                        });
-                        _this3.changeState('signedIn', user);
-                    }
-                })['catch'](function (err) {
-                    if (!that._isMounted) {
-                        return;
-                    }
-                    if (!authState || authState === 'signedIn') {
-                        _this3.setState({ authState: 'signIn' });
-                        _this3.changeState('signIn');
-                    }
-                });
-            }
-
-            return checkUser;
-        }()
+            return _awsAmplify.Auth.currentAuthenticatedUser().then(function (user) {
+                if (!that._isMounted) {
+                    return;
+                }
+                if (authState !== 'signedIn') {
+                    _this3.setState({
+                        authState: 'signedIn',
+                        authData: user
+                    });
+                    _this3.changeState('signedIn', user);
+                }
+            }).catch(function (err) {
+                if (!that._isMounted) {
+                    return;
+                }
+                if (!authState || authState === 'signedIn') {
+                    _this3.setState({ authState: 'signIn' });
+                    _this3.changeState('signIn');
+                }
+            });
+        }
     }, {
         key: 'onHubCapsule',
-        value: function () {
-            function onHubCapsule(capsule) {
-                var channel = capsule.channel,
-                    payload = capsule.payload,
-                    source = capsule.source;
+        value: function onHubCapsule(capsule) {
+            var channel = capsule.channel,
+                payload = capsule.payload,
+                source = capsule.source;
 
-                if (channel === 'auth') {
-                    this.checkUser();
-                }
+            if (channel === 'auth') {
+                this.checkUser();
             }
-
-            return onHubCapsule;
-        }()
+        }
     }, {
         key: 'inGreeting',
-        value: function () {
-            function inGreeting(name) {
-                return 'Hello ' + name;
-            }
-
-            return inGreeting;
-        }()
+        value: function inGreeting(name) {
+            return 'Hello ' + name;
+        }
     }, {
         key: 'outGreeting',
-        value: function () {
-            function outGreeting() {
-                return '';
-            }
-
-            return outGreeting;
-        }()
+        value: function outGreeting() {
+            return '';
+        }
     }, {
         key: 'userGreetings',
-        value: function () {
-            function userGreetings(theme) {
-                var user = this.state.authData;
-                var greeting = this.props.inGreeting || this.inGreeting;
-                var name = user.name || user.username;
-                var message = typeof greeting === 'function' ? greeting(name) : greeting;
-                return _react2['default'].createElement(
-                    'span',
-                    null,
-                    _react2['default'].createElement(
-                        _AmplifyUI.NavItem,
-                        { theme: theme },
-                        message
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.NavButton,
-                        {
-                            theme: theme,
-                            onClick: this.signOut
-                        },
-                        _awsAmplify.I18n.get('Sign Out')
-                    )
-                );
-            }
-
-            return userGreetings;
-        }()
-    }, {
-        key: 'noUserGreetings',
-        value: function () {
-            function noUserGreetings(theme) {
-                var greeting = this.props.outGreeting || this.outGreeting;
-                var message = typeof greeting === 'function' ? greeting() : greeting;
-                return message ? _react2['default'].createElement(
+        value: function userGreetings(theme) {
+            var user = this.state.authData;
+            var greeting = this.props.inGreeting || this.inGreeting;
+            var name = user.name || user.username;
+            var message = typeof greeting === 'function' ? greeting(name) : greeting;
+            return _react2.default.createElement(
+                'span',
+                null,
+                _react2.default.createElement(
                     _AmplifyUI.NavItem,
                     { theme: theme },
                     message
-                ) : null;
-            }
-
-            return noUserGreetings;
-        }()
+                ),
+                _react2.default.createElement(
+                    _AmplifyUI.NavButton,
+                    {
+                        theme: theme,
+                        onClick: this.signOut
+                    },
+                    _awsAmplify.I18n.get('Sign Out')
+                )
+            );
+        }
+    }, {
+        key: 'noUserGreetings',
+        value: function noUserGreetings(theme) {
+            var greeting = this.props.outGreeting || this.outGreeting;
+            var message = typeof greeting === 'function' ? greeting() : greeting;
+            return message ? _react2.default.createElement(
+                _AmplifyUI.NavItem,
+                { theme: theme },
+                message
+            ) : null;
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                var hide = this.props.hide;
+        value: function render() {
+            var hide = this.props.hide;
 
-                if (hide && hide.includes(Greetings)) {
-                    return null;
-                }
-
-                var authState = this.state.authState;
-
-                var signedIn = authState === 'signedIn';
-
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                var greeting = signedIn ? this.userGreetings(theme) : this.noUserGreetings(theme);
-                if (!greeting) {
-                    return null;
-                }
-
-                return _react2['default'].createElement(
-                    _AmplifyUI.NavBar,
-                    { theme: theme },
-                    _react2['default'].createElement(
-                        _AmplifyUI.Nav,
-                        { theme: theme },
-                        _react2['default'].createElement(
-                            _AmplifyUI.NavRight,
-                            { theme: theme },
-                            greeting
-                        )
-                    )
-                );
+            if (hide && hide.includes(Greetings)) {
+                return null;
             }
 
-            return render;
-        }()
+            var authState = this.state.authState;
+
+            var signedIn = authState === 'signedIn';
+
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            var greeting = signedIn ? this.userGreetings(theme) : this.noUserGreetings(theme);
+            if (!greeting) {
+                return null;
+            }
+
+            return _react2.default.createElement(
+                _AmplifyUI.NavBar,
+                { theme: theme },
+                _react2.default.createElement(
+                    _AmplifyUI.Nav,
+                    { theme: theme },
+                    _react2.default.createElement(
+                        _AmplifyUI.NavRight,
+                        { theme: theme },
+                        greeting
+                    )
+                )
+            );
+        }
     }]);
 
     return Greetings;
-}(_AuthPiece3['default']);
+}(_AuthPiece3.default);
 
-exports['default'] = Greetings;
+exports.default = Greetings;

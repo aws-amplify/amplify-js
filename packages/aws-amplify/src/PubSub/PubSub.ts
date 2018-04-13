@@ -16,6 +16,7 @@ import * as Observable from 'zen-observable';
 
 import { ConsoleLogger as Logger } from '../Common/Logger';
 import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
+import { AWSAppSyncProvider } from './Providers';
 
 const logger = new Logger('PubSub');
 
@@ -47,6 +48,11 @@ export default class PubSub {
         logger.debug('configure PubSub', { opt });
 
         this._options = Object.assign({}, this._options, opt);
+
+        if (this._options.aws_appsync_graphqlEndpoint && this._options.aws_appsync_region &&
+            !this._pluggables.find(p => p.getProviderName() === 'AWSAppSyncProvider')) {
+            this.addPluggable(new AWSAppSyncProvider());
+        }
 
         this._pluggables.map((pluggable) => pluggable.configure(this._options));
 
@@ -84,7 +90,7 @@ export default class PubSub {
                 start: console.error,
                 next: value => observer.next({ provider, value }),
                 error: error => observer.error({ provider, error }),
-                // complete: observer.complete, // TODO: when all completed, complete the ourter one
+                // complete: observer.complete, // TODO: when all completed, complete the outer one
             }));
 
             return () => subscriptions.forEach(subscription => subscription.unsubscribe());
