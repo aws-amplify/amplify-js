@@ -432,6 +432,17 @@ awesome-typescript-loader@^3.2.2:
     object-assign "^4.1.1"
     source-map-support "^0.4.15"
 
+aws-amplify@^0.2.14, aws-amplify@^0.2.x:
+  version "0.2.15"
+  resolved "https://registry.yarnpkg.com/aws-amplify/-/aws-amplify-0.2.15.tgz#8ea5364e4082ebbd845aa8a4544dc760639b45ca"
+  dependencies:
+    amazon-cognito-identity-js "^2.0.0"
+    aws-sdk "2.198.0"
+    axios "^0.17.0"
+    paho-mqtt "^1.0.4"
+    uuid "^3.2.1"
+    zen-observable "^0.8.6"
+
 aws-sdk@2.198.0:
   version "2.198.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.198.0.tgz#2245311337ddc844cc34c13f3fcf3b7ea843f434"
