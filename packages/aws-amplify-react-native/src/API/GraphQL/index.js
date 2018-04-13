@@ -10,7 +10,5 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-export * from './PubSubProvider';
-export * from './AWSAppSyncProvider';
-export * from './AWSIotProvider';
-export * from './MqttOverWSProvider';
+
+export { default as Connect } from './Connect';
