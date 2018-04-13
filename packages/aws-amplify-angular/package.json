@@ -15,8 +15,6 @@
     "@angular/core": "^5.2.6",
     "@angular/platform-browser": "^5.2.9",
     "@angular/platform-browser-dynamic": "^5.2.9",
-    "@types/jasmine": "^2.8.6",
-    "@types/jasminewd2": "^2.0.3",
     "@types/node": "^9.4.6",
     "@types/paho-mqtt": "^1.0.3",
     "@types/zen-observable": "^0.5.3",
