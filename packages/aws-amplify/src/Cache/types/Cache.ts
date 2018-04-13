@@ -63,6 +63,8 @@ export interface CacheConfig {
     defaultPriority?: number;
 
     storage?: Storage;
+
+    Cache?: Cache;
 }
 
 export interface CacheItem {

@@ -55,6 +55,7 @@ var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 var BUFFER_SIZE = 1000;
 var MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
 var interval = 5 * 1000; // 5s
+var RESEND_LIMIT = 5;
 /**
 * Provide mobile analytics client functions
 */
@@ -239,7 +240,16 @@ var AnalyticsClass = /** @class */ (function () {
             pluggable.record(params)
                 .then(function (success) {
                 if (!success) {
-                    that._putToBuffer(params);
+                    params.resendLimits = typeof params.resendLimits === 'number' ?
+                        params.resendLimits : RESEND_LIMIT;
+                    if (params.resendLimits > 0) {
+                        logger.debug("resending event " + params.eventName + " with " + params.resendLimits + " retry times left");
+                        params.resendLimits -= 1;
+                        that._putToBuffer(params);
+                    }
+                    else {
+                        logger.debug("retry times used up for event " + params.eventName);
+                    }
                 }
             });
         });
