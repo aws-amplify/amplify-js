@@ -404,10 +404,10 @@ const oauth = {
     scope : ['phone', 'email', 'profile', 'openid','aws.cognito.signin.user.admin'], 
 
     // Callback URL
-    redirectSignIn : 'http://localhost:3000/', 
+    redirectSignIn : 'http://www.example.com/signin', 
     
     // Sign out URL
-    redirectSignOut : 'http://localhost:3000/',
+    redirectSignOut : 'http://www.example.com/signout',
 
     // 'code' for Authorization code grant, 
     // 'token' for Implicit grant
@@ -469,10 +469,7 @@ class MyApp extends React.Component {
 }
 
 export default withOAuth(MyApp);
-```
-
-While using `aws-amplify-react`, *Sign in with Amazon* button will appear in your login page when you work with *withAuthenticator* HOC or *Authenticator* component.
- 
+``` 
     
 ### Enabling MFA (Multi-Factor Authentication)
 
