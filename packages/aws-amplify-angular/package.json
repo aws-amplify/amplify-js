@@ -28,28 +28,19 @@
     "jasmine-spec-reporter": "^4.2.1",
     "karma": "^2.0.0",
     "karma-chrome-launcher": "^2.2.0",
-    "karma-cli": "^1.0.1",
     "karma-coverage-istanbul-reporter": "^1.4.2",
     "karma-jasmine": "^1.1.1",
-    "karma-jasmine-html-reporter": "^1.0.0",
+    "karma-mocha-reporter": "^2.2.5",
     "karma-typescript": "^3.0.12",
-    "protractor": "^5.3.1",
+    "mocha": "^5.1.0",
     "rxjs": "^5.5.6",
-    "typescript": "^2.8.1"
+    "typescript": "^2.8.1",
+    "zone": "^0.3.4",
+    "zone.js": "^0.8.26"
   },
   "dependencies": {
     "@angular/cli": "^1.7.4",
     "@angular/compiler-cli": "^5.2.9",
-    "@types/lodash": "^4.14.106",
-    "karma-html-reporter": "^0.2.7",
-    "karma-htmlfile-reporter": "^0.3.5",
-    "karma-mocha-reporter": "^2.2.5",
-    "karma-phantomjs-launcher": "^1.0.4",
-    "karma-remap-istanbul": "^0.6.0",
-    "karma-typescript-preprocessor": "^0.3.1",
-    "mocha": "^5.1.0",
-    "require-context": "^1.1.0",
-    "zone": "^0.3.4",
-    "zone.js": "^0.8.26"
+    "@types/lodash": "^4.14.106"
   }
 }
