@@ -768,9 +768,9 @@ export default class AuthClass {
             });
         } else {
             if (!that._refreshHandlers[provider]) {
-                logger.debug('no refresh hanlder for provider:', provider);
+                logger.debug('no refresh handler for provider:', provider);
                 this.cleanCachedItems();
-                return Promise.reject('no refresh hanlder for provider');
+                return Promise.reject('no refresh handler for provider');
             } else {
                 logger.debug('token not expired');
                 return this._setCredentialsFromFederation({provider, token, user, expires_at });
