@@ -233,12 +233,15 @@ export default class AuthClass {
                 onSuccess: (session) => {
                     logger.debug(session);
                     that._setCredentialsFromSession(session).then((cred) => {
+                        logger.debug('succeed to get cognito credentials');
                         that.user = user;
                         dispatchAuthEvent('signIn', user);
                         resolve(user);
                     }).catch(e => {
                         logger.debug('cannot get cognito credentials');
-                        reject('signin failed');
+                        that.user = user;
+                        dispatchAuthEvent('signIn', user);
+                        resolve(user);
                     });
                 },
                 onFailure: (err) => {
@@ -471,12 +474,15 @@ export default class AuthClass {
                     onSuccess: (session) => {
                         logger.debug(session);
                         that._setCredentialsFromSession(session).then((cred) => {
+                            logger.debug('succeed to get cognito credentials');
                             that.user = user;
                             dispatchAuthEvent('signIn', user);
                             resolve(user);
                         }).catch(e => {
                             logger.debug('cannot get cognito credentials');
-                            reject('signin failed');
+                            that.user = user;
+                            dispatchAuthEvent('signIn', user);
+                            resolve(user);
                         });
                     },
                     onFailure: (err) => {
@@ -501,12 +507,15 @@ export default class AuthClass {
                 onSuccess: (session) => {
                     logger.debug(session);
                     that._setCredentialsFromSession(session).then((cred) => {
+                        logger.debug('succeed to get cognito credentials');
                         that.user = user;
                         dispatchAuthEvent('signIn', user);
                         resolve(user);
                     }).catch(e => {
-                        logger.debug('cannot get cognito credentials');
-                        reject('signin failed');
+                        logger.debug('succeed to get cognito credentials');
+                        that.user = user;
+                        dispatchAuthEvent('signIn', user);
+                        resolve(user);
                     });
                 },
                 onFailure: (err) => {
