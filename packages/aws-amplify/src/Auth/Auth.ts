@@ -768,9 +768,9 @@ export default class AuthClass {
             });
         } else {
             if (!that._refreshHandlers[provider]) {
-                logger.debug('no refresh hanlder for provider:', provider);
+                logger.debug('no refresh handler for provider:', provider);
                 this.cleanCachedItems();
-                return Promise.reject('no refresh hanlder for provider');
+                return Promise.reject('no refresh handler for provider');
             } else {
                 logger.debug('token not expired');
                 return this._setCredentialsFromFederation({provider, token, user, expires_at });
@@ -977,8 +977,17 @@ export default class AuthClass {
                 const attributes = await this.userAttributes(user);
                 const userAttrs:object = this.attributesToObject(attributes);
 
+                // check if the credentials is in the memory
+                if (!this.credentials) {
+                    try {
+                        await this.currentCredentials();
+                    } catch (e) {
+                        logger.debug('Failed to retrieve credentials while getting current user info', e);
+                    }
+                }
+
                 const info = {
-                    'id': this.credentials.identityId,
+                    'id': this.credentials? this.credentials.identityId : undefined,
                     'username': user.username,
                     'attributes': userAttrs
                 };
@@ -1169,7 +1178,7 @@ export default class AuthClass {
                 },
                 (err) => {
                     logger.debug('Failed to load credentials', credentials);
-                    rej('Failed to load creadentials');
+                    rej(err);
                 }
             );
         });

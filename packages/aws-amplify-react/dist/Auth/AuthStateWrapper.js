@@ -18,7 +18,7 @@ var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -46,116 +46,92 @@ var AuthStateWrapper = function (_Component) {
 
     _createClass(AuthStateWrapper, [{
         key: 'componentWillMount',
-        value: function () {
-            function componentWillMount() {
-                var config = this.props.amplifyConfig;
-                if (config) {
-                    _awsAmplify2['default'].configure(config);
-                }
+        value: function componentWillMount() {
+            var config = this.props.amplifyConfig;
+            if (config) {
+                _awsAmplify2.default.configure(config);
             }
-
-            return componentWillMount;
-        }()
+        }
     }, {
         key: 'componentDidMount',
-        value: function () {
-            function componentDidMount() {
-                this.checkUser();
-            }
-
-            return componentDidMount;
-        }()
+        value: function componentDidMount() {
+            this.checkUser();
+        }
     }, {
         key: 'handleStateChange',
-        value: function () {
-            function handleStateChange(state, data) {
-                logger.debug('authStateWrapper state change ' + state, data);
-                if (state === this.state.auth) {
-                    return;
-                }
-
-                if (state === 'signedOut') {
-                    state = 'signIn';
-                }
-                this.setState({ auth: state, authData: data, error: null });
-                if (this.props.onStateChange) {
-                    this.props.onStateChange(state, data);
-                }
+        value: function handleStateChange(state, data) {
+            logger.debug('authStateWrapper state change ' + state, data);
+            if (state === this.state.auth) {
+                return;
             }
 
-            return handleStateChange;
-        }()
+            if (state === 'signedOut') {
+                state = 'signIn';
+            }
+            this.setState({ auth: state, authData: data, error: null });
+            if (this.props.onStateChange) {
+                this.props.onStateChange(state, data);
+            }
+        }
     }, {
         key: 'handleAuthEvent',
-        value: function () {
-            function handleAuthEvent(state, event) {
-                if (event.type === 'error') {
-                    this.setState({ error: event.data });
-                }
+        value: function handleAuthEvent(state, event) {
+            if (event.type === 'error') {
+                this.setState({ error: event.data });
             }
-
-            return handleAuthEvent;
-        }()
+        }
     }, {
         key: 'checkUser',
-        value: function () {
-            function checkUser() {
-                var _this2 = this;
+        value: function checkUser() {
+            var _this2 = this;
 
-                return _awsAmplify.Auth.currentUser().then(function (user) {
-                    var state = user ? 'signedIn' : 'signIn';
-                    _this2.handleStateChange(state, user);
-                })['catch'](function (err) {
-                    return logger.error(err);
-                });
-            }
-
-            return checkUser;
-        }()
+            return _awsAmplify.Auth.currentUser().then(function (user) {
+                var state = user ? 'signedIn' : 'signIn';
+                _this2.handleStateChange(state, user);
+            }).catch(function (err) {
+                return logger.error(err);
+            });
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                var _this3 = this;
+        value: function render() {
+            var _this3 = this;
 
-                var _state = this.state,
-                    auth = _state.auth,
-                    authData = _state.authData;
+            var _state = this.state,
+                auth = _state.auth,
+                authData = _state.authData;
 
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                var render_children = _react2['default'].Children.map(this.props.children, function (child) {
-                    if (!child) {
-                        return null;
-                    }
-                    return _react2['default'].cloneElement(child, {
-                        authState: auth,
-                        authData: authData,
-                        theme: theme,
-                        onStateChange: _this3.handleStateChange,
-                        onAuthEvent: _this3.handleAuthEvent
-                    });
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            var render_children = _react2.default.Children.map(this.props.children, function (child) {
+                if (!child) {
+                    return null;
+                }
+                return _react2.default.cloneElement(child, {
+                    authState: auth,
+                    authData: authData,
+                    theme: theme,
+                    onStateChange: _this3.handleStateChange,
+                    onAuthEvent: _this3.handleAuthEvent
                 });
+            });
 
-                return _react2['default'].createElement(
+            return _react2.default.createElement(
+                'div',
+                { className: 'amplify-state-wrapper', style: theme.stateWrapper },
+                render_children,
+                this.state.error && _react2.default.createElement(
                     'div',
-                    { className: 'amplify-state-wrapper', style: theme.stateWrapper },
-                    render_children,
-                    this.state.error && _react2['default'].createElement(
-                        'div',
-                        {
-                            className: 'amplify-error-section',
-                            style: theme.errorSection
-                        },
-                        this.state.error
-                    )
-                );
-            }
-
-            return render;
-        }()
+                    {
+                        className: 'amplify-error-section',
+                        style: theme.errorSection
+                    },
+                    this.state.error
+                )
+            );
+        }
     }]);
 
     return AuthStateWrapper;
 }(_react.Component);
 
-exports['default'] = AuthStateWrapper;
+exports.default = AuthStateWrapper;

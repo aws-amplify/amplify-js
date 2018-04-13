@@ -22,7 +22,7 @@ var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../AmplifyUI');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61,153 +61,129 @@ var ForgotPassword = function (_AuthPiece) {
 
     _createClass(ForgotPassword, [{
         key: 'send',
-        value: function () {
-            function send() {
-                var _this2 = this;
+        value: function send() {
+            var _this2 = this;
 
-                var username = this.inputs.username;
+            var username = this.inputs.username;
 
-                _awsAmplify.Auth.forgotPassword(username).then(function (data) {
-                    logger.debug(data);
-                    _this2.setState({ delivery: data.CodeDeliveryDetails });
-                })['catch'](function (err) {
-                    return _this2.error(err);
-                });
-            }
-
-            return send;
-        }()
+            _awsAmplify.Auth.forgotPassword(username).then(function (data) {
+                logger.debug(data);
+                _this2.setState({ delivery: data.CodeDeliveryDetails });
+            }).catch(function (err) {
+                return _this2.error(err);
+            });
+        }
     }, {
         key: 'submit',
-        value: function () {
-            function submit() {
-                var _this3 = this;
+        value: function submit() {
+            var _this3 = this;
 
-                var _inputs = this.inputs,
-                    username = _inputs.username,
-                    code = _inputs.code,
-                    password = _inputs.password;
+            var _inputs = this.inputs,
+                username = _inputs.username,
+                code = _inputs.code,
+                password = _inputs.password;
 
-                _awsAmplify.Auth.forgotPasswordSubmit(username, code, password).then(function (data) {
-                    logger.debug(data);
-                    _this3.changeState('signIn');
-                    _this3.setState({ delivery: null });
-                })['catch'](function (err) {
-                    return _this3.error(err);
-                });
-            }
-
-            return submit;
-        }()
+            _awsAmplify.Auth.forgotPasswordSubmit(username, code, password).then(function (data) {
+                logger.debug(data);
+                _this3.changeState('signIn');
+                _this3.setState({ delivery: null });
+            }).catch(function (err) {
+                return _this3.error(err);
+            });
+        }
     }, {
         key: 'sendView',
-        value: function () {
-            function sendView() {
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                return _react2['default'].createElement(
-                    'div',
-                    null,
-                    _react2['default'].createElement(_AmplifyUI.InputRow, {
-                        autoFocus: true,
-                        placeholder: _awsAmplify.I18n.get('Username'),
-                        theme: theme,
-                        key: 'username',
-                        name: 'username',
-                        onChange: this.handleInputChange
-                    }),
-                    _react2['default'].createElement(
-                        _AmplifyUI.ButtonRow,
-                        { theme: theme, onClick: this.send },
-                        _awsAmplify.I18n.get('Send Code')
-                    )
-                );
-            }
-
-            return sendView;
-        }()
+        value: function sendView() {
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(_AmplifyUI.InputRow, {
+                    autoFocus: true,
+                    placeholder: _awsAmplify.I18n.get('Username'),
+                    theme: theme,
+                    key: 'username',
+                    name: 'username',
+                    onChange: this.handleInputChange
+                }),
+                _react2.default.createElement(
+                    _AmplifyUI.ButtonRow,
+                    { theme: theme, onClick: this.send },
+                    _awsAmplify.I18n.get('Send Code')
+                )
+            );
+        }
     }, {
         key: 'submitView',
-        value: function () {
-            function submitView() {
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                return _react2['default'].createElement(
-                    'div',
-                    null,
-                    _react2['default'].createElement(_AmplifyUI.InputRow, {
-                        placeholder: _awsAmplify.I18n.get('Code'),
-                        theme: theme,
-                        key: 'code',
-                        name: 'code',
-                        onChange: this.handleInputChange
-                    }),
-                    _react2['default'].createElement(_AmplifyUI.InputRow, {
-                        placeholder: _awsAmplify.I18n.get('New Password'),
-                        theme: theme,
-                        type: 'password',
-                        key: 'password',
-                        name: 'password',
-                        onChange: this.handleInputChange
-                    }),
-                    _react2['default'].createElement(
-                        _AmplifyUI.ButtonRow,
-                        { theme: theme, onClick: this.submit },
-                        _awsAmplify.I18n.get('Submit')
-                    )
-                );
-            }
-
-            return submitView;
-        }()
+        value: function submitView() {
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(_AmplifyUI.InputRow, {
+                    placeholder: _awsAmplify.I18n.get('Code'),
+                    theme: theme,
+                    key: 'code',
+                    name: 'code',
+                    onChange: this.handleInputChange
+                }),
+                _react2.default.createElement(_AmplifyUI.InputRow, {
+                    placeholder: _awsAmplify.I18n.get('New Password'),
+                    theme: theme,
+                    type: 'password',
+                    key: 'password',
+                    name: 'password',
+                    onChange: this.handleInputChange
+                }),
+                _react2.default.createElement(
+                    _AmplifyUI.ButtonRow,
+                    { theme: theme, onClick: this.submit },
+                    _awsAmplify.I18n.get('Submit')
+                )
+            );
+        }
     }, {
         key: 'showComponent',
-        value: function () {
-            function showComponent(theme) {
-                var _this4 = this;
+        value: function showComponent(theme) {
+            var _this4 = this;
 
-                var _props = this.props,
-                    authState = _props.authState,
-                    hide = _props.hide;
+            var _props = this.props,
+                authState = _props.authState,
+                hide = _props.hide;
 
-                if (hide && hide.includes(ForgotPassword)) {
-                    return null;
-                }
-
-                return _react2['default'].createElement(
-                    _AmplifyUI.FormSection,
-                    { theme: theme },
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionHeader,
-                        { theme: theme },
-                        _awsAmplify.I18n.get('Forgot Password')
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionBody,
-                        null,
-                        this.state.delivery ? this.submitView() : this.sendView()
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionFooter,
-                        { theme: theme },
-                        _react2['default'].createElement(
-                            _AmplifyUI.Link,
-                            { theme: theme, onClick: function () {
-                                    function onClick() {
-                                        return _this4.changeState('signIn');
-                                    }
-
-                                    return onClick;
-                                }() },
-                            _awsAmplify.I18n.get('Back to Sign In')
-                        )
-                    )
-                );
+            if (hide && hide.includes(ForgotPassword)) {
+                return null;
             }
 
-            return showComponent;
-        }()
+            return _react2.default.createElement(
+                _AmplifyUI.FormSection,
+                { theme: theme },
+                _react2.default.createElement(
+                    _AmplifyUI.SectionHeader,
+                    { theme: theme },
+                    _awsAmplify.I18n.get('Forgot Password')
+                ),
+                _react2.default.createElement(
+                    _AmplifyUI.SectionBody,
+                    null,
+                    this.state.delivery ? this.submitView() : this.sendView()
+                ),
+                _react2.default.createElement(
+                    _AmplifyUI.SectionFooter,
+                    { theme: theme },
+                    _react2.default.createElement(
+                        _AmplifyUI.Link,
+                        { theme: theme, onClick: function onClick() {
+                                return _this4.changeState('signIn');
+                            } },
+                        _awsAmplify.I18n.get('Back to Sign In')
+                    )
+                )
+            );
+        }
     }]);
 
     return ForgotPassword;
-}(_AuthPiece3['default']);
+}(_AuthPiece3.default);
 
-exports['default'] = ForgotPassword;
+exports.default = ForgotPassword;

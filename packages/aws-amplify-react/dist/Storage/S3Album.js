@@ -30,7 +30,7 @@ var _S3Text2 = _interopRequireDefault(_S3Text);
 
 var _Common = require('./Common');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64,7 +64,7 @@ var S3Album = function (_Component) {
         _this.list = _this.list.bind(_this);
         _this.marshal = _this.marshal.bind(_this);
 
-        var theme = _this.props.theme || _AmplifyTheme2['default'];
+        var theme = _this.props.theme || _AmplifyTheme2.default;
         _this.state = {
             theme: theme,
             items: [],
@@ -77,339 +77,283 @@ var S3Album = function (_Component) {
 
     _createClass(S3Album, [{
         key: 'getKey',
-        value: function () {
-            function getKey(file) {
-                var fileToKey = this.props.fileToKey;
-                var name = file.name,
-                    size = file.size,
-                    type = file.type;
+        value: function getKey(file) {
+            var fileToKey = this.props.fileToKey;
+            var name = file.name,
+                size = file.size,
+                type = file.type;
 
-                var key = encodeURI(name);
-                if (fileToKey) {
-                    var callback_type = typeof fileToKey === 'undefined' ? 'undefined' : _typeof(fileToKey);
-                    if (callback_type === 'string') {
-                        key = fileToKey;
-                    } else if (callback_type === 'function') {
-                        key = fileToKey({ name: name, size: size, type: type });
-                    } else {
-                        key = encodeURI(JSON.stringify(fileToKey));
-                    }
-                    if (!key) {
-                        logger.debug('key is empty');
-                        key = 'empty_key';
-                    }
+            var key = encodeURI(name);
+            if (fileToKey) {
+                var callback_type = typeof fileToKey === 'undefined' ? 'undefined' : _typeof(fileToKey);
+                if (callback_type === 'string') {
+                    key = fileToKey;
+                } else if (callback_type === 'function') {
+                    key = fileToKey({ name: name, size: size, type: type });
+                } else {
+                    key = encodeURI(JSON.stringify(fileToKey));
                 }
-
-                return key.replace(/\s/g, '_');
+                if (!key) {
+                    logger.debug('key is empty');
+                    key = 'empty_key';
+                }
             }
 
-            return getKey;
-        }()
+            return key.replace(/\s/g, '_');
+        }
     }, {
         key: 'handlePick',
-        value: function () {
-            function handlePick(data) {
-                var _this2 = this;
+        value: function handlePick(data) {
+            var _this2 = this;
 
-                var that = this;
-                var _props = this.props,
-                    onPick = _props.onPick,
-                    onLoad = _props.onLoad,
-                    onError = _props.onError,
-                    track = _props.track,
-                    level = _props.level;
+            var that = this;
+            var _props = this.props,
+                onPick = _props.onPick,
+                onLoad = _props.onLoad,
+                onError = _props.onError,
+                track = _props.track,
+                level = _props.level;
 
 
-                if (onPick) {
-                    onPick(data);
-                }
-
-                var path = this.props.path || '';
-                var file = data.file,
-                    name = data.name,
-                    size = data.size,
-                    type = data.type;
-
-                var key = path + this.getKey(data);
-                _awsAmplify.Storage.put(key, file, {
-                    level: level ? level : 'public',
-                    contentType: type,
-                    track: track
-                }).then(function (data) {
-                    logger.debug('handle pick data', data);
-                    var items = _this2.state.items;
-
-                    if (items.filter(function (item) {
-                        return item.key === key;
-                    }).length === 0) {
-                        var list = items.concat(data);
-                        _this2.marshal(list);
-                    } else {
-                        logger.debug('update an item');
-                    }
-                    if (onLoad) {
-                        onLoad(data);
-                    }
-                })['catch'](function (err) {
-                    logger.debug('handle pick error', err);
-                    if (onError) {
-                        onError(err);
-                    }
-                });
-                this.setState({ ts: new Date().getTime() });
+            if (onPick) {
+                onPick(data);
             }
 
-            return handlePick;
-        }()
+            var path = this.props.path || '';
+            var file = data.file,
+                name = data.name,
+                size = data.size,
+                type = data.type;
+
+            var key = path + this.getKey(data);
+            _awsAmplify.Storage.put(key, file, {
+                level: level ? level : 'public',
+                contentType: type,
+                track: track
+            }).then(function (data) {
+                logger.debug('handle pick data', data);
+                var items = _this2.state.items;
+
+                if (items.filter(function (item) {
+                    return item.key === key;
+                }).length === 0) {
+                    var list = items.concat(data);
+                    _this2.marshal(list);
+                } else {
+                    logger.debug('update an item');
+                }
+                if (onLoad) {
+                    onLoad(data);
+                }
+            }).catch(function (err) {
+                logger.debug('handle pick error', err);
+                if (onError) {
+                    onError(err);
+                }
+            });
+            this.setState({ ts: new Date().getTime() });
+        }
     }, {
         key: 'handleClick',
-        value: function () {
-            function handleClick(item) {
-                var _props2 = this.props,
-                    onClickItem = _props2.onClickItem,
-                    select = _props2.select,
-                    onSelect = _props2.onSelect;
+        value: function handleClick(item) {
+            var _props2 = this.props,
+                onClickItem = _props2.onClickItem,
+                select = _props2.select,
+                onSelect = _props2.onSelect;
 
-                if (onClickItem) {
-                    onClickItem(item);
-                }
-
-                if (!select) {
-                    return;
-                }
-
-                item.selected = !item.selected;
-                this.setState({ items: this.state.items.slice() });
-
-                if (!onSelect) {
-                    return;
-                }
-
-                var selected_items = this.state.items.filter(function (item) {
-                    return item.selected;
-                });
-                onSelect(item, selected_items);
+            if (onClickItem) {
+                onClickItem(item);
             }
 
-            return handleClick;
-        }()
+            if (!select) {
+                return;
+            }
+
+            item.selected = !item.selected;
+            this.setState({ items: this.state.items.slice() });
+
+            if (!onSelect) {
+                return;
+            }
+
+            var selected_items = this.state.items.filter(function (item) {
+                return item.selected;
+            });
+            onSelect(item, selected_items);
+        }
     }, {
         key: 'onHubCapsule',
-        value: function () {
-            function onHubCapsule(capsule) {
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                this.setState({ theme: Object.assign({}, theme) });
-            }
-
-            return onHubCapsule;
-        }()
+        value: function onHubCapsule(capsule) {
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            this.setState({ theme: Object.assign({}, theme) });
+        }
     }, {
         key: 'componentDidMount',
-        value: function () {
-            function componentDidMount() {
-                this.list();
-            }
-
-            return componentDidMount;
-        }()
+        value: function componentDidMount() {
+            this.list();
+        }
     }, {
         key: 'componentDidUpdate',
-        value: function () {
-            function componentDidUpdate(prevProps, prevState) {
-                if (this.props.path == prevProps.path && this.props.ts == prevProps.ts && this.props.select == prevProps.select) {
-                    return;
-                }
-
-                if (!this.props.select) {
-                    this.state.items.forEach(function (item) {
-                        return item.selected = false;
-                    });
-                }
-                if (this.props.onSelect) {
-                    this.props.onSelect(null, []);
-                }
-
-                this.list();
+        value: function componentDidUpdate(prevProps, prevState) {
+            if (this.props.path == prevProps.path && this.props.ts == prevProps.ts && this.props.select == prevProps.select) {
+                return;
             }
 
-            return componentDidUpdate;
-        }()
+            if (!this.props.select) {
+                this.state.items.forEach(function (item) {
+                    return item.selected = false;
+                });
+            }
+            if (this.props.onSelect) {
+                this.props.onSelect(null, []);
+            }
+
+            this.list();
+        }
     }, {
         key: 'list',
-        value: function () {
-            function list() {
-                var _this3 = this;
+        value: function list() {
+            var _this3 = this;
 
-                var _props3 = this.props,
-                    path = _props3.path,
-                    level = _props3.level,
-                    track = _props3.track;
+            var _props3 = this.props,
+                path = _props3.path,
+                level = _props3.level,
+                track = _props3.track;
 
-                logger.debug('Album path: ' + path);
-                return _awsAmplify.Storage.list(path, { level: level ? level : 'public', track: track }).then(function (data) {
-                    logger.debug('album list', data);
-                    _this3.marshal(data);
-                })['catch'](function (err) {
-                    logger.warn(err);
-                    return [];
-                });
-            }
-
-            return list;
-        }()
+            logger.debug('Album path: ' + path);
+            return _awsAmplify.Storage.list(path, { level: level ? level : 'public', track: track }).then(function (data) {
+                logger.debug('album list', data);
+                _this3.marshal(data);
+            }).catch(function (err) {
+                logger.warn(err);
+                return [];
+            });
+        }
     }, {
         key: 'contentType',
-        value: function () {
-            function contentType(item) {
-                return _awsAmplify.JS.filenameToContentType(item.key, 'image/*');
-            }
-
-            return contentType;
-        }()
+        value: function contentType(item) {
+            return _awsAmplify.JS.filenameToContentType(item.key, 'image/*');
+        }
     }, {
         key: 'marshal',
-        value: function () {
-            function marshal(list) {
-                var _this4 = this;
+        value: function marshal(list) {
+            var _this4 = this;
 
-                var contentType = this.props.contentType || '';
-                list.forEach(function (item) {
-                    if (item.contentType) {
-                        return;
-                    }
-                    var isString = typeof contentType === 'string';
-                    item.contentType = isString ? contentType : contentType(item);
-                    if (!item.contentType) {
-                        item.contentType = _this4.contentType(item);
-                    }
-                });
+            var contentType = this.props.contentType || '';
+            list.forEach(function (item) {
+                if (item.contentType) {
+                    return;
+                }
+                var isString = typeof contentType === 'string';
+                item.contentType = isString ? contentType : contentType(item);
+                if (!item.contentType) {
+                    item.contentType = _this4.contentType(item);
+                }
+            });
 
-                list = this.filter(list);
-                list = this.sort(list);
-                this.setState({ items: list });
-            }
-
-            return marshal;
-        }()
+            list = this.filter(list);
+            list = this.sort(list);
+            this.setState({ items: list });
+        }
     }, {
         key: 'filter',
-        value: function () {
-            function filter(list) {
-                var filter = this.props.filter;
+        value: function filter(list) {
+            var filter = this.props.filter;
 
-                return filter ? filter(list) : list;
-            }
-
-            return filter;
-        }()
+            return filter ? filter(list) : list;
+        }
     }, {
         key: 'sort',
-        value: function () {
-            function sort(list) {
-                var sort = this.props.sort;
+        value: function sort(list) {
+            var sort = this.props.sort;
 
-                var typeof_sort = typeof sort === 'undefined' ? 'undefined' : _typeof(sort);
-                if (typeof_sort === 'function') {
-                    return sort(list);
+            var typeof_sort = typeof sort === 'undefined' ? 'undefined' : _typeof(sort);
+            if (typeof_sort === 'function') {
+                return sort(list);
+            }
+
+            if (['string', 'undefined'].includes(typeof_sort)) {
+                var sort_str = sort ? sort : 'lastModified';
+                var parts = sort_str.split(/\s+/);
+                var field = parts[0];
+                var dir = parts.length > 1 ? parts[1] : '';
+                if (field === 'lastModified') {
+                    dir = dir === 'asc' ? 'asc' : 'desc';
+                } else {
+                    dir = dir === 'desc' ? 'desc' : 'asc';
                 }
+                _awsAmplify.JS.sortByField(list, field, dir);
 
-                if (['string', 'undefined'].includes(typeof_sort)) {
-                    var sort_str = sort ? sort : 'lastModified';
-                    var parts = sort_str.split(/\s+/);
-                    var field = parts[0];
-                    var dir = parts.length > 1 ? parts[1] : '';
-                    if (field === 'lastModified') {
-                        dir = dir === 'asc' ? 'asc' : 'desc';
-                    } else {
-                        dir = dir === 'desc' ? 'desc' : 'asc';
-                    }
-                    _awsAmplify.JS.sortByField(list, field, dir);
-
-                    return list;
-                }
-
-                logger.warn('invalid sort. done nothing. should be a string or function');
                 return list;
             }
 
-            return sort;
-        }()
+            logger.warn('invalid sort. done nothing. should be a string or function');
+            return list;
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                var _this5 = this;
+        value: function render() {
+            var _this5 = this;
 
-                var _props4 = this.props,
-                    picker = _props4.picker,
-                    translateItem = _props4.translateItem,
-                    level = _props4.level;
-                var _state = this.state,
-                    items = _state.items,
-                    ts = _state.ts;
+            var _props4 = this.props,
+                picker = _props4.picker,
+                translateItem = _props4.translateItem,
+                level = _props4.level;
+            var _state = this.state,
+                items = _state.items,
+                ts = _state.ts;
 
 
-                var pickerTitle = this.props.pickerTitle || 'Pick';
+            var pickerTitle = this.props.pickerTitle || 'Pick';
 
-                var theme = this.props.theme || _AmplifyTheme2['default'];
+            var theme = this.props.theme || _AmplifyTheme2.default;
 
-                var list = items.map(function (item) {
-                    var isText = item.contentType && _awsAmplify.JS.isTextFile(item.contentType);
-                    return isText ? _react2['default'].createElement(_S3Text2['default'], {
-                        key: item.key,
-                        textKey: item.key,
-                        theme: theme,
-                        style: theme.albumText,
-                        selected: item.selected,
-                        translate: translateItem,
-                        level: level,
-                        onClick: function () {
-                            function onClick() {
-                                return _this5.handleClick(item);
-                            }
-
-                            return onClick;
-                        }()
-                    }) : _react2['default'].createElement(_S3Image2['default'], {
-                        key: item.key,
-                        imgKey: item.key,
-                        theme: theme,
-                        style: theme.albumPhoto,
-                        selected: item.selected,
-                        translate: translateItem,
-                        level: level,
-                        onClick: function () {
-                            function onClick() {
-                                return _this5.handleClick(item);
-                            }
-
-                            return onClick;
-                        }()
-                    });
+            var list = items.map(function (item) {
+                var isText = item.contentType && _awsAmplify.JS.isTextFile(item.contentType);
+                return isText ? _react2.default.createElement(_S3Text2.default, {
+                    key: item.key,
+                    textKey: item.key,
+                    theme: theme,
+                    style: theme.albumText,
+                    selected: item.selected,
+                    translate: translateItem,
+                    level: level,
+                    onClick: function onClick() {
+                        return _this5.handleClick(item);
+                    }
+                }) : _react2.default.createElement(_S3Image2.default, {
+                    key: item.key,
+                    imgKey: item.key,
+                    theme: theme,
+                    style: theme.albumPhoto,
+                    selected: item.selected,
+                    translate: translateItem,
+                    level: level,
+                    onClick: function onClick() {
+                        return _this5.handleClick(item);
+                    }
                 });
-                return _react2['default'].createElement(
+            });
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(
                     'div',
-                    null,
-                    _react2['default'].createElement(
-                        'div',
-                        { style: theme.album },
-                        list
-                    ),
-                    picker ? _react2['default'].createElement(_Widget.Picker, {
-                        key: ts,
-                        title: pickerTitle,
-                        accept: 'image/*, text/*',
-                        onPick: this.handlePick,
-                        theme: theme
-                    }) : null
-                );
-            }
-
-            return render;
-        }()
+                    { style: theme.album },
+                    list
+                ),
+                picker ? _react2.default.createElement(_Widget.Picker, {
+                    key: ts,
+                    title: pickerTitle,
+                    accept: 'image/*, text/*',
+                    onPick: this.handlePick,
+                    theme: theme
+                }) : null
+            );
+        }
     }]);
 
     return S3Album;
 }(_react.Component);
 
-exports['default'] = S3Album;
+exports.default = S3Album;
