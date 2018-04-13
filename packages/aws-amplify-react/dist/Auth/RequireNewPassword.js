@@ -58,30 +58,6 @@ var RequireNewPassword = function (_AuthPiece) {
 
     _createClass(RequireNewPassword, [{
         key: 'change',
-<<<<<<< HEAD
-        value: function () {
-            function change() {
-                var _this2 = this;
-
-                var user = this.props.authData;
-                var password = this.inputs.password;
-                var requiredAttributes = user.challengeParam.requiredAttributes;
-
-                _awsAmplify.Auth.completeNewPassword(user, password, requiredAttributes).then(function (user) {
-                    logger.debug('complete new password', user);
-                    if (user.challengeName === 'SMS_MFA') {
-                        _this2.changeState('confirmSignIn', user);
-                    } else {
-                        _this2.changeState('signedIn', user);
-                    }
-                })['catch'](function (err) {
-                    return _this2.error(err);
-                });
-            }
-
-            return change;
-        }()
-=======
         value: function change() {
             var _this2 = this;
 
@@ -100,7 +76,6 @@ var RequireNewPassword = function (_AuthPiece) {
                 return _this2.error(err);
             });
         }
->>>>>>> upstream/master
     }, {
         key: 'showComponent',
         value: function showComponent(theme) {

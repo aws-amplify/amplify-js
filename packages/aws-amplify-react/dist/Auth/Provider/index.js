@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.OAuthButton = exports.withOAuth = exports.AmazonButton = exports.withAmazon = exports.FacebookButton = exports.withFacebook = exports.GoogleButton = exports.withGoogle = undefined;
+exports.AmazonButton = exports.withAmazon = exports.FacebookButton = exports.withFacebook = exports.GoogleButton = exports.withGoogle = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -53,29 +53,6 @@ Object.defineProperty(exports, 'AmazonButton', {
         return _withAmazon.AmazonButton;
     }
 });
-
-var _withOAuth = require('./withOAuth');
-
-Object.defineProperty(exports, 'withOAuth', {
-    enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_withOAuth)['default'];
-        }
-
-        return get;
-    }()
-});
-Object.defineProperty(exports, 'OAuthButton', {
-    enumerable: true,
-    get: function () {
-        function get() {
-            return _withOAuth.OAuthButton;
-        }
-
-        return get;
-    }()
-});
 exports.withFederated = withFederated;
 
 var _react = require('react');
@@ -88,13 +65,7 @@ var _withFacebook2 = _interopRequireDefault(_withFacebook);
 
 var _withAmazon2 = _interopRequireDefault(_withAmazon);
 
-<<<<<<< HEAD
-var _withOAuth2 = _interopRequireDefault(_withOAuth);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-=======
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
->>>>>>> upstream/master
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -103,11 +74,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function withFederated(Comp) {
-<<<<<<< HEAD
-    var Federated = (0, _withOAuth2['default'])((0, _withAmazon2['default'])((0, _withGoogle2['default'])((0, _withFacebook2['default'])(Comp))));
-=======
     var Federated = (0, _withAmazon2.default)((0, _withGoogle2.default)((0, _withFacebook2.default)(Comp)));
->>>>>>> upstream/master
 
     return function (_Component) {
         _inherits(_class, _Component);
