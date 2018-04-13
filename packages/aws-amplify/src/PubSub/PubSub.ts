@@ -49,7 +49,8 @@ export default class PubSub {
 
         this._options = Object.assign({}, this._options, opt);
 
-        if (this._options.aws_appsync_graphqlEndpoint && this._options.aws_appsync_region) {
+        if (this._options.aws_appsync_graphqlEndpoint && this._options.aws_appsync_region &&
+            !this._pluggables.find(p => p.getProviderName() === 'AWSAppSyncProvider')) {
             this.addPluggable(new AWSAppSyncProvider());
         }
 
