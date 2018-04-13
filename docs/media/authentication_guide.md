@@ -414,7 +414,7 @@ const oauth = {
     responseType: 'code'
 
     // optional, for Cognito hosted ui specified options
-    customAttrs: {
+    options: {
         // Indicates if the data collection is enabled to support Cognito advanced security features. By default, this flag is set to true.
         AdvancedSecurityDataCollectionFlag : true
     }

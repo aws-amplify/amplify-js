@@ -23,11 +23,11 @@ export default function withOAuth(Comp, options) {
                 responseType
             } = config;
 
-            const customAttrs = config.customAttrs || {};
+            const options = config.options || {};
             const url = 'https://' + domain 
                 + '/login?redirect_uri=' + redirectSignIn 
                 + '&response_type=' + responseType 
-                + '&client_id=' + (customAttrs.ClientId || Auth.configure().userPoolWebClientId);
+                + '&client_id=' + (options.ClientId || Auth.configure().userPoolWebClientId);
             window.location.assign(url);            
         }
 

@@ -59,5 +59,5 @@ export interface OAuth {
 	redirectSignIn : string,
 	redirectSignOut : string,
     responseType: string,
-    customAttrs?: object
+    options?: object
 }

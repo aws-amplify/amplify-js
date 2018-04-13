@@ -128,7 +128,7 @@ export default class AuthClass {
                     RedirectUriSignOut: oauth.redirectSignOut,
                     ResponseType: oauth.responseType
                 },
-                oauth.customAttrs
+                oauth.options
             );
 
             logger.debug('cognito auth params', cognitoAuthParams);
