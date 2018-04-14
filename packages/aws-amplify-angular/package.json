@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "./node_modules/karma/bin/karma start karma.conf.js"
+    "test": "karma start karma.conf.js"
   },
   "author": "",
   "license": "Apache-2.0",
