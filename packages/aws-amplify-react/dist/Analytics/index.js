@@ -10,13 +10,9 @@ Object.keys(_trackLifecycle).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
-    get: function () {
-      function get() {
-        return _trackLifecycle[key];
-      }
-
-      return get;
-    }()
+    get: function get() {
+      return _trackLifecycle[key];
+    }
   });
 });
 
@@ -26,12 +22,8 @@ Object.keys(_trackUpdate).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
-    get: function () {
-      function get() {
-        return _trackUpdate[key];
-      }
-
-      return get;
-    }()
+    get: function get() {
+      return _trackUpdate[key];
+    }
   });
 });
