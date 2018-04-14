@@ -1,22 +1,20 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
-import AmplifyTheme from '../AmplifyTheme';
-
 const template = `
-<div [ngStyle]="theme.photoPicker.container">
-  <div [ngStyle]="theme.photoPicker.preview">
+<div class="amplify-photo-picker-container">
+  <div class="amplify-photo-picker-preview">
     <img
-      [ngStyle]="theme.photoPicker.previewImg"
+      class="amplify-photo-picker-preview"
       src="{{photoUrl}}"
       *ngIf="hasPhoto"
       (error)="onPhotoError()"
     />
   </div>
-  <div [ngStyle]="theme.photoPicker.button">Pick a Photo</div>
+  <div class="amplify-photo-picker-button">Pick a Photo</div>
   <input
     title="Pick"
     type="file" accept="image/*"
-    [ngStyle]="theme.photoPicker.picker"
+    class="amplify-photo-picker-input"
     (change)="pick($event)"
   />
 </div>
@@ -29,9 +27,6 @@ const template = `
 export class PhotoPickerComponent {
   photoUrl: string;
   hasPhoto: boolean = false;
-
-  @Input()
-  theme: any = AmplifyTheme;
 
   @Input()
   set url(url: string) {
@@ -65,7 +60,6 @@ export class PhotoPickerComponent {
   }
 
   onPhotoError() {
-    console.log('photo error');
     this.hasPhoto = false;
   }
 }

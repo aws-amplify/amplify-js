@@ -1,14 +1,11 @@
 import { Component, Input } from '@angular/core';
-
 import { AmplifyService } from '../../providers';
-import AmplifyTheme from '../AmplifyTheme';
 
 const template = `
-<div [ngStyle]="theme.album.container">
+<div class="amplify-album-container">
   <amplify-s3-image
     *ngFor="let item of list"
     path="{{item.path}}"
-    [theme]="theme"
   ></amplify-s3-image>
 </div>
 `;
@@ -26,9 +23,6 @@ export class S3AlbumComponent {
     this.amplifyService = amplifyService;
   }
 
-  @Input()
-  theme: any = AmplifyTheme;
-
   @Input() set path(path: string) {
     if (!path) { return; }
 
@@ -40,6 +34,6 @@ export class S3AlbumComponent {
           return { path: item.key };
         });
       })
-      .catch(err => console.log(err));
+      .catch(err => console.error(err));
   }
 }

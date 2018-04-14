@@ -1,51 +1,68 @@
 import { Component, Input } from '@angular/core';
-
 import { AmplifyService, AuthState } from '../../providers';
-import AmplifyTheme from '../AmplifyTheme';
 import { includes } from './common';
 
 const template = `
-<div [ngStyle]="theme.form.container" *ngIf="_show">
-  <div [ngStyle]="theme.form.header">
-  </div>
-  <div [ngStyle]="theme.form.body">
-    <div [ngStyle]="theme.form.row">
+<div class="amplify-form-container" *ngIf="_show">
+  <div class="amplify-form-header"></div>
+  <div class="amplify-form-body">
+    
+    <div class="amplify-form-row">
+      
+      <div class="amplify-form-cell-left">
+        <a class="amplify-form-link"
+          (click)="onSignIn()"
+        >Sign In</a>
+      </div>
+      
+      <div class="amplify-form-cell-right">
+        <a class="amplify-form-link"
+          (click)="onSignUp()"
+        >Sign Up</a>
+      </div>
+
+    </div>
+
+    <div class="amplify-form-row">
       <input
         (keyup)="setUsername($event.target.value)"
-        [ngStyle]="theme.form.input"
+        class="amplify-form-input"
         type="text"
         placeholder="Username"
         [value]="username"
       />
     </div>
-    <div [ngStyle]="theme.form.row">
+
+    <div class="amplify-form-row">
       <input #password
         (keyup)="setPassword(password.value)"
         (keyup.enter)="onSignIn()"
-        [ngStyle]="theme.form.input"
+        class="amplify-form-input"
         type="password"
         placeholder="Password"
       />
     </div>
-    <div [ngStyle]="theme.form.row">
-      <div [ngStyle]="theme.form.leftCell">
-        <a [ngStyle]="theme.form.link"
+
+    <div class="amplify-form-row">
+
+      <div class="amplify-form-cell-right">
+        <a class="amplify-form-link"
           (click)="onForgotPassword()"
         >Forgot Password</a>
       </div>
-      <div [ngStyle]="theme.form.rightCell">
-        <a [ngStyle]="theme.form.link"
-          (click)="onSignUp()"
-        >Sign Up</a>
-      </div>
+
     </div>
-    <button [ngStyle]="theme.form.button"
+
+    <button class="amplify-form-button"
       (click)="onSignIn()"
     >Sign In</button>
+
   </div>
-  <div [ngStyle]="theme.form.footer">
-    <div [ngStyle]="theme.form.errorMessage" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="amplify-form-footer">
+    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>
+
 </div>
 `
 
@@ -56,12 +73,9 @@ const template = `
 export class SignInComponent {
   _authState: AuthState;
   _show: boolean;
-
   username: string;
   password: string;
-
   errorMessage: string;
-
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
@@ -69,13 +83,9 @@ export class SignInComponent {
   }
 
   @Input()
-  theme: any = AmplifyTheme;
-
-  @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
-
     this.username = authState.user? authState.user.username || '' : '';
   }
 
@@ -89,7 +99,7 @@ export class SignInComponent {
 
   onSignIn() {
     this.amplifyService.auth().signIn(this.username, this.password)
-      .then(user => console.log(user))
+      .then(user => this.amplifyService.setAuthState({ state: 'confirmSignIn', user: user }))
       .catch(err => this._setError(err));
   }
 

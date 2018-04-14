@@ -14,15 +14,9 @@ const template = `
 </div>
 `
 
-const style=`
-amplify-form {
-}
-`
-
 @Component({
   selector: 'amplify-form',
-  template: template,
-  styles: [style]
+  template: template
 })
 export class FormComponent {
   @Input()

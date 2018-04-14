@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { AmplifyService } from './providers/amplify.service';
+
 import {
   PhotoPickerComponent,
   S3ImageComponent,
   S3AlbumComponent
 } from './components/storage';
 import {
-  AuthenticatorComponent,
   SignInComponent,
+  AuthenticatorComponent,
   RequireNewPasswordComponent,
   ConfirmSignInComponent,
   SignUpComponent,
@@ -26,9 +26,8 @@ import {
   	PhotoPickerComponent,
     S3ImageComponent,
     S3AlbumComponent,
-
-    AuthenticatorComponent,
     SignInComponent,
+    AuthenticatorComponent,
     RequireNewPasswordComponent,
     ConfirmSignInComponent,
     SignUpComponent,
@@ -41,9 +40,8 @@ import {
   	PhotoPickerComponent,
     S3ImageComponent,
     S3AlbumComponent,
-
-    AuthenticatorComponent,
     SignInComponent,
+    AuthenticatorComponent,
     RequireNewPasswordComponent,
     ConfirmSignInComponent,
     SignUpComponent,

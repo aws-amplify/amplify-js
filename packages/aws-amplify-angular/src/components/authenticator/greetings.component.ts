@@ -1,16 +1,13 @@
 import { Component, Input } from '@angular/core';
-
 import { AmplifyService, AuthState } from '../../providers';
 
-import AmplifyTheme from '../AmplifyTheme';
-
 const template = `
-<div [ngStyle]="theme.footer">
-  <span [ngStyle]="theme.greeting">{{ greeting }}</span>
-  <button [ngStyle]="theme.button"
-    *ngIf="signedIn"
-    (click)="onSignOut()"
-  >Sign Out</button>
+<div class="amplify-greeting">
+    <span class="amplify-greeting-text">{{ greeting }}</span>
+    <button class="amplify-form-button amplify-greeting-sign-out"
+        *ngIf="signedIn"
+        (click)="onSignOut()"
+      >Sign Out</button>
 </div>
 `
 
@@ -30,9 +27,6 @@ export class GreetingsComponent {
   }
 
   @Input()
-  theme: any = AmplifyTheme;
-
-  @Input()
   authState: AuthState;
 
   subscribe() {
@@ -46,12 +40,10 @@ export class GreetingsComponent {
 
     this.greeting = this.signedIn
       ? "Hello " + authState.user.username
-      : 'Please Sign In';
+      : "";
   }
 
   onSignOut() {
-    this.amplifyService.auth().signOut()
-      .then(() => console.log('signed out'))
-      .catch(err => console.log(err));
+    this.amplifyService.auth().signOut();
   }
 }
