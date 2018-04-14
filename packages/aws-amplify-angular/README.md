@@ -143,15 +143,8 @@ Import the service into your component and listen for auth state changes:
 
 ### Styles
 
-You can override the default styling with css.
-
-For example,
+You can use and override a default theme. Within your app, add to your styles.css or components css:
 
 ```css
-
-  .amplify-authenticator {
-    width: 300px !important;
-    padding: 0px !important;
-  }
-
+@import "~aws-amplify-angular/theme.css";
 ```
