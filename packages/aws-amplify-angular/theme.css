@@ -44,13 +44,13 @@
   cursor: pointer;
 }
 
+.amplify-form-button:hover {
+  color: darkorange;
+}
+
 .amplify-greeting-sign-out {
   margin: -6px;
   float:right;
-}
-
-.amplify-form-button:hover {
-  color: darkorange;
 }
 
 .amplify-footer {
@@ -61,4 +61,39 @@
   margin: 0.5em 0 0.5em 2em;
   clear: both;
   color: orangered;
+}
+
+/** Storage Components **/
+
+.amplify-photo-picker-container {
+  width: 400px;
+  margin: 0 auto;
+  padding: 1em;
+}
+
+.amplify-upload-btn-wrapper {
+  margin: 2em;
+}
+
+.amplify-photo-picker-preview {
+  width: 90%;
+}
+
+.amplify-album-container {
+  width: 400px;
+  margin: 0 auto;
+  padding: 1em;
+}
+
+.amplify-image-container {
+  width:128px;
+}
+
+.amplify-image {
+  width:128px;
+  transition: width 0.5s;
+}
+
+.amplify-image:hover {
+  width:175px;
 }

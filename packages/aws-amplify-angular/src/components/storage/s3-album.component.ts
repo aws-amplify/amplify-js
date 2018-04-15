@@ -4,6 +4,7 @@ import { AmplifyService } from '../../providers';
 const template = `
 <div class="amplify-album-container">
   <amplify-s3-image
+    class="amplify-image-container"
     *ngFor="let item of list"
     path="{{item.path}}"
   ></amplify-s3-image>
@@ -25,7 +26,6 @@ export class S3AlbumComponent {
 
   @Input() set path(path: string) {
     if (!path) { return; }
-
     const that = this;
     this.amplifyService.storage()
       .list(path)

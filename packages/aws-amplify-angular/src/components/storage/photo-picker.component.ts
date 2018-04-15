@@ -10,13 +10,13 @@ const template = `
       (error)="onPhotoError()"
     />
   </div>
-  <div class="amplify-photo-picker-button">Pick a Photo</div>
-  <input
-    title="Pick"
-    type="file" accept="image/*"
-    class="amplify-photo-picker-input"
-    (change)="pick($event)"
-  />
+  <div class="amplify-upload-btn-wrapper">
+    <input type="file" 
+      class="amplify-upload-input"
+      accept="image/*"
+      (change)="pick($event)"/>
+  </div>
+
 </div>
 `
 
@@ -27,7 +27,7 @@ const template = `
 export class PhotoPickerComponent {
   photoUrl: string;
   hasPhoto: boolean = false;
-
+  
   @Input()
   set url(url: string) {
     this.photoUrl = url;

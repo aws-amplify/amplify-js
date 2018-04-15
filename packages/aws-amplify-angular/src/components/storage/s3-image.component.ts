@@ -2,12 +2,10 @@ import { Component, Input } from '@angular/core';
 import { AmplifyService } from '../../providers';
 
 const template = `
-<div class="amplify-image-container">
   <img
     class="amplify-image"
     src="{{url}}"
   />
-</div>
 `;
 
 @Component({

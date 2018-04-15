@@ -45,7 +45,6 @@ const template = `
 
 @Component({
   selector: 'amplify-authenticator',
-  encapsulation: ViewEncapsulation.None,
   template: template
 })
 export class AuthenticatorComponent {
