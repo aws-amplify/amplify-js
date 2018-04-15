@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { AmplifyService } from '../../providers';
 
 const template = `
@@ -7,6 +7,7 @@ const template = `
     class="amplify-image-container"
     *ngFor="let item of list"
     path="{{item.path}}"
+    (selected)="onImageSelected($event)"
   ></amplify-s3-image>
 </div>
 `;
@@ -20,8 +21,15 @@ export class S3AlbumComponent {
 
   amplifyService: AmplifyService;
 
+  @Output()
+  selected: EventEmitter<string> = new EventEmitter<string>();
+
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+  }
+
+  onImageSelected(event) {
+    this.selected.emit(event);
   }
 
   @Input() set path(path: string) {

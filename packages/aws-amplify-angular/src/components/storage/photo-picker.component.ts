@@ -10,7 +10,7 @@ const template = `
       (error)="onPhotoError()"
     />
   </div>
-  <div class="amplify-upload-btn-wrapper">
+  <div>
     <input type="file" 
       class="amplify-upload-input"
       accept="image/*"

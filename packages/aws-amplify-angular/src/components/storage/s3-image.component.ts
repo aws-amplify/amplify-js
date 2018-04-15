@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { AmplifyService } from '../../providers';
 
 const template = `
   <img
     class="amplify-image"
+    (click)="onImageClicked()"
     src="{{url}}"
   />
 `;
@@ -16,8 +17,15 @@ export class S3ImageComponent {
   url: any;
   amplifyService: AmplifyService;
 
+  @Output()
+  selected: EventEmitter<string> = new EventEmitter<string>();
+
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+  }
+
+  onImageClicked() {
+    this.selected.emit(this.url);
   }
 
   @Input()
