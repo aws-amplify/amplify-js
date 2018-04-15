@@ -141,6 +141,31 @@ Import the service into your component and listen for auth state changes:
 
 ## Storage Components
 
+```
+<amplify-photo-picker 
+    (picked)="onImagePicked($event)"
+    (loaded)="onImageLoaded($event)"></amplify-photo-picker>
+```
+
+`onImagePicked(event)` can be used to upload your photo to S3 using Storage:
+
+```
+onImagePicked(file) {
+    this.amplify.storage().put("pics/"+file.name, file, {
+      'level': 'private',
+      'contentType': file.type
+  })
+  .then (result => console.log('uploaded: ', result))
+  .catch(err => console.log('upload error: ', err));
+  }
+```
+
+You can use the album component to list all your photos:
+
+```
+<amplify-s3-album path="pics"></amplify-s3-album>
+```
+
 ### Styles
 
 You can use and override a default theme. Within your app, add to your styles.css or components css:
