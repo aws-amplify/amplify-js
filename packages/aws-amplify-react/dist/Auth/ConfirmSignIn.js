@@ -22,7 +22,7 @@ var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../AmplifyUI');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61,97 +61,81 @@ var ConfirmSignIn = function (_AuthPiece) {
 
     _createClass(ConfirmSignIn, [{
         key: 'confirm',
-        value: function () {
-            function confirm() {
-                var _this2 = this;
+        value: function confirm() {
+            var _this2 = this;
 
-                var user = this.props.authData;
-                var code = this.inputs.code;
+            var user = this.props.authData;
+            var code = this.inputs.code;
 
-                var mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
-                _awsAmplify.Auth.confirmSignIn(user, code, mfaType).then(function () {
-                    return _this2.changeState('signedIn');
-                })['catch'](function (err) {
-                    return _this2.error(err);
-                });
-            }
-
-            return confirm;
-        }()
+            var mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
+            _awsAmplify.Auth.confirmSignIn(user, code, mfaType).then(function () {
+                return _this2.changeState('signedIn', user);
+            }).catch(function (err) {
+                return _this2.error(err);
+            });
+        }
     }, {
         key: 'componentDidUpdate',
-        value: function () {
-            function componentDidUpdate() {
-                //logger.debug('component did update with props', this.props);
-                var user = this.props.authData;
-                var mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'TOTP' : 'SMS';
-                if (this.state.mfaType !== mfaType) this.setState({ mfaType: mfaType });
-            }
-
-            return componentDidUpdate;
-        }()
+        value: function componentDidUpdate() {
+            //logger.debug('component did update with props', this.props);
+            var user = this.props.authData;
+            var mfaType = user && user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'TOTP' : 'SMS';
+            if (this.state.mfaType !== mfaType) this.setState({ mfaType: mfaType });
+        }
     }, {
         key: 'showComponent',
-        value: function () {
-            function showComponent(theme) {
-                var _this3 = this;
+        value: function showComponent(theme) {
+            var _this3 = this;
 
-                var _props = this.props,
-                    hide = _props.hide,
-                    authData = _props.authData;
+            var _props = this.props,
+                hide = _props.hide,
+                authData = _props.authData;
 
-                if (hide && hide.includes(ConfirmSignIn)) {
-                    return null;
-                }
-
-                return _react2['default'].createElement(
-                    _AmplifyUI.FormSection,
-                    { theme: theme },
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionHeader,
-                        { theme: theme },
-                        _awsAmplify.I18n.get('Confirm ' + this.state.mfaType + ' Code')
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionBody,
-                        { theme: theme },
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            autoFocus: true,
-                            placeholder: _awsAmplify.I18n.get('Code'),
-                            theme: theme,
-                            key: 'code',
-                            name: 'code',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.confirm },
-                            _awsAmplify.I18n.get('Confirm')
-                        )
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionFooter,
-                        { theme: theme },
-                        _react2['default'].createElement(
-                            _AmplifyUI.Link,
-                            { theme: theme, onClick: function () {
-                                    function onClick() {
-                                        return _this3.changeState('signIn');
-                                    }
-
-                                    return onClick;
-                                }() },
-                            _awsAmplify.I18n.get('Back to Sign In')
-                        )
-                    )
-                );
+            if (hide && hide.includes(ConfirmSignIn)) {
+                return null;
             }
 
-            return showComponent;
-        }()
+            return _react2.default.createElement(
+                _AmplifyUI.FormSection,
+                { theme: theme },
+                _react2.default.createElement(
+                    _AmplifyUI.SectionHeader,
+                    { theme: theme },
+                    _awsAmplify.I18n.get('Confirm ' + this.state.mfaType + ' Code')
+                ),
+                _react2.default.createElement(
+                    _AmplifyUI.SectionBody,
+                    { theme: theme },
+                    _react2.default.createElement(_AmplifyUI.InputRow, {
+                        autoFocus: true,
+                        placeholder: _awsAmplify.I18n.get('Code'),
+                        theme: theme,
+                        key: 'code',
+                        name: 'code',
+                        onChange: this.handleInputChange
+                    }),
+                    _react2.default.createElement(
+                        _AmplifyUI.ButtonRow,
+                        { theme: theme, onClick: this.confirm },
+                        _awsAmplify.I18n.get('Confirm')
+                    )
+                ),
+                _react2.default.createElement(
+                    _AmplifyUI.SectionFooter,
+                    { theme: theme },
+                    _react2.default.createElement(
+                        _AmplifyUI.Link,
+                        { theme: theme, onClick: function onClick() {
+                                return _this3.changeState('signIn');
+                            } },
+                        _awsAmplify.I18n.get('Back to Sign In')
+                    )
+                )
+            );
+        }
     }]);
 
     return ConfirmSignIn;
-}(_AuthPiece3['default']);
+}(_AuthPiece3.default);
 
-exports['default'] = ConfirmSignIn;
+exports.default = ConfirmSignIn;

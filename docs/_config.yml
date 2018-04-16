@@ -123,13 +123,15 @@ category_list:
             - title: Custom Plugin
               url: https://aws.github.io/aws-amplify/media/analytics_guide#create-a-custom-analytics-plugin
         - title: API 
-          excerpt: A simple and secure solution for making HTTP requests.
+          excerpt: A simple and secure solution for making HTTP requests using REST and GraphQL.
           cta: Read more
           class: aws-icon-ps-60-database-server
           url: '/media/api_guide'    
           services:
-            - title: AWS API Gateway
+            - title: AWS API Gateway,
               url: https://aws.amazon.com/api-gateway
+            - title: AWS AppSync
+              url: https://aws.amazon.com/appsync
         - title: Authentication
           excerpt:  Authentication APIs with pre-built UI components for your app.  
           cta: Read more

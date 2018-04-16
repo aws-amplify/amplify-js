@@ -14,7 +14,7 @@
 import Analytics, { AnalyticsClass, AnalyticsProvider } from './Analytics';
 import Auth, { AuthClass } from './Auth';
 import Storage, { StorageClass } from './Storage';
-import API, { APIClass } from './API';
+import API, { APIClass, graphqlOperation } from './API';
 import PubSub from './PubSub';
 import I18n from './I18n';
 import Cache from './Cache';
@@ -55,7 +55,7 @@ export default class Amplify {
     static addPluggable(pluggable) {
         if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
             const category = pluggable.getCategory();
-            switch(category) {
+            switch (category) {
                 case 'Analytics':
                     Analytics.addPluggable(pluggable);
                     break;
@@ -89,3 +89,4 @@ Amplify.Logger = Logger;
 
 export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
 export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider };
+export { graphqlOperation };

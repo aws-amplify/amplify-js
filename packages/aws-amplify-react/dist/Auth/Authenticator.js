@@ -60,7 +60,7 @@ var _AmplifyMessageMap = require('../AmplifyMessageMap');
 
 var _AmplifyMessageMap2 = _interopRequireDefault(_AmplifyMessageMap);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -99,136 +99,116 @@ var Authenticator = function (_Component) {
 
     _createClass(Authenticator, [{
         key: 'componentWillMount',
-        value: function () {
-            function componentWillMount() {
-                var config = this.props.amplifyConfig;
-                if (config) {
-                    _awsAmplify2['default'].configure(config);
-                }
+        value: function componentWillMount() {
+            var config = this.props.amplifyConfig;
+            if (config) {
+                _awsAmplify2.default.configure(config);
             }
-
-            return componentWillMount;
-        }()
+        }
     }, {
         key: 'handleStateChange',
-        value: function () {
-            function handleStateChange(state, data) {
-                logger.debug('authenticator state change ' + state, data);
-                if (state === this.state.auth) {
-                    return;
-                }
-
-                if (state === 'signedOut') {
-                    state = 'signIn';
-                }
-                this.setState({ auth: state, authData: data, error: null });
-                if (this.props.onStateChange) {
-                    this.props.onStateChange(state, data);
-                }
+        value: function handleStateChange(state, data) {
+            logger.debug('authenticator state change ' + state, data);
+            if (state === this.state.auth) {
+                return;
             }
 
-            return handleStateChange;
-        }()
+            if (state === 'signedOut') {
+                state = 'signIn';
+            }
+            this.setState({ auth: state, authData: data, error: null });
+            if (this.props.onStateChange) {
+                this.props.onStateChange(state, data);
+            }
+        }
     }, {
         key: 'handleAuthEvent',
-        value: function () {
-            function handleAuthEvent(state, event) {
-                if (event.type === 'error') {
-                    var map = this.props.errorMessage || _AmplifyMessageMap2['default'];
-                    var message = typeof map === 'string' ? map : map(event.data);
-                    this.setState({ error: message });
-                }
+        value: function handleAuthEvent(state, event) {
+            if (event.type === 'error') {
+                var map = this.props.errorMessage || _AmplifyMessageMap2.default;
+                var message = typeof map === 'string' ? map : map(event.data);
+                this.setState({ error: message });
             }
-
-            return handleAuthEvent;
-        }()
+        }
     }, {
         key: 'errorRenderer',
-        value: function () {
-            function errorRenderer(err) {
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                return _react2['default'].createElement(
-                    _AmplifyUI.ErrorSection,
+        value: function errorRenderer(err) {
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            return _react2.default.createElement(
+                _AmplifyUI.ErrorSection,
+                { theme: theme },
+                _react2.default.createElement(
+                    _AmplifyUI.SectionBody,
                     { theme: theme },
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionBody,
-                        { theme: theme },
-                        err
-                    )
-                );
-            }
-
-            return errorRenderer;
-        }()
+                    err
+                )
+            );
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                var _this2 = this;
+        value: function render() {
+            var _this2 = this;
 
-                var _state = this.state,
-                    auth = _state.auth,
-                    authData = _state.authData;
+            var _state = this.state,
+                auth = _state.auth,
+                authData = _state.authData;
 
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                var messageMap = this.props.errorMessage || _AmplifyMessageMap2['default'];
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            var messageMap = this.props.errorMessage || _AmplifyMessageMap2.default;
 
-                var _props = this.props,
-                    hideDefault = _props.hideDefault,
-                    hide = _props.hide,
-                    federated = _props.federated;
+            var _props = this.props,
+                hideDefault = _props.hideDefault,
+                hide = _props.hide,
+                federated = _props.federated;
 
-                if (!hide) {
-                    hide = [];
-                }
-                if (hideDefault) {
-                    hide = hide.concat([_Greetings2['default'], _SignIn2['default'], _ConfirmSignIn2['default'], _RequireNewPassword2['default'], _SignUp2['default'], _ConfirmSignUp2['default'], _VerifyContact2['default'], _ForgotPassword2['default'], _TOTPSetup2['default']]);
-                }
-                var props_children = this.props.children || [];
-                var default_children = [_react2['default'].createElement(_Greetings2['default'], null), _react2['default'].createElement(_SignIn2['default'], { federated: federated }), _react2['default'].createElement(_ConfirmSignIn2['default'], null), _react2['default'].createElement(_RequireNewPassword2['default'], null), _react2['default'].createElement(_SignUp2['default'], null), _react2['default'].createElement(_ConfirmSignUp2['default'], null), _react2['default'].createElement(_VerifyContact2['default'], null), _react2['default'].createElement(_ForgotPassword2['default'], null), _react2['default'].createElement(_TOTPSetup2['default'], null)];
-
-                var render_props_children = _react2['default'].Children.map(props_children, function (child, index) {
-                    return _react2['default'].cloneElement(child, {
-                        key: 'aws-amplify-authenticator-props-children-' + index,
-                        theme: theme,
-                        messageMap: messageMap,
-                        authState: auth,
-                        authData: authData,
-                        onStateChange: _this2.handleStateChange,
-                        onAuthEvent: _this2.handleAuthEvent
-                    });
-                });
-
-                var render_default_children = _react2['default'].Children.map(default_children, function (child, index) {
-                    return _react2['default'].cloneElement(child, {
-                        key: 'aws-amplify-authenticator-default-children-' + index,
-                        theme: theme,
-                        messageMap: messageMap,
-                        authState: auth,
-                        authData: authData,
-                        onStateChange: _this2.handleStateChange,
-                        onAuthEvent: _this2.handleAuthEvent,
-                        hide: hide
-                    });
-                });
-
-                var render_children = render_default_children.concat(render_props_children);
-
-                var errorRenderer = this.props.errorRenderer || this.errorRenderer;
-                var error = this.state.error;
-                return _react2['default'].createElement(
-                    _AmplifyUI.Container,
-                    { theme: theme },
-                    render_children,
-                    error ? errorRenderer(error) : null
-                );
+            if (!hide) {
+                hide = [];
             }
+            if (hideDefault) {
+                hide = hide.concat([_Greetings2.default, _SignIn2.default, _ConfirmSignIn2.default, _RequireNewPassword2.default, _SignUp2.default, _ConfirmSignUp2.default, _VerifyContact2.default, _ForgotPassword2.default, _TOTPSetup2.default]);
+            }
+            var props_children = this.props.children || [];
+            var default_children = [_react2.default.createElement(_Greetings2.default, null), _react2.default.createElement(_SignIn2.default, { federated: federated }), _react2.default.createElement(_ConfirmSignIn2.default, null), _react2.default.createElement(_RequireNewPassword2.default, null), _react2.default.createElement(_SignUp2.default, null), _react2.default.createElement(_ConfirmSignUp2.default, null), _react2.default.createElement(_VerifyContact2.default, null), _react2.default.createElement(_ForgotPassword2.default, null), _react2.default.createElement(_TOTPSetup2.default, null)];
 
-            return render;
-        }()
+            var render_props_children = _react2.default.Children.map(props_children, function (child, index) {
+                return _react2.default.cloneElement(child, {
+                    key: 'aws-amplify-authenticator-props-children-' + index,
+                    theme: theme,
+                    messageMap: messageMap,
+                    authState: auth,
+                    authData: authData,
+                    onStateChange: _this2.handleStateChange,
+                    onAuthEvent: _this2.handleAuthEvent
+                });
+            });
+
+            var render_default_children = _react2.default.Children.map(default_children, function (child, index) {
+                return _react2.default.cloneElement(child, {
+                    key: 'aws-amplify-authenticator-default-children-' + index,
+                    theme: theme,
+                    messageMap: messageMap,
+                    authState: auth,
+                    authData: authData,
+                    onStateChange: _this2.handleStateChange,
+                    onAuthEvent: _this2.handleAuthEvent,
+                    hide: hide
+                });
+            });
+
+            var render_children = render_default_children.concat(render_props_children);
+
+            var errorRenderer = this.props.errorRenderer || this.errorRenderer;
+            var error = this.state.error;
+            return _react2.default.createElement(
+                _AmplifyUI.Container,
+                { theme: theme },
+                render_children,
+                error ? errorRenderer(error) : null
+            );
+        }
     }]);
 
     return Authenticator;
 }(_react.Component);
 
-exports['default'] = Authenticator;
+exports.default = Authenticator;
