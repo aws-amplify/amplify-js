@@ -107,7 +107,7 @@ export class RestClient {
                 return acc;
                 // tslint:disable-next-line:align
             }, {});
-            return this._request(params);
+            return this._request(params, isAllResponse);
         }
 
         return Auth.currentCredentials()
