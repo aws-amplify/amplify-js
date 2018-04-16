@@ -92,29 +92,51 @@ AmplifyService is a provider in Angular app, provides AWS Amplify core functions
 ...
 ```
 
-### Get AWS Amplify Functionalities
+### Access AWS Amplify Categories
 
-You can access and work directly with Amplify Categories via the provider:
+You can access and work directly with Amplify Categories via the built-in service provider (or create your own):
 
 ```
-  this.amplifyService.auth();      // AWS Amplify Auth
-  this.amplifyService.analytics(); // AWS Amplify Analytics
-  this.amplifyService.storage();   // AWS Amplify Storage
-  this.amplifyService.api();       // AWS Amplify API
-  this.amplifyService.cache();     // AWS Amplify Cache
-  this.amplifyService.pubsub();    // AWS Amplify PubSub 
+import { Component } from '@angular/core';
+import { AmplifyService }  from 'aws-amplify-angular';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+
+export class AppComponent {
+  
+  constructor( public amplify:AmplifyService ) {
+  	
+  	this.amplifyService = amplify;
+  	
+  	/** now you can access category APIs:
+  	 * this.amplifyService.auth();      	// AWS Amplify Auth
+ 	 * this.amplifyService.analytics(); 	// AWS Amplify Analytics
+ 	 * this.amplifyService.storage();   	// AWS Amplify Storage
+	 * this.amplifyService.api();       	// AWS Amplify API
+	 * this.amplifyService.cache();     	// AWS Amplify Cache
+	 * this.amplifyService.pubsub();    	// AWS Amplify PubSub
+	 **/
+  }
+  
+}
 ```
 
 You can access all [AWS Amplify Category APIs](https://aws.github.io/aws-amplify) from the provider.
 
-### Subscribe to authentication state changes:
+### Subscribe to authentication state changes
 
 Import the service into your component and listen for auth state changes:
 
 ```
   ...
-  constructor(public amplifyService: AmplifyService) {
+  constructor( public amplifyService: AmplifyService ) {
+  
     this.amplifyService = amplifyService;
+    
     this.amplifyService.authStateChange$
       .subscribe(authState => {
         this.signedIn = authState.state === 'signedIn';
@@ -131,7 +153,7 @@ Import the service into your component and listen for auth state changes:
 
 ## Authenticator Components
 
-### Add Authenticator to a template
+#### Add Authenticator to a template
 
 ```
   ...
@@ -141,17 +163,56 @@ Import the service into your component and listen for auth state changes:
 
 ## Storage Components
 
+#### Photo Picker
+
+The `<amplify-photo-picker></amplify-photo-picker>` will display a file upload input that will allow choosing any image for upload to Amzon S3. Once an image is selected, a base64 encoded preview will also be displayed as part of the component. The component will emit two events:
+
+ - `(picked)` - File has been chosen, the event will contain the `File` object which can be used for upload.
+ - `(loaded)` - Preview has been loaded and displayed.
+
+```
+<amplify-photo-picker 
+    (picked)="onImagePicked($event)"
+    (loaded)="onImageLoaded($event)"></amplify-photo-picker>
+```
+
+`onImagePicked(event)` can then be used to upload your photo to S3 using Storage:
+
+```
+onImagePicked( file ) {
+
+    let key = `pics/${file.name}`;
+    
+    this.amplify.storage().put( key, file, {
+      'level': 'private',
+      'contentType': file.type
+    })
+    .then (result => console.log('uploaded: ', result))
+    .catch(err => console.log('upload error: ', err));
+  
+  }
+```
+
+You can use the album component to list all your photos:
+
+```
+<amplify-s3-album 
+	path="pics"
+	(selected)="onAlbumImageSelected($event)"></amplify-s3-album>
+```
+
+`(selected)` can be used to retrieve the URL to the image on Amazon S3 when an image is clicked.
+
+```
+onAlbumImageSelected( event ) {
+  	window.open( event, '_blank' );
+}
+```
+
 ### Styles
 
-You can override the default styling with css.
-
-For example,
+You can use and override a default theme. Within your app, add to your styles.css or components css:
 
 ```css
-
-  .amplify-authenticator {
-    width: 300px !important;
-    padding: 0px !important;
-  }
-
+@import "~aws-amplify-angular/theme.css";
 ```
