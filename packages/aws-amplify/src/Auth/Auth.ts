@@ -1088,7 +1088,6 @@ export default class AuthClass {
      * @param {String} user - user info
      */
     public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
-        logger.debug('federatedResponse', response);
         const { token, identity_id, expires_at } = response;
         const that = this;
         return new Promise((res, rej) => {
@@ -1228,8 +1227,6 @@ export default class AuthClass {
         },  {
             region
         });
-
-        console.log('JBL credentials', credentials);
 
         Cache.setItem('federatedInfo', { provider, token, identity_id, user, expires_at }, { priority: 1 });
         return this._loadCredentials(credentials, 'federated', true, user);
