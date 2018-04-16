@@ -22,7 +22,7 @@ var _qrcode = require('qrcode.react');
 
 var _qrcode2 = _interopRequireDefault(_qrcode);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66,144 +66,120 @@ var TOTPSetupComp = function (_Component) {
 
     _createClass(TOTPSetupComp, [{
         key: 'triggerTOTPEvent',
-        value: function () {
-            function triggerTOTPEvent(event, data, user) {
-                if (this.props.onTOTPEvent) {
-                    this.props.onTOTPEvent(event, data, user);
-                }
+        value: function triggerTOTPEvent(event, data, user) {
+            if (this.props.onTOTPEvent) {
+                this.props.onTOTPEvent(event, data, user);
             }
-
-            return triggerTOTPEvent;
-        }()
+        }
     }, {
         key: 'handleInputChange',
-        value: function () {
-            function handleInputChange(evt) {
-                this.setState({ setupMessage: null });
-                this.inputs = {};
-                var _evt$target = evt.target,
-                    name = _evt$target.name,
-                    value = _evt$target.value,
-                    type = _evt$target.type,
-                    checked = _evt$target.checked;
+        value: function handleInputChange(evt) {
+            this.setState({ setupMessage: null });
+            this.inputs = {};
+            var _evt$target = evt.target,
+                name = _evt$target.name,
+                value = _evt$target.value,
+                type = _evt$target.type,
+                checked = _evt$target.checked;
 
-                var check_type = ['radio', 'checkbox'].includes(type);
-                this.inputs[name] = check_type ? checked : value;
-            }
-
-            return handleInputChange;
-        }()
+            var check_type = ['radio', 'checkbox'].includes(type);
+            this.inputs[name] = check_type ? checked : value;
+        }
     }, {
         key: 'setup',
-        value: function () {
-            function setup() {
-                var _this2 = this;
+        value: function setup() {
+            var _this2 = this;
 
-                this.setState({ setupMessage: null });
-                var user = this.props.authData;
-                _awsAmplify.Auth.setupTOTP(user).then(function (data) {
-                    logger.debug('secret key', data);
-                    var code = "otpauth://totp/AWSCognito:" + user.username + "?secret=" + data + "&issuer=AWSCognito";
-                    _this2.setState({ code: code });
-                })['catch'](function (err) {
-                    return logger.debug('totp setup failed', err);
-                });
-            }
-
-            return setup;
-        }()
+            this.setState({ setupMessage: null });
+            var user = this.props.authData;
+            _awsAmplify.Auth.setupTOTP(user).then(function (data) {
+                logger.debug('secret key', data);
+                var code = "otpauth://totp/AWSCognito:" + user.username + "?secret=" + data + "&issuer=AWSCognito";
+                _this2.setState({ code: code });
+            }).catch(function (err) {
+                return logger.debug('totp setup failed', err);
+            });
+        }
     }, {
         key: 'verifyTotpToken',
-        value: function () {
-            function verifyTotpToken() {
-                var _this3 = this;
+        value: function verifyTotpToken() {
+            var _this3 = this;
 
-                if (!this.inputs) {
-                    logger.debug('no input');
-                    return;
-                }
-                var user = this.props.authData;
-                var totpCode = this.inputs.totpCode;
-
-                _awsAmplify.Auth.verifyTotpToken(user, totpCode).then(function () {
-                    // set it to preferred mfa
-                    _awsAmplify.Auth.setPreferredMFA(user, 'TOTP');
-                    _this3.setState({ setupMessage: 'Setup TOTP successfully!' });
-                    logger.debug('set up totp success!');
-                    _this3.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
-                })['catch'](function (err) {
-                    _this3.setState({ setupMessage: 'Setup TOTP failed!' });
-                    logger.error(err);
-                });
+            if (!this.inputs) {
+                logger.debug('no input');
+                return;
             }
+            var user = this.props.authData;
+            var totpCode = this.inputs.totpCode;
 
-            return verifyTotpToken;
-        }()
+            _awsAmplify.Auth.verifyTotpToken(user, totpCode).then(function () {
+                // set it to preferred mfa
+                _awsAmplify.Auth.setPreferredMFA(user, 'TOTP');
+                _this3.setState({ setupMessage: 'Setup TOTP successfully!' });
+                logger.debug('set up totp success!');
+                _this3.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
+            }).catch(function (err) {
+                _this3.setState({ setupMessage: 'Setup TOTP failed!' });
+                logger.error(err);
+            });
+        }
     }, {
         key: 'showSecretCode',
-        value: function () {
-            function showSecretCode(code, theme) {
-                if (!code) return null;
-                return _react2['default'].createElement(
-                    'div',
-                    null,
-                    _react2['default'].createElement(_qrcode2['default'], { value: code }),
-                    _react2['default'].createElement(_AmplifyUI.InputRow, {
-                        autoFocus: true,
-                        placeholder: _awsAmplify.I18n.get('totp verification token'),
-                        theme: theme,
-                        key: 'totpCode',
-                        name: 'totpCode',
-                        onChange: this.handleInputChange
-                    }),
-                    _react2['default'].createElement(
-                        _AmplifyUI.ButtonRow,
-                        { theme: theme, onClick: this.verifyTotpToken },
-                        _awsAmplify.I18n.get('Verify')
-                    )
-                );
-            }
-
-            return showSecretCode;
-        }()
+        value: function showSecretCode(code, theme) {
+            if (!code) return null;
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(_qrcode2.default, { value: code }),
+                _react2.default.createElement(_AmplifyUI.InputRow, {
+                    autoFocus: true,
+                    placeholder: _awsAmplify.I18n.get('totp verification token'),
+                    theme: theme,
+                    key: 'totpCode',
+                    name: 'totpCode',
+                    onChange: this.handleInputChange
+                }),
+                _react2.default.createElement(
+                    _AmplifyUI.ButtonRow,
+                    { theme: theme, onClick: this.verifyTotpToken },
+                    _awsAmplify.I18n.get('Verify')
+                )
+            );
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                var theme = this.props.theme ? this.props.theme : _AmplifyTheme2['default'];
-                var code = this.state.code;
+        value: function render() {
+            var theme = this.props.theme ? this.props.theme : _AmplifyTheme2.default;
+            var code = this.state.code;
 
-                return _react2['default'].createElement(
-                    _AmplifyUI.FormSection,
+            return _react2.default.createElement(
+                _AmplifyUI.FormSection,
+                { theme: theme },
+                _react2.default.createElement(
+                    _AmplifyUI.SectionHeader,
                     { theme: theme },
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionHeader,
-                        { theme: theme },
-                        _awsAmplify.I18n.get('TOTP Setup')
+                    _awsAmplify.I18n.get('TOTP Setup')
+                ),
+                _react2.default.createElement(
+                    _AmplifyUI.SectionBody,
+                    { theme: theme },
+                    _react2.default.createElement(
+                        _AmplifyUI.ButtonRow,
+                        { theme: theme, onClick: this.setup },
+                        _awsAmplify.I18n.get('Get secret key')
                     ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionBody,
+                    this.showSecretCode(code, theme),
+                    this.state.setupMessage ? _react2.default.createElement(
+                        _AmplifyUI.MessageRow,
                         { theme: theme },
-                        _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.setup },
-                            _awsAmplify.I18n.get('Get secret key')
-                        ),
-                        this.showSecretCode(code, theme),
-                        this.state.setupMessage ? _react2['default'].createElement(
-                            _AmplifyUI.MessageRow,
-                            { theme: theme },
-                            _awsAmplify.I18n.get(this.state.setupMessage)
-                        ) : null
-                    )
-                );
-            }
-
-            return render;
-        }()
+                        _awsAmplify.I18n.get(this.state.setupMessage)
+                    ) : null
+                )
+            );
+        }
     }]);
 
     return TOTPSetupComp;
 }(_react.Component);
 
-exports['default'] = TOTPSetupComp;
+exports.default = TOTPSetupComp;

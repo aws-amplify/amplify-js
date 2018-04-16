@@ -1,13 +1,13 @@
 {
   "name": "aws-amplify-react",
-  "version": "0.1.38",
+  "version": "0.1.39",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "dist/index.js",
   "scripts": {
     "test": "jest --coverage --updateSnapshot",
-    "build": "babel src --presets babel-preset-env --out-dir dist --copy-files",
-    "watch": "babel src --presets babel-preset-env --out-dir dist --copy-files --watch",
-    "build-with-test": "npm test && npm run build"
+    "build": "npm run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
+    "build-with-test": "npm test && npm run build",
+    "clean": "rimraf dist"
   },
   "devDependencies": {
     "aws-amplify": "^0.2.14",

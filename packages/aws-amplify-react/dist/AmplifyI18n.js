@@ -114,4 +114,4 @@ var dict = {
     }
 };
 
-exports['default'] = dict;
+exports.default = dict;
