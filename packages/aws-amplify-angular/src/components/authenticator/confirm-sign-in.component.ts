@@ -1,4 +1,4 @@
-import { Component, Input, Inject } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../providers';
 
 const template = `
