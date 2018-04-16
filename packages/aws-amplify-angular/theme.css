@@ -48,10 +48,7 @@
   color: darkorange;
 }
 
-.amplify-greeting-sign-out {
-  margin: -6px;
-  float:right;
-}
+.amplify-greeting-sign-out {}
 
 .amplify-footer {
   clear: both;
@@ -71,10 +68,6 @@
   padding: 1em;
 }
 
-.amplify-upload-btn-wrapper {
-  margin: 2em;
-}
-
 .amplify-photo-picker-preview {
   width: 90%;
 }
@@ -86,14 +79,15 @@
 }
 
 .amplify-image-container {
-  width:128px;
+  width:80px;
 }
 
 .amplify-image {
-  width:128px;
+  width:80px;
   transition: width 0.5s;
+  cursor: pointer;
 }
 
 .amplify-image:hover {
-  width:175px;
+  width:128px;
 }
