@@ -54,6 +54,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
+            t[p[i]] = s[p[i]];
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var Signer_1 = require("../Common/Signer");
 var Common_1 = require("../Common");
@@ -128,11 +137,19 @@ var RestClient = /** @class */ (function () {
                     libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
                     params.data = JSON.stringify(extraParams.body);
                 }
+                params['signerServiceInfo'] = extraParams.signerServiceInfo;
                 params.headers = __assign({}, libraryHeaders, extraParams.headers);
                 // Do not sign the request if client has added 'Authorization' header,
                 // which means custom authorizer.
-                if (params.headers['Authorization']) {
-                    return [2 /*return*/, this._request(params, isAllResponse)];
+                if (typeof params.headers['Authorization'] !== 'undefined') {
+                    params.headers = Object.keys(params.headers).reduce(function (acc, k) {
+                        if (params.headers[k]) {
+                            acc[k] = params.headers[k];
+                        }
+                        return acc;
+                        // tslint:disable-next-line:align
+                    }, {});
+                    return [2 /*return*/, this._request(params)];
                 }
                 return [2 /*return*/, Auth_1.default.currentCredentials()
                         .then(function (credentials) { return _this._signed(params, credentials, isAllResponse); })];
@@ -220,18 +237,20 @@ var RestClient = /** @class */ (function () {
     };
     /** private methods **/
     RestClient.prototype._signed = function (params, credentials, isAllResponse) {
+        var signerServiceInfoParams = params.signerServiceInfo, otherParams = __rest(params, ["signerServiceInfo"]);
         var endpoint_region = this._region || this._options.region;
         var endpoint_service = this._service || this._options.service;
         var creds = {
-            'secret_key': credentials.secretAccessKey,
-            'access_key': credentials.accessKeyId,
-            'session_token': credentials.sessionToken
+            secret_key: credentials.secretAccessKey,
+            access_key: credentials.accessKeyId,
+            session_token: credentials.sessionToken,
         };
-        var service_info = {
-            'service': endpoint_service,
-            'region': endpoint_region
+        var endpointInfo = {
+            region: endpoint_region,
+            service: endpoint_service,
         };
-        var signed_params = Signer_1.default.sign(params, creds, service_info);
+        var signerServiceInfo = Object.assign(endpointInfo, signerServiceInfoParams);
+        var signed_params = Signer_1.default.sign(otherParams, creds, signerServiceInfo);
         if (signed_params.data) {
             signed_params.body = signed_params.data;
         }
@@ -245,6 +264,7 @@ var RestClient = /** @class */ (function () {
         });
     };
     RestClient.prototype._request = function (params, isAllResponse) {
+        if (isAllResponse === void 0) { isAllResponse = false; }
         return axios_1.default(params)
             .then(function (response) { return isAllResponse ? response : response.data; })
             .catch(function (error) {

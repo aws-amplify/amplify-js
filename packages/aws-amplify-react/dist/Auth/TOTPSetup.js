@@ -30,7 +30,7 @@ var _qrcode2 = _interopRequireDefault(_qrcode);
 
 var _Widget = require('../Widget');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66,37 +66,29 @@ var TOTPSetup = function (_AuthPiece) {
 
     _createClass(TOTPSetup, [{
         key: 'onTOTPEvent',
-        value: function () {
-            function onTOTPEvent(event, data, user) {
-                logger.debug('on totp event', event, data);
-                //const user = this.props.authData;
-                if (event === 'Setup TOTP') {
-                    if (data === 'SUCCESS') {
-                        this.changeState('signedIn', user);
-                    }
+        value: function onTOTPEvent(event, data, user) {
+            logger.debug('on totp event', event, data);
+            //const user = this.props.authData;
+            if (event === 'Setup TOTP') {
+                if (data === 'SUCCESS') {
+                    this.changeState('signedIn', user);
                 }
             }
-
-            return onTOTPEvent;
-        }()
+        }
     }, {
         key: 'showComponent',
-        value: function () {
-            function showComponent(theme) {
-                var hide = this.props.hide;
+        value: function showComponent(theme) {
+            var hide = this.props.hide;
 
-                if (hide && hide.includes(TOTPSetup)) {
-                    return null;
-                }
-
-                return _react2['default'].createElement(_Widget.TOTPSetupComp, _extends({}, this.props, { onTOTPEvent: this.onTOTPEvent }));
+            if (hide && hide.includes(TOTPSetup)) {
+                return null;
             }
 
-            return showComponent;
-        }()
+            return _react2.default.createElement(_Widget.TOTPSetupComp, _extends({}, this.props, { onTOTPEvent: this.onTOTPEvent }));
+        }
     }]);
 
     return TOTPSetup;
-}(_AuthPiece3['default']);
+}(_AuthPiece3.default);
 
-exports['default'] = TOTPSetup;
+exports.default = TOTPSetup;

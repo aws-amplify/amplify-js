@@ -33,6 +33,7 @@ export interface AuthOptions {
     mandatorySignIn: boolean
     cookieStorage?: ICookieStorageData,
     refreshHandlers?: Object
+    oauth?: OAuth
 }
 
 /**
@@ -53,4 +54,13 @@ export interface FederatedResponse {
     expires_at: number
     // the identityId for developer authenticated identities
     identity_id?: string,
+}
+
+export interface OAuth {
+    domain : string,
+	scope : Array<string>,
+	redirectSignIn : string,
+	redirectSignOut : string,
+    responseType: string,
+    options?: object
 }
