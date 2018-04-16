@@ -11,6 +11,7 @@
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'",
+    "rollup": "rollup -c",
     "generate-docs-local": "typedoc --out docs src",
     "generate-docs-root": "typedoc --out ../../docs src"
   },
@@ -64,6 +65,9 @@
     "axios": "^0.17.0",
     "graphql": "^0.13.1",
     "paho-mqtt": "^1.0.4",
+    "rollup": "^0.57.1",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-typescript2": "^0.12.0",
     "uuid": "^3.2.1",
     "zen-observable": "^0.8.6"
   },
