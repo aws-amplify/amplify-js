@@ -1083,14 +1083,16 @@ export default class AuthClass {
      * For federated login
      * @param {String} provider - federation login provider
      * @param {FederatedResponse} response - response should have the access token
+     * the identity id (optional)
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */
     public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
-        const { token, expires_at } = response;
+        logger.debug('federatedResponse', response);
+        const { token, identity_id, expires_at } = response;
         const that = this;
         return new Promise((res, rej) => {
-            that._setCredentialsFromFederation({ provider, token, user, expires_at }).then((cred) => {
+            that._setCredentialsFromFederation({ provider, token, identity_id, user, expires_at }).then((cred) => {
                 dispatchAuthEvent('signIn', that.user);
                 logger.debug('federated sign in credentials', this.credentials);
                 res(cred);
@@ -1200,7 +1202,7 @@ export default class AuthClass {
 
     
     private _setCredentialsFromFederation(params) {
-        const { provider, token, user, expires_at } = params;
+        const { provider, token, identity_id, user, expires_at } = params;
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
@@ -1221,12 +1223,15 @@ export default class AuthClass {
         const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
+            IdentityId: identity_id,
             Logins: logins
         },  {
             region
         });
 
-        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+        console.log('JBL credentials', credentials);
+
+        Cache.setItem('federatedInfo', { provider, token, identity_id, user, expires_at }, { priority: 1 });
         return this._loadCredentials(credentials, 'federated', true, user);
     }
 

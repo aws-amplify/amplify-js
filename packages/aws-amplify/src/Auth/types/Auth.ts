@@ -49,6 +49,8 @@ export interface MfaRequiredDetails {
 export interface FederatedResponse {
     // access token
     token: string,
+    // identity id
+    identity_id: string,
     // the universal time when token expired
     expires_at: number
 }
