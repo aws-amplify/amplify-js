@@ -6,6 +6,7 @@ export default class AuthClass {
     private _config;
     private _userPoolStorageSync;
     private userPool;
+    private _cognitoAuthClient;
     private credentials;
     private credentials_source;
     private user;

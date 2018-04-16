@@ -92,6 +92,22 @@ var FederatedButtons = exports.FederatedButtons = function (_Component) {
             });
         }
     }, {
+        key: 'OAuth',
+        value: function OAuth(oauth_config) {
+            if (!oauth_config) {
+                return null;
+            }
+            var _props4 = this.props,
+                theme = _props4.theme,
+                onStateChange = _props4.onStateChange;
+
+            return _react2.default.createElement(_Provider.OAuthButton, {
+                label: oauth_config ? oauth_config.label : undefined,
+                theme: theme,
+                onStateChange: onStateChange
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
             var authState = this.props.authState;
@@ -101,13 +117,19 @@ var FederatedButtons = exports.FederatedButtons = function (_Component) {
             }
 
             var federated = this.props.federated || {};
+            var config = _awsAmplify.Auth.configure();
+            if (config.oauth) {
+                federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+            }
+
             if (_awsAmplify.JS.isEmpty(federated)) {
                 return null;
             }
 
             var google_client_id = federated.google_client_id,
                 facebook_app_id = federated.facebook_app_id,
-                amazon_client_id = federated.amazon_client_id;
+                amazon_client_id = federated.amazon_client_id,
+                oauth_config = federated.oauth_config;
 
 
             var theme = this.props.theme || _AmplifyTheme2.default;
@@ -116,7 +138,8 @@ var FederatedButtons = exports.FederatedButtons = function (_Component) {
                 { theme: theme },
                 this.google(google_client_id),
                 this.facebook(facebook_app_id),
-                this.amazon(amazon_client_id)
+                this.amazon(amazon_client_id),
+                this.OAuth(oauth_config)
             );
         }
     }]);
@@ -136,10 +159,15 @@ var FederatedSignIn = function (_Component2) {
     _createClass(FederatedSignIn, [{
         key: 'render',
         value: function render() {
-            var _props4 = this.props,
-                federated = _props4.federated,
-                authState = _props4.authState,
-                onStateChange = _props4.onStateChange;
+            var _props5 = this.props,
+                authState = _props5.authState,
+                onStateChange = _props5.onStateChange;
+
+            var federated = this.props.federated || {};
+            var config = _awsAmplify.Auth.configure();
+            if (config.oauth) {
+                federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+            }
 
             if (!federated) {
                 logger.debug('federated prop is empty. show nothing');
@@ -149,7 +177,7 @@ var FederatedSignIn = function (_Component2) {
             if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) {
                 return null;
             }
-
+            logger.debug('federated Config is', federated);
             var theme = this.props.theme || _AmplifyTheme2.default;
             return _react2.default.createElement(
                 _AmplifyUI.FormSection,

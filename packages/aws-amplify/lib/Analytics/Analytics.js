@@ -89,7 +89,7 @@ var AnalyticsClass = /** @class */ (function () {
     AnalyticsClass.prototype.configure = function (config) {
         logger.debug('configure Analytics');
         var amplifyConfig = Common_1.Parser.parseMobilehubConfig(config);
-        var conf = Object.assign({}, this._config, amplifyConfig.Analytics);
+        var conf = Object.assign({}, this._config, amplifyConfig.Analytics, config);
         var clientInfo = Common_1.ClientDevice.clientInfo();
         conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
         this._config = conf;
