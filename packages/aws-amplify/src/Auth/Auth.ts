@@ -76,8 +76,6 @@ export default class AuthClass {
         this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
         this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
 
-        console.log(this._refreshHandlers);
-
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
         } else {
@@ -161,7 +159,8 @@ export default class AuthClass {
             });
         }
 
-        // If the developer has provided an object of refresh handlers then we can overwrite the default blank _refreshHandlers object.
+        // If the developer has provided an object of refresh handlers,
+        // then we can overwrite the default blank _refreshHandlers object.
         if (refreshHandlers) {
             this._refreshHandlers = refreshHandlers;
         }
