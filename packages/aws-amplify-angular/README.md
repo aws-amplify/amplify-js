@@ -28,7 +28,7 @@ Modify your apps `src/app/main/ts`:
 
 ```
 import Amplify from 'aws-amplify';
-import awsmobile from './aws-exports';
+import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
 ```
 
