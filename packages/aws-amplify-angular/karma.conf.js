@@ -12,17 +12,10 @@ module.exports = function (config) {
       require('karma-typescript')
     ],
     files: [
-      'src/components/common/*.ts',
-      'src/__tests__/components/common/*.spec.ts',
-
-      // 'src/components/storage/photo-picker.component.ts',
-      // 'src/__tests__/components/storage/*.spec.ts',
-
-      // 'src/components/AmplifyTheme.ts',
-
+      'src/components/**/*.ts',
       'src/providers/*.ts',
+      'src/__tests__/components/**/*.spec.ts',
       'src/__tests__/providers/*.ts',
-
       'node_modules/zone.js/dist/zone.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/zone.js/dist/proxy.js',
