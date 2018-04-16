@@ -124,22 +124,7 @@ describe('AmplifyService:', () => {
     it('...should be created with a setAuthState method', inject([AmplifyService], (service: AmplifyService) => {
       expect(service.setAuthState).toBeTruthy();
     }));
-
-    it('...should set the authState', inject([AmplifyService], (service: AmplifyService) => {
-
-      const myNewAuthState =  <AuthState> {
-        user: {name: 'AW Ess'},
-        state: 'Good2Go'
-      }
-
-      service.setAuthState(myNewAuthState);
-
-      service.authStateChange$.subscribe((data) => {
-        expect(data).toEqual(myNewAuthState)
-      })
-
-    }));
-
+    
   });
 
   describe('Storage', () => {

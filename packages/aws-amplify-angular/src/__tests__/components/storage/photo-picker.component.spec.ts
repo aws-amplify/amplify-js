@@ -1,10 +1,7 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DebugElement } from '@angular/core';
-import { By } from '@angular/platform-browser';
+import { Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { PhotoPickerComponent } from '../../../components/storage/photo-picker.component';
-import AmplifyTheme from '../../../components/AmplifyTheme';
 
     describe('PhotoPickerComponent:', () => {
 
@@ -14,7 +11,6 @@ import AmplifyTheme from '../../../components/AmplifyTheme';
 
       let component: PhotoPickerComponent;
       let fixture: ComponentFixture<PhotoPickerComponent>;
-      let titleEl: DebugElement;
     
       beforeEach(() => {
     
@@ -27,14 +23,24 @@ import AmplifyTheme from '../../../components/AmplifyTheme';
     
         // get test component from the fixture
         component = fixture.componentInstance;
-    
-        titleEl = fixture.debugElement.query(By.css('.form-title'));
 
       });
 
       it('...should be created', () => {
         expect(component).toBeTruthy();
       });
+
+      it('...should have a pick method', () => {
+        expect(component.pick).toBeTruthy();
+      });
+
+      it('...should have an onPhotoError method', () => {
+        expect(component.onPhotoError).toBeTruthy();
+      });
+
+      it('...should have a hasPhoto variable that is false by default', () => {
+        expect(component.hasPhoto).toEqual(false);
+      })
 
       afterAll(() => {
         TestBed.resetTestEnvironment();
