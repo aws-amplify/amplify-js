@@ -32,7 +32,8 @@ export interface AuthOptions {
     region?: string,
     mandatorySignIn: boolean
     cookieStorage?: ICookieStorageData,
-    oauth?: OAuth
+    oauth?: OAuth,
+    refreshHandlers?: object,
 }
 
 /**
