@@ -191,6 +191,21 @@ category_list:
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide'  
+    -  category: Front-end Support
+       title: Front-end Support
+       subs:
+        - title: React 
+          excerpt: React support package.
+          cta: Read more
+          url: '/media/react_guide' 
+        - title: React Native
+          excerpt: React Native support package.
+          cta: Read more
+          url: '/media/react_native_guide' 
+        - title: Angular 
+          excerpt: Angular support package.
+          cta: Read more
+          url: '/media/angular_guide' 
     -  category: CLI
        title: CLI
        subs:

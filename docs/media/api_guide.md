@@ -486,7 +486,7 @@ const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId
 }`;
 
 // Subscribe with eventId 123
-const subscription = API.graphqlSubscribe(
+const subscription = API.graphql(
     graphqlOperation(SubscribeToEventComments, { eventId: '123' })
 ).subscribe({
     next: (eventData) => console.log(eventData)
