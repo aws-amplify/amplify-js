@@ -863,6 +863,7 @@ export default class AuthClass {
                 logger.debug('cannot load guest credentials for unauthenticated user');
                 dispatchAuthEvent('signOut', that.user);
                 that.user = null;
+                that._clearCachedCredentials();
                 resolve();
             });
         });
@@ -1066,6 +1067,13 @@ export default class AuthClass {
         }
 
         return this._gettingCredPromise;
+    }
+
+    private _clearCachedCredentials() {
+        logger.debug('clearing cached credentials');
+        this._gettingCredPromise = null;
+        this.credentials = null;
+        this.credentials_source = '';
     }
 
     private _setCredentialsFromAWS() {

@@ -1149,6 +1149,43 @@ describe('auth unit test', () => {
             spyon2.mockClear();
         });
 
+        test('happy case for source userpool with mandatorySignIn', async () => {
+            const auth = new Auth({
+                ...authOptions,
+                mandatorySignIn: true,
+            });
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool
+            });
+            auth['credentials_source'] = 'aws';
+            auth['credentials'] = new CognitoIdentityCredentials({
+                IdentityPoolId: 'identityPoolId'
+            });
+
+            const spyonAuth = jest.spyOn(Auth.prototype, "currentUserCredentials")
+                .mockImplementationOnce(() => {
+                    return new Promise((resolve, reject) => { resolve(); });
+                });
+            const spyon = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
+                .mockImplementationOnce(() => {
+                    return user;
+                });
+            const spyon2 = jest.spyOn(CognitoUser.prototype, "signOut");
+            // @ts-ignore
+
+            await auth.signOut();
+
+            expect.assertions(3);
+            expect(spyon2).toBeCalled();
+            expect(auth['credentials_source']).toBe('');
+            expect(auth['credentials']).toBeNull();
+
+            spyonAuth.mockClear();
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
         test('no UserPool', async () => {
             const auth = new Auth(authOptionsWithNoUserPoolId);
             auth['credentials_source'] = 'aws';
