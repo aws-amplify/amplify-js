@@ -14,7 +14,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _awsAmplify = require('aws-amplify');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -55,119 +55,71 @@ function trackLifecycle(Comp, trackerName) {
 
         _createClass(WithTrackLifecycle, [{
             key: 'track',
-            value: function () {
-                function track(event) {
-                    var filtered = this.trackEvents.filter(function (item) {
-                        return item === event;
-                    });
-                    if (filtered.length > 0) {
-                        _awsAmplify.Analytics.record(this.trackerName, { event: event });
-                    }
+            value: function track(event) {
+                var filtered = this.trackEvents.filter(function (item) {
+                    return item === event;
+                });
+                if (filtered.length > 0) {
+                    _awsAmplify.Analytics.record(this.trackerName, { event: event });
                 }
-
-                return track;
-            }()
+            }
         }, {
             key: 'componentWillMount',
-            value: function () {
-                function componentWillMount() {
-                    this.track('componentWillMount');
-                }
-
-                return componentWillMount;
-            }()
+            value: function componentWillMount() {
+                this.track('componentWillMount');
+            }
         }, {
             key: 'componentDidMount',
-            value: function () {
-                function componentDidMount() {
-                    this.track('componentDidMount');
-                }
-
-                return componentDidMount;
-            }()
+            value: function componentDidMount() {
+                this.track('componentDidMount');
+            }
         }, {
             key: 'componentWillUnmount',
-            value: function () {
-                function componentWillUnmount() {
-                    this.track('componentWillUnmount');
-                }
-
-                return componentWillUnmount;
-            }()
+            value: function componentWillUnmount() {
+                this.track('componentWillUnmount');
+            }
         }, {
             key: 'componentDidCatch',
-            value: function () {
-                function componentDidCatch() {
-                    this.track('componentDidCatch');
-                }
-
-                return componentDidCatch;
-            }()
+            value: function componentDidCatch() {
+                this.track('componentDidCatch');
+            }
         }, {
             key: 'componentWillReceiveProps',
-            value: function () {
-                function componentWillReceiveProps() {
-                    this.track('componentWillReceiveProps');
-                }
-
-                return componentWillReceiveProps;
-            }()
+            value: function componentWillReceiveProps() {
+                this.track('componentWillReceiveProps');
+            }
         }, {
             key: 'shouldComponentUpdate',
-            value: function () {
-                function shouldComponentUpdate() {
-                    this.track('shouldComponentUpdate');
-                    return true;
-                }
-
-                return shouldComponentUpdate;
-            }()
+            value: function shouldComponentUpdate() {
+                this.track('shouldComponentUpdate');
+                return true;
+            }
         }, {
             key: 'componentWillUpdate',
-            value: function () {
-                function componentWillUpdate() {
-                    this.track('componentWillUpdate');
-                }
-
-                return componentWillUpdate;
-            }()
+            value: function componentWillUpdate() {
+                this.track('componentWillUpdate');
+            }
         }, {
             key: 'componentDidUpdate',
-            value: function () {
-                function componentDidUpdate() {
-                    this.track('componentDidUpdate');
-                }
-
-                return componentDidUpdate;
-            }()
+            value: function componentDidUpdate() {
+                this.track('componentDidUpdate');
+            }
         }, {
             key: 'setState',
-            value: function () {
-                function setState() {
-                    this.track('setState');
-                }
-
-                return setState;
-            }()
+            value: function setState() {
+                this.track('setState');
+            }
         }, {
             key: 'forceUpdate',
-            value: function () {
-                function forceUpdate() {
-                    this.track('forceUpdate');
-                }
-
-                return forceUpdate;
-            }()
+            value: function forceUpdate() {
+                this.track('forceUpdate');
+            }
         }, {
             key: 'render',
-            value: function () {
-                function render() {
-                    this.track('render');
-                    return _react2['default'].createElement(Comp, this.props);
-                }
-
-                return render;
-            }()
+            value: function render() {
+                this.track('render');
+                return _react2.default.createElement(Comp, this.props);
+            }
         }]);
 
         return WithTrackLifecycle;

@@ -24,6 +24,7 @@ exports.StorageClass = Storage_1.StorageClass;
 var API_1 = require("./API");
 exports.API = API_1.default;
 exports.APIClass = API_1.APIClass;
+exports.graphqlOperation = API_1.graphqlOperation;
 var PubSub_1 = require("./PubSub");
 exports.PubSub = PubSub_1.default;
 var I18n_1 = require("./I18n");

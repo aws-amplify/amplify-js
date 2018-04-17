@@ -13,166 +13,114 @@ var _Authenticator = require('./Authenticator');
 
 Object.defineProperty(exports, 'Authenticator', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_Authenticator)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_Authenticator).default;
+    }
 });
 
 var _AuthPiece = require('./AuthPiece');
 
 Object.defineProperty(exports, 'AuthPiece', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_AuthPiece)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_AuthPiece).default;
+    }
 });
 
 var _SignIn = require('./SignIn');
 
 Object.defineProperty(exports, 'SignIn', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_SignIn)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_SignIn).default;
+    }
 });
 
 var _ConfirmSignIn = require('./ConfirmSignIn');
 
 Object.defineProperty(exports, 'ConfirmSignIn', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_ConfirmSignIn)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_ConfirmSignIn).default;
+    }
 });
 
 var _RequireNewPassword = require('./RequireNewPassword');
 
 Object.defineProperty(exports, 'RequireNewPassword', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_RequireNewPassword)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_RequireNewPassword).default;
+    }
 });
 
 var _SignUp = require('./SignUp');
 
 Object.defineProperty(exports, 'SignUp', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_SignUp)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_SignUp).default;
+    }
 });
 
 var _ConfirmSignUp = require('./ConfirmSignUp');
 
 Object.defineProperty(exports, 'ConfirmSignUp', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_ConfirmSignUp)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_ConfirmSignUp).default;
+    }
 });
 
 var _VerifyContact = require('./VerifyContact');
 
 Object.defineProperty(exports, 'VerifyContact', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_VerifyContact)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_VerifyContact).default;
+    }
 });
 
 var _ForgotPassword = require('./ForgotPassword');
 
 Object.defineProperty(exports, 'ForgotPassword', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_ForgotPassword)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_ForgotPassword).default;
+    }
 });
 
 var _Greetings = require('./Greetings');
 
 Object.defineProperty(exports, 'Greetings', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_Greetings)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_Greetings).default;
+    }
 });
 
 var _FederatedSignIn = require('./FederatedSignIn');
 
 Object.defineProperty(exports, 'FederatedSignIn', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_FederatedSignIn)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_FederatedSignIn).default;
+    }
 });
 Object.defineProperty(exports, 'FederatedButtons', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _FederatedSignIn.FederatedButtons;
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _FederatedSignIn.FederatedButtons;
+    }
 });
 
 var _TOTPSetup = require('./TOTPSetup');
 
 Object.defineProperty(exports, 'TOTPSetup', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_TOTPSetup)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_TOTPSetup).default;
+    }
 });
 
 var _Provider = require('./Provider');
@@ -181,13 +129,9 @@ Object.keys(_Provider).forEach(function (key) {
     if (key === "default" || key === "__esModule") return;
     Object.defineProperty(exports, key, {
         enumerable: true,
-        get: function () {
-            function get() {
-                return _Provider[key];
-            }
-
-            return get;
-        }()
+        get: function get() {
+            return _Provider[key];
+        }
     });
 });
 exports.withAuthenticator = withAuthenticator;
@@ -204,7 +148,7 @@ var _Authenticator2 = _interopRequireDefault(_Authenticator);
 
 var _Greetings2 = _interopRequireDefault(_Greetings);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -246,48 +190,40 @@ function withAuthenticator(Comp) {
 
         _createClass(_class, [{
             key: 'handleAuthStateChange',
-            value: function () {
-                function handleAuthStateChange(state, data) {
-                    this.setState({ authState: state, authData: data });
-                }
-
-                return handleAuthStateChange;
-            }()
+            value: function handleAuthStateChange(state, data) {
+                this.setState({ authState: state, authData: data });
+            }
         }, {
             key: 'render',
-            value: function () {
-                function render() {
-                    var _state = this.state,
-                        authState = _state.authState,
-                        authData = _state.authData;
+            value: function render() {
+                var _state = this.state,
+                    authState = _state.authState,
+                    authData = _state.authData;
 
-                    var signedIn = authState === 'signedIn';
-                    if (signedIn) {
-                        return _react2['default'].createElement(
-                            'div',
-                            null,
-                            includeGreetings ? _react2['default'].createElement(_Greetings2['default'], {
-                                authState: authState,
-                                authData: authData,
-                                onStateChange: this.handleAuthStateChange
-                            }) : null,
-                            _react2['default'].createElement(Comp, _extends({}, this.props, {
-                                authState: authState,
-                                authData: authData,
-                                onStateChange: this.handleAuthStateChange
-                            }))
-                        );
-                    }
-
-                    return _react2['default'].createElement(_Authenticator2['default'], _extends({}, this.props, {
-                        hideDefault: authenticatorComponents.length > 0,
-                        onStateChange: this.handleAuthStateChange,
-                        children: authenticatorComponents
-                    }));
+                var signedIn = authState === 'signedIn';
+                if (signedIn) {
+                    return _react2.default.createElement(
+                        'div',
+                        null,
+                        includeGreetings ? _react2.default.createElement(_Greetings2.default, {
+                            authState: authState,
+                            authData: authData,
+                            onStateChange: this.handleAuthStateChange
+                        }) : null,
+                        _react2.default.createElement(Comp, _extends({}, this.props, {
+                            authState: authState,
+                            authData: authData,
+                            onStateChange: this.handleAuthStateChange
+                        }))
+                    );
                 }
 
-                return render;
-            }()
+                return _react2.default.createElement(_Authenticator2.default, _extends({}, this.props, {
+                    hideDefault: authenticatorComponents.length > 0,
+                    onStateChange: this.handleAuthStateChange,
+                    children: authenticatorComponents
+                }));
+            }
         }]);
 
         return _class;
@@ -310,32 +246,24 @@ var AuthenticatorWrapper = exports.AuthenticatorWrapper = function (_Component2)
 
     _createClass(AuthenticatorWrapper, [{
         key: 'handleAuthState',
-        value: function () {
-            function handleAuthState(state, data) {
-                this.setState({ auth: state, authData: data });
-            }
-
-            return handleAuthState;
-        }()
+        value: function handleAuthState(state, data) {
+            this.setState({ auth: state, authData: data });
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                return _react2['default'].createElement(
-                    'div',
-                    null,
-                    _react2['default'].createElement(_Authenticator2['default'], _extends({}, this.props, { onStateChange: this.handleAuthState })),
-                    this.props.children(this.state.auth)
-                );
-            }
-
-            return render;
-        }()
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(_Authenticator2.default, _extends({}, this.props, { onStateChange: this.handleAuthState })),
+                this.props.children(this.state.auth)
+            );
+        }
     }]);
 
     return AuthenticatorWrapper;
 }(_react.Component);
 
 AuthenticatorWrapper.propTypes = {
-    children: _propTypes2['default'].func.isRequired
+    children: _propTypes2.default.func.isRequired
 };
