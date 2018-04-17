@@ -175,7 +175,13 @@ AWS Amplifies provides components that you can use in your Angular view template
 
 ### Authenticator
 
-Authenticator component creates an out-of-the-box signing/sign-up experience for your Angular app. Before using this directive, please be sure that you have activated [Authentication category](https://aws.github.io/aws-amplify/media/authentication_guide).
+Authenticator component creates an out-of-the-box signing/sign-up experience for your Angular app. 
+
+Before using this component, please be sure that you have activated [Authentication category](https://aws.github.io/aws-amplify/media/authentication_guide):
+```bash
+$ awsmobile user-signin enable
+```
+
 
 To use Authenticator, just add the `amplify-authenticator` directive in your .html view:
 ```html
@@ -188,10 +194,13 @@ To use Authenticator, just add the `amplify-authenticator` directive in your .ht
 
 Photo Picker component will render a file upload control that will allow choosing a local image and uploading it to Amazon S3. Once an image is selected, a base64 encoded image preview will be displayed automatically.
 
-The component will emit two events:
+Before using this component, please be sure that you have activated [*user-files* with AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
 
- - `(picked)` - Emitted when an image is selected. The event will contain the `File` object which can be used for upload.
- - `(loaded)` - Emitted when an image preview has been rendered and displayed.
+```bash
+$ awsmobile user-files enable
+```
+
+To render photo picker in an Angular view, use *amplify-photo-picker* component:
 
 ```html
 <amplify-photo-picker 
@@ -199,6 +208,11 @@ The component will emit two events:
     (loaded)="onImageLoaded($event)">
 </amplify-photo-picker>
 ```
+
+The component will emit two events:
+
+ - `(picked)` - Emitted when an image is selected. The event will contain the `File` object which can be used for upload.
+ - `(loaded)` - Emitted when an image preview has been rendered and displayed.
 
 **Uploading Image**
 
@@ -216,11 +230,19 @@ onImagePicked( file ) {
     .then (result => console.log('uploaded: ', result))
     .catch(err => console.log('upload error: ', err));
   
-  }
+}
 ```
 ### S3 Album
 
-S3 Album component display a list of images from the connected S3 bucket:
+S3 Album component display a list of images from the connected S3 bucket.
+
+Before using this component, please be sure that you have activated [*user-files* with AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
+
+```bash
+$ awsmobile user-files enable
+```
+
+To render the album, use *amplify-s3-album* component in your Angular view:
 
 ```html
 <amplify-s3-album path="pics" (selected)="onAlbumImageSelected($event)">
