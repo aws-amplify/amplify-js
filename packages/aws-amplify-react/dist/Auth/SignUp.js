@@ -22,7 +22,7 @@ var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../AmplifyUI');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -56,126 +56,110 @@ var SignUp = function (_AuthPiece) {
 
     _createClass(SignUp, [{
         key: 'signUp',
-        value: function () {
-            function signUp() {
-                var _this2 = this;
+        value: function signUp() {
+            var _this2 = this;
 
-                var _inputs = this.inputs,
-                    username = _inputs.username,
-                    password = _inputs.password,
-                    email = _inputs.email,
-                    phone_number = _inputs.phone_number;
+            var _inputs = this.inputs,
+                username = _inputs.username,
+                password = _inputs.password,
+                email = _inputs.email,
+                phone_number = _inputs.phone_number;
 
-                _awsAmplify.Auth.signUp(username, password, email, phone_number).then(function () {
-                    return _this2.changeState('confirmSignUp', username);
-                })['catch'](function (err) {
-                    return _this2.error(err);
-                });
-            }
-
-            return signUp;
-        }()
+            _awsAmplify.Auth.signUp(username, password, email, phone_number).then(function () {
+                return _this2.changeState('confirmSignUp', username);
+            }).catch(function (err) {
+                return _this2.error(err);
+            });
+        }
     }, {
         key: 'showComponent',
-        value: function () {
-            function showComponent(theme) {
-                var _this3 = this;
+        value: function showComponent(theme) {
+            var _this3 = this;
 
-                var hide = this.props.hide;
+            var hide = this.props.hide;
 
-                if (hide && hide.includes(SignUp)) {
-                    return null;
-                }
-
-                return _react2['default'].createElement(
-                    _AmplifyUI.FormSection,
-                    { theme: theme },
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionHeader,
-                        { theme: theme },
-                        _awsAmplify.I18n.get('Sign Up Account')
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionBody,
-                        { theme: theme },
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            autoFocus: true,
-                            placeholder: _awsAmplify.I18n.get('Username'),
-                            theme: theme,
-                            key: 'username',
-                            name: 'username',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            placeholder: _awsAmplify.I18n.get('Password'),
-                            theme: theme,
-                            type: 'password',
-                            key: 'password',
-                            name: 'password',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            placeholder: _awsAmplify.I18n.get('Email'),
-                            theme: theme,
-                            key: 'email',
-                            name: 'email',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            placeholder: _awsAmplify.I18n.get('Phone Number'),
-                            theme: theme,
-                            key: 'phone_number',
-                            name: 'phone_number',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { onClick: this.signUp, theme: theme },
-                            _awsAmplify.I18n.get('Sign Up')
-                        )
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionFooter,
-                        { theme: theme },
-                        _react2['default'].createElement(
-                            'div',
-                            { style: theme.col6 },
-                            _react2['default'].createElement(
-                                _AmplifyUI.Link,
-                                { theme: theme, onClick: function () {
-                                        function onClick() {
-                                            return _this3.changeState('confirmSignUp');
-                                        }
-
-                                        return onClick;
-                                    }() },
-                                _awsAmplify.I18n.get('Confirm a Code')
-                            )
-                        ),
-                        _react2['default'].createElement(
-                            'div',
-                            { style: Object.assign({ textAlign: 'right' }, theme.col6) },
-                            _react2['default'].createElement(
-                                _AmplifyUI.Link,
-                                { theme: theme, onClick: function () {
-                                        function onClick() {
-                                            return _this3.changeState('signIn');
-                                        }
-
-                                        return onClick;
-                                    }() },
-                                _awsAmplify.I18n.get('Sign In')
-                            )
-                        )
-                    )
-                );
+            if (hide && hide.includes(SignUp)) {
+                return null;
             }
 
-            return showComponent;
-        }()
+            return _react2.default.createElement(
+                _AmplifyUI.FormSection,
+                { theme: theme },
+                _react2.default.createElement(
+                    _AmplifyUI.SectionHeader,
+                    { theme: theme },
+                    _awsAmplify.I18n.get('Sign Up Account')
+                ),
+                _react2.default.createElement(
+                    _AmplifyUI.SectionBody,
+                    { theme: theme },
+                    _react2.default.createElement(_AmplifyUI.InputRow, {
+                        autoFocus: true,
+                        placeholder: _awsAmplify.I18n.get('Username'),
+                        theme: theme,
+                        key: 'username',
+                        name: 'username',
+                        onChange: this.handleInputChange
+                    }),
+                    _react2.default.createElement(_AmplifyUI.InputRow, {
+                        placeholder: _awsAmplify.I18n.get('Password'),
+                        theme: theme,
+                        type: 'password',
+                        key: 'password',
+                        name: 'password',
+                        onChange: this.handleInputChange
+                    }),
+                    _react2.default.createElement(_AmplifyUI.InputRow, {
+                        placeholder: _awsAmplify.I18n.get('Email'),
+                        theme: theme,
+                        key: 'email',
+                        name: 'email',
+                        onChange: this.handleInputChange
+                    }),
+                    _react2.default.createElement(_AmplifyUI.InputRow, {
+                        placeholder: _awsAmplify.I18n.get('Phone Number'),
+                        theme: theme,
+                        key: 'phone_number',
+                        name: 'phone_number',
+                        onChange: this.handleInputChange
+                    }),
+                    _react2.default.createElement(
+                        _AmplifyUI.ButtonRow,
+                        { onClick: this.signUp, theme: theme },
+                        _awsAmplify.I18n.get('Sign Up')
+                    )
+                ),
+                _react2.default.createElement(
+                    _AmplifyUI.SectionFooter,
+                    { theme: theme },
+                    _react2.default.createElement(
+                        'div',
+                        { style: theme.col6 },
+                        _react2.default.createElement(
+                            _AmplifyUI.Link,
+                            { theme: theme, onClick: function onClick() {
+                                    return _this3.changeState('confirmSignUp');
+                                } },
+                            _awsAmplify.I18n.get('Confirm a Code')
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { style: Object.assign({ textAlign: 'right' }, theme.col6) },
+                        _react2.default.createElement(
+                            _AmplifyUI.Link,
+                            { theme: theme, onClick: function onClick() {
+                                    return _this3.changeState('signIn');
+                                } },
+                            _awsAmplify.I18n.get('Sign In')
+                        )
+                    )
+                )
+            );
+        }
     }]);
 
     return SignUp;
-}(_AuthPiece3['default']);
+}(_AuthPiece3.default);
 
-exports['default'] = SignUp;
+exports.default = SignUp;

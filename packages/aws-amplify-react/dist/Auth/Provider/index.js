@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.AmazonButton = exports.withAmazon = exports.FacebookButton = exports.withFacebook = exports.GoogleButton = exports.withGoogle = undefined;
+exports.OAuthButton = exports.withOAuth = exports.AmazonButton = exports.withAmazon = exports.FacebookButton = exports.withFacebook = exports.GoogleButton = exports.withGoogle = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -13,69 +13,60 @@ var _withGoogle = require('./withGoogle');
 
 Object.defineProperty(exports, 'withGoogle', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_withGoogle)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_withGoogle).default;
+    }
 });
 Object.defineProperty(exports, 'GoogleButton', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _withGoogle.GoogleButton;
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _withGoogle.GoogleButton;
+    }
 });
 
 var _withFacebook = require('./withFacebook');
 
 Object.defineProperty(exports, 'withFacebook', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_withFacebook)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_withFacebook).default;
+    }
 });
 Object.defineProperty(exports, 'FacebookButton', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _withFacebook.FacebookButton;
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _withFacebook.FacebookButton;
+    }
 });
 
 var _withAmazon = require('./withAmazon');
 
 Object.defineProperty(exports, 'withAmazon', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _interopRequireDefault(_withAmazon)['default'];
-        }
-
-        return get;
-    }()
+    get: function get() {
+        return _interopRequireDefault(_withAmazon).default;
+    }
 });
 Object.defineProperty(exports, 'AmazonButton', {
     enumerable: true,
-    get: function () {
-        function get() {
-            return _withAmazon.AmazonButton;
-        }
+    get: function get() {
+        return _withAmazon.AmazonButton;
+    }
+});
 
-        return get;
-    }()
+var _withOAuth = require('./withOAuth');
+
+Object.defineProperty(exports, 'withOAuth', {
+    enumerable: true,
+    get: function get() {
+        return _interopRequireDefault(_withOAuth).default;
+    }
+});
+Object.defineProperty(exports, 'OAuthButton', {
+    enumerable: true,
+    get: function get() {
+        return _withOAuth.OAuthButton;
+    }
 });
 exports.withFederated = withFederated;
 
@@ -89,7 +80,9 @@ var _withFacebook2 = _interopRequireDefault(_withFacebook);
 
 var _withAmazon2 = _interopRequireDefault(_withAmazon);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+var _withOAuth2 = _interopRequireDefault(_withOAuth);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -98,7 +91,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 function withFederated(Comp) {
-    var Federated = (0, _withAmazon2['default'])((0, _withGoogle2['default'])((0, _withFacebook2['default'])(Comp)));
+    var Federated = (0, _withOAuth2.default)((0, _withAmazon2.default)((0, _withGoogle2.default)((0, _withFacebook2.default)(Comp))));
 
     return function (_Component) {
         _inherits(_class, _Component);
@@ -111,14 +104,10 @@ function withFederated(Comp) {
 
         _createClass(_class, [{
             key: 'render',
-            value: function () {
-                function render() {
-                    var federated = this.props.federated || {};
-                    return _react2['default'].createElement(Federated, _extends({}, this.props, federated));
-                }
-
-                return render;
-            }()
+            value: function render() {
+                var federated = this.props.federated || {};
+                return _react2.default.createElement(Federated, _extends({}, this.props, federated));
+            }
         }]);
 
         return _class;

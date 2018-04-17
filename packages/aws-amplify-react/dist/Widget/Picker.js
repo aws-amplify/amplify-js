@@ -16,7 +16,7 @@ var _AmplifyTheme = require('../AmplifyTheme');
 
 var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -74,77 +74,65 @@ var Picker = function (_Component) {
 
     _createClass(Picker, [{
         key: 'handleInput',
-        value: function () {
-            function handleInput(e) {
-                var that = this;
+        value: function handleInput(e) {
+            var that = this;
 
-                var file = e.target.files[0];
-                if (!file) {
-                    return;
-                }
-
-                var name = file.name,
-                    size = file.size,
-                    type = file.type;
-
-                logger.debug(file);
-
-                var onPick = this.props.onPick;
-
-                if (onPick) {
-                    onPick({
-                        file: file,
-                        name: name,
-                        size: size,
-                        type: type
-                    });
-                }
+            var file = e.target.files[0];
+            if (!file) {
+                return;
             }
 
-            return handleInput;
-        }()
+            var name = file.name,
+                size = file.size,
+                type = file.type;
+
+            logger.debug(file);
+
+            var onPick = this.props.onPick;
+
+            if (onPick) {
+                onPick({
+                    file: file,
+                    name: name,
+                    size: size,
+                    type: type
+                });
+            }
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                var _this2 = this;
+        value: function render() {
+            var _this2 = this;
 
-                var title = this.props.title || 'Pick a File';
-                var accept = this.props.accept || '*/*';
+            var title = this.props.title || 'Pick a File';
+            var accept = this.props.accept || '*/*';
 
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                var pickerStyle = Object.assign({}, PickerPicker, theme.pickerPicker);
-                var buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
-                var inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            var pickerStyle = Object.assign({}, PickerPicker, theme.pickerPicker);
+            var buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
+            var inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
 
-                return _react2['default'].createElement(
-                    'div',
-                    { style: pickerStyle },
-                    _react2['default'].createElement(
-                        'button',
-                        { style: buttonStyle },
-                        _awsAmplify.I18n.get(title)
-                    ),
-                    _react2['default'].createElement('input', {
-                        title: _awsAmplify.I18n.get(title),
-                        type: 'file', accept: accept,
-                        style: inputStyle,
-                        onChange: function () {
-                            function onChange(e) {
-                                return _this2.handleInput(e);
-                            }
-
-                            return onChange;
-                        }()
-                    })
-                );
-            }
-
-            return render;
-        }()
+            return _react2.default.createElement(
+                'div',
+                { style: pickerStyle },
+                _react2.default.createElement(
+                    'button',
+                    { style: buttonStyle },
+                    _awsAmplify.I18n.get(title)
+                ),
+                _react2.default.createElement('input', {
+                    title: _awsAmplify.I18n.get(title),
+                    type: 'file', accept: accept,
+                    style: inputStyle,
+                    onChange: function onChange(e) {
+                        return _this2.handleInput(e);
+                    }
+                })
+            );
+        }
     }]);
 
     return Picker;
 }(_react.Component);
 
-exports['default'] = Picker;
+exports.default = Picker;

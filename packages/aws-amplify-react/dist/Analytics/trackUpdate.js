@@ -14,7 +14,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _awsAmplify = require('aws-amplify');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -48,23 +48,15 @@ function trackUpdate(Comp, trackerName) {
 
         _createClass(_class, [{
             key: 'componentDidUpdate',
-            value: function () {
-                function componentDidUpdate(prevProps, prevState) {
-                    var attributes = Object.assign({}, this.props, this.state);
-                    _awsAmplify.Analytics.record(this.trackerName, attributes);
-                }
-
-                return componentDidUpdate;
-            }()
+            value: function componentDidUpdate(prevProps, prevState) {
+                var attributes = Object.assign({}, this.props, this.state);
+                _awsAmplify.Analytics.record(this.trackerName, attributes);
+            }
         }, {
             key: 'render',
-            value: function () {
-                function render() {
-                    return _react2['default'].createElement(Comp, this.props);
-                }
-
-                return render;
-            }()
+            value: function render() {
+                return _react2.default.createElement(Comp, this.props);
+            }
         }]);
 
         return _class;

@@ -216,7 +216,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
 
     userPool.signUp('username', 'password', attributeList, null, function(err, result){
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         cognitoUser = result.user;
@@ -241,7 +241,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
     cognitoUser.confirmRegistration('123456', true, function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -253,7 +253,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
 ```javascript
     cognitoUser.resendConfirmationCode(function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -307,7 +307,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
         },
 
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         },
 
     });
@@ -322,7 +322,7 @@ Note also that if CognitoUser.authenticateUser throws ReferenceError: navigator 
 ```javascript
     cognitoUser.getUserAttributes(function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         for (i = 0; i < result.length; i++) {
@@ -341,7 +341,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         },
         inputVerificationCode: function() {
             var verificationCode = prompt('Please input verification code: ' ,'');
@@ -358,7 +358,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 
     cognitoUser.deleteAttributes(attributeList, function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -378,7 +378,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 
     cognitoUser.updateAttributes(attributeList, function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -390,7 +390,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 ```javascript
     cognitoUser.enableMFA(function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -402,7 +402,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 ```javascript
     cognitoUser.disableMFA(function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -414,7 +414,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 ```javascript
     cognitoUser.changePassword('oldPassword', 'newPassword', function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -430,7 +430,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 	          console.log('CodeDeliveryData from forgotPassword: ' + data);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         },
         //Optional automatic callback
         inputVerificationCode: function(data) {
@@ -456,7 +456,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 ```javascript
     cognitoUser.deleteUser(function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -508,7 +508,7 @@ In React Native, loading the persisted current user information requires an extr
     if (cognitoUser != null) {
         cognitoUser.getSession(function(err, session) {
             if (err) {
-                alert(err);
+                alert(err.message || JSON.stringify(err));
                 return;
             }
             console.log('session validity: ' + session.isValid());
@@ -577,7 +577,7 @@ In React Native, loading the persisted current user information requires an extr
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message);
         }
     });
 
@@ -592,7 +592,7 @@ In React Native, loading the persisted current user information requires an extr
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         }
     });
 ```
@@ -607,7 +607,7 @@ In React Native, loading the persisted current user information requires an extr
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         }
     });
 ```
@@ -621,7 +621,7 @@ In React Native, loading the persisted current user information requires an extr
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         }
     });
 ```
@@ -636,7 +636,7 @@ In React Native, loading the persisted current user information requires an extr
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         }
     });
 ```
@@ -678,7 +678,7 @@ In React Native, loading the persisted current user information requires an extr
 ```javascript
     cognitoUser.getMFAOptions(function(err, mfaOptions) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('MFA options for user ' + mfaOptions);
@@ -758,7 +758,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
             },
 
             onFailure: function(err) {
-                alert(err);
+                alert(err.message || JSON.stringify(err));
             },
 
             mfaSetup: function(challengeName, challengeParameters) {
@@ -796,7 +796,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
         };
         cognitoUser.setUserMfaPreference(smsMfaSettings, null, function(err, result) {
             if (err) {
-                alert(err);
+                alert(err.message || JSON.stringify(err));
             }
             console.log('call result ' + result)
         });
@@ -811,7 +811,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
         };
         cognitoUser.setUserMfaPreference(null, totpMfaSettings, function(err, result) {
             if (err) {
-                alert(err);
+                alert(err.message || JSON.stringify(err));
             }
             console.log('call result ' + result)
         });
@@ -842,7 +842,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
   ```js
 	    cognitoUser.getUserData(function(err, userData) {
 	        if (err) {
-	            alert(err);
+	            alert(err.message || JSON.stringify(err));
 	            return;
 	        }
 	        console.log('User data for user ' + userData);

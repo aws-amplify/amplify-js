@@ -33,6 +33,7 @@ export interface AuthOptions {
     mandatorySignIn: boolean
     cookieStorage?: ICookieStorageData,
     storage?: ICognitoStorage
+    oauth?: OAuth
 }
 
 /**
@@ -51,4 +52,13 @@ export interface FederatedResponse {
     token: string,
     // the universal time when token expired
     expires_at: number
+}
+
+export interface OAuth {
+    domain : string,
+	scope : Array<string>,
+	redirectSignIn : string,
+	redirectSignOut : string,
+    responseType: string,
+    options?: object
 }
