@@ -1,4 +1,4 @@
-import 'regenerator-runtime/runtime';
+import regeneratorRuntime from 'regenerator-runtime/runtime';
 import React, { Component } from 'react';
 import { parse } from 'graphql/language/parser';
 
