@@ -40,9 +40,9 @@ exports.Constants = {
 };
 var logger = new Logger_1.ConsoleLogger('Common');
 if (Facet_1.AWS['util']) {
-    Facet_1.AWS['util'].userAgent = function () {
-        return exports.Constants.userAgent;
-    };
+    // AWS['util'].userAgent = () => {
+    //     return Constants.userAgent;
+    // };
 }
 else if (Facet_1.AWS.config) {
     Facet_1.AWS.config.update({ 'customUserAgent': exports.Constants.userAgent });

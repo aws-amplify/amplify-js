@@ -4,7 +4,11 @@ const CompressionPlugin = require("compression-webpack-plugin")
 module.exports = {
     entry: {
         'aws-amplify': './src/index.ts',
-        'aws-amplify.min': './src/index.ts'
+        'aws-amplify.min': './src/index.ts',
+        'aws-amplify-auth': './src/Auth/index.ts',
+        'aws-amplify-auth.min': './src/Auth/index.ts',
+        'aws-amplify-analytics': './src/Analytics/index.ts',
+        'aws-amplify-analytics.min': './src/Analytics/index.ts'
     },
     output: {
         filename: '[name].js',
