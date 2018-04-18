@@ -228,63 +228,6 @@ Storage.list('photos/', {level: 'private'})
 For the complete API documentation for Storage module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/storageclass.html)
 {: .callout .callout--info}
 
-## Customized Path Prefix
-
-You can customize the path prefix by:
-```js
-const customPrefix: {
-    public: 'myPublicPrefix/',
-    protected: 'myProtectedPrefix/',
-    private: 'myPrivatePrefix/'
-};
-
-Storage.put('test.txt', 'Hello', {
-    customPrefix: customPrefix,
-    // ...
-})
-.then (result => console.log(result))
-.catch(err => console.log(err));
-```
-
-Also you need to setup your corresponding IAM role and your bucket permissions manually to make it work.
-For exmaple, if you want to enable read, write and delete operation for all the objects under path ```myPublicPrefix/```, you need to declare it in your IAM policy:
-```xml
-"Statement": [
-    {
-        "Effect": "Allow",
-        "Action": [
-            "s3:GetObject",
-            "s3:PutObject",
-            "s3:DeleteObject"
-        ],
-        "Resource": [
-            "arn:aws:s3:::your-s3-bucket/myPublicPrefix/*",
-        ]
-    }
-]
-```
-
-Or if you want to have customized private path prefix like ```myPrivatePrefix/```, you need to add it into your IAM policy like:
-```xml
-"Statement": [
-    {
-        "Effect": "Allow",
-        "Action": [
-            "s3:GetObject",
-            "s3:PutObject",
-            "s3:DeleteObject"
-        ],
-        "Resource": [
-            "arn:aws:s3:::your-s3-bucket/myPublicPrefix/*",
-            "arn:aws:s3:::your-s3-bucket/myPrivatePrefix/${cognito-identity.amazonaws.com:sub}/*"
-        ]
-    }
-]
-```
-This ensures only the authenticated user has the access into the objects under the path.
-
-
-
 ## Tracking Events
 
 You can enable automatic tracking of storage events such as uploads and downloads, by setting `{ track: true }` when calling the Storage API. 
@@ -481,3 +424,59 @@ return <S3Album track />
 
 Enabling tracking will automatically send 'Storage' events to Amazon Pinpoint, and you will be able to see the results in AWS Pinpoint console under *Custom Events*. The event name will be *Storage*, and event details will be displayed in *attributes* , e.g. Storage -> Method -> Put.
 
+## Customization 
+
+### Customize Upload Path 
+
+You can customize your upload path by defining prefixes:
+
+```js
+const customPrefix: {
+    public: 'myPublicPrefix/',
+    protected: 'myProtectedPrefix/',
+    private: 'myPrivatePrefix/'
+};
+
+Storage.put('test.txt', 'Hello', {
+    customPrefix: customPrefix,
+    // ...
+})
+.then (result => console.log(result))
+.catch(err => console.log(err));
+```
+
+For example, if you want to enable read, write and delete operation for all the objects under path *myPublicPrefix/*,  declare it in your IAM policy:
+
+```xml
+"Statement": [
+    {
+        "Effect": "Allow",
+        "Action": [
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:DeleteObject"
+        ],
+        "Resource": [
+            "arn:aws:s3:::your-s3-bucket/myPublicPrefix/*",
+        ]
+    }
+]
+```
+
+If you want to have custom *private* path prefix like *myPrivatePrefix/*, you need to add it into your IAM policy:
+```xml
+"Statement": [
+    {
+        "Effect": "Allow",
+        "Action": [
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:DeleteObject"
+        ],
+        "Resource": [
+            "arn:aws:s3:::your-s3-bucket/myPrivatePrefix/${cognito-identity.amazonaws.com:sub}/*"
+        ]
+    }
+]
+```
+This ensures only the authenticated users has the access to the objects under the path.
