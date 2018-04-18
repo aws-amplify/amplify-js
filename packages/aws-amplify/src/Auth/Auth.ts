@@ -274,16 +274,18 @@ export default class AuthClass {
         const that = this;
         return new Promise((resolve, reject) => {
             user.authenticateUser(authDetails, {
-                onSuccess: (session) => {
+                onSuccess: async (session) => {
                     logger.debug(session);
-                    that._setCredentialsFromSession(session).then((cred) => {
+                    try {
+                        const cred = await that._setCredentialsFromSession(session);
+                        logger.debug('succeed to get cognito credentials', cred);
+                    } catch (e) {
+                        logger.debug('cannot get cognito credentials', e);
+                    } finally {
                         that.user = user;
                         dispatchAuthEvent('signIn', user);
                         resolve(user);
-                    }).catch(e => {
-                        logger.debug('cannot get cognito credentials');
-                        reject('signin failed');
-                    });
+                    }
                 },
                 onFailure: (err) => {
                     logger.debug('signIn failure', err);
@@ -512,16 +514,18 @@ export default class AuthClass {
         return new Promise((resolve, reject) => {
             user.sendMFACode(
                 code, {
-                    onSuccess: (session) => {
+                    onSuccess: async (session) => {
                         logger.debug(session);
-                        that._setCredentialsFromSession(session).then((cred) => {
+                        try {
+                            const cred = await that._setCredentialsFromSession(session);
+                            logger.debug('succeed to get cognito credentials', cred);
+                        } catch (e) {
+                            logger.debug('cannot get cognito credentials', e);
+                        } finally {
                             that.user = user;
                             dispatchAuthEvent('signIn', user);
                             resolve(user);
-                        }).catch(e => {
-                            logger.debug('cannot get cognito credentials');
-                            reject('signin failed');
-                        });
+                        }
                     },
                     onFailure: (err) => {
                         logger.debug('confirm signIn failure', err);
@@ -542,16 +546,18 @@ export default class AuthClass {
         const that = this;
         return new Promise((resolve, reject) => {
             user.completeNewPasswordChallenge(password, requiredAttributes, {
-                onSuccess: (session) => {
+                onSuccess: async (session) => {
                     logger.debug(session);
-                    that._setCredentialsFromSession(session).then((cred) => {
+                    try {
+                        const cred = await that._setCredentialsFromSession(session);
+                        logger.debug('succeed to get cognito credentials', cred);
+                    } catch (e) {
+                        logger.debug('cannot get cognito credentials', e);
+                    } finally {
                         that.user = user;
                         dispatchAuthEvent('signIn', user);
                         resolve(user);
-                    }).catch(e => {
-                        logger.debug('cannot get cognito credentials');
-                        reject('signin failed');
-                    });
+                    }
                 },
                 onFailure: (err) => {
                     logger.debug('completeNewPassword failure', err);
