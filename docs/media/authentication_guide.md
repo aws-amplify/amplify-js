@@ -358,7 +358,7 @@ There is also `withGoogle`, `withFacebook`, `withAmazon` components, in case you
 
 Amazon Cognito provides a customizable user experience via the hosted UI. The hosted UI supports OAuth 2.0 and Federated Identities with Facebook, Amazon, Google, and SAML providers.
 
-Note: Amazon Cognito hosted UI feature is supported with *aws-amplify@^0.2.15* and *aws-amplify-react@^0.1.39* versions.
+Note: Amazon Cognito hosted UI feature has not been published to npm yet.
 {: .callout .callout--info}
 
 #### Setup your Cognito App Client
