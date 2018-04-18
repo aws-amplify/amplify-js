@@ -36,8 +36,8 @@ restClient.get('...')
 */
 export class RestClient {
     private _options;
-    private _region:string = 'us-east-1'; // this will be updated by config
-    private _service:string = 'execute-api'; // this can be updated by config
+    private _region: string = 'us-east-1'; // this will be updated by config
+    private _service: string = 'execute-api'; // this can be updated by config
 
     /**
     * @param {RestClientOptions} [options] - Instance options
@@ -80,24 +80,35 @@ export class RestClient {
         let libraryHeaders = {};
 
         if (Platform.isReactNative) {
-        const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
+            const userAgent = Platform.userAgent || 'aws-amplify/0.1.x';
             libraryHeaders = {
                 'User-Agent': userAgent
             };
         }
 
         const extraParams = Object.assign({}, init);
-        const isAllResponse = init? init.response : null;
+        const isAllResponse = init ? init.response : null;
         if (extraParams.body) {
             libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
             params.data = JSON.stringify(extraParams.body);
         }
 
+        params['signerServiceInfo'] = extraParams.signerServiceInfo;
+
         params.headers = { ...libraryHeaders, ...extraParams.headers };
 
         // Do not sign the request if client has added 'Authorization' header,
         // which means custom authorizer.
-        if (params.headers['Authorization']) { return this._request(params, isAllResponse); }
+        if (typeof params.headers['Authorization'] !== 'undefined') {
+            params.headers = Object.keys(params.headers).reduce((acc, k) => {
+                if (params.headers[k]) {
+                    acc[k] = params.headers[k];
+                }
+                return acc;
+                // tslint:disable-next-line:align
+            }, {});
+            return this._request(params);
+        }
 
         return Auth.currentCredentials()
             .then(credentials => this._signed(params, credentials, isAllResponse));
@@ -190,18 +201,27 @@ export class RestClient {
     /** private methods **/
 
     private _signed(params, credentials, isAllResponse) {
-        const endpoint_region:string = this._region || this._options.region;
-        const endpoint_service:string = this._service || this._options.service;
+
+        const { signerServiceInfo: signerServiceInfoParams, ...otherParams } = params;
+
+        const endpoint_region: string = this._region || this._options.region;
+        const endpoint_service: string = this._service || this._options.service;
+
         const creds = {
-            'secret_key': credentials.secretAccessKey,
-            'access_key': credentials.accessKeyId,
-            'session_token': credentials.sessionToken 
+            secret_key: credentials.secretAccessKey,
+            access_key: credentials.accessKeyId,
+            session_token: credentials.sessionToken,
         };
-        const service_info = {
-            'service': endpoint_service,
-            'region': endpoint_region
+
+        const endpointInfo = {
+            region: endpoint_region,
+            service: endpoint_service,
         };
-        const signed_params = Signer.sign(params,creds,service_info);
+
+        const signerServiceInfo = Object.assign(endpointInfo, signerServiceInfoParams);
+
+        const signed_params = Signer.sign(otherParams, creds, signerServiceInfo);
+
         if (signed_params.data) {
             signed_params.body = signed_params.data;
         }
@@ -211,16 +231,16 @@ export class RestClient {
         delete signed_params.headers['host'];
 
         return axios(signed_params)
-            .then(response => isAllResponse? response : response.data)
+            .then(response => isAllResponse ? response : response.data)
             .catch((error) => {
                 logger.debug(error);
                 throw error;
             });
     }
 
-    private _request(params, isAllResponse) {
+    private _request(params, isAllResponse = false) {
         return axios(params)
-            .then(response => isAllResponse? response : response.data)
+            .then(response => isAllResponse ? response : response.data)
             .catch((error) => {
                 logger.debug(error);
                 throw error;
