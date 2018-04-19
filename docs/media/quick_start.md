@@ -15,6 +15,7 @@ AWS Amplify can be used with any JavaScript front-end library. In addition, for 
 <ul class="tabs">
     <li class="tab-link current react" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
+    <li class="tab-link angular" data-tab="angular">Angular</li>
 </ul>
 <div id="react" class="tab-content current">
 If you have an existing React application you can skip this section. Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
@@ -48,6 +49,15 @@ Then run your app:
 $ react-native run-ios  # or run-android
 ```
 </div>
+<div id="angular" class="tab-content">
+If you have an existing Angular application you can skip this section. Otherwise, you can use the [angular-cli](https://github.com/angular/angular-cli) to bootstrap a new angular app:
+
+```bash
+$ npm install -g @angular/cli
+$ ng new myAmplifyProject
+$ cd myAmplifyProject
+```
+</div>
 </div>
 
 ## Install AWS Amplify 
@@ -57,27 +67,28 @@ AWS Amplify is available as an npm package. Run the following commands at the ro
 <ul class="tabs">
     <li class="tab-link react current" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
+    <li class="tab-link angular" data-tab="angular">Angular</li>
 </ul>
 <div id="react" class="tab-content current">
 
 ```bash
-npm install aws-amplify
+$ npm install --save aws-amplify
 ```
 
 On a React app, in addition to `aws-amplify`, we provide helpers and higher order components that are packaged in `aws-amplify-react`.
 
 ```bash
-npm install aws-amplify-react #optional
+$ npm install --save aws-amplify-react # optional HOCs
 ```
 </div>
 <div id="react-native" class="tab-content">
 ```bash
-npm install aws-amplify
+$ npm install --save aws-amplify
 ```
 For React Native, in addition to `aws-amplify`, we provide React Native specific components in `aws-amplify-react-native` package.
 
 ```bash
-npm install aws-amplify-react-native
+$ npm install --save aws-amplify-react-native
 ```
 
 ### Linking native libraries for React Native
@@ -99,6 +110,19 @@ $ react-native link amazon-cognito-identity-js
 ```
 
 
+</div>
+<div id="angular" class="tab-content">
+```bash
+$ npm install --save aws-amplify
+```
+
+In addition to `aws-amplify` core, you can install our angular module which provides a service provider, helpers and components:
+
+```bash
+$ npm install --save aws-amplify-angular
+``` 
+
+See the [angular guide](https://aws.github.io/aws-amplify/media/angular_guide) for details and usage.
 </div>
 </div>
 
