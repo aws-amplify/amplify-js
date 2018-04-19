@@ -12,39 +12,32 @@
  */
 
 import { AuthOptions, FederatedResponse } from './types';
-
+import * as AWS from 'aws-sdk/global';
 import {
-    AWS,
-    Cognito,
-    CognitoHostedUI,
-    ConsoleLogger as Logger,
-    Constants,
-    Hub,
-    FacebookOAuth,
-    GoogleOAuth,
-    JS,
-    Parser
-} from '../Common';
-import Platform from '../Common/Platform';
-import Cache from '../Cache';
-import { ICognitoUserPoolData, ICognitoUserData } from 'amazon-cognito-identity-js';
-
-const logger = new Logger('AuthClass');
-
-const {
-    CognitoIdentityCredentials,
-    Credentials
-} = AWS;
-
-const { CognitoAuth } = CognitoHostedUI;
-
-const {
     CookieStorage,
     CognitoUserPool,
     CognitoUserAttribute,
     CognitoUser,
     AuthenticationDetails,
-} = Cognito;
+    ICognitoUserPoolData,
+    ICognitoUserData
+} from 'amazon-cognito-identity-js';
+import { CognitoAuth } from 'amazon-cognito-auth-js';
+import { 
+    Platform, 
+    Parser, 
+    JS, 
+    FacebookOAuth, 
+    GoogleOAuth, 
+    Hub, 
+    Constants,
+    ConsoleLogger as Logger, 
+}  from '@aws-amplify/common';
+import Cache from '@aws-amplify/cache';
+
+const { CognitoIdentityCredentials, Credentials } = AWS;
+
+const logger = new Logger('AuthClass');
 
 const dispatchAuthEvent = (event, data) => {
     Hub.dispatch('auth', { event, data }, 'Auth');
@@ -1268,7 +1261,7 @@ export default class AuthClass {
         return this.currentUserCredentials();
     }
 
-    private createCognitoUser(username: string): Cognito.CognitoUser {
+    private createCognitoUser(username: string): CognitoUser {
         const userData: ICognitoUserData = {
             Username: username,
             Pool: this.userPool,
