@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.MapEntries = undefined;
-exports['default'] = AmplifyMessageMap;
+exports.default = AmplifyMessageMap;
 
 var _awsAmplify = require('aws-amplify');
 

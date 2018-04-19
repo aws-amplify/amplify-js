@@ -20,7 +20,7 @@ var _Picker = require('./Picker');
 
 var _Picker2 = _interopRequireDefault(_Picker);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65,78 +65,70 @@ var TextPicker = function (_Component) {
 
     _createClass(TextPicker, [{
         key: 'handlePick',
-        value: function () {
-            function handlePick(data) {
-                var that = this;
-                var file = data.file,
-                    name = data.name,
-                    size = data.size,
-                    type = data.type;
-                var _props = this.props,
-                    preview = _props.preview,
-                    onPick = _props.onPick,
-                    onLoad = _props.onLoad;
+        value: function handlePick(data) {
+            var that = this;
+            var file = data.file,
+                name = data.name,
+                size = data.size,
+                type = data.type;
+            var _props = this.props,
+                preview = _props.preview,
+                onPick = _props.onPick,
+                onLoad = _props.onLoad;
 
 
-                if (onPick) {
-                    onPick(data);
-                }
-
-                if (preview) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        var text = e.target.result;
-                        that.setState({ previewText: text });
-                        if (onLoad) {
-                            onLoad(text);
-                        }
-                    };
-                    reader.readAsText(file);
-                }
+            if (onPick) {
+                onPick(data);
             }
 
-            return handlePick;
-        }()
+            if (preview) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var text = e.target.result;
+                    that.setState({ previewText: text });
+                    if (onLoad) {
+                        onLoad(text);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                var preview = this.props.preview;
-                var previewText = this.state.previewText;
+        value: function render() {
+            var preview = this.props.preview;
+            var previewText = this.state.previewText;
 
 
-                var title = this.props.title || 'Pick a File';
+            var title = this.props.title || 'Pick a File';
 
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                var containerStyle = Object.assign({}, Container, theme.picker);
-                var previewStyle = Object.assign({}, PickerPreview, theme.pickerPreview, theme.halfHeight, preview && preview !== 'hidden' ? {} : _AmplifyTheme2['default'].hidden);
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            var containerStyle = Object.assign({}, Container, theme.picker);
+            var previewStyle = Object.assign({}, PickerPreview, theme.pickerPreview, theme.halfHeight, preview && preview !== 'hidden' ? {} : _AmplifyTheme2.default.hidden);
 
-                return _react2['default'].createElement(
+            return _react2.default.createElement(
+                'div',
+                { style: containerStyle },
+                previewText ? _react2.default.createElement(
                     'div',
-                    { style: containerStyle },
-                    previewText ? _react2['default'].createElement(
-                        'div',
-                        { style: previewStyle },
-                        _react2['default'].createElement(
-                            'pre',
-                            { style: theme.pre },
-                            previewText
-                        )
-                    ) : null,
-                    _react2['default'].createElement(_Picker2['default'], {
-                        title: title,
-                        accept: 'text/*',
-                        theme: theme,
-                        onPick: this.handlePick
-                    })
-                );
-            }
-
-            return render;
-        }()
+                    { style: previewStyle },
+                    _react2.default.createElement(
+                        'pre',
+                        { style: theme.pre },
+                        previewText
+                    )
+                ) : null,
+                _react2.default.createElement(_Picker2.default, {
+                    title: title,
+                    accept: 'text/*',
+                    theme: theme,
+                    onPick: this.handlePick
+                })
+            );
+        }
     }]);
 
     return TextPicker;
 }(_react.Component);
 
-exports['default'] = TextPicker;
+exports.default = TextPicker;

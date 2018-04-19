@@ -1,3 +1,10 @@
+/// <reference types="zen-observable" />
+import * as Observable from 'zen-observable';
+import { GraphQLOptions, GraphQLResult } from './types';
+export declare const graphqlOperation: (query: any, variables?: {}) => {
+    query: any;
+    variables: {};
+};
 /**
  * Export Cloud Logic APIs
  */
@@ -77,8 +84,18 @@ export default class APIClass {
     * @return {string} - The endpoint of the api
     */
     endpoint(apiName: any): Promise<any>;
+    private _headerBasedAuth();
+    /**
+     * Executes a GraphQL operation
+     *
+     * @param {GraphQLOptions} GraphQL Options
+     * @returns {Promise<GraphQLResult> | Observable<object>}
+     */
+    graphql({query, variables}: GraphQLOptions): Promise<GraphQLResult> | Observable<object>;
+    private _graphql({query: queryStr, variables});
+    private _graphqlSubscribe({query, variables});
     /**
      * @private
      */
-    _ensureCredentials(): Promise<boolean>;
+    _ensureCredentials(): Promise<any>;
 }
