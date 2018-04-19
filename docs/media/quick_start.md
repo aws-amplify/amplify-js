@@ -348,6 +348,40 @@ Reload your application on the physical device or emulator/simulator:
 <img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/react_native_with_authenticator.png" width="100%"/>
 
 </div>
+<div id="angular" class="tab-content">
+
+For enabling authentication in your Angular app, you can use the service provider Auth API directly or the built in component. Once you've configured the module, you can include the `amplify-authenticator` anywhere in your app:
+
+```js
+
+    // app.component.html
+    <amplify-authenticator></amplify-authenticator>
+
+```
+
+Within your controller, you can listen for authentication state changes using the service provider:
+
+```js
+
+    // app.component.ts
+    import { AmplifyService }  from 'aws-amplify-angular';
+    ...
+    constructor( public amplify:AmplifyService ) {
+        this.amplify = amplify;
+        this.amplify.authStateChange$
+          .subscribe(authState => {
+            this.authenticated = authState.state === 'signedIn';
+            if (!authState.user) {
+              this.user = null;
+            } else {
+              this.user = authState.user;
+            }
+          });
+    }
+    
+```
+
+</div>
 </div>
 
 For more information about Authentication Category, see [AWS Amplify Authentication Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide)
