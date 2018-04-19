@@ -922,30 +922,30 @@ export default class AuthClass {
             logger.debug('failed to clear cached items');
         }
 
-        const source = this.credentials_source;
-        if (source === 'aws' || source === 'userPool') {
-            if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (this.userPool) { 
             const user = this.userPool.getCurrentUser();
-            if (!user) { return Promise.resolve(); }
-            logger.debug('user sign out', user);
-            user.signOut();
-            if (this._cognitoAuthClient) {
-                this._cognitoAuthClient.signOut();
+            if (user) {
+                logger.debug('user sign out', user);
+                user.signOut();
+                if (this._cognitoAuthClient) {
+                    this._cognitoAuthClient.signOut();
+                }
             }
+        } else {
+            logger.debug('no Congito User pool');
         }
-
+        
         const that = this;
-        return new Promise((resolve, reject) => {
-            that._setCredentialsForGuest().then((cred) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await that._setCredentialsForGuest();
+            } catch (e) {
+                logger.debug('cannot load guest credentials for unauthenticated user', e);
+            } finally {
                 dispatchAuthEvent('signOut', that.user);
                 that.user = null;
                 resolve();
-            }).catch((e) => {
-                logger.debug('cannot load guest credentials for unauthenticated user');
-                dispatchAuthEvent('signOut', that.user);
-                that.user = null;
-                resolve();
-            });
+            }
         });
     }
 
