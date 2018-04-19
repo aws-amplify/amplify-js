@@ -11,6 +11,24 @@ With AWS IoT, AWS Amplify PubSub module automatically signs your HTTP requests w
 
 ## Installation and Configuration
 
+### AWS IoT
+
+AwsIOTProvider is capable of signing request according to [Signature Version 4](https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
+
+```js
+import { PubSub } from 'aws-amplify';
+import { AWSIoTProvider } from 'aws-amplify/lib/PubSub/Providers';
+```
+
+```js
+// Apply plugin with configuration
+Amplify.addPluggable(new AWSIoTProvider({
+     aws_pubsub_region: '<YOUR-AWS-REGION>',
+     aws_pubsub_endpoint: 'wss://xxxxxxxxxxxxx.iot.<YOUR-AWS-REGION>.amazonaws.com/mqtt',
+   }));
+```
+
+### Third Party Providers
 Import PubSub module and related service provider plugin to your app:
 ```js
 import { PubSub } from 'aws-amplify';
