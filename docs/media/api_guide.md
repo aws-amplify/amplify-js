@@ -114,6 +114,9 @@ The following code sample assumes you have used Automated Setup.
 
 To invoke an endpoint, you need to set `apiName`, `path` and `headers` parameters, and each method returns a Promise.
 
+Under the hood, aws-amplify use [Axios](https://github.com/axios/axios), so the API status code response > 299 are thrown as an exception.
+If you need to handle errors managed by your API, work with the `error.response` object.
+
 #### **GET**
 
 ```js
@@ -125,6 +128,8 @@ let myInit = { // OPTIONAL
 }
 API.get(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -158,6 +163,8 @@ let myInit = {
 
 API.post(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -189,6 +196,8 @@ let myInit = {
 
 API.put(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -219,6 +228,8 @@ let myInit = { // OPTIONAL
 
 API.del(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -486,7 +497,7 @@ const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId
 }`;
 
 // Subscribe with eventId 123
-const subscription = API.graphqlSubscribe(
+const subscription = API.graphql(
     graphqlOperation(SubscribeToEventComments, { eventId: '123' })
 ).subscribe({
     next: (eventData) => console.log(eventData)
