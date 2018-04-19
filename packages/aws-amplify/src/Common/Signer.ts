@@ -71,6 +71,39 @@ const signed_headers = function(headers) {
 
 /**
 * @private
+* Create canonical query strings sorted by key name.
+*
+<pre>
+CanonicalQueryStrings =
+    CanonicalQueryStringA + & + CanonicalQueryStringB + & ... + CanonicalQueryStringN
+</pre>
+*/
+const canonical_querystrings = function(qs) {
+    const result = [];
+    if (!qs) {
+        return result;
+    }
+    
+    const keys = Object.keys(qs).sort();
+    for (let i = 0; i < keys.length; i++) {
+        result.push(fixed_encodeURIComponent(keys[i]) + '=' + fixed_encodeURIComponent(qs[keys[i]]));
+    }
+
+    return result.join('&');
+};
+
+/**
+* fixed_encodeURIComponent URI encodes according to RFC3986.
+* @private
+*/
+const fixed_encodeURIComponent = function(str) {
+    return encodeURIComponent(str).replace(/[!'()*]/g, (c) => {
+        return '%' + c.charCodeAt(0).toString(16);
+    });
+};
+
+/**
+* @private
 * Create canonical request
 * Refer to 
 * {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html|Create a Canonical Request}
@@ -90,11 +123,11 @@ const canonical_request = function(request) {
     const sorted_query = url_info.query
         ? url_info.query.split('&').sort((a, b) => a < b ? -1 : 1).join('&')
         : '';
-
+  
     return [
         request.method || '/',
         url_info.pathname,
-        sorted_query,
+        canonical_querystrings(request.params),
         canonical_headers(request.headers),
         signed_headers(request.headers),
         hash(request.data)

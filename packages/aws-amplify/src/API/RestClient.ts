@@ -70,10 +70,11 @@ export class RestClient {
 
         const params = {
             method,
-            url,
+            url: parsed_url.url,
             host: parsed_url.host,
             path: parsed_url.path,
             headers: {},
+            params: {},
             data: null
         };
 
@@ -96,6 +97,9 @@ export class RestClient {
         params['signerServiceInfo'] = extraParams.signerServiceInfo;
 
         params.headers = { ...libraryHeaders, ...extraParams.headers };
+
+        // Axios name for queryStringParameters is params. But queryStringParameters should be used in the init obj.
+        params.params = { ...extraParams.queryStringParameters, ...parsed_url.queryStringParameters };
 
         // Do not sign the request if client has added 'Authorization' header,
         // which means custom authorizer.
@@ -248,11 +252,32 @@ export class RestClient {
     }
 
     private _parseUrl(url) {
-        const parts = url.split('/');
+        const parts = url.split('?');
+        const url_parts = parts[0].split('/');
+        const qs = this._parseQueryStrings(parts);
 
         return {
-            host: parts[2],
-            path: '/' + parts.slice(3).join('/')
+            url: parts[0],
+            host: url_parts[2],
+            path: '/' + url_parts.slice(3).join('/'),
+            queryStringParameters: qs
         };
+    }
+
+    private _parseQueryStrings(parts) {
+        const result = {};
+        if (parts.length < 2) {
+            return result;
+        }
+
+        const qs_parts = parts.splice(1).join('').split('&');
+        for (let i = 0; i < qs_parts.length; i++) {
+            const key_value = qs_parts[i].split('=');
+            if (key_value.length > 1) {
+                result[key_value[0]] = key_value.splice(1).join('');
+            }
+        }
+
+        return result;
     }
 }
