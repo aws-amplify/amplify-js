@@ -46,6 +46,15 @@ describe('forgotPassword', () => {
             }
         });
 
+        test('hidden if hide include ForgotPassword', () => {
+            const wrapper = shallow(<ForgotPassword/>);
+            wrapper.setProps({
+                authState: acceptedStates[0],
+                hide: [ForgotPassword]
+            });
+            expect(wrapper).toMatchSnapshot();
+        });
+
         test('simulating clicking submit', async () => {
             const spyon = jest.spyOn(Auth, 'forgotPasswordSubmit')
                 .mockImplementationOnce(() => {
