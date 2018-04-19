@@ -311,6 +311,7 @@ AWS Amplify provides out-of-the-box user authentication experience with `withAut
 <ul class="tabs">
     <li class="tab-link react current" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
+    <li class="tab-link angular" data-tab="angular">Angular</li>
 </ul>
 <div id="react" class="tab-content current">
 
