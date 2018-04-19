@@ -1,7 +1,7 @@
 {
-  "name": "aws-amplify",
-  "version": "0.3.0",
-  "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
+  "name": "@aws-amplify/common",
+  "version": "0.0.1",
+  "description": "Common category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -11,13 +11,9 @@
     "build": "npm run clean && tsc && webpack",
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
-    "lint": "tslint 'src/**/*.ts'",
-    "rollup": "rollup -c",
-    "generate-docs-local": "typedoc --out docs src",
-    "generate-docs-root": "typedoc --out ../../docs src"
+    "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {
-    "./lib/Cache": "./lib/Cache/reactnative.js",
     "./lib/Common/ClientDevice": "./lib/Common/ClientDevice/reactnative.js",
     "./lib/Common/RNComponents": "./lib/Common/RNComponents/reactnative.js"
   },
@@ -32,11 +28,8 @@
   },
   "homepage": "https://github.com/aws/aws-amplify#readme",
   "devDependencies": {
-    "@types/graphql": "^0.13.0",
     "@types/jest": "^20.0.8",
     "@types/node": "^8.0.24",
-    "@types/paho-mqtt": "^1.0.3",
-    "@types/zen-observable": "^0.5.3",
     "awesome-typescript-loader": "^3.2.2",
     "babel-loader": "^7.1.2",
     "babel-preset-es2015": "^6.24.1",
@@ -46,34 +39,19 @@
     "find": "^0.2.7",
     "jest": "^22.x",
     "json-loader": "^0.5.7",
-    "prepend-file": "^1.3.1",
     "prettier": "^1.7.4",
     "rimraf": "^2.6.2",
-    "rollup-plugin-commonjs": "^9.1.0",
-    "rollup-plugin-json": "^2.3.0",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-typescript": "^0.8.1",
-    "rollup-plugin-typescript2": "^0.13.0",
     "source-map-loader": "^0.2.1",
     "ts-jest": "^22.0.0",
     "tslint": "^5.7.0",
     "tslint-config-airbnb": "^5.3.0",
-    "typedoc-dep-update": "^0.9.0",
     "typescript": "2.6.2",
     "typescript-formatter": "^6.0.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "amazon-cognito-auth-js": "^1.1.9",
-    "amazon-cognito-identity-js": "^2.0.0",
-    "axios": "^0.17.0",
-    "graphql": "^0.13.1",
-    "paho-mqtt": "^1.0.4",
-    "rollup": "^0.57.1",
-    "uuid": "^3.2.1",
-    "aws-sdk": "2.198.0",
-    "zen-observable": "^0.8.6"
+    "aws-sdk": "2.198.0"
   },
   "jest": {
     "transform": {
@@ -86,10 +64,6 @@
       "js",
       "json",
       "jsx"
-    ],
-    "setupFiles": [
-      "./__mocks__/SessionStorage.js",
-      "./__mocks__/LocalStorage.js"
     ],
     "testEnvironment": "jsdom",
     "mapCoverage": true,

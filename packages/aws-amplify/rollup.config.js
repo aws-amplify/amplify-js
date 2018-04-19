@@ -17,10 +17,10 @@ export default {
         //     file: 'dist/aws-amplify.cjs.js',
         //     format: 'cjs'
         // },
-        // {
-        //     file: 'dist/aws-amplify.es.js',
-        //     format: 'es'
-        // },
+        {
+            file: 'dist/aws-amplify.es.js',
+            format: 'es'
+        },
         // {
         //     file: 'dist/aws-amplify.iife.js',
         //     format: 'iife',
@@ -54,8 +54,7 @@ export default {
             // exclude: ['../../node_modules/graphql/index.mjs'],
             extensions: ['.js', '.json'],
             namedExports: { 
-                'uuid': ['v1', 'v4'], 
-                'aws-sdk': ['util'],
+                'uuid': ['v1', 'v4'],
                 '../../node_modules/graphql/error/index.js': ['GraphQLError', 'formatError', 'printError'],
                 'paho-mqtt': ['Client', 'Message'],
                 '../../node_modules/graphql/type/index.js': [
