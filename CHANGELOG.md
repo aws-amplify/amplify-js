@@ -2,9 +2,14 @@
 <!--LATEST=0.2.8-->
 <!--ENTRYINSERT-->
 
+
 upcoming changes
 * aws-amplify
     * remove unused variable #670
+
+* amazon-cognito-identity-js
+    * Add declartion for SetUserMFAPreference #667
+
 
 ##04/12/2018
 * aws-amplify - v0.3.0
