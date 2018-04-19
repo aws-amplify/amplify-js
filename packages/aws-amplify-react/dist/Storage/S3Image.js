@@ -22,7 +22,7 @@ var _Widget = require('../Widget');
 
 var _Common = require('./Common');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64,226 +64,186 @@ var S3Image = function (_Component) {
 
     _createClass(S3Image, [{
         key: 'getImageSource',
-        value: function () {
-            function getImageSource(key, level, track) {
-                var _this2 = this;
+        value: function getImageSource(key, level, track) {
+            var _this2 = this;
 
-                _awsAmplify.Storage.get(key, { level: level ? level : 'public', track: track }).then(function (url) {
-                    _this2.setState({
-                        src: url
-                    });
-                })['catch'](function (err) {
-                    return logger.debug(err);
+            _awsAmplify.Storage.get(key, { level: level ? level : 'public', track: track }).then(function (url) {
+                _this2.setState({
+                    src: url
                 });
-            }
-
-            return getImageSource;
-        }()
+            }).catch(function (err) {
+                return logger.debug(err);
+            });
+        }
     }, {
         key: 'load',
-        value: function () {
-            function load() {
-                var _props = this.props,
-                    imgKey = _props.imgKey,
-                    path = _props.path,
-                    body = _props.body,
-                    contentType = _props.contentType,
-                    level = _props.level,
-                    track = _props.track;
+        value: function load() {
+            var _props = this.props,
+                imgKey = _props.imgKey,
+                path = _props.path,
+                body = _props.body,
+                contentType = _props.contentType,
+                level = _props.level,
+                track = _props.track;
 
-                if (!imgKey && !path) {
-                    logger.debug('empty imgKey and path');
-                    return;
-                }
-
-                var that = this;
-                var key = imgKey || path;
-                logger.debug('loading ' + key + '...');
-                if (body) {
-                    var type = contentType || 'binary/octet-stream';
-                    var ret = _awsAmplify.Storage.put(key, body, {
-                        contentType: type,
-                        level: level ? level : 'public',
-                        track: track
-                    });
-                    ret.then(function (data) {
-                        logger.debug(data);
-                        that.getImageSource(key, level, track);
-                    })['catch'](function (err) {
-                        return logger.debug(err);
-                    });
-                } else {
-                    that.getImageSource(key, level, track);
-                }
+            if (!imgKey && !path) {
+                logger.debug('empty imgKey and path');
+                return;
             }
 
-            return load;
-        }()
+            var that = this;
+            var key = imgKey || path;
+            logger.debug('loading ' + key + '...');
+            if (body) {
+                var type = contentType || 'binary/octet-stream';
+                var ret = _awsAmplify.Storage.put(key, body, {
+                    contentType: type,
+                    level: level ? level : 'public',
+                    track: track
+                });
+                ret.then(function (data) {
+                    logger.debug(data);
+                    that.getImageSource(key, level, track);
+                }).catch(function (err) {
+                    return logger.debug(err);
+                });
+            } else {
+                that.getImageSource(key, level, track);
+            }
+        }
     }, {
         key: 'handleOnLoad',
-        value: function () {
-            function handleOnLoad(evt) {
-                var onLoad = this.props.onLoad;
+        value: function handleOnLoad(evt) {
+            var onLoad = this.props.onLoad;
 
-                if (onLoad) {
-                    onLoad(this.state.src);
-                }
+            if (onLoad) {
+                onLoad(this.state.src);
             }
-
-            return handleOnLoad;
-        }()
+        }
     }, {
         key: 'handleOnError',
-        value: function () {
-            function handleOnError(evt) {
-                var onError = this.props.onError;
+        value: function handleOnError(evt) {
+            var onError = this.props.onError;
 
-                if (onError) {
-                    onError(this.state.src);
-                }
+            if (onError) {
+                onError(this.state.src);
             }
-
-            return handleOnError;
-        }()
+        }
     }, {
         key: 'handlePick',
-        value: function () {
-            function handlePick(data) {
-                var that = this;
+        value: function handlePick(data) {
+            var that = this;
 
-                var path = this.props.path || '';
-                var _props2 = this.props,
-                    imgKey = _props2.imgKey,
-                    level = _props2.level,
-                    fileToKey = _props2.fileToKey,
-                    track = _props2.track;
-                var file = data.file,
-                    name = data.name,
-                    size = data.size,
-                    type = data.type;
+            var path = this.props.path || '';
+            var _props2 = this.props,
+                imgKey = _props2.imgKey,
+                level = _props2.level,
+                fileToKey = _props2.fileToKey,
+                track = _props2.track;
+            var file = data.file,
+                name = data.name,
+                size = data.size,
+                type = data.type;
 
-                var key = imgKey || path + (0, _Common.calcKey)(data, fileToKey);
-                _awsAmplify.Storage.put(key, file, {
-                    level: level ? level : 'public',
-                    contentType: type,
-                    track: track
-                }).then(function (data) {
-                    logger.debug('handle pick data', data);
-                    that.getImageSource(key, level, track);
-                })['catch'](function (err) {
-                    return logger.debug('handle pick error', err);
-                });
-            }
-
-            return handlePick;
-        }()
+            var key = imgKey || path + (0, _Common.calcKey)(data, fileToKey);
+            _awsAmplify.Storage.put(key, file, {
+                level: level ? level : 'public',
+                contentType: type,
+                track: track
+            }).then(function (data) {
+                logger.debug('handle pick data', data);
+                that.getImageSource(key, level, track);
+            }).catch(function (err) {
+                return logger.debug('handle pick error', err);
+            });
+        }
     }, {
         key: 'handleClick',
-        value: function () {
-            function handleClick(evt) {
-                var onClick = this.props.onClick;
+        value: function handleClick(evt) {
+            var onClick = this.props.onClick;
 
-                if (onClick) {
-                    onClick(evt);
-                }
+            if (onClick) {
+                onClick(evt);
             }
-
-            return handleClick;
-        }()
+        }
     }, {
         key: 'componentDidMount',
-        value: function () {
-            function componentDidMount() {
-                this.load();
-            }
-
-            return componentDidMount;
-        }()
+        value: function componentDidMount() {
+            this.load();
+        }
     }, {
         key: 'componentDidUpdate',
-        value: function () {
-            function componentDidUpdate(prevProps) {
-                var update = prevProps.path !== this.props.path || prevProps.imgKey !== this.props.imgKey || prevProps.body !== this.props.body;
-                if (update) {
-                    this.load();
-                }
+        value: function componentDidUpdate(prevProps) {
+            var update = prevProps.path !== this.props.path || prevProps.imgKey !== this.props.imgKey || prevProps.body !== this.props.body;
+            if (update) {
+                this.load();
             }
-
-            return componentDidUpdate;
-        }()
+        }
     }, {
         key: 'imageEl',
-        value: function () {
-            function imageEl(src, theme) {
-                if (!src) {
-                    return null;
-                }
-
-                var selected = this.props.selected;
-
-                var containerStyle = { position: 'relative' };
-                return _react2['default'].createElement(
-                    'div',
-                    { style: containerStyle, onClick: this.handleClick },
-                    _react2['default'].createElement('img', {
-                        style: theme.photoImg,
-                        src: src,
-                        onLoad: this.handleOnLoad,
-                        onError: this.handleOnError
-                    }),
-                    _react2['default'].createElement('div', { style: selected ? theme.overlaySelected : theme.overlay })
-                );
+        value: function imageEl(src, theme) {
+            if (!src) {
+                return null;
             }
 
-            return imageEl;
-        }()
+            var selected = this.props.selected;
+
+            var containerStyle = { position: 'relative' };
+            return _react2.default.createElement(
+                'div',
+                { style: containerStyle, onClick: this.handleClick },
+                _react2.default.createElement('img', {
+                    style: theme.photoImg,
+                    src: src,
+                    onLoad: this.handleOnLoad,
+                    onError: this.handleOnError
+                }),
+                _react2.default.createElement('div', { style: selected ? theme.overlaySelected : theme.overlay })
+            );
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                var _props3 = this.props,
-                    hidden = _props3.hidden,
-                    style = _props3.style,
-                    picker = _props3.picker,
-                    translate = _props3.translate,
-                    imgKey = _props3.imgKey;
+        value: function render() {
+            var _props3 = this.props,
+                hidden = _props3.hidden,
+                style = _props3.style,
+                picker = _props3.picker,
+                translate = _props3.translate,
+                imgKey = _props3.imgKey;
 
-                var src = this.state.src;
-                if (translate) {
-                    src = typeof translate === 'string' ? translate : translate({
-                        type: 'image',
-                        key: imgKey,
-                        content: src
-                    });
-                }
-                if (!src && !picker) {
-                    return null;
-                }
-
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                var photoStyle = hidden ? _AmplifyTheme2['default'].hidden : Object.assign({}, theme.photo, style);
-
-                return _react2['default'].createElement(
-                    'div',
-                    { style: photoStyle },
-                    photoStyle ? this.imageEl(src, theme) : null,
-                    picker ? _react2['default'].createElement(
-                        'div',
-                        null,
-                        _react2['default'].createElement(_Widget.PhotoPicker, {
-                            key: 'picker',
-                            onPick: this.handlePick,
-                            theme: theme
-                        })
-                    ) : null
-                );
+            var src = this.state.src;
+            if (translate) {
+                src = typeof translate === 'string' ? translate : translate({
+                    type: 'image',
+                    key: imgKey,
+                    content: src
+                });
+            }
+            if (!src && !picker) {
+                return null;
             }
 
-            return render;
-        }()
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            var photoStyle = hidden ? _AmplifyTheme2.default.hidden : Object.assign({}, theme.photo, style);
+
+            return _react2.default.createElement(
+                'div',
+                { style: photoStyle },
+                photoStyle ? this.imageEl(src, theme) : null,
+                picker ? _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(_Widget.PhotoPicker, {
+                        key: 'picker',
+                        onPick: this.handlePick,
+                        theme: theme
+                    })
+                ) : null
+            );
+        }
     }]);
 
     return S3Image;
 }(_react.Component);
 
-exports['default'] = S3Image;
+exports.default = S3Image;
