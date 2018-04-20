@@ -28,6 +28,23 @@ Amplify.addPluggable(new AWSIoTProvider({
    }));
 ```
 
+Create necessary policies in AWS IoT Console. Go to IoT Core and choose secure from left navigation pane. Then go to create policy. Following `myIOTPolicy` policy will allow full access to all the topics.
+
+![Alt text](images/iot_attach_policy.png?raw=true "Title")
+
+Then attach this policy to cognito identity. You can get the `Cognito Identity Id` of a logged in user using Amplify Auth Module. 
+
+```
+    Auth.currentCredentials().then((info) => {
+      const cognitoIdentityId = info._identityId;
+    });
+```
+
+You can send `cognitoIdentityId` to backend and attach `myIOTPolicy` using relavent SDK. You can do this via AWS sdk or using commandline tool for testing purpose. In command line you can do the following.
+
+`aws iot  attach-principal-policy    --policy-name 'myIOTPolicy'    --principal '<YOUR_COGNITO_IDENTITY_ID>'`
+
+
 ### Third Party Providers
 Import PubSub module and related service provider plugin to your app:
 ```js
