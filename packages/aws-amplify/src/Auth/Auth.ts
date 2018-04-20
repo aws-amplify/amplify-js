@@ -561,6 +561,7 @@ export default class AuthClass {
                 },
                 onFailure: (err) => {
                     logger.debug('completeNewPassword failure', err);
+                    dispatchAuthEvent('completeNewPassword_failure', err);
                     reject(err);
                 },
                 mfaRequired: (challengeName, challengeParam) => {
