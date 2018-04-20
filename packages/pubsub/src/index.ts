@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -10,20 +10,20 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import PubSubClass from './PubSub';
 
+import { ConsoleLogger as Logger } from '@aws-amplify/common';
 
-// import InMemoryCache from '../../Cache/InMemoryCache';
+const logger = new Logger('PubSub');
 
-if (!(<any>global).window) {
-    (<any>global).window = {
-        setTimeout,
-        clearTimeout,
-        WebSocket: (<any>global).WebSocket,
-        ArrayBuffer: (<any>global).ArrayBuffer,
-        addEventListener(){ },
-        navigator: { onLine: true }
-    };
+let _instance: PubSubClass = null;
+
+if (!_instance) {
+    logger.debug('Create PubSub Instance');
+    _instance = new PubSubClass(null);
 }
-if (!(<any>global).localStorage) {
-    (<any>global).localStorage = InMemoryCache;
-}
+
+const PubSub = _instance;
+export default PubSub;
+
+export * from './Providers/AWSIotProvider';

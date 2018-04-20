@@ -1,7 +1,7 @@
 {
-  "name": "@aws-amplify/auth",
+  "name": "@aws-amplify/analytics",
   "version": "0.0.1",
-  "description": "The Auth category of AWS Amplify",
+  "description": "The Analytics category of AWS Amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -48,11 +48,11 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "amazon-cognito-auth-js": "^1.1.9",
-    "amazon-cognito-identity-js": "^2.0.0",
     "aws-sdk": "2.198.0",
+    "uuid": "^3.2.1",
     "@aws-amplify/common": "^0.0.2",
-    "@aws-amplify/cache": "^0.0.1"
+    "@aws-amplify/cache": "^0.0.1",
+    "@aws-amplify/auth": "^0.0.1"
   },
   "jest": {
     "transform": {

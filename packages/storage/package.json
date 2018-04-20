@@ -1,7 +1,7 @@
 {
-  "name": "@aws-amplify/auth",
+  "name": "@aws-amplify/storage",
   "version": "0.0.1",
-  "description": "The Auth category of AWS Amplify",
+  "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -41,18 +41,14 @@
     "ts-jest": "^22.0.0",
     "tslint": "^5.7.0",
     "tslint-config-airbnb": "^5.3.0",
-    "typedoc-dep-update": "^0.9.0",
     "typescript": "2.6.2",
     "typescript-formatter": "^6.0.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "amazon-cognito-auth-js": "^1.1.9",
-    "amazon-cognito-identity-js": "^2.0.0",
     "aws-sdk": "2.198.0",
-    "@aws-amplify/common": "^0.0.2",
-    "@aws-amplify/cache": "^0.0.1"
+    "@aws-amplify/common": "^0.0.2"
   },
   "jest": {
     "transform": {
@@ -65,10 +61,6 @@
       "js",
       "json",
       "jsx"
-    ],
-    "setupFiles": [
-      "./__mocks__/SessionStorage.js",
-      "./__mocks__/LocalStorage.js"
     ],
     "testEnvironment": "jsdom",
     "mapCoverage": true,

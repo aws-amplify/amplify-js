@@ -11,19 +11,19 @@
  * and limitations under the License.
  */
 
+import APIClass, { graphqlOperation } from './API';
 
-// import InMemoryCache from '../../Cache/InMemoryCache';
+import { ConsoleLogger as Logger } from '../Common';
 
-if (!(<any>global).window) {
-    (<any>global).window = {
-        setTimeout,
-        clearTimeout,
-        WebSocket: (<any>global).WebSocket,
-        ArrayBuffer: (<any>global).ArrayBuffer,
-        addEventListener(){ },
-        navigator: { onLine: true }
-    };
+const logger = new Logger('API');
+
+let _instance: APIClass = null;
+
+if (!_instance) {
+    logger.debug('Create API Instance');
+    _instance = new APIClass(null);
 }
-if (!(<any>global).localStorage) {
-    (<any>global).localStorage = InMemoryCache;
-}
+
+const API = _instance;
+export default API;
+export { APIClass, graphqlOperation };

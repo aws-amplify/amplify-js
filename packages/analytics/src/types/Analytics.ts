@@ -10,20 +10,27 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
-
-// import InMemoryCache from '../../Cache/InMemoryCache';
-
-if (!(<any>global).window) {
-    (<any>global).window = {
-        setTimeout,
-        clearTimeout,
-        WebSocket: (<any>global).WebSocket,
-        ArrayBuffer: (<any>global).ArrayBuffer,
-        addEventListener(){ },
-        navigator: { onLine: true }
-    };
+import * as AWS from 'aws-sdk/global';
+/**
+* Analytics instance options
+*/
+export interface AnalyticsOptions {
+    appId: string;
+    platform?: string;
+    clientId?: string;
+    region?: string;
+    credentials?: AWS.Credentials & AWS.CognitoIdentityCredentials;
 }
-if (!(<any>global).localStorage) {
-    (<any>global).localStorage = InMemoryCache;
+
+export interface EventAttributes {
+    [key: string]: any;
+}
+
+export interface EventMetrics {
+    [key: string]: number;
+}
+
+export enum SessionState {
+    START = 'START',
+    STOP = 'STOP'
 }

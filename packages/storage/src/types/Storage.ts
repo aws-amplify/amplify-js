@@ -11,19 +11,12 @@
  * and limitations under the License.
  */
 
-
-// import InMemoryCache from '../../Cache/InMemoryCache';
-
-if (!(<any>global).window) {
-    (<any>global).window = {
-        setTimeout,
-        clearTimeout,
-        WebSocket: (<any>global).WebSocket,
-        ArrayBuffer: (<any>global).ArrayBuffer,
-        addEventListener(){ },
-        navigator: { onLine: true }
-    };
-}
-if (!(<any>global).localStorage) {
-    (<any>global).localStorage = InMemoryCache;
+/**
+ * Storage instance options
+ */
+export interface StorageOptions {
+    bucket?: string;
+    region?: string;
+    credentials?: object;
+    level?: string;
 }

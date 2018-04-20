@@ -10,20 +10,18 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+export interface AnalyticsProvider {
+    // you need to implement those  methods
 
+    // configure your provider
+    configure(config: object): object;
 
-// import InMemoryCache from '../../Cache/InMemoryCache';
+    // record events and returns true if succeeds
+    record(params: object): Promise<boolean>;
 
-if (!(<any>global).window) {
-    (<any>global).window = {
-        setTimeout,
-        clearTimeout,
-        WebSocket: (<any>global).WebSocket,
-        ArrayBuffer: (<any>global).ArrayBuffer,
-        addEventListener(){ },
-        navigator: { onLine: true }
-    };
-}
-if (!(<any>global).localStorage) {
-    (<any>global).localStorage = InMemoryCache;
+    // return 'Analytics';
+    getCategory(): string;
+    
+    // return the name of you provider
+    getProviderName(): string;
 }
