@@ -36,7 +36,7 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
   - [React Native Development](#react-native-development)
 * [Documentation](https://aws.github.io/aws-amplify)
 * [Examples](#example)
-  - [1. Collect user session metrics.](#1-collect-user-session-metrics)
+  - [1. Collect user session metrics](#1-collect-user-session-metrics)
   - [2. Add Authentication](#2-add-authentication-to-your-app)
   - [3. Sign HTTP requests](#3-sign-http-requests)
   - [4. Upload and Download public or private content](#4-upload-and-download-public-or-private-content)
@@ -48,15 +48,24 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 
 For creating cloud powered Web apps with JavaScript, AWS Amplify is available as `aws-amplify` package on [npm](https://www.npmjs.com/)
 
-```
+```bash
 $ npm install aws-amplify --save
 ```
 
 If you are developing a [React](https://github.com/facebook/react/) app, you can install an additional package `aws-amplify-react` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
 
-```
+```bash
+$ npm install aws-amplify --save
 $ npm install aws-amplify-react --save
 ```
+
+If you are developing an [Angular](https://github.com/angular/angular) app, you can install an additional package `aws-amplify-angular`. This package contains an [Angular module](https://docs.angularjs.org/api/ng/function/angular.module) with a [provider and components](https://aws.github.io/aws-amplify/media/angular_guide):
+
+```bash
+$ npm install aws-amplify --save
+$ npm install aws-amplify-angular --save
+```
+
 #### Visit our [Installation Guide for Web](https://aws.github.io/aws-amplify/media/install_n_config?platform=javascript) to start building your web app.  
 
 ### React Native Development
@@ -96,7 +105,7 @@ Analytics.record('myCustomEvent');
 
 ### 2. Add Authentication to your App
 
-Adding authentication to your React Native app is as easy as wrapping your app's main component with our `withAuthenticator` higher order component. AWS Amplify will provide you customizable UI for common use cases such as user registration and login.
+Adding authentication to your React or React Native app is as easy as wrapping your app's main component with our `withAuthenticator` higher order component. AWS Amplify will provide you customizable UI for common use cases such as user registration and login.
 
 ```jsx
 ...
@@ -109,6 +118,39 @@ Amplify.configure(aws_exports);
 
 export default withAuthenticator(App);
 ```
+
+To add authentication to your Angular app you can also use the built-in service provider and components:
+
+```js
+// main.ts
+import Amplify from 'aws-amplify';
+import awsmobile from './aws-exports';
+Amplify.configure(awsmobile); // or manual configuration, see the docs
+...
+// app.component.ts
+import { AmplifyService }  from 'aws-amplify-angular';
+
+...
+
+constructor( public amplify:AmplifyService ) {
+  // handle auth state changes
+  this.amplify.authStateChange$
+      .subscribe(authState => {
+        this.authenticated = authState.state === 'signedIn';
+        if (!authState.user) {
+          this.user = null;
+        } else {
+          this.user = authState.user;
+        }
+    });
+}
+
+// app.component.html
+<amplify-authenticator></amplify-authenticator>
+
+```
+
+#### See our [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) for more details on Angular setup and usage.
 
 #### See our [Authentication Developer Guide](https://aws.github.io/aws-amplify/media/authentication_guide) for detailed information. 
 
