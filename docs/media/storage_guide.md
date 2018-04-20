@@ -20,7 +20,7 @@ To create a project fully functioning with the Storage category.
 $ npm install -g awsmobile-cli
 $ cd my-app #Change to your project's root folder
 $ awsmobile init
-$ awsmobile user-files 
+$ awsmobile user-files enable
 $ awsmobile push #Update your backend 
 ```
 
