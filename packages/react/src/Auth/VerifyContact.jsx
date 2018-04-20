@@ -137,7 +137,7 @@ export default class VerifyContact extends AuthPiece {
                     { this.state.verifyAttr? this.submitView() : this.verifyView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signedIn')}>
+                    <Link theme={theme} onClick={() => this.changeState('signedIn', authData)}>
                         {I18n.get('Skip')}
                     </Link>
                 </SectionFooter>
