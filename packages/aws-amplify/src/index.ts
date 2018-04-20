@@ -22,7 +22,8 @@ import {
     Hub,
     JS,
     ClientDevice,
-    Signer
+    Signer,
+    I18n
 } from './Common';
 
 const logger = new Logger('Amplify');
