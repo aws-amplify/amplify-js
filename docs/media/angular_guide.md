@@ -10,8 +10,8 @@ AWS Amplify provides Angular Components with `aws-amplify-angular` npm package.
 Install `aws-amplify` and `aws-amplify-angular` npm packages into your Angular app.
 
 ```bash
-$ yarn add aws-amplify
-$ yarn add aws-amplify-angular
+$ npm install --save aws-amplify # or yarn add aws-amplify
+$ npm install --save aws-amplify-angular # or yarn add aws-amplify-angular
 ```
 
 ### Setup
@@ -24,10 +24,11 @@ Following commands will enable Auth category and will create `aws-exports.js` co
 $ npm install -g awsmobile-cli
 $ awsmobile init
 $ awsmobile user-signin enable
-$ awsmobile push #Update your backend
+$ awsmobile user-files enable
+$ awsmobile push # Update your backend
 ```
 
-After creating your backend, the configuration file is copied to `/awsmobilejs/#current-backend-info/aws-exports.js`, and optionally to your source folder if you have identified a source folder location in `awmobile init` command.
+After creating your backend, the configuration file is copied to `/awsmobilejs/#current-backend-info/aws-exports.js`, and the source folder you have identified in the `awmobile init` command.
 
 To import the configuration file to your Angular app, you will need to rename `aws_exports.js` to `aws_exports.ts`. Alternatively, you can create a `yarn start` command in your `package.json`.
 ```js
@@ -37,7 +38,7 @@ To import the configuration file to your Angular app, you will need to rename `a
 }
 ```
 
-Import configuration file and load it in your `main.ts`, which is the entry point of your Angular application. 
+Import the configuration file and load it in your `main.ts`, which is the entry point of your Angular application. 
 
 ```js
 import Amplify from 'aws-amplify';
@@ -52,7 +53,7 @@ When working with underlying `aws-js-sdk`, the "node" package should be included
 }
 ```
 
-If you are developing locally using a `yarn link`, you will need to modify `.angular-cli.json` :
+NOTE: If you are developing locally (not with npm packages, using a `yarn link`), you will need to modify `.angular-cli.json` :
 
 ```js
 "defaults": {
@@ -86,9 +87,11 @@ import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 });
 ```
 
+NOTE: the service provider is optional. You can import the core categories normally i.e. `import { Analytic } from 'aws-amplify'` or create your own provider. The service provider does some work for you and exposes the categories as methods. The provider also manages and dispatches authentication state changes using observables which you can subscribe to within your components (see below).
+
 ## Using Amplify Service
 
-AmplifyService is a provider in your Angular app, and it provides AWS Amplify core functions through dependency injection.
+AmplifyService is a provider in your Angular app, and it provides AWS Amplify core categories through dependency injection.
 
 ### Using Dependency Injection
 
@@ -130,11 +133,11 @@ export class AppComponent {
       
       /** now you can access category APIs:
        * this.amplifyService.auth();          // AWS Amplify Auth
-      * this.amplifyService.analytics();     // AWS Amplify Analytics
-      * this.amplifyService.storage();       // AWS Amplify Storage
-     * this.amplifyService.api();           // AWS Amplify API
-     * this.amplifyService.cache();         // AWS Amplify Cache
-     * this.amplifyService.pubsub();        // AWS Amplify PubSub
+       * this.amplifyService.analytics();     // AWS Amplify Analytics
+       * this.amplifyService.storage();       // AWS Amplify Storage
+       * this.amplifyService.api();           // AWS Amplify API
+       * this.amplifyService.cache();         // AWS Amplify Cache
+       * this.amplifyService.pubsub();        // AWS Amplify PubSub
      **/
   }
   
