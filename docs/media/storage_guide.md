@@ -3,7 +3,7 @@
 
 # Storage
 
-AWS Amplify Storage module provides a simple mechanism for managing user content for your app in public or private storage buckets.
+AWS Amplify Storage module provides a simple mechanism for managing user content for your app in public, protected or private storage buckets.
 
 ## Installation and Configuration
 
@@ -89,13 +89,15 @@ Note: You can restrict the access to your bucket by updating AllowedOrigin to in
 
 ### File Access Levels
 
-Storage module can manage files in two different access levels; `public` and `private`.
+Storage module can manage files with three different access levels; `public`, `protected` and `private`.
 
 Files with public access level can be accessed by all users who are using your app. In S3, they are stored under the `public/` path in your S3 bucket.
 
+Files with protected access level are readable by all users but writable only by the creating user. In S3, they are stored under `protected/{user_identity_id}/` where the **user_identity_id** corresponds to a unique Amazon Cognito Identity ID for that user.
+
 Files with private access level are only accessible for specific authenticated users only. In S3, they are stored under `private/{user_identity_id}/` where the **user_identity_id** corresponds to a unique Amazon Cognito Identity ID for that user.
 
-The access level can be configured on the Storage object globally. Alternatively, the access levels can be set in individual function calls. 
+The access level can be configured on the Storage object globally. Alternatively, the access levels can be set in individual function calls.
 
 Default access level for Storage module is `public`. Unless you configure Storage otherwise, all uploaded files will be publicly available for all users.
 {: .callout .callout--info}
