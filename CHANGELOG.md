@@ -7,7 +7,7 @@
     * Add declartion for SetUserMFAPreference #667
 
 
-##04/12/2018
+## 04/12/2018
 * aws-amplify - v0.3.0
     * Feature: Adding graphql support #645.
     * Bug Fix: Analytics retry issue #644.
@@ -18,7 +18,7 @@
     * Bug Fix: Keyboard dismiss fix #530
     
 
-##04/11/2018
+## 04/11/2018
 * aws-amplify - v0.2.15
     * Enhancement: Preserve error context when loading Cognito credentials. #577
     * Enhancement: Increase test coverage for PubSub. #588
