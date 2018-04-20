@@ -7,7 +7,7 @@ AWS Amplify provides React Native Components with `aws-amplify-react-native` npm
 
 ## Installation and Configuration
 
-Install following npm packages into your Angular app.
+Install following npm packages into your React Native app.
 
 ```bash
 $ npm install aws-amplify
