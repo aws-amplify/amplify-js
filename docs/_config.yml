@@ -138,7 +138,7 @@ category_list:
           class: aws-icon-ps-60-shield-circle
           url: '/media/authentication_guide'
           services:
-            - title: AWS Cognito ,
+            - title: AWS Cognito,
               url: https://aws.amazon.com/cognito/
             - title: OAuth 2.0 ,
               url: https://aws.amazon.com/cognito/
@@ -150,10 +150,12 @@ category_list:
           class: aws-icon-ps-60-circular-circuit
           url: '/media/pub_sub_guide'   
           services:
-              - title: Generic MQTT ,
-                url: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html#mqtt
-              - title: AWS IoT (Coming soon)
+              - title: AWS IoT,
                 url: https://aws.amazon.com/iot/
+              - title: MQTT,
+                url: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html#mqtt
+              - title: Custom Plugin
+                url:  
         - title: Push Notifications 
           excerpt: Push notifications with campaign analytics and targeting.
           cta: Read more
@@ -189,6 +191,21 @@ category_list:
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide'  
+    -  category: Front-end Support
+       title: Front-end Support
+       subs:
+        - title: React 
+          excerpt: React support package.
+          cta: Read more
+          url: '/media/react_guide' 
+        - title: React Native
+          excerpt: React Native support package.
+          cta: Read more
+          url: '/media/react_native_guide' 
+        - title: Angular 
+          excerpt: Angular support package.
+          cta: Read more
+          url: '/media/angular_guide' 
     -  category: CLI
        title: CLI
        subs:
