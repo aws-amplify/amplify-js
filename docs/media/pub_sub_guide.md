@@ -2,18 +2,18 @@
 ---
 # PubSub
 
-AWS Amplify PubSub module provides connectivity with cloud-based message-oriented middleware. You can use PubSub to pass messages between your app instances and your app's backend for creating real-time interactive experiences.
+The AWS Amplify PubSub category provides connectivity with cloud-based message-oriented middleware. You can use PubSub to pass messages between your app instances and your app's backend creating real-time interactive experiences.
 
-PubSub is available with **AWS IoT** and **Generic MQTT Over WebSocket Provider**. 
+PubSub is available with **AWS IoT** and **Generic MQTT Over WebSocket Providers**. 
 
-With AWS IoT, AWS Amplify PubSub module automatically signs your HTTP requests when sending your messages.
+With AWS IoT, AWS Amplify's PubSub automatically signs your HTTP requests when sending your messages.
 {: .callout .callout--info}
 
 ## Installation and Configuration
 
 ### AWS IoT
 
-AwsIOTProvider is capable of signing request according to [Signature Version 4](https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
+The `AwsIOTProvider` is capable of signing request according to [Signature Version 4](https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
 
 ```js
 import { PubSub } from 'aws-amplify';
@@ -28,11 +28,11 @@ Amplify.addPluggable(new AWSIoTProvider({
    }));
 ```
 
-Create necessary policies in AWS IoT Console. Go to IoT Core and choose secure from left navigation pane. Then go to create policy. Following `myIOTPolicy` policy will allow full access to all the topics.
+If you are using AWS IOT, you will need to create the necessary IAM policies in the AWS IoT Console. Go to IoT Core and choose **Secure** from the left navigation pane. Then navigate to **Create Policy**. The following `myIOTPolicy` policy will allow full access to all the topics.
 
 ![Alt text](images/iot_attach_policy.png?raw=true "Title")
 
-Then attach this policy to cognito identity. You can get the `Cognito Identity Id` of a logged in user using Amplify Auth Module. 
+Then attach this policy to a **Cognito Identity**. You can get the `Cognito Identity Id` of a logged in user using the Amplify Auth Module. 
 
 ```
     Auth.currentCredentials().then((info) => {
@@ -40,9 +40,9 @@ Then attach this policy to cognito identity. You can get the `Cognito Identity I
     });
 ```
 
-You can send `cognitoIdentityId` to backend and attach `myIOTPolicy` using relavent SDK. You can do this via AWS sdk or using commandline tool for testing purpose. In command line you can do the following.
+You can also retrieve the value from your `aws-exports.js` file via the `aws_cognito_identity_pool_id` value. Then you can send your `cognitoIdentityId` to the AWS backend and attach `myIOTPolicy`. You can do this with the [AWS CLI](https://aws.amazon.com/cli/):
 
-`aws iot  attach-principal-policy    --policy-name 'myIOTPolicy'    --principal '<YOUR_COGNITO_IDENTITY_ID>'`
+`aws iot attach-principal-policy --policy-name 'myIOTPolicy' --principal '<YOUR_COGNITO_IDENTITY_ID>'`
 
 
 ### Third Party Providers
