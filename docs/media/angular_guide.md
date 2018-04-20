@@ -10,8 +10,8 @@ AWS Amplify provides Angular Components with `aws-amplify-angular` npm package.
 Install `aws-amplify` and `aws-amplify-angular` npm packages into your Angular app.
 
 ```bash
-$ yarn add aws-amplify
-$ yarn add aws-amplify-angular
+$ npm install --save aws-amplify # or yarn add aws-amplify
+$ npm install --save aws-amplify-angular # or yarn add aws-amplify-angular
 ```
 
 ### Setup
@@ -24,10 +24,11 @@ Following commands will enable Auth category and will create `aws-exports.js` co
 $ npm install -g awsmobile-cli
 $ awsmobile init
 $ awsmobile user-signin enable
-$ awsmobile push #Update your backend
+$ awsmobile user-files enable
+$ awsmobile push # Update your backend
 ```
 
-After creating your backend, the configuration file is copied to `/awsmobilejs/#current-backend-info/aws-exports.js`, and optionally to your source folder if you have identified a source folder location in `awmobile init` command.
+After creating your backend, the configuration file is copied to `/awsmobilejs/#current-backend-info/aws-exports.js`, and the source folder you have identified in the `awmobile init` command.
 
 To import the configuration file to your Angular app, you will need to rename `aws_exports.js` to `aws_exports.ts`. Alternatively, you can create a `yarn start` command in your `package.json`.
 ```js
@@ -37,7 +38,7 @@ To import the configuration file to your Angular app, you will need to rename `a
 }
 ```
 
-Import configuration file and load it in your `main.ts`, which is the entry point of your Angular application. 
+Import the configuration file and load it in your `main.ts`, which is the entry point of your Angular application. 
 
 ```js
 import Amplify from 'aws-amplify';
@@ -52,7 +53,7 @@ When working with underlying `aws-js-sdk`, the "node" package should be included
 }
 ```
 
-If you are developing locally using a `yarn link`, you will need to modify `.angular-cli.json` :
+NOTE: If you are developing locally (not with npm packages, using a `yarn link`), you will need to modify `.angular-cli.json` :
 
 ```js
 "defaults": {
@@ -86,9 +87,11 @@ import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 });
 ```
 
+NOTE: the service provider is optional. You can import the core categories normally i.e. `import { Analytic } from 'aws-amplify'` or create your own provider. The service provider does some work for you and exposes the categories as methods. The provider also manages and dispatches authentication state changes using observables which you can subscribe to within your components (see below).
+
 ## Using Amplify Service
 
-AmplifyService is a provider in your Angular app, and it provides AWS Amplify core functions through dependency injection.
+AmplifyService is a provider in your Angular app, and it provides AWS Amplify core categories through dependency injection.
 
 ### Using Dependency Injection
 
@@ -130,11 +133,11 @@ export class AppComponent {
       
       /** now you can access category APIs:
        * this.amplifyService.auth();          // AWS Amplify Auth
-      * this.amplifyService.analytics();     // AWS Amplify Analytics
-      * this.amplifyService.storage();       // AWS Amplify Storage
-     * this.amplifyService.api();           // AWS Amplify API
-     * this.amplifyService.cache();         // AWS Amplify Cache
-     * this.amplifyService.pubsub();        // AWS Amplify PubSub
+       * this.amplifyService.analytics();     // AWS Amplify Analytics
+       * this.amplifyService.storage();       // AWS Amplify Storage
+       * this.amplifyService.api();           // AWS Amplify API
+       * this.amplifyService.cache();         // AWS Amplify Cache
+       * this.amplifyService.pubsub();        // AWS Amplify PubSub
      **/
   }
   
@@ -175,7 +178,13 @@ AWS Amplifies provides components that you can use in your Angular view template
 
 ### Authenticator
 
-Authenticator component creates an out-of-the-box signing/sign-up experience for your Angular app. Before using this directive, please be sure that you have activated [Authentication category](https://aws.github.io/aws-amplify/media/authentication_guide).
+Authenticator component creates an out-of-the-box signing/sign-up experience for your Angular app. 
+
+Before using this component, please be sure that you have activated [Authentication category](https://aws.github.io/aws-amplify/media/authentication_guide):
+```bash
+$ awsmobile user-signin enable
+```
+
 
 To use Authenticator, just add the `amplify-authenticator` directive in your .html view:
 ```html
@@ -188,10 +197,13 @@ To use Authenticator, just add the `amplify-authenticator` directive in your .ht
 
 Photo Picker component will render a file upload control that will allow choosing a local image and uploading it to Amazon S3. Once an image is selected, a base64 encoded image preview will be displayed automatically.
 
-The component will emit two events:
+Before using this component, please be sure that you have activated [*user-files* with AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
 
- - `(picked)` - Emitted when an image is selected. The event will contain the `File` object which can be used for upload.
- - `(loaded)` - Emitted when an image preview has been rendered and displayed.
+```bash
+$ awsmobile user-files enable
+```
+
+To render photo picker in an Angular view, use *amplify-photo-picker* component:
 
 ```html
 <amplify-photo-picker 
@@ -199,6 +211,11 @@ The component will emit two events:
     (loaded)="onImageLoaded($event)">
 </amplify-photo-picker>
 ```
+
+The component will emit two events:
+
+ - `(picked)` - Emitted when an image is selected. The event will contain the `File` object which can be used for upload.
+ - `(loaded)` - Emitted when an image preview has been rendered and displayed.
 
 **Uploading Image**
 
@@ -216,11 +233,19 @@ onImagePicked( file ) {
     .then (result => console.log('uploaded: ', result))
     .catch(err => console.log('upload error: ', err));
   
-  }
+}
 ```
 ### S3 Album
 
-S3 Album component display a list of images from the connected S3 bucket:
+S3 Album component display a list of images from the connected S3 bucket.
+
+Before using this component, please be sure that you have activated [*user-files* with AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
+
+```bash
+$ awsmobile user-files enable
+```
+
+To render the album, use *amplify-s3-album* component in your Angular view:
 
 ```html
 <amplify-s3-album path="pics" (selected)="onAlbumImageSelected($event)">
