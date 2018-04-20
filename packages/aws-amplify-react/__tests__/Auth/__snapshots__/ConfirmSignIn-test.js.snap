@@ -1,6 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`] = `
+exports[`ConfirmSignIn render test hidden if hide include confirmSignIn 1`] = `""`;
+
+exports[`ConfirmSignIn render test render correctly with Props confirmSignIn 1`] = `
 <FormSection
   theme={
     Object {
@@ -483,7 +485,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
       }
     }
   >
-    Confirm Code
+    Confirm SMS Code
   </SectionHeader>
   <SectionBody
     theme={
@@ -1706,18 +1708,18 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignIn 1`]
 </FormSection>
 `;
 
-exports[`ConfirmSignIn null case with other authState render corrently 1`] = `""`;
+exports[`ConfirmSignIn render test render corrently with other authstate 1`] = `""`;
 
-exports[`ConfirmSignIn null case with other authState render corrently 2`] = `""`;
+exports[`ConfirmSignIn render test render corrently with other authstate 2`] = `""`;
 
-exports[`ConfirmSignIn null case with other authState render corrently 3`] = `""`;
+exports[`ConfirmSignIn render test render corrently with other authstate 3`] = `""`;
 
-exports[`ConfirmSignIn null case with other authState render corrently 4`] = `""`;
+exports[`ConfirmSignIn render test render corrently with other authstate 4`] = `""`;
 
-exports[`ConfirmSignIn null case with other authState render corrently 5`] = `""`;
+exports[`ConfirmSignIn render test render corrently with other authstate 5`] = `""`;
 
-exports[`ConfirmSignIn null case with other authState render corrently 6`] = `""`;
+exports[`ConfirmSignIn render test render corrently with other authstate 6`] = `""`;
 
-exports[`ConfirmSignIn null case with other authState render corrently 7`] = `""`;
+exports[`ConfirmSignIn render test render corrently with other authstate 7`] = `""`;
 
-exports[`ConfirmSignIn null case with other authState render corrently 8`] = `""`;
+exports[`ConfirmSignIn render test render corrently with other authstate 8`] = `""`;

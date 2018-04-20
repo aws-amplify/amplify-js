@@ -34,7 +34,7 @@ depending on your project setup and experience with modern JavaScript build tool
 This method is simpler and does not require additional tools, but may have worse performance due to
 the browser having to download multiple files.
 
-Download the JavaScript [library file](https://raw.githubusercontent.com/aws/amazon-cognito-identity-js/master/dist/amazon-cognito-identity.min.js) and place it in your project.
+Download the JavaScript [library file](https://raw.githubusercontent.com/aws/aws-amplify/master/packages/amazon-cognito-identity-js/dist/amazon-cognito-identity.min.js) and place it in your project.
 
 Optionally, to use other AWS services, include a build of the [AWS SDK for JavaScript](http://aws.amazon.com/sdk-for-browser/).
 
@@ -101,7 +101,7 @@ migration.
       loaders: [
         {
           test: /\.json$/,
-          loader: 'json'
+          loader: 'json-loader'
         }
       ]
     }
@@ -216,7 +216,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
 
     userPool.signUp('username', 'password', attributeList, null, function(err, result){
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         cognitoUser = result.user;
@@ -241,7 +241,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
     cognitoUser.confirmRegistration('123456', true, function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -253,7 +253,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
 ```javascript
     cognitoUser.resendConfirmationCode(function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -307,7 +307,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
         },
 
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         },
 
     });
@@ -322,7 +322,7 @@ Note also that if CognitoUser.authenticateUser throws ReferenceError: navigator 
 ```javascript
     cognitoUser.getUserAttributes(function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         for (i = 0; i < result.length; i++) {
@@ -341,7 +341,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         },
         inputVerificationCode: function() {
             var verificationCode = prompt('Please input verification code: ' ,'');
@@ -358,7 +358,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 
     cognitoUser.deleteAttributes(attributeList, function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -378,7 +378,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 
     cognitoUser.updateAttributes(attributeList, function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -390,7 +390,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 ```javascript
     cognitoUser.enableMFA(function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -402,7 +402,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 ```javascript
     cognitoUser.disableMFA(function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -414,7 +414,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 ```javascript
     cognitoUser.changePassword('oldPassword', 'newPassword', function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -430,7 +430,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 	          console.log('CodeDeliveryData from forgotPassword: ' + data);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         },
         //Optional automatic callback
         inputVerificationCode: function(data) {
@@ -456,7 +456,7 @@ Note that the inputVerificationCode method needs to be defined but does not need
 ```javascript
     cognitoUser.deleteUser(function(err, result) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('call result: ' + result);
@@ -508,7 +508,7 @@ In React Native, loading the persisted current user information requires an extr
     if (cognitoUser != null) {
         cognitoUser.getSession(function(err, session) {
             if (err) {
-                alert(err);
+                alert(err.message || JSON.stringify(err));
                 return;
             }
             console.log('session validity: ' + session.isValid());
@@ -577,7 +577,7 @@ In React Native, loading the persisted current user information requires an extr
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message);
         }
     });
 
@@ -592,7 +592,7 @@ In React Native, loading the persisted current user information requires an extr
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         }
     });
 ```
@@ -607,7 +607,7 @@ In React Native, loading the persisted current user information requires an extr
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         }
     });
 ```
@@ -621,7 +621,7 @@ In React Native, loading the persisted current user information requires an extr
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         }
     });
 ```
@@ -636,7 +636,7 @@ In React Native, loading the persisted current user information requires an extr
             console.log('call result: ' + result);
         },
         onFailure: function(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         }
     });
 ```
@@ -678,7 +678,7 @@ In React Native, loading the persisted current user information requires an extr
 ```javascript
     cognitoUser.getMFAOptions(function(err, mfaOptions) {
         if (err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
             return;
         }
         console.log('MFA options for user ' + mfaOptions);
@@ -758,7 +758,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
             },
 
             onFailure: function(err) {
-                alert(err);
+                alert(err.message || JSON.stringify(err));
             },
 
             mfaSetup: function(challengeName, challengeParameters) {
@@ -771,7 +771,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
             },
 
             selectMFAType : function(challengeName, challengeParameters) {
-                var mfaType = prompt('Please select the MFA method.', '');
+                var mfaType = prompt('Please select the MFA method.', ''); // valid values for mfaType is "SMS_MFA", "SOFTWARE_TOKEN_MFA" 
                 cognitoUser.sendMFASelectionAnswer(mfaType, this);
             },
 
@@ -796,7 +796,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
         };
         cognitoUser.setUserMfaPreference(smsMfaSettings, null, function(err, result) {
             if (err) {
-                alert(err);
+                alert(err.message || JSON.stringify(err));
             }
             console.log('call result ' + result)
         });
@@ -811,7 +811,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
         };
         cognitoUser.setUserMfaPreference(null, totpMfaSettings, function(err, result) {
             if (err) {
-                alert(err);
+                alert(err.message || JSON.stringify(err));
             }
             console.log('call result ' + result)
         });
@@ -822,7 +822,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
   ```js
 	     cognitoUser.setAuthenticationFlowType('USER_PASSWORD_AUTH');
 	
-	     cognitoUser.initiateAuth(authenticationDetails, {
+	     cognitoUser.authenticateUser(authenticationDetails, {
 	        onSuccess: function(result) {
 	            // User authentication was successful
 	        },
@@ -836,21 +836,61 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 	        }
 	     });
   ```
+  
+**Use case 31.** Retrieve the user data for an authenticated user. 
+
+  ```js
+	    cognitoUser.getUserData(function(err, userData) {
+	        if (err) {
+	            alert(err.message || JSON.stringify(err));
+	            return;
+	        }
+	        console.log('User data for user ' + userData);
+	    });
+  ```
+
+**Use case 32.** Handling expiration of the Id Token. 
+
+  ```js
+      refresh_token = session.getRefreshToken(); // receive session from calling cognitoUser.getSession()
+      if (AWS.config.credentials.needsRefresh()) {
+        cognitoUser.refreshSession(refresh_token, (err, session) => {
+          if(err) {
+            console.log(err);
+          } 
+          else {
+            AWS.config.credentials.params.Logins['cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>']  = session.getIdToken().getJwtToken();
+            AWS.config.credentials.refresh((err)=> {
+              if(err)  {
+                console.log(err);
+              }
+              else{
+                console.log("TOKEN SUCCESSFULLY UPDATED");
+              }
+            });
+          }
+        });
+      }
+  ```  
 
 ## Network Configuration
 The Amazon Cognito Identity JavaScript SDK will make requests to the following endpoints
-* For Amazon Cognito Identity request handling: "https://cognito-idp.us-east-1.amazonaws.com"
-  * This endpoint may change based on which region your Identity Pool was created in.
+* For Amazon Cognito User Pool service request handling: "https://cognito-idp.us-east-1.amazonaws.com"
+  * This endpoint may change based on which region your Cognito User Pool was created in.
 
 For most frameworks you can whitelist the domain by whitelisting all AWS endpoints with "*.amazonaws.com".
 
 ## Random numbers
 
-In order to authenticate with the Amazon Cognito Identity Service, the client needs to generate a random number as part of the SRP protocol. The AWS SDK is only compatible with modern browsers, and these include [support for cryptographically strong random values](https://caniuse.com/#feat=cryptography). If you do need to support older browsers then you should include a strong polyfill for `window.crypto.getRandomValues()` before including this library.
+In order to authenticate with the Amazon Cognito User Pool Service, the client needs to generate a random number as part of the SRP protocol. The AWS SDK is only compatible with modern browsers, and these include [support for cryptographically strong random values](https://caniuse.com/#feat=cryptography). If you do need to support older browsers then you should include a strong polyfill for `window.crypto.getRandomValues()` before including this library.
 
 ## Change Log
 
-**v1.32.0:**
+**v2.0.2:**
+* What has changed
+  * To make a new version for NPM package sync with Github repo. 
+
+**v2.0.1:**
 * What has changed
   * Added migration lambda trigger support. 
 

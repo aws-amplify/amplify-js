@@ -15,7 +15,7 @@
 * RestClient instance options
 */
 export class RestClientOptions {
-	/** AWS credentials */
+    /** AWS credentials */
     credentials: AWSCredentials;
 
     /**
@@ -38,29 +38,40 @@ export class RestClientOptions {
 * AWS credentials needed for RestClient
 */
 export class AWSCredentials {
-	/**
-	* Secret Access Key
-	*
-	* [Access Key ID and Secret Access Key]
-	* (http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
-	*/
-	secretAccessKey: string;
+    /**
+    * Secret Access Key
+    *
+    * [Access Key ID and Secret Access Key]
+    * (http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
+    */
+    secretAccessKey: string;
 
-	/**
-	* Access Key ID
-	*
-	* [Access Key ID and Secret Access Key]
-	* (http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
-	*/
-	accessKeyId: string;
+    /**
+    * Access Key ID
+    *
+    * [Access Key ID and Secret Access Key]
+    * (http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
+    */
+    accessKeyId: string;
 
-	/** Access Token of current session */
-	sessionToken: string;
+    /** Access Token of current session */
+    sessionToken: string;
 }
 
 // TODO: remove this once unauth creds are figured out
 export interface apiOptions {
-	headers: object;
-	endpoints: object;
-	credentials?: object;
+    headers: object;
+    endpoints: object;
+    credentials?: object;
+}
+
+export interface GraphQLOptions {
+    query: string,
+    variables?: object,
+}
+
+export interface GraphQLResult {
+    data?: object,
+    errors?: [object],
+    extensions?: { [key: string]: any },
 }

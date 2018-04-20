@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include site-head.html %}
+	</head>
+	<body class="{{ site.amplify.color_theme }}" data-spy="scroll" data-target=".js-scrollspy">
+		{% include site-header.html %}
+
+		<div class="section">
+			<div class="container">
+
+				<div class="row">
+					<div class="col-md-10">
+						<div class="content">
+							{{ content }}
+						</div><!-- /.content -->
+					</div><!-- /.col -->
+					<div class="col-md-4 col-md-offset-1">
+						<div class="sections-list-wrapper">
+							<div class="sections-list js-affix js-scrollspy hidden-xs hidden-sm">
+								<div class="dev-guide">
+								</div>						
+							</div><!-- /.sections-list -->
+							<div class='list-all'></div>
+						</div>
+					</div><!-- /.col -->
+				</div><!-- /.row -->
+			</div><!-- /.container -->
+		</div><!-- /.section -->
+
+		<div class="js-footer-area">
+			{% if page.page_nav.prev.content or page.page_nav.next.content %}
+				<nav class="page-nav">
+					<div class="container">
+						<div class="row">
+							<div class="col-xs-12">
+								{% if page.page_nav.prev.content and page.page_nav.prev.url %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.page_nav.prev.url }}" class="page-nav__item page-nav__item--prev">
+										<i class="icon icon--arrow-left"></i>
+										{{ page.page_nav.prev.content }}
+									</a><!-- /.page-nav__item -->
+								{% endif %}
+								{% if page.page_nav.next.content and page.page_nav.next.url %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.page_nav.next.url }}" class="page-nav__item page-nav__item--next">
+										{{ page.page_nav.next.content }}
+										<i class="icon icon--arrow-right"></i>
+									</a><!-- /.page-nav__item -->
+								{% endif %}
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.container -->
+				</nav><!-- /.page-nav -->
+			{% endif %}
+			{% if page.micro_nav == true %}
+				{% include micro-nav.html %}
+			{% endif %}
+			{% include site-footer.html %}
+		</div><!-- /.js-footer-area -->
+	</body>
+</html>
+
+

@@ -13,6 +13,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var API_1 = require("./API");
+exports.APIClass = API_1.default;
+exports.graphqlOperation = API_1.graphqlOperation;
 var Common_1 = require("../Common");
 var logger = new Common_1.ConsoleLogger('API');
 var _instance = null;

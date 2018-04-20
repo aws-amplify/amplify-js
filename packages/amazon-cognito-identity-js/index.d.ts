@@ -62,7 +62,9 @@ declare module "amazon-cognito-identity-js" {
         public setDeviceStatusRemembered(callbacks: { onSuccess: (success: string) => void, onFailure: (err: any) => void }): void;
         public setDeviceStatusNotRemembered(callbacks: { onSuccess: (success: string) => void, onFailure: (err: any) => void }): void;
         public getDevice(callbacks: {onSuccess: (success: string) => void, onFailure: (err: Error) => void}): any;
-        public sendMFACode(confirmationCode: string, callbacks: { onSuccess: (session: CognitoUserSession) => void, onFailure: (err: any) => void }, mfaType: string): void;
+        public forgetDevice(callbacks: {onSuccess: (success: string) => void, onFailure: (err: Error) => void}): void;
+        public forgetSpecificDevice(deviceKey: string, callbacks: {onSuccess: (success: string) => void, onFailure: (err: Error) => void}): void;
+        public sendMFACode(confirmationCode: string, callbacks: { onSuccess: (session: CognitoUserSession) => void, onFailure: (err: any) => void }, mfaType?: string): void;
         public listDevices(limit: number, paginationToken: string, callbacks: {onSuccess: (data: any) => void, onFailure: (err: Error) => void}): void;
         public completeNewPasswordChallenge(newPassword: string,
                                             requiredAttributeData: any,
@@ -83,12 +85,14 @@ declare module "amazon-cognito-identity-js" {
         public enableMFA(callback: NodeCallback<Error, string>): void;
         public disableMFA(callback: NodeCallback<Error, string>): void;
         public getMFAOptions(callback: NodeCallback<Error, MFAOption[]>): void;
+        public getUserData(callback: NodeCallback<Error, UserData>): void;
         public associateSoftwareToken(
             callbacks: {
                 associateSecretCode: (secretCode: string) => void,
                 onFailure: (err: any) => void
-            });
-        public verifySoftwareToken(totpCode, friendlyDeviceName, callbacks: {onSuccess: (session: CognitoUserSession) => void, onFailure: (err: Error) => void}): any;
+            }): void;
+        public verifySoftwareToken(totpCode: string, friendlyDeviceName: string, callbacks: {onSuccess: (session: CognitoUserSession) => void, onFailure: (err: Error) => void}): void;
+        public setUserMfaPreference(smsMfaSettings: string[], softwareTokenMfaSettings: string[], callback: NodeCallback<Error, string>): void;
     }
 
     export interface MFAOption {
@@ -96,6 +100,14 @@ declare module "amazon-cognito-identity-js" {
         AttributeName: string;
     }
 
+    export interface UserData {
+        MFAOptions: MFAOption[];
+        PreferredMfaSetting: string;
+        UserAttributes: ICognitoUserAttributeData[];
+        UserMFASettingList: string[];
+        Username: string;
+    }
+    
     export interface ICognitoUserAttributeData {
         Name: string;
         Value: string;
@@ -160,6 +172,8 @@ declare module "amazon-cognito-identity-js" {
 
         public getJwtToken(): string;
         public getExpiration(): number;
+        public getIssuedAt(): number;
+        public decodePayload(): { [id: string]: any; }
     }
 
     export class CognitoIdToken {
@@ -167,6 +181,8 @@ declare module "amazon-cognito-identity-js" {
 
         public getJwtToken(): string;
         public getExpiration(): number;
+        public getIssuedAt(): number;
+        public decodePayload(): { [id: string]: any; }
     }
 
     export class CognitoRefreshToken {

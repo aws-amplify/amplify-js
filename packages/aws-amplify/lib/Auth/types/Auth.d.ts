@@ -1,3 +1,4 @@
+import { ICookieStorageData } from "amazon-cognito-identity-js";
 /**
 * Parameters for user sign up
 */
@@ -15,6 +16,8 @@ export interface AuthOptions {
     identityPoolId: string;
     region?: string;
     mandatorySignIn: boolean;
+    cookieStorage?: ICookieStorageData;
+    oauth?: OAuth;
 }
 /**
 * Details for multi-factor authentication
@@ -22,4 +25,19 @@ export interface AuthOptions {
 export interface MfaRequiredDetails {
     challengeName: any;
     challengeParameters: any;
+}
+/**
+ * interface for federatedResponse
+ */
+export interface FederatedResponse {
+    token: string;
+    expires_at: number;
+}
+export interface OAuth {
+    domain: string;
+    scope: Array<string>;
+    redirectSignIn: string;
+    redirectSignOut: string;
+    responseType: string;
+    options?: object;
 }

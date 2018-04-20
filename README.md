@@ -21,7 +21,13 @@
   </a>
 </p>
 
-AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications. The library is a declarative interface across different categories of operations in order to make common tasks easier to add into your application. The default implementation works with Amazon Web Services (AWS) resources but is designed to be open and pluggable for usage with other cloud services that wish to provide an implementation or custom backends.
+### AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications. 
+
+AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations. AWS Amplify goes well with any JavaScript based frontend workflow, and React Native for mobile developers. 
+
+Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
+
+#### Visit our [Web Site](https://aws.github.io/aws-amplify) to learn more about AWS Amplify.
 
 <img src="https://dha4w82d62smt.cloudfront.net/items/1z3c0R3C3R1M063M3g2D/Screen%20Recording%202018-02-11%20at%2009.02%20AM.gif" style="display: block;height: auto;width: 100%;"/>
 
@@ -30,27 +36,37 @@ AWS Amplify is a JavaScript library for frontend and mobile developers building 
   - [React Native Development](#react-native-development)
 * [Documentation](https://aws.github.io/aws-amplify)
 * [Examples](#example)
-  - [1. Collect user session metrics.](#1-collect-user-session-metrics)
+  - [1. Collect user session metrics](#1-collect-user-session-metrics)
   - [2. Add Authentication](#2-add-authentication-to-your-app)
-  - [3. Override default authentication screens](#3-override-default-authentication-screens)
-  - [4. Sign HTTP requests](#4-sign-http-requests)
-  - [5. Upload and Download public or private content](#5-upload-and-download-public-or-private-content)
+  - [3. Sign HTTP requests](#3-sign-http-requests)
+  - [4. Upload and Download public or private content](#4-upload-and-download-public-or-private-content)
 * [Contributing](#contributing)
 
 ## Installation
 
 ### Web Development
-AWS Amplify is available as the `aws-amplify` package on [npm](https://www.npmjs.com/)
 
-```
+For creating cloud powered Web apps with JavaScript, AWS Amplify is available as `aws-amplify` package on [npm](https://www.npmjs.com/)
+
+```bash
 $ npm install aws-amplify --save
 ```
 
 If you are developing a [React](https://github.com/facebook/react/) app, you can install an additional package `aws-amplify-react` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
 
-```
+```bash
+$ npm install aws-amplify --save
 $ npm install aws-amplify-react --save
 ```
+
+If you are developing an [Angular](https://github.com/angular/angular) app, you can install an additional package `aws-amplify-angular`. This package contains an [Angular module](https://docs.angularjs.org/api/ng/function/angular.module) with a [provider and components](https://aws.github.io/aws-amplify/media/angular_guide):
+
+```bash
+$ npm install aws-amplify --save
+$ npm install aws-amplify-angular --save
+```
+
+#### Visit our [Installation Guide for Web](https://aws.github.io/aws-amplify/media/install_n_config?platform=javascript) to start building your web app.  
 
 ### React Native Development
 
@@ -66,36 +82,15 @@ If you are developing a [React Native](https://github.com/facebook/react-native)
 $ npm install aws-amplify-react-native --save
 ```
 
-Unless your react-native app was created using [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), you will need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) libraries in your project for the Auth module on React Native.
-
-To link `amazon-cognito-identity-js`, you must first `eject` the project:
-
-```bash
-$ npm run eject
-$ react-native link amazon-cognito-identity-js
-```
-
-Now run your application as normal:
-
-```bash
-$ react-native run-ios
-```
-
-Documentation is available [here](https://aws.github.io/aws-amplify)
+#### Visit our [Installation Guide for React Native](https://aws.github.io/aws-amplify/media/install_n_config?platform=react-native) to start building your web app.  
 
 ## Examples
 
-AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](docs/media/developer_guide.md). A couple of samples are below. For in-depth samples with specific frameworks:
-
- - [React](https://github.com/awslabs/aws-mobile-react-sample)
- - [React Native](https://github.com/awslabs/aws-mobile-react-native-starter)
- - [Ionic](https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws)
- - Vue (coming soon)
- - Angular (coming soon)
+AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](https://aws.github.io/aws-amplify/media/developer_guide). A couple of samples are below:
 
 ### 1. Collect user session metrics
 
-By default, AWS Amplify can send user session information as metrics with a few lines of code:
+By default, AWS Amplify can collect user session tracking data with a few lines of code:
 
 ```js
 import Amplify, { Analytics } from 'aws-amplify';
@@ -106,45 +101,11 @@ Amplify.configure(aws_exports);
 Analytics.record('myCustomEvent');
 ```
 
-See [here](https://aws.github.io/aws-amplify/media/analytics_guide.html) for the Analytics developer guide. 
+#### See our [Analytics Developer Guide](https://aws.github.io/aws-amplify/media/analytics_guide) for detailed information. 
 
 ### 2. Add Authentication to your App
 
-<img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
-
-Take a fresh React app created by `create-react-app` as an example and edit the `App.js` file:
-
-```jsx
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
-
-import Amplify from 'aws-amplify';
-import { withAuthenticator } from 'aws-amplify-react';
-import aws_exports from './aws-exports';
-
-Amplify.configure(aws_exports);
-
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
-}
-
-export default withAuthenticator(App);
-```
-
-If you are working in React Native the exact same setup is used. Simply include `aws-amplify-react-native` instead:
+Adding authentication to your React or React Native app is as easy as wrapping your app's main component with our `withAuthenticator` higher order component. AWS Amplify will provide you customizable UI for common use cases such as user registration and login.
 
 ```jsx
 ...
@@ -158,42 +119,44 @@ Amplify.configure(aws_exports);
 export default withAuthenticator(App);
 ```
 
-### 3. Override default authentication screens
-
-The `withAuthenticator` HOC gives you some good default authentication screens. But if you need to
-customize those screens with more than simply styles, it also provides an optional third parameter
-through which you can pass the list of customized (or not) screens:
+To add authentication to your Angular app you can also use the built-in service provider and components:
 
 ```js
-import React, { Component } from 'react';
-import { ConfirmSignIn, ConfirmSignUp, ForgotPassword, SignIn, SignUp, VerifyContact, withAuthenticator } from 'aws-amplify-react';
+// main.ts
+import Amplify from 'aws-amplify';
+import awsmobile from './aws-exports';
+Amplify.configure(awsmobile); // or manual configuration, see the docs
+...
+// app.component.ts
+import { AmplifyService }  from 'aws-amplify-angular';
 
-class App extends Component {
-  render() {
-    ...
-  }
+...
+
+constructor( public amplify:AmplifyService ) {
+  // handle auth state changes
+  this.amplify.authStateChange$
+      .subscribe(authState => {
+        this.authenticated = authState.state === 'signedIn';
+        if (!authState.user) {
+          this.user = null;
+        } else {
+          this.user = authState.user;
+        }
+    });
 }
 
-class MySignIn extends SignIn {
-  render() {
-    ...
-  }
-}
-
-export default withAuthenticator(App, false, [
-  <MySignIn/>,
-  <ConfirmSignIn/>,
-  <VerifyContact/>,
-  <SignUp/>,
-  <ConfirmSignUp/>,
-  <ForgotPassword/>
-]);
+// app.component.html
+<amplify-authenticator></amplify-authenticator>
 
 ```
 
-### 4. Sign HTTP requests
+#### See our [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) for more details on Angular setup and usage.
 
-Sign REST requests with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html) using the API module to one or multiple endpoints:
+#### See our [Authentication Developer Guide](https://aws.github.io/aws-amplify/media/authentication_guide) for detailed information. 
+
+### 3. Sign HTTP requests
+
+AWS Amplify automatically signs your REST requests with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html) when using the API module :
 
 ```js
 let apiName = 'MyApiName';
@@ -206,9 +169,11 @@ API.get(apiName, path, options).then(response => {
 });
 ```
 
-### 5. Upload and Download public or private content
+#### See our [API Developer Guide](https://aws.github.io/aws-amplify/media/api_guide) for detailed information. 
 
-With configurable settings, store content in an S3 bucket in public folders for all of your application's users or in private folders for each user identity:
+### 4. Upload and Download public or private content
+
+AWS Amplify provides an easy-to-use API to store and get content from public or private storage folders:  
 
 ```js
   Storage.put(key, fileObj, {level: 'private'})
@@ -223,6 +188,8 @@ With configurable settings, store content in an S3 bucket in public folders for 
     .then (result => console.log(result))
     .catch(err => console.log(err));
 ```
+
+#### See our [Storage Developer Guide](https://aws.github.io/aws-amplify/media/storage_guide) for detailed information. 
 
 ## Contributing
 

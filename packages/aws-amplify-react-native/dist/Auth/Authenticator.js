@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View } from 'react-native';
+import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Auth, Analytics, Logger } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
@@ -119,9 +119,13 @@ export default class Authenticator extends React.Component {
             });
         });
         return React.createElement(
-            View,
-            { style: theme.container },
-            children
+            TouchableWithoutFeedback,
+            { onPress: Keyboard.dismiss, accessible: false },
+            React.createElement(
+                View,
+                { style: theme.container },
+                children
+            )
         );
     }
 }
