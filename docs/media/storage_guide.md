@@ -20,7 +20,7 @@ To create a project fully functioning with the Storage category.
 $ npm install -g awsmobile-cli
 $ cd my-app #Change to your project's root folder
 $ awsmobile init
-$ awsmobile user-files 
+$ awsmobile user-files enable
 $ awsmobile push #Update your backend 
 ```
 
@@ -160,6 +160,46 @@ Storage.put('test.txt', 'Private Content', {
 })
 .then (result => console.log(result))
 .catch(err => console.log(err));
+```
+
+Upload an image from browser:
+```js
+class S3ImageUpload extends React.Component {
+    function onChange(e) {
+        const file = e.target.files[0];
+        Storage.put('example.png', file, {
+            contentType: 'image/png'
+        })
+        .then (result => console.log(result))
+        .catch(err => console.log(err));
+    }
+
+    render() {
+        return ()
+            <input
+                type="file" accept='image/png'
+                onChange={(e) => this.onChange(e)}
+            />
+        )
+    }
+}
+```
+
+Upload an image from react-native app:
+```js
+import RNFetchBlob from 'react-native-fetch-blob';
+
+readFile(filePath) {
+    return RNFetchBlob.fs.readFile(filePath, 'base64').then(data => new Buffer(data, 'base64'));
+}
+
+readFile(imagePath).then(buffer => {
+    Storage.put(key, buffer, {
+        contentType: imageType
+    })
+}).catch(e => {
+    console.log(e);
+});
 ```
 
 #### Get
@@ -457,6 +497,8 @@ Add an S3 album component to your template:
 See the [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) for usage.
 
 ## Customization 
+
+Note: this is only available in aws-amplify@beta for now.
 
 ### Customize Upload Path 
 

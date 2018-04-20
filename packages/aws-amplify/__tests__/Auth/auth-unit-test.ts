@@ -169,27 +169,25 @@ import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, Cognit
 import { CognitoIdentityCredentials, Credentials } from 'aws-sdk';
 import GoogleOAuth from '../../src/Common/OAuthHelper/GoogleOAuth';
 
-const authOptions = {
-    Auth: {
-        userPoolId: "awsUserPoolsId",
-        userPoolWebClientId: "awsUserPoolsWebClientId",
-        region: "region",
-        identityPoolId: "awsCognitoIdentityPoolId"
-    }
+const authOptions : AuthOptions = {
+    userPoolId: "awsUserPoolsId",
+    userPoolWebClientId: "awsUserPoolsWebClientId",
+    region: "region",
+    identityPoolId: "awsCognitoIdentityPoolId",
+    mandatorySignIn: false
 }
 
-const authOptionsWithNoUserPoolId = {
-    Auth: {
-        userPoolId: null,
-        userPoolWebClientId: "awsUserPoolsWebClientId",
-        region: "region",
-        identityPoolId: "awsCognitoIdentityPoolId"
-    }
+const authOptionsWithNoUserPoolId : AuthOptions = {
+    userPoolId: null,
+    userPoolWebClientId: "awsUserPoolsWebClientId",
+    region: "region",
+    identityPoolId: "awsCognitoIdentityPoolId",
+    mandatorySignIn: false
 }
 
 const userPool = new CognitoUserPool({
-    UserPoolId: authOptions.Auth.userPoolId,
-    ClientId: authOptions.Auth.userPoolWebClientId
+    UserPoolId: authOptions.userPoolId,
+    ClientId: authOptions.userPoolWebClientId
 });
 
 const idToken = new CognitoIdToken({IdToken: 'idToken'});

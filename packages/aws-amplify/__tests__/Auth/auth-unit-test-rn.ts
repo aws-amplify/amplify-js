@@ -148,27 +148,25 @@ import Cache from '../../src/Cache';
 import { CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
-const authOptions = {
-    Auth: {
-        userPoolId: "awsUserPoolsId",
-        userPoolWebClientId: "awsUserPoolsWebClientId",
-        region: "region",
-        identityPoolId: "awsCognitoIdentityPoolId"
-    }
+const authOptions : AuthOptions = {
+    userPoolId: "awsUserPoolsId",
+    userPoolWebClientId: "awsUserPoolsWebClientId",
+    region: "region",
+    identityPoolId: "awsCognitoIdentityPoolId",
+    mandatorySignIn: false
 }
 
-const authOptionsWithNoUserPoolId = {
-    Auth: {
-        userPoolId: null,
-        userPoolWebClientId: "awsUserPoolsWebClientId",
-        region: "region",
-        identityPoolId: "awsCognitoIdentityPoolId"
-    }
+const authOptionsWithNoUserPoolId : AuthOptions = {
+    userPoolId: null,
+    userPoolWebClientId: "awsUserPoolsWebClientId",
+    region: "region",
+    identityPoolId: "awsCognitoIdentityPoolId",
+    mandatorySignIn: false
 }
 
 const userPool = new CognitoUserPool({
-    UserPoolId: authOptions.Auth.userPoolId,
-    ClientId: authOptions.Auth.userPoolWebClientId
+    UserPoolId: authOptions.userPoolId,
+    ClientId: authOptions.userPoolWebClientId
 });
 
 const idToken = new CognitoIdToken({IdToken: 'idToken'});
