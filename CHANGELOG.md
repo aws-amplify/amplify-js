@@ -12,7 +12,7 @@
     * Bug Fix: Cannot sign in after Auth.completeNewPassword #589
     * Bug Fix: Declare type dependencies #629
     * Bug Fix: API GraphQL connect fix #652
-* aws-amplify - v0.1.42@beta
+* aws-amplify-react - v0.1.42@beta
     * Feature: Cognito Hosted UI #565 #480 #311 #45 #542 #376
 
 
