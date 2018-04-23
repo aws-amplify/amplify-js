@@ -3,9 +3,8 @@ import Auth, { AuthClass } from './Auth';
 import Storage, { StorageClass } from './Storage';
 import API, { APIClass, graphqlOperation } from './API';
 import PubSub from './PubSub';
-import I18n from './I18n';
 import Cache from './Cache';
-import { ConsoleLogger as Logger, Hub, JS, ClientDevice, Signer } from './Common';
+import { ConsoleLogger as Logger, Hub, JS, ClientDevice, Signer, I18n } from './Common';
 export default class Amplify {
     static Auth: AuthClass;
     static Analytics: AnalyticsClass;

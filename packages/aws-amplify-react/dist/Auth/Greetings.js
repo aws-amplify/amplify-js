@@ -182,55 +182,18 @@ var Greetings = function (_AuthPiece) {
         }
     }, {
         key: 'userGreetings',
-<<<<<<< HEAD
-        value: function () {
-            function userGreetings(theme) {
-                var user = this.state.authData;
-                var greeting = this.props.inGreeting || this.inGreeting;
-                // get name from attributes first
-                var nameFromAttr = user.attributes ? user.attributes.name || (user.attributes.given_name ? user.attributes.given_name + ' ' + user.attributes.family_name : undefined) : undefined;
-
-                var name = nameFromAttr || user.name || user.username;
-                var message = typeof greeting === 'function' ? greeting(name) : greeting;
-                return _react2['default'].createElement(
-                    'span',
-                    null,
-                    _react2['default'].createElement(
-                        _AmplifyUI.NavItem,
-                        { theme: theme },
-                        message
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.NavButton,
-                        {
-                            theme: theme,
-                            onClick: this.signOut
-                        },
-                        _awsAmplify.I18n.get('Sign Out')
-                    )
-                );
-            }
-
-            return userGreetings;
-        }()
-    }, {
-        key: 'noUserGreetings',
-        value: function () {
-            function noUserGreetings(theme) {
-                var greeting = this.props.outGreeting || this.outGreeting;
-                var message = typeof greeting === 'function' ? greeting() : greeting;
-                return message ? _react2['default'].createElement(
-=======
         value: function userGreetings(theme) {
             var user = this.state.authData;
             var greeting = this.props.inGreeting || this.inGreeting;
-            var name = user.name || user.username;
+            // get name from attributes first
+            var nameFromAttr = user.attributes ? user.attributes.name || (user.attributes.given_name ? user.attributes.given_name + ' ' + user.attributes.family_name : undefined) : undefined;
+
+            var name = nameFromAttr || user.name || user.username;
             var message = typeof greeting === 'function' ? greeting(name) : greeting;
             return _react2.default.createElement(
                 'span',
                 null,
                 _react2.default.createElement(
->>>>>>> upstream/master
                     _AmplifyUI.NavItem,
                     { theme: theme },
                     message
