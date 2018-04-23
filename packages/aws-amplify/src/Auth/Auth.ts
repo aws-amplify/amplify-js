@@ -138,11 +138,15 @@ export default class AuthClass {
                 onSuccess: (result) => {
                     that.user = that.userPool.getCurrentUser();
                     logger.debug("Cognito Hosted authentication result", result);
-                    that.currentSession().then((session) => {
-                        that._setCredentialsFromSession(session).then((cred) => {
+                    that.currentSession().then(async (session) => {
+                        try {
+                            const cred = await that._setCredentialsFromSession(session);
                             logger.debug('sign in succefully with', cred);
+                        } catch (e) {
+                            logger.debug('sign in without aws credentials', e);
+                        } finally {
                             dispatchAuthEvent('signIn', that.user);
-                        });
+                        }
                     });
                 },
                 onFailure: (err) => {
