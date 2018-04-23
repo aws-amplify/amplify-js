@@ -24,21 +24,15 @@ jest.mock('aws-sdk/clients/mobileanalytics', () => {
     return MobileAnalytics;
 });
 
-
-jest.mock('../../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
 jest.mock('uuid', () => {
     const mockfn = () => {return 'sessionId'};
     return { v1: mockfn };
 })
 
-import { Pinpoint, AWS, MobileAnalytics, JS } from '../../../src/Common';
+import { AWS, JS, ConsoleLogger as Logger } from '@aws-amplify/common';
+import * as Pinpoint from 'aws-sdk/clients/pinpoint';
+import * as  MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import AnalyticsProvider from "../../../src/Analytics/Providers/AWSAnalyticsProvider";
-import { ConsoleLogger as Logger } from '../../../src/Common/Logger';
 
 const credentials = {
     accessKeyId: 'accessKeyId',

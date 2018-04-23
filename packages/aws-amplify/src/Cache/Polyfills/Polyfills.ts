@@ -17,6 +17,6 @@ const polyfills = () => {
     if (!(<any>global).localStorage) {
         (<any>global).localStorage = InMemoryCache;
     }
-}
+};
 
 export default polyfills;

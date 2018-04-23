@@ -47,13 +47,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var common_1 = require("@aws-amplify/common");
-var S3 = require("aws-sdk/clients/s3");
+var Common_1 = require("../Common");
 var Auth_1 = require("../Auth");
-var logger = new common_1.ConsoleLogger('StorageClass');
+var logger = new Common_1.ConsoleLogger('StorageClass');
 var dispatchStorageEvent = function (track, attrs, metrics) {
     if (track) {
-        common_1.Hub.dispatch('storage', { attrs: attrs, metrics: metrics }, 'Storage');
+        Common_1.Hub.dispatch('storage', { attrs: attrs, metrics: metrics }, 'Storage');
     }
 };
 /**
@@ -91,7 +90,7 @@ var StorageClass = /** @class */ (function () {
     /**
     * Get a presigned URL of the file
     * @param {String} key - key of the object
-    * @param {Object} [options] - { level : private|protected|public }
+    * @param {Object} [options] - { level : private|public }
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
     StorageClass.prototype.get = function (key, options) {
@@ -152,7 +151,7 @@ var StorageClass = /** @class */ (function () {
      * Put a file in S3 bucket specified to configure method
      * @param {Stirng} key - key of the object
      * @param {Object} object - File to be put in Amazon S3 bucket
-     * @param {Object} [options] - { level : private|protected|public, contentType: MIME Types }
+     * @param {Object} [options] - { level : private|public, contentType: MIME Types }
      * @return - promise resolves to object on success
      */
     StorageClass.prototype.put = function (key, object, options) {
@@ -215,7 +214,7 @@ var StorageClass = /** @class */ (function () {
     /**
      * Remove the object for specified key
      * @param {String} key - key of the object
-     * @param {Object} [options] - { level : private|protected|public }
+     * @param {Object} [options] - { level : private|public }
      * @return - Promise resolves upon successful removal of the object
      */
     StorageClass.prototype.remove = function (key, options) {
@@ -258,7 +257,7 @@ var StorageClass = /** @class */ (function () {
     /**
      * List bucket objects relative to the level and prefix specified
      * @param {String} path - the path that contains objects
-     * @param {Object} [options] - { level : private|protected|public }
+     * @param {Object} [options] - { level : private|public }
      * @return - Promise resolves to list of keys for all objects in path
      */
     StorageClass.prototype.list = function (path, options) {
@@ -336,8 +335,8 @@ var StorageClass = /** @class */ (function () {
     StorageClass.prototype._prefix = function (options) {
         var credentials = options.credentials, level = options.level;
         var customPrefix = options.customPrefix || {};
-        var privatePath = (customPrefix.private || 'private/') + credentials.identityId + '/';
-        var protectedPath = (customPrefix.protected || 'protected/') + credentials.identityId + '/';
+        var privatePath = customPrefix.private || "private/" + credentials.identityId + "/";
+        var protectedPath = customPrefix.protected || "protected/" + credentials.identityId + "/";
         var publicPath = customPrefix.public || 'public/';
         switch (level) {
             case 'private':
@@ -353,11 +352,11 @@ var StorageClass = /** @class */ (function () {
      */
     StorageClass.prototype._createS3 = function (options) {
         var bucket = options.bucket, region = options.region, credentials = options.credentials;
-        common_1.AWS.config.update({
+        Common_1.AWS.config.update({
             region: region,
             credentials: credentials
         });
-        return new S3({
+        return new Common_1.S3({
             apiVersion: '2006-03-01',
             params: { Bucket: bucket },
             region: region

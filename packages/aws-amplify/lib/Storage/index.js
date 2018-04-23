@@ -14,8 +14,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Storage_1 = require("./Storage");
 exports.StorageClass = Storage_1.default;
-var common_1 = require("@aws-amplify/common");
-var logger = new common_1.ConsoleLogger('Storage');
+var Common_1 = require("../Common");
+var logger = new Common_1.ConsoleLogger('Storage');
 var _instance = null;
 if (!_instance) {
     logger.debug('Create Storage Instance');

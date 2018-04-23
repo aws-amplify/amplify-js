@@ -11,16 +11,10 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
-jest.mock('../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
 import { CacheConfig } from '../../src/Cache/types/Cache';
 import StorageCache from '../../src/Cache/StorageCache';
 import { defaultConfig } from '../../src/Cache/Utils';
-import { ConsoleLogger as Logger } from '../../src/Common/Logger';
+import { ConsoleLogger as Logger } from '@aws-amplify/common';
 
 const config: CacheConfig = {
     keyPrefix: 'aws-amplify#$#',

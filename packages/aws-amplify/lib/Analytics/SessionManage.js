@@ -12,18 +12,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-var common_1 = require("@aws-amplify/common");
+var Common_1 = require("../Common");
+var Platform_1 = require("../Common/Platform");
 // detect session stop
 var date = new Date();
 var preInteract = date.getTime();
 var expireTime = 30 * 60 * 1000; // 30mins
 var actions = ['mousemove', 'keydown', 'scroll'];
-if (!common_1.Platform.isReactNative) {
+if (!Platform_1.default.isReactNative) {
     actions.map(function (action) {
         document.addEventListener(action, function () {
             var curInteract = date.getTime();
             if (preInteract + expireTime < curInteract) {
-                common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
+                Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
             }
             preInteract = curInteract;
         });

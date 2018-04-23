@@ -134,7 +134,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
     return CognitoUser;
 });
 
-jest.mock('../../src/Common/Platform', () => {
+jest.mock('@aws-amplify/common/lib/Platform', () => {
     return {
         default: {
             isReactNative: true

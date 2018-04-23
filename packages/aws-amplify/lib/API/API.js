@@ -62,8 +62,8 @@ var Observable = require("zen-observable");
 var PubSub_1 = require("../PubSub");
 var RestClient_1 = require("./RestClient");
 var Auth_1 = require("../Auth");
-var common_1 = require("@aws-amplify/common");
-var logger = new common_1.ConsoleLogger('API');
+var Logger_1 = require("../Common/Logger");
+var logger = new Logger_1.ConsoleLogger('API');
 exports.graphqlOperation = function (query, variables) {
     if (variables === void 0) { variables = {}; }
     return ({ query: query, variables: variables });

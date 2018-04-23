@@ -47,12 +47,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-var common_1 = require("@aws-amplify/common");
-var Pinpoint = require("aws-sdk/clients/pinpoint");
-var MobileAnalytics = require("aws-sdk/clients/mobileanalytics");
+var Common_1 = require("../../Common");
 var Cache_1 = require("../../Cache");
 var uuid_1 = require("uuid");
-var logger = new common_1.ConsoleLogger('AWSAnalyticsProvider');
+var logger = new Common_1.ConsoleLogger('AWSAnalyticsProvider');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 var AWSAnalyticsProvider = /** @class */ (function () {
     function AWSAnalyticsProvider(config) {
@@ -368,7 +366,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      */
     AWSAnalyticsProvider.prototype._initMobileAnalytics = function () {
         var _a = this._config, credentials = _a.credentials, region = _a.region;
-        this.mobileAnalytics = new MobileAnalytics({ credentials: credentials, region: region });
+        this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });
     };
     /**
      * @private
@@ -378,7 +376,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     AWSAnalyticsProvider.prototype._initPinpoint = function () {
         var _this = this;
         var _a = this._config, region = _a.region, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials;
-        this.pinpointClient = new Pinpoint({
+        this.pinpointClient = new Common_1.Pinpoint({
             region: region,
             credentials: credentials,
         });

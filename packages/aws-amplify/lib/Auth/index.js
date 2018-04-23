@@ -14,8 +14,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Auth_1 = require("./Auth");
 exports.AuthClass = Auth_1.default;
-var common_1 = require("@aws-amplify/common");
-var logger = new common_1.ConsoleLogger('Auth');
+var Common_1 = require("../Common");
+var logger = new Common_1.ConsoleLogger('Auth');
 var _instance = null;
 if (!_instance) {
     logger.debug('Create Auth Instance');

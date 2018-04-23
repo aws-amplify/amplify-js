@@ -1,13 +1,6 @@
-jest.mock('../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
-import { AWS, ClientDevice, Parser } from '../../src/Common';
-import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from '../../src/Analytics/types';
+import { AWS, ClientDevice, Parser, ConsoleLogger as Logger } from '@aws-amplify/common';
+import { AnalyticsOptions, EventAttributes, EventMetrics } from '../../src/Analytics/types';
 import { default as Analytics } from "../../src/Analytics/Analytics";
-import { ConsoleLogger as Logger } from '../../src/Common/Logger';
 import Auth from '../../src/Auth/Auth';
 import AWSAnalyticsProvider from '../../src/Analytics/Providers/AWSAnalyticsProvider';
 

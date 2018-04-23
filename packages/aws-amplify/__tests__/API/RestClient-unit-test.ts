@@ -12,7 +12,7 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
-jest.mock('../../src/Common/Signer', () => {
+jest.mock('@aws-amplify/common/lib/Signer', () => {
     return {
         default: {
             sign: () => {
@@ -37,15 +37,9 @@ jest.mock('axios', () => {
     }
 });
 
-jest.mock('../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
 import { RestClient } from '../../src/API/RestClient';
 import * as AWS from 'aws-sdk';
-import Signer from '../../src/Common/Signer';
+import { Signer } from '@aws-amplify/common';
 import Auth from '../../src/Auth';
 import axios from 'axios';
 

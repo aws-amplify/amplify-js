@@ -24,8 +24,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = require("./Utils");
 var StorageCache_1 = require("./StorageCache");
-var common_1 = require("@aws-amplify/common");
-var logger = new common_1.ConsoleLogger('Cache');
+var Common_1 = require("../Common");
+var logger = new Common_1.ConsoleLogger('Cache');
 /**
  * Customized storage based on the SessionStorage or LocalStorage with LRU implemented
  */

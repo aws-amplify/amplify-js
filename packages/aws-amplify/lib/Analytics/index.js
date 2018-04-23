@@ -14,8 +14,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Analytics_1 = require("./Analytics");
 exports.AnalyticsClass = Analytics_1.default;
-var common_1 = require("@aws-amplify/common");
-var logger = new common_1.ConsoleLogger('Analytics');
+var Common_1 = require("../Common");
+var Platform_1 = require("../Common/Platform");
+var logger = new Common_1.ConsoleLogger('Analytics');
 var startsessionRecorded = false;
 var _instance = null;
 if (!_instance) {
@@ -26,10 +27,10 @@ var Analytics = _instance;
 exports.default = Analytics;
 // listen on app state change
 var dispatchAppStateEvent = function (event, data) {
-    common_1.Hub.dispatch('appState', { event: event, data: data }, 'AppState');
+    Common_1.Hub.dispatch('appState', { event: event, data: data }, 'AppState');
 };
-if (common_1.Platform.isReactNative) {
-    common_1.AppState.addEventListener('change', function (nextAppState) {
+if (Platform_1.default.isReactNative) {
+    Common_1.AppState.addEventListener('change', function (nextAppState) {
         switch (nextAppState) {
             case 'active':
                 dispatchAppStateEvent('active', {});
@@ -79,7 +80,7 @@ var authEvent = function (payload) {
         case 'configured':
             if (!startsessionRecorded) {
                 startsessionRecorded = true;
-                common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
+                Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
             }
             break;
     }
@@ -94,7 +95,7 @@ var analyticsEvent = function (payload) {
             break;
     }
 };
-common_1.Hub.listen('auth', Analytics);
-common_1.Hub.listen('storage', Analytics);
-common_1.Hub.listen('analytics', Analytics);
+Common_1.Hub.listen('auth', Analytics);
+Common_1.Hub.listen('storage', Analytics);
+Common_1.Hub.listen('analytics', Analytics);
 //# sourceMappingURL=index.js.map

@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var API_1 = require("./API");
 exports.APIClass = API_1.default;
 exports.graphqlOperation = API_1.graphqlOperation;
-var common_1 = require("@aws-amplify/common");
-var logger = new common_1.ConsoleLogger('API');
+var Common_1 = require("../Common");
+var logger = new Common_1.ConsoleLogger('API');
 var _instance = null;
 if (!_instance) {
     logger.debug('Create API Instance');

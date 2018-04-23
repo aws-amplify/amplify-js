@@ -47,10 +47,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var common_1 = require("@aws-amplify/common");
+var Common_1 = require("../Common");
 var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
 var Auth_1 = require("../Auth");
-var logger = new common_1.ConsoleLogger('AnalyticsClass');
+var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 // events buffer
 var BUFFER_SIZE = 1000;
 var MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
@@ -88,9 +88,9 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.configure = function (config) {
         logger.debug('configure Analytics');
-        var amplifyConfig = common_1.Parser.parseMobilehubConfig(config);
+        var amplifyConfig = Common_1.Parser.parseMobilehubConfig(config);
         var conf = Object.assign({}, this._config, amplifyConfig.Analytics, config);
-        var clientInfo = common_1.ClientDevice.clientInfo();
+        var clientInfo = Common_1.ClientDevice.clientInfo();
         conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
         this._config = conf;
         if (conf['disabled']) {
