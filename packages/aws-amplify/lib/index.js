@@ -27,6 +27,8 @@ exports.APIClass = API_1.APIClass;
 exports.graphqlOperation = API_1.graphqlOperation;
 var PubSub_1 = require("./PubSub");
 exports.PubSub = PubSub_1.default;
+var I18n_1 = require("./I18n");
+exports.I18n = I18n_1.default;
 var Cache_1 = require("./Cache");
 exports.Cache = Cache_1.default;
 var Common_1 = require("./Common");
@@ -35,7 +37,6 @@ exports.Hub = Common_1.Hub;
 exports.JS = Common_1.JS;
 exports.ClientDevice = Common_1.ClientDevice;
 exports.Signer = Common_1.Signer;
-exports.I18n = Common_1.I18n;
 var logger = new Common_1.ConsoleLogger('Amplify');
 var Amplify = /** @class */ (function () {
     function Amplify() {
@@ -45,7 +46,7 @@ var Amplify = /** @class */ (function () {
             return;
         }
         Auth_1.default.configure(config);
-        Common_1.I18n.configure(config);
+        I18n_1.default.configure(config);
         Analytics_1.default.configure(config);
         API_1.default.configure(config);
         Storage_1.default.configure(config);
@@ -91,7 +92,7 @@ Amplify.Auth = Auth_1.default;
 Amplify.Analytics = Analytics_1.default;
 Amplify.API = API_1.default;
 Amplify.Storage = Storage_1.default;
-Amplify.I18n = Common_1.I18n;
+Amplify.I18n = I18n_1.default;
 Amplify.Cache = Cache_1.default;
 Amplify.PubSub = PubSub_1.default;
 Amplify.Logger = Common_1.ConsoleLogger;
