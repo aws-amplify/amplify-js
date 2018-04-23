@@ -3,6 +3,15 @@
 
 # Federated Identity Setup
 
+## Enabling federated sign-in
+
+Amplify's authentication module uses AWS Cognito User Pools, which requires federated identity providers to be registered.  
+
+If you are using Mobile Hub, you can register a federated identify provider by accessing the User Sign-In section and selecting the provider under the 'Add sign-in Providers' section.
+
+You may also register federated identity providers within the Cognito User Pool by selecting the applicable pool and then accessing the Federation -> Identity providers section.
+
+
 ## Google
 
 * [AWS Developer Guide](http://docs.aws.amazon.com/cognito/latest/developerguide/google.html)
