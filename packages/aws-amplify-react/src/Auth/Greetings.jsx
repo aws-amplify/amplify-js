@@ -56,12 +56,12 @@ export default class Greetings extends AuthPiece {
     }
 
     googleSignOut() {
-        const auth2 = window.gapi && window.gapi.auth2? window.gapi.auth2 : null;
-        if (!auth2) {
+        const authInstance = window.gapi && window.gapi.auth2? window.gapi.auth2.getAuthInstance() : null;
+        if (!authInstance) {
             return Promise.resolve(null);
         }
 
-        auth2.getAuthInstance().then((googleAuth) => {
+        authInstance.then((googleAuth) => {
             if (!googleAuth) {
                 logger.debug('google Auth undefined');
                 return Promise.resolve(null);

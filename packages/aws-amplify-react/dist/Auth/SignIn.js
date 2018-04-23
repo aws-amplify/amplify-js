@@ -24,7 +24,7 @@ var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../AmplifyUI');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63,150 +63,130 @@ var SignIn = function (_AuthPiece) {
 
     _createClass(SignIn, [{
         key: 'checkContact',
-        value: function () {
-            function checkContact(user) {
-                var _this2 = this;
+        value: function checkContact(user) {
+            var _this2 = this;
 
-                _awsAmplify.Auth.verifiedContact(user).then(function (data) {
-                    if (!_awsAmplify.JS.isEmpty(data.verified)) {
-                        _this2.changeState('signedIn', user);
-                    } else {
-                        user = Object.assign(user, data);
-                        _this2.changeState('verifyContact', user);
-                    }
-                });
-            }
-
-            return checkContact;
-        }()
+            _awsAmplify.Auth.verifiedContact(user).then(function (data) {
+                if (!_awsAmplify.JS.isEmpty(data.verified)) {
+                    _this2.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    _this2.changeState('verifyContact', user);
+                }
+            });
+        }
     }, {
         key: 'signIn',
-        value: function () {
-            function signIn() {
-                var _this3 = this;
+        value: function signIn() {
+            var _this3 = this;
 
-                var _inputs = this.inputs,
-                    username = _inputs.username,
-                    password = _inputs.password;
+            var _inputs = this.inputs,
+                username = _inputs.username,
+                password = _inputs.password;
 
-                _awsAmplify.Auth.signIn(username, password).then(function (user) {
-                    logger.debug(user);
-                    if (user.challengeName === 'SMS_MFA' || user.challengeName === 'SOFTWARE_TOKEN_MFA') {
-                        logger.debug('confirm user with ' + user.challengeName);
-                        _this3.changeState('confirmSignIn', user);
-                    } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-                        logger.debug('require new password', user.challengeParam);
-                        _this3.changeState('requireNewPassword', user);
-                    } else if (user.challengeName === 'MFA_SETUP') {
-                        logger.debug('TOTP setup', user.challengeParam);
-                        _this3.changeState('TOTPSetup', user);
-                    } else {
-                        _this3.checkContact(user);
-                    }
-                })['catch'](function (err) {
-                    _this3.error(err);
-                });
-            }
-
-            return signIn;
-        }()
+            _awsAmplify.Auth.signIn(username, password).then(function (user) {
+                logger.debug(user);
+                if (user.challengeName === 'SMS_MFA' || user.challengeName === 'SOFTWARE_TOKEN_MFA') {
+                    logger.debug('confirm user with ' + user.challengeName);
+                    _this3.changeState('confirmSignIn', user);
+                } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
+                    logger.debug('require new password', user.challengeParam);
+                    _this3.changeState('requireNewPassword', user);
+                } else if (user.challengeName === 'MFA_SETUP') {
+                    logger.debug('TOTP setup', user.challengeParam);
+                    _this3.changeState('TOTPSetup', user);
+                } else {
+                    _this3.checkContact(user);
+                }
+            }).catch(function (err) {
+                _this3.error(err);
+            });
+        }
     }, {
         key: 'showComponent',
-        value: function () {
-            function showComponent(theme) {
-                var _this4 = this;
+        value: function showComponent(theme) {
+            var _this4 = this;
 
-                var _props = this.props,
-                    authState = _props.authState,
-                    hide = _props.hide,
-                    federated = _props.federated,
-                    onStateChange = _props.onStateChange;
+            var _props = this.props,
+                authState = _props.authState,
+                hide = _props.hide,
+                federated = _props.federated,
+                onStateChange = _props.onStateChange;
 
-                if (hide && hide.includes(SignIn)) {
-                    return null;
-                }
-
-                return _react2['default'].createElement(
-                    _AmplifyUI.FormSection,
-                    { theme: theme },
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionHeader,
-                        { theme: theme },
-                        _awsAmplify.I18n.get('Sign In Account')
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionBody,
-                        { theme: theme },
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            autoFocus: true,
-                            placeholder: _awsAmplify.I18n.get('Username'),
-                            theme: theme,
-                            key: 'username',
-                            name: 'username',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(_AmplifyUI.InputRow, {
-                            placeholder: _awsAmplify.I18n.get('Password'),
-                            theme: theme,
-                            key: 'password',
-                            type: 'password',
-                            name: 'password',
-                            onChange: this.handleInputChange
-                        }),
-                        _react2['default'].createElement(
-                            _AmplifyUI.ButtonRow,
-                            { theme: theme, onClick: this.signIn },
-                            _awsAmplify.I18n.get('Sign In')
-                        ),
-                        _react2['default'].createElement(_FederatedSignIn.FederatedButtons, {
-                            federated: federated,
-                            theme: theme,
-                            authState: authState,
-                            onStateChange: onStateChange
-                        })
-                    ),
-                    _react2['default'].createElement(
-                        _AmplifyUI.SectionFooter,
-                        { theme: theme },
-                        _react2['default'].createElement(
-                            'div',
-                            { style: theme.col6 },
-                            _react2['default'].createElement(
-                                _AmplifyUI.Link,
-                                { theme: theme, onClick: function () {
-                                        function onClick() {
-                                            return _this4.changeState('forgotPassword');
-                                        }
-
-                                        return onClick;
-                                    }() },
-                                _awsAmplify.I18n.get('Forgot Password')
-                            )
-                        ),
-                        _react2['default'].createElement(
-                            'div',
-                            { style: Object.assign({ textAlign: 'right' }, theme.col6) },
-                            _react2['default'].createElement(
-                                _AmplifyUI.Link,
-                                { theme: theme, onClick: function () {
-                                        function onClick() {
-                                            return _this4.changeState('signUp');
-                                        }
-
-                                        return onClick;
-                                    }() },
-                                _awsAmplify.I18n.get('Sign Up')
-                            )
-                        )
-                    )
-                );
+            if (hide && hide.includes(SignIn)) {
+                return null;
             }
 
-            return showComponent;
-        }()
+            return _react2.default.createElement(
+                _AmplifyUI.FormSection,
+                { theme: theme },
+                _react2.default.createElement(
+                    _AmplifyUI.SectionHeader,
+                    { theme: theme },
+                    _awsAmplify.I18n.get('Sign In Account')
+                ),
+                _react2.default.createElement(
+                    _AmplifyUI.SectionBody,
+                    { theme: theme },
+                    _react2.default.createElement(_AmplifyUI.InputRow, {
+                        autoFocus: true,
+                        placeholder: _awsAmplify.I18n.get('Username'),
+                        theme: theme,
+                        key: 'username',
+                        name: 'username',
+                        onChange: this.handleInputChange
+                    }),
+                    _react2.default.createElement(_AmplifyUI.InputRow, {
+                        placeholder: _awsAmplify.I18n.get('Password'),
+                        theme: theme,
+                        key: 'password',
+                        type: 'password',
+                        name: 'password',
+                        onChange: this.handleInputChange
+                    }),
+                    _react2.default.createElement(
+                        _AmplifyUI.ButtonRow,
+                        { theme: theme, onClick: this.signIn },
+                        _awsAmplify.I18n.get('Sign In')
+                    ),
+                    _react2.default.createElement(_FederatedSignIn.FederatedButtons, {
+                        federated: federated,
+                        theme: theme,
+                        authState: authState,
+                        onStateChange: onStateChange
+                    })
+                ),
+                _react2.default.createElement(
+                    _AmplifyUI.SectionFooter,
+                    { theme: theme },
+                    _react2.default.createElement(
+                        'div',
+                        { style: theme.col6 },
+                        _react2.default.createElement(
+                            _AmplifyUI.Link,
+                            { theme: theme, onClick: function onClick() {
+                                    return _this4.changeState('forgotPassword');
+                                } },
+                            _awsAmplify.I18n.get('Forgot Password')
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { style: Object.assign({ textAlign: 'right' }, theme.col6) },
+                        _react2.default.createElement(
+                            _AmplifyUI.Link,
+                            { theme: theme, onClick: function onClick() {
+                                    return _this4.changeState('signUp');
+                                } },
+                            _awsAmplify.I18n.get('Sign Up')
+                        )
+                    )
+                )
+            );
+        }
     }]);
 
     return SignIn;
-}(_AuthPiece3['default']);
+}(_AuthPiece3.default);
 
-exports['default'] = SignIn;
+exports.default = SignIn;

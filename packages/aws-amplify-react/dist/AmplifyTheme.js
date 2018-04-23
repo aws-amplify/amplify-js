@@ -311,4 +311,4 @@ var Bootstrap = {
     col12: Col12
 };
 
-exports['default'] = Bootstrap;
+exports.default = Bootstrap;

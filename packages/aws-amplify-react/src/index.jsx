@@ -10,7 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 import { I18n } from 'aws-amplify';
 
 import dict from './AmplifyI18n';
@@ -20,6 +19,7 @@ export * from './Auth';
 export * from './Analytics';
 export * from './Storage';
 export * from './Widget';
+export * from './API';
 
 export { default as AmplifyTheme } from './AmplifyTheme';
 export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
