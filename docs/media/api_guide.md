@@ -242,7 +242,7 @@ async function deleteData() {
     let myInit = { // OPTIONAL
         headers: {} // OPTIONAL
     }
-    return await API.delete(apiName, path, myInit);
+    return await API.del(apiName, path, myInit);
 }
 
 deleteData();

@@ -77,13 +77,13 @@ For a complete guide for starting your app with AWS Amplify, please see our [Qui
 
 ### Store Files on The Cloud
 
-AWS Amplify's default implementation for Storage category uses Amazon S3. You can store content in public or private Amazon S3 buckets. Private folders enable the resources are only available to a specific user identity.
+AWS Amplify's default implementation for Storage category uses Amazon S3. You can store content in public, protected or private folders. Protected folders allow content to be readable by everyone, but writable only by the creating user. Private folders restrict all content access to the creating user.
 
 ```js
   Storage.put(key, fileObj, {level: 'private'})
         .then (result => console.log(result))
         .catch(err => console.log(err));
-        
+
     // Stores data with specifying its MIME type
     Storage.put(key, fileObj, {
         level: 'private',
