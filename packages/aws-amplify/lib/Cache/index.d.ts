@@ -1,5 +1,6 @@
 import BrowserStorageCache from './BrowserStorageCache';
 import InMemoryCache from './InMemoryCache';
 import { CacheConfig } from './types';
-export { BrowserStorageCache, InMemoryCache, CacheConfig };
+import { Polyfills } from './Polyfills';
+export { BrowserStorageCache, InMemoryCache, CacheConfig, Polyfills };
 export default BrowserStorageCache;

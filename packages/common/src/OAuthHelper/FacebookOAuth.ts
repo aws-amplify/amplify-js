@@ -10,9 +10,11 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { ConsoleLogger as Logger } from '../Logger';
+import {
+    ConsoleLogger as Logger,
+} from '../Logger';
 
-const logger = new Logger('FacebookOAuthHelper');
+const logger = new Logger('CognitoCredentials');
 
 export default class FacebookOAuth {
     public refreshFacebookToken() {

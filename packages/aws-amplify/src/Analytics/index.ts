@@ -18,9 +18,9 @@ import {
     ConsoleLogger as Logger,
     Hub,
     Linking,
-    AppState
-} from '../Common';
-import Platform from '../Common/Platform';
+    AppState,
+    Platform
+} from '@aws-amplify/common';
 
 const logger = new Logger('Analytics');
 let startsessionRecorded = false;

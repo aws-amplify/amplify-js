@@ -64,12 +64,10 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Signer_1 = require("../Common/Signer");
-var Common_1 = require("../Common");
+var common_1 = require("@aws-amplify/common");
 var Auth_1 = require("../Auth");
 var axios_1 = require("axios");
-var Platform_1 = require("../Common/Platform");
-var logger = new Common_1.ConsoleLogger('RestClient');
+var logger = new common_1.ConsoleLogger('RestClient');
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
 * Sign request with AWS credentials if available
@@ -125,8 +123,8 @@ var RestClient = /** @class */ (function () {
                     data: null
                 };
                 libraryHeaders = {};
-                if (Platform_1.default.isReactNative) {
-                    userAgent = Platform_1.default.userAgent || 'aws-amplify/0.1.x';
+                if (common_1.Platform.isReactNative) {
+                    userAgent = common_1.Platform.userAgent || 'aws-amplify/0.1.x';
                     libraryHeaders = {
                         'User-Agent': userAgent
                     };
@@ -250,7 +248,7 @@ var RestClient = /** @class */ (function () {
             service: endpoint_service,
         };
         var signerServiceInfo = Object.assign(endpointInfo, signerServiceInfoParams);
-        var signed_params = Signer_1.default.sign(otherParams, creds, signerServiceInfo);
+        var signed_params = common_1.Signer.sign(otherParams, creds, signerServiceInfo);
         if (signed_params.data) {
             signed_params.body = signed_params.data;
         }

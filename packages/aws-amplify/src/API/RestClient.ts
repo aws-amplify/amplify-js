@@ -11,13 +11,11 @@
  * and limitations under the License.
  */
 
-import Signer from '../Common/Signer';
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger, Signer, Platform } from '@aws-amplify/common';
 
 import Auth from '../Auth';
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
-import Platform from '../Common/Platform';
 
 const logger = new Logger('RestClient');
 

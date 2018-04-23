@@ -13,10 +13,10 @@
 
 import {
     AWS,
-    S3,
     ConsoleLogger as Logger,
     Hub
-} from '../Common';
+} from '@aws-amplify/common';
+import * as S3 from 'aws-sdk/clients/s3';
 
 import Auth from '../Auth';
 import { StorageOptions } from './types';

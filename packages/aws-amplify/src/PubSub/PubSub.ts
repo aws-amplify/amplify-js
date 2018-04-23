@@ -10,11 +10,11 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import '../Common/Polyfills';
+import { ConsoleLogger as Logger, Polyfills } from '@aws-amplify/common';
+import { Polyfills as CachePolyfills } from '../Cache';
 import { Client } from 'paho-mqtt';
 import * as Observable from 'zen-observable';
 
-import { ConsoleLogger as Logger } from '../Common/Logger';
 import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
 import { AWSAppSyncProvider } from './Providers';
 

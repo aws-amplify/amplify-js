@@ -10,22 +10,5 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { AWS } from '@aws-amplify/common';
-/**
-* Analytics instance options
-*/
-export interface AnalyticsOptions {
-    appId: string;
-    platform?: string;
-    clientId?: string;
-    region?: string;
-    credentials?: AWS.Credentials & AWS.CognitoIdentityCredentials;
-}
 
-export interface EventAttributes {
-    [key: string]: any;
-}
-
-export interface EventMetrics {
-    [key: string]: number;
-}
+export { default as Polyfills } from './Polyfills';

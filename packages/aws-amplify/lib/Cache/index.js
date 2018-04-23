@@ -16,5 +16,8 @@ var BrowserStorageCache_1 = require("./BrowserStorageCache");
 exports.BrowserStorageCache = BrowserStorageCache_1.default;
 var InMemoryCache_1 = require("./InMemoryCache");
 exports.InMemoryCache = InMemoryCache_1.default;
+var Polyfills_1 = require("./Polyfills");
+exports.Polyfills = Polyfills_1.Polyfills;
+Polyfills_1.Polyfills();
 exports.default = BrowserStorageCache_1.default;
 //# sourceMappingURL=index.js.map

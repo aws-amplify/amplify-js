@@ -26,7 +26,7 @@ export { default as Parser } from './Parser';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export * from './RNComponents';
 export { default as Platform } from './Platform';
-
+export { default as Polyfills } from './Polyfills';
 import Platform from './Platform';
 export const Constants = {
     'userAgent': Platform.userAgent
@@ -35,9 +35,9 @@ export const Constants = {
 const logger = new Logger('Common');
 
 if (AWS['util']) {
-    AWS['util'].userAgent = () => {
-        return Constants.userAgent;
-    };
+    // AWS['util'].userAgent = () => {
+    //     return Constants.userAgent;
+    // };
 } else if (AWS.config) {
     AWS.config.update({'customUserAgent': Constants.userAgent});
 } else {

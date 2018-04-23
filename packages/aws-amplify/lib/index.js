@@ -27,17 +27,16 @@ exports.APIClass = API_1.APIClass;
 exports.graphqlOperation = API_1.graphqlOperation;
 var PubSub_1 = require("./PubSub");
 exports.PubSub = PubSub_1.default;
-var I18n_1 = require("./I18n");
-exports.I18n = I18n_1.default;
 var Cache_1 = require("./Cache");
 exports.Cache = Cache_1.default;
-var Common_1 = require("./Common");
-exports.Logger = Common_1.ConsoleLogger;
-exports.Hub = Common_1.Hub;
-exports.JS = Common_1.JS;
-exports.ClientDevice = Common_1.ClientDevice;
-exports.Signer = Common_1.Signer;
-var logger = new Common_1.ConsoleLogger('Amplify');
+var common_1 = require("@aws-amplify/common");
+exports.Logger = common_1.ConsoleLogger;
+exports.Hub = common_1.Hub;
+exports.JS = common_1.JS;
+exports.ClientDevice = common_1.ClientDevice;
+exports.Signer = common_1.Signer;
+exports.I18n = common_1.I18n;
+var logger = new common_1.ConsoleLogger('Amplify');
 var Amplify = /** @class */ (function () {
     function Amplify() {
     }
@@ -46,7 +45,7 @@ var Amplify = /** @class */ (function () {
             return;
         }
         Auth_1.default.configure(config);
-        I18n_1.default.configure(config);
+        common_1.I18n.configure(config);
         Analytics_1.default.configure(config);
         API_1.default.configure(config);
         Storage_1.default.configure(config);
@@ -92,8 +91,8 @@ Amplify.Auth = Auth_1.default;
 Amplify.Analytics = Analytics_1.default;
 Amplify.API = API_1.default;
 Amplify.Storage = Storage_1.default;
-Amplify.I18n = I18n_1.default;
+Amplify.I18n = common_1.I18n;
 Amplify.Cache = Cache_1.default;
 Amplify.PubSub = PubSub_1.default;
-Amplify.Logger = Common_1.ConsoleLogger;
+Amplify.Logger = common_1.ConsoleLogger;
 //# sourceMappingURL=index.js.map

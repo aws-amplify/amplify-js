@@ -10,22 +10,13 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { AWS } from '@aws-amplify/common';
-/**
-* Analytics instance options
-*/
-export interface AnalyticsOptions {
-    appId: string;
-    platform?: string;
-    clientId?: string;
-    region?: string;
-    credentials?: AWS.Credentials & AWS.CognitoIdentityCredentials;
+
+import InMemoryCache from '../InMemoryCache';
+
+const polyfills = () => {
+    if (!(<any>global).localStorage) {
+        (<any>global).localStorage = InMemoryCache;
+    }
 }
 
-export interface EventAttributes {
-    [key: string]: any;
-}
-
-export interface EventMetrics {
-    [key: string]: number;
-}
+export default polyfills;

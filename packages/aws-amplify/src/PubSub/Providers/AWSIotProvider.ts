@@ -12,7 +12,7 @@
  */
 import { MqttOverWSProvider } from './MqttOverWSProvider';
 import Auth from '../../Auth';
-import { Signer } from '../../Common';
+import { Signer } from '@aws-amplify/common';
 
 const SERVICE_NAME = 'iotdevicegateway';
 

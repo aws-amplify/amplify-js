@@ -10,4 +10,5 @@ script:
   - yarn build
   - yarn test --scope aws-amplify
   - yarn test --scope aws-amplify-react
+  - yarn test --scope @aws-amplify/common
   - yarn coverage

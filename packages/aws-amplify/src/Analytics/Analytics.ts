@@ -15,10 +15,10 @@ import {
     ClientDevice,
     ConsoleLogger as Logger,
     missingConfig,
-    Parser
-} from '../Common';
+    Parser,
+    Platform
+} from '@aws-amplify/common';
 import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
-import Platform from '../Common/Platform';
 import Auth from '../Auth';
 
 import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';

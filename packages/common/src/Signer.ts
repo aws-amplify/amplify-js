@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
-import { AWS } from './Facet';
 import { ConsoleLogger as Logger } from './Logger';
+import { AWS } from './Facet';
 
 const logger = new Logger('Signer'),
     url = require('url'),

@@ -18,7 +18,7 @@ import {
 
 import StorageCache from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger } from '@aws-amplify/common';
 
 const logger = new Logger('Cache');
 

@@ -1,4 +1,4 @@
-import { AWS } from '../../Common';
+import { AWS } from '@aws-amplify/common';
 /**
 * Analytics instance options
 */
@@ -14,8 +14,4 @@ export interface EventAttributes {
 }
 export interface EventMetrics {
     [key: string]: number;
-}
-export declare enum SessionState {
-    START = "START",
-    STOP = "STOP",
 }

@@ -18,7 +18,7 @@ import * as Observable from 'zen-observable';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { ProvidertOptions } from '../types';
-import { ConsoleLogger as Logger } from '../../Common/Logger';
+import { ConsoleLogger as Logger } from '@aws-amplify/common';
 
 const logger = new Logger('MqttOverWSProvider');
 

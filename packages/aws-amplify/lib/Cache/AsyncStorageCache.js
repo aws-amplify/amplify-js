@@ -61,8 +61,8 @@ var StorageCache_1 = require("./StorageCache");
 var CacheUtils_1 = require("./Utils/CacheUtils");
 var react_native_1 = require("react-native");
 exports.AsyncStorage = react_native_1.AsyncStorage;
-var Common_1 = require("../Common");
-var logger = new Common_1.ConsoleLogger('AsyncStorageCache');
+var common_1 = require("@aws-amplify/common");
+var logger = new common_1.ConsoleLogger('AsyncStorageCache');
 /*
  * Customized cache which based on the AsyncStorage with LRU implemented
  */

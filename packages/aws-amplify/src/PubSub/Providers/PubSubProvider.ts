@@ -12,7 +12,7 @@
  */
 import * as Observable from 'zen-observable';
 import { PubSubProvider, ProvidertOptions } from '../types';
-import { ConsoleLogger as Logger } from '../../Common';
+import { ConsoleLogger as Logger } from '@aws-amplify/common';
 
 const logger = new Logger('AbstractPubSubProvider');
 

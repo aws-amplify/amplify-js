@@ -10,8 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { Hub } from '../Common';
-import Platform from '../Common/Platform';
+import { Hub, Platform } from '@aws-amplify/common';
 
 // detect session stop
 const date = new Date();

@@ -19,7 +19,7 @@ import PubSub from '../PubSub';
 import { RestClient as RestClass } from './RestClient';
 
 import Auth from '../Auth';
-import { ConsoleLogger as Logger } from '../Common/Logger';
+import { ConsoleLogger as Logger } from '@aws-amplify/common';
 import { GraphQLOptions, GraphQLResult } from './types';
 
 const logger = new Logger('API');
