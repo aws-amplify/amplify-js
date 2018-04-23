@@ -2,6 +2,11 @@
 <!--LATEST=0.2.8-->
 <!--ENTRYINSERT-->
 
+## current changes (not released)
+* amazon-cognito-identity-js
+    * Add declartion for SetUserMFAPreference #667
+
+
 ##04/12/2018
 * aws-amplify - v0.3.0
     * Feature: Adding graphql support #645.
