@@ -14,8 +14,8 @@
     "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {
-    "./lib/Common/ClientDevice": "./lib/Common/ClientDevice/reactnative.js",
-    "./lib/Common/RNComponents": "./lib/Common/RNComponents/reactnative.js"
+    "./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
+    "./lib/RNComponents": "./lib/RNComponents/reactnative.js"
   },
   "repository": {
     "type": "git",

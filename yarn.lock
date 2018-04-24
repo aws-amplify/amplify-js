@@ -32,12 +32,6 @@
   dependencies:
     tslib "^1.7.1"
 
-"@aws-amplify/common@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/common/-/common-0.0.1.tgz#a8144c174a79be133944360de3ef86d7145f4dc9"
-  dependencies:
-    aws-sdk "2.198.0"
-
 "@babel/code-frame@^7.0.0-beta.35":
   version "7.0.0-beta.40"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.0.0-beta.40.tgz#37e2b0cf7c56026b4b21d3927cadf81adec32ac6"

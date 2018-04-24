@@ -33,7 +33,7 @@ import {
     Constants,
     ConsoleLogger as Logger, 
 }  from '@aws-amplify/common';
-import Cache from '../Cache';
+import Cache from '@aws-amplify/cache';
 
 const {
     CognitoIdentityCredentials,

@@ -16,7 +16,7 @@ import Auth, { AuthClass } from './Auth';
 import Storage, { StorageClass } from './Storage';
 import API, { APIClass, graphqlOperation } from './API';
 import PubSub from './PubSub';
-import Cache from './Cache';
+import Cache from '@aws-amplify/cache';
 import {
     ConsoleLogger as Logger,
     Hub,

@@ -13,7 +13,7 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/common';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
 import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
-import Cache from '../../Cache';
+import Cache from '@aws-amplify/cache';
 import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
 

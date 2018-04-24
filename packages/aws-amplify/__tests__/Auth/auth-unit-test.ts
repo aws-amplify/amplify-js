@@ -158,7 +158,7 @@ jest.mock('amazon-cognito-auth-js/lib/CognitoAuth', () => {
 
 import { AuthOptions, SignUpParams } from '../../src/Auth/types';
 import Auth from '../../src/Auth/Auth';
-import Cache from '../../src/Cache';
+import Cache from '@aws-amplify/cache';
 import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials, Credentials } from 'aws-sdk';
 import { GoogleOAuth } from '@aws-amplify/common';

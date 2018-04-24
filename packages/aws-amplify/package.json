@@ -67,7 +67,8 @@
     "uuid": "^3.2.1",
     "aws-sdk": "2.198.0",
     "zen-observable": "^0.8.6",
-    "@aws-amplify/common": "^0.0.3"
+    "@aws-amplify/common": "^0.0.3",
+    "@aws-amplify/cache": "^0.0.3"
   },
   "jest": {
     "transform": {
@@ -81,15 +82,11 @@
       "json",
       "jsx"
     ],
-    "setupFiles": [
-      "./__mocks__/SessionStorage.js",
-      "./__mocks__/LocalStorage.js"
-    ],
     "testEnvironment": "jsdom",
     "mapCoverage": true,
     "coverageThreshold": {
       "global": {
-        "branches": 70,
+        "branches": 68,
         "functions": 80,
         "lines": 80,
         "statements": 80
