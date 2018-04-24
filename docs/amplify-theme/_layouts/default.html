@@ -38,6 +38,7 @@
 									{% if site.category_list and isPageInCategories %}
 										<ul class="level-1 nav">
 											{% for category in site.category_list %}
+												<div class='category-header'>{{ category.title }}</div>
 												{% for item in category.subs %}
 													{% if page.url contains item.url %}
 														<div class='in-this-page js-sections'></div>

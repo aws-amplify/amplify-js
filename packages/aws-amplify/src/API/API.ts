@@ -10,13 +10,21 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { OperationDefinitionNode, GraphQLError } from 'graphql';
+import { print } from 'graphql/language/printer';
+import { parse } from 'graphql/language/parser';
+import * as Observable from 'zen-observable';
+import PubSub from '../PubSub';
 
 import { RestClient as RestClass } from './RestClient';
 
 import Auth from '../Auth';
 import { ConsoleLogger as Logger } from '../Common/Logger';
+import { GraphQLOptions, GraphQLResult } from './types';
 
 const logger = new Logger('API');
+
+export const graphqlOperation = (query, variables = {}) => ({ query, variables });
 
 /**
  * Export Cloud Logic APIs
@@ -43,21 +51,26 @@ export default class APIClass {
      * @return {Object} - The current configuration
      */
     configure(options) {
-        logger.debug('configure API');
-        let opt = options? options.API || options : {};
+        let opt = options ? options.API || options : {};
+        logger.debug('configure API', { opt });
 
         if (opt['aws_project_region']) {
             if (opt['aws_cloud_logic_custom']) {
                 const custom = opt['aws_cloud_logic_custom'];
-                opt.endpoints = (typeof custom === 'string')? JSON.parse(custom)
-                                                             : custom;
+                opt.endpoints = (typeof custom === 'string') ? JSON.parse(custom)
+                    : custom;
             }
             opt = Object.assign({}, opt, {
                 region: opt['aws_project_region'],
                 header: {},
             });
         }
-        
+
+        if (typeof opt.graphql_headers !== 'undefined' && typeof opt.graphql_headers !== 'function') {
+            logger.warn('graphql_headers should be a function');
+            opt.graphql_headers = undefined;
+        }
+
         this._options = Object.assign({}, this._options, opt);
 
         this.createInstance();
@@ -65,10 +78,10 @@ export default class APIClass {
         return this._options;
     }
 
-   /**
-    * Create an instance of API for the library
-    * @return - A promise of true if Success
-    */
+    /**
+     * Create an instance of API for the library
+     * @return - A promise of true if Success
+     */
     createInstance() {
         logger.debug('create API instance');
         if (this._options) {
@@ -90,7 +103,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -104,7 +117,7 @@ export default class APIClass {
         }
         return this._api.get(endpoint + path, init);
     }
-    
+
     /**
      * Make a POST request
      * @param {string} apiName  - The api name of the request
@@ -116,7 +129,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -142,7 +155,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -168,7 +181,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -194,7 +207,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -220,7 +233,7 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
@@ -244,11 +257,165 @@ export default class APIClass {
         if (!this._api) {
             try {
                 await this.createInstance();
-            } catch(error) {
+            } catch (error) {
                 return Promise.reject(error);
             }
         }
         return this._api.endpoint(apiName);
+    }
+
+    private async _headerBasedAuth() {
+        const {
+            aws_appsync_authenticationType: authenticationType,
+            aws_appsync_apiKey: apiKey,
+        } = this._options;
+        let headers = {};
+
+        const credentialsOK = await this._ensureCredentials();
+
+        switch (authenticationType) {
+            case 'API_KEY':
+                headers = {
+                    Authorization: null,
+                    'X-Api-Key': apiKey
+                };
+                break;
+            case 'AWS_IAM':
+                if (!credentialsOK) { throw new Error('No credentials'); }
+                break;
+            case 'AMAZON_COGNITO_USER_POOLS':
+                const session = await Auth.currentSession();
+
+                headers = {
+                    Authorization: session.getAccessToken().getJwtToken()
+                };
+                break;
+            default:
+                headers = {
+                    Authorization: null,
+                };
+                break;
+        }
+
+        return headers;
+    }
+
+    /**
+     * Executes a GraphQL operation
+     *
+     * @param {GraphQLOptions} GraphQL Options
+     * @returns {Promise<GraphQLResult> | Observable<object>}
+     */
+    graphql({ query, variables = {} }: GraphQLOptions) {
+
+        const doc = parse(query);
+
+        const [operationDef = {},] = doc.definitions.filter(def => def.kind === 'OperationDefinition');
+        const { operation: operationType } = operationDef as OperationDefinitionNode;
+
+        switch (operationType) {
+            case 'query':
+            case 'mutation':
+                return this._graphql({ query, variables });
+            case 'subscription':
+                return this._graphqlSubscribe({ query, variables });
+        }
+
+        throw new Error(`invalid operation type: ${operationType}`);
+    }
+
+    private async _graphql({ query: queryStr, variables }: GraphQLOptions): Promise<GraphQLResult> {
+        if (!this._api) {
+            await this.createInstance();
+        }
+
+        const {
+            aws_appsync_region: region,
+            aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
+            graphql_headers = () => ({}),
+            graphql_endpoint: customGraphqlEndpoint,
+        } = this._options;
+
+        const doc = parse(queryStr);
+        const query = print(doc);
+
+        const headers = {
+            ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
+            ...(customGraphqlEndpoint && { Authorization: null }),
+            ... await graphql_headers({ query: doc, variables })
+        };
+
+        const body = {
+            query,
+            variables,
+        };
+
+        const init = {
+            headers,
+            body,
+            signerServiceInfo: {
+                service: 'appsync',
+                region,
+            }
+        };
+
+        const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
+
+        if (!endpoint) {
+            const error = new GraphQLError('No graphql endpoint provided.');
+
+            throw {
+                data: {},
+                errors: [error],
+            };
+        }
+
+        let response;
+        try {
+            response = await this._api.post(endpoint, init);
+        } catch (err) {
+            response = {
+                data: {},
+                errors: [
+                    new GraphQLError(err.message)
+                ]
+            };
+        }
+
+        const { errors } = response;
+
+        if (errors && errors.length) {
+            throw response;
+        }
+
+        return response;
+    }
+
+    private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
+        return new Observable(observer => {
+
+            let handle = null;
+
+            (async () => {
+                const {
+                    extensions: { subscription }
+                } = await this._graphql({ query, variables });
+
+                const { newSubscriptions } = subscription;
+
+                const newTopics = Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+
+                const observable = PubSub.subscribe(newTopics, subscription);
+
+                handle = observable.subscribe(observer);
+            })();
+
+            return () => {
+                if (handle) {
+                    handle.unsubscribe();
+                }
+            };
+        });
     }
 
     /**
@@ -261,7 +428,7 @@ export default class APIClass {
                 const cred = Auth.essentialCredentials(credentials);
                 logger.debug('set credentials for api', cred);
 
-                return true;
+                return credentials;
             })
             .catch(err => {
                 logger.warn('ensure credentials error', err);
