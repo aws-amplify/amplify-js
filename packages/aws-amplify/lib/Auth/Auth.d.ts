@@ -1,4 +1,4 @@
-import { AuthOptions } from './types';
+import { AuthOptions, FederatedResponse } from './types';
 /**
 * Provide authentication steps
 */
@@ -9,6 +9,8 @@ export default class AuthClass {
     private credentials;
     private credentials_source;
     private user;
+    private _refreshHandlers;
+    private _gettingCredPromise;
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
@@ -134,6 +136,7 @@ export default class AuthClass {
      * @return - A promise resolves to be current user's credentials
      */
     currentUserCredentials(): Promise<any>;
+    private _refreshFederatedToken(federatedInfo);
     currentCredentials(): Promise<any>;
     /**
      * Initiate an attribute confirmation request
@@ -163,6 +166,7 @@ export default class AuthClass {
      * @return - A promise resolved if success
      */
     signOut(): Promise<any>;
+    private cleanCachedItems();
     /**
      * Change a password for an authenticated user
      * @param {Object} user - The CognitoUser object
@@ -194,10 +198,11 @@ export default class AuthClass {
     /**
      * For federated login
      * @param {String} provider - federation login provider
-     * @param {Object} response - response including access_token
+     * @param {FederatedResponse} response - response should have the access token
+     * and the expiration time (the universal time)
      * @param {String} user - user info
      */
-    federatedSignIn(provider: any, response: any, user: any): Promise<any>;
+    federatedSignIn(provider: string, response: FederatedResponse, user: object): Promise<{}>;
     /**
      * Compact version of credentials
      * @param {Object} credentials
@@ -211,11 +216,13 @@ export default class AuthClass {
         authenticated: any;
     };
     private attributesToObject(attributes);
-    private setCredentialsFromFederation(provider, token, user);
     private pickupCredentials();
-    private setCredentialsFromAWS();
-    private setCredentialsForGuest();
-    private setCredentialsFromSession(session);
+    private _setCredentialsFromAWS();
+    private _setCredentialsForGuest();
+    private _setCredentialsFromSession(session);
+    private _setCredentialsFromFederation(params);
+    private _loadCredentials(credentials, source, authenticated, rawUser);
     private keepAlive();
     private createCognitoUser(username);
+    private _isExpired(credentials);
 }

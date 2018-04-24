@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Logger, JS } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import { FormSection, SectionBody, ActionRow } from '../AmplifyUI';
-import { GoogleButton } from './Provider';
+import { AmplifyGoogleSignIn } from 'react-native-aws-amplify-google-signin';
 
 const logger = new Logger('FederatedSignIn');
 
@@ -29,7 +29,7 @@ export class FederatedButtons extends Component {
         }
 
         const { theme, onStateChange } = this.props;
-        return React.createElement(GoogleButton, {
+        return React.createElement(AmplifyGoogleSignIn.GoogleButton, {
             google_ios_client_id: google_ios_client_id,
             google_web_client_id: google_web_client_id,
             theme: theme,
