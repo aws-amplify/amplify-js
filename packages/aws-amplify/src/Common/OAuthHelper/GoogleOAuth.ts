@@ -17,12 +17,19 @@ import {
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
-    setTimeout(
-        () => {
-            res();
-        }, 
-        2000
-    );
+    const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+    if (ga) {
+        logger.debug('google api already loaded');
+        res();
+    } else {
+        setTimeout(
+            () => {
+                res();
+            }, 
+            2000
+        );
+    }
+    
 });
 
 export default class GoogleOAuth {

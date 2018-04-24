@@ -17,12 +17,18 @@ import {
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
-    setTimeout(
-        () => {
-            res();
-        }, 
-        2000
-    );
+    const fb = window['FB'];
+    if (fb) {
+        logger.debug('FB SDK already loaded');
+        res();
+    } else {
+        setTimeout(
+            () => {
+                res();
+            }, 
+            2000
+        );
+    }
 });
 
 export default class FacebookOAuth {
