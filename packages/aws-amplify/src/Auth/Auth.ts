@@ -80,7 +80,7 @@ export default class AuthClass {
     }
 
     configure(config) {
-        if (!config) return this._config;
+        if (!config) return this._config || {};
         logger.debug('configure Auth');
         const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Auth, config);
         this._config = conf;
