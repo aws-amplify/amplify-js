@@ -4,8 +4,11 @@ Config
 lerna-debug.log
 node_modules/**
 packages/*/node_modules/**
-packages/**/lib/
-packages/**/dist/
+packages/aws-amplify-angular/lib/
+packages/cache/dist/
+packages/cache/lib/
+packages/common/dist/
+packages/common/lib/
 .DS_Store
 .vscode
 .idea
