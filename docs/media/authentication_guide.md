@@ -358,7 +358,7 @@ There is also `withGoogle`, `withFacebook`, `withAmazon` components, in case you
 
 Amazon Cognito provides a customizable user experience via the hosted UI. The hosted UI supports OAuth 2.0 and Federated Identities with Facebook, Amazon, Google, and SAML providers.
 
-Note: Amazon Cognito hosted UI feature is supported with *aws-amplify@^0.2.15* and *aws-amplify-react@^0.1.39* versions.
+Note: Amazon Cognito hosted UI feature is now available in aws-amplify@beta.
 {: .callout .callout--info}
 
 #### Setup your Cognito App Client
@@ -383,7 +383,7 @@ You can also enable Federated Identities for your hosted UI;
 
 - Go to *Federation* > *Identity providers*
 - Select an *Identity provider* and enter required credentials for the identity provider. (e.g., App Id, App secret, Authorized scope)
-- In the settings page for your selected identity provider (Facebook, Google, etc.),  set *Oauth Redirected URI* to `https://your-domain-prefix.auth.us-east 1.amazoncognito.com/oauth2/idpresponse` (*your-domain-prefix* is the domain prefix you have entered in previously).
+- In the settings page for your selected identity provider (Facebook, Google, etc.),  set *Oauth Redirected URI* to `https://your-domain-prefix.auth.us-east-1.amazoncognito.com/oauth2/idpresponse` (*your-domain-prefix* is the domain prefix you have entered in previously).
 - To retrieve user attributes from your identity provider, go to *Federation* > *Attribute mapping*. Here, you can map Federation Provider attributes to corresponding User pool attributes. 
 
 If  *email* attribute is a required field in your Cognito User Pool settings, please make sure that you have selected *email* in your Authorized Scopes, and you have mapped it correctly to your User Pool attributes.
@@ -418,7 +418,7 @@ const oauth = {
         // Indicates if the data collection is enabled to support Cognito advanced security features. By default, this flag is set to true.
         AdvancedSecurityDataCollectionFlag : true
     }
-}
+}
 
 Amplify.configure({
     Auth: {
@@ -665,7 +665,7 @@ const MyTheme = Object.assign({}, AmplifyTheme, { sectionHeader: MySectionHeader
 <Authenticator theme={MyTheme} />
 ```
 
-A sample them can be found [here](https://github.com/richardzcode/a-theme-react).
+A sample theme can be found [here](https://github.com/richardzcode/a-theme-react).
 {: .callout .callout--info}
 
 ### Create Your Own UI

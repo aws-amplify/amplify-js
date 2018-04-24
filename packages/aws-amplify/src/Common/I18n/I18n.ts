@@ -12,7 +12,7 @@
  */
 
 import { I18nOptions } from './types';
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger } from '../Logger';
 
 const logger = new Logger('I18n');
 
