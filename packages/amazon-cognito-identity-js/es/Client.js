@@ -89,7 +89,7 @@ var Client = function () {
         // otherwise check if error is Network error
       } else if (err instanceof Error && err.message === 'Network error') {
         error = {
-          code: err.name,
+          code: 'NetworkError',
           name: err.name,
           message: err.message
         };
