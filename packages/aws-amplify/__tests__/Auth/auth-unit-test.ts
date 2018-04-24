@@ -1344,21 +1344,14 @@ describe('auth unit test', () => {
     });
 
     describe('signOut', () => {
-        test('happy case for all', async () => {
+        test('happy case', async () => {
             const auth = new Auth(authOptions);
-            auth['credentials'] = new CognitoIdentityCredentials({
-                IdentityPoolId: 'identityPoolId'
-            });
+
             const user = new CognitoUser({
                 Username: 'username',
                 Pool: userPool
             });
 
-
-            const spyonAuth = jest.spyOn(Auth.prototype, "currentUserCredentials")
-            .mockImplementationOnce(() => {
-                return new Promise((resolve, reject) => { resolve(); });
-            });
             const spyon = jest.spyOn(CognitoIdentityCredentials.prototype, "clearCachedId");
             const spyon2 = jest.spyOn(Cache, 'removeItem');
             const spyon3 = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
@@ -1372,87 +1365,41 @@ describe('auth unit test', () => {
             expect(spyon).toBeCalled();
             expect(spyon2).toBeCalledWith('federatedInfo');
 
-            spyonAuth.mockClear();
             spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
 
-        test('happy case for source userpool', async () => {
-            const auth = new Auth(authOptions);
-            const user = new CognitoUser({
-                Username: 'username',
-                Pool: userPool
-            });
-            auth['credentials_source'] = 'aws';
-            auth['credentials'] = new CognitoIdentityCredentials({
-                IdentityPoolId: 'identityPoolId'
-            });
-
-            const spyonAuth = jest.spyOn(Auth.prototype, "currentUserCredentials")
-            .mockImplementationOnce(() => {
-                return new Promise((resolve, reject) => { resolve(); });
-            });
-            const spyon = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
-            .mockImplementationOnce(() => {
-                return user;
-            });
-            const spyon2 = jest.spyOn(CognitoUser.prototype, "signOut");
-            // @ts-ignore
-
-            await auth.signOut();
-
-            expect.assertions(1);
-            expect(spyon2).toBeCalled();
-
-            spyonAuth.mockClear();
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
-
-        test('no UserPool', async () => {
+        test('happy case for no userpool', async () => {
             const auth = new Auth(authOptionsWithNoUserPoolId);
-            auth['credentials_source'] = 'aws';
-            auth['credentials'] = new CognitoIdentityCredentials({
-                IdentityPoolId: 'identityPoolId'
-            });
 
-            const spyonAuth = jest.spyOn(Auth.prototype, "currentUserCredentials")
-            .mockImplementationOnce(() => {
-                return new Promise((resolve, reject) => { resolve(); });
-            });
-            expect.assertions(1);
-            try {
-                await auth.signOut();
-            } catch (e) {
-                expect(e).toBe('No userPool');
-            }
-
-            spyonAuth.mockClear();
+            expect(await auth.signOut()).toBeUndefined();            
         });
 
         test('no User in userpool', async () => {
             const auth = new Auth(authOptions);
-            auth['credentials_source'] = 'aws';
-            auth['credentials'] = new CognitoIdentityCredentials({
-                IdentityPoolId: 'identityPoolId'
-            });
 
-            const spyonAuth = jest.spyOn(Auth.prototype, "currentUserCredentials")
-            .mockImplementationOnce(() => {
-                return new Promise((resolve, reject) => { resolve(); });
-            });
             const spyon = jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
                 .mockImplementationOnce(() => {
                     return null;
                 });
+            expect(await auth.signOut()).toBeUndefined();           
 
-
-            expect.assertions(1);
-            expect(await auth.signOut()).toBeUndefined();
-
-            spyonAuth.mockClear();
             spyon.mockClear();
+        });
+
+        test('get guest credentials failed', async() => {
+            const auth = new Auth(authOptionsWithNoUserPoolId);
+
+            const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementation(() => {
+                return new Promise((res, rej) => {
+                    rej('err');
+                });
+            });
+
+            expect(await auth.signOut()).toBeUndefined();     
+
+            cognitoCredentialSpyon.mockClear();
         });
     });
 

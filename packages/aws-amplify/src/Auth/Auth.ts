@@ -140,11 +140,15 @@ export default class AuthClass {
                 onSuccess: (result) => {
                     that.user = that.userPool.getCurrentUser();
                     logger.debug("Cognito Hosted authentication result", result);
-                    that.currentSession().then((session) => {
-                        that._setCredentialsFromSession(session).then((cred) => {
+                    that.currentSession().then(async (session) => {
+                        try {
+                            const cred = await that._setCredentialsFromSession(session);
                             logger.debug('sign in succefully with', cred);
+                        } catch (e) {
+                            logger.debug('sign in without aws credentials', e);
+                        } finally {
                             dispatchAuthEvent('signIn', that.user);
-                        });
+                        }
                     });
                 },
                 onFailure: (err) => {
@@ -563,6 +567,7 @@ export default class AuthClass {
                 },
                 onFailure: (err) => {
                     logger.debug('completeNewPassword failure', err);
+                    dispatchAuthEvent('completeNewPassword_failure', err);
                     reject(err);
                 },
                 mfaRequired: (challengeName, challengeParam) => {
@@ -924,30 +929,30 @@ export default class AuthClass {
             logger.debug('failed to clear cached items');
         }
 
-        const source = this.credentials_source;
-        if (source === 'aws' || source === 'userPool') {
-            if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (this.userPool) { 
             const user = this.userPool.getCurrentUser();
-            if (!user) { return Promise.resolve(); }
-            logger.debug('user sign out', user);
-            user.signOut();
-            if (this._cognitoAuthClient) {
-                this._cognitoAuthClient.signOut();
+            if (user) {
+                logger.debug('user sign out', user);
+                user.signOut();
+                if (this._cognitoAuthClient) {
+                    this._cognitoAuthClient.signOut();
+                }
             }
+        } else {
+            logger.debug('no Congito User pool');
         }
-
+        
         const that = this;
-        return new Promise((resolve, reject) => {
-            that._setCredentialsForGuest().then((cred) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await that._setCredentialsForGuest();
+            } catch (e) {
+                logger.debug('cannot load guest credentials for unauthenticated user', e);
+            } finally {
                 dispatchAuthEvent('signOut', that.user);
                 that.user = null;
                 resolve();
-            }).catch((e) => {
-                logger.debug('cannot load guest credentials for unauthenticated user');
-                dispatchAuthEvent('signOut', that.user);
-                that.user = null;
-                resolve();
-            });
+            }
         });
     }
 

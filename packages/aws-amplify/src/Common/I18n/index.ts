@@ -13,7 +13,7 @@
 
 import { I18n as I18nClass } from './I18n';
 
-import { ConsoleLogger as Logger } from '../Common/Logger';
+import { ConsoleLogger as Logger } from '../Logger';
 
 const logger = new Logger('I18n');
 
