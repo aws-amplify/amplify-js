@@ -83,10 +83,10 @@ export default class S3Image extends Component {
         const { src } = this.state;
         if (!src) { return null; }
 
-        const { style, resizeMode} = this.props;
+        const { style, resizeMode, blurRadius } = this.props;
         const theme = this.props.theme || AmplifyTheme;
         const photoStyle = Object.assign({}, StyleSheet.flatten(theme.photo), style);
 
-        return <Image source={src} resizeMode={resizeMode} style={photoStyle} />
+        return <Image source={src} resizeMode={resizeMode} style={photoStyle} blurRadius={blurRadius} />
     }
 }
