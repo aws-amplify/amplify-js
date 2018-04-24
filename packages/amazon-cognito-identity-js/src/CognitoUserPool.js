@@ -33,7 +33,13 @@ export default class CognitoUserPool {
    *        flag is set to true.
    */
   constructor(data) {
-    const { UserPoolId, ClientId, endpoint, AdvancedSecurityDataCollectionFlag } = data || {};
+    const {
+      UserPoolId,
+      ClientId,
+      ProxyAgent,
+      endpoint,
+      AdvancedSecurityDataCollectionFlag
+    } = data || {};
     if (!UserPoolId || !ClientId) {
       throw new Error('Both UserPoolId and ClientId are required.');
     }
@@ -45,7 +51,7 @@ export default class CognitoUserPool {
     this.userPoolId = UserPoolId;
     this.clientId = ClientId;
 
-    this.client = new Client(region, endpoint);
+    this.client = new Client(region, endpoint, { agent: ProxyAgent || null });
 
     /**
      * By default, AdvancedSecurityDataCollectionFlag is set to true,

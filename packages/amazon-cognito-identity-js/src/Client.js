@@ -6,9 +6,10 @@ export default class Client {
    * @param {string} region AWS region
    * @param {string} endpoint endpoint
    */
-  constructor(region, endpoint) {
+  constructor(region, endpoint, options) {
     this.endpoint = endpoint || `https://cognito-idp.${region}.amazonaws.com/`;
     this.userAgent = UserAgent.prototype.userAgent || 'aws-amplify/0.1.x js';
+    this.options = options || {};
   }
 
   /**
@@ -26,13 +27,16 @@ export default class Client {
       'X-Amz-User-Agent': this.userAgent,
     };
 
-    const options = {
-      headers,
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      body: JSON.stringify(params),
-    };
+    const options = Object.assign(
+      this.options,
+      {
+        headers,
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        body: JSON.stringify(params),
+      }
+    );
 
     let response;
 

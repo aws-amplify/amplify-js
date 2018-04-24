@@ -52,6 +52,7 @@ var CognitoUserPool = function () {
     var _ref = data || {},
         UserPoolId = _ref.UserPoolId,
         ClientId = _ref.ClientId,
+        ProxyAgent = _ref.ProxyAgent,
         endpoint = _ref.endpoint,
         AdvancedSecurityDataCollectionFlag = _ref.AdvancedSecurityDataCollectionFlag;
 
@@ -66,7 +67,7 @@ var CognitoUserPool = function () {
     this.userPoolId = UserPoolId;
     this.clientId = ClientId;
 
-    this.client = new _Client2.default(region, endpoint);
+    this.client = new _Client2.default(region, endpoint, { agent: ProxyAgent || null });
 
     /**
      * By default, AdvancedSecurityDataCollectionFlag is set to true,

@@ -17,11 +17,12 @@ var Client = function () {
    * @param {string} region AWS region
    * @param {string} endpoint endpoint
    */
-  function Client(region, endpoint) {
+  function Client(region, endpoint, options) {
     _classCallCheck(this, Client);
 
     this.endpoint = endpoint || 'https://cognito-idp.' + region + '.amazonaws.com/';
     this.userAgent = _UserAgent2.default.prototype.userAgent || 'aws-amplify/0.1.x js';
+    this.options = options || {};
   }
 
   /**
@@ -41,13 +42,13 @@ var Client = function () {
       'X-Amz-User-Agent': this.userAgent
     };
 
-    var options = {
+    var options = Object.assign(this.options, {
       headers: headers,
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
       body: JSON.stringify(params)
-    };
+    });
 
     var response = void 0;
 
