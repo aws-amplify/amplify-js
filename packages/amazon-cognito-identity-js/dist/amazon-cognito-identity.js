@@ -6365,6 +6365,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    fetch(this.endpoint, options).then(function (resp) {
 	      response = resp;
 	      return resp;
+	    }, function (err) {
+	      // If error happens here, the request failed
+	      // if it is TypeError throw network error
+	      if (err instanceof TypeError) {
+	        throw new Error('Network error');
+	      }
+	      throw err;
 	    }).then(function (resp) {
 	      return resp.json().catch(function () {
 	        return {};
@@ -6381,15 +6388,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	        message: data.message || data.Message || null
 	      };
 	      return callback(error);
-	    }).catch(function () {
-	      // Taken from aws-sdk-js/lib/protocol/json.js
-	      var code = (response.headers.get('x-amzn-errortype') || 'UnknownError').split(':')[0];
-	      var error = {
-	        code: code,
-	        name: code,
-	        statusCode: response.status,
-	        message: response.status.toString()
-	      };
+	    }).catch(function (err) {
+	      // default to return 'UnknownError'
+	      var error = { code: 'UnknownError', message: 'Unkown error' };
+
+	      // first check if we have a service error
+	      if (response && response.headers && response.headers.get('x-amzn-errortype')) {
+	        try {
+	          var code = response.headers.get('x-amz-errortype').split(':')[0];
+	          error = {
+	            code: code,
+	            name: code,
+	            statusCode: response.status,
+	            message: response.status ? response.status.toString() : null
+	          };
+	        } catch (ex) {}
+	        // pass through so it doesn't get swallowed if we can't parse it
+
+	        // otherwise check if error is Network error
+	      } else if (err instanceof Error && err.message === 'Network error') {
+	        error = {
+	          code: err.name,
+	          name: err.name,
+	          message: err.message
+	        };
+	      }
 	      return callback(error);
 	    });
 	  };
