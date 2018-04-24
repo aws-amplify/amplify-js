@@ -1,10 +1,24 @@
 # Changelog for AWS Amplify
-<!--LATEST=0.2.8-->
+<!--LATEST=0.3.3-->
 <!--ENTRYINSERT-->
 
-upcoming changes
-* aws-amplify
+## 04/24/2018
+* aws-amplify - v0.3.3
     * remove unused variable #670
+    * Enhancement: Configurable Storage prefix #611 #332 #668
+    * Enhancement: Analytics events resending limit #590
+    * Bug Fix: Cannot sign in after Auth.completeNewPassword #589
+    * Bug Fix: Declare type dependencies #629
+    * Bug Fix: API GraphQL connect fix #652
+    * Feature: OAuth / Cognito Hosted UI #565 #480 #311 #45 #542 #376 #710
+    * Enhancement: add docs for protected storage level #626
+    * Enhancement: Dispatch failure event for pwd completion error #694
+    * Bug Fix: Sign out and i18n #700
+    * Enhancement: Initial commit of documentation change #708
+    * Bug Fix: use NetworkError code in aws-cognito-identity #706
+    
+* aws-amplify-react - v0.1.43
+    * Feature: OAuth / Cognito Hosted UI HOCs #565 #480 #311 #45 #542 #376
 
 ## 04/19/2018
 * amazon-cognito-identity-js - v2.0.4@beta
@@ -65,7 +79,7 @@ upcoming changes
     * Enhancement: Analytics turn on/off #479
     * Enhancement: Add params.ContentDisposition to Storage.put() #501
     * Enhancement: Make Storage operations options optional #527
-    * Enhaneement: Adding custom federated auth provider #540
+    * Enhancement: Adding custom federated auth provider #540
     * Feature: Initial implementation of PubSub category #460
     * Bug Fix: Retrieving credentials only once when reloading pages #486
     * Bug Fix: Sign out fix #511
