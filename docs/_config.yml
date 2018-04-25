@@ -194,6 +194,10 @@ category_list:
     -  category: Front-end Support
        title: Front-end Support
        subs:
+        - title: Angular 
+          excerpt: Angular support package.
+          cta: Read more
+          url: '/media/angular_guide' 
         - title: React 
           excerpt: React support package.
           cta: Read more
@@ -202,10 +206,10 @@ category_list:
           excerpt: React Native support package.
           cta: Read more
           url: '/media/react_native_guide' 
-        - title: Angular 
-          excerpt: Angular support package.
+        - title: Vue.js
+          excerpt: Vue.j support package.
           cta: Read more
-          url: '/media/angular_guide' 
+          url: '/media/vuejs_guide' 
     -  category: CLI
        title: CLI
        subs:
