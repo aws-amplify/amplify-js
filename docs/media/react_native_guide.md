@@ -9,7 +9,7 @@ See our [React Native Starter App in Github](https://github.com/awslabs/aws-mobi
 
 ## Installation and Configuration
 
-Install following npm packages into your Angular app.
+Install following npm packages into your React Native app.
 
 ```bash
 $ npm install aws-amplify

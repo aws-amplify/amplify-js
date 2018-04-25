@@ -165,7 +165,7 @@ category_list:
               - title: AWS Pinpoint
                 url: https://aws.amazon.com/pinpoint/
         - title: Storage 
-          excerpt: A simple mechanism for managing user content in public or private storage.
+          excerpt: A simple mechanism for managing user content in public, protected or private storage.
           cta: Read more
           class: aws-icon-ps-60-file-box
           url: '/media/storage_guide'   
