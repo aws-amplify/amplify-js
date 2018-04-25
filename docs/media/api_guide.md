@@ -114,6 +114,9 @@ The following code sample assumes you have used Automated Setup.
 
 To invoke an endpoint, you need to set `apiName`, `path` and `headers` parameters, and each method returns a Promise.
 
+Under the hood, aws-amplify use [Axios](https://github.com/axios/axios), so the API status code response > 299 are thrown as an exception.
+If you need to handle errors managed by your API, work with the `error.response` object.
+
 #### **GET**
 
 ```js
@@ -125,6 +128,8 @@ let myInit = { // OPTIONAL
 }
 API.get(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -158,6 +163,8 @@ let myInit = {
 
 API.post(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -189,6 +196,8 @@ let myInit = {
 
 API.put(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -219,6 +228,8 @@ let myInit = { // OPTIONAL
 
 API.del(apiName, path, myInit).then(response => {
     // Add your code here
+}).catch(error => {
+    console.log(error.response)
 });
 ```
 
@@ -231,7 +242,7 @@ async function deleteData() {
     let myInit = { // OPTIONAL
         headers: {} // OPTIONAL
     }
-    return await API.delete(apiName, path, myInit);
+    return await API.del(apiName, path, myInit);
 }
 
 deleteData();
@@ -433,7 +444,7 @@ const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
 }`;
 
 // Simple query
-const allEvents = await API.graphql({ ListEvents });
+const allEvents = await API.graphql(graphqlOperation(ListEvents));
 
 // Query using a parameter
 const oneEvent = await API.graphql(graphqlOperation(GetEvent, { id: 'some id' }));
@@ -463,7 +474,7 @@ const eventDetails = {
     name: 'Party tonight!',
     when: '8:00pm',
     where: 'Ballroom',
-    decription: 'Coming together as a team!'
+    description: 'Coming together as a team!'
 };
 
 const newEvent = await API.graphql(graphqlOperation(CreateEvent, eventDetails));

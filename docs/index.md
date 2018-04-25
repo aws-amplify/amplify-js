@@ -17,23 +17,20 @@ marketing_grid:
     - title: Declarative API
       excerpt: <p>AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations.</p>
                <p>
-                    See our <a href='/aws-amplify/media/examples'>code examples</a> to learn how you can 'cloud-enable' your app in under 5 minutes.
+                  See our <a href='/aws-amplify/media/examples'>code examples</a> to learn how you can 'cloud-enable' your app in under 5 minutes.
                 </p> 
     - title: Bring your own frontend 
       excerpt: <p>AWS Amplify goes well with any JavaScript based frontend workflow, and React Native for mobile developers.</p> 
-               <p>See our starter kits for  
-                  <a href='https://github.com/awslabs/aws-mobile-react-sample'>React</a>, 
-                  <a href='https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws'>Ionic</a>,
-                  <a href='https://github.com/aws-samples/aws-amplify-vue'>Vue</a>,
-                   and 
-                  <a href='https://github.com/awslabs/aws-mobile-react-native-starter'>React Native</a>.
-                   <u>Angular</u> is coming soon...   
-
+               <p>Learn more about our frontend support for
+                  <a href='/aws-amplify/media/angular_guide'>Angular</a>,
+                  <a href='/aws-amplify/media/react_guide'>React</a>, 
+                  <a href='/aws-amplify/media/react_native_guide'>React Native</a>,
+                  <a href='/aws-amplify/media/ionic_guide'>Ionic</a>,
+                  <a href='/aws-amplify/media/vuejs_guide'>Vue.js</a>
                 </p>
     - title: Open and Pluggable
       excerpt: Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
 
-      
 # Grid navigation
 grid_navigation:
     - title: Installation
