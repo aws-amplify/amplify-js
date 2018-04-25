@@ -16,8 +16,42 @@ import {
 
 const logger = new Logger('CognitoCredentials');
 
+const waitForInit = new Promise((res, rej) => {
+    const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+    if (ga) {
+        logger.debug('google api already loaded');
+        res();
+    } else {
+        setTimeout(
+            () => {
+                res();
+            }, 
+            2000
+        );
+    }
+    
+});
+
 export default class GoogleOAuth {
-    public refreshGoogleToken() {
+    public initialized = false;
+
+    constructor() {
+        this.refreshGoogleToken = this.refreshGoogleToken.bind(this);
+        this._refreshGoogleTokenImpl = this._refreshGoogleTokenImpl.bind(this);
+    }
+
+    public async refreshGoogleToken() {
+        if (!this.initialized) {
+            logger.debug('need to wait for the Google SDK loaded');
+            await waitForInit;
+            this.initialized = true;
+            logger.debug('finish waiting');
+        }
+
+        return this._refreshGoogleTokenImpl();
+    }
+
+    private _refreshGoogleTokenImpl() {
         const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
         if (!ga) {
             logger.debug('no gapi auth2 available');
