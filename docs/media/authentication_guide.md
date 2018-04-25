@@ -83,7 +83,10 @@ Auth.signIn(username, password)
     .then(user => console.log(user))
     .catch(err => console.log(err));
 
-// If MFA enabled, keep the user object from sign in, collect confirmation code, and then
+// If MFA is enabled, confirm user signing 
+// `user` : Return object from Auth.signIn()
+// `code` : Confirmation code  
+// `mfaType` : MFA Type e.g. SMS, TOTP.
 Auth.confirmSignIn(user, code, mfaType)
     .then(data => console.log(data))
     .catch(err => console.log(err));
@@ -356,13 +359,11 @@ There is also `withGoogle`, `withFacebook`, `withAmazon` components, in case you
 
 ### Using Amazon Cognito Hosted UI
 
-Amazon Cognito provides a customizable user experience via the hosted UI. The hosted UI supports OAuth 2.0 and Federated Identities with Facebook, Amazon, Google, and SAML providers.
-
-{: .callout .callout--info}
+Amazon Cognito provides a customizable user experience via the hosted UI. The hosted UI supports OAuth 2.0 and Federated Identities with Facebook, Amazon, Google, and SAML providers. To learn more about Amazon Cognito Hosted UI, please visit [Amazon Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-configuring-app-integration.html).
 
 #### Setup your Cognito App Client
 
-To start using hosted UI, first, you need to setup your App Client in the Amazon Cognito console.
+To start using hosted UI, you need to setup your App Client in the Amazon Cognito console.
 
 To setup App Client;
 - Go to [Amazon Cognito Console](https://aws.amazon.com/cognito/).
