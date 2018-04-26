@@ -329,6 +329,8 @@ export default class APIClass {
             await this.createInstance();
         }
 
+        debugger;
+
         const {
             aws_appsync_region: region,
             aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
