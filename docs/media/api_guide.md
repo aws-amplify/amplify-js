@@ -311,8 +311,8 @@ When working with a GraphQL endpoint, you will need to set request headers for a
 ```js
 Amplify.configure({
   API: {
-    graphql_headers: async () => ({
-      'My-Custom-Header': 'my value'
+    graphql_headers: () => ({
+        'My-Custom-Header': 'my value'
     })
   }
 });
