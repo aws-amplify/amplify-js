@@ -3,10 +3,10 @@
 ##Installation for iOS
 
 1. react-native init myApp
-2. Open myApp in xcode
-3. npm install --save aws-amplify
-4. npm install --save aws-amplify-react-native
-5. npm install --save react-native-aws-amplify-google-signin
+
+2. npm install --save aws-amplify
+3. npm install --save aws-amplify-react-native
+4. npm install --save react-native-aws-amplify-google-signin
 5. react-native link aws-amplify-react-native
 6. Install the required SDKs using CocoaPods :
 ```
@@ -24,18 +24,18 @@ vi Podfile
   pod 'GoogleSymbolUtilities'
   pod 'GoogleUtilities'
 ```
-8. Close your Podfile, and run pod install.
+8. Save changes to your Podfile, and run: 
+```
+pod install
+```
 9. Now open your project in xcode using myApp.xcworkspace
-10. Add a new URL with the Identifier and URL schemes set to your app's REVERSED_CLIENT_ID(found inside GoogleService-Info.plist file)
+10. Add a new URL with the Identifier and URL schemes set to your app's REVERSED_CLIENT_ID(found inside GoogleService-Info.plist file), like so:
+
+<img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/xcode-adding-url-types.png" width="100%"/>
 
 
  Note: If you already have your app configured on Google Developer console, then just download the plist file for your OAuth Client. If you haven't set up your Client IDs for your app, follow : https://developers.google.com/identity/sign-in/ios/sdk/ to get your app setup with a web client, iOS client and Android client.
 
- 11. Add dependency on following frameworks in your Linked Frameworks : 
- 1. SystemConfiguration.framework
- 2. SafariServices.framework
- 3.AddressBook.framework 
- 4. libz.tbd
 
  Now execute react-native run-ios to log into your App with Google Signin! 
 
