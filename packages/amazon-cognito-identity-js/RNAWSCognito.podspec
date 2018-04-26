@@ -1,7 +1,11 @@
 # coding: utf-8
+require 'json'
+
+package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+
 Pod::Spec.new do |s|
   s.name    = "RNAWSCognito"
-  s.version = "2.0.3"
+  s.version = package['version']
   s.requires_arc = true
   s.platforms = { :ios => "8.0" }
   s.license = { :file => 'LICENSE.txt' }
