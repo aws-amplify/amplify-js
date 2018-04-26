@@ -24,6 +24,8 @@ export const Username = (props) => {
             placeholder={I18n.get('Username')}
             autoFocus={true}
             autoCapitalize="none"
+            accessibilityLabel={I18n.get('Username')}
+            accessible={true}
             {...props}
         />
     )
@@ -36,6 +38,8 @@ export const Password = (props) => {
             style={theme.input}
             placeholder={I18n.get('Password')}
             secureTextEntry={true}
+            accessibilityLabel={I18n.get('Password')}
+            accessible={true}
             {...props}
         />
     )
@@ -49,6 +53,8 @@ export const Email = (props) => {
             placeholder={I18n.get('Email')}
             keyboardType="email-address"
             autoCapitalize="none"
+            accessibilityLabel={I18n.get('Email')}
+            accessible={true}
             {...props}
         />
     )
@@ -61,6 +67,8 @@ export const PhoneNumber = (props) => {
             style={theme.input}
             placeholder={I18n.get('Phone Number')}
             keyboardType="phone-pad"
+            accessibilityLabel={I18n.get('Phone Number')}
+            accessible={true}
             {...props}
         />
     )
@@ -73,6 +81,8 @@ export const ConfirmationCode = (props) => {
             style={theme.input}
             placeholder={I18n.get('Code')}
             autoFocus={true}
+            accessibilityLabel={I18n.get('Code')}
+            accessible={true}
             {...props}
         />
     )
@@ -84,6 +94,8 @@ export const LinkCell = (props) => {
         <View style={theme.cell}>
             <TouchableHighlight
                 onPress={props.onPress}
+                accessible={true}
+                accessibilityLabel={props.children}
             >
                 <Text style={theme.sectionFooterLink}>{props.children}</Text>
             </TouchableHighlight>
@@ -94,7 +106,11 @@ export const LinkCell = (props) => {
 export const Header = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
-        <View style={theme.sectionHeader}>
+        <View 
+            style={theme.sectionHeader}
+            accessible={true}
+            accessibilityLabel={props.children}
+        >
             <Text style={theme.sectionHeaderText}>{props.children}</Text>
         </View>
     )
@@ -103,7 +119,11 @@ export const Header = (props) => {
 export const ErrorRow = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
-        <View style={theme.errorRow}>
+        <View 
+            style={theme.errorRow}
+            accessible={true}
+            accessibilityLabel={props.children}
+        >
             <Text style={theme.erroRowText}>{props.children}</Text>
         </View>
     )
