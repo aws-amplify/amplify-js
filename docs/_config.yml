@@ -123,20 +123,22 @@ category_list:
             - title: Custom Plugin
               url: https://aws.github.io/aws-amplify/media/analytics_guide#create-a-custom-analytics-plugin
         - title: API 
-          excerpt: A simple and secure solution for making HTTP requests.
+          excerpt: A simple and secure solution for making HTTP requests using REST and GraphQL.
           cta: Read more
           class: aws-icon-ps-60-database-server
           url: '/media/api_guide'    
           services:
-            - title: AWS API Gateway
+            - title: AWS API Gateway,
               url: https://aws.amazon.com/api-gateway
+            - title: AWS AppSync
+              url: https://aws.amazon.com/appsync
         - title: Authentication
           excerpt:  Authentication APIs with pre-built UI components for your app.  
           cta: Read more
           class: aws-icon-ps-60-shield-circle
           url: '/media/authentication_guide'
           services:
-            - title: AWS Cognito ,
+            - title: AWS Cognito,
               url: https://aws.amazon.com/cognito/
             - title: OAuth 2.0 ,
               url: https://aws.amazon.com/cognito/
@@ -148,10 +150,12 @@ category_list:
           class: aws-icon-ps-60-circular-circuit
           url: '/media/pub_sub_guide'   
           services:
-              - title: Generic MQTT ,
-                url: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html#mqtt
-              - title: AWS IoT (Coming soon)
+              - title: AWS IoT,
                 url: https://aws.amazon.com/iot/
+              - title: MQTT,
+                url: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html#mqtt
+              - title: Custom Plugin
+                url:  
         - title: Push Notifications 
           excerpt: Push notifications with campaign analytics and targeting.
           cta: Read more
@@ -161,7 +165,7 @@ category_list:
               - title: AWS Pinpoint
                 url: https://aws.amazon.com/pinpoint/
         - title: Storage 
-          excerpt: A simple mechanism for managing user content in public or private storage.
+          excerpt: A simple mechanism for managing user content in public, protected or private storage.
           cta: Read more
           class: aws-icon-ps-60-file-box
           url: '/media/storage_guide'   
@@ -187,6 +191,25 @@ category_list:
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide'  
+    -  category: Front-end Support
+       title: Front-end Support
+       subs:
+        - title: Angular 
+          excerpt: Angular support package.
+          cta: Read more
+          url: '/media/angular_guide' 
+        - title: React 
+          excerpt: React support package.
+          cta: Read more
+          url: '/media/react_guide' 
+        - title: React Native
+          excerpt: React Native support package.
+          cta: Read more
+          url: '/media/react_native_guide' 
+        - title: Vue.js
+          excerpt: Vue.j support package.
+          cta: Read more
+          url: '/media/vuejs_guide' 
     -  category: CLI
        title: CLI
        subs:

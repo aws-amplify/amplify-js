@@ -20,7 +20,7 @@ var _Widget = require('../Widget');
 
 var _Common = require('./Common');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66,227 +66,187 @@ var S3Text = function (_Component) {
 
     _createClass(S3Text, [{
         key: 'getText',
-        value: function () {
-            function getText(key, level, track) {
-                var _this2 = this;
+        value: function getText(key, level, track) {
+            var _this2 = this;
 
-                _awsAmplify.Storage.get(key, { download: true, level: level ? level : 'public', track: track }).then(function (data) {
-                    logger.debug(data);
-                    var text = data.Body.toString('utf8');
-                    _this2.setState({ text: text });
-                    _this2.handleOnLoad(text);
-                })['catch'](function (err) {
-                    logger.debug(err);
-                    _this2.handleOnError(err);
-                });
-            }
-
-            return getText;
-        }()
+            _awsAmplify.Storage.get(key, { download: true, level: level ? level : 'public', track: track }).then(function (data) {
+                logger.debug(data);
+                var text = data.Body.toString('utf8');
+                _this2.setState({ text: text });
+                _this2.handleOnLoad(text);
+            }).catch(function (err) {
+                logger.debug(err);
+                _this2.handleOnError(err);
+            });
+        }
     }, {
         key: 'load',
-        value: function () {
-            function load() {
-                var _props = this.props,
-                    path = _props.path,
-                    textKey = _props.textKey,
-                    body = _props.body,
-                    contentType = _props.contentType,
-                    level = _props.level,
-                    track = _props.track;
+        value: function load() {
+            var _props = this.props,
+                path = _props.path,
+                textKey = _props.textKey,
+                body = _props.body,
+                contentType = _props.contentType,
+                level = _props.level,
+                track = _props.track;
 
-                if (!textKey && !path) {
-                    logger.debug('empty textKey and path');
-                    return;
-                }
-
-                var that = this;
-                var key = textKey || path;
-                logger.debug('loading ' + key + '...');
-                if (body) {
-                    var type = contentType || 'text/*';
-                    var ret = _awsAmplify.Storage.put(key, body, {
-                        contentType: type,
-                        level: level ? level : 'public',
-                        track: track
-                    });
-                    ret.then(function (data) {
-                        logger.debug(data);
-                        that.getText(key, level, track);
-                    })['catch'](function (err) {
-                        return logger.debug(err);
-                    });
-                } else {
-                    that.getText(key, level, track);
-                }
+            if (!textKey && !path) {
+                logger.debug('empty textKey and path');
+                return;
             }
 
-            return load;
-        }()
+            var that = this;
+            var key = textKey || path;
+            logger.debug('loading ' + key + '...');
+            if (body) {
+                var type = contentType || 'text/*';
+                var ret = _awsAmplify.Storage.put(key, body, {
+                    contentType: type,
+                    level: level ? level : 'public',
+                    track: track
+                });
+                ret.then(function (data) {
+                    logger.debug(data);
+                    that.getText(key, level, track);
+                }).catch(function (err) {
+                    return logger.debug(err);
+                });
+            } else {
+                that.getText(key, level, track);
+            }
+        }
     }, {
         key: 'handleOnLoad',
-        value: function () {
-            function handleOnLoad(text) {
-                var onLoad = this.props.onLoad;
+        value: function handleOnLoad(text) {
+            var onLoad = this.props.onLoad;
 
-                if (onLoad) {
-                    onLoad(text);
-                }
+            if (onLoad) {
+                onLoad(text);
             }
-
-            return handleOnLoad;
-        }()
+        }
     }, {
         key: 'handleOnError',
-        value: function () {
-            function handleOnError(err) {
-                var onError = this.props.onError;
+        value: function handleOnError(err) {
+            var onError = this.props.onError;
 
-                if (onError) {
-                    onError(err);
-                }
+            if (onError) {
+                onError(err);
             }
-
-            return handleOnError;
-        }()
+        }
     }, {
         key: 'handlePick',
-        value: function () {
-            function handlePick(data) {
-                var that = this;
+        value: function handlePick(data) {
+            var that = this;
 
-                var path = this.props.path || '';
-                var _props2 = this.props,
-                    textKey = _props2.textKey,
-                    level = _props2.level,
-                    fileToKey = _props2.fileToKey,
-                    track = _props2.track;
-                var file = data.file,
-                    name = data.name,
-                    size = data.size,
-                    type = data.type;
+            var path = this.props.path || '';
+            var _props2 = this.props,
+                textKey = _props2.textKey,
+                level = _props2.level,
+                fileToKey = _props2.fileToKey,
+                track = _props2.track;
+            var file = data.file,
+                name = data.name,
+                size = data.size,
+                type = data.type;
 
-                var key = textKey || path + (0, _Common.calcKey)(data, fileToKey);
-                _awsAmplify.Storage.put(key, file, {
-                    level: level ? level : 'public',
-                    contentType: type,
-                    track: track
-                }).then(function (data) {
-                    logger.debug('handle pick data', data);
-                    that.getText(key, level, track);
-                })['catch'](function (err) {
-                    return logger.debug('handle pick error', err);
-                });
-            }
-
-            return handlePick;
-        }()
+            var key = textKey || path + (0, _Common.calcKey)(data, fileToKey);
+            _awsAmplify.Storage.put(key, file, {
+                level: level ? level : 'public',
+                contentType: type,
+                track: track
+            }).then(function (data) {
+                logger.debug('handle pick data', data);
+                that.getText(key, level, track);
+            }).catch(function (err) {
+                return logger.debug('handle pick error', err);
+            });
+        }
     }, {
         key: 'handleClick',
-        value: function () {
-            function handleClick(evt) {
-                var onClick = this.props.onClick;
+        value: function handleClick(evt) {
+            var onClick = this.props.onClick;
 
-                if (onClick) {
-                    onClick(evt);
-                }
+            if (onClick) {
+                onClick(evt);
             }
-
-            return handleClick;
-        }()
+        }
     }, {
         key: 'componentDidMount',
-        value: function () {
-            function componentDidMount() {
-                this.load();
-            }
-
-            return componentDidMount;
-        }()
+        value: function componentDidMount() {
+            this.load();
+        }
     }, {
         key: 'componentDidUpdate',
-        value: function () {
-            function componentDidUpdate(prevProps) {
-                var update = prevProps.path !== this.props.path || prevProps.textKey !== this.props.textKey || prevProps.body !== this.props.body;
-                if (update) {
-                    this.load();
-                }
+        value: function componentDidUpdate(prevProps) {
+            var update = prevProps.path !== this.props.path || prevProps.textKey !== this.props.textKey || prevProps.body !== this.props.body;
+            if (update) {
+                this.load();
             }
-
-            return componentDidUpdate;
-        }()
+        }
     }, {
         key: 'textEl',
-        value: function () {
-            function textEl(text, theme) {
-                if (!text) {
-                    return null;
-                }
-
-                var selected = this.props.selected;
-
-                var containerStyle = { position: 'relative' };
-                return _react2['default'].createElement(
-                    'div',
-                    { style: containerStyle, onClick: this.handleClick },
-                    _react2['default'].createElement(
-                        'pre',
-                        { style: theme.pre },
-                        text
-                    ),
-                    _react2['default'].createElement('div', { style: selected ? theme.overlaySelected : theme.overlay })
-                );
+        value: function textEl(text, theme) {
+            if (!text) {
+                return null;
             }
 
-            return textEl;
-        }()
+            var selected = this.props.selected;
+
+            var containerStyle = { position: 'relative' };
+            return _react2.default.createElement(
+                'div',
+                { style: containerStyle, onClick: this.handleClick },
+                _react2.default.createElement(
+                    'pre',
+                    { style: theme.pre },
+                    text
+                ),
+                _react2.default.createElement('div', { style: selected ? theme.overlaySelected : theme.overlay })
+            );
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                var _props3 = this.props,
-                    hidden = _props3.hidden,
-                    style = _props3.style,
-                    picker = _props3.picker,
-                    translate = _props3.translate,
-                    textKey = _props3.textKey;
+        value: function render() {
+            var _props3 = this.props,
+                hidden = _props3.hidden,
+                style = _props3.style,
+                picker = _props3.picker,
+                translate = _props3.translate,
+                textKey = _props3.textKey;
 
-                var text = this.state.text;
-                if (translate) {
-                    text = typeof translate === 'string' ? translate : translate({
-                        type: 'text',
-                        key: textKey,
-                        content: text
-                    });
-                }
-                if (!text && !picker) {
-                    return null;
-                }
-
-                var theme = this.props.theme || _AmplifyTheme2['default'];
-                var textStyle = hidden ? _AmplifyTheme2['default'].hidden : Object.assign({}, theme.text, style);
-
-                return _react2['default'].createElement(
-                    'div',
-                    { style: textStyle },
-                    textStyle ? this.textEl(text, theme) : null,
-                    picker ? _react2['default'].createElement(
-                        'div',
-                        null,
-                        _react2['default'].createElement(_Widget.TextPicker, {
-                            key: 'picker',
-                            onPick: this.handlePick,
-                            theme: theme
-                        })
-                    ) : null
-                );
+            var text = this.state.text;
+            if (translate) {
+                text = typeof translate === 'string' ? translate : translate({
+                    type: 'text',
+                    key: textKey,
+                    content: text
+                });
+            }
+            if (!text && !picker) {
+                return null;
             }
 
-            return render;
-        }()
+            var theme = this.props.theme || _AmplifyTheme2.default;
+            var textStyle = hidden ? _AmplifyTheme2.default.hidden : Object.assign({}, theme.text, style);
+
+            return _react2.default.createElement(
+                'div',
+                { style: textStyle },
+                textStyle ? this.textEl(text, theme) : null,
+                picker ? _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(_Widget.TextPicker, {
+                        key: 'picker',
+                        onPick: this.handlePick,
+                        theme: theme
+                    })
+                ) : null
+            );
+        }
     }]);
 
     return S3Text;
 }(_react.Component);
 
-exports['default'] = S3Text;
+exports.default = S3Text;

@@ -9,7 +9,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports['default'] = withAmazon;
+exports.default = withAmazon;
 
 var _react = require('react');
 
@@ -23,7 +23,7 @@ var _AmplifyTheme2 = _interopRequireDefault(_AmplifyTheme);
 
 var _AmplifyUI = require('../../AmplifyUI');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -52,106 +52,82 @@ function withAmazon(Comp) {
 
         _createClass(_class, [{
             key: 'signIn',
-            value: function () {
-                function signIn() {
-                    var _this2 = this;
+            value: function signIn() {
+                var _this2 = this;
 
-                    var amz = window.amazon;
-                    var options = { scope: 'profile' };
-                    amz.Login.authorize(options, function (response) {
-                        if (response.error) {
-                            logger.debug('Failed to login with amazon: ' + response.error);
-                            return;
-                        }
-
-                        _this2.federatedSignIn(response);
-                    });
-                }
-
-                return signIn;
-            }()
-        }, {
-            key: 'federatedSignIn',
-            value: function () {
-                function federatedSignIn(response) {
-                    var access_token = response.access_token,
-                        expires_in = response.expires_in;
-                    var onStateChange = this.props.onStateChange;
-
-                    var date = new Date();
-                    var expires_at = expires_in * 1000 + date.getTime();
-                    if (!access_token) {
+                var amz = window.amazon;
+                var options = { scope: 'profile' };
+                amz.Login.authorize(options, function (response) {
+                    if (response.error) {
+                        logger.debug('Failed to login with amazon: ' + response.error);
                         return;
                     }
 
-                    var amz = window.amazon;
-                    amz.Login.retrieveProfile(function (userInfo) {
-                        if (!userInfo.success) {
-                            logger.debug('Get user Info failed');
-                            return;
-                        }
+                    _this2.federatedSignIn(response);
+                });
+            }
+        }, {
+            key: 'federatedSignIn',
+            value: function federatedSignIn(response) {
+                var access_token = response.access_token,
+                    expires_in = response.expires_in;
+                var onStateChange = this.props.onStateChange;
 
-                        var user = {
-                            name: userInfo.profile.Name
-                        };
-
-                        _awsAmplify.Auth.federatedSignIn('amazon', { token: access_token, expires_at: expires_at }, user).then(function (credentials) {
-                            logger.debug('getting credentials');
-                            logger.debug(credentials);
-                            if (onStateChange) {
-                                onStateChange('signedIn');
-                            }
-                        });
-                    });
+                var date = new Date();
+                var expires_at = expires_in * 1000 + date.getTime();
+                if (!access_token) {
+                    return;
                 }
 
-                return federatedSignIn;
-            }()
+                var amz = window.amazon;
+                amz.Login.retrieveProfile(function (userInfo) {
+                    if (!userInfo.success) {
+                        logger.debug('Get user Info failed');
+                        return;
+                    }
+
+                    var user = {
+                        name: userInfo.profile.Name
+                    };
+
+                    _awsAmplify.Auth.federatedSignIn('amazon', { token: access_token, expires_at: expires_at }, user).then(function (credentials) {
+                        logger.debug('getting credentials');
+                        logger.debug(credentials);
+                        if (onStateChange) {
+                            onStateChange('signedIn');
+                        }
+                    });
+                });
+            }
         }, {
             key: 'componentDidMount',
-            value: function () {
-                function componentDidMount() {
-                    this.createScript();
-                }
-
-                return componentDidMount;
-            }()
+            value: function componentDidMount() {
+                this.createScript();
+            }
         }, {
             key: 'createScript',
-            value: function () {
-                function createScript() {
-                    var script = document.createElement('script');
-                    script.src = 'https://api-cdn.amazon.com/sdk/login1.js';
-                    script.async = true;
-                    script.onload = this.initAmazon;
-                    document.body.appendChild(script);
-                }
-
-                return createScript;
-            }()
+            value: function createScript() {
+                var script = document.createElement('script');
+                script.src = 'https://api-cdn.amazon.com/sdk/login1.js';
+                script.async = true;
+                script.onload = this.initAmazon;
+                document.body.appendChild(script);
+            }
         }, {
             key: 'initAmazon',
-            value: function () {
-                function initAmazon() {
-                    logger.debug('init amazon');
-                    var amazon_client_id = this.props.amazon_client_id;
+            value: function initAmazon() {
+                logger.debug('init amazon');
+                var amazon_client_id = this.props.amazon_client_id;
 
-                    var amz = window.amazon;
-                    amz.Login.setClientId(amazon_client_id);
-                }
-
-                return initAmazon;
-            }()
+                var amz = window.amazon;
+                amz.Login.setClientId(amazon_client_id);
+            }
         }, {
             key: 'render',
-            value: function () {
-                function render() {
-                    var amz = window.amazon;
-                    return _react2['default'].createElement(Comp, _extends({}, this.props, { amz: amz, amazonSignIn: this.signIn }));
-                }
-
-                return render;
-            }()
+            value: function render() {
+                var amz = window.amazon;
+                return _react2.default.createElement(Comp, _extends({}, this.props, { amz: amz, amazonSignIn: this.signIn }));
+            }
         }]);
 
         return _class;
@@ -159,12 +135,12 @@ function withAmazon(Comp) {
 }
 
 var Button = function Button(props) {
-    return _react2['default'].createElement(
+    return _react2.default.createElement(
         _AmplifyUI.SignInButton,
         {
             id: 'amazon_signin_btn',
             onClick: props.amazonSignIn,
-            theme: props.theme || _AmplifyTheme2['default']
+            theme: props.theme || _AmplifyTheme2.default
         },
         'Sign In with Amazon'
     );

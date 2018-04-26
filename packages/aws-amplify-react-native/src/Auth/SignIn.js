@@ -17,7 +17,7 @@ import {
     Text, 
     TextInput, 
     Button, 
-    TouchableHighlight 
+    TouchableHighlight
 } from 'react-native';
 import {
     Auth,

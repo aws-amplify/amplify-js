@@ -8,4 +8,3 @@
 import {GoogleButton, withGoogle} from './withGoogle';
 
 export const AmplifyGoogleSignIn = {GoogleButton, withGoogle};
-

@@ -6,6 +6,7 @@ export default class AuthClass {
     private _config;
     private _userPoolStorageSync;
     private userPool;
+    private _cognitoAuthClient;
     private credentials;
     private credentials_source;
     private user;
@@ -16,7 +17,7 @@ export default class AuthClass {
      * @param {Object} config - Configuration of the Auth
      */
     constructor(config: AuthOptions);
-    configure(config: any): AuthOptions;
+    configure(config: any): {};
     /**
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String | object} params - The user attirbutes used for signin
