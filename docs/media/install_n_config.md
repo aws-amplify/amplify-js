@@ -14,6 +14,7 @@ Installing AWS Amplify involves installing our client libraries from `npm`, and 
     <li class="tab-link javascript current" data-tab="javascript">JavaScript</li>
     <li class="tab-link react" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
+    <li class="tab-link angular" data-tab="angular">Angular</li>
 </ul>
 <div id="javascript" class="tab-content current">
 For JavaScript web development, regardless of the frontend framework used, `aws-amplify` package provides core APIs
@@ -38,6 +39,17 @@ npm install aws-amplify
 ```bash
 npm install aws-amplify-react-native
 ```
+</div>
+<div id="angular" class="tab-content">
+For Angular, in addition to `aws-amplify`, we provide an Angular module with a service provider and components in the `aws-amplify-angular` package
+```bash
+npm install aws-amplify
+```
+```bash
+npm install aws-amplify-angular
+```
+
+See the [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide).
 </div>
 </div>
 

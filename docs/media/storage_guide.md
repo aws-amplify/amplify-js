@@ -3,7 +3,7 @@
 
 # Storage
 
-AWS Amplify Storage module provides a simple mechanism for managing user content for your app in public or private storage buckets.
+AWS Amplify Storage module provides a simple mechanism for managing user content for your app in public, protected or private storage buckets.
 
 ## Installation and Configuration
 
@@ -20,7 +20,7 @@ To create a project fully functioning with the Storage category.
 $ npm install -g awsmobile-cli
 $ cd my-app #Change to your project's root folder
 $ awsmobile init
-$ awsmobile user-files 
+$ awsmobile user-files enable
 $ awsmobile push #Update your backend 
 ```
 
@@ -89,13 +89,15 @@ Note: You can restrict the access to your bucket by updating AllowedOrigin to in
 
 ### File Access Levels
 
-Storage module can manage files in two different access levels; `public` and `private`.
+Storage module can manage files with three different access levels; `public`, `protected` and `private`.
 
 Files with public access level can be accessed by all users who are using your app. In S3, they are stored under the `public/` path in your S3 bucket.
 
+Files with protected access level are readable by all users but writable only by the creating user. In S3, they are stored under `protected/{user_identity_id}/` where the **user_identity_id** corresponds to a unique Amazon Cognito Identity ID for that user.
+
 Files with private access level are only accessible for specific authenticated users only. In S3, they are stored under `private/{user_identity_id}/` where the **user_identity_id** corresponds to a unique Amazon Cognito Identity ID for that user.
 
-The access level can be configured on the Storage object globally. Alternatively, the access levels can be set in individual function calls. 
+The access level can be configured on the Storage object globally. Alternatively, the access levels can be set in individual function calls.
 
 Default access level for Storage module is `public`. Unless you configure Storage otherwise, all uploaded files will be publicly available for all users.
 {: .callout .callout--info}
@@ -160,6 +162,46 @@ Storage.put('test.txt', 'Private Content', {
 })
 .then (result => console.log(result))
 .catch(err => console.log(err));
+```
+
+Upload an image from browser:
+```js
+class S3ImageUpload extends React.Component {
+    function onChange(e) {
+        const file = e.target.files[0];
+        Storage.put('example.png', file, {
+            contentType: 'image/png'
+        })
+        .then (result => console.log(result))
+        .catch(err => console.log(err));
+    }
+
+    render() {
+        return ()
+            <input
+                type="file" accept='image/png'
+                onChange={(e) => this.onChange(e)}
+            />
+        )
+    }
+}
+```
+
+Upload an image from react-native app:
+```js
+import RNFetchBlob from 'react-native-fetch-blob';
+
+readFile(filePath) {
+    return RNFetchBlob.fs.readFile(filePath, 'base64').then(data => new Buffer(data, 'base64'));
+}
+
+readFile(imagePath).then(buffer => {
+    Storage.put(key, buffer, {
+        contentType: imageType
+    })
+}).catch(e => {
+    console.log(e);
+});
 ```
 
 #### Get
@@ -423,6 +465,38 @@ return <S3Album track />
 ```
 
 Enabling tracking will automatically send 'Storage' events to Amazon Pinpoint, and you will be able to see the results in AWS Pinpoint console under *Custom Events*. The event name will be *Storage*, and event details will be displayed in *attributes* , e.g. Storage -> Method -> Put.
+
+## UI Components for Angular
+
+`aws-amplify-angular` provides similar storage ui components.
+
+### Photo Picker
+
+Add a photo picker to your components template:
+
+```html
+
+<amplify-photo-picker 
+    (loaded)="onImagePreviewLoaded($event)"
+    (picked)="onImageSelected($event)">
+</amplify-photo-picker>
+
+```
+
+### S3 Album
+
+Add an S3 album component to your template:
+
+```html
+
+<amplify-s3-album 
+    path="{{s3ListPath}}"
+    (selected)="onAlbumImageSelected($event)">  			
+</amplify-s3-album>
+
+```
+
+See the [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) for usage.
 
 ## Customization 
 
