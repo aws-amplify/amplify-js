@@ -1,6 +1,6 @@
 {
   "name": "react-native-aws-amplify-google-signin",
-  "version": "1.0.12",
+  "version": "1.0.15",
   "description": "",
   "main": "index.js",
   "scripts": {
