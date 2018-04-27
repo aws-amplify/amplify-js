@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {Logger} from 'aws-amplify';
 
-const { RNAmplifyGoogleSignIn } = NativeModules;
+const { RNAwsAmplifyGoogleSignin } = NativeModules;
 const logger = new Logger('GoogleSignin');
 logger.debug('Native module is : ', RNAmplifyGoogleSignIn);
 const aNativeAppEventEmitter = new NativeEventEmitter(RNAmplifyGoogleSignIn);

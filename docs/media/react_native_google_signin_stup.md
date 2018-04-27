@@ -7,7 +7,7 @@
 2. npm install --save aws-amplify
 3. npm install --save aws-amplify-react-native
 4. npm install --save react-native-aws-amplify-google-signin
-5. react-native link aws-amplify-react-native
+5. react-native link react-native-aws-amplify-google-signin
 6. Install the required SDKs using CocoaPods :
 ```
 cd ios
