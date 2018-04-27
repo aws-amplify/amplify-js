@@ -1,6 +1,6 @@
-#import "RNAwsAmplifyGoogleSignIn.h"
+#import "RNAwsAmplifyGoogleSignin.h"
 
-@implementation RNAwsAmplifyGoogleSignIn
+@implementation RNAwsAmplifyGoogleSignin
 
 RCT_EXPORT_MODULE();
 @synthesize bridge = _bridge;

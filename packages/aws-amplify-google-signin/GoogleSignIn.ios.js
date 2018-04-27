@@ -12,8 +12,8 @@ import {Logger} from 'aws-amplify';
 
 const { RNAwsAmplifyGoogleSignin } = NativeModules;
 const logger = new Logger('GoogleSignin');
-logger.debug('Native module is : ', RNAmplifyGoogleSignIn);
-const aNativeAppEventEmitter = new NativeEventEmitter(RNAmplifyGoogleSignIn);
+logger.debug('Native module is : ', RNAwsAmplifyGoogleSignin);
+const aNativeAppEventEmitter = new NativeEventEmitter(RNAwsAmplifyGoogleSignin);
 class GoogleSignin {
 
     constructor() {
@@ -38,7 +38,7 @@ class GoogleSignin {
       params.scopes || [], params.iosClientId, params.offlineAccess ? params.webClientId : '', params.hostedDomain ? params.hostedDomain : null
       ];
   
-      RNAmplifyGoogleSignIn.configure(...params);
+      RNAwsAmplifyGoogleSignin.configure(...params);
       return Promise.resolve(true);
     }
   
@@ -55,7 +55,7 @@ class GoogleSignin {
             resolve(null);
           });
     
-          RNAmplifyGoogleSignIn.currentUserAsync();
+          RNAwsAmplifyGoogleSignin.currentUserAsync();
         });
     }
     
@@ -78,13 +78,13 @@ class GoogleSignin {
             reject(err);
           });
     
-          !this.signinIsInProcess && RNAmplifyGoogleSignIn.signIn();
+          !this.signinIsInProcess && RNAwsAmplifyGoogleSignin.signIn();
         });
       }
     
       signOut() {
         return new Promise((resolve, reject) => {
-          RNAmplifyGoogleSignIn.signOut();
+          RNAwsAmplifyGoogleSignin.signOut();
           resolve();
         });
       }
@@ -101,7 +101,7 @@ class GoogleSignin {
             reject(err);
           });
     
-          RNAmplifyGoogleSignIn.revokeAccess();
+          RNAwsAmplifyGoogleSignin.revokeAccess();
         });
       }
     
