@@ -15,7 +15,7 @@ import {
     AWS,
     ConsoleLogger as Logger,
     Hub
-} from '@aws-amplify/common';
+} from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 
 import Auth from '../Auth';

@@ -10,18 +10,15 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-const polyfill = () => {
-    if (!(<any>global).window) {
-        (<any>global).window = {
-            setTimeout,
-            clearTimeout,
-            WebSocket: (<any>global).WebSocket,
-            ArrayBuffer: (<any>global).ArrayBuffer,
-            addEventListener(){ },
-            navigator: { onLine: true }
-        };
-    }
-};
+if (!(<any>global).window) {
+    (<any>global).window = {
+        setTimeout,
+        clearTimeout,
+        WebSocket: (<any>global).WebSocket,
+        ArrayBuffer: (<any>global).ArrayBuffer,
+        addEventListener(){ },
+        navigator: { onLine: true }
+    };
+}
 
-export default polyfill;
 

@@ -29,7 +29,7 @@ jest.mock('uuid', () => {
     return { v1: mockfn };
 })
 
-import { AWS, JS, ConsoleLogger as Logger } from '@aws-amplify/common';
+import { AWS, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
 import * as  MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import AnalyticsProvider from "../../../src/Analytics/Providers/AWSAnalyticsProvider";

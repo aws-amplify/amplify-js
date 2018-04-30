@@ -39,7 +39,7 @@ jest.mock('axios', () => {
 
 import { RestClient } from '../../src/API/RestClient';
 import * as AWS from 'aws-sdk';
-import { Signer } from '@aws-amplify/common';
+import { Signer } from '@aws-amplify/core';
 import Auth from '../../src/Auth';
 import axios from 'axios';
 

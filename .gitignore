@@ -7,8 +7,8 @@ packages/*/node_modules/**
 packages/aws-amplify-angular/lib/
 packages/cache/dist/
 packages/cache/lib/
-packages/common/dist/
-packages/common/lib/
+packages/core/dist/
+packages/core/lib/
 .DS_Store
 .vscode
 .idea

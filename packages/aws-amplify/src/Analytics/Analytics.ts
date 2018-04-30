@@ -17,7 +17,7 @@ import {
     missingConfig,
     Parser,
     Platform
-} from '@aws-amplify/common';
+} from '@aws-amplify/core';
 import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
 import Auth from '../Auth';
 

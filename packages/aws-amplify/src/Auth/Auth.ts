@@ -32,7 +32,7 @@ import {
     Hub, 
     Constants,
     ConsoleLogger as Logger, 
-}  from '@aws-amplify/common';
+}  from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 
 const {

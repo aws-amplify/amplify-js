@@ -13,7 +13,7 @@
 
 import StorageClass from './Storage';
 
-import { ConsoleLogger as Logger } from '@aws-amplify/common';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Storage');
 

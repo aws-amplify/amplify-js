@@ -51,7 +51,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/common": "^0.0.3"
+    "@aws-amplify/core": "^0.0.1"
   },
   "jest": {
     "transform": {

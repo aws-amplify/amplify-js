@@ -67,7 +67,7 @@
     "uuid": "^3.2.1",
     "aws-sdk": "2.198.0",
     "zen-observable": "^0.8.6",
-    "@aws-amplify/common": "^0.0.3",
+    "@aws-amplify/core": "^0.0.1",
     "@aws-amplify/cache": "^0.0.3"
   },
   "jest": {

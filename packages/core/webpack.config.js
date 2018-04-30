@@ -3,13 +3,13 @@ const CompressionPlugin = require("compression-webpack-plugin")
 
 module.exports = {
     entry: {
-        'aws-amplify-common': './src/index.ts',
-        'aws-amplify-common.min': './src/index.ts',
+        'aws-amplify-core': './src/index.ts',
+        'aws-amplify-core.min': './src/index.ts',
     },
     output: {
         filename: '[name].js',
         path: __dirname + '/dist',
-        library: 'aws-amplify-common',
+        library: 'aws-amplify-core',
         libraryTarget: 'umd',
         umdNamedDefine: true
     },

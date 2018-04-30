@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Signer, Platform } from '@aws-amplify/common';
+import { ConsoleLogger as Logger, Signer, Platform } from '@aws-amplify/core';
 
 import Auth from '../Auth';
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';

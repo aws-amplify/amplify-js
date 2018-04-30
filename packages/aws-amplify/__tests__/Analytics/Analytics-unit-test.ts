@@ -1,4 +1,4 @@
-import { AWS, ClientDevice, Parser, ConsoleLogger as Logger } from '@aws-amplify/common';
+import { AWS, ClientDevice, Parser, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AnalyticsOptions, EventAttributes, EventMetrics } from '../../src/Analytics/types';
 import { default as Analytics } from "../../src/Analytics/Analytics";
 import Auth from '../../src/Auth/Auth';

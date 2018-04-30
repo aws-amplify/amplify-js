@@ -53,7 +53,7 @@ jest.mock('aws-sdk/clients/s3', () => {
 });
 
 import Storage from '../../src/Storage/Storage';
-import { Hub } from '@aws-amplify/common';
+import { Hub } from '@aws-amplify/core';
 import Auth from '../../src/Auth/Auth';
 import * as S3 from 'aws-sdk/clients/s3';
 

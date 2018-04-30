@@ -1,7 +1,7 @@
 {
-  "name": "@aws-amplify/common",
-  "version": "0.0.3",
-  "description": "Common category of aws-amplify",
+  "name": "@aws-amplify/core",
+  "version": "0.0.1",
+  "description": "Core category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",

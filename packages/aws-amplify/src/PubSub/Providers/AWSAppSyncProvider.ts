@@ -13,7 +13,7 @@
 import { Client, Message } from 'paho-mqtt';
 import * as Observable from 'zen-observable';
 import { v4 as uuid } from 'uuid';
-import { ConsoleLogger as Logger } from '@aws-amplify/common';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import { MqttOverWSProvider } from './MqttOverWSProvider';
 

@@ -20,7 +20,7 @@ import {
     Linking,
     AppState,
     Platform
-} from '@aws-amplify/common';
+} from '@aws-amplify/core';
 
 const logger = new Logger('Analytics');
 let startsessionRecorded = false;

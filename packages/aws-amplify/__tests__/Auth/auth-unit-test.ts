@@ -161,7 +161,7 @@ import Auth from '../../src/Auth/Auth';
 import Cache from '@aws-amplify/cache';
 import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials, Credentials } from 'aws-sdk';
-import { GoogleOAuth } from '@aws-amplify/common';
+import { GoogleOAuth } from '@aws-amplify/core';
 
 const authOptions : AuthOptions = {
     userPoolId: "awsUserPoolsId",

@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { ConsoleLogger as Logger } from '@aws-amplify/common';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as Pinpoint from 'aws-sdk/clients/pinpoint';
 import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import Cache from '@aws-amplify/cache';

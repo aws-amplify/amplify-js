@@ -11,6 +11,4 @@
  * and limitations under the License.
  */
 
-import polyfills from  './Polyfills';
-polyfills();
-export default polyfills;
+import './Polyfills';

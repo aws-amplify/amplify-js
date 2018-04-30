@@ -13,10 +13,6 @@
 
 import InMemoryCache from '../InMemoryCache';
 
-const polyfills = () => {
-    if (!(<any>global).localStorage) {
-        (<any>global).localStorage = InMemoryCache;
-    }
-};
-
-export default polyfills;
+if (!(<any>global).localStorage) {
+    (<any>global).localStorage = InMemoryCache;
+}

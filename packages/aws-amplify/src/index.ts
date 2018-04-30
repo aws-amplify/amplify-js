@@ -24,7 +24,7 @@ import {
     ClientDevice,
     Signer,
     I18n
-} from '@aws-amplify/common';
+} from '@aws-amplify/core';
 
 const logger = new Logger('Amplify');
 
