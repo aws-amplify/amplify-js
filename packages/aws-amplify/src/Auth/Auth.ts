@@ -264,12 +264,17 @@ export default class AuthClass {
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser
      */
-    public signIn(username: string, password: string): Promise<any> {
+    public signIn(username: string, password: string, authenticationFlowType: Maybe<string>): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
         const user = this.createCognitoUser(username);
+
+        if (authenticationFlowType) {
+          user.setAuthenticationFlowType(authenticationFlowType);
+        }
+
         const authDetails = new AuthenticationDetails({
             Username: username,
             Password: password
