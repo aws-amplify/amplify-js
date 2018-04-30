@@ -1,13 +1,50 @@
 # Changelog for AWS Amplify
-<!--LATEST=0.2.8-->
+<!--LATEST=0.3.3-->
 <!--ENTRYINSERT-->
 
-## current changes (not released)
-* amazon-cognito-identity-js
+## 04/24/2018
+* aws-amplify - v0.3.3
+    * remove unused variable #670
+    * Enhancement: Configurable Storage prefix #611 #332 #668
+    * Enhancement: Analytics events resending limit #590
+    * Bug Fix: Cannot sign in after Auth.completeNewPassword #589
+    * Bug Fix: Declare type dependencies #629
+    * Bug Fix: API GraphQL connect fix #652
+    * Feature: OAuth / Cognito Hosted UI #565 #480 #311 #45 #542 #376 #710
+    * Enhancement: add docs for protected storage level #626
+    * Enhancement: Dispatch failure event for pwd completion error #694
+    * Bug Fix: Sign out and i18n #700
+    * Enhancement: Initial commit of documentation change #708
+    * Bug Fix: use NetworkError code in aws-cognito-identity #706
+    
+* aws-amplify-react - v0.1.43
+    * Feature: OAuth / Cognito Hosted UI HOCs #565 #480 #311 #45 #542 #376
+
+## 04/19/2018
+* amazon-cognito-identity-js - v2.0.4@beta
     * Add declartion for SetUserMFAPreference #667
+    * Enhancement: Callback with error if error thrown due to network #605
+    * Bug Fix: Callback with error if error thrown due to network #605
+    
+* aws-amplify - v0.3.2@beta
+    * Enhancement: Configurable Storage prefix #611 #332 #668
+    * Enhancement: Analytics events resending limit #590
+    * Bug Fix: Cannot sign in after Auth.completeNewPassword #589
+    * Bug Fix: Declare type dependencies #629
+    * Bug Fix: API GraphQL connect fix #652
+    * Feature: OAuth / Cognito Hosted UI #565 #480 #311 #45 #542 #376
+    
+* aws-amplify-react - v0.1.42@beta
+    * Feature: OAuth / Cognito Hosted UI HOCs #565 #480 #311 #45 #542 #376
 
 
-##04/12/2018
+## 04/16/2018
+* aws-amplify-angular - v0.1.0
+    * Feature: Component `<amplify-authenticator></amplify-authenticator>`
+    * Feature: Provider `AmplifyService`
+
+
+## 04/12/2018
 * aws-amplify - v0.3.0
     * Feature: Adding graphql support #645.
     * Bug Fix: Analytics retry issue #644.
@@ -18,7 +55,7 @@
     * Bug Fix: Keyboard dismiss fix #530
     
 
-##04/11/2018
+## 04/11/2018
 * aws-amplify - v0.2.15
     * Enhancement: Preserve error context when loading Cognito credentials. #577
     * Enhancement: Increase test coverage for PubSub. #588
@@ -42,7 +79,7 @@
     * Enhancement: Analytics turn on/off #479
     * Enhancement: Add params.ContentDisposition to Storage.put() #501
     * Enhancement: Make Storage operations options optional #527
-    * Enhaneement: Adding custom federated auth provider #540
+    * Enhancement: Adding custom federated auth provider #540
     * Feature: Initial implementation of PubSub category #460
     * Bug Fix: Retrieving credentials only once when reloading pages #486
     * Bug Fix: Sign out fix #511
