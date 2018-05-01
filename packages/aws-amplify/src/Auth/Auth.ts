@@ -718,11 +718,20 @@ export default class AuthClass {
             return this.user;
         } else {
             logger.debug('get current authenticated userpool user');
+            let user = null;
             try {
-                this.user = await this.currentUserPoolUser();
-                return this.user;
+                user = await this.currentUserPoolUser();
             } catch (e) {
-                return Promise.reject('not authenticated');
+                throw 'not authenticated';
+            }
+            let attributes = {};
+            try {
+                attributes = this.attributesToObject(await this.userAttributes(user));
+            } catch (e) {
+                logger.debug('cannot get user attributes');
+            } finally {
+                this.user = Object.assign({}, user, { attributes });
+                return this.user;
             }
         }
     }
