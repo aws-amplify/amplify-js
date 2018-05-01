@@ -318,6 +318,23 @@ Amplify.configure({
 });
 ```
 
+### Signing a GraphQL request to authenticate with AWS Identity Access Management (IAM).
+
+Amplify provides the ability to sign requests for IAM authentication.  
+
+Add the following to your configuration statement to enable this for GraphQL requests that are processed through AWS API Gateway:
+
+```js
+Amplify.configure({
+  API: {
+    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
+    graphql_endpoint_iam_region: 'my_graphql_apigateway_region'
+  }
+});
+```
+
+Example region value: "us-east-1".
+
 ### Configuration for AWS AppSync
 
 AWS AppSync is a cloud-based fully-managed GraphQL service that is integrated with AWS Amplify API category and command line tools with AWS Mobile CLI.
