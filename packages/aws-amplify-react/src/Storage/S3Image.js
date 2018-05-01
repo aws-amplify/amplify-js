@@ -151,12 +151,11 @@ export default class S3Image extends Component {
         if (!src && !picker) { return null; }
 
         const theme = this.props.theme || AmplifyTheme;
-        const photoStyle = hidden? AmplifyTheme.hidden
-                                 : Object.assign({}, theme.photo, style);
+        const photoStyle = Object.assign({}, theme.photo, style);
 
         return (
             <div style={photoStyle}>
-                { photoStyle? this.imageEl(src, theme): null }
+                { hidden? null : this.imageEl(src, theme) }
                 { picker? <div>
                               <PhotoPicker
                                   key="picker"
