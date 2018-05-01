@@ -264,9 +264,9 @@ export default class APIClass {
         return this._api.endpoint(apiName);
     }
 
-    private async _headerBasedAuth(graphIam?) {
+    private async _headerBasedAuth(defaultAuthenticationType?) {
         const {
-            aws_appsync_authenticationType: authenticationType = graphIam,
+            aws_appsync_authenticationType: authenticationType = defaultAuthenticationType,
             aws_appsync_apiKey: apiKey,
         } = this._options;
         let headers = {};
