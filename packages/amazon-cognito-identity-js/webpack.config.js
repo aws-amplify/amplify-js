@@ -49,23 +49,24 @@ var config = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
-        // query: {
-        //   presets: ['es2015'],
-        // }
+        query: {
+           cacheDirectory: './node_modules/.cache/babel'
+         }
       }
     ]
   }
 };
 
-// if (process.env.NODE_ENV === 'production') {
-//   config.devtool = 'source-map';
-//   config.plugins.push(
-//     new webpack.optimize.UglifyJsPlugin({
-//       compress: {
-//         warnings: false
-//       }
-//     })
-//   );
-// }
+if (process.env.NODE_ENV === 'production') {
+  config.devtool = 'source-map';
+  config.plugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+      // compress: {
+      //   warnings: false
+      // }
+      sourceMap: true
+    })
+  );
+}
 
 module.exports = config;
