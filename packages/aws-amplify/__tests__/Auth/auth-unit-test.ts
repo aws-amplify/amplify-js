@@ -891,7 +891,8 @@ describe('auth unit test', () => {
                 userPoolId: undefined,
                 userPoolWebClientId: "awsUserPoolsWebClientId",
                 region: "region",
-                identityPoolId: "awsCognitoIdentityPoolId"
+                identityPoolId: "awsCognitoIdentityPoolId",
+                mandatorySignIn: false
             });
 
             expect.assertions(1);
@@ -918,8 +919,14 @@ describe('auth unit test', () => {
                     });
                 });
 
+            const spyon2 = jest.spyOn(Auth.prototype, 'userAttributes').mockImplementationOnce(() => {
+                return Promise.resolve([{
+                    Name: 'name',
+                    Value: 'val' 
+                }]);
+            });
             expect.assertions(1);
-            expect(await auth.currentAuthenticatedUser()).toEqual(user);
+            expect(await auth.currentAuthenticatedUser()).toEqual({"attributes": {"name": "val"}});
 
             spyon.mockClear();
 
