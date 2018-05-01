@@ -26,31 +26,46 @@ var config = {
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.BannerPlugin(banner, { raw: true })
+    new webpack.BannerPlugin({
+      banner,
+      raw: true
+    })
   ],
   module: {
-    loaders: [
+    // loaders: [
+    //   {
+    //     test: /\.js$/,
+    //     exclude: /node_modules/,
+    //     loader: 'babel',
+    //     query: {
+    //       cacheDirectory: './node_modules/.cache/babel'
+    //     }
+    //   }
+    // ],
+    rules: [
+      // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+      //{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel',
-        query: {
-          cacheDirectory: './node_modules/.cache/babel'
-        }
+        loader: 'babel-loader',
+        // query: {
+        //   presets: ['es2015'],
+        // }
       }
     ]
   }
 };
 
-if (process.env.NODE_ENV === 'production') {
-  config.devtool = 'source-map';
-  config.plugins.push(
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
-    })
-  );
-}
+// if (process.env.NODE_ENV === 'production') {
+//   config.devtool = 'source-map';
+//   config.plugins.push(
+//     new webpack.optimize.UglifyJsPlugin({
+//       compress: {
+//         warnings: false
+//       }
+//     })
+//   );
+// }
 
 module.exports = config;
