@@ -3,7 +3,9 @@
 
 # React
 
-AWS Amplify provides React Components with `aws-amplify-react` npm package.
+AWS Amplify provides React Components with `aws-amplify-react` npm package. Also, to help you start working with AWS Amplify, we provide a Starter App. 
+
+See our [React Starter App in Github](https://github.com/awslabs/aws-mobile-react-sample).
 
 ## Installation and Configuration
 
