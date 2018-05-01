@@ -327,7 +327,7 @@ Add the following to your configuration statement to enable this for GraphQL req
 ```js
 Amplify.configure({
   API: {
-    graphql_endpoint: 'https:/www.example.com/my-graphql-endpoint',
+    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
     graphql_endpoint_iam_region: 'my_graphql_apigateway_region'
   }
 });
