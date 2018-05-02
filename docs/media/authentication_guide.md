@@ -50,6 +50,20 @@ Amplify.configure({
         userPoolId: 'XX-XXXX-X_abcd1234',
     // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
         userPoolWebClientId: 'a1b2c3d4e5f6g7h8i9j0k1l2m3',
+    // OPTIONAL - add a refresh handler for developer authenticated identities, or override SDK provided refresh handlers, keyed by provider name.  Example:
+        refreshHandlers: {
+            'developer': () => {
+                // This can be any call to your backend, but two things are required:
+                // 1. Your backend needs to return the response from getOpenIdTokenForDeveloperIdentity, per AWS docs.
+                // 2. Your client needs to resolve the handler with the appropriate data structure, as with the Object below.
+                // ...In short, this should look very similar to how you handle the call to Auth.federatedSignIn.
+                return new Promise((resolve, reject) => {
+                    API.get(YOUR_BACKEND_REFRESH_TOKEN_API_NAME, YOUR_QUERY_STRING_IDENTIFYING_USER_TO_REFRESH))
+                        .then( (results) => { resolve({token: results.Token, expires_at: results.Expires, identity_id: results.IdentityId}) } )
+                    )
+                })
+            }
+        },
     // OPTIONAL - Enforce user authentication prior to accessing AWS resources or not
         mandatorySignIn: false,
     // OPTIONAL - Configuration for cookie storage
