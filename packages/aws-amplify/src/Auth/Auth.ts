@@ -160,9 +160,9 @@ export default class AuthClass {
         }
 
         // If the developer has provided an object of refresh handlers,
-        // then we can overwrite the default blank _refreshHandlers object.
+        // then we can merge the provided handlers with the current handlers.
         if (refreshHandlers) {
-            this._refreshHandlers = refreshHandlers;
+            this._refreshHandlers = { ...this._refreshHandlers,  ...refreshHandlers };
         }
 
         dispatchAuthEvent('configured', null);
