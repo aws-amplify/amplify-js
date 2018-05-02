@@ -2,7 +2,35 @@
 <!--LATEST=0.2.8-->
 <!--ENTRYINSERT-->
 
-##04/12/2018
+upcoming changes
+* aws-amplify
+    * remove unused variable #670
+
+## 04/19/2018
+* amazon-cognito-identity-js - v2.0.4@beta
+    * Add declartion for SetUserMFAPreference #667
+    * Enhancement: Callback with error if error thrown due to network #605
+    * Bug Fix: Callback with error if error thrown due to network #605
+    
+* aws-amplify - v0.3.2@beta
+    * Enhancement: Configurable Storage prefix #611 #332 #668
+    * Enhancement: Analytics events resending limit #590
+    * Bug Fix: Cannot sign in after Auth.completeNewPassword #589
+    * Bug Fix: Declare type dependencies #629
+    * Bug Fix: API GraphQL connect fix #652
+    * Feature: OAuth / Cognito Hosted UI #565 #480 #311 #45 #542 #376
+    
+* aws-amplify-react - v0.1.42@beta
+    * Feature: OAuth / Cognito Hosted UI HOCs #565 #480 #311 #45 #542 #376
+
+
+## 04/16/2018
+* aws-amplify-angular - v0.1.0
+    * Feature: Component `<amplify-authenticator></amplify-authenticator>`
+    * Feature: Provider `AmplifyService`
+
+
+## 04/12/2018
 * aws-amplify - v0.3.0
     * Feature: Adding graphql support #645.
     * Bug Fix: Analytics retry issue #644.
@@ -13,7 +41,7 @@
     * Bug Fix: Keyboard dismiss fix #530
     
 
-##04/11/2018
+## 04/11/2018
 * aws-amplify - v0.2.15
     * Enhancement: Preserve error context when loading Cognito credentials. #577
     * Enhancement: Increase test coverage for PubSub. #588

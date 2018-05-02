@@ -29,8 +29,3 @@ export interface EventAttributes {
 export interface EventMetrics {
     [key: string]: number;
 }
-
-export enum SessionState {
-    START = 'START',
-    STOP = 'STOP'
-}
