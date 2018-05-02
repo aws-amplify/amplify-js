@@ -215,6 +215,23 @@ Storage.get('test.txt')
     .catch(err => console.log(err));
 ```
 
+Protected bucket:
+To get current user's objects
+```js
+Storage.get('test.txt', { level: 'protected' })
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
+```
+To get other users' objects
+```js
+Storage.get('test.txt', { 
+    level: 'protected', 
+    identityId: 'xxxxxxx' // the identityId of that user
+})
+.then(result => console.log(result))
+.catch(err => console.log(err));
+```
+
 Private bucket:
 ```js
 Storage.get('test.txt', {level: 'private'})
