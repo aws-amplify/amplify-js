@@ -772,6 +772,24 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
 
+        test('mfaSetup', async () => {
+            const spyon = jest.spyOn(CognitoUser.prototype, 'completeNewPasswordChallenge')
+                .mockImplementationOnce((password, requiredAttributes, callback) => {
+                    callback.mfaSetup('challengeName', 'challengeParam');
+                });
+
+            const auth = new Auth(authOptions);
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool
+            });
+
+            expect.assertions(1);
+            expect(await auth.completeNewPassword(user, 'password', {})).toBe(user);
+
+            spyon.mockClear();
+        });
+
         test('no password', async () => {
             const auth = new Auth(authOptions);
             const user = new CognitoUser({
