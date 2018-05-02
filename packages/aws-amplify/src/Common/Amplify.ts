@@ -6,6 +6,8 @@ export default class Amplify {
     private static _components = [];
     private static _config = {};
 
+    // for backward compatibility to avoid breaking change
+    // if someone is using like Amplify.Auth
     static Auth = null;
     static Analytics = null;
     static API = null;
