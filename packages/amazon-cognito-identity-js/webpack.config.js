@@ -32,16 +32,6 @@ var config = {
     })
   ],
   module: {
-    // loaders: [
-    //   {
-    //     test: /\.js$/,
-    //     exclude: /node_modules/,
-    //     loader: 'babel',
-    //     query: {
-    //       cacheDirectory: './node_modules/.cache/babel'
-    //     }
-    //   }
-    // ],
     rules: [
       // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
       //{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
@@ -61,9 +51,6 @@ if (process.env.NODE_ENV === 'production') {
   config.devtool = 'source-map';
   config.plugins.push(
     new webpack.optimize.UglifyJsPlugin({
-      // compress: {
-      //   warnings: false
-      // }
       sourceMap: true
     })
   );
