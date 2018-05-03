@@ -154,6 +154,16 @@ Storage.put('test.txt', 'Hello')
     .catch(err => console.log(err));
 ```
 
+Protected bucket:
+```js
+Storage.put('test.txt', 'Protected Content', {
+    level: 'protected',
+    contentType: 'text/plain'
+})
+.then (result => console.log(result))
+.catch(err => console.log(err));
+```
+
 Private bucket:
 ```js
 Storage.put('test.txt', 'Private Content', {
@@ -257,6 +267,13 @@ Storage.remove('test.txt')
     .catch(err => console.log(err));
 ```
 
+Protected
+```js
+Storage.remove('test.txt', {level: 'protected'})
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
+```
+
 Private
 ```js
 Storage.remove('test.txt', {level: 'private'})
@@ -273,6 +290,23 @@ Public
 Storage.list('photos/')
     .then(result => console.log(result))
     .catch(err => console.log(err));
+```
+
+Protected bucket:
+To list current user's objects
+```js
+Storage.list('photos/', { level: 'protected' })
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
+```
+To get other users' objects
+```js
+Storage.list('photos/', { 
+    level: 'protected', 
+    identityId: 'xxxxxxx' // the identityId of that user
+})
+.then(result => console.log(result))
+.catch(err => console.log(err));
 ```
 
 Private
