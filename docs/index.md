@@ -14,6 +14,14 @@ buttons:
 
 # Grid navigation
 marketing_grid:
+    - title: Build Web and Mobile apps
+      excerpt: <p>You can build cloud-connected web and mobile apps with AWS Amplify.</p>   
+                  <p> Learn more about creating 
+                    <a href='/aws-amplify/media/build/web-apps'>Web apps</a>,
+                    <a href='/aws-amplify/media/build/react-native-apps'>React Native apps,</a>
+                    and
+                    <a href='/aws-amplify/media/build/hybrid-apps'>hybrid mobile apps</a>.
+                  </p>
     - title: Declarative API
       excerpt: <p>AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations.</p>
                <p>
@@ -30,6 +38,10 @@ marketing_grid:
                 </p>
     - title: Open and Pluggable
       excerpt: Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
+    - title: Add cloud services fast
+      excerpt: Create amazing cloud-enabled apps in minutes with 
+       <a href='/aws-amplify/media/cli_guide'>AWS Mobile CLI</a>. 
+       Use serverless technology to run code without provisioning or managing servers.
 
 # Grid navigation
 grid_navigation:
