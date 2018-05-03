@@ -147,14 +147,14 @@ Storage.configure({
 
 Puts data into Amazon S3.
 
-Public bucket:
+Public level:
 ```js
 Storage.put('test.txt', 'Hello')
     .then (result => console.log(result))
     .catch(err => console.log(err));
 ```
 
-Protected bucket:
+Protected level:
 ```js
 Storage.put('test.txt', 'Protected Content', {
     level: 'protected',
@@ -164,7 +164,7 @@ Storage.put('test.txt', 'Protected Content', {
 .catch(err => console.log(err));
 ```
 
-Private bucket:
+Private level:
 ```js
 Storage.put('test.txt', 'Private Content', {
     level: 'private',
@@ -218,14 +218,14 @@ readFile(imagePath).then(buffer => {
 
 Retrieves a publicly accessible URL for data stored.
 
-Public bucket:
+Public level:
 ```js
 Storage.get('test.txt')
     .then(result => console.log(result))
     .catch(err => console.log(err));
 ```
 
-Protected bucket:
+Protected level:
 To get current user's objects
 ```js
 Storage.get('test.txt', { level: 'protected' })
@@ -242,7 +242,7 @@ Storage.get('test.txt', {
 .catch(err => console.log(err));
 ```
 
-Private bucket:
+Private level:
 ```js
 Storage.get('test.txt', {level: 'private'})
     .then(result => console.log(result))
@@ -260,21 +260,21 @@ Storage.get('test.txt', {expires: 60})
 
 Delete stored data from the storage bucket.
 
-Public
+Public level: 
 ```js
 Storage.remove('test.txt')
     .then(result => console.log(result))
     .catch(err => console.log(err));
 ```
 
-Protected
+Protected level: 
 ```js
 Storage.remove('test.txt', {level: 'protected'})
     .then(result => console.log(result))
     .catch(err => console.log(err));
 ```
 
-Private
+Private level:
 ```js
 Storage.remove('test.txt', {level: 'private'})
     .then(result => console.log(result))
@@ -285,14 +285,14 @@ Storage.remove('test.txt', {level: 'private'})
 
 List keys under path specified.
 
-Public
+Public level:
 ```js
 Storage.list('photos/')
     .then(result => console.log(result))
     .catch(err => console.log(err));
 ```
 
-Protected bucket:
+Protected level:
 To list current user's objects
 ```js
 Storage.list('photos/', { level: 'protected' })
@@ -309,7 +309,7 @@ Storage.list('photos/', {
 .catch(err => console.log(err));
 ```
 
-Private
+Private level:
 ```js
 Storage.list('photos/', {level: 'private'})
     .then(result => console.log(result))
