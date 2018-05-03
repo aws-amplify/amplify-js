@@ -93,7 +93,7 @@ const canonical_request = function(request) {
 
     return [
         request.method || '/',
-        url_info.pathname,
+        encodeURIComponent(url_info.pathname).replace(/%2F/ig, '/'),
         sorted_query,
         canonical_headers(request.headers),
         signed_headers(request.headers),

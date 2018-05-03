@@ -111,7 +111,7 @@ export class RestClient {
         }
 
         return Auth.currentCredentials()
-            .then(credentials => this._signed(params, credentials, isAllResponse));
+            .then(credentials => this._signed(Object.assign({},params,extraParams), credentials, isAllResponse));
     }
 
     /**
@@ -203,7 +203,12 @@ export class RestClient {
     private _signed(params, credentials, isAllResponse) {
 
         const { signerServiceInfo: signerServiceInfoParams, ...otherParams } = params;
-
+        otherParams.url = [
+            otherParams.url, 
+            Object.entries(otherParams.queryStringParameters || {})
+            .map(e => e.map(encodeURIComponent)).map(([k,v]) => `${k}=${v}`).join('&')
+        ].filter(Boolean).join('?');
+        
         const endpoint_region: string = this._region || this._options.region;
         const endpoint_service: string = this._service || this._options.service;
 
