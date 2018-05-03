@@ -9,7 +9,7 @@ module.exports = {
     output: {
         filename: '[name].js',
         path: __dirname + '/dist',
-        library: 'aws-amplify-cache',
+        library: 'amplify_cache',
         libraryTarget: 'umd',
         umdNamedDefine: true
     },

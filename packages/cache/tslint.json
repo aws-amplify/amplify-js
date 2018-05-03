@@ -4,9 +4,6 @@
     "plugins": [
         "prettier"
     ],
-    "extends": [
-        //"tslint-config-airbnb"
-    ],
     "jsRules": {},
     "rules": {
         "prefer-const": true,

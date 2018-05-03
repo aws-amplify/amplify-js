@@ -9,7 +9,7 @@ module.exports = {
     output: {
         filename: '[name].js',
         path: __dirname + '/dist',
-        library: 'aws-amplify-core',
+        library: 'amplify_core',
         libraryTarget: 'umd',
         umdNamedDefine: true
     },
