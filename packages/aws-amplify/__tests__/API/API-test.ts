@@ -17,6 +17,7 @@ jest.mock('../../src/Common/Builder', () => {
     };
 });
 
+
 import axios from 'axios';
 
 import API, { graphqlOperation } from '../../src/API/API';
