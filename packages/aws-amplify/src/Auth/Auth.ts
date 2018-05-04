@@ -86,7 +86,8 @@ export default class AuthClass {
             oauth, 
             region, 
             identityPoolId, 
-            mandatorySignIn 
+            mandatorySignIn,
+            refreshHandlers
         } = this._config;
 
         if (userPoolId) {
@@ -116,7 +117,8 @@ export default class AuthClass {
             mandatorySignIn,
             region,
             userPoolId,
-            identityPoolId
+            identityPoolId,
+            refreshHandlers
         });
 
         // initiailize cognitoauth client if hosted ui options provided
@@ -699,7 +701,6 @@ export default class AuthClass {
             if (!that.userPool) {
                 return Promise.reject('No userPool');
             }
-            that.credentials_source = 'userPool';
             return that.userPool.getCurrentUser();
         });
     }
@@ -810,7 +811,6 @@ export default class AuthClass {
     public currentUserCredentials() : Promise<any> {
         return Credentials.currentUserCredentials();
     }
-
 
 
     public currentCredentials(): Promise<any> {
@@ -1030,14 +1030,15 @@ export default class AuthClass {
      * For federated login
      * @param {String} provider - federation login provider
      * @param {FederatedResponse} response - response should have the access token
+     * the identity id (optional)
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */
     public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
-        const { token, expires_at } = response;
+        const { token, identity_id, expires_at } = response;
         const that = this;
         return new Promise((res, rej) => {
-            Credentials.set({ provider, token, user, expires_at }, 'federation').then((cred) => {
+            Credentials.set({ provider, token, identity_id, user, expires_at }, 'federation').then((cred) => {
                 dispatchAuthEvent('signIn', that.user);
                 logger.debug('federated sign in credentials', cred);
                 res(cred);

@@ -37,6 +37,13 @@ export class Credentials {
         if (!config) return this._config || {};
 
         this._config = Object.assign({}, this._config, config);
+        const { refreshHandlers } = this._config;
+         // If the developer has provided an object of refresh handlers,
+        // then we can merge the provided handlers with the current handlers.
+        if (refreshHandlers) {
+            this._refreshHandlers = { ...this._refreshHandlers,  ...refreshHandlers };
+        }
+
         return this._config;
     }
 
@@ -118,31 +125,34 @@ export class Credentials {
         const { provider, user } = federatedInfo;
         let token = federatedInfo.token;
         let expires_at = federatedInfo.expires_at;
+        let identity_id = federatedInfo.identity_id;
 
         const that = this;
         logger.debug('checking if federated jwt token expired');
-        if (expires_at < new Date().getTime()
-            && typeof that._refreshHandlers[provider] === 'function') {
-            logger.debug('getting refreshed jwt token from federation provider');
-            return that._refreshHandlers[provider]().then((data) => {
-                logger.debug('refresh federated token sucessfully', data);
-                token = data.token;
-                expires_at = data.expires_at;
-                // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
-                return that._setCredentialsFromFederation({ provider, token, user, expires_at });
-            }).catch(e => {
-                logger.debug('refresh federated token failed', e);
-                this.clear();
-                return Promise.reject('refreshing federation token failed: ' + e);
-            });
+        if (expires_at > new Date().getTime()) {
+            // if not expired
+            logger.debug('token not expired');
+            return this._setCredentialsFromFederation({provider, token, user, identity_id, expires_at });
         } else {
-            if (!that._refreshHandlers[provider]) {
+            // if refresh handler exists
+            if (that._refreshHandlers[provider] && typeof that._refreshHandlers[provider] === 'function') {
+                logger.debug('getting refreshed jwt token from federation provider');
+                return that._refreshHandlers[provider]().then((data) => {
+                    logger.debug('refresh federated token sucessfully', data);
+                    token = data.token;
+                    identity_id = data.identity_id;
+                    expires_at = data.expires_at;
+                    
+                    return that._setCredentialsFromFederation({ provider, token, user, identity_id, expires_at });
+                }).catch(e => {
+                    logger.debug('refresh federated token failed', e);
+                    this.clear();
+                    return Promise.reject('refreshing federation token failed: ' + e);
+                });
+            } else {
                 logger.debug('no refresh handler for provider:', provider);
                 this.clear();
                 return Promise.reject('no refresh handler for provider');
-            } else {
-                logger.debug('token not expired');
-                return this._setCredentialsFromFederation({provider, token, user, expires_at });
             }
         }
     }
@@ -193,7 +203,7 @@ export class Credentials {
     }
 
     private _setCredentialsFromFederation(params) {
-        const { provider, token, user, expires_at } = params;
+        const { provider, token, identity_id, user, expires_at } = params;
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
@@ -214,6 +224,7 @@ export class Credentials {
         const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
+            IdentityId: identity_id,
             Logins: logins
         },  {
             region
@@ -223,7 +234,7 @@ export class Credentials {
             credentials, 
             'federated', 
             true, 
-            { provider, token, expires_at, user}
+            params,
         );
     }
 
@@ -260,8 +271,8 @@ export class Credentials {
                             { id: this._credentials.identityId },
                             info.user
                         );
-                        const { provider, token, expires_at } = info;
-                        this._cacheClass.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+                        const { provider, token, expires_at, identity_id } = info;
+                        this._cacheClass.setItem('federatedInfo', { provider, token, user, expires_at, identity_id }, { priority: 1 });
                     }
                     res(that._credentials);
                 },
