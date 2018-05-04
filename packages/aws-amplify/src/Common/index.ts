@@ -25,6 +25,7 @@ export { default as Signer } from './Signer';
 export { default as Parser } from './Parser';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export * from './RNComponents';
+export { default as Credentials } from './Credentials';
 
 import Platform from './Platform';
 export const Constants = {
