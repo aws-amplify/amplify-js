@@ -62,7 +62,8 @@ export default class AuthClass {
      */
     constructor(config: AuthOptions) {
         this.configure(config);
-        // refresh token
+
+        this.currentSession = this.currentSession.bind(this);
 
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
@@ -78,7 +79,16 @@ export default class AuthClass {
         this._config = conf;
 
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
-        const { userPoolId, userPoolWebClientId, cookieStorage, oauth } = this._config;
+        const { 
+            userPoolId, 
+            userPoolWebClientId, 
+            cookieStorage, 
+            oauth, 
+            region, 
+            identityPoolId, 
+            mandatorySignIn 
+        } = this._config;
+
         if (userPoolId) {
             const userPoolData: ICognitoUserPoolData = {
                 UserPoolId: userPoolId,
@@ -101,6 +111,13 @@ export default class AuthClass {
                 });
             }
         }
+
+        Credentials.configure({
+            mandatorySignIn,
+            region,
+            userPoolId,
+            identityPoolId
+        });
 
         // initiailize cognitoauth client if hosted ui options provided
         if (oauth) {

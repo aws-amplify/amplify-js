@@ -84,7 +84,7 @@ export class Credentials {
                         // refresh the jwt token here if necessary
                         return that._refreshFederatedToken(federatedInfo);
                     } else {
-                        return that._cacheClass.currentSession()
+                        return that._authClass.currentSession()
                             .then(session => {
                                 return that._setCredentialsFromSession(session);
                             }).catch((error) => {
