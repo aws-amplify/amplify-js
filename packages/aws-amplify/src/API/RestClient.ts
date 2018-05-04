@@ -19,7 +19,8 @@ import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
 import Platform from '../Common/Platform';
 
-const logger = new Logger('RestClient');
+const logger = new Logger('RestClient'),
+    url = require('url');
 
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -203,11 +204,16 @@ export class RestClient {
     private _signed(params, credentials, isAllResponse) {
 
         const { signerServiceInfo: signerServiceInfoParams, ...otherParams } = params;
-        otherParams.url = [
-            otherParams.url, 
-            Object.entries(otherParams.queryStringParameters || {})
-            .map(e => e.map(encodeURIComponent)).map(([k,v]) => `${k}=${v}`).join('&')
-        ].filter(Boolean).join('?');
+        
+        // Intentionally discarding search
+        const { search, ...parsedUrl } = url.parse(otherParams.url, true, true);
+        otherParams.url = url.format({
+            ...parsedUrl,
+            query: {
+                ...parsedUrl.query,
+                ...(otherParams.queryStringParameters || {})
+            }
+        });
         
         const endpoint_region: string = this._region || this._options.region;
         const endpoint_service: string = this._service || this._options.service;
