@@ -84,7 +84,7 @@ export default class AuthClass {
     }
 
     configure(config) {
-        if (!config) return this._config;
+        if (!config) return this._config || {};
         logger.debug('configure Auth');
         const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Auth, config);
         this._config = conf;
@@ -579,6 +579,12 @@ export default class AuthClass {
                     user['challengeName'] = challengeName;
                     user['challengeParam'] = challengeParam;
                     resolve(user);
+                },
+                mfaSetup: (challengeName, challengeParam) => {
+                    logger.debug('signIn mfa setup', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
                 }
             });
         });
@@ -718,11 +724,20 @@ export default class AuthClass {
             return this.user;
         } else {
             logger.debug('get current authenticated userpool user');
+            let user = null;
             try {
-                this.user = await this.currentUserPoolUser();
-                return this.user;
+                user = await this.currentUserPoolUser();
             } catch (e) {
-                return Promise.reject('not authenticated');
+                throw 'not authenticated';
+            }
+            let attributes = {};
+            try {
+                attributes = this.attributesToObject(await this.userAttributes(user));
+            } catch (e) {
+                logger.debug('cannot get user attributes');
+            } finally {
+                this.user = Object.assign({}, user, { attributes });
+                return this.user;
             }
         }
     }

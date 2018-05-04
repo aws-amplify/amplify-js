@@ -17,9 +17,12 @@ jest.mock('../../src/Common/Builder', () => {
     };
 });
 
-import API from '../../src/API/API';
+import API, { graphqlOperation } from '../../src/API/API';
 import Auth from '../../src/Auth';
 import { RestClient } from '../../src/API/RestClient';
+import { print } from 'graphql/language/printer';
+import { parse } from 'graphql/language/parser';
+import PubSub from '../../src/PubSub/PubSub';
 
 const config = {
     API: {
@@ -30,6 +33,224 @@ const config = {
 };
 
 describe('API test', () => {
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    const aws_cloud_logic_custom = [{
+        "id": "lh3s27sl16",
+        "name": "todosCRUD",
+        "description": "",
+        "endpoint": "https://lh3s27sl16.execute-api.us-east-1.amazonaws.com/Development",
+        "region": "us-east-1",
+        "paths": ["/todos", "/todos/123"]
+    }];
+
+    describe('graphql test', () => {
+        test('happy-case-query', async () => {
+            const spyonAuth = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('cred');
+                });
+            });
+
+            const spyon = jest.spyOn(RestClient.prototype, 'post')
+                .mockImplementationOnce((url, init) => {
+                    return new Promise((res, rej) => {
+                        res({})
+                    });
+                });
+
+            const api = new API(config);
+            const url = 'https://appsync.amazonaws.com',
+                region = 'us-east-2',
+                apiKey = 'secret_api_key',
+                variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+            api.configure({
+                aws_appsync_graphqlEndpoint: url,
+                aws_appsync_region: region,
+                aws_appsync_authenticationType: 'API_KEY',
+                aws_appsync_apiKey: apiKey
+            })
+            const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
+                getEvent(id: $id) {
+                    id
+                    name
+                    where
+                    when
+                    description
+                    comments(nextToken: $nextToken) {
+                      items {
+                        commentId
+                        content
+                        createdAt
+                      }
+                    }
+                  }
+                }`;
+
+            const doc = parse(GetEvent);
+            const query = print(doc);
+
+            const headers = {
+                Authorization: null,
+                'X-Api-Key': apiKey
+            };
+
+            const body = {
+                query,
+                variables,
+            };
+
+            const init = {
+                headers,
+                body,
+                signerServiceInfo: {
+                    service: 'appsync',
+                    region,
+                }
+            };
+
+            await api.graphql(graphqlOperation(GetEvent, variables));
+
+            expect(spyon).toBeCalledWith(url, init);
+        });
+
+        test.skip('happy-case-subscription', (done) => {
+            const spyonAuth = jest.spyOn(Auth, 'currentCredentials').mockImplementation(() => {
+                return new Promise((res, rej) => {
+                    res('cred');
+                });
+            });
+            
+            // TODO: This mock doesnt work on jest
+            const spyon = jest.spyOn(RestClient.prototype, 'post')
+                .mockImplementation((url, init) => {
+                    return new Promise((res, rej) => {
+                        res({})
+                    });
+                });
+
+            const api = new API(config);
+            const url = 'https://appsync.amazonaws.com',
+                region = 'us-east-2',
+                apiKey = 'secret_api_key',
+                variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+
+            api.configure({
+                aws_appsync_graphqlEndpoint: url,
+                aws_appsync_region: region,
+                aws_appsync_authenticationType: 'API_KEY',
+                aws_appsync_apiKey: apiKey
+            });
+            const pubsub = new PubSub(config);
+
+            const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
+                subscribeToEventComments(eventId: $eventId) {
+                  eventId
+                  commentId
+                  content
+                }
+              }`;
+
+            const doc = parse(SubscribeToEventComments);
+            const query = print(doc);
+
+            const headers = {
+                Authorization: null,
+                'X-Api-Key': apiKey
+            };
+
+            const body = {
+                query,
+                variables,
+            };
+
+            const init = {
+                headers,
+                body,
+                signerServiceInfo: {
+                    service: 'appsync',
+                    region,
+                }
+            };
+
+            const observable = api.graphql(graphqlOperation(SubscribeToEventComments, variables)).subscribe({
+                next: () => {
+                    done();
+                }
+            });
+
+            pubsub.publish('topic1', 'my message');
+
+            expect(observable).not.toBe(undefined);
+            expect(spyon).toBeCalled();
+        });
+
+        test('happy case mutation', async () => {
+            const spyonAuth = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('cred');
+                });
+            });
+
+            const spyon = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce((url, init) => {
+                return new Promise((res, rej) => {
+                    res({})
+                });
+            });
+            const api = new API(config);
+            const url = 'https://appsync.amazonaws.com',
+                region = 'us-east-2',
+                apiKey = 'secret_api_key',
+                variables = {
+                    id: '809392da-ec91-4ef0-b219-5238a8f942b2',
+                    content: 'lalala',
+                    createdAt: new Date().toISOString()
+                };
+            api.configure({
+                aws_appsync_graphqlEndpoint: url,
+                aws_appsync_region: region,
+                aws_appsync_authenticationType: 'API_KEY',
+                aws_appsync_apiKey: apiKey
+            })
+            const AddComment = `mutation AddComment($eventId: ID!, $content: String!, $createdAt: String!) {
+                commentOnEvent(eventId: $eventId, content: $content, createdAt: $createdAt) {
+                  eventId
+                  content
+                  createdAt
+                }
+              }`;
+
+            const doc = parse(AddComment);
+            const query = print(doc);
+
+            const headers = {
+                Authorization: null,
+                'X-Api-Key': apiKey
+            };
+
+            const body = {
+                query,
+                variables,
+            };
+
+            const init = {
+                headers,
+                body,
+                signerServiceInfo: {
+                    service: 'appsync',
+                    region,
+                }
+            };
+
+            await api.graphql(graphqlOperation(AddComment, variables));
+
+            expect(spyon).toBeCalledWith(url, init);
+        });
+    });
+
     describe('configure test', () => {
         test('without aws_project_region', () => {
             const api = new API({});
@@ -38,18 +259,11 @@ describe('API test', () => {
                 myoption: 'myoption'
             }
 
-            expect(api.configure(options)).toEqual({"myoption": "myoption"});
+            expect(api.configure(options)).toEqual({ "myoption": "myoption" });
         });
 
         test('with aws_project_region', () => {
             const api = new API({});
-            const aws_cloud_logic_custom = [{
-                    "id":"lh3s27sl16",
-                    "name":"todosCRUD",
-                    "description":"",
-                    "endpoint":"https://lh3s27sl16.execute-api.us-east-1.amazonaws.com/Development",
-                    "region":"us-east-1",
-                    "paths":["/todos","/todos/123"]}];
 
             const options = {
                 aws_project_region: 'region',
@@ -65,6 +279,8 @@ describe('API test', () => {
             });
         });
     });
+
+
 
     describe('get test', () => {
         test('happy case', async () => {
@@ -85,9 +301,6 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('endpoint length 0', async () => {
@@ -111,16 +324,13 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
             const api = new API(config);
             const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    rej('err');
+                    rej('err no current credentials');
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'get').mockImplementationOnce(() => {
@@ -136,10 +346,6 @@ describe('API test', () => {
             } catch (e) {
                 expect(e).toBe('No credentials');
             }
-
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('no restclient instance', async () => {
@@ -147,7 +353,7 @@ describe('API test', () => {
             const spyon = jest.spyOn(API.prototype, 'createInstance').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
-    
+
             expect.assertions(1);
             try {
                 await api.get('apiName', 'path', 'init');
@@ -155,48 +361,55 @@ describe('API test', () => {
                 expect(e).toBe('err');
             }
 
-            spyon.mockClear();
         });
     });
 
     describe('post test', () => {
+
         test('happy case', async () => {
-            const api = new API(config);
+            const api = new API({
+                region: 'region-2',
+            });
+            const options = {
+                aws_project_region: 'region',
+                aws_cloud_logic_custom
+            };
+
             const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce(() => {
+                console.log('spyon2, post');
                 return Promise.resolve();
             });
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
                 return 'endpoint';
             });
 
+            api.configure(options);
             await api.post('apiName', 'path', 'init');
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test.skip('endpoint length 0', async () => {
-            const api = new API(config);
             const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce(() => {
+
                 return Promise.resolve();
             });
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
                 return '';
             });
 
+            const api = new API(config);
             expect.assertions(1);
             try {
                 await api.post('apiName', 'path', 'init');
@@ -204,13 +417,9 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
-            const api = new API(config);
             const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
@@ -223,6 +432,7 @@ describe('API test', () => {
                 return 'endpoint';
             });
 
+            const api = new API(config);
             expect.assertions(1);
             try {
                 await api.post('apiName', 'path', 'init');
@@ -230,9 +440,6 @@ describe('API test', () => {
                 expect(e).toBe('No credentials');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('no restclient instance', async () => {
@@ -240,7 +447,7 @@ describe('API test', () => {
             const spyon = jest.spyOn(API.prototype, 'createInstance').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
-    
+
             expect.assertions(1);
             try {
                 await api.post('apiName', 'path', 'init');
@@ -248,7 +455,6 @@ describe('API test', () => {
                 expect(e).toBe('err');
             }
 
-            spyon.mockClear();
         });
     });
 
@@ -271,9 +477,6 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test.skip('endpoint length 0', async () => {
@@ -297,9 +500,6 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
@@ -323,9 +523,6 @@ describe('API test', () => {
                 expect(e).toBe('No credentials');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('no restclient instance', async () => {
@@ -333,7 +530,7 @@ describe('API test', () => {
             const spyon = jest.spyOn(API.prototype, 'createInstance').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
-    
+
             expect.assertions(1);
             try {
                 await api.put('apiName', 'path', 'init');
@@ -341,10 +538,9 @@ describe('API test', () => {
                 expect(e).toBe('err');
             }
 
-            spyon.mockClear();
         });
     });
-    
+
     describe('patch test', () => {
         test('happy case', async () => {
             const api = new API(config);
@@ -364,9 +560,7 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
+
         });
 
         test.skip('endpoint length 0', async () => {
@@ -390,9 +584,6 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
@@ -416,9 +607,6 @@ describe('API test', () => {
                 expect(e).toBe('No credentials');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('no restclient instance', async () => {
@@ -426,7 +614,7 @@ describe('API test', () => {
             const spyon = jest.spyOn(API.prototype, 'createInstance').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
-    
+
             expect.assertions(1);
             try {
                 await api.patch('apiName', 'path', 'init');
@@ -434,10 +622,9 @@ describe('API test', () => {
                 expect(e).toBe('err');
             }
 
-            spyon.mockClear();
         });
     });
-    
+
     describe('del test', () => {
         test('happy case', async () => {
             const api = new API(config);
@@ -457,9 +644,7 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
+
         });
 
         test.skip('endpoint length 0', async () => {
@@ -483,9 +668,6 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
@@ -509,9 +691,6 @@ describe('API test', () => {
                 expect(e).toBe('No credentials');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('no restclient instance', async () => {
@@ -519,7 +698,7 @@ describe('API test', () => {
             const spyon = jest.spyOn(API.prototype, 'createInstance').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
-    
+
             expect.assertions(1);
             try {
                 await api.del('apiName', 'path', 'init');
@@ -527,7 +706,6 @@ describe('API test', () => {
                 expect(e).toBe('err');
             }
 
-            spyon.mockClear();
         });
     });
 
@@ -550,9 +728,6 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test.skip('endpoint length 0', async () => {
@@ -576,9 +751,6 @@ describe('API test', () => {
                 expect(e).toBe('Api apiName does not exist');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('cred not ready', async () => {
@@ -602,9 +774,6 @@ describe('API test', () => {
                 expect(e).toBe('No credentials');
             }
 
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('no restclient instance', async () => {
@@ -612,7 +781,7 @@ describe('API test', () => {
             const spyon = jest.spyOn(API.prototype, 'createInstance').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
-    
+
             expect.assertions(1);
             try {
                 await api.head('apiName', 'path', 'init');
@@ -620,12 +789,11 @@ describe('API test', () => {
                 expect(e).toBe('err');
             }
 
-            spyon.mockClear();
         });
     });
 
     describe('endpoint test', () => {
-        test('happy case', async() => {
+        test('happy case', async () => {
             const api = new API(config);
             const spyon = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
                 return 'endpoint';
@@ -635,7 +803,6 @@ describe('API test', () => {
 
             expect(spyon).toBeCalledWith('apiName');
 
-            spyon.mockClear();
         });
 
         test('no restclient instance', async () => {
@@ -643,7 +810,7 @@ describe('API test', () => {
             const spyon = jest.spyOn(API.prototype, 'createInstance').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
-    
+
             expect.assertions(1);
             try {
                 await api.endpoint('apiName');
@@ -651,7 +818,11 @@ describe('API test', () => {
                 expect(e).toBe('err');
             }
 
-            spyon.mockClear();
         });
     });
+
+
+
 });
+
+
