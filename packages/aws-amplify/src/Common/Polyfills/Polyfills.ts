@@ -27,5 +27,3 @@ if (!(<any>global).window) {
 if (!(<any>global).localStorage) {
     (<any>global).localStorage = InMemoryCache;
 }
-
-(<any>Object).entries = Object.entries || (x => Object.keys(x).map(k => [k, x[k]]));
