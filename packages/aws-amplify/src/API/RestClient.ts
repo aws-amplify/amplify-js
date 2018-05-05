@@ -112,7 +112,7 @@ export class RestClient {
         }
 
         return Auth.currentCredentials()
-            .then(credentials => this._signed(Object.assign({},params,extraParams), credentials, isAllResponse));
+            .then(credentials => this._signed({...params, ...extraParams}, credentials, isAllResponse));
     }
 
     /**
