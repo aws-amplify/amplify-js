@@ -90,7 +90,7 @@ export default class AuthClass {
         this._config = conf;
 
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
-        const { userPoolId, userPoolWebClientId, cookieStorage, oauth } = this._config;
+        const { userPoolId, userPoolWebClientId, cookieStorage, oauth, refreshHandlers } = this._config;
         if (userPoolId) {
             const userPoolData: ICognitoUserPoolData = {
                 UserPoolId: userPoolId,
@@ -161,6 +161,12 @@ export default class AuthClass {
                 const curUrl = window.location.href;
                 this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
             });
+        }
+
+        // If the developer has provided an object of refresh handlers,
+        // then we can merge the provided handlers with the current handlers.
+        if (refreshHandlers) {
+            this._refreshHandlers = { ...this._refreshHandlers,  ...refreshHandlers };
         }
 
         dispatchAuthEvent('configured', null);
@@ -846,6 +852,7 @@ export default class AuthClass {
         logger.debug('Getting federated credentials');
         const { provider, user } = federatedInfo;
         let token = federatedInfo.token;
+        let identity_id = federatedInfo.identity_id;
         let expires_at = federatedInfo.expires_at;
 
         const that = this;
@@ -856,9 +863,10 @@ export default class AuthClass {
             return that._refreshHandlers[provider]().then((data) => {
                 logger.debug('refresh federated token sucessfully', data);
                 token = data.token;
+                identity_id = data.identity_id;
                 expires_at = data.expires_at;
                 // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
-                return that._setCredentialsFromFederation({ provider, token, user, expires_at });
+                return that._setCredentialsFromFederation({ provider, token, user, identity_id, expires_at });
             }).catch(e => {
                 logger.debug('refresh federated token failed', e);
                 this.cleanCachedItems();
@@ -871,7 +879,7 @@ export default class AuthClass {
                 return Promise.reject('no refresh handler for provider');
             } else {
                 logger.debug('token not expired');
-                return this._setCredentialsFromFederation({provider, token, user, expires_at });
+                return this._setCredentialsFromFederation({provider, token, user, identity_id, expires_at });
             }
         }
     }
@@ -1109,14 +1117,15 @@ export default class AuthClass {
      * For federated login
      * @param {String} provider - federation login provider
      * @param {FederatedResponse} response - response should have the access token
+     * the identity id (optional)
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */
     public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
-        const { token, expires_at } = response;
+        const { token, identity_id, expires_at } = response;
         const that = this;
         return new Promise((res, rej) => {
-            that._setCredentialsFromFederation({ provider, token, user, expires_at }).then((cred) => {
+            that._setCredentialsFromFederation({ provider, token, identity_id, user, expires_at }).then((cred) => {
                 dispatchAuthEvent('signIn', that.user);
                 logger.debug('federated sign in credentials', this.credentials);
                 res(cred);
@@ -1226,7 +1235,7 @@ export default class AuthClass {
 
     
     private _setCredentialsFromFederation(params) {
-        const { provider, token, user, expires_at } = params;
+        const { provider, token, identity_id, user, expires_at } = params;
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
@@ -1247,12 +1256,13 @@ export default class AuthClass {
         const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
+            IdentityId: identity_id,
             Logins: logins
         },  {
             region
         });
 
-        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+        Cache.setItem('federatedInfo', { provider, token, identity_id, user, expires_at }, { priority: 1 });
         return this._loadCredentials(credentials, 'federated', true, user);
     }
 

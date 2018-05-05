@@ -58,7 +58,7 @@ export class RequireNewPasswordComponent {
   @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
-    this._show = authState.state === 'reauireNewPassword';
+    this._show = authState.state === 'requireNewPassword';
   }
 
   setPassword(password: string) {
