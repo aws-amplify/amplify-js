@@ -265,6 +265,7 @@ $ awsmobile features
  ◯ database
  ◉ analytics
  ◉ hosting
+ ◯ appsync
 ```
 
 Remember to use `awsmobile push` to update your backend with the new configuration. This will refresh your `/src/aws-exports.js` file.
