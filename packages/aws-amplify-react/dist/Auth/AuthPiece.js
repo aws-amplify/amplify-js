@@ -22,7 +22,7 @@ var _AmplifyMessageMap = require('../AmplifyMessageMap');
 
 var _AmplifyMessageMap2 = _interopRequireDefault(_AmplifyMessageMap);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66,129 +66,97 @@ var AuthPiece = function (_Component) {
 
     _createClass(AuthPiece, [{
         key: 'usernameFromAuthData',
-        value: function () {
-            function usernameFromAuthData() {
-                var authData = this.props.authData;
+        value: function usernameFromAuthData() {
+            var authData = this.props.authData;
 
-                if (!authData) {
-                    return '';
-                }
-
-                var username = '';
-                if ((typeof authData === 'undefined' ? 'undefined' : _typeof(authData)) === 'object') {
-                    // user object
-                    username = authData.user ? authData.user.username : authData.username;
-                } else {
-                    username = authData; // username string
-                }
-
-                return username;
+            if (!authData) {
+                return '';
             }
 
-            return usernameFromAuthData;
-        }()
+            var username = '';
+            if ((typeof authData === 'undefined' ? 'undefined' : _typeof(authData)) === 'object') {
+                // user object
+                username = authData.user ? authData.user.username : authData.username;
+            } else {
+                username = authData; // username string
+            }
+
+            return username;
+        }
     }, {
         key: 'errorMessage',
-        value: function () {
-            function errorMessage(err) {
-                if (typeof err === 'string') {
-                    return err;
-                }
-                return err.message ? err.message : JSON.stringify(err);
+        value: function errorMessage(err) {
+            if (typeof err === 'string') {
+                return err;
             }
-
-            return errorMessage;
-        }()
+            return err.message ? err.message : JSON.stringify(err);
+        }
     }, {
         key: 'triggerAuthEvent',
-        value: function () {
-            function triggerAuthEvent(event) {
-                var state = this.props.authState;
-                if (this.props.onAuthEvent) {
-                    this.props.onAuthEvent(state, event);
-                }
+        value: function triggerAuthEvent(event) {
+            var state = this.props.authState;
+            if (this.props.onAuthEvent) {
+                this.props.onAuthEvent(state, event);
             }
-
-            return triggerAuthEvent;
-        }()
+        }
     }, {
         key: 'changeState',
-        value: function () {
-            function changeState(state, data) {
-                if (this.props.onStateChange) {
-                    this.props.onStateChange(state, data);
-                }
-
-                this.triggerAuthEvent({
-                    type: 'stateChange',
-                    data: state
-                });
+        value: function changeState(state, data) {
+            if (this.props.onStateChange) {
+                this.props.onStateChange(state, data);
             }
 
-            return changeState;
-        }()
+            this.triggerAuthEvent({
+                type: 'stateChange',
+                data: state
+            });
+        }
     }, {
         key: 'error',
-        value: function () {
-            function error(err) {
-                this.triggerAuthEvent({
-                    type: 'error',
-                    data: this.errorMessage(err)
-                });
-            }
-
-            return error;
-        }()
+        value: function error(err) {
+            this.triggerAuthEvent({
+                type: 'error',
+                data: this.errorMessage(err)
+            });
+        }
     }, {
         key: 'handleInputChange',
-        value: function () {
-            function handleInputChange(evt) {
-                this.inputs = this.inputs || {};
-                var _evt$target = evt.target,
-                    name = _evt$target.name,
-                    value = _evt$target.value,
-                    type = _evt$target.type,
-                    checked = _evt$target.checked;
+        value: function handleInputChange(evt) {
+            this.inputs = this.inputs || {};
+            var _evt$target = evt.target,
+                name = _evt$target.name,
+                value = _evt$target.value,
+                type = _evt$target.type,
+                checked = _evt$target.checked;
 
-                var check_type = ['radio', 'checkbox'].includes(type);
-                this.inputs[name] = check_type ? checked : value;
-            }
-
-            return handleInputChange;
-        }()
+            var check_type = ['radio', 'checkbox'].includes(type);
+            this.inputs[name] = check_type ? checked : value;
+        }
     }, {
         key: 'render',
-        value: function () {
-            function render() {
-                if (!this._validAuthStates.includes(this.props.authState)) {
-                    this._isHidden = true;
-                    return null;
-                }
-
-                if (this._isHidden) {
-                    var track = this.props.track;
-
-                    if (track) track();
-                }
-                this._isHidden = false;
-
-                return this.showComponent(this.props.theme || _AmplifyTheme2['default']);
+        value: function render() {
+            if (!this._validAuthStates.includes(this.props.authState)) {
+                this._isHidden = true;
+                return null;
             }
 
-            return render;
-        }()
+            if (this._isHidden) {
+                var track = this.props.track;
+
+                if (track) track();
+            }
+            this._isHidden = false;
+
+            return this.showComponent(this.props.theme || _AmplifyTheme2.default);
+        }
     }, {
         key: 'showComponent',
-        value: function () {
-            function showComponent(theme) {
-                throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
-            }
-
-            return showComponent;
-        }()
+        value: function showComponent(theme) {
+            throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
+        }
     }]);
 
     return AuthPiece;
 }(_react.Component);
 
-exports['default'] = AuthPiece;
+exports.default = AuthPiece;

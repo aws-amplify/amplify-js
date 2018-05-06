@@ -4,7 +4,13 @@
         "outDir": "./lib/",
         "target": "es5",
         "noImplicitAny": false,
-        "lib": ["es5", "es2015","dom"],
+        "lib": [
+            "es5",
+            "es2015",
+            "dom",
+            "esnext.asynciterable",
+            "es2017.object"
+        ],
         "sourceMap": true,
         "module": "commonjs",
         "moduleResolution": "node",
@@ -15,5 +21,7 @@
             "../../node_modules/@types"
         ]
     },
-    "include": ["src/**/*"]
- }
+    "include": [
+        "src/**/*"
+    ]
+}
