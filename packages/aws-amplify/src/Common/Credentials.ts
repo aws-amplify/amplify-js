@@ -272,7 +272,17 @@ export class Credentials {
                             info.user
                         );
                         const { provider, token, expires_at, identity_id } = info;
-                        this._cacheClass.setItem('federatedInfo', { provider, token, user, expires_at, identity_id }, { priority: 1 });
+                        this._cacheClass.setItem(
+                            'federatedInfo', 
+                            { 
+                                provider, 
+                                token, 
+                                user, 
+                                expires_at, 
+                                identity_id 
+                            }, 
+                            { priority: 1 }
+                        );
                     }
                     res(that._credentials);
                 },
