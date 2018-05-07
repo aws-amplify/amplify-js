@@ -13,7 +13,7 @@
 
 import APIClass, { graphqlOperation } from './API';
 
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger, Amplify } from '../Common';
 
 const logger = new Logger('API');
 
@@ -25,5 +25,7 @@ if (!_instance) {
 }
 
 const API = _instance;
+Amplify.register(API);
+
 export default API;
 export { APIClass, graphqlOperation };
