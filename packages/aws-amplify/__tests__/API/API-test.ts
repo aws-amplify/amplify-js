@@ -17,12 +17,19 @@ jest.mock('../../src/Common/Builder', () => {
     };
 });
 
+
+import axios from 'axios';
+
 import API, { graphqlOperation } from '../../src/API/API';
 import Auth from '../../src/Auth';
 import { RestClient } from '../../src/API/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import PubSub from '../../src/PubSub/PubSub';
+import { Signer, ConsoleLogger as Logger } from '../../src/Common/';
+import { anonOperationNotAloneMessage } from 'graphql/validation/rules/LoneAnonymousOperation';
+
+jest.mock('axios');
 
 const config = {
     API: {
@@ -301,6 +308,106 @@ describe('API test', () => {
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
 
+        });
+
+        test('query-string on init', async () => {
+            const resp = {data: [{name: 'Bob'}]};
+
+            const options = {
+                aws_project_region: 'region',
+                aws_cloud_logic_custom
+            };
+
+            const api = new API(options);
+            const creds = {
+                secretAccessKey: 'secret',
+                accessKeyId: 'access',
+                sessionToken: 'token'
+            };
+
+            const creds2 = {
+                secret_key: 'secret',
+                access_key: 'access',
+                session_token: 'token'
+            };
+
+            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementation(() => {
+                return new Promise((res, rej) => {
+                    res(creds);
+                });
+            });
+            
+            const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+            const spyonSigner = jest.spyOn(Signer, 'sign').mockImplementationOnce(() => {
+                return { headers: {}};
+            });
+
+            const spyAxios = jest.spyOn(axios, 'default').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(resp);
+                });
+            });
+            
+            const init = {
+                queryStringParameters: {
+                    'ke:y3': 'val:ue 3'
+                }
+            }
+            await api.get('apiName', '/items', init);
+            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "queryStringParameters": {"ke:y3": "val:ue 3"}, "url": "endpoint/items?ke%3Ay3=val%3Aue%203"};
+            expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
+        });
+
+        test('query-string on init and url', async () => {
+            const resp = {data: [{name: 'Bob'}]};
+
+            const options = {
+                aws_project_region: 'region',
+                aws_cloud_logic_custom
+            };
+
+            const api = new API(options);
+            const creds = {
+                secretAccessKey: 'secret',
+                accessKeyId: 'access',
+                sessionToken: 'token'
+            };
+
+            const creds2 = {
+                secret_key: 'secret',
+                access_key: 'access',
+                session_token: 'token'
+            };
+
+            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementation(() => {
+                return new Promise((res, rej) => {
+                    res(creds);
+                });
+            });
+            
+            const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+            const spyonSigner = jest.spyOn(Signer, 'sign').mockImplementationOnce(() => {
+                return { headers: {}};
+            });
+
+            const spyAxios = jest.spyOn(axios, 'default').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res(resp);
+                });
+            });
+            
+            const init = {
+                queryStringParameters: {
+                    'key2': 'value2_real'
+                }
+            }
+            await api.get('apiName', '/items?key1=value1&key2=value', init);
+            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "queryStringParameters": {"key2": "value2_real"}, "url": "endpoint/items?key1=value1&key2=value2_real"};
+            expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
         });
 
         test('endpoint length 0', async () => {
