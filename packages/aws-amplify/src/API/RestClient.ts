@@ -20,7 +20,7 @@ import axios from 'axios';
 import Platform from '../Common/Platform';
 
 const logger = new Logger('RestClient'),
-    url = require('url');
+    urlLib = require('url');
 
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -98,6 +98,16 @@ export class RestClient {
 
         params.headers = { ...libraryHeaders, ...extraParams.headers };
 
+        // Intentionally discarding search
+        const { search, ...parsedUrl } = urlLib.parse(url, true, true);
+        params.url = urlLib.format({
+            ...parsedUrl,
+            query: {
+                ...parsedUrl.query,
+                ...(extraParams.queryStringParameters || {})
+            }
+        });
+
         // Do not sign the request if client has added 'Authorization' header,
         // which means custom authorizer.
         if (typeof params.headers['Authorization'] !== 'undefined') {
@@ -108,11 +118,12 @@ export class RestClient {
                 return acc;
                 // tslint:disable-next-line:align
             }, {});
+
             return this._request(params);
         }
 
         return Auth.currentCredentials()
-            .then(credentials => this._signed({...params, ...extraParams}, credentials, isAllResponse));
+            .then(credentials => this._signed({ ...params, ...extraParams }, credentials, isAllResponse));
     }
 
     /**
@@ -204,17 +215,7 @@ export class RestClient {
     private _signed(params, credentials, isAllResponse) {
 
         const { signerServiceInfo: signerServiceInfoParams, ...otherParams } = params;
-        
-        // Intentionally discarding search
-        const { search, ...parsedUrl } = url.parse(otherParams.url, true, true);
-        otherParams.url = url.format({
-            ...parsedUrl,
-            query: {
-                ...parsedUrl.query,
-                ...(otherParams.queryStringParameters || {})
-            }
-        });
-        
+
         const endpoint_region: string = this._region || this._options.region;
         const endpoint_service: string = this._service || this._options.service;
 
