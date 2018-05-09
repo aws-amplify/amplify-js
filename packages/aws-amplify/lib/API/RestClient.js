@@ -69,7 +69,7 @@ var Common_1 = require("../Common");
 var Auth_1 = require("../Auth");
 var axios_1 = require("axios");
 var Platform_1 = require("../Common/Platform");
-var logger = new Common_1.ConsoleLogger('RestClient');
+var logger = new Common_1.ConsoleLogger('RestClient'), url = require('url');
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
 * Sign request with AWS credentials if available
@@ -152,7 +152,7 @@ var RestClient = /** @class */ (function () {
                     return [2 /*return*/, this._request(params)];
                 }
                 return [2 /*return*/, Auth_1.default.currentCredentials()
-                        .then(function (credentials) { return _this._signed(params, credentials, isAllResponse); })];
+                        .then(function (credentials) { return _this._signed(__assign({}, params, extraParams), credentials, isAllResponse); })];
             });
         });
     };
@@ -238,6 +238,9 @@ var RestClient = /** @class */ (function () {
     /** private methods **/
     RestClient.prototype._signed = function (params, credentials, isAllResponse) {
         var signerServiceInfoParams = params.signerServiceInfo, otherParams = __rest(params, ["signerServiceInfo"]);
+        // Intentionally discarding search
+        var _a = url.parse(otherParams.url, true, true), search = _a.search, parsedUrl = __rest(_a, ["search"]);
+        otherParams.url = url.format(__assign({}, parsedUrl, { query: __assign({}, parsedUrl.query, (otherParams.queryStringParameters || {})) }));
         var endpoint_region = this._region || this._options.region;
         var endpoint_service = this._service || this._options.service;
         var creds = {

@@ -17,7 +17,7 @@ export default class AuthClass {
      * @param {Object} config - Configuration of the Auth
      */
     constructor(config: AuthOptions);
-    configure(config: any): AuthOptions;
+    configure(config: any): {};
     /**
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String | object} params - The user attirbutes used for signin
@@ -200,6 +200,7 @@ export default class AuthClass {
      * For federated login
      * @param {String} provider - federation login provider
      * @param {FederatedResponse} response - response should have the access token
+     * the identity id (optional)
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */

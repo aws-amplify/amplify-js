@@ -51,11 +51,6 @@ var Common_1 = require("../Common");
 var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
 var Auth_1 = require("../Auth");
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
-// events buffer
-var BUFFER_SIZE = 1000;
-var MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-var interval = 5 * 1000; // 5s
-var RESEND_LIMIT = 5;
 /**
 * Provide mobile analytics client functions
 */
@@ -65,22 +60,9 @@ var AnalyticsClass = /** @class */ (function () {
      * @param config - Configuration of the Analytics
      */
     function AnalyticsClass() {
-        var _this = this;
-        this._buffer = [];
         this._config = {};
         this._pluggables = [];
         this._disabled = false;
-        // default one
-        // events batch
-        var that = this;
-        // flush event buffer
-        setInterval(function () {
-            var size = _this._buffer.length < MAX_SIZE_PER_FLUSH ? _this._buffer.length : MAX_SIZE_PER_FLUSH;
-            for (var i = 0; i < size; i += 1) {
-                var params = _this._buffer.shift();
-                that._sendFromBuffer(params);
-            }
-        }, interval);
     }
     /**
      * configure Analytics
@@ -118,7 +100,7 @@ var AnalyticsClass = /** @class */ (function () {
                         ensureCredentails = _a.sent();
                         if (!ensureCredentails)
                             return [2 /*return*/, Promise.resolve(false)];
-                        if (pluggable) {
+                        if (pluggable && pluggable.getCategory() === 'Analytics') {
                             this._pluggables.push(pluggable);
                             config = pluggable.configure(this._config);
                             return [2 /*return*/, Promise.resolve(config)];
@@ -144,7 +126,7 @@ var AnalyticsClass = /** @class */ (function () {
      * Record Session start
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    AnalyticsClass.prototype.startSession = function () {
+    AnalyticsClass.prototype.startSession = function (provider) {
         return __awaiter(this, void 0, void 0, function () {
             var ensureCredentails, timestamp, params;
             return __generator(this, function (_a) {
@@ -155,8 +137,8 @@ var AnalyticsClass = /** @class */ (function () {
                         if (!ensureCredentails)
                             return [2 /*return*/, Promise.resolve(false)];
                         timestamp = new Date().getTime();
-                        params = { eventName: '_session_start', timestamp: timestamp, config: this._config };
-                        return [2 /*return*/, this._putToBuffer(params)];
+                        params = { event: '_session_start', timestamp: timestamp, config: this._config, provider: provider };
+                        return [2 /*return*/, this._sendEvent(params)];
                 }
             });
         });
@@ -170,7 +152,7 @@ var AnalyticsClass = /** @class */ (function () {
      * Record Session stop
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    AnalyticsClass.prototype.stopSession = function () {
+    AnalyticsClass.prototype.stopSession = function (provider) {
         return __awaiter(this, void 0, void 0, function () {
             var ensureCredentails, timestamp, params;
             return __generator(this, function (_a) {
@@ -181,8 +163,8 @@ var AnalyticsClass = /** @class */ (function () {
                         if (!ensureCredentails)
                             return [2 /*return*/, Promise.resolve(false)];
                         timestamp = new Date().getTime();
-                        params = { eventName: '_session_stop', timestamp: timestamp, config: this._config };
-                        return [2 /*return*/, this._putToBuffer(params)];
+                        params = { event: '_session_stop', timestamp: timestamp, config: this._config, provider: provider };
+                        return [2 /*return*/, this._sendEvent(params)];
                 }
             });
         });
@@ -194,9 +176,9 @@ var AnalyticsClass = /** @class */ (function () {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    AnalyticsClass.prototype.record = function (eventName, attributes, metrics) {
+    AnalyticsClass.prototype.record = function (event, attributes, metrics) {
         return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, timestamp, params;
+            var ensureCredentails, timestamp, provider, params;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._getCredentials()];
@@ -205,71 +187,61 @@ var AnalyticsClass = /** @class */ (function () {
                         if (!ensureCredentails)
                             return [2 /*return*/, Promise.resolve(false)];
                         timestamp = new Date().getTime();
-                        params = { eventName: eventName, attributes: attributes, metrics: metrics, timestamp: timestamp, config: this._config };
-                        return [2 /*return*/, this._putToBuffer(params)];
+                        provider = null;
+                        // for compatibility
+                        if (typeof event === 'string') {
+                            provider = 'AWSAnalytics';
+                        }
+                        else {
+                            provider = event['provider'];
+                        }
+                        params = { event: event, attributes: attributes, metrics: metrics, timestamp: timestamp, config: this._config, provider: provider };
+                        return [2 /*return*/, this._sendEvent(params)];
                 }
             });
         });
     };
     AnalyticsClass.prototype.updateEndpoint = function (config) {
         return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, timestamp, conf, params;
+            var ensureCredentails, timestamp, conf, params, provider;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
+                    case 0:
+                        if (this._disabled) {
+                            logger.debug('Analytics has been disabled');
+                            return [2 /*return*/, Promise.resolve()];
+                        }
+                        return [4 /*yield*/, this._getCredentials()];
                     case 1:
                         ensureCredentails = _a.sent();
                         if (!ensureCredentails)
                             return [2 /*return*/, Promise.resolve(false)];
                         timestamp = new Date().getTime();
                         conf = Object.assign(this._config, config);
-                        params = { eventName: '_update_endpoint', timestamp: timestamp, config: conf };
-                        return [2 /*return*/, this._putToBuffer(params)];
+                        params = { event: '_update_endpoint', timestamp: timestamp, config: conf };
+                        provider = config.provider ? config.provider : 'AWSAnalytics';
+                        this._pluggables.map(function (pluggable) {
+                            if (pluggable.getProviderName() === provider) {
+                                return pluggable.updateEndpoint(params);
+                            }
+                        });
+                        return [2 /*return*/, Promise.reject('no available provider to update endpoint')];
                 }
             });
         });
     };
-    /**
-     * @private
-     * @param {Object} params - params for the event recording
-     * Send events from buffer
-     */
-    AnalyticsClass.prototype._sendFromBuffer = function (params) {
-        var that = this;
-        this._pluggables.map(function (pluggable) {
-            pluggable.record(params)
-                .then(function (success) {
-                if (!success) {
-                    params.resendLimits = typeof params.resendLimits === 'number' ?
-                        params.resendLimits : RESEND_LIMIT;
-                    if (params.resendLimits > 0) {
-                        logger.debug("resending event " + params.eventName + " with " + params.resendLimits + " retry times left");
-                        params.resendLimits -= 1;
-                        that._putToBuffer(params);
-                    }
-                    else {
-                        logger.debug("retry times used up for event " + params.eventName);
-                    }
-                }
-            });
-        });
-    };
-    /**
-     * @private
-     * @param params - params for the event recording
-     * Put events into buffer
-     */
-    AnalyticsClass.prototype._putToBuffer = function (params) {
+    AnalyticsClass.prototype._sendEvent = function (params) {
         if (this._disabled) {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
         }
-        if (this._buffer.length < BUFFER_SIZE) {
-            this._buffer.push(params);
-            return Promise.resolve();
-        }
-        else
-            return Promise.reject('exceed buffer size');
+        var provider = params.provider ? params.provider : 'AWSAnalytics';
+        this._pluggables.map(function (pluggable) {
+            if (pluggable.getProviderName() === provider) {
+                pluggable.record(params);
+            }
+        });
+        return Promise.resolve();
     };
     /**
      * @private

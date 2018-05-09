@@ -18,14 +18,77 @@ import { v1 as uuid } from 'uuid';
 const logger = new Logger('AWSAnalyticsProvider');
 const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 
+// events buffer
+const BUFFER_SIZE = 1000;
+const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
+const interval = 5*1000; // 5s
+const RESEND_LIMIT = 5;
+
 export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private _config;
     private mobileAnalytics;
     private pinpointClient;
     private _sessionId;
+    private _buffer;
 
     constructor(config?) {
+        this._buffer = [];
         this._config = config? config : {};
+
+        // events batch
+        const that = this;
+
+        // flush event buffer
+        setInterval(
+            () => {
+                const size = this._buffer.length < MAX_SIZE_PER_FLUSH ? this._buffer.length : MAX_SIZE_PER_FLUSH;
+                for (let i = 0; i < size; i += 1) {
+                    const params = this._buffer.shift();
+                    that._sendFromBuffer(params);
+                } 
+            },
+            interval);
+    }
+
+    /**
+     * @private
+     * @param params - params for the event recording
+     * Put events into buffer
+     */
+    private _putToBuffer(params) {
+        if (this._buffer.length < BUFFER_SIZE) {
+            this._buffer.push(params);
+            return Promise.resolve(true);
+        } else {
+            logger.debug('exceed analytics events buffer size');
+            return Promise.reject(false);
+        }
+    }
+
+    private async _sendFromBuffer(params) {
+        const { event } = params;
+        let success = true;
+        switch (event) {
+            case '_session_start':
+                success = await this._startSession(params);
+            case '_session_stop':
+                success = await this._stopSession(params);
+            default:
+                success = await this._recordCustomEvent(params);
+        }
+        
+        if (!success) {
+            params.resendLimits = typeof params.resendLimits === 'number' ? 
+                params.resendLimits : RESEND_LIMIT;
+            if (params.resendLimits > 0) {
+                logger.debug(
+                    `resending event ${params.eventName} with ${params.resendLimits} retry times left`);
+                params.resendLimits -= 1;
+                this._putToBuffer(params);
+            } else {
+                logger.debug(`retry times used up for event ${params.eventName}`);
+            }
+        }
     }
 
     /**
@@ -58,17 +121,12 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @param {Object} params - the params of an event
      */
     public record(params): Promise<boolean> {
-        const { eventName } = params;
-        switch (eventName) {
-            case '_session_start':
-                return this._startSession(params);
-            case '_session_stop':
-                return this._stopSession(params);
-            case '_update_endpoint':
-                return this._updateEndpoint(params);
-            default:
-                return this._recordCustomEvent(params);
-        }
+        return this._putToBuffer(params);
+        
+    }
+
+    public updateEndpoint(params) {
+        return this._updateEndpoint(params);
     }
 
     /**
@@ -101,6 +159,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
                 }
             ]
         };
+        
 
         return new Promise<any>((res, rej) => {
             this.mobileAnalytics.putEvents(eventParams, (err, data) => {
@@ -199,7 +258,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      */
     private async _recordCustomEvent(params) {
         // credentials updated
-        const { eventName, attributes, metrics, timestamp, config } = params;
+        const { event, attributes, metrics, timestamp, config } = params;
 
         const initClients = await this._init(config);
         if (!initClients) return false;
@@ -209,7 +268,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             clientContext,
             events: [
                 {
-                    eventType: eventName,
+                    eventType: event,
                     timestamp: new Date(timestamp).toISOString(),
                     attributes,
                     metrics

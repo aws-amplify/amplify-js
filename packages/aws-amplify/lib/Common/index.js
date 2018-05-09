@@ -35,6 +35,8 @@ exports.Parser = Parser_1.default;
 var OAuthHelper_1 = require("./OAuthHelper");
 exports.FacebookOAuth = OAuthHelper_1.FacebookOAuth;
 exports.GoogleOAuth = OAuthHelper_1.GoogleOAuth;
+var Amplify_1 = require("./Amplify");
+exports.Amplify = Amplify_1.default;
 __export(require("./RNComponents"));
 var Platform_1 = require("./Platform");
 exports.Constants = {

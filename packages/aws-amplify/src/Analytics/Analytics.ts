@@ -25,17 +25,11 @@ import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
 
-// events buffer
-const BUFFER_SIZE = 1000;
-const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-const interval = 5*1000; // 5s
-const RESEND_LIMIT = 5;
 /**
 * Provide mobile analytics client functions
 */
 export default class AnalyticsClass {
     private _config;
-    private _buffer;
     private _provider;
     private _pluggables: AnalyticsProvider[];
     private _disabled;
@@ -45,25 +39,9 @@ export default class AnalyticsClass {
      * @param config - Configuration of the Analytics
      */
     constructor() {
-        this._buffer = [];
         this._config = {};
         this._pluggables = [];
         this._disabled = false;
-        // default one
-
-        // events batch
-        const that = this;
-
-        // flush event buffer
-        setInterval(
-            () => {
-                const size = this._buffer.length < MAX_SIZE_PER_FLUSH ? this._buffer.length : MAX_SIZE_PER_FLUSH;
-                for (let i = 0; i < size; i += 1) {
-                    const params = this._buffer.shift();
-                    that._sendFromBuffer(params);
-                }
-            },
-            interval);
     }
 
     /**
@@ -104,7 +82,6 @@ export default class AnalyticsClass {
 
         if (pluggable && pluggable.getCategory() === 'Analytics') {
             this._pluggables.push(pluggable);
-            // pluggable.configure(this._config);
             const config = pluggable.configure(this._config);
             return Promise.resolve(config);
         }
@@ -128,13 +105,13 @@ export default class AnalyticsClass {
      * Record Session start
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    public async startSession() {
+    public async startSession(provider?: string) {
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = { eventName: '_session_start', timestamp, config: this._config };
-        return this._putToBuffer(params);
+        const params = { event: '_session_start', timestamp, config: this._config, provider };
+        return this._sendEvent(params);
     }
 
     /**
@@ -147,13 +124,13 @@ export default class AnalyticsClass {
      * Record Session stop
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    public async stopSession() {
+    public async stopSession(provider?: string) {
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = { eventName: '_session_stop', timestamp, config: this._config };
-        return this._putToBuffer(params);
+        const params = { event: '_session_stop', timestamp, config: this._config, provider };
+        return this._sendEvent(params);
     }
 
     /**
@@ -163,66 +140,62 @@ export default class AnalyticsClass {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    public async record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics) {
+    public async record(event: string | object, attributes?: EventAttributes, metrics?: EventMetrics) {
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
-        const params = { eventName, attributes, metrics, timestamp, config: this._config };
-        return this._putToBuffer(params);
+        let provider = null;
+        // for compatibility
+        if (typeof event === 'string') {
+            provider = 'AWSAnalytics';
+        } else {
+            provider = event['provider'];
+        }
+        const params = { event, attributes, metrics, timestamp, config: this._config, provider };
+        return this._sendEvent(params);
     }
 
     public async updateEndpoint(config) {
+        if (this._disabled) {
+            logger.debug('Analytics has been disabled');
+            return Promise.resolve();
+        }
+
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
         const timestamp = new Date().getTime();
         const conf = Object.assign(this._config, config);
-        const params = { eventName: '_update_endpoint', timestamp, config: conf };
-        return this._putToBuffer(params);
-    }
+        const params = { event: '_update_endpoint', timestamp, config: conf };
 
-    /**
-     * @private
-     * @param {Object} params - params for the event recording
-     * Send events from buffer
-     */
-    private _sendFromBuffer(params) {
-        const that = this;
+        // for compatibility
+        const provider = config.provider? config.provider : 'AWSAnalytics';
+
         this._pluggables.map((pluggable) => {
-            pluggable.record(params)
-                .then(success => {
-                    if (!success) {
-                        params.resendLimits = typeof params.resendLimits === 'number' ? 
-                            params.resendLimits : RESEND_LIMIT;
-                        if (params.resendLimits > 0) {
-                            logger.debug(
-                                `resending event ${params.eventName} with ${params.resendLimits} retry times left`);
-                            params.resendLimits -= 1;
-                            that._putToBuffer(params);
-                        } else {
-                            logger.debug(`retry times used up for event ${params.eventName}`);
-                        }
-                    }
-                });
+            if (pluggable.getProviderName() === provider) {
+                return pluggable.updateEndpoint(params);
+            }
         });
+
+        return Promise.reject('no available provider to update endpoint');
     }
 
-    /**
-     * @private
-     * @param params - params for the event recording
-     * Put events into buffer
-     */
-    private _putToBuffer(params) {
+    private _sendEvent(params) {
         if (this._disabled) {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
         }
-        if (this._buffer.length < BUFFER_SIZE) {
-            this._buffer.push(params);
-            return Promise.resolve();
-        }
-        else return Promise.reject('exceed buffer size');
+
+        const provider = params.provider? params.provider: 'AWSAnalytics';
+        
+        this._pluggables.map((pluggable) => {
+            if (pluggable.getProviderName() === provider) {
+                pluggable.record(params);
+            }
+        });
+
+        return Promise.resolve();
     }
 
     /**

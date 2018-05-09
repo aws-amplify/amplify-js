@@ -24,6 +24,7 @@ if (!_instance) {
     _instance = new Analytics_1.default();
 }
 var Analytics = _instance;
+Common_1.Amplify.register(Analytics);
 exports.default = Analytics;
 // listen on app state change
 var dispatchAppStateEvent = function (event, data) {

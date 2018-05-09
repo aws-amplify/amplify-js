@@ -11,6 +11,14 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -87,14 +95,14 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.configure = function (config) {
         var _this = this;
         if (!config)
-            return this._config;
+            return this._config || {};
         logger.debug('configure Auth');
         var conf = Object.assign({}, this._config, Common_1.Parser.parseMobilehubConfig(config).Auth, config);
         this._config = conf;
         if (!this._config.identityPoolId) {
             logger.debug('Do not have identityPoolId yet.');
         }
-        var _a = this._config, userPoolId = _a.userPoolId, userPoolWebClientId = _a.userPoolWebClientId, cookieStorage = _a.cookieStorage, oauth = _a.oauth;
+        var _a = this._config, userPoolId = _a.userPoolId, userPoolWebClientId = _a.userPoolWebClientId, cookieStorage = _a.cookieStorage, oauth = _a.oauth, refreshHandlers = _a.refreshHandlers;
         if (userPoolId) {
             var userPoolData = {
                 UserPoolId: userPoolId,
@@ -172,6 +180,11 @@ var AuthClass = /** @class */ (function () {
                 var curUrl = window.location.href;
                 _this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
             });
+        }
+        // If the developer has provided an object of refresh handlers,
+        // then we can merge the provided handlers with the current handlers.
+        if (refreshHandlers) {
+            this._refreshHandlers = __assign({}, this._refreshHandlers, refreshHandlers);
         }
         dispatchAuthEvent('configured', null);
         return this._config;
@@ -646,6 +659,12 @@ var AuthClass = /** @class */ (function () {
                     user['challengeName'] = challengeName;
                     user['challengeParam'] = challengeParam;
                     resolve(user);
+                },
+                mfaSetup: function (challengeName, challengeParam) {
+                    logger.debug('signIn mfa setup', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
                 }
             });
         });
@@ -796,7 +815,7 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.currentAuthenticatedUser = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var federatedUser, e_5, _a, e_6;
+            var federatedUser, e_5, user, e_6, attributes, _a, e_7;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -820,18 +839,35 @@ var AuthClass = /** @class */ (function () {
                         return [2 /*return*/, this.user];
                     case 5:
                         logger.debug('get current authenticated userpool user');
+                        user = null;
                         _b.label = 6;
                     case 6:
                         _b.trys.push([6, 8, , 9]);
-                        _a = this;
                         return [4 /*yield*/, this.currentUserPoolUser()];
                     case 7:
-                        _a.user = _b.sent();
-                        return [2 /*return*/, this.user];
+                        user = _b.sent();
+                        return [3 /*break*/, 9];
                     case 8:
                         e_6 = _b.sent();
-                        return [2 /*return*/, Promise.reject('not authenticated')];
-                    case 9: return [2 /*return*/];
+                        throw 'not authenticated';
+                    case 9:
+                        attributes = {};
+                        _b.label = 10;
+                    case 10:
+                        _b.trys.push([10, 12, 13, 14]);
+                        _a = this.attributesToObject;
+                        return [4 /*yield*/, this.userAttributes(user)];
+                    case 11:
+                        attributes = _a.apply(this, [_b.sent()]);
+                        return [3 /*break*/, 14];
+                    case 12:
+                        e_7 = _b.sent();
+                        logger.debug('cannot get user attributes');
+                        return [3 /*break*/, 14];
+                    case 13:
+                        this.user = Object.assign({}, user, { attributes: attributes });
+                        return [2 /*return*/, this.user];
+                    case 14: return [2 /*return*/];
                 }
             });
         });
@@ -953,34 +989,37 @@ var AuthClass = /** @class */ (function () {
         logger.debug('Getting federated credentials');
         var provider = federatedInfo.provider, user = federatedInfo.user;
         var token = federatedInfo.token;
+        var identity_id = federatedInfo.identity_id;
         var expires_at = federatedInfo.expires_at;
         var that = this;
         logger.debug('checking if federated jwt token expired');
-        if (expires_at < new Date().getTime()
-            && typeof that._refreshHandlers[provider] === 'function') {
-            logger.debug('getting refreshed jwt token from federation provider');
-            return that._refreshHandlers[provider]().then(function (data) {
-                logger.debug('refresh federated token sucessfully', data);
-                token = data.token;
-                expires_at = data.expires_at;
-                // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
-                return that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
-            }).catch(function (e) {
-                logger.debug('refresh federated token failed', e);
-                _this.cleanCachedItems();
-                return Promise.reject('refreshing federation token failed: ' + e);
-            });
-        }
-        else {
-            if (!that._refreshHandlers[provider]) {
-                logger.debug('no refresh handler for provider:', provider);
-                this.cleanCachedItems();
-                return Promise.reject('no refresh handler for provider');
+        if (expires_at < new Date().getTime()) {
+            if (typeof that._refreshHandlers[provider] === 'function') {
+                logger.debug('getting refreshed jwt token from federation provider');
+                return that._refreshHandlers[provider]().then(function (data) {
+                    logger.debug('refresh federated token sucessfully', data);
+                    token = data.token;
+                    identity_id = data.identity_id;
+                    expires_at = data.expires_at;
+                    // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+                    return that._setCredentialsFromFederation({ provider: provider, token: token, user: user, identity_id: identity_id, expires_at: expires_at });
+                }).catch(function (e) {
+                    logger.debug('refresh federated token failed', e);
+                    _this.cleanCachedItems();
+                    return Promise.reject('refreshing federation token failed: ' + e);
+                });
             }
             else {
-                logger.debug('token not expired');
-                return this._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at });
+                if (!that._refreshHandlers[provider]) {
+                    logger.debug('no refresh handler for provider:', provider);
+                    this.cleanCachedItems();
+                    return Promise.reject('no refresh handler for provider');
+                }
             }
+        }
+        else {
+            logger.debug('token not expired');
+            return this._setCredentialsFromFederation({ provider: provider, token: token, user: user, identity_id: identity_id, expires_at: expires_at });
         }
     };
     AuthClass.prototype.currentCredentials = function () {
@@ -1042,7 +1081,7 @@ var AuthClass = /** @class */ (function () {
     AuthClass.prototype.signOut = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var e_7, user, that;
+            var e_8, user, that;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1052,7 +1091,7 @@ var AuthClass = /** @class */ (function () {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        e_7 = _a.sent();
+                        e_8 = _a.sent();
                         logger.debug('failed to clear cached items');
                         return [3 /*break*/, 3];
                     case 3:
@@ -1071,7 +1110,7 @@ var AuthClass = /** @class */ (function () {
                         }
                         that = this;
                         return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-                                var e_8;
+                                var e_9;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0:
@@ -1081,8 +1120,8 @@ var AuthClass = /** @class */ (function () {
                                             _a.sent();
                                             return [3 /*break*/, 4];
                                         case 2:
-                                            e_8 = _a.sent();
-                                            logger.debug('cannot load guest credentials for unauthenticated user', e_8);
+                                            e_9 = _a.sent();
+                                            logger.debug('cannot load guest credentials for unauthenticated user', e_9);
                                             return [3 /*break*/, 4];
                                         case 3:
                                             dispatchAuthEvent('signOut', that.user);
@@ -1209,7 +1248,7 @@ var AuthClass = /** @class */ (function () {
      */
     AuthClass.prototype.currentUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var source, user, attributes, userAttrs, e_9, info, err_1, user;
+            var source, user, attributes, userAttrs, e_10, info, err_1, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1238,8 +1277,8 @@ var AuthClass = /** @class */ (function () {
                         _a.sent();
                         return [3 /*break*/, 7];
                     case 6:
-                        e_9 = _a.sent();
-                        logger.debug('Failed to retrieve credentials while getting current user info', e_9);
+                        e_10 = _a.sent();
+                        logger.debug('Failed to retrieve credentials while getting current user info', e_10);
                         return [3 /*break*/, 7];
                     case 7:
                         info = {
@@ -1266,15 +1305,16 @@ var AuthClass = /** @class */ (function () {
      * For federated login
      * @param {String} provider - federation login provider
      * @param {FederatedResponse} response - response should have the access token
+     * the identity id (optional)
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */
     AuthClass.prototype.federatedSignIn = function (provider, response, user) {
         var _this = this;
-        var token = response.token, expires_at = response.expires_at;
+        var token = response.token, identity_id = response.identity_id, expires_at = response.expires_at;
         var that = this;
         return new Promise(function (res, rej) {
-            that._setCredentialsFromFederation({ provider: provider, token: token, user: user, expires_at: expires_at }).then(function (cred) {
+            that._setCredentialsFromFederation({ provider: provider, token: token, identity_id: identity_id, user: user, expires_at: expires_at }).then(function (cred) {
                 dispatchAuthEvent('signIn', that.user);
                 logger.debug('federated sign in credentials', _this.credentials);
                 res(cred);
@@ -1375,7 +1415,7 @@ var AuthClass = /** @class */ (function () {
         return this._loadCredentials(credentials, 'userPool', true, null);
     };
     AuthClass.prototype._setCredentialsFromFederation = function (params) {
-        var provider = params.provider, token = params.token, user = params.user, expires_at = params.expires_at;
+        var provider = params.provider, token = params.token, identity_id = params.identity_id, user = params.user, expires_at = params.expires_at;
         var domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
@@ -1392,11 +1432,12 @@ var AuthClass = /** @class */ (function () {
         var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
         var credentials = new Common_1.AWS.CognitoIdentityCredentials({
             IdentityPoolId: identityPoolId,
+            IdentityId: identity_id,
             Logins: logins
         }, {
             region: region
         });
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, user: user, expires_at: expires_at }, { priority: 1 });
+        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, identity_id: identity_id, user: user, expires_at: expires_at }, { priority: 1 });
         return this._loadCredentials(credentials, 'federated', true, user);
     };
     AuthClass.prototype._loadCredentials = function (credentials, source, authenticated, rawUser) {

@@ -4,7 +4,6 @@ import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 */
 export default class AnalyticsClass {
     private _config;
-    private _buffer;
     private _provider;
     private _pluggables;
     private _disabled;
@@ -35,7 +34,7 @@ export default class AnalyticsClass {
      * Record Session start
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    startSession(): Promise<boolean | void>;
+    startSession(provider?: string): Promise<boolean | void>;
     /**
     * Receive a capsule from Hub
     * @param {any} capsuak - The message from hub
@@ -45,7 +44,7 @@ export default class AnalyticsClass {
      * Record Session stop
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    stopSession(): Promise<boolean | void>;
+    stopSession(provider?: string): Promise<boolean | void>;
     /**
      * Record one analytic event and send it to Pinpoint
      * @param {String} name - The name of the event
@@ -53,20 +52,9 @@ export default class AnalyticsClass {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics): Promise<boolean | void>;
+    record(event: string | object, attributes?: EventAttributes, metrics?: EventMetrics): Promise<boolean | void>;
     updateEndpoint(config: any): Promise<boolean | void>;
-    /**
-     * @private
-     * @param {Object} params - params for the event recording
-     * Send events from buffer
-     */
-    private _sendFromBuffer(params);
-    /**
-     * @private
-     * @param params - params for the event recording
-     * Put events into buffer
-     */
-    private _putToBuffer(params);
+    private _sendEvent(params);
     /**
      * @private
      * check if current credentials exists

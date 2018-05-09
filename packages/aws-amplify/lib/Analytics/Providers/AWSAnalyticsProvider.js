@@ -52,10 +52,86 @@ var Cache_1 = require("../../Cache");
 var uuid_1 = require("uuid");
 var logger = new Common_1.ConsoleLogger('AWSAnalyticsProvider');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
+// events buffer
+var BUFFER_SIZE = 1000;
+var MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
+var interval = 5 * 1000; // 5s
+var RESEND_LIMIT = 5;
 var AWSAnalyticsProvider = /** @class */ (function () {
     function AWSAnalyticsProvider(config) {
+        var _this = this;
+        this._buffer = [];
         this._config = config ? config : {};
+        // events batch
+        var that = this;
+        // flush event buffer
+        setInterval(function () {
+            var size = _this._buffer.length < MAX_SIZE_PER_FLUSH ? _this._buffer.length : MAX_SIZE_PER_FLUSH;
+            for (var i = 0; i < size; i += 1) {
+                var params = _this._buffer.shift();
+                that._sendFromBuffer(params);
+            }
+        }, interval);
     }
+    /**
+     * @private
+     * @param params - params for the event recording
+     * Put events into buffer
+     */
+    AWSAnalyticsProvider.prototype._putToBuffer = function (params) {
+        if (this._buffer.length < BUFFER_SIZE) {
+            this._buffer.push(params);
+            return Promise.resolve(true);
+        }
+        else {
+            logger.debug('exceed analytics events buffer size');
+            return Promise.reject(false);
+        }
+    };
+    AWSAnalyticsProvider.prototype._sendFromBuffer = function (params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var event, success, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        event = params.event;
+                        success = true;
+                        _a = event;
+                        switch (_a) {
+                            case '_session_start': return [3 /*break*/, 1];
+                            case '_session_stop': return [3 /*break*/, 3];
+                        }
+                        return [3 /*break*/, 5];
+                    case 1: return [4 /*yield*/, this._startSession(params)];
+                    case 2:
+                        success = _b.sent();
+                        _b.label = 3;
+                    case 3: return [4 /*yield*/, this._stopSession(params)];
+                    case 4:
+                        success = _b.sent();
+                        _b.label = 5;
+                    case 5: return [4 /*yield*/, this._recordCustomEvent(params)];
+                    case 6:
+                        success = _b.sent();
+                        _b.label = 7;
+                    case 7:
+                        if (!success) {
+                            params.resendLimits = typeof params.resendLimits === 'number' ?
+                                params.resendLimits : RESEND_LIMIT;
+                            if (params.resendLimits > 0) {
+                                logger.debug("resending event " + params.eventName + " with " + params.resendLimits + " retry times left");
+                                params.resendLimits -= 1;
+                                this._putToBuffer(params);
+                            }
+                            else {
+                                logger.debug("retry times used up for event " + params.eventName);
+                            }
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     /**
      * get the category of the plugin
      */
@@ -83,17 +159,10 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @param {Object} params - the params of an event
      */
     AWSAnalyticsProvider.prototype.record = function (params) {
-        var eventName = params.eventName;
-        switch (eventName) {
-            case '_session_start':
-                return this._startSession(params);
-            case '_session_stop':
-                return this._stopSession(params);
-            case '_update_endpoint':
-                return this._updateEndpoint(params);
-            default:
-                return this._recordCustomEvent(params);
-        }
+        return this._putToBuffer(params);
+    };
+    AWSAnalyticsProvider.prototype.updateEndpoint = function (params) {
+        return this._updateEndpoint(params);
     };
     /**
      * @private
@@ -248,11 +317,11 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     AWSAnalyticsProvider.prototype._recordCustomEvent = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var eventName, attributes, metrics, timestamp, config, initClients, clientContext, eventParams;
+            var event, attributes, metrics, timestamp, config, initClients, clientContext, eventParams;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        eventName = params.eventName, attributes = params.attributes, metrics = params.metrics, timestamp = params.timestamp, config = params.config;
+                        event = params.event, attributes = params.attributes, metrics = params.metrics, timestamp = params.timestamp, config = params.config;
                         return [4 /*yield*/, this._init(config)];
                     case 1:
                         initClients = _a.sent();
@@ -263,7 +332,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                             clientContext: clientContext,
                             events: [
                                 {
-                                    eventType: eventName,
+                                    eventType: event,
                                     timestamp: new Date(timestamp).toISOString(),
                                     attributes: attributes,
                                     metrics: metrics

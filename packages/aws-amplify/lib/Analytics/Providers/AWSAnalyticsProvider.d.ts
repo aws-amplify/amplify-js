@@ -4,7 +4,15 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private mobileAnalytics;
     private pinpointClient;
     private _sessionId;
+    private _buffer;
     constructor(config?: any);
+    /**
+     * @private
+     * @param params - params for the event recording
+     * Put events into buffer
+     */
+    private _putToBuffer(params);
+    private _sendFromBuffer(params);
     /**
      * get the category of the plugin
      */
@@ -23,6 +31,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @param {Object} params - the params of an event
      */
     record(params: any): Promise<boolean>;
+    updateEndpoint(params: any): Promise<boolean>;
     /**
      * @private
      * @param params
