@@ -42,7 +42,7 @@ Import the configuration file and load it in your `main.ts`, which is the entry 
 
 ```js
 import Amplify from 'aws-amplify';
-import awsmobile from './aws-exports';
+import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
 ```
 
