@@ -921,30 +921,31 @@ export default class AuthClass {
 
         const that = this;
         logger.debug('checking if federated jwt token expired');
-        if (expires_at < new Date().getTime()
-            && typeof that._refreshHandlers[provider] === 'function') {
-            logger.debug('getting refreshed jwt token from federation provider');
-            return that._refreshHandlers[provider]().then((data) => {
-                logger.debug('refresh federated token sucessfully', data);
-                token = data.token;
-                identity_id = data.identity_id;
-                expires_at = data.expires_at;
-                // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
-                return that._setCredentialsFromFederation({ provider, token, user, identity_id, expires_at });
-            }).catch(e => {
-                logger.debug('refresh federated token failed', e);
-                this.cleanCachedItems();
-                return Promise.reject('refreshing federation token failed: ' + e);
-            });
-        } else {
-            if (!that._refreshHandlers[provider]) {
-                logger.debug('no refresh handler for provider:', provider);
-                this.cleanCachedItems();
-                return Promise.reject('no refresh handler for provider');
+        if (expires_at < new Date().getTime()) {
+            if (typeof that._refreshHandlers[provider] === 'function') {
+                logger.debug('getting refreshed jwt token from federation provider');
+                return that._refreshHandlers[provider]().then((data) => {
+                    logger.debug('refresh federated token sucessfully', data);
+                    token = data.token;
+                    identity_id = data.identity_id;
+                    expires_at = data.expires_at;
+                    // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+                    return that._setCredentialsFromFederation({provider, token, user, identity_id, expires_at});
+                }).catch(e => {
+                    logger.debug('refresh federated token failed', e);
+                    this.cleanCachedItems();
+                    return Promise.reject('refreshing federation token failed: ' + e);
+                });
             } else {
-                logger.debug('token not expired');
-                return this._setCredentialsFromFederation({provider, token, user, identity_id, expires_at });
+                if (!that._refreshHandlers[provider]) {
+                    logger.debug('no refresh handler for provider:', provider);
+                    this.cleanCachedItems();
+                    return Promise.reject('no refresh handler for provider');
+                }
             }
+        } else {
+            logger.debug('token not expired');
+            return this._setCredentialsFromFederation({provider, token, user, identity_id, expires_at});
         }
     }
 
