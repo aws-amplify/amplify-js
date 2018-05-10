@@ -9,7 +9,7 @@ See our [React Starter App in Github](https://github.com/awslabs/aws-mobile-reac
 
 ## Installation and Configuration
 
-Install following npm packages into your Angular app.
+Install following npm packages into your React app.
 
 ```bash
 $ npm install aws-amplify
@@ -20,4 +20,3 @@ $ npm install aws-amplify-react
 
 Follow setup and configuration steps in our [Quick Start Guide](https://aws.github.io/aws-amplify/media/quick_start?platform=react).
 
- 

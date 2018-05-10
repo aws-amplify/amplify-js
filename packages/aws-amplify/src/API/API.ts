@@ -264,9 +264,9 @@ export default class APIClass {
         return this._api.endpoint(apiName);
     }
 
-    private async _headerBasedAuth() {
+    private async _headerBasedAuth(defaultAuthenticationType?) {
         const {
-            aws_appsync_authenticationType: authenticationType,
+            aws_appsync_authenticationType: authenticationType = defaultAuthenticationType,
             aws_appsync_apiKey: apiKey,
         } = this._options;
         let headers = {};
@@ -334,6 +334,7 @@ export default class APIClass {
             aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
             graphql_headers = () => ({}),
             graphql_endpoint: customGraphqlEndpoint,
+            graphql_endpoint_iam_region: customEndpointRegion
         } = this._options;
 
         const doc = parse(queryStr);
@@ -341,7 +342,9 @@ export default class APIClass {
 
         const headers = {
             ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
-            ...(customGraphqlEndpoint && { Authorization: null }),
+            ...(customGraphqlEndpoint &&
+                ( customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null } )
+            ),
             ... await graphql_headers({ query: doc, variables })
         };
 
@@ -354,8 +357,8 @@ export default class APIClass {
             headers,
             body,
             signerServiceInfo: {
-                service: 'appsync',
-                region,
+                service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
+                region: !customGraphqlEndpoint ? region : customEndpointRegion
             }
         };
 
