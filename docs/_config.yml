@@ -148,7 +148,7 @@ category_list:
           class: aws-icon-ps-60-network-nodes
           url: '/media/hosting_guide'   
           services:
-              - title: Amazon Cloudfront
+              - title: Amazon CloudFront
                 url: https://aws.amazon.com/cloudfront/
         - title: PubSub 
           excerpt: Connect your app to message-oriented middleware on the cloud.

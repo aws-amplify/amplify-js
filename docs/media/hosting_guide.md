@@ -15,7 +15,7 @@ If it is the first time you are using `awsmobile-cli`, you need to configure the
 $ awsmobile configure
 ```
 
-If prompted for credentials, follow the steps provided by the CLI. For more information, see [Provide IAM credentials to AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html).
+If prompted for credentials, follow the steps provided by the CLI. For more information, see [Provide IAM credentials to AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html). Also, to enable cloud features with CLI, your account needs to have permission to create AWS resources.
 
 ## Deployment with CLI
 

@@ -47,13 +47,13 @@ Every time you deploy your website, a performance test is executed using real de
 
 #### Easily Add Cloud Features to your Website
 
-ASW Mobile CLI helps you to configure your website's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
+AWS Mobile CLI helps you to configure your website's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
 awsmobile cloud-api enable
 ```
 
-AWS Mobile CLI also creates the necessary folder structure and generates JavaScipt files necessary for your app's backend logic:
+AWS Mobile CLI also creates the necessary folder structure and generates JavaScript files necessary for your app's backend logic:
 
 ![Cloud API](../images/backend_cloud_api.png?raw=true "Cloud API"){: style="max-height:450px;"}
 

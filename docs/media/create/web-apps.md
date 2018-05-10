@@ -44,13 +44,13 @@ In the example, AWS Amplify Storage category already knows about the authenticat
 
 #### Command line support
 
-ASW Mobile CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
+AWS Mobile CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
 awsmobile cloud-api enable
 ```
 
-AWS Mobile CLI creates the necessary folder structure and generates JavaScipt files for your app's backend:
+AWS Mobile CLI creates the necessary folder structure and generates JavaScript files for your app's backend:
 
 ![Performance Results](../images/backend_cloud_api.png?raw=true "Performance Results")
 
@@ -87,7 +87,7 @@ With AWS Mobile CLI, you can deploy your app with single line command:
 ```bash
 awsmobile publish
 ```
-Amazon Cloud Front will handle the delivery of your static assets to the browser.
+Amazon CloudFront will handle the delivery of your static assets to the browser.
 
 ![CDN](../images/mobile_hub_cdn.png?raw=true "CDN")
 
@@ -103,7 +103,7 @@ Every time you deploy your app to hosting, a performance test will be automatica
 
 AWS Amplify provides UI components for React and Angular, so you can import AWS Amplify modules easily and use the UI components for Authentication and Storage categories. (Vue.js components support is coming soon.)
 
-In a React app, you can also use a Higher-Order-Component to provide a sign-in/sign-out experience simply by wrapping your app's main component:
+In a React app, you can also use a Higher-Order Components to provide a sign-in/sign-out experience simply by wrapping your app's main component:
 
 ```js
 export default withAuthenticator(App);
