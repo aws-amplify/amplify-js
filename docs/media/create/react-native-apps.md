@@ -95,7 +95,7 @@ Once you have deployed your web app, the next challenge will be monitoring your 
 
 AWS Amplify provides analytics, push notifications and targeted messaging capabilities out-of-the-box. You will start receiving key engagement metrics such as the number of user sessions and the number of app launches automatically after you deploy your app.
 
-Also, collecting more data with Analytics category is as very simple:
+Also, collecting more data with Analytics category is simple:
 
 ```js
 Analytics.record('albumVisit', { genre: 'jazz', artist: 'Miles Davis' });
@@ -106,7 +106,7 @@ Analytics events are displayed in Amazon Pinpoint console. In the console, you c
 
 #### Utilities
 
-AWS Amplify comes with additional utility modules that will help you to build better React Native with local cache, notifications, and more.
+AWS Amplify comes with additional utility modules that will help you to build better React Native apps with local cache, notifications, and more.
 
 ### Start Building a React Native app now!
 
