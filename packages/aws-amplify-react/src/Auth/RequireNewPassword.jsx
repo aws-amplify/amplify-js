@@ -45,9 +45,13 @@ export default class RequireNewPassword extends AuthPiece {
                 logger.debug('complete new password', user);
                 if (user.challengeName === 'SMS_MFA') {
                     this.changeState('confirmSignIn', user);
+                } else if (user.challengeName === 'MFA_SETUP') {
+                    logger.debug('TOTP setup', user.challengeParam);
+                    this.changeState('TOTPSetup', user);
                 } else {
                     this.changeState('signedIn', user);
                 }
+                
             })
             .catch(err => this.error(err));
     }
