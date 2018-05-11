@@ -1,0 +1,199 @@
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+import { ConsoleLogger as Logger, Kinesis} from '../../Common';
+import Cache from '../../Cache';
+import { AnalyticsProvider } from '../types';
+
+const logger = new Logger('AWSKineisProvider');
+
+// events buffer
+const BUFFER_SIZE = 1000;
+const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
+const interval = 5*1000; // 5s
+const RESEND_LIMIT = 5;
+
+export default class AWSKinesisProvider implements AnalyticsProvider {
+
+    private _config;
+    private _kinesis;
+    private _buffer;
+
+    constructor(config?) {
+        this._buffer = [];
+        this._config = config? config : {};
+
+        // events batch
+        const that = this;
+
+        // flush event buffer
+        setInterval(
+            () => {
+                const size = this._buffer.length < MAX_SIZE_PER_FLUSH ? this._buffer.length : MAX_SIZE_PER_FLUSH;
+                const events = [];
+                for (let i = 0; i < size; i += 1) {
+                    const params = this._buffer.shift();
+                    events.push(params);
+                } 
+                that._sendFromBuffer(events);
+            },
+            interval);
+    }
+
+    /**
+     * get the category of the plugin
+     */
+    public getCategory(): string {
+        return 'Analytics';
+    }
+
+    /**
+     * get provider name of the plugin
+     */
+    public getProviderName(): string {
+        return 'AWSKinesis';
+    }
+
+    /**
+     * configure the plugin
+     * @param {Object} config - configuration
+     */
+    public configure(config): object {
+        logger.debug('configure Analytics', config);
+        const conf = config? config : {};
+        this._config = Object.assign({}, this._config, conf);
+        return this._config;
+    }
+
+    /**
+     * record an event
+     * @param {Object} params - the params of an event
+     */
+    public record(params): Promise<boolean> {
+        return this._putToBuffer(params);
+    }
+
+    public updateEndpoint(params) {
+        return Promise.resolve(true);
+    }
+
+    /**
+     * @private
+     * @param params - params for the event recording
+     * Put events into buffer
+     */
+    private _putToBuffer(params) {
+        if (this._buffer.length < BUFFER_SIZE) {
+            this._buffer.push(params);
+            return Promise.resolve(true);
+        } else {
+            logger.debug('exceed analytics events buffer size');
+            return Promise.reject(false);
+        }
+    }
+
+    private _sendFromBuffer(events) {
+        // collapse events by credentials
+        const eventsGroups = [];
+        let preCred = null;
+        let group = [];
+        for (let i = 0; i < events.length; i += 1) {
+            let cred = events[i].config.credentials;
+            if (i == 0) {
+                group.push(events[i]);
+                preCred = cred;
+            } else {
+                if (cred.sessionToken === preCred.sessionToken && cred.identityId === preCred.identityId) {
+                    logger.debug('no change for cred, put event in the same group');
+                    group.push(events[i]);
+                } else {
+                    eventsGroups.push(group);
+                    group = [];
+                    group.push(events[i]);
+                    preCred = cred;
+                }
+            }
+        }
+        eventsGroups.push(group);
+
+        eventsGroups.map(evts => {
+            this._sendEvents(evts);
+        });
+    }
+
+    private _sendEvents(group) {
+        if (group.length === 0) {
+            logger.debug('events array is empty, directly return');
+            return;
+        }
+
+        const { config } = group[0];
+
+        const initClients = this._init(config);
+        if (!initClients) return false;
+
+        const records = {};
+
+        group.map(params => {
+            // spit by streamName
+            const evt = params.event;
+            const { streamName } = evt;
+            if (records[streamName] === undefined) {
+                records[streamName] = [];
+            }
+
+            const Data = JSON.stringify(evt.data);
+            const PartitionKey = evt.partitionKey || ('partition-' + this._config.credentials.identityId);
+            const record = { Data, PartitionKey };
+            records[streamName].push(record);
+        });
+
+        Object.keys(records).map(streamName => {
+            logger.debug('putting records to kinesis with records', records[streamName])
+            this._kinesis.putRecords({
+                Records: records[streamName],
+                StreamName: streamName
+            }, (err, data)=> {
+                if (err) logger.debug('Failed to upload records to Kinesis', err);
+                else logger.debug('Upload records to stream', streamName);
+            });
+        });
+    }
+
+    private _init(config) {
+        logger.debug('init clients');
+        if (!config.credentials) {
+            logger.debug('no credentials provided by config, abort this init');
+            return false;
+        }
+
+        if (this._kinesis
+            && this._config.credentials 
+            && this._config.credentials.sessionToken === config.credentials.sessionToken
+            && this._config.credentials.identityId === config.credentials.identityId) {
+            logger.debug('no change for analytics config, directly return from init');
+            return true;
+        }
+
+        this._config = Object.assign(this._config, config);
+        const { region, credentials } = this._config;
+        logger.debug('initialize kinesis with credentials', credentials);
+        this._kinesis = new Kinesis({
+            apiVersion: '2013-12-02',
+            region,
+            credentials
+        });
+
+        return true;
+    }
+}

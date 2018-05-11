@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import Analytics, { AnalyticsClass, AnalyticsProvider } from './Analytics';
+import Analytics, { AnalyticsClass, AnalyticsProvider, AWSPinpointProvider, AWSKinesisProvider } from './Analytics';
 import Auth, { AuthClass } from './Auth';
 import Storage, { StorageClass } from './Storage';
 import API, { APIClass, graphqlOperation } from './API';
@@ -39,5 +39,5 @@ Amplify.PubSub = PubSub;
 Amplify.Logger = Logger;
 
 export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
-export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider };
+export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider, AWSPinpointProvider, AWSKinesisProvider };
 export { graphqlOperation };

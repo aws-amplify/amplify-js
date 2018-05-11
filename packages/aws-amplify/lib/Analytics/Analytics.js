@@ -48,7 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
-var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
+var AWSPinpointProvider_1 = require("./Providers/AWSPinpointProvider");
 var Auth_1 = require("../Auth");
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 /**
@@ -82,7 +82,7 @@ var AnalyticsClass = /** @class */ (function () {
             pluggable.configure(conf);
         });
         if (this._pluggables.length === 0) {
-            this.addPluggable(new AWSAnalyticsProvider_1.default());
+            this.addPluggable(new AWSPinpointProvider_1.default());
         }
         return conf;
     };
@@ -190,7 +190,7 @@ var AnalyticsClass = /** @class */ (function () {
                         provider = null;
                         // for compatibility
                         if (typeof event === 'string') {
-                            provider = 'AWSAnalytics';
+                            provider = 'AWSPinpoint';
                         }
                         else {
                             provider = event['provider'];
@@ -219,7 +219,7 @@ var AnalyticsClass = /** @class */ (function () {
                         timestamp = new Date().getTime();
                         conf = Object.assign(this._config, config);
                         params = { event: '_update_endpoint', timestamp: timestamp, config: conf };
-                        provider = config.provider ? config.provider : 'AWSAnalytics';
+                        provider = config.provider ? config.provider : 'AWSPinpoint';
                         this._pluggables.map(function (pluggable) {
                             if (pluggable.getProviderName() === provider) {
                                 return pluggable.updateEndpoint(params);
@@ -235,7 +235,7 @@ var AnalyticsClass = /** @class */ (function () {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
         }
-        var provider = params.provider ? params.provider : 'AWSAnalytics';
+        var provider = params.provider ? params.provider : 'AWSPinpoint';
         this._pluggables.map(function (pluggable) {
             if (pluggable.getProviderName() === provider) {
                 pluggable.record(params);

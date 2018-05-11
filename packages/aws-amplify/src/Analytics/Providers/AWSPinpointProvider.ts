@@ -15,7 +15,7 @@ import Cache from '../../Cache';
 import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
 
-const logger = new Logger('AWSAnalyticsProvider');
+const logger = new Logger('AWSPinpointProvider');
 const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 
 // events buffer
@@ -24,7 +24,7 @@ const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
 const interval = 5*1000; // 5s
 const RESEND_LIMIT = 5;
 
-export default class AWSAnalyticsProvider implements AnalyticsProvider {
+export default class AWSPinpointProvider implements AnalyticsProvider {
     private _config;
     private mobileAnalytics;
     private pinpointClient;
@@ -102,7 +102,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * get provider name of the plugin
      */
     public getProviderName(): string {
-        return 'AWSAnalytics';
+        return 'AWSPinpoint';
     }
 
     /**

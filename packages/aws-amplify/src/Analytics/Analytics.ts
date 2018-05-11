@@ -17,7 +17,7 @@ import {
     missingConfig,
     Parser
 } from '../Common';
-import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
+import AWSPinpointProvider from './Providers/AWSPinpointProvider';
 import Platform from '../Common/Platform';
 import Auth from '../Auth';
 
@@ -66,7 +66,7 @@ export default class AnalyticsClass {
         });
 
         if (this._pluggables.length === 0) {
-            this.addPluggable(new AWSAnalyticsProvider());
+            this.addPluggable(new AWSPinpointProvider());
         }
 
         return conf;
@@ -148,7 +148,7 @@ export default class AnalyticsClass {
         let provider = null;
         // for compatibility
         if (typeof event === 'string') {
-            provider = 'AWSAnalytics';
+            provider = 'AWSPinpoint';
         } else {
             provider = event['provider'];
         }
@@ -170,7 +170,7 @@ export default class AnalyticsClass {
         const params = { event: '_update_endpoint', timestamp, config: conf };
 
         // for compatibility
-        const provider = config.provider? config.provider : 'AWSAnalytics';
+        const provider = config.provider? config.provider : 'AWSPinpoint';
 
         this._pluggables.map((pluggable) => {
             if (pluggable.getProviderName() === provider) {
@@ -187,7 +187,7 @@ export default class AnalyticsClass {
             return Promise.resolve();
         }
 
-        const provider = params.provider? params.provider: 'AWSAnalytics';
+        const provider = params.provider? params.provider: 'AWSPinpoint';
         
         this._pluggables.map((pluggable) => {
             if (pluggable.getProviderName() === provider) {

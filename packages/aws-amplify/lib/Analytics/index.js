@@ -11,6 +11,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
 var Analytics_1 = require("./Analytics");
 exports.AnalyticsClass = Analytics_1.default;
@@ -26,6 +29,7 @@ if (!_instance) {
 var Analytics = _instance;
 Common_1.Amplify.register(Analytics);
 exports.default = Analytics;
+__export(require("./Providers"));
 // listen on app state change
 var dispatchAppStateEvent = function (event, data) {
     Common_1.Hub.dispatch('appState', { event: event, data: data }, 'AppState');
