@@ -98,9 +98,11 @@ const authEvent = (payload) => {
             Analytics.record('_userauth.auth_fail');
             break;
         case 'configured':
-            if (!startsessionRecorded) {
-                startsessionRecorded = true;
-                Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
+            if(!Analytics.getCustomSessionMgmt()){
+                if (!startsessionRecorded) {
+                    startsessionRecorded = true;
+                    Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
+                }
             }
             break;
     }

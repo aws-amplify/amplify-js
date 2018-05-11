@@ -10,6 +10,8 @@ import { default as Analytics } from "../../src/Analytics/Analytics";
 import { ConsoleLogger as Logger } from '../../src/Common/Logger';
 import Auth from '../../src/Auth/Auth';
 import AWSAnalyticsProvider from '../../src/Analytics/Providers/AWSAnalyticsProvider';
+import AnalyticsSingleton from '../../src/Analytics';
+import Hub from '../../src/Common/Hub';
 
 const options: AnalyticsOptions = {
     appId: 'appId',
@@ -27,6 +29,33 @@ const credentials = {
 }
 
 jest.useFakeTimers();
+
+describe('configure with custom session management', () => {
+
+    const hubSpy = jest.spyOn(Hub, 'dispatch');
+
+    test('happy path with custom session management', async()=> {
+        AnalyticsSingleton.configure({
+            Analytics: {
+                appId: 'appId',
+                customSessionMgmt: true
+            }
+        });
+
+        AnalyticsSingleton.onHubCapsule({channel: 'auth', payload: { event: 'configured', data: null }, source: 'Auth'});     
+        expect(hubSpy).toHaveBeenCalledTimes(0);
+    });
+
+    test('happy path with default session management', async ()=> {                        
+        AnalyticsSingleton.disableCustomSessionMgmt();
+        AnalyticsSingleton.onHubCapsule({channel: 'auth', payload: { event: 'configured', data: null }, source: 'Auth'});
+        expect(hubSpy).toBeCalledWith('analytics', { eventType: 'session_start' }, 'Analytics');
+        expect(hubSpy).toHaveBeenCalledTimes(1);
+
+        hubSpy.mockClear();
+    });
+
+});
 
 describe('setInterval test', () => {
     test('record failed', async () => {

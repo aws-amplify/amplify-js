@@ -39,6 +39,7 @@ export default class AnalyticsClass {
     private _provider;
     private _pluggables: AnalyticsProvider[];
     private _disabled;
+    private _customSessionMgmt;
 
     /**
      * Initialize Analtyics
@@ -49,6 +50,7 @@ export default class AnalyticsClass {
         this._config = {};
         this._pluggables = [];
         this._disabled = false;
+        this._customSessionMgmt = false;
         // default one
 
         // events batch
@@ -83,6 +85,11 @@ export default class AnalyticsClass {
         if (conf['disabled']) {
             this._disabled = true;
         }
+
+        if (conf['customSessionMgmt']) {
+            this._customSessionMgmt = conf['customSessionMgmt'];
+        }
+
         this._pluggables.map((pluggable) => {
             pluggable.configure(conf);
         });
@@ -122,6 +129,27 @@ export default class AnalyticsClass {
      */
     public enable() {
         this._disabled = false;
+    }
+
+    /**
+     * enable sending default session management events
+     */
+    public disableCustomSessionMgmt() {
+        this._customSessionMgmt = false;
+    }
+    
+    /**
+     * get custom session management flag
+     */
+    public getCustomSessionMgmt() {
+        return this._customSessionMgmt;
+    }
+
+    /**
+     * Disable sending custom session management events
+     */
+    public enableCustomSessionMgmt() {
+        this._customSessionMgmt = true;
     }
 
     /**
