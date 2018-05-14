@@ -51,6 +51,9 @@ var Common_1 = require("../Common");
 var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
 var Auth_1 = require("../Auth");
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
+var dispatchAnalyticsEvent = function (event, data) {
+    Common_1.Hub.dispatch('analytics', { event: event, data: data }, 'Analytics');
+};
 /**
 * Provide mobile analytics client functions
 */
@@ -84,6 +87,7 @@ var AnalyticsClass = /** @class */ (function () {
         if (this._pluggables.length === 0) {
             this.addPluggable(new AWSAnalyticsProvider_1.default());
         }
+        dispatchAnalyticsEvent('configured', null);
         return conf;
     };
     /**

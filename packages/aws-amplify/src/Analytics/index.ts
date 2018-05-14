@@ -25,6 +25,8 @@ import Platform from '../Common/Platform';
 
 const logger = new Logger('Analytics');
 let startsessionRecorded = false;
+let authConfigured = false;
+let analyticsConfigured = false;
 
 let _instance: AnalyticsClass = null;
 
@@ -98,9 +100,10 @@ const authEvent = (payload) => {
             Analytics.record('_userauth.auth_fail');
             break;
         case 'configured':
-            if (!startsessionRecorded) {
+            authConfigured = true;
+            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
                 startsessionRecorded = true;
-                Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
+                Analytics.startSession();
             }
             break;
     }
@@ -111,9 +114,13 @@ const analyticsEvent = (payload) => {
     if (!eventType) return;
 
      switch(eventType) {
-         case 'session_start':
-             Analytics.startSession();
-             break;
+        case 'configured':
+            analyticsConfigured = true;
+            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
+                startsessionRecorded = true;
+                Analytics.startSession();
+            }
+            break;
      }
 };
 

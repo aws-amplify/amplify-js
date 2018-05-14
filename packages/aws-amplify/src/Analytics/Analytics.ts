@@ -15,6 +15,7 @@ import {
     ClientDevice,
     ConsoleLogger as Logger,
     missingConfig,
+    Hub,
     Parser
 } from '../Common';
 import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
@@ -24,6 +25,10 @@ import Auth from '../Auth';
 import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
+
+const dispatchAnalyticsEvent = (event, data) => {
+    Hub.dispatch('analytics', { event, data }, 'Analytics');
+};
 
 /**
 * Provide mobile analytics client functions
@@ -68,6 +73,8 @@ export default class AnalyticsClass {
         if (this._pluggables.length === 0) {
             this.addPluggable(new AWSAnalyticsProvider());
         }
+
+        dispatchAnalyticsEvent('configured', null);
 
         return conf;
     }
