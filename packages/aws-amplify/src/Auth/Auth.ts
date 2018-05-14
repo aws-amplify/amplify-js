@@ -995,6 +995,7 @@ export default class AuthClass {
         // clear federatedInfo
         await Cache.removeItem('federatedInfo');
         await Cache.removeItem('federatedUser');
+        await Cache.removeItem('CognitoIdentityId-' + identityPoolId);
     }
 
     /**
@@ -1197,16 +1198,18 @@ export default class AuthClass {
         }
     }
 
-    private _setCredentialsForGuest() {
+    private async _setCredentialsForGuest() {
         logger.debug('setting credentials for guest');
         const { identityPoolId, region, mandatorySignIn } = this._config;
         if (mandatorySignIn) {
             return Promise.reject('cannot get guest credentials when mandatory signin enabled');
         }
 
+        const identityId = await Cache.getItem('CognitoIdentityId-' + identityPoolId);
         const credentials = new CognitoIdentityCredentials(
             {
-            IdentityPoolId: identityPoolId
+            IdentityPoolId: identityPoolId,
+            IdentityId: identityId? identityId: undefined
         },  {
             region
         });
@@ -1269,9 +1272,10 @@ export default class AuthClass {
 
     private _loadCredentials(credentials, source, authenticated, rawUser) {
         const that = this;
+        const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
             credentials.getPromise().then(
-                () => {
+                async () => {
                     logger.debug('Load credentials successfully', credentials);
                     that.credentials = credentials;
                     that.credentials.authenticated = authenticated;
@@ -1282,6 +1286,14 @@ export default class AuthClass {
                             rawUser
                         );
                         Cache.setItem('federatedUser', that.user, { priority: 1 });
+                    }
+                    if (source === 'guest') {
+                        await Cache.getItem('CognitoIdentityId-' + identityPoolId, {
+                            callback: () => {
+                                return credentials.identityId;
+                            },
+                            priority: 1
+                        });
                     }
                     res(that.credentials);
                 },
