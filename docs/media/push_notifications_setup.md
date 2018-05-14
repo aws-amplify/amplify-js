@@ -46,11 +46,11 @@ That would install required npm modules and link React Native binaries.
  - Download  `google-services.json` file and copy it under your `android/app` project folder.
  Note: Please make sure you have this file in place or you won't pass the build process.
 6. Open ```android/build.gradle```
-    - Add ```classpath 'com.google.gms:google-services:3.1.1'``` in the ```dependencies``` under ```buildscript```:
+    - Add ```classpath 'com.google.gms:google-services:3.2.0'``` in the ```dependencies``` under ```buildscript```:
         ```gradle
         dependencies {
             classpath 'com.android.tools.build:gradle:2.2.3'
-            classpath 'com.google.gms:google-services:3.1.1'  
+            classpath 'com.google.gms:google-services:3.2.0'  
 
             // NOTE: Do not place your application dependencies here; they belong
             // in the individual module build.gradle files
@@ -72,7 +72,19 @@ Also update maven `url` as the following under  `allprojects` > `repositories`. 
         }
     }
 ```
-7. Open `android/app/build.gradle` file and add following configuration to the bottom of the file.
+7. Open `android/app/build.gradle`
+    - Add firebase libs to the ```dependencies``` section
+```gradle
+dependencies {
+ compile project(':aws-amplify-react-native')
+ ..
+ ..
+ ..
+ compile 'com.google.firebase:firebase-core:12.0.1'
+ compile 'com.google.firebase:firebase-messaging:12.0.1'
+}
+```
+    - Add following configuration to the bottom of the file.
 ```gradle
 apply plugin: 'com.google.gms.google-services'
 ``` 

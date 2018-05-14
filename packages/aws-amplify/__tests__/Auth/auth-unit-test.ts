@@ -1117,6 +1117,26 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
 
+        test('with federated info and not expired, then refresh it successfully', async () => {
+            const auth = new Auth(authOptions);
+
+            const spyon = jest.spyOn(Cache, 'getItem')
+                .mockImplementationOnce(() => {
+                    return {
+                        provider: 'google',
+                        token: 'token',
+                        expires_at: (new Date().getTime()) * 2
+                    }
+                });
+
+            auth._refreshHandlers = {}
+            
+            expect.assertions(1);
+            expect(await auth.currentUserCredentials()).not.toBeUndefined();
+
+            spyon.mockClear();
+        });
+
         test('with federated info and expired, then refresh it successfully', async () => {
             const auth = new Auth(authOptions);
 
@@ -1138,7 +1158,7 @@ describe('auth unit test', () => {
                 }
             }
             expect.assertions(1);
-             expect(await auth.currentUserCredentials()).not.toBeUndefined();
+            expect(await auth.currentUserCredentials()).not.toBeUndefined();
 
             spyon.mockClear();
         });

@@ -99,6 +99,10 @@ a {
 	border-bottom: .0625em solid;
 	border-color: inherit;
 	padding-bottom: .125em;
+	border-color: #ffa50042;
+	&:hover {
+		border-color: orange;
+	}
 }
 
 /* ----- Images ----- */

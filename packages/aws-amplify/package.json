@@ -62,7 +62,7 @@
     "amazon-cognito-identity-js": "^2.0.0",
     "aws-sdk": "2.198.0",
     "axios": "^0.17.0",
-    "graphql": "^0.13.1",
+    "graphql": "0.13.0",
     "paho-mqtt": "^1.0.4",
     "url": "^0.11.0",
     "uuid": "^3.2.1",
