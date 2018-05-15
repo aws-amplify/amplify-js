@@ -105,15 +105,15 @@ var AWSAnalyticsProvider = /** @class */ (function () {
                     case 1: return [4 /*yield*/, this._startSession(params)];
                     case 2:
                         success = _b.sent();
-                        _b.label = 3;
+                        return [3 /*break*/, 7];
                     case 3: return [4 /*yield*/, this._stopSession(params)];
                     case 4:
                         success = _b.sent();
-                        _b.label = 5;
+                        return [3 /*break*/, 7];
                     case 5: return [4 /*yield*/, this._recordCustomEvent(params)];
                     case 6:
                         success = _b.sent();
-                        _b.label = 7;
+                        return [3 /*break*/, 7];
                     case 7:
                         if (!success) {
                             params.resendLimits = typeof params.resendLimits === 'number' ?

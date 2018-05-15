@@ -90,10 +90,10 @@ var authEvent = function (payload) {
     }
 };
 var analyticsEvent = function (payload) {
-    var eventType = payload.eventType;
-    if (!eventType)
+    var event = payload.event;
+    if (!event)
         return;
-    switch (eventType) {
+    switch (event) {
         case 'configured':
             analyticsConfigured = true;
             if (authConfigured && analyticsConfigured && !startsessionRecorded) {

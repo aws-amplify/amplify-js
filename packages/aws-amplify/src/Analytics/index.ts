@@ -110,10 +110,10 @@ const authEvent = (payload) => {
 };
 
 const analyticsEvent = (payload) => {
-    const { eventType } = payload;
-    if (!eventType) return;
+    const { event } = payload;
+    if (!event) return;
 
-     switch(eventType) {
+     switch(event) {
         case 'configured':
             analyticsConfigured = true;
             if (authConfigured && analyticsConfigured && !startsessionRecorded) {

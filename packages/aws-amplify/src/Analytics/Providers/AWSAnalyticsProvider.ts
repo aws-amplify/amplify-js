@@ -71,10 +71,13 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         switch (event) {
             case '_session_start':
                 success = await this._startSession(params);
+                break;
             case '_session_stop':
                 success = await this._stopSession(params);
+                break;
             default:
                 success = await this._recordCustomEvent(params);
+                break;
         }
         
         if (!success) {
