@@ -369,16 +369,30 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      */
     private _generateClientContext() {
         const { endpointId, appId } = this._config;
-        const clientContext = {
+        const clientContext = this._config.clientContext || {};
+
+        const clientCtx = {
             client: {
-                client_id: endpointId
+                client_id: clientContext.clientId || endpointId,
+                app_title: clientContext.appTitle,
+                app_version_name: clientContext.appVersionName,
+                app_version_code: clientContext.appVersionCode,
+                app_package_name: clientContext.appPackageName,
+            },
+            env: {
+                platform: clientContext.platform,
+                platform_version: clientContext.platformVersion,
+                model: clientContext.model,
+                make: clientContext.make,
+                locale: clientContext.locale
             },
             services: {
                 mobile_analytics: {
-                    app_id: appId
+                    app_id: appId,
+                    sdk_name: 'aws-amplify'
                 }
             }
         };
-        return JSON.stringify(clientContext);
+        return JSON.stringify(clientCtx);
     }
 }
