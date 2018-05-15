@@ -17,6 +17,7 @@ export default class Amplify {
     static PubSub = null;
 
     static Logger = null;
+    static ServiceWorker = null;
 
     static register(comp) {
         logger.debug('component registed in amplify', comp);

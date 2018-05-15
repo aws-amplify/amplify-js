@@ -23,7 +23,8 @@ import {
     FacebookOAuth,
     GoogleOAuth,
     JS,
-    Parser
+    Parser,
+    AsyncStorage
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
@@ -65,6 +66,7 @@ export default class AuthClass {
 
     private _refreshHandlers = {};
     private _gettingCredPromise = null;
+    private _localStorage = window.localStorage;
 
     /**
      * Initialize Auth with AWS configurations
@@ -75,6 +77,10 @@ export default class AuthClass {
         // refresh token
         this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
         this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
+
+        if (Platform.isReactNative) {
+            this._localStorage = AsyncStorage;
+        }
 
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
@@ -1261,16 +1267,18 @@ export default class AuthClass {
         }
     }
 
-    private _setCredentialsForGuest() {
+    private async _setCredentialsForGuest() {
         logger.debug('setting credentials for guest');
         const { identityPoolId, region, mandatorySignIn } = this._config;
         if (mandatorySignIn) {
             return Promise.reject('cannot get guest credentials when mandatory signin enabled');
         }
 
+        const identityId = await this._localStorage.getItem('CognitoIdentityId-' + identityPoolId);
         const credentials = new CognitoIdentityCredentials(
             {
-            IdentityPoolId: identityPoolId
+            IdentityPoolId: identityPoolId,
+            IdentityId: identityId? identityId: undefined
         },  {
             region
         });
@@ -1333,9 +1341,10 @@ export default class AuthClass {
 
     private _loadCredentials(credentials, source, authenticated, rawUser) {
         const that = this;
+        const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
             credentials.getPromise().then(
-                () => {
+                async () => {
                     logger.debug('Load credentials successfully', credentials);
                     that.credentials = credentials;
                     that.credentials.authenticated = authenticated;
@@ -1345,7 +1354,21 @@ export default class AuthClass {
                             { id: this.credentials.identityId },
                             rawUser
                         );
-                        Cache.setItem('federatedUser', that.user, { priority: 1 });
+                        try {
+                            await Cache.setItem('federatedUser', that.user, { priority: 1 });
+                        } catch(e) {
+                            logger.debug('Failed to cache federated user info', e);
+                        }
+                    }
+                    if (source === 'guest') {
+                        try {
+                            await this._localStorage.setItem(
+                                'CognitoIdentityId-' + identityPoolId, 
+                                credentials.identityId
+                            );
+                        } catch (e) {
+                            logger.debug('Failed to cache identityId', e);
+                        }
                     }
                     res(that.credentials);
                 },
