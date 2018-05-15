@@ -19,6 +19,15 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
+            t[p[i]] = s[p[i]];
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
 var logger = new Common_1.ConsoleLogger('Signer'), url = require('url'), crypto = Common_1.AWS['util'].crypto;
@@ -93,7 +102,7 @@ var canonical_request = function (request) {
         : '';
     return [
         request.method || '/',
-        url_info.pathname,
+        encodeURIComponent(url_info.pathname).replace(/%2F/ig, '/'),
         sorted_query,
         canonical_headers(request.headers),
         signed_headers(request.headers),
@@ -239,10 +248,11 @@ var sign = function (request, access_info, service_info) {
 var signUrl = function (urlToSign, accessInfo, serviceInfo, expiration) {
     var now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
     var today = now.substr(0, 8);
-    var parsedUrl = url.parse(urlToSign, true, true);
+    // Intentionally discarding search
+    var _a = url.parse(urlToSign, true, true), search = _a.search, parsedUrl = __rest(_a, ["search"]);
     var host = parsedUrl.host;
     var signedHeaders = { host: host };
-    var _a = serviceInfo || parse_service_info({ url: url.format(parsedUrl) }), region = _a.region, service = _a.service;
+    var _b = serviceInfo || parse_service_info({ url: url.format(parsedUrl) }), region = _b.region, service = _b.service;
     var credentialScope = credential_scope(today, region, service);
     var queryParams = __assign({ 'X-Amz-Algorithm': DEFAULT_ALGORITHM, 'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'), 'X-Amz-Date': now.substr(0, 16) }, (expiration && { 'X-Amz-Expires': "" + expiration }), { 'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(',') });
     var canonicalRequest = canonical_request({

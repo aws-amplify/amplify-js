@@ -185,7 +185,10 @@ var Greetings = function (_AuthPiece) {
         value: function userGreetings(theme) {
             var user = this.state.authData;
             var greeting = this.props.inGreeting || this.inGreeting;
-            var name = user.name || user.username;
+            // get name from attributes first
+            var nameFromAttr = user.attributes ? user.attributes.name || (user.attributes.given_name ? user.attributes.given_name + ' ' + user.attributes.family_name : undefined) : undefined;
+
+            var name = nameFromAttr || user.name || user.username;
             var message = typeof greeting === 'function' ? greeting(name) : greeting;
             return _react2.default.createElement(
                 'span',
