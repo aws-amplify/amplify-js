@@ -2,7 +2,7 @@
 ---
 # Service Workers
 
-AWS Amplify *ServiceWorker* module enables registering a service worker in the browser and communicating with it via *postMessage* events, so that you can create rich offline experiences with push notifications and analytics. 
+AWS Amplify *ServiceWorker* class enables registering a service worker in the browser and communicating with it via *postMessage* events, so that you can create rich offline experiences with [Push APIs](https://developer.mozilla.org/en-US/docs/Web/API/Push_API) and analytics. 
 
 After registering the service worker, the ServiceWorker module will listen and attempt to dispatch messages on state changes, and it will record analytics events based on the service worker's lifecycle.
 
@@ -11,7 +11,7 @@ After registering the service worker, the ServiceWorker module will listen and a
 
 ## Installation
 
-Import:
+Import *ServiceWorker*:
 ```js
 import { ServiceWorker } from 'aws-amplify';
 ```
@@ -83,6 +83,8 @@ addEventListener('push', (event) => {
 });
 ```
 
+For more information about Notifications API, please visit [here](https://developer.mozilla.org/en-US/docs/Web/API/notification).
+
 ### send()
 
 `send` method sends a message to your service worker, from your web app. Remember that your app's code and service worker script work in different contexts, and the communication between the two is possible with *send()* method.
@@ -96,6 +98,9 @@ This is useful when you want to control your service worker logic programmatical
     });
 
 ```
+
+For more information about Message API, please visit [here](https://developer.mozilla.org/en-US/docs/Web/Events/message_(ServiceWorker)).
+
 
 #### Receiving Messages 
 
@@ -116,7 +121,7 @@ In your *service-worker.js* file, add the following event listener:
     
 ```
 
-#### Monitoring Lifecycle Events
+### Monitoring Lifecycle Events
 
 If you enable AWS Amplify [Analytics]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide) category, *ServiceWorker* module automatically tracks service worker state changes and message events.
 

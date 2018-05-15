@@ -22,12 +22,7 @@
  */
 var appCacheFiles = [
 	'/',
-	'/index.html',
-	'/inline.bundle.js',
-	'/main.bundle.js',
-	'/polyfills.bundle.js',
-	'/styles.bundle.js',
-	'/vendor.bundle.js'
+	'/index.html'
 ], 
 // The name of the Cache Storage
 appCache = 'aws-amplify-v1';
