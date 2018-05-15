@@ -23,7 +23,8 @@ import {
     FacebookOAuth,
     GoogleOAuth,
     JS,
-    Parser
+    Parser,
+    AsyncStorage
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
@@ -65,6 +66,7 @@ export default class AuthClass {
 
     private _refreshHandlers = {};
     private _gettingCredPromise = null;
+    private _localStorage = window.localStorage;
 
     /**
      * Initialize Auth with AWS configurations
@@ -75,6 +77,10 @@ export default class AuthClass {
         // refresh token
         this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
         this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
+
+        if (Platform.isReactNative) {
+            this._localStorage = AsyncStorage;
+        }
 
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
@@ -1204,7 +1210,7 @@ export default class AuthClass {
             return Promise.reject('cannot get guest credentials when mandatory signin enabled');
         }
 
-        const identityId = await Cache.getItem('CognitoIdentityId-' + identityPoolId);
+        const identityId = await this._localStorage.getItem('CognitoIdentityId-' + identityPoolId);
         const credentials = new CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
@@ -1292,12 +1298,9 @@ export default class AuthClass {
                     }
                     if (source === 'guest') {
                         try {
-                            await Cache.setItem(
+                            await this._localStorage.setItem(
                                 'CognitoIdentityId-' + identityPoolId, 
-                                credentials.identityId, 
-                                {
-                                    priority: 1
-                                }
+                                credentials.identityId
                             );
                         } catch (e) {
                             logger.debug('Failed to cache identityId', e);
