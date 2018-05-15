@@ -995,7 +995,6 @@ export default class AuthClass {
         // clear federatedInfo
         await Cache.removeItem('federatedInfo');
         await Cache.removeItem('federatedUser');
-        await Cache.removeItem('CognitoIdentityId-' + identityPoolId);
     }
 
     /**
