@@ -104,7 +104,7 @@ class ServiceWorkerClass {
      *  - reject(Error)
      */
     enablePush(publicKey: string) {
-        if (!this._registration) throw new Error('Server Worker not registered');
+        if (!this._registration) throw new Error('Service Worker not registered');
         this._publicKey = publicKey;
         return new Promise((resolve, reject) => {
             this._registration.pushManager.getSubscription()
