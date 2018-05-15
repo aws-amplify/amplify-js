@@ -11,9 +11,10 @@ After registering the service worker, the ServiceWorker module will listen and a
 
 ## Installation
 
-Import *ServiceWorker*:
+Import *ServiceWorker* and instantiate a new instance (you can have mulitple workers on different scopes):
 ```js
 import { ServiceWorker } from 'aws-amplify';
+const myServiceWorker = new ServiceWorker();
 ```
 
 ## Working with the API
@@ -28,7 +29,7 @@ Make sure that worker script is included with your build and provide a script pa
 
 ```js
 // Register the service worker with `service-worker.js` with service worker scope `/`.
-let myServiceWorker = await this.serviceWorker.register('/service-worker.js', '/');
+myServiceWorker = await this.serviceWorker.register('/service-worker.js', '/');
 ```
 
 *register* method is a wrapper around Service Worker API's *register()* method. For more information about Service Worker API, visit [here](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register).
