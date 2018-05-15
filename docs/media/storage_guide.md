@@ -500,8 +500,6 @@ See the [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) f
 
 ## Customization 
 
-Note: this is only available in aws-amplify@beta for now.
-
 ### Customize Upload Path 
 
 You can customize your upload path by defining prefixes:

@@ -24,6 +24,8 @@ __export(require("./Logger"));
 __export(require("./Errors"));
 var Hub_1 = require("./Hub");
 exports.Hub = Hub_1.default;
+var I18n_1 = require("./I18n");
+exports.I18n = I18n_1.default;
 var JS_1 = require("./JS");
 exports.JS = JS_1.default;
 var Signer_1 = require("./Signer");

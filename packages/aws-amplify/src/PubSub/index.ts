@@ -12,7 +12,7 @@
  */
 import PubSubClass from './PubSub';
 
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger, Amplify } from '../Common';
 
 const logger = new Logger('PubSub');
 
@@ -24,6 +24,8 @@ if (!_instance) {
 }
 
 const PubSub = _instance;
+Amplify.register(PubSub);
+
 export default PubSub;
 
 export * from './Providers/AWSIotProvider';

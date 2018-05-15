@@ -125,6 +125,7 @@ let path = '/path';
 let myInit = { // OPTIONAL
     headers: {} // OPTIONAL
     response: true // OPTIONAL (return entire response object instead of response.data)
+    queryStringParameters: {} // OPTIONAL
 }
 API.get(apiName, path, myInit).then(response => {
     // Add your code here
@@ -318,6 +319,23 @@ Amplify.configure({
 });
 ```
 
+### Signing a GraphQL request to authenticate with AWS Identity Access Management (IAM).
+
+Amplify provides the ability to sign requests for IAM authentication.  
+
+Add the following to your configuration statement to enable this for GraphQL requests that are processed through AWS API Gateway:
+
+```js
+Amplify.configure({
+  API: {
+    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
+    graphql_endpoint_iam_region: 'my_graphql_apigateway_region'
+  }
+});
+```
+
+Example region value: "us-east-1".
+
 ### Configuration for AWS AppSync
 
 AWS AppSync is a cloud-based fully-managed GraphQL service that is integrated with AWS Amplify API category and command line tools with AWS Mobile CLI.
@@ -444,7 +462,7 @@ const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
 }`;
 
 // Simple query
-const allEvents = await API.graphql({ ListEvents });
+const allEvents = await API.graphql(graphqlOperation(ListEvents));
 
 // Query using a parameter
 const oneEvent = await API.graphql(graphqlOperation(GetEvent, { id: 'some id' }));
@@ -474,7 +492,7 @@ const eventDetails = {
     name: 'Party tonight!',
     when: '8:00pm',
     where: 'Ballroom',
-    decription: 'Coming together as a team!'
+    description: 'Coming together as a team!'
 };
 
 const newEvent = await API.graphql(graphqlOperation(CreateEvent, eventDetails));

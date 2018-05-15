@@ -45,8 +45,8 @@
     "clean": "rimraf lib es",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
-    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack dist/amazon-cognito-identity.js",
-    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack dist/amazon-cognito-identity.min.js",
+    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack -p dist/amazon-cognito-identity.js",
+    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack -p dist/amazon-cognito-identity.min.js",
     "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
@@ -63,7 +63,7 @@
   "types": "./index.d.ts",
   "dependencies": {
     "buffer": "4.9.1",
-    "crypto-browserify": "1.0.9",
+    "crypto-browserify": "3.0.0",
     "js-cookie": "^2.1.4"
   },
   "devDependencies": {
