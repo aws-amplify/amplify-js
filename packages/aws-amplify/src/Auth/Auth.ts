@@ -1285,15 +1285,24 @@ export default class AuthClass {
                             { id: this.credentials.identityId },
                             rawUser
                         );
-                        Cache.setItem('federatedUser', that.user, { priority: 1 });
+                        try {
+                            await Cache.setItem('federatedUser', that.user, { priority: 1 });
+                        } catch(e) {
+                            logger.debug('Failed to cache federated user info', e);
+                        }
                     }
                     if (source === 'guest') {
-                        await Cache.getItem('CognitoIdentityId-' + identityPoolId, {
-                            callback: () => {
-                                return credentials.identityId;
-                            },
-                            priority: 1
-                        });
+                        try {
+                            await Cache.setItem(
+                                'CognitoIdentityId-' + identityPoolId, 
+                                credentials.identityId, 
+                                {
+                                    priority: 1
+                                }
+                            );
+                        } catch (e) {
+                            logger.debug('Failed to cache identityId', e);
+                        }
                     }
                     res(that.credentials);
                 },
