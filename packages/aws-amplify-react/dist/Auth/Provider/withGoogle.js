@@ -88,9 +88,7 @@ function withGoogle(Comp) {
         }, {
             key: 'componentDidMount',
             value: function componentDidMount() {
-                var google_client_id = this.props.google_client_id;
-
-                if (google_client_id) this.createScript();
+                this.createScript();
             }
         }, {
             key: 'createScript',

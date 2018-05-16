@@ -7,7 +7,7 @@
     * Enhancement: Update crypto browserify to v3.0.0 #731
     * Enhancement: Callback with error if error thrown due to network #605
 
-* aws-amplify - v0.3.4
+* aws-amplify - v0.4.0
     * Bug Fix: To return an empty object instead of undefined if auth is not configured. #714
     * Bug Fix: Analytics retry issue #644
     * Bug Fix: Adds the ability to sign custom graphql requests. #743
@@ -24,17 +24,16 @@
     * Feature: Add ServiceWorker utility class #831
     * Feature: federated sign in for react native #818
 
-* aws-ampify-react - v0.1.44
+* aws-ampify-react - v0.1.45
     * Bug Fix: Fix Auth completeNewPassword #736
     * Enhancement: Add hidden style #757
     * Enhancement: Import sdk on need #770
 
-* aws-amplify-react-native - 0.2.10
+* aws-amplify-react-native - 0.2.11
     * Feature: federated sign in for react native #818
 
-
-aws-ampify-angular:
-Bug Fix: angular sign in mfa check #759
+* aws-ampify-angular - v0.1.1:
+    * Bug Fix: angular sign in mfa check #759
 
 
 ## 04/24/2018

@@ -69,9 +69,6 @@ var RequireNewPassword = function (_AuthPiece) {
                 logger.debug('complete new password', user);
                 if (user.challengeName === 'SMS_MFA') {
                     _this2.changeState('confirmSignIn', user);
-                } else if (user.challengeName === 'MFA_SETUP') {
-                    logger.debug('TOTP setup', user.challengeParam);
-                    _this2.changeState('TOTPSetup', user);
                 } else {
                     _this2.changeState('signedIn', user);
                 }

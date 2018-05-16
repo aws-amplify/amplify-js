@@ -101,9 +101,7 @@ function withFacebook(Comp) {
         }, {
             key: 'componentDidMount',
             value: function componentDidMount() {
-                var facebook_app_id = this.props.facebook_app_id;
-
-                if (facebook_app_id) this.createScript();
+                this.createScript();
             }
         }, {
             key: 'fbAsyncInit',

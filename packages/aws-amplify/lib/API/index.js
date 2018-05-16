@@ -23,6 +23,5 @@ if (!_instance) {
     _instance = new API_1.default(null);
 }
 var API = _instance;
-Common_1.Amplify.register(API);
 exports.default = API;
 //# sourceMappingURL=index.js.map

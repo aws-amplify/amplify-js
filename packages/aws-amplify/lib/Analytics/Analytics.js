@@ -118,7 +118,7 @@ var AnalyticsClass = /** @class */ (function () {
                         ensureCredentails = _a.sent();
                         if (!ensureCredentails)
                             return [2 /*return*/, Promise.resolve(false)];
-                        if (pluggable && pluggable.getCategory() === 'Analytics') {
+                        if (pluggable) {
                             this._pluggables.push(pluggable);
                             config = pluggable.configure(this._config);
                             return [2 /*return*/, Promise.resolve(config)];
