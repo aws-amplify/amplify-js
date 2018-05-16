@@ -67,7 +67,10 @@ export default class AnalyticsClass {
             this._disabled = true;
         }
         this._pluggables.map((pluggable) => {
-            pluggable.configure(conf);
+            // backward compatibility
+            const plugConf = Object.assign({}, conf, conf[pluggable.getProviderName()]);
+            
+            pluggable.configure(plugConf);
         });
 
         if (this._pluggables.length === 0) {
