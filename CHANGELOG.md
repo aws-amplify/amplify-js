@@ -3,6 +3,10 @@
 <!--ENTRYINSERT-->
 
 ## 05/15/2018
+* aws-ampify-react - v0.1.46
+    * Bug Fix: revert the change of regenerator-runtime in Connect.js
+    
+## 05/15/2018
 * amazon-cognito-identity-js - v2.0.5
     * Enhancement: Update crypto browserify to v3.0.0 #731
     * Enhancement: Callback with error if error thrown due to network #605
