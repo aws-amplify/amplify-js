@@ -197,6 +197,10 @@ category_list:
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide'  
+        - title: Service Worker 
+          excerpt: A utility class to work with PWA and Service Worker APIs. 
+          cta: Read more
+          url: '/media/service_workers_guide'  
     -  category: CLI
        title: CLI
        subs:
