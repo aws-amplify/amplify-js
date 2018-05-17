@@ -12,7 +12,6 @@
  */
 
 import {
-    ClientDevice,
     ConsoleLogger as Logger,
     missingConfig,
     Hub,
@@ -56,21 +55,19 @@ export default class AnalyticsClass {
     public configure(config) {
         logger.debug('configure Analytics');
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        const conf = Object.assign({}, this._config, amplifyConfig.Analytics, config);
+        this._config = Object.assign({}, this._config, amplifyConfig.Analytics, config);
 
-        const clientInfo:any = ClientDevice.clientInfo();
-        conf['clientInfo'] = conf['client_info']? conf['client_info'] : clientInfo;
-
-        this._config = conf;
-
-        if (conf['disabled']) {
+        if (this._config['disabled']) {
             this._disabled = true;
         }
+
+        // for backward compatibility
+        if (!this._config['AWSAnalytics']) {
+            this._config['AWSAnalytics'] = Object.assign({}, this._config);
+        }
+
         this._pluggables.map((pluggable) => {
-            // backward compatibility
-            const plugConf = Object.assign({}, conf, conf[pluggable.getProviderName()]);
-            
-            pluggable.configure(plugConf);
+            pluggable.configure(this._config[pluggable.getProviderName()]);
         });
 
         if (this._pluggables.length === 0) {
@@ -78,8 +75,7 @@ export default class AnalyticsClass {
         }
 
         dispatchAnalyticsEvent('configured', null);
-
-        return conf;
+        return this._config;
     }
 
     /**
@@ -87,12 +83,9 @@ export default class AnalyticsClass {
      * @param {Object} pluggable - an instance of the plugin
      */
     public async addPluggable(pluggable: AnalyticsProvider) {
-        const ensureCredentails = await this._getCredentials();
-        if (!ensureCredentails) return Promise.resolve(false);
-
         if (pluggable && pluggable.getCategory() === 'Analytics') {
             this._pluggables.push(pluggable);
-            const config = pluggable.configure(this._config);
+            const config = pluggable.configure(this._config[pluggable.getProviderName()]);
             return Promise.resolve(config);
         }
     }
@@ -112,34 +105,27 @@ export default class AnalyticsClass {
     }
 
     /**
-     * Record Session start
-     * @return - A promise which resolves if buffer doesn't overflow
-     */
-    public async startSession(provider?: string) {
-        const ensureCredentails = await this._getCredentials();
-        if (!ensureCredentails) return Promise.resolve(false);
-
-        const timestamp = new Date().getTime();
-        const params = { event: '_session_start', timestamp, config: this._config, provider };
-        return this._sendEvent(params);
-    }
-
-    /**
     * Receive a capsule from Hub
     * @param {any} capsuak - The message from hub
     */
    public onHubCapsule(capsule: any): void {}
+
+
+    /**
+     * Record Session start
+     * @return - A promise which resolves if buffer doesn't overflow
+     */
+    public async startSession(provider?: string) {
+        const params = { event: { name: '_session_start' },  provider };
+        return this._sendEvent(params);
+    }
 
     /**
      * Record Session stop
      * @return - A promise which resolves if buffer doesn't overflow
      */
     public async stopSession(provider?: string) {
-        const ensureCredentails = await this._getCredentials();
-        if (!ensureCredentails) return Promise.resolve(false);
-
-        const timestamp = new Date().getTime();
-        const params = { event: '_session_stop', timestamp, config: this._config, provider };
+        const params = { event: { name: '_session_stop' }, provider };
         return this._sendEvent(params);
     }
 
@@ -150,45 +136,28 @@ export default class AnalyticsClass {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    public async record(event: string | object, attributes?: EventAttributes, metrics?: EventMetrics) {
-        const ensureCredentails = await this._getCredentials();
-        if (!ensureCredentails) return Promise.resolve(false);
-
-        const timestamp = new Date().getTime();
-        let provider = null;
-        // for compatibility
+    public async record(event: string | object, provider? , metrics?: EventMetrics) {
+        let params = null;
+        // this is just for compatibility, going to be deprecated
         if (typeof event === 'string') {
-            provider = 'AWSAnalytics';
+            params =  {
+                'event': {
+                    name: event, 
+                    attributes: provider, 
+                    metrics
+                }, 
+                provider: undefined
+            };
         } else {
-            provider = event['provider'];
+            params = { event, provider };
         }
-        const params = { event, attributes, metrics, timestamp, config: this._config, provider };
         return this._sendEvent(params);
     }
 
-    public async updateEndpoint(config) {
-        if (this._disabled) {
-            logger.debug('Analytics has been disabled');
-            return Promise.resolve();
-        }
+    public async updateEndpoint(attrs, provider?) {
+        const event = Object.assign({ name: '_update_endpoint' }, attrs);
 
-        const ensureCredentails = await this._getCredentials();
-        if (!ensureCredentails) return Promise.resolve(false);
-
-        const timestamp = new Date().getTime();
-        const conf = Object.assign(this._config, config);
-        const params = { event: '_update_endpoint', timestamp, config: conf };
-
-        // for compatibility
-        const provider = config.provider? config.provider : 'AWSAnalytics';
-
-        this._pluggables.map((pluggable) => {
-            if (pluggable.getProviderName() === provider) {
-                return pluggable.updateEndpoint(params);
-            }
-        });
-
-        return Promise.reject('no available provider to update endpoint');
+        return this.record(event, provider);
     }
 
     private _sendEvent(params) {
@@ -196,7 +165,6 @@ export default class AnalyticsClass {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
         }
-
         const provider = params.provider? params.provider: 'AWSAnalytics';
         
         this._pluggables.map((pluggable) => {
@@ -206,28 +174,5 @@ export default class AnalyticsClass {
         });
 
         return Promise.resolve();
-    }
-
-    /**
-     * @private
-     * check if current credentials exists
-     */
-    private _getCredentials() {
-        const that = this;
-        return Auth.currentCredentials()
-            .then(credentials => {
-                if (!credentials) return false;
-                const cred = Auth.essentialCredentials(credentials);
-
-                that._config.credentials = cred;
-                // that._config.endpointId = cred.identityId;
-                // logger.debug('set endpointId for analytics', that._config.endpointId);
-                logger.debug('set credentials for analytics', that._config.credentials);
-                return true;
-            })
-            .catch(err => {
-                logger.debug('ensure credentials error', err);
-                return false;
-            });
     }
 }
