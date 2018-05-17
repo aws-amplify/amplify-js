@@ -125,5 +125,5 @@ You can see those analytics events are related metrics in Amazon Pinpoint consol
 
 ### API Reference
 
-For the complete API documentation for ServiceWorker module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/serviceworker.html)
+For the complete API documentation for ServiceWorker module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/serviceworkerclass.html)
 {: .callout .callout--info}

@@ -918,6 +918,12 @@ img { max-width: 100%; }
 		<li class="current tsd-kind-class">
 			<a href="googleoauth.html" class="tsd-kind-icon">GoogleOAuth</a>
 			<ul>
+				<li class=" tsd-kind-constructor tsd-parent-kind-class">
+					<a href="googleoauth.html#constructor" class="tsd-kind-icon">constructor</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class">
+					<a href="googleoauth.html#initialized" class="tsd-kind-icon">initialized</a>
+				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="googleoauth.html#refreshgoogletoken" class="tsd-kind-icon">refresh<wbr>Google<wbr>Token</a>
 				</li>
@@ -940,6 +946,18 @@ img { max-width: 100%; }
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
 					<section class="tsd-index-section ">
+						<h3>Constructors</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="googleoauth.html#constructor" class="tsd-kind-icon">constructor</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section ">
+						<h3>Properties</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-class"><a href="googleoauth.html#initialized" class="tsd-kind-icon">initialized</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="googleoauth.html#refreshgoogletoken" class="tsd-kind-icon">refresh<wbr>Google<wbr>Token</a></li>
@@ -949,21 +967,54 @@ img { max-width: 100%; }
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
-			<h2>Methods</h2>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="refreshgoogletoken" class="tsd-anchor"></a>
-				<h3>refresh<wbr>Google<wbr>Token</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">refresh<wbr>Google<wbr>Token<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+			<h2>Constructors</h2>
+			<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+				<a name="constructor" class="tsd-anchor"></a>
+				<h3>constructor</h3>
+				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">new <wbr>GoogleOAuth<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="googleoauth.html" class="tsd-signature-type">GoogleOAuth</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/257a41a/packages/aws-amplify/src/Common/OAuthHelper/GoogleOAuth.ts#L20">Common/OAuthHelper/GoogleOAuth.ts:20</a></li>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Common/OAuthHelper/GoogleOAuth.ts#L36">Common/OAuthHelper/GoogleOAuth.ts:36</a></li>
 							</ul>
 						</aside>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						<h4 class="tsd-returns-title">Returns <a href="googleoauth.html" class="tsd-signature-type">GoogleOAuth</a></h4>
+					</li>
+				</ul>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Properties</h2>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+				<a name="initialized" class="tsd-anchor"></a>
+				<h3>initialized</h3>
+				<div class="tsd-signature tsd-kind-icon">initialized<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Common/OAuthHelper/GoogleOAuth.ts#L36">Common/OAuthHelper/GoogleOAuth.ts:36</a></li>
+					</ul>
+				</aside>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Methods</h2>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="refreshgoogletoken" class="tsd-anchor"></a>
+				<h3>refresh<wbr>Google<wbr>Token</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">refresh<wbr>Google<wbr>Token<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Common/OAuthHelper/GoogleOAuth.ts#L43">Common/OAuthHelper/GoogleOAuth.ts:43</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 				</ul>
 			</section>
