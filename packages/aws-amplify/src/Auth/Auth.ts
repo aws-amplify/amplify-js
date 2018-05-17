@@ -1243,7 +1243,7 @@ export default class AuthClass {
     }
 
     
-    private _setCredentialsFromFederation(params) {
+    private async _setCredentialsFromFederation(params) {
         const { provider, token, identity_id, user, expires_at } = params;
         const domains = {
             'google': 'accounts.google.com',
@@ -1271,7 +1271,11 @@ export default class AuthClass {
             region
         });
 
-        Cache.setItem('federatedInfo', { provider, token, identity_id, user, expires_at }, { priority: 1 });
+        try {
+            await Cache.setItem('federatedInfo', { provider, token, identity_id, user, expires_at }, { priority: 1 });
+        } catch (e) {
+            logger.debug('Failed to cache federated info with', e);
+        }
         return this._loadCredentials(credentials, 'federated', true, user);
     }
 
