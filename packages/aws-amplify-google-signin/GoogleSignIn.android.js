@@ -9,7 +9,7 @@ import {
   ViewPropTypes,
 } from 'react-native';
 
-const { RNAmplifyGoogleSignIn } = NativeModules;
+const { RNAwsAmplifyGoogleSignIn } = NativeModules;
 
 class GoogleSigninError extends Error {
   constructor(error, code) {
@@ -26,7 +26,7 @@ class GoogleSignin {
     }
   
     hasPlayServices(params = { autoResolve: true }) {
-      return RNAmplifyGoogleSignIn.playServicesAvailable(params.autoResolve);
+      return RNAwsAmplifyGoogleSignIn.playServicesAvailable(params.autoResolve);
     }
   
     configure(params = {}) {
@@ -39,7 +39,7 @@ class GoogleSignin {
         params.hostedDomain || null,
       ];
   
-      return RNAmplifyGoogleSignIn.configure(...params);
+      return RNAwsAmplifyGoogleSignIn.configure(...params);
     }
   
     currentUserAsync() {
@@ -47,7 +47,7 @@ class GoogleSignin {
         const sucessCb = DeviceEventEmitter.addListener('RNGoogleSignInSilentSuccess', (user) => {
           this._user = {...user};
   
-          RNAmplifyGoogleSignIn.getAccessToken(user).then((token) => {
+          RNAwsAmplifyGoogleSignIn.getAccessToken(user).then((token) => {
             this._user.accessToken = token;
             this._removeListeners(sucessCb, errorCb);
             resolve(this._user);
@@ -63,7 +63,7 @@ class GoogleSignin {
           resolve(null);
         });
   
-        RNAmplifyGoogleSignIn.currentUserAsync();
+        RNAwsAmplifyGoogleSignIn.currentUserAsync();
       });
     }
   
@@ -75,7 +75,7 @@ class GoogleSignin {
       return new Promise((resolve, reject) => {
         const sucessCb = DeviceEventEmitter.addListener('RNGoogleSignInSuccess', (user) => {
           this._user = {...user};
-          RNAmplifyGoogleSignIn.getAccessToken(user).then((token) => {
+          RNAwsAmplifyGoogleSignIn.getAccessToken(user).then((token) => {
             this._user.accessToken = token;
             this._removeListeners(sucessCb, errorCb);
             resolve(this._user);
@@ -91,7 +91,7 @@ class GoogleSignin {
           reject(new GoogleSigninError(err.error, err.code));
         });
   
-        RNAmplifyGoogleSignIn.signIn();
+        RNAwsAmplifyGoogleSignIn.signIn();
       });
     }
   
@@ -108,7 +108,7 @@ class GoogleSignin {
         });
   
         this._user = null;
-        RNAmplifyGoogleSignIn.signOut();
+        RNAwsAmplifyGoogleSignIn.signOut();
       });
     }
   
@@ -124,7 +124,7 @@ class GoogleSignin {
           reject(new GoogleSigninError(err.error, err.code));
         });
   
-        RNAmplifyGoogleSignIn.revokeAccess();
+        RNAwsAmplifyGoogleSignIn.revokeAccess();
       });
     }
   

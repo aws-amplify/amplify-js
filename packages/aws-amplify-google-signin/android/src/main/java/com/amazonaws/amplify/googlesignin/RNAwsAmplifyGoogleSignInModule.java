@@ -36,20 +36,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class RNAmplifyGoogleSignInModule extends ReactContextBaseJavaModule {
+public class RNAwsAmplifyGoogleSignInModule extends ReactContextBaseJavaModule {
     private GoogleApiClient _apiClient;
 
     public static final int RC_SIGN_IN = 9001;
 
-    public RNAmplifyGoogleSignInModule(final ReactApplicationContext reactContext) {
+    public RNAwsAmplifyGoogleSignInModule(final ReactApplicationContext reactContext) {
         super(reactContext);
-        reactContext.addActivityEventListener(new RNAmplifyGoogleSignInActivityEventListener());
+        reactContext.addActivityEventListener(new RNAwsAmplifyGoogleSignInActivityEventListener());
     }
 
-    private class RNAmplifyGoogleSignInActivityEventListener extends BaseActivityEventListener {
+    private class RNAwsAmplifyGoogleSignInActivityEventListener extends BaseActivityEventListener {
         @Override
         public void onActivityResult(Activity activity, final int requestCode, final int resultCode, final Intent intent) {
-            if (requestCode == RNAmplifyGoogleSignInModule.RC_SIGN_IN) {
+            if (requestCode == RNAwsAmplifyGoogleSignInModule.RC_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(intent);
                 handleSignInResult(result, false);
             }
@@ -58,7 +58,7 @@ public class RNAmplifyGoogleSignInModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "RNAmplifyGoogleSignIn";
+        return "RNAwsAmplifyGoogleSignIn";
     }
 
   

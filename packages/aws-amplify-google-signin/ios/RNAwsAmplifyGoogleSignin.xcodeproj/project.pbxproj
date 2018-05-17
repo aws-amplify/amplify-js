@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D7CDBCB20AA15BD00649178 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7CDBCA20AA15BD00649178 /* AddressBook.framework */; };
+		5D7CDBCF20AA15EC00649178 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7CDBCE20AA15EC00649178 /* SystemConfiguration.framework */; };
+		5D7CDBD220AA15FB00649178 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7CDBCC20AA15C600649178 /* StoreKit.framework */; };
+		5D7CDBD820AA2A5800649178 /* GoogleAuthUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7CDBD720AA2A5800649178 /* GoogleAuthUtilities.framework */; };
+		5D7CDBDA20AA2BDC00649178 /* GoogleAppUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7CDBD920AA2BDC00649178 /* GoogleAppUtilities.framework */; };
+		5D7CDBDC20AA2C7600649178 /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7CDBDB20AA2C7600649178 /* GoogleSignIn.framework */; };
+		5D7CDBDE20AA2CA600649178 /* GoogleNetworkingUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7CDBDD20AA2CA600649178 /* GoogleNetworkingUtilities.framework */; };
+		5D7CDBE020AA2F0000649178 /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7CDBDF20AA2F0000649178 /* GoogleSignIn.framework */; };
+		5D7CDBE220AA2F4A00649178 /* GoogleSymbolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7CDBE120AA2F4A00649178 /* GoogleSymbolUtilities.framework */; };
+		5D7CDBE420AA2F8000649178 /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D7CDBE320AA2F7F00649178 /* GoogleUtilities.framework */; };
 		B3E7B58A1CC2AC0600A0062D /* RNAwsAmplifyGoogleSignin.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNAwsAmplifyGoogleSignin.m */; };
 /* End PBXBuildFile section */
 
@@ -24,8 +34,25 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNAwsAmplifyGoogleSignin.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNAwsAmplifyGoogleSignin.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D2B67A5EF7A5052585CA6A3 /* Pods-RNAwsAmplifyGoogleSignin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNAwsAmplifyGoogleSignin.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNAwsAmplifyGoogleSignin/Pods-RNAwsAmplifyGoogleSignin.release.xcconfig"; sourceTree = "<group>"; };
+		5D7CDBCA20AA15BD00649178 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		5D7CDBCC20AA15C600649178 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		5D7CDBCE20AA15EC00649178 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		5D7CDBD020AA15F400649178 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		5D7CDBD320AA167F00649178 /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSignIn.framework; path = ../../../../fedLibs/AmplifyRNGoogleSignIn/ios/Pods/GoogleSignIn/Frameworks/GoogleSignIn.framework; sourceTree = "<group>"; };
+		5D7CDBD520AA169E00649178 /* GoogleSignIn.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleSignIn.bundle; path = ../../../../fedLibs/AmplifyRNGoogleSignIn/ios/Pods/GoogleSignIn/Resources/GoogleSignIn.bundle; sourceTree = "<group>"; };
+		5D7CDBD720AA2A5800649178 /* GoogleAuthUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAuthUtilities.framework; path = "../../../../../rn_apps_testing_folder/nativeSocialSignIn/testLibNative/rninit/thisworks/googleios/node_modules/react-native-aws-amplify-google-signin/ios/Pods/GoogleAuthUtilities/Frameworks/frameworks/GoogleAuthUtilities.framework"; sourceTree = "<group>"; };
+		5D7CDBD920AA2BDC00649178 /* GoogleAppUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppUtilities.framework; path = "../../../../../rn_apps_testing_folder/nativeSocialSignIn/testLibNative/rninit/thisworks/googleios/node_modules/react-native-aws-amplify-google-signin/ios/Pods/GoogleAppUtilities/Frameworks/frameworks/GoogleAppUtilities.framework"; sourceTree = "<group>"; };
+		5D7CDBDB20AA2C7600649178 /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSignIn.framework; path = ../../../../../rn_apps_testing_folder/nativeSocialSignIn/testLibNative/rninit/thisworks/googleios/ios/Pods/GoogleSignIn/Frameworks/GoogleSignIn.framework; sourceTree = "<group>"; };
+		5D7CDBDD20AA2CA600649178 /* GoogleNetworkingUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleNetworkingUtilities.framework; path = "../../../../../rn_apps_testing_folder/nativeSocialSignIn/testLibNative/rninit/finalinstapp/node_modules/react-native-aws-amplify-google-signin/ios/Pods/GoogleNetworkingUtilities/Frameworks/frameworks/GoogleNetworkingUtilities.framework"; sourceTree = "<group>"; };
+		5D7CDBDF20AA2F0000649178 /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSignIn.framework; path = Pods/GoogleSignIn/Frameworks/GoogleSignIn.framework; sourceTree = "<group>"; };
+		5D7CDBE120AA2F4A00649178 /* GoogleSymbolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSymbolUtilities.framework; path = "../../../../../rn_apps_testing_folder/nativeSocialSignIn/testLibNative/rninit/thisworks/testGoogleFinal/node_modules/react-native-aws-amplify-google-signin/ios/Pods/GoogleSymbolUtilities/Frameworks/frameworks/GoogleSymbolUtilities.framework"; sourceTree = "<group>"; };
+		5D7CDBE320AA2F7F00649178 /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = "../../../../../rn_apps_testing_folder/nativeSocialSignIn/testLibNative/rninit/thisworks/testGoogleFinal/node_modules/react-native-aws-amplify-google-signin/ios/Pods/GoogleUtilities/Frameworks/frameworks/GoogleUtilities.framework"; sourceTree = "<group>"; };
+		5DC853DC20AA3D8E005ECF43 /* React */ = {isa = PBXFileReference; lastKnownFileType = folder; name = React; path = "../../../../../rn_apps_testing_folder/nativeSocialSignIn/testLibNative/rninit/thisworks/testGoogleFinal/node_modules/react-native/React"; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* RNAwsAmplifyGoogleSignin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAwsAmplifyGoogleSignin.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* RNAwsAmplifyGoogleSignin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAwsAmplifyGoogleSignin.m; sourceTree = "<group>"; };
+		BAA3195685614E4F96BD3F19 /* libPods-RNAwsAmplifyGoogleSignin.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNAwsAmplifyGoogleSignin.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E35FA3EE7342B21ACF5BD604 /* Pods-RNAwsAmplifyGoogleSignin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNAwsAmplifyGoogleSignin.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNAwsAmplifyGoogleSignin/Pods-RNAwsAmplifyGoogleSignin.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,12 +60,51 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D7CDBCB20AA15BD00649178 /* AddressBook.framework in Frameworks */,
+				5D7CDBD220AA15FB00649178 /* StoreKit.framework in Frameworks */,
+				5D7CDBE020AA2F0000649178 /* GoogleSignIn.framework in Frameworks */,
+				5D7CDBCF20AA15EC00649178 /* SystemConfiguration.framework in Frameworks */,
+				5D7CDBDE20AA2CA600649178 /* GoogleNetworkingUtilities.framework in Frameworks */,
+				5D7CDBDC20AA2C7600649178 /* GoogleSignIn.framework in Frameworks */,
+				5D7CDBDA20AA2BDC00649178 /* GoogleAppUtilities.framework in Frameworks */,
+				5D7CDBD820AA2A5800649178 /* GoogleAuthUtilities.framework in Frameworks */,
+				5D7CDBE220AA2F4A00649178 /* GoogleSymbolUtilities.framework in Frameworks */,
+				5D7CDBE420AA2F8000649178 /* GoogleUtilities.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0C0AEBA95C7601458F05907D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E35FA3EE7342B21ACF5BD604 /* Pods-RNAwsAmplifyGoogleSignin.debug.xcconfig */,
+				4D2B67A5EF7A5052585CA6A3 /* Pods-RNAwsAmplifyGoogleSignin.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		1151356C4B6C64476F4E9446 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5D7CDBE320AA2F7F00649178 /* GoogleUtilities.framework */,
+				5D7CDBE120AA2F4A00649178 /* GoogleSymbolUtilities.framework */,
+				5D7CDBDD20AA2CA600649178 /* GoogleNetworkingUtilities.framework */,
+				5D7CDBDB20AA2C7600649178 /* GoogleSignIn.framework */,
+				5D7CDBD920AA2BDC00649178 /* GoogleAppUtilities.framework */,
+				5D7CDBD720AA2A5800649178 /* GoogleAuthUtilities.framework */,
+				5D7CDBD520AA169E00649178 /* GoogleSignIn.bundle */,
+				5D7CDBD320AA167F00649178 /* GoogleSignIn.framework */,
+				5D7CDBD020AA15F400649178 /* libz.tbd */,
+				5D7CDBCE20AA15EC00649178 /* SystemConfiguration.framework */,
+				5D7CDBCC20AA15C600649178 /* StoreKit.framework */,
+				5D7CDBCA20AA15BD00649178 /* AddressBook.framework */,
+				BAA3195685614E4F96BD3F19 /* libPods-RNAwsAmplifyGoogleSignin.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -50,9 +116,13 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				5DC853DC20AA3D8E005ECF43 /* React */,
+				5D7CDBDF20AA2F0000649178 /* GoogleSignIn.framework */,
 				B3E7B5881CC2AC0600A0062D /* RNAwsAmplifyGoogleSignin.h */,
 				B3E7B5891CC2AC0600A0062D /* RNAwsAmplifyGoogleSignin.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				1151356C4B6C64476F4E9446 /* Frameworks */,
+				0C0AEBA95C7601458F05907D /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -63,9 +133,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RNAwsAmplifyGoogleSignin" */;
 			buildPhases = (
+				CCBCCCA83F1535A76C291B87 /* [CP] Check Pods Manifest.lock */,
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
 				58B511D91A9E6C8500147676 /* CopyFiles */,
+				11456D85EE0AED0F40CD4CE1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -106,6 +178,48 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		11456D85EE0AED0F40CD4CE1 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-RNAwsAmplifyGoogleSignin/Pods-RNAwsAmplifyGoogleSignin-resources.sh",
+				"${PODS_ROOT}/GTMOAuth2/Source/Touch/GTMOAuth2ViewTouch.xib",
+				"${PODS_ROOT}/GoogleAuthUtilities/Frameworks/frameworks/GoogleAuthUtilities.framework/Resources/GTMOAuth2ViewTouch.xib",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GTMOAuth2ViewTouch.nib",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RNAwsAmplifyGoogleSignin/Pods-RNAwsAmplifyGoogleSignin-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CCBCCCA83F1535A76C291B87 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RNAwsAmplifyGoogleSignin-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		58B511D71A9E6C8500147676 /* Sources */ = {
@@ -202,9 +316,14 @@
 		};
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E35FA3EE7342B21ACF5BD604 /* Pods-RNAwsAmplifyGoogleSignin.debug.xcconfig */;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/GoogleSignIn/Frameworks",
+				);
 				HEADER_SEARCH_PATHS = (
-				"$(inherited)",
+					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
@@ -218,7 +337,12 @@
 		};
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4D2B67A5EF7A5052585CA6A3 /* Pods-RNAwsAmplifyGoogleSignin.release.xcconfig */;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/GoogleSignIn/Frameworks",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

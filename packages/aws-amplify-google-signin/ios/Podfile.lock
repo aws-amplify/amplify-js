@@ -1,0 +1,54 @@
+PODS:
+  - GoogleAppUtilities (1.1.2):
+    - GoogleSymbolUtilities (~> 1.1)
+  - GoogleAuthUtilities (2.0.2):
+    - GoogleNetworkingUtilities (~> 1.2)
+    - GoogleSymbolUtilities (~> 1.1)
+  - GoogleNetworkingUtilities (1.2.2):
+    - GoogleSymbolUtilities (~> 1.1)
+  - GoogleSignIn (4.1.2):
+    - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
+    - GoogleToolboxForMac/NSString+URLArguments (~> 2.1)
+    - GTMOAuth2 (~> 1.0)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - GoogleSymbolUtilities (1.1.2)
+  - GoogleToolboxForMac/DebugUtils (2.1.3):
+    - GoogleToolboxForMac/Defines (= 2.1.3)
+  - GoogleToolboxForMac/Defines (2.1.3)
+  - GoogleToolboxForMac/NSDictionary+URLArguments (2.1.3):
+    - GoogleToolboxForMac/DebugUtils (= 2.1.3)
+    - GoogleToolboxForMac/Defines (= 2.1.3)
+    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.3)
+  - GoogleToolboxForMac/NSString+URLArguments (2.1.3)
+  - GoogleUtilities (1.3.2):
+    - GoogleSymbolUtilities (~> 1.1)
+  - GTMOAuth2 (1.1.6):
+    - GTMSessionFetcher (~> 1.1)
+  - GTMSessionFetcher (1.1.14):
+    - GTMSessionFetcher/Full (= 1.1.14)
+  - GTMSessionFetcher/Core (1.1.14)
+  - GTMSessionFetcher/Full (1.1.14):
+    - GTMSessionFetcher/Core (= 1.1.14)
+
+DEPENDENCIES:
+  - GoogleAppUtilities
+  - GoogleAuthUtilities
+  - GoogleNetworkingUtilities
+  - GoogleSignIn
+  - GoogleSymbolUtilities
+  - GoogleUtilities
+
+SPEC CHECKSUMS:
+  GoogleAppUtilities: a8a552aa74f6597f805e45b5a3962766c3134973
+  GoogleAuthUtilities: ccad2e0a9284699973ff57c0dd24c3893657fda4
+  GoogleNetworkingUtilities: 3edd3a8161347494f2da60ea0deddc8a472d94cb
+  GoogleSignIn: d9ef55b10f0aa401a5de2747f59b725e4b9732ac
+  GoogleSymbolUtilities: 631ee17048aa5e9ab133470d768ea997a5ef9b96
+  GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
+  GoogleUtilities: 8bbc733218aad26306f9d4a253823986110e3358
+  GTMOAuth2: c77fe325e4acd453837e72d91e3b5f13116857b2
+  GTMSessionFetcher: 390ea358e5a0d0133153806f744662dad933d06b
+
+PODFILE CHECKSUM: 8e6923c3f0892db0cd04ee2f9a6883af78d0af02
+
+COCOAPODS: 1.4.0

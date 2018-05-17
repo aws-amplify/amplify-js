@@ -108,7 +108,7 @@ class GoogleSignin {
       _removeListeners(...listeners) {
         listeners.forEach(lt => lt.remove());
       }
-    }
+}
     
-    const GoogleSignInSingleton = new GoogleSignin();
-     export default GoogleSignInSingleton;
+const GoogleSignInSingleton = new GoogleSignin();
+export default GoogleSignInSingleton;

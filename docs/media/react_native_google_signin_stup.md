@@ -47,17 +47,7 @@ Android set up :
 2. npm install --save aws-amplify-react-native
 3. react-native link aws-amplify-react-native
 4. Add your app's google-services.json file to android/app folder.
-5. Change your android/build.gradle to have : 
-allprojects {
-    repositories {
-        
-        maven { //add this to avoid issues with firebase
-            url 'https://maven.google.com'
-        }
-       
-    }
-}
-6.
+5. Run react-native run-android from the command prompt. 
 
 
 

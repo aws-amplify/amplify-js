@@ -13,12 +13,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class RNAmplifyGoogleSignInPackage implements ReactPackage {
+public class RNAwsAmplifyGoogleSignInPackage implements ReactPackage {
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new RNAmplifyGoogleSignInModule(reactContext));
+        modules.add(new RNAwsAmplifyGoogleSignInModule(reactContext));
         return modules;
     }
 
