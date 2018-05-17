@@ -265,6 +265,7 @@ $ awsmobile features
  ◯ database
  ◉ analytics
  ◉ hosting
+ ◯ appsync
 ```
 
 Remember to use `awsmobile push` to update your backend with the new configuration. This will refresh your `/src/aws-exports.js` file.
@@ -300,7 +301,7 @@ import { Analytics } from 'aws-amplify';
 
 This will record an **appRender** event every time a user launches your app.
 
-You can easily add custom analytics events to suit your purposes. For more information about Analytics Category, see [AWS Amplify Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide)
+You can easily add custom analytics events to suit your purposes. For more information about Analytics Category, see [AWS Amplify Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide)
 {: .callout .callout--info}
 
 ## Add User Authentication to Your App

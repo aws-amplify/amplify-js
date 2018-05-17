@@ -99,7 +99,15 @@ export class SignInComponent {
 
   onSignIn() {
     this.amplifyService.auth().signIn(this.username, this.password)
-      .then(user => this.amplifyService.setAuthState({ state: 'confirmSignIn', user: user }))
+      .then(user => {
+        if (user.challengeName === 'SMS_MFA' || user.challengeName === 'SOFTWARE_TOKEN_MFA') {
+          this.amplifyService.setAuthState({ state: 'confirmSignIn', user: user });
+        } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
+          this.amplifyService.setAuthState({ state: 'requireNewPassword', user: user });
+        } else {
+          this.amplifyService.setAuthState({ state: 'signedIn', user: user });
+        }
+      })
       .catch(err => this._setError(err));
   }
 
