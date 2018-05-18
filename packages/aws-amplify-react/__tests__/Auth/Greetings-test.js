@@ -64,6 +64,25 @@ describe('Greetings', () => {
                 expect(wrapper).toMatchSnapshot();
             }
         });
+
+        test('render name from attributes', () => {
+            const wrapper = shallow(<Greetings/>);
+            wrapper.setProps({
+                authState: 'signedIn',
+                theme: 'theme'
+            });
+
+            wrapper.setState({
+                authData: {
+                    attributes: {
+                        name: 'name'
+                    }
+                },
+                authState: 'signedIn'
+            })  
+
+            expect(wrapper).toMatchSnapshot();
+        })
     });
 
    

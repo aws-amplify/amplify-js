@@ -63,7 +63,8 @@ export default function withAmazon(Comp) {
         }
 
         componentDidMount() {
-            this.createScript();
+            const { amazon_client_id } = this.props;
+            if (amazon_client_id) this.createScript();
         }
 
         createScript() {

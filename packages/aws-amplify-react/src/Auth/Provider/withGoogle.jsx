@@ -51,7 +51,8 @@ export default function withGoogle(Comp) {
         }
 
         componentDidMount() {
-            this.createScript();
+            const { google_client_id } = this.props;
+            if (google_client_id) this.createScript();
         }
 
         createScript() {

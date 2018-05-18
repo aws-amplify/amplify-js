@@ -23,7 +23,8 @@ import {
     FacebookOAuth,
     GoogleOAuth,
     JS,
-    Parser
+    Parser,
+    AsyncStorage
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
@@ -65,6 +66,7 @@ export default class AuthClass {
 
     private _refreshHandlers = {};
     private _gettingCredPromise = null;
+    private _localStorage = window.localStorage;
 
     /**
      * Initialize Auth with AWS configurations
@@ -75,6 +77,10 @@ export default class AuthClass {
         // refresh token
         this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
         this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
+
+        if (Platform.isReactNative) {
+            this._localStorage = AsyncStorage;
+        }
 
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
@@ -90,7 +96,7 @@ export default class AuthClass {
         this._config = conf;
 
         if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
-        const { userPoolId, userPoolWebClientId, cookieStorage, oauth } = this._config;
+        const { userPoolId, userPoolWebClientId, cookieStorage, oauth, refreshHandlers } = this._config;
         if (userPoolId) {
             const userPoolData: ICognitoUserPoolData = {
                 UserPoolId: userPoolId,
@@ -161,6 +167,12 @@ export default class AuthClass {
                 const curUrl = window.location.href;
                 this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
             });
+        }
+
+        // If the developer has provided an object of refresh handlers,
+        // then we can merge the provided handlers with the current handlers.
+        if (refreshHandlers) {
+            this._refreshHandlers = { ...this._refreshHandlers,  ...refreshHandlers };
         }
 
         dispatchAuthEvent('configured', null);
@@ -573,6 +585,12 @@ export default class AuthClass {
                     user['challengeName'] = challengeName;
                     user['challengeParam'] = challengeParam;
                     resolve(user);
+                },
+                mfaSetup: (challengeName, challengeParam) => {
+                    logger.debug('signIn mfa setup', challengeName);
+                    user['challengeName'] = challengeName;
+                    user['challengeParam'] = challengeParam;
+                    resolve(user);
                 }
             });
         });
@@ -712,11 +730,20 @@ export default class AuthClass {
             return this.user;
         } else {
             logger.debug('get current authenticated userpool user');
+            let user = null;
             try {
-                this.user = await this.currentUserPoolUser();
-                return this.user;
+                user = await this.currentUserPoolUser();
             } catch (e) {
-                return Promise.reject('not authenticated');
+                throw 'not authenticated';
+            }
+            let attributes = {};
+            try {
+                attributes = this.attributesToObject(await this.userAttributes(user));
+            } catch (e) {
+                logger.debug('cannot get user attributes');
+            } finally {
+                this.user = Object.assign({}, user, { attributes });
+                return this.user;
             }
         }
     }
@@ -831,33 +858,36 @@ export default class AuthClass {
         logger.debug('Getting federated credentials');
         const { provider, user } = federatedInfo;
         let token = federatedInfo.token;
+        let identity_id = federatedInfo.identity_id;
         let expires_at = federatedInfo.expires_at;
 
         const that = this;
         logger.debug('checking if federated jwt token expired');
-        if (expires_at < new Date().getTime()
-            && typeof that._refreshHandlers[provider] === 'function') {
-            logger.debug('getting refreshed jwt token from federation provider');
-            return that._refreshHandlers[provider]().then((data) => {
-                logger.debug('refresh federated token sucessfully', data);
-                token = data.token;
-                expires_at = data.expires_at;
-                // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
-                return that._setCredentialsFromFederation({ provider, token, user, expires_at });
-            }).catch(e => {
-                logger.debug('refresh federated token failed', e);
-                this.cleanCachedItems();
-                return Promise.reject('refreshing federation token failed: ' + e);
-            });
-        } else {
-            if (!that._refreshHandlers[provider]) {
-                logger.debug('no refresh handler for provider:', provider);
-                this.cleanCachedItems();
-                return Promise.reject('no refresh handler for provider');
+        if (expires_at < new Date().getTime()) {
+            if (typeof that._refreshHandlers[provider] === 'function') {
+                logger.debug('getting refreshed jwt token from federation provider');
+                return that._refreshHandlers[provider]().then((data) => {
+                    logger.debug('refresh federated token sucessfully', data);
+                    token = data.token;
+                    identity_id = data.identity_id;
+                    expires_at = data.expires_at;
+                    // Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
+                    return that._setCredentialsFromFederation({provider, token, user, identity_id, expires_at});
+                }).catch(e => {
+                    logger.debug('refresh federated token failed', e);
+                    this.cleanCachedItems();
+                    return Promise.reject('refreshing federation token failed: ' + e);
+                });
             } else {
-                logger.debug('token not expired');
-                return this._setCredentialsFromFederation({provider, token, user, expires_at });
+                if (!that._refreshHandlers[provider]) {
+                    logger.debug('no refresh handler for provider:', provider);
+                    this.cleanCachedItems();
+                    return Promise.reject('no refresh handler for provider');
+                }
             }
+        } else {
+            logger.debug('token not expired');
+            return this._setCredentialsFromFederation({provider, token, user, identity_id, expires_at});
         }
     }
 
@@ -1094,14 +1124,15 @@ export default class AuthClass {
      * For federated login
      * @param {String} provider - federation login provider
      * @param {FederatedResponse} response - response should have the access token
+     * the identity id (optional)
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */
     public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
-        const { token, expires_at } = response;
+        const { token, identity_id, expires_at } = response;
         const that = this;
         return new Promise((res, rej) => {
-            that._setCredentialsFromFederation({ provider, token, user, expires_at }).then((cred) => {
+            that._setCredentialsFromFederation({ provider, token, identity_id, user, expires_at }).then((cred) => {
                 dispatchAuthEvent('signIn', that.user);
                 logger.debug('federated sign in credentials', this.credentials);
                 res(cred);
@@ -1172,16 +1203,18 @@ export default class AuthClass {
         }
     }
 
-    private _setCredentialsForGuest() {
+    private async _setCredentialsForGuest() {
         logger.debug('setting credentials for guest');
         const { identityPoolId, region, mandatorySignIn } = this._config;
         if (mandatorySignIn) {
             return Promise.reject('cannot get guest credentials when mandatory signin enabled');
         }
 
+        const identityId = await this._localStorage.getItem('CognitoIdentityId-' + identityPoolId);
         const credentials = new CognitoIdentityCredentials(
             {
-            IdentityPoolId: identityPoolId
+            IdentityPoolId: identityPoolId,
+            IdentityId: identityId? identityId: undefined
         },  {
             region
         });
@@ -1210,8 +1243,8 @@ export default class AuthClass {
     }
 
     
-    private _setCredentialsFromFederation(params) {
-        const { provider, token, user, expires_at } = params;
+    private async _setCredentialsFromFederation(params) {
+        const { provider, token, identity_id, user, expires_at } = params;
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
@@ -1229,24 +1262,29 @@ export default class AuthClass {
         logins[domain] = token;
 
         const { identityPoolId, region } = this._config;
-        const creds = new AWS.CognitoIdentityCredentials(
+        const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
+            IdentityId: identity_id,
             Logins: logins
         },  {
             region
         });
 
-
-        Cache.setItem('federatedInfo', { provider, token, user, expires_at }, { priority: 1 });
-        return this._loadCredentials(creds, 'federated', true, user);
+        try {
+            await Cache.setItem('federatedInfo', { provider, token, identity_id, user, expires_at }, { priority: 1 });
+        } catch (e) {
+            logger.debug('Failed to cache federated info with', e);
+        }
+        return this._loadCredentials(credentials, 'federated', true, user);
     }
 
     private _loadCredentials(credentials, source, authenticated, rawUser) {
         const that = this;
+        const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
             credentials.getPromise().then(
-                () => {
+                async () => {
                     logger.debug('Load credentials successfully', credentials);
                     that.credentials = credentials;
                     that.credentials.authenticated = authenticated;
@@ -1256,7 +1294,21 @@ export default class AuthClass {
                             { id: this.credentials.identityId },
                             rawUser
                         );
-                        Cache.setItem('federatedUser', that.user, { priority: 1 });
+                        try {
+                            await Cache.setItem('federatedUser', that.user, { priority: 1 });
+                        } catch(e) {
+                            logger.debug('Failed to cache federated user info', e);
+                        }
+                    }
+                    if (source === 'guest') {
+                        try {
+                            await this._localStorage.setItem(
+                                'CognitoIdentityId-' + identityPoolId, 
+                                credentials.identityId
+                            );
+                        } catch (e) {
+                            logger.debug('Failed to cache identityId', e);
+                        }
                     }
                     res(that.credentials);
                 },

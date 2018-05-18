@@ -93,7 +93,7 @@ const canonical_request = function(request) {
 
     return [
         request.method || '/',
-        url_info.pathname,
+        encodeURIComponent(url_info.pathname).replace(/%2F/ig, '/'),
         sorted_query,
         canonical_headers(request.headers),
         signed_headers(request.headers),
@@ -286,7 +286,8 @@ const sign = function(request, access_info, service_info = null) {
 const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, expiration?: Number) {
     const now = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
     const today = now.substr(0, 8);
-    const parsedUrl = url.parse(urlToSign, true, true);
+    // Intentionally discarding search
+    const {search, ...parsedUrl} = url.parse(urlToSign, true, true);
     const { host } = parsedUrl;
     const signedHeaders = { host };
 

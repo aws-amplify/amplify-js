@@ -43,7 +43,7 @@ Import the configuration file and load it in your `main.ts`, which is the entry 
 ```js
 import Amplify from 'aws-amplify';
 import awsmobile from './aws-exports';
-Amplify.configure(aws_exports);
+Amplify.configure(awsmobile);
 ```
 
 When working with underlying `aws-js-sdk`, the "node" package should be included in *types* compiler option. Please make sure that you edit `tsconfig.app.json` file in your source file folder, e.g. *src/tsconfig.app.json*.
