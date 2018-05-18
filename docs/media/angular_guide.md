@@ -274,4 +274,5 @@ At this time the newest version of Angular (6.x) does not provide the shim for t
     if (global === undefined) {
       var global = window;
     }
-  </script>```
+  </script>
+  ```
