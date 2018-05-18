@@ -102,7 +102,7 @@ export default class AnalyticsClass {
         const ensureCredentails = await this._getCredentials();
         if (!ensureCredentails) return Promise.resolve(false);
 
-        if (pluggable) {
+        if (pluggable && pluggable.getCategory() === 'Analytics') {
             this._pluggables.push(pluggable);
             // pluggable.configure(this._config);
             const config = pluggable.configure(this._config);
