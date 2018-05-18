@@ -378,7 +378,7 @@ Amplify.configure(aws_config);
 
 #### Manual Configuration
 
-As an alternative to automatic configuration, you can manually enter configuration parameters in your app:
+As an alternative to automatic configuration, you can manually enter configuration parameters in your app. Authentication type options are API_KEY, AWS_IAM, AMAZON_COGNITO_USER_POOLS and OPENID_CONNECT.
 
 ```js
 let myAppConfig = {
@@ -390,7 +390,7 @@ let myAppConfig = {
     // ...
 }
 
-Amplify.configure(aws_config);
+Amplify.configure(myAppConfig);
 ```
 
 ```js
@@ -402,7 +402,7 @@ let myAppConfig = {
     // ...
 }
 
-Amplify.configure(aws_config);
+Amplify.configure(myAppConfig);
 ```
 
 ```js
@@ -414,7 +414,7 @@ let myAppConfig = {
     // ...
 }
 
-Amplify.configure(aws_config);
+Amplify.configure(myAppConfig);
 ```
 
 ```js
@@ -426,7 +426,7 @@ let myAppConfig = {
     // ...
 }
 
-Amplify.configure(aws_config);
+Amplify.configure(myAppConfig);
 ```
 ### Using GraphQL Client
 
