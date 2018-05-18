@@ -18,7 +18,8 @@ import {
     ConsoleLogger as Logger,
     Hub,
     Linking,
-    AppState
+    AppState,
+    Amplify
 } from '../Common';
 import Platform from '../Common/Platform';
 
@@ -33,6 +34,8 @@ if (!_instance) {
 }
 
 const Analytics = _instance;
+Amplify.register(Analytics);
+
 export default Analytics;
 export { AnalyticsProvider };
 export { AnalyticsClass };
