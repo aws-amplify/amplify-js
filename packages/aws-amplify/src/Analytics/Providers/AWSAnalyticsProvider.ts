@@ -229,14 +229,14 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
 
     private async _updateEndpoint(params) : Promise<boolean> {
         // credentials updated
-        const { timestamp, config } = params;
+        const { timestamp, config, credentials } = params;
 
         const initClients = await this._init(config);
         if (!initClients) return false;
 
         this._config = Object.assign(this._config, config);
 
-        const { appId, region, credentials, endpointId } = this._config;
+        const { appId, region, endpointId } = this._config;
         const cacheKey = this.getProviderName() + '_' + appId;
         // const endpointId = endpointId? endpointId : await this._getEndpointId(cacheKey);
 
