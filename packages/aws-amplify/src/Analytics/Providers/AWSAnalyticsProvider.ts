@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger, Pinpoint, MobileAnalytics} from '../../Common';
+import Platform from '../../Common/Platform';
 import Cache from '../../Cache';
 import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
@@ -368,7 +369,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * generate client context with endpoint Id and app Id provided
      */
     private _generateClientContext() {
-        const { endpointId, appId } = this._config;
+        const { endpointId, appId, clientInfo } = this._config;
         const clientContext = this._config.clientContext || {};
 
         const clientCtx = {
@@ -380,16 +381,16 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
                 app_package_name: clientContext.appPackageName,
             },
             env: {
-                platform: clientContext.platform,
-                platform_version: clientContext.platformVersion,
-                model: clientContext.model,
-                make: clientContext.make,
+                platform: clientContext.platform || clientInfo.platform,
+                platform_version: clientContext.platformVersion || clientInfo.version,
+                model: clientContext.model || clientInfo.model,
+                make: clientContext.make || clientInfo.make,
                 locale: clientContext.locale
             },
             services: {
                 mobile_analytics: {
                     app_id: appId,
-                    sdk_name: 'aws-amplify'
+                    sdk_name: Platform.userAgent
                 }
             }
         };
