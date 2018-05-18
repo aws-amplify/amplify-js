@@ -84,7 +84,9 @@ var authEvent = function (payload) {
             authConfigured = true;
             if (authConfigured && analyticsConfigured && !startsessionRecorded) {
                 startsessionRecorded = true;
-                Analytics.startSession();
+                Analytics.updateEndpoint({}).then(function () {
+                    Analytics.startSession();
+                });
             }
             break;
     }

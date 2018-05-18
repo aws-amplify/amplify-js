@@ -34,6 +34,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private pinpointClient;
     private _sessionId;
     private _buffer;
+    private _clientInfo;
 
     constructor(config?) {
         this._buffer = [];
@@ -42,8 +43,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         // events batch
         const that = this;
 
-              const clientInfo:any = ClientDevice.clientInfo();
-        conf['clientInfo'] = conf['client_info']? conf['client_info'] : clientInfo;
+        this._clientInfo = ClientDevice.clientInfo();
 
         // flush event buffer
         setInterval(
@@ -73,7 +73,12 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
     }
 
     private async _sendFromBuffer(params) {
-        const { event } = params;
+        const { event, config } = params;
+
+        const { appId, region } = config;
+        const cacheKey = this.getProviderName() + '_' + appId;
+        config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
+
         let success = true;
         switch (event.name) {
             case '_session_start':
@@ -229,21 +234,15 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
 
     private async _updateEndpoint(params) : Promise<boolean> {
         // credentials updated
-        const { timestamp, config, credentials } = params;
+        const { timestamp, config, credentials, event } = params;
+        const { appId, region, endpointId } = config;
 
-        const initClients = await this._init(config);
-        if (!initClients) return false;
-
-        this._config = Object.assign(this._config, config);
-
-        const { appId, region, endpointId } = this._config;
-        const cacheKey = this.getProviderName() + '_' + appId;
-        // const endpointId = endpointId? endpointId : await this._getEndpointId(cacheKey);
-
-        const request = this._endpointRequest();
+        this._initClients(config, credentials);
+        
+        const request = this._endpointRequest(config, event);
         const update_params = {
             ApplicationId: appId,
-            EndpointId: endpointId || await this._getEndpointId(cacheKey),
+            EndpointId: endpointId,
             EndpointRequest: request
         };
 
@@ -252,11 +251,20 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         return new Promise<boolean>((res, rej) => {
             that.pinpointClient.updateEndpoint(update_params, (err, data) => {
                 if (err) {
-                    logger.debug('Pinpoint ERROR', err);
+                    logger.debug('updateEndpoint failed', err);
                     res(false);
                 } else {
-                    logger.debug('Pinpoint SUCCESS', data);
-                    res(true);
+                    logger.debug('updateEndpoint success', data);
+                    that.pinpointClient.getEndpoint({
+                        ApplicationId: appId, /* required */
+                        EndpointId: endpointId /* required */
+                    }, (err, data) => {
+                        if (err) {
+                            logger.debug('get endpint failed');
+                        }
+                        logger.debug('get back endpoint info', data);
+                        res(true);
+                    });
                 }
             });
         });
@@ -318,11 +326,6 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
             return;
         }
 
-        // const { appId } = config;
-        // const cacheKey = this.getProviderName() + '_' + appId;
-        // const endpointId = config.endpointId ? config.endpointId :
-        //     (this._config.endpointId ? this._config.endpointId : await this._getEndpointId(cacheKey));
-
         this._config.credentials = credentials;
         const { region } = config;
         logger.debug('init clients with credentials', credentials);
@@ -345,29 +348,26 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * EndPoint request
      * @return {Object} - The request of updating endpoint
      */
-    private _endpointRequest() {
-        const { 
-            clientInfo, 
-            credentials, 
+    private _endpointRequest(config, event) {
+        const { credentials } = config;
+        const clientInfo = this._clientInfo;
+        const {
             Address, 
             RequestId, 
             Attributes,
             UserAttributes,
-            endpointId, 
-            UserId
-        } = this._config;
+            UserId,
+            OptOut
+        } = event;
 
-        const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
 
-        logger.debug('demographic user id: ', user_id);
-        const OptOut = this._config.OptOut? this._config.OptOut: undefined;
         const ret = {
             Address,
             Attributes,
             ChannelType,
             Demographic: {
-                AppVersion: this._config.appVersion || clientInfo.appVersion,
+                AppVersion: event.appVersion || clientInfo.appVersion,
                 Make: clientInfo.make,
                 Model: clientInfo.model,
                 ModelVersion: clientInfo.version,

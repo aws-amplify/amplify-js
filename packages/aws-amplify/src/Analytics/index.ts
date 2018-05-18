@@ -103,7 +103,9 @@ const authEvent = (payload) => {
             authConfigured = true;
             if (authConfigured && analyticsConfigured && !startsessionRecorded) {
                 startsessionRecorded = true;
-                Analytics.startSession();
+                Analytics.updateEndpoint({}).then(() => {
+                    Analytics.startSession();
+                });
             }
             break;
     }

@@ -1,4 +1,4 @@
-import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
+import { AnalyticsProvider, EventMetrics } from './types';
 /**
 * Provide mobile analytics client functions
 */
@@ -21,7 +21,7 @@ export default class AnalyticsClass {
      * add plugin into Analytics category
      * @param {Object} pluggable - an instance of the plugin
      */
-    addPluggable(pluggable: AnalyticsProvider): Promise<boolean | object>;
+    addPluggable(pluggable: AnalyticsProvider): Promise<object>;
     /**
      * stop sending events
      */
@@ -31,20 +31,20 @@ export default class AnalyticsClass {
      */
     enable(): void;
     /**
-     * Record Session start
-     * @return - A promise which resolves if buffer doesn't overflow
-     */
-    startSession(provider?: string): Promise<boolean | void>;
-    /**
     * Receive a capsule from Hub
     * @param {any} capsuak - The message from hub
     */
     onHubCapsule(capsule: any): void;
     /**
+     * Record Session start
+     * @return - A promise which resolves if buffer doesn't overflow
+     */
+    startSession(provider?: string): Promise<void>;
+    /**
      * Record Session stop
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    stopSession(provider?: string): Promise<boolean | void>;
+    stopSession(provider?: string): Promise<void>;
     /**
      * Record one analytic event and send it to Pinpoint
      * @param {String} name - The name of the event
@@ -52,12 +52,7 @@ export default class AnalyticsClass {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    record(event: string | object, attributes?: EventAttributes, metrics?: EventMetrics): Promise<boolean | void>;
-    updateEndpoint(config: any): Promise<boolean | void>;
+    record(event: string | object, provider?: any, metrics?: EventMetrics): Promise<void>;
+    updateEndpoint(attrs: any, provider?: any): Promise<void>;
     private _sendEvent(params);
-    /**
-     * @private
-     * check if current credentials exists
-     */
-    private _getCredentials();
 }

@@ -12,6 +12,7 @@ export default class AuthClass {
     private user;
     private _refreshHandlers;
     private _gettingCredPromise;
+    private _localStorage;
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth

@@ -3,5 +3,4 @@ export interface AnalyticsProvider {
     record(params: object): Promise<boolean>;
     getCategory(): string;
     getProviderName(): string;
-    updateEndpoint(params: object): Promise<boolean>;
 }

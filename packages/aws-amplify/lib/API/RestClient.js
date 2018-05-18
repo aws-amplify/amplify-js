@@ -149,7 +149,7 @@ var RestClient = /** @class */ (function () {
                         return acc;
                         // tslint:disable-next-line:align
                     }, {});
-                    return [2 /*return*/, this._request(params)];
+                    return [2 /*return*/, this._request(params, isAllResponse)];
                 }
                 return [2 /*return*/, Auth_1.default.currentCredentials()
                         .then(function (credentials) { return _this._signed(__assign({}, params, extraParams), credentials, isAllResponse); })];
