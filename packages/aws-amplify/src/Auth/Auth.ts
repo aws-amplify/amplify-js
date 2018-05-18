@@ -370,10 +370,7 @@ export default class AuthClass {
      * @return - A promise resolve if success
      */
     public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
-        let smsMfaSettings = {
-            PreferredMfa : false,
-            Enabled : false
-        };
+        let smsMfaSettings = null;
         let totpMfaSettings = {
             PreferredMfa : false,
             Enabled : false
@@ -742,7 +739,7 @@ export default class AuthClass {
             } catch (e) {
                 logger.debug('cannot get user attributes');
             } finally {
-                this.user = Object.assign({}, user, { attributes });
+                this.user = Object.assign(user, { attributes });
                 return this.user;
             }
         }
