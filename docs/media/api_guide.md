@@ -393,7 +393,41 @@ let myAppConfig = {
 Amplify.configure(aws_config);
 ```
 
+```js
+let myAppConfig = {
+    // ...
+    'aws_appsync_graphqlEndpoint': 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
+    'aws_appsync_region': 'us-east-1',
+    'aws_appsync_authenticationType': 'AWS_IAM',
+    // ...
+}
 
+Amplify.configure(aws_config);
+```
+
+```js
+let myAppConfig = {
+    // ...
+    'aws_appsync_graphqlEndpoint': 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
+    'aws_appsync_region': 'us-east-1',
+    'aws_appsync_authenticationType': 'AMAZON_COGNITO_USER_POOLS', // You have configured Auth with Amazon Cognito User Pool ID and Web Client Id
+    // ...
+}
+
+Amplify.configure(aws_config);
+```
+
+```js
+let myAppConfig = {
+    // ...
+    'aws_appsync_graphqlEndpoint': 'https://xxxxxx.appsync-api.us-east-1.amazonaws.com/graphql',
+    'aws_appsync_region': 'us-east-1',
+    'aws_appsync_authenticationType': 'OPENID_CONNECT', // Before calling API.graphql(...) is required to do Auth.federatedSignIn(...) check authentication guide for details.
+    // ...
+}
+
+Amplify.configure(aws_config);
+```
 ### Using GraphQL Client
 
 AWS Amplify API category provides a GraphQL client for working with queries, mutations, and subscriptions.
