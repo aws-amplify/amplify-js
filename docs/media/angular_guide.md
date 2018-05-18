@@ -270,9 +270,10 @@ At this time the newest version of Angular (6.x) does not provide the shim for t
 
 1.  Add the following to your polyfills.ts: ```(window as any).global = window;```.
 2.  Add the following script to your index.html ```<head>``` tag:
-``` <script>
-    if (global === undefined) {
-      var global = window;
-    }
-  </script>
+``` 
+    <script>
+        if (global === undefined) {
+            var global = window;
+        }
+    </script>
   ```
