@@ -121,6 +121,9 @@ class ServiceWorkerClass {
                         }).then((subscription) => {
                             this._subscription = subscription;
                             this._logger.debug(`User subscribed: ${JSON.stringify(subscription)}`);
+                            Amplify.Analytics.record('ServiceWorker', {
+                                'subscription': subscription
+                            });
                             resolve(subscription);
                         }).catch((error) => {
                             this._logger.error(error);
