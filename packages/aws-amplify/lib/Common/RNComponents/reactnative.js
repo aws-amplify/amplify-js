@@ -15,4 +15,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_native_1 = require("react-native");
 exports.Linking = react_native_1.Linking;
 exports.AppState = react_native_1.AppState;
+exports.AsyncStorage = react_native_1.AsyncStorage;
 //# sourceMappingURL=reactnative.js.map

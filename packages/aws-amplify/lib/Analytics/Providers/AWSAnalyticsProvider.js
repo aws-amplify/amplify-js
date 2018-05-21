@@ -49,6 +49,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 var Common_1 = require("../../Common");
 var Cache_1 = require("../../Cache");
+var Auth_1 = require("../../Auth");
 var uuid_1 = require("uuid");
 var logger = new Common_1.ConsoleLogger('AWSAnalyticsProvider');
 var NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
@@ -57,6 +58,7 @@ var BUFFER_SIZE = 1000;
 var MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
 var interval = 5 * 1000; // 5s
 var RESEND_LIMIT = 5;
+// params: { event: {name: , .... }, timeStamp, config, resendLimits }
 var AWSAnalyticsProvider = /** @class */ (function () {
     function AWSAnalyticsProvider(config) {
         var _this = this;
@@ -64,6 +66,7 @@ var AWSAnalyticsProvider = /** @class */ (function () {
         this._config = config ? config : {};
         // events batch
         var that = this;
+        this._clientInfo = Common_1.ClientDevice.clientInfo();
         // flush event buffer
         setInterval(function () {
             var size = _this._buffer.length < MAX_SIZE_PER_FLUSH ? _this._buffer.length : MAX_SIZE_PER_FLUSH;
@@ -90,31 +93,48 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     };
     AWSAnalyticsProvider.prototype._sendFromBuffer = function (params) {
         return __awaiter(this, void 0, void 0, function () {
-            var event, success, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var event, config, appId, region, cacheKey, _a, _b, success, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
-                        event = params.event;
-                        success = true;
-                        _a = event;
-                        switch (_a) {
-                            case '_session_start': return [3 /*break*/, 1];
-                            case '_session_stop': return [3 /*break*/, 3];
-                        }
-                        return [3 /*break*/, 5];
-                    case 1: return [4 /*yield*/, this._startSession(params)];
+                        event = params.event, config = params.config;
+                        appId = config.appId, region = config.region;
+                        cacheKey = this.getProviderName() + '_' + appId;
+                        _a = config;
+                        if (!config.endpointId) return [3 /*break*/, 1];
+                        _b = config.endpointId;
+                        return [3 /*break*/, 3];
+                    case 1: return [4 /*yield*/, this._getEndpointId(cacheKey)];
                     case 2:
-                        success = _b.sent();
-                        _b.label = 3;
-                    case 3: return [4 /*yield*/, this._stopSession(params)];
-                    case 4:
-                        success = _b.sent();
-                        _b.label = 5;
-                    case 5: return [4 /*yield*/, this._recordCustomEvent(params)];
-                    case 6:
-                        success = _b.sent();
-                        _b.label = 7;
+                        _b = _d.sent();
+                        _d.label = 3;
+                    case 3:
+                        _a.endpointId = _b;
+                        success = true;
+                        _c = event.name;
+                        switch (_c) {
+                            case '_session_start': return [3 /*break*/, 4];
+                            case '_session_stop': return [3 /*break*/, 6];
+                            case '_update_endpoint': return [3 /*break*/, 8];
+                        }
+                        return [3 /*break*/, 10];
+                    case 4: return [4 /*yield*/, this._startSession(params)];
+                    case 5:
+                        success = _d.sent();
+                        return [3 /*break*/, 12];
+                    case 6: return [4 /*yield*/, this._stopSession(params)];
                     case 7:
+                        success = _d.sent();
+                        return [3 /*break*/, 12];
+                    case 8: return [4 /*yield*/, this._updateEndpoint(params)];
+                    case 9:
+                        success = _d.sent();
+                        return [3 /*break*/, 12];
+                    case 10: return [4 /*yield*/, this._recordCustomEvent(params)];
+                    case 11:
+                        success = _d.sent();
+                        return [3 /*break*/, 12];
+                    case 12:
                         if (!success) {
                             params.resendLimits = typeof params.resendLimits === 'number' ?
                                 params.resendLimits : RESEND_LIMIT;
@@ -159,10 +179,21 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @param {Object} params - the params of an event
      */
     AWSAnalyticsProvider.prototype.record = function (params) {
-        return this._putToBuffer(params);
-    };
-    AWSAnalyticsProvider.prototype.updateEndpoint = function (params) {
-        return this._updateEndpoint(params);
+        return __awaiter(this, void 0, void 0, function () {
+            var credentials, timestamp;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._getCredentials()];
+                    case 1:
+                        credentials = _a.sent();
+                        if (!credentials)
+                            return [2 /*return*/, Promise.resolve(false)];
+                        timestamp = new Date().getTime();
+                        Object.assign(params, { timestamp: timestamp, config: this._config, credentials: credentials });
+                        return [2 /*return*/, this._putToBuffer(params)];
+                }
+            });
+        });
     };
     /**
      * @private
@@ -171,46 +202,39 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     AWSAnalyticsProvider.prototype._startSession = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var timestamp, config, initClients, sessionId, clientContext, eventParams;
+            var timestamp, config, credentials, sessionId, clientContext, eventParams;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        timestamp = params.timestamp, config = params.config;
-                        return [4 /*yield*/, this._init(config)];
-                    case 1:
-                        initClients = _a.sent();
-                        if (!initClients)
-                            return [2 /*return*/, false];
-                        logger.debug('record session start');
-                        this._sessionId = uuid_1.v1();
-                        sessionId = this._sessionId;
-                        clientContext = this._generateClientContext();
-                        eventParams = {
-                            clientContext: clientContext,
-                            events: [
-                                {
-                                    eventType: '_session.start',
-                                    timestamp: new Date(timestamp).toISOString(),
-                                    'session': {
-                                        'id': sessionId,
-                                        'startTimestamp': new Date(timestamp).toISOString()
-                                    }
-                                }
-                            ]
-                        };
-                        return [2 /*return*/, new Promise(function (res, rej) {
-                                _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
-                                    if (err) {
-                                        logger.debug('record event failed. ', err);
-                                        res(false);
-                                    }
-                                    else {
-                                        logger.debug('record event success. ', data);
-                                        res(true);
-                                    }
-                                });
-                            })];
-                }
+                timestamp = params.timestamp, config = params.config, credentials = params.credentials;
+                this._initClients(config, credentials);
+                logger.debug('record session start');
+                this._sessionId = uuid_1.v1();
+                sessionId = this._sessionId;
+                clientContext = this._generateClientContext(config);
+                eventParams = {
+                    clientContext: clientContext,
+                    events: [
+                        {
+                            eventType: '_session.start',
+                            timestamp: new Date(timestamp).toISOString(),
+                            'session': {
+                                'id': sessionId,
+                                'startTimestamp': new Date(timestamp).toISOString()
+                            }
+                        }
+                    ]
+                };
+                return [2 /*return*/, new Promise(function (res, rej) {
+                        _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
+                            if (err) {
+                                logger.debug('record event failed. ', err);
+                                res(false);
+                            }
+                            else {
+                                logger.debug('record event success. ', data);
+                                res(true);
+                            }
+                        });
+                    })];
             });
         });
     };
@@ -221,92 +245,77 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     AWSAnalyticsProvider.prototype._stopSession = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var timestamp, config, initClients, sessionId, clientContext, eventParams;
+            var timestamp, config, credentials, sessionId, clientContext, eventParams;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        timestamp = params.timestamp, config = params.config;
-                        return [4 /*yield*/, this._init(config)];
-                    case 1:
-                        initClients = _a.sent();
-                        if (!initClients)
-                            return [2 /*return*/, false];
-                        logger.debug('record session stop');
-                        sessionId = this._sessionId ? this._sessionId : uuid_1.v1();
-                        clientContext = this._generateClientContext();
-                        eventParams = {
-                            clientContext: clientContext,
-                            events: [
-                                {
-                                    eventType: '_session.stop',
-                                    timestamp: new Date(timestamp).toISOString(),
-                                    'session': {
-                                        'id': sessionId,
-                                        'startTimestamp': new Date(timestamp).toISOString()
-                                    }
-                                }
-                            ]
-                        };
-                        return [2 /*return*/, new Promise(function (res, rej) {
-                                _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
-                                    if (err) {
-                                        logger.debug('record event failed. ', err);
-                                        res(false);
-                                    }
-                                    else {
-                                        logger.debug('record event success. ', data);
-                                        res(true);
-                                    }
-                                });
-                            })];
-                }
+                timestamp = params.timestamp, config = params.config, credentials = params.credentials;
+                this._initClients(config, credentials);
+                logger.debug('record session stop');
+                sessionId = this._sessionId ? this._sessionId : uuid_1.v1();
+                clientContext = this._generateClientContext(config);
+                eventParams = {
+                    clientContext: clientContext,
+                    events: [
+                        {
+                            eventType: '_session.stop',
+                            timestamp: new Date(timestamp).toISOString(),
+                            'session': {
+                                'id': sessionId,
+                                'startTimestamp': new Date(timestamp).toISOString()
+                            }
+                        }
+                    ]
+                };
+                return [2 /*return*/, new Promise(function (res, rej) {
+                        _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
+                            if (err) {
+                                logger.debug('record event failed. ', err);
+                                res(false);
+                            }
+                            else {
+                                logger.debug('record event success. ', data);
+                                res(true);
+                            }
+                        });
+                    })];
             });
         });
     };
     AWSAnalyticsProvider.prototype._updateEndpoint = function (params) {
         return __awaiter(this, void 0, void 0, function () {
-            var timestamp, config, initClients, _a, appId, region, credentials, endpointId, cacheKey, request, update_params, _b, _c, that;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
-                    case 0:
-                        timestamp = params.timestamp, config = params.config;
-                        return [4 /*yield*/, this._init(config)];
-                    case 1:
-                        initClients = _d.sent();
-                        if (!initClients)
-                            return [2 /*return*/, false];
-                        this._config = Object.assign(this._config, config);
-                        _a = this._config, appId = _a.appId, region = _a.region, credentials = _a.credentials, endpointId = _a.endpointId;
-                        cacheKey = this.getProviderName() + '_' + appId;
-                        request = this._endpointRequest();
-                        _b = {
-                            ApplicationId: appId
-                        };
-                        _c = endpointId;
-                        if (_c) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this._getEndpointId(cacheKey)];
-                    case 2:
-                        _c = (_d.sent());
-                        _d.label = 3;
-                    case 3:
-                        update_params = (_b.EndpointId = _c,
-                            _b.EndpointRequest = request,
-                            _b);
-                        that = this;
-                        logger.debug('updateEndpoint with params: ', update_params);
-                        return [2 /*return*/, new Promise(function (res, rej) {
-                                that.pinpointClient.updateEndpoint(update_params, function (err, data) {
+            var timestamp, config, credentials, event, appId, region, endpointId, request, update_params, that;
+            return __generator(this, function (_a) {
+                timestamp = params.timestamp, config = params.config, credentials = params.credentials, event = params.event;
+                appId = config.appId, region = config.region, endpointId = config.endpointId;
+                this._initClients(config, credentials);
+                request = this._endpointRequest(config, event);
+                update_params = {
+                    ApplicationId: appId,
+                    EndpointId: endpointId,
+                    EndpointRequest: request
+                };
+                that = this;
+                logger.debug('updateEndpoint with params: ', update_params);
+                return [2 /*return*/, new Promise(function (res, rej) {
+                        that.pinpointClient.updateEndpoint(update_params, function (err, data) {
+                            if (err) {
+                                logger.debug('updateEndpoint failed', err);
+                                res(false);
+                            }
+                            else {
+                                logger.debug('updateEndpoint success', data);
+                                that.pinpointClient.getEndpoint({
+                                    ApplicationId: appId,
+                                    EndpointId: endpointId /* required */
+                                }, function (err, data) {
                                     if (err) {
-                                        logger.debug('Pinpoint ERROR', err);
-                                        res(false);
+                                        logger.debug('get endpint failed');
                                     }
-                                    else {
-                                        logger.debug('Pinpoint SUCCESS', data);
-                                        res(true);
-                                    }
+                                    logger.debug('get back endpoint info', data);
+                                    res(true);
                                 });
-                            })];
-                }
+                            }
+                        });
+                    })];
             });
         });
     };
@@ -317,42 +326,36 @@ var AWSAnalyticsProvider = /** @class */ (function () {
     AWSAnalyticsProvider.prototype._recordCustomEvent = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var event, attributes, metrics, timestamp, config, initClients, clientContext, eventParams;
+            var event, timestamp, config, credentials, name, attributes, metrics, clientContext, eventParams;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        event = params.event, attributes = params.attributes, metrics = params.metrics, timestamp = params.timestamp, config = params.config;
-                        return [4 /*yield*/, this._init(config)];
-                    case 1:
-                        initClients = _a.sent();
-                        if (!initClients)
-                            return [2 /*return*/, false];
-                        clientContext = this._generateClientContext();
-                        eventParams = {
-                            clientContext: clientContext,
-                            events: [
-                                {
-                                    eventType: event,
-                                    timestamp: new Date(timestamp).toISOString(),
-                                    attributes: attributes,
-                                    metrics: metrics
-                                }
-                            ]
-                        };
-                        logger.debug('record event with params', eventParams);
-                        return [2 /*return*/, new Promise(function (res, rej) {
-                                _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
-                                    if (err) {
-                                        logger.debug('record event failed. ', err);
-                                        res(false);
-                                    }
-                                    else {
-                                        logger.debug('record event success. ', data);
-                                        res(true);
-                                    }
-                                });
-                            })];
-                }
+                event = params.event, timestamp = params.timestamp, config = params.config, credentials = params.credentials;
+                name = event.name, attributes = event.attributes, metrics = event.metrics;
+                this._initClients(config, credentials);
+                clientContext = this._generateClientContext(config);
+                eventParams = {
+                    clientContext: clientContext,
+                    events: [
+                        {
+                            eventType: name,
+                            timestamp: new Date(timestamp).toISOString(),
+                            attributes: attributes,
+                            metrics: metrics
+                        }
+                    ]
+                };
+                logger.debug('record event with params', eventParams);
+                return [2 /*return*/, new Promise(function (res, rej) {
+                        _this.mobileAnalytics.putEvents(eventParams, function (err, data) {
+                            if (err) {
+                                logger.debug('record event failed. ', err);
+                                res(false);
+                            }
+                            else {
+                                logger.debug('record event success. ', data);
+                                res(true);
+                            }
+                        });
+                    })];
             });
         });
     };
@@ -361,53 +364,25 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @param config
      * Init the clients
      */
-    AWSAnalyticsProvider.prototype._init = function (config) {
+    AWSAnalyticsProvider.prototype._initClients = function (config, credentials) {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            var appId, cacheKey, endpointId, _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0:
-                        logger.debug('init clients');
-                        if (!config.credentials) {
-                            logger.debug('no credentials provided by config, abort this init');
-                            return [2 /*return*/, false];
-                        }
-                        if (this.mobileAnalytics
-                            && this._config.credentials
-                            && this._config.credentials.sessionToken === config.credentials.sessionToken
-                            && this._config.credentials.identityId === config.credentials.identityId) {
-                            logger.debug('no change for analytics config, directly return from init');
-                            return [2 /*return*/, true];
-                        }
-                        appId = config.appId;
-                        cacheKey = this.getProviderName() + '_' + appId;
-                        if (!config.endpointId) return [3 /*break*/, 1];
-                        _a = config.endpointId;
-                        return [3 /*break*/, 5];
-                    case 1:
-                        if (!this._config.endpointId) return [3 /*break*/, 2];
-                        _b = this._config.endpointId;
-                        return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, this._getEndpointId(cacheKey)];
-                    case 3:
-                        _b = _c.sent();
-                        _c.label = 4;
-                    case 4:
-                        _a = (_b);
-                        _c.label = 5;
-                    case 5:
-                        endpointId = _a;
-                        this._config = Object.assign(this._config, { endpointId: endpointId }, config);
-                        this._initMobileAnalytics();
-                        return [2 /*return*/, new Promise(function (res, rej) {
-                                _this._initPinpoint().then(function (data) {
-                                    res(true);
-                                }).catch(function (err) {
-                                    res(false);
-                                });
-                            })];
+            var region;
+            return __generator(this, function (_a) {
+                logger.debug('init clients');
+                if (this.mobileAnalytics
+                    && this.pinpointClient
+                    && this._config.credentials
+                    && this._config.credentials.sessionToken === credentials.sessionToken
+                    && this._config.credentials.identityId === credentials.identityId) {
+                    logger.debug('no change for aws credentials, directly return from init');
+                    return [2 /*return*/];
                 }
+                this._config.credentials = credentials;
+                region = config.region;
+                logger.debug('init clients with credentials', credentials);
+                this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });
+                this.pinpointClient = new Common_1.Pinpoint({ region: region, credentials: credentials });
+                return [2 /*return*/];
             });
         });
     };
@@ -430,61 +405,20 @@ var AWSAnalyticsProvider = /** @class */ (function () {
         });
     };
     /**
-     * @private
-     * Init the MobileAnalytics client
-     */
-    AWSAnalyticsProvider.prototype._initMobileAnalytics = function () {
-        var _a = this._config, credentials = _a.credentials, region = _a.region;
-        this.mobileAnalytics = new Common_1.MobileAnalytics({ credentials: credentials, region: region });
-    };
-    /**
-     * @private
-     * Init Pinpoint with configuration and update pinpoint client endpoint
-     * @return - A promise resolves if endpoint updated successfully
-     */
-    AWSAnalyticsProvider.prototype._initPinpoint = function () {
-        var _this = this;
-        var _a = this._config, region = _a.region, appId = _a.appId, endpointId = _a.endpointId, credentials = _a.credentials;
-        this.pinpointClient = new Common_1.Pinpoint({
-            region: region,
-            credentials: credentials,
-        });
-        var request = this._endpointRequest();
-        var update_params = {
-            ApplicationId: appId,
-            EndpointId: endpointId,
-            EndpointRequest: request
-        };
-        logger.debug('updateEndpoint with params: ', update_params);
-        return new Promise(function (res, rej) {
-            _this.pinpointClient.updateEndpoint(update_params, function (err, data) {
-                if (err) {
-                    logger.debug('Pinpoint ERROR', err);
-                    rej(err);
-                }
-                else {
-                    logger.debug('Pinpoint SUCCESS', data);
-                    res(data);
-                }
-            });
-        });
-    };
-    /**
      * EndPoint request
      * @return {Object} - The request of updating endpoint
      */
-    AWSAnalyticsProvider.prototype._endpointRequest = function () {
-        var _a = this._config, clientInfo = _a.clientInfo, credentials = _a.credentials, Address = _a.Address, RequestId = _a.RequestId, Attributes = _a.Attributes, UserAttributes = _a.UserAttributes, endpointId = _a.endpointId, UserId = _a.UserId;
-        var user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
+    AWSAnalyticsProvider.prototype._endpointRequest = function (config, event) {
+        var credentials = config.credentials;
+        var clientInfo = this._clientInfo;
+        var Address = event.Address, RequestId = event.RequestId, Attributes = event.Attributes, UserAttributes = event.UserAttributes, UserId = event.UserId, OptOut = event.OptOut;
         var ChannelType = Address ? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
-        logger.debug('demographic user id: ', user_id);
-        var OptOut = this._config.OptOut ? this._config.OptOut : undefined;
         var ret = {
             Address: Address,
             Attributes: Attributes,
             ChannelType: ChannelType,
             Demographic: {
-                AppVersion: this._config.appVersion || clientInfo.appVersion,
+                AppVersion: event.appVersion || clientInfo.appVersion,
                 Make: clientInfo.make,
                 Model: clientInfo.model,
                 ModelVersion: clientInfo.version,
@@ -504,8 +438,8 @@ var AWSAnalyticsProvider = /** @class */ (function () {
      * @private
      * generate client context with endpoint Id and app Id provided
      */
-    AWSAnalyticsProvider.prototype._generateClientContext = function () {
-        var _a = this._config, endpointId = _a.endpointId, appId = _a.appId;
+    AWSAnalyticsProvider.prototype._generateClientContext = function (config) {
+        var endpointId = config.endpointId, appId = config.appId;
         var clientContext = {
             client: {
                 client_id: endpointId
@@ -517,6 +451,24 @@ var AWSAnalyticsProvider = /** @class */ (function () {
             }
         };
         return JSON.stringify(clientContext);
+    };
+    /**
+     * @private
+     * check if current credentials exists
+     */
+    AWSAnalyticsProvider.prototype._getCredentials = function () {
+        var that = this;
+        return Auth_1.default.currentCredentials()
+            .then(function (credentials) {
+            if (!credentials)
+                return null;
+            logger.debug('set credentials for analytics', that._config.credentials);
+            return Auth_1.default.essentialCredentials(credentials);
+        })
+            .catch(function (err) {
+            logger.debug('ensure credentials error', err);
+            return null;
+        });
     };
     return AWSAnalyticsProvider;
 }());

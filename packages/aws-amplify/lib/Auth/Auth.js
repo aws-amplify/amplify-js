@@ -81,10 +81,14 @@ var AuthClass = /** @class */ (function () {
         this.user = null;
         this._refreshHandlers = {};
         this._gettingCredPromise = null;
+        this._localStorage = window.localStorage;
         this.configure(config);
         // refresh token
         this._refreshHandlers['google'] = Common_1.GoogleOAuth.refreshGoogleToken;
         this._refreshHandlers['facebook'] = Common_1.FacebookOAuth.refreshFacebookToken;
+        if (Platform_1.default.isReactNative) {
+            this._localStorage = Common_1.AsyncStorage;
+        }
         if (Common_1.AWS.config) {
             Common_1.AWS.config.update({ customUserAgent: Common_1.Constants.userAgent });
         }
@@ -1385,18 +1389,30 @@ var AuthClass = /** @class */ (function () {
         }
     };
     AuthClass.prototype._setCredentialsForGuest = function () {
-        logger.debug('setting credentials for guest');
-        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
-        if (mandatorySignIn) {
-            return Promise.reject('cannot get guest credentials when mandatory signin enabled');
-        }
-        var credentials = new CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId
-        }, {
-            region: region
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, identityPoolId, region, mandatorySignIn, identityId, credentials, that;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        logger.debug('setting credentials for guest');
+                        _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region, mandatorySignIn = _a.mandatorySignIn;
+                        if (mandatorySignIn) {
+                            return [2 /*return*/, Promise.reject('cannot get guest credentials when mandatory signin enabled')];
+                        }
+                        return [4 /*yield*/, this._localStorage.getItem('CognitoIdentityId-' + identityPoolId)];
+                    case 1:
+                        identityId = _b.sent();
+                        credentials = new CognitoIdentityCredentials({
+                            IdentityPoolId: identityPoolId,
+                            IdentityId: identityId ? identityId : undefined
+                        }, {
+                            region: region
+                        });
+                        that = this;
+                        return [2 /*return*/, this._loadCredentials(credentials, 'guest', false, null)];
+                }
+            });
         });
-        var that = this;
-        return this._loadCredentials(credentials, 'guest', false, null);
     };
     AuthClass.prototype._setCredentialsFromSession = function (session) {
         logger.debug('set credentials from session');
@@ -1415,46 +1431,94 @@ var AuthClass = /** @class */ (function () {
         return this._loadCredentials(credentials, 'userPool', true, null);
     };
     AuthClass.prototype._setCredentialsFromFederation = function (params) {
-        var provider = params.provider, token = params.token, identity_id = params.identity_id, user = params.user, expires_at = params.expires_at;
-        var domains = {
-            'google': 'accounts.google.com',
-            'facebook': 'graph.facebook.com',
-            'amazon': 'www.amazon.com',
-            'developer': 'cognito-identity.amazonaws.com'
-        };
-        // Use custom provider url instead of the predefined ones
-        var domain = domains[provider] || provider;
-        if (!domain) {
-            return Promise.reject('You must specify a federated provider');
-        }
-        var logins = {};
-        logins[domain] = token;
-        var _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
-        var credentials = new Common_1.AWS.CognitoIdentityCredentials({
-            IdentityPoolId: identityPoolId,
-            IdentityId: identity_id,
-            Logins: logins
-        }, {
-            region: region
+        return __awaiter(this, void 0, void 0, function () {
+            var provider, token, identity_id, user, expires_at, domains, domain, logins, _a, identityPoolId, region, credentials, e_11;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        provider = params.provider, token = params.token, identity_id = params.identity_id, user = params.user, expires_at = params.expires_at;
+                        domains = {
+                            'google': 'accounts.google.com',
+                            'facebook': 'graph.facebook.com',
+                            'amazon': 'www.amazon.com',
+                            'developer': 'cognito-identity.amazonaws.com'
+                        };
+                        domain = domains[provider] || provider;
+                        if (!domain) {
+                            return [2 /*return*/, Promise.reject('You must specify a federated provider')];
+                        }
+                        logins = {};
+                        logins[domain] = token;
+                        _a = this._config, identityPoolId = _a.identityPoolId, region = _a.region;
+                        credentials = new Common_1.AWS.CognitoIdentityCredentials({
+                            IdentityPoolId: identityPoolId,
+                            IdentityId: identity_id,
+                            Logins: logins
+                        }, {
+                            region: region
+                        });
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, identity_id: identity_id, user: user, expires_at: expires_at }, { priority: 1 })];
+                    case 2:
+                        _b.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        e_11 = _b.sent();
+                        logger.debug('Failed to cache federated info with', e_11);
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/, this._loadCredentials(credentials, 'federated', true, user)];
+                }
+            });
         });
-        Cache_1.default.setItem('federatedInfo', { provider: provider, token: token, identity_id: identity_id, user: user, expires_at: expires_at }, { priority: 1 });
-        return this._loadCredentials(credentials, 'federated', true, user);
     };
     AuthClass.prototype._loadCredentials = function (credentials, source, authenticated, rawUser) {
         var _this = this;
         var that = this;
+        var identityPoolId = this._config.identityPoolId;
         return new Promise(function (res, rej) {
-            credentials.getPromise().then(function () {
-                logger.debug('Load credentials successfully', credentials);
-                that.credentials = credentials;
-                that.credentials.authenticated = authenticated;
-                that.credentials_source = source;
-                if (source === 'federated') {
-                    that.user = Object.assign({ id: _this.credentials.identityId }, rawUser);
-                    Cache_1.default.setItem('federatedUser', that.user, { priority: 1 });
-                }
-                res(that.credentials);
-            }, function (err) {
+            credentials.getPromise().then(function () { return __awaiter(_this, void 0, void 0, function () {
+                var e_12, e_13;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            logger.debug('Load credentials successfully', credentials);
+                            that.credentials = credentials;
+                            that.credentials.authenticated = authenticated;
+                            that.credentials_source = source;
+                            if (!(source === 'federated')) return [3 /*break*/, 4];
+                            that.user = Object.assign({ id: this.credentials.identityId }, rawUser);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 3, , 4]);
+                            return [4 /*yield*/, Cache_1.default.setItem('federatedUser', that.user, { priority: 1 })];
+                        case 2:
+                            _a.sent();
+                            return [3 /*break*/, 4];
+                        case 3:
+                            e_12 = _a.sent();
+                            logger.debug('Failed to cache federated user info', e_12);
+                            return [3 /*break*/, 4];
+                        case 4:
+                            if (!(source === 'guest')) return [3 /*break*/, 8];
+                            _a.label = 5;
+                        case 5:
+                            _a.trys.push([5, 7, , 8]);
+                            return [4 /*yield*/, this._localStorage.setItem('CognitoIdentityId-' + identityPoolId, credentials.identityId)];
+                        case 6:
+                            _a.sent();
+                            return [3 /*break*/, 8];
+                        case 7:
+                            e_13 = _a.sent();
+                            logger.debug('Failed to cache identityId', e_13);
+                            return [3 /*break*/, 8];
+                        case 8:
+                            res(that.credentials);
+                            return [2 /*return*/];
+                    }
+                });
+            }); }, function (err) {
                 logger.debug('Failed to load credentials', credentials);
                 rej(err);
             });

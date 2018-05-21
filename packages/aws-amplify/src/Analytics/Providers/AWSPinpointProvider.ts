@@ -10,8 +10,11 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { ConsoleLogger as Logger, Pinpoint, MobileAnalytics} from '../../Common';
+import { ConsoleLogger as Logger, Pinpoint, ClientDevice, MobileAnalytics} from '../../Common';
+import Platform from '../../Common/Platform';
 import Cache from '../../Cache';
+import Auth from '../../Auth';
+
 import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
 
@@ -30,6 +33,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     private pinpointClient;
     private _sessionId;
     private _buffer;
+    private _clientInfo;
 
     constructor(config?) {
         this._buffer = [];
@@ -37,6 +41,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         // events batch
         const that = this;
+
+        this._clientInfo = ClientDevice.clientInfo();
 
         // flush event buffer
         setInterval(
@@ -66,15 +72,26 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     }
 
     private async _sendFromBuffer(params) {
-        const { event } = params;
+        const { event, config } = params;
+
+        const { appId, region } = config;
+        const cacheKey = this.getProviderName() + '_' + appId;
+        config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
+
         let success = true;
-        switch (event) {
+        switch (event.name) {
             case '_session_start':
                 success = await this._startSession(params);
+                break;
             case '_session_stop':
                 success = await this._stopSession(params);
+                break;
+            case '_update_endpoint':
+                success = await this._updateEndpoint(params);
+                break;
             default:
                 success = await this._recordCustomEvent(params);
+                break;
         }
         
         if (!success) {
@@ -120,13 +137,13 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      * record an event
      * @param {Object} params - the params of an event
      */
-    public record(params): Promise<boolean> {
-        return this._putToBuffer(params);
-        
-    }
+    public async record(params): Promise<boolean> {
+        const credentials = await this._getCredentials();
+        if (!credentials) return Promise.resolve(false);
+        const timestamp = new Date().getTime();
 
-    public updateEndpoint(params) {
-        return this._updateEndpoint(params);
+        Object.assign(params, { timestamp, config: this._config, credentials });
+        return this._putToBuffer(params);
     }
 
     /**
@@ -135,17 +152,15 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     private async _startSession(params) {
         // credentials updated
-        const { timestamp, config } = params;
+        const { timestamp, config, credentials } = params;
 
-        const initClients = await this._init(config);
-        if (!initClients) return false;
-        
+        this._initClients(config, credentials);
 
         logger.debug('record session start');
         this._sessionId = uuid();
         const sessionId = this._sessionId;
         
-        const clientContext = this._generateClientContext();
+        const clientContext = this._generateClientContext(config);
         const eventParams = {
             clientContext,
             events: [
@@ -181,15 +196,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     private async _stopSession(params) {
         // credentials updated
-        const { timestamp, config } = params;
+        const { timestamp, config, credentials } = params;
 
-        const initClients = await this._init(config);
-        if (!initClients) return false;
+        this._initClients(config, credentials);
 
         logger.debug('record session stop');
     
         const sessionId = this._sessionId ? this._sessionId : uuid();
-        const clientContext = this._generateClientContext();
+        const clientContext = this._generateClientContext(config);
         const eventParams = {
             clientContext,
             events: [
@@ -219,21 +233,15 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
     private async _updateEndpoint(params) : Promise<boolean> {
         // credentials updated
-        const { timestamp, config } = params;
+        const { timestamp, config, credentials, event } = params;
+        const { appId, region, endpointId } = config;
 
-        const initClients = await this._init(config);
-        if (!initClients) return false;
-
-        this._config = Object.assign(this._config, config);
-
-        const { appId, region, credentials, endpointId } = this._config;
-        const cacheKey = this.getProviderName() + '_' + appId;
-        // const endpointId = endpointId? endpointId : await this._getEndpointId(cacheKey);
-
-        const request = this._endpointRequest();
+        this._initClients(config, credentials);
+        
+        const request = this._endpointRequest(config, event);
         const update_params = {
             ApplicationId: appId,
-            EndpointId: endpointId || await this._getEndpointId(cacheKey),
+            EndpointId: endpointId,
             EndpointRequest: request
         };
 
@@ -242,11 +250,22 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         return new Promise<boolean>((res, rej) => {
             that.pinpointClient.updateEndpoint(update_params, (err, data) => {
                 if (err) {
-                    logger.debug('Pinpoint ERROR', err);
+                    logger.debug('updateEndpoint failed', err);
                     res(false);
                 } else {
-                    logger.debug('Pinpoint SUCCESS', data);
-                    res(true);
+                    logger.debug('updateEndpoint success', data);
+                    that.pinpointClient.getEndpoint(
+                        {
+                            ApplicationId: appId, /* required */
+                            EndpointId: endpointId /* required */
+                        }, 
+                        (err, data) => {
+                            if (err) {
+                                logger.debug('get endpint failed');
+                            }
+                            logger.debug('get back endpoint info', data);
+                            res(true);
+                    });
                 }
             });
         });
@@ -258,17 +277,17 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     private async _recordCustomEvent(params) {
         // credentials updated
-        const { event, attributes, metrics, timestamp, config } = params;
+        const { event, timestamp, config, credentials } = params;
+        const { name, attributes, metrics } = event;
 
-        const initClients = await this._init(config);
-        if (!initClients) return false;
+        this._initClients(config, credentials);
         
-        const clientContext = this._generateClientContext();
+        const clientContext = this._generateClientContext(config);
         const eventParams = {
             clientContext,
             events: [
                 {
-                    eventType: event,
+                    eventType: name,
                     timestamp: new Date(timestamp).toISOString(),
                     attributes,
                     metrics
@@ -296,34 +315,23 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      * @param config 
      * Init the clients
      */
-    private async _init(config) {
+    private async _initClients(config, credentials) {
         logger.debug('init clients');
-        if (!config.credentials) {
-            logger.debug('no credentials provided by config, abort this init');
-            return false;
-        }
+
         if (this.mobileAnalytics 
-            && this._config.credentials 
-            && this._config.credentials.sessionToken === config.credentials.sessionToken
-            && this._config.credentials.identityId === config.credentials.identityId) {
-            logger.debug('no change for analytics config, directly return from init');
-            return true;
+            && this.pinpointClient
+            && this._config.credentials
+            && this._config.credentials.sessionToken === credentials.sessionToken
+            && this._config.credentials.identityId === credentials.identityId) {
+            logger.debug('no change for aws credentials, directly return from init');
+            return;
         }
 
-        const { appId } = config;
-        const cacheKey = this.getProviderName() + '_' + appId;
-        const endpointId = config.endpointId ? config.endpointId :
-            (this._config.endpointId ? this._config.endpointId : await this._getEndpointId(cacheKey));
-
-        this._config = Object.assign(this._config, { endpointId }, config);
-        this._initMobileAnalytics();
-        return new Promise((res, rej) => {
-            this._initPinpoint().then((data) => {
-                res(true);
-            }).catch((err) => {
-                res(false);
-            });
-        });
+        this._config.credentials = credentials;
+        const { region } = config;
+        logger.debug('init clients with credentials', credentials);
+        this.mobileAnalytics = new MobileAnalytics({ credentials, region });
+        this.pinpointClient = new Pinpoint({ region, credentials });
     }
 
     private async _getEndpointId(cacheKey) {
@@ -338,74 +346,29 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     }
 
     /**
-     * @private
-     * Init the MobileAnalytics client
-     */
-    private _initMobileAnalytics() {
-        const { credentials, region } = this._config;
-        this.mobileAnalytics = new MobileAnalytics({ credentials, region });
-    }
-
-    /**
-     * @private
-     * Init Pinpoint with configuration and update pinpoint client endpoint
-     * @return - A promise resolves if endpoint updated successfully
-     */
-    private _initPinpoint() {
-        const { region, appId, endpointId, credentials } = this._config;
-        this.pinpointClient = new Pinpoint({
-            region,
-            credentials,
-        });
-
-        const request = this._endpointRequest();
-        const update_params = {
-            ApplicationId: appId,
-            EndpointId: endpointId,
-            EndpointRequest: request
-        };
-        logger.debug('updateEndpoint with params: ', update_params);
-
-        return new Promise((res, rej) => {
-            this.pinpointClient.updateEndpoint(update_params, function(err, data) {
-                if (err) {
-                    logger.debug('Pinpoint ERROR', err);
-                    rej(err);
-                } else {
-                    logger.debug('Pinpoint SUCCESS', data);
-                    res(data);
-                }
-            });
-        });
-    }
-
-    /**
      * EndPoint request
      * @return {Object} - The request of updating endpoint
      */
-    _endpointRequest() {
-        const { 
-            clientInfo, 
-            credentials, 
+    private _endpointRequest(config, event) {
+        const { credentials } = config;
+        const clientInfo = this._clientInfo;
+        const {
             Address, 
             RequestId, 
             Attributes,
             UserAttributes,
-            endpointId, 
-            UserId
-        } = this._config;
+            UserId,
+            OptOut
+        } = event;
 
-        const user_id = (credentials && credentials.authenticated) ? credentials.identityId : null;
         const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
 
-        logger.debug('demographic user id: ', user_id);
-        const OptOut = this._config.OptOut? this._config.OptOut: undefined;
         const ret = {
             Address,
             Attributes,
             ChannelType,
             Demographic: {
-                AppVersion: this._config.appVersion || clientInfo.appVersion,
+                AppVersion: event.appVersion || clientInfo.appVersion,
                 Make: clientInfo.make,
                 Model: clientInfo.model,
                 ModelVersion: clientInfo.version,
@@ -426,18 +389,51 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      * @private
      * generate client context with endpoint Id and app Id provided
      */
-    private _generateClientContext() {
-        const { endpointId, appId } = this._config;
-        const clientContext = {
+    private _generateClientContext(config) {
+        const { endpointId, appId, clientInfo } = config;
+
+        const clientContext = config.clientContext || {};
+
+        const clientCtx = {
             client: {
-                client_id: endpointId
+                client_id: clientContext.clientId || endpointId,
+                app_title: clientContext.appTitle,
+                app_version_name: clientContext.appVersionName,
+                app_version_code: clientContext.appVersionCode,
+                app_package_name: clientContext.appPackageName,
+            },
+            env: {
+                platform: clientContext.platform || clientInfo.platform,
+                platform_version: clientContext.platformVersion || clientInfo.version,
+                model: clientContext.model || clientInfo.model,
+                make: clientContext.make || clientInfo.make,
+                locale: clientContext.locale
             },
             services: {
                 mobile_analytics: {
-                    app_id: appId
+                    app_id: appId,
+                    sdk_name: Platform.userAgent
                 }
             }
         };
-        return JSON.stringify(clientContext);
+        return JSON.stringify(clientCtx);
+    }
+
+    /**
+     * @private
+     * check if current credentials exists
+     */
+    private _getCredentials() {
+        const that = this;
+        return Auth.currentCredentials()
+            .then(credentials => {
+                if (!credentials) return null;
+                logger.debug('set credentials for analytics', that._config.credentials);
+                return Auth.essentialCredentials(credentials);
+            })
+            .catch(err => {
+                logger.debug('ensure credentials error', err);
+                return null;
+            });
     }
 }

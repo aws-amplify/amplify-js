@@ -24,7 +24,4 @@ export interface AnalyticsProvider {
     
     // return the name of you provider
     getProviderName(): string;
-
-    // update endpoint
-    updateEndpoint(params: object): Promise<boolean>;
 }

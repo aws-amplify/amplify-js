@@ -48,9 +48,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
+<<<<<<< HEAD
 var AWSPinpointProvider_1 = require("./Providers/AWSPinpointProvider");
 var Auth_1 = require("../Auth");
+=======
+var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
+>>>>>>> analytics-refactor
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
+var dispatchAnalyticsEvent = function (event, data) {
+    Common_1.Hub.dispatch('analytics', { event: event, data: data }, 'Analytics');
+};
 /**
 * Provide mobile analytics client functions
 */
@@ -69,22 +76,25 @@ var AnalyticsClass = /** @class */ (function () {
      * @param {Object} config - Configuration of the Analytics
      */
     AnalyticsClass.prototype.configure = function (config) {
+        var _this = this;
         logger.debug('configure Analytics');
         var amplifyConfig = Common_1.Parser.parseMobilehubConfig(config);
-        var conf = Object.assign({}, this._config, amplifyConfig.Analytics, config);
-        var clientInfo = Common_1.ClientDevice.clientInfo();
-        conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
-        this._config = conf;
-        if (conf['disabled']) {
+        this._config = Object.assign({}, this._config, amplifyConfig.Analytics, config);
+        if (this._config['disabled']) {
             this._disabled = true;
         }
+        // for backward compatibility
+        if (!this._config['AWSAnalytics']) {
+            this._config['AWSAnalytics'] = Object.assign({}, this._config);
+        }
         this._pluggables.map(function (pluggable) {
-            pluggable.configure(conf);
+            pluggable.configure(_this._config[pluggable.getProviderName()]);
         });
         if (this._pluggables.length === 0) {
             this.addPluggable(new AWSPinpointProvider_1.default());
         }
-        return conf;
+        dispatchAnalyticsEvent('configured', null);
+        return this._config;
     };
     /**
      * add plugin into Analytics category
@@ -92,21 +102,14 @@ var AnalyticsClass = /** @class */ (function () {
      */
     AnalyticsClass.prototype.addPluggable = function (pluggable) {
         return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, config;
+            var config;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        ensureCredentails = _a.sent();
-                        if (!ensureCredentails)
-                            return [2 /*return*/, Promise.resolve(false)];
-                        if (pluggable && pluggable.getCategory() === 'Analytics') {
-                            this._pluggables.push(pluggable);
-                            config = pluggable.configure(this._config);
-                            return [2 /*return*/, Promise.resolve(config)];
-                        }
-                        return [2 /*return*/];
+                if (pluggable && pluggable.getCategory() === 'Analytics') {
+                    this._pluggables.push(pluggable);
+                    config = pluggable.configure(this._config[pluggable.getProviderName()]);
+                    return [2 /*return*/, Promise.resolve(config)];
                 }
+                return [2 /*return*/];
             });
         });
     };
@@ -123,49 +126,33 @@ var AnalyticsClass = /** @class */ (function () {
         this._disabled = false;
     };
     /**
+    * Receive a capsule from Hub
+    * @param {any} capsuak - The message from hub
+    */
+    AnalyticsClass.prototype.onHubCapsule = function (capsule) { };
+    /**
      * Record Session start
      * @return - A promise which resolves if buffer doesn't overflow
      */
     AnalyticsClass.prototype.startSession = function (provider) {
         return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, timestamp, params;
+            var params;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        ensureCredentails = _a.sent();
-                        if (!ensureCredentails)
-                            return [2 /*return*/, Promise.resolve(false)];
-                        timestamp = new Date().getTime();
-                        params = { event: '_session_start', timestamp: timestamp, config: this._config, provider: provider };
-                        return [2 /*return*/, this._sendEvent(params)];
-                }
+                params = { event: { name: '_session_start' }, provider: provider };
+                return [2 /*return*/, this._sendEvent(params)];
             });
         });
     };
-    /**
-    * Receive a capsule from Hub
-    * @param {any} capsuak - The message from hub
-    */
-    AnalyticsClass.prototype.onHubCapsule = function (capsule) { };
     /**
      * Record Session stop
      * @return - A promise which resolves if buffer doesn't overflow
      */
     AnalyticsClass.prototype.stopSession = function (provider) {
         return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, timestamp, params;
+            var params;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        ensureCredentails = _a.sent();
-                        if (!ensureCredentails)
-                            return [2 /*return*/, Promise.resolve(false)];
-                        timestamp = new Date().getTime();
-                        params = { event: '_session_stop', timestamp: timestamp, config: this._config, provider: provider };
-                        return [2 /*return*/, this._sendEvent(params)];
-                }
+                params = { event: { name: '_session_stop' }, provider: provider };
+                return [2 /*return*/, this._sendEvent(params)];
             });
         });
     };
@@ -176,10 +163,11 @@ var AnalyticsClass = /** @class */ (function () {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    AnalyticsClass.prototype.record = function (event, attributes, metrics) {
+    AnalyticsClass.prototype.record = function (event, provider, metrics) {
         return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, timestamp, provider, params;
+            var params;
             return __generator(this, function (_a) {
+<<<<<<< HEAD
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._getCredentials()];
                     case 1:
@@ -197,14 +185,32 @@ var AnalyticsClass = /** @class */ (function () {
                         }
                         params = { event: event, attributes: attributes, metrics: metrics, timestamp: timestamp, config: this._config, provider: provider };
                         return [2 /*return*/, this._sendEvent(params)];
+=======
+                params = null;
+                // this is just for compatibility, going to be deprecated
+                if (typeof event === 'string') {
+                    params = {
+                        'event': {
+                            name: event,
+                            attributes: provider,
+                            metrics: metrics
+                        },
+                        provider: undefined
+                    };
                 }
+                else {
+                    params = { event: event, provider: provider };
+>>>>>>> analytics-refactor
+                }
+                return [2 /*return*/, this._sendEvent(params)];
             });
         });
     };
-    AnalyticsClass.prototype.updateEndpoint = function (config) {
+    AnalyticsClass.prototype.updateEndpoint = function (attrs, provider) {
         return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, timestamp, conf, params, provider;
+            var event;
             return __generator(this, function (_a) {
+<<<<<<< HEAD
                 switch (_a.label) {
                     case 0:
                         if (this._disabled) {
@@ -227,6 +233,10 @@ var AnalyticsClass = /** @class */ (function () {
                         });
                         return [2 /*return*/, Promise.reject('no available provider to update endpoint')];
                 }
+=======
+                event = Object.assign({ name: '_update_endpoint' }, attrs);
+                return [2 /*return*/, this.record(event, provider)];
+>>>>>>> analytics-refactor
             });
         });
     };
@@ -242,28 +252,6 @@ var AnalyticsClass = /** @class */ (function () {
             }
         });
         return Promise.resolve();
-    };
-    /**
-     * @private
-     * check if current credentials exists
-     */
-    AnalyticsClass.prototype._getCredentials = function () {
-        var that = this;
-        return Auth_1.default.currentCredentials()
-            .then(function (credentials) {
-            if (!credentials)
-                return false;
-            var cred = Auth_1.default.essentialCredentials(credentials);
-            that._config.credentials = cred;
-            // that._config.endpointId = cred.identityId;
-            // logger.debug('set endpointId for analytics', that._config.endpointId);
-            logger.debug('set credentials for analytics', that._config.credentials);
-            return true;
-        })
-            .catch(function (err) {
-            logger.debug('ensure credentials error', err);
-            return false;
-        });
     };
     return AnalyticsClass;
 }());
