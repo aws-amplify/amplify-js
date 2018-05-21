@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger, Pinpoint, ClientDevice, MobileAnalytics} from '../../Common';
+import Platform from '../../Common/Platform';
 import Cache from '../../Cache';
 import Auth from '../../Auth';
 
@@ -389,18 +390,33 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * generate client context with endpoint Id and app Id provided
      */
     private _generateClientContext(config) {
-        const { endpointId, appId } = config;
-        const clientContext = {
+        const { endpointId, appId, clientInfo } = config;
+
+        const clientContext = config.clientContext || {};
+
+        const clientCtx = {
             client: {
-                client_id: endpointId
+                client_id: clientContext.clientId || endpointId,
+                app_title: clientContext.appTitle,
+                app_version_name: clientContext.appVersionName,
+                app_version_code: clientContext.appVersionCode,
+                app_package_name: clientContext.appPackageName,
+            },
+            env: {
+                platform: clientContext.platform || clientInfo.platform,
+                platform_version: clientContext.platformVersion || clientInfo.version,
+                model: clientContext.model || clientInfo.model,
+                make: clientContext.make || clientInfo.make,
+                locale: clientContext.locale
             },
             services: {
                 mobile_analytics: {
-                    app_id: appId
+                    app_id: appId,
+                    sdk_name: Platform.userAgent
                 }
             }
         };
-        return JSON.stringify(clientContext);
+        return JSON.stringify(clientCtx);
     }
 
     /**

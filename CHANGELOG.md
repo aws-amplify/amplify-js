@@ -2,6 +2,23 @@
 <!--LATEST=0.3.3-->
 <!--ENTRYINSERT-->
 
+## 05/18/2018
+* amazon-cognito-identity-js - 2.0.6
+    * Bug Fix: Roll back crypto-browserify to 1.0.9 #857
+
+* aws-amplify - 0.4.1
+    * Enhancement: Storage protected level #780
+    * Enhancement: OIDC support for graphql #861
+    * Enhancment: Analytics client context configurable #855
+    * Bug Fix: fix: setPreferredMFA method throws error when setting totp with no cellphone #859
+
+* aws-amplify-react - 0.1.47
+    * Bug Fix: jump to confirm user if sign in with unconfirmed user #777
+
+## 05/15/2018
+* aws-ampify-react - v0.1.46
+    * Bug Fix: revert the change of regenerator-runtime in Connect.js
+    
 ## 05/15/2018
 * amazon-cognito-identity-js - v2.0.5
     * Enhancement: Update crypto browserify to v3.0.0 #731
