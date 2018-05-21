@@ -256,15 +256,17 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
                     res(false);
                 } else {
                     logger.debug('updateEndpoint success', data);
-                    that.pinpointClient.getEndpoint({
-                        ApplicationId: appId, /* required */
-                        EndpointId: endpointId /* required */
-                    }, (err, data) => {
-                        if (err) {
-                            logger.debug('get endpint failed');
-                        }
-                        logger.debug('get back endpoint info', data);
-                        res(true);
+                    that.pinpointClient.getEndpoint(
+                        {
+                            ApplicationId: appId, /* required */
+                            EndpointId: endpointId /* required */
+                        }, 
+                        (err, data) => {
+                            if (err) {
+                                logger.debug('get endpint failed');
+                            }
+                            logger.debug('get back endpoint info', data);
+                            res(true);
                     });
                 }
             });
