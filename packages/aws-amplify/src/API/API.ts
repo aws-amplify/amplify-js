@@ -21,6 +21,7 @@ import { RestClient as RestClass } from './RestClient';
 import Auth from '../Auth';
 import { ConsoleLogger as Logger } from '../Common/Logger';
 import { GraphQLOptions, GraphQLResult } from './types';
+import Cache from '../Cache';
 
 const logger = new Logger('API');
 
@@ -283,6 +284,14 @@ export default class APIClass {
             case 'AWS_IAM':
                 if (!credentialsOK) { throw new Error('No credentials'); }
                 break;
+            case 'OPENID_CONNECT':
+                const federatedInfo = await Cache.getItem('federatedInfo');
+
+                if (!federatedInfo || !federatedInfo.token) { throw new Error('No federated jwt'); }
+                headers = {
+                    Authorization: federatedInfo.token
+                };
+                break;
             case 'AMAZON_COGNITO_USER_POOLS':
                 const session = await Auth.currentSession();
 
@@ -343,7 +352,7 @@ export default class APIClass {
         const headers = {
             ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
             ...(customGraphqlEndpoint &&
-                ( customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null } )
+                (customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null })
             ),
             ... await graphql_headers({ query: doc, variables })
         };
