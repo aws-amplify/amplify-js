@@ -10,8 +10,10 @@ var Parser = /** @class */ (function () {
         // Analytics
         if (config['aws_mobile_analytics_app_id']) {
             var Analytics = {
-                appId: config['aws_mobile_analytics_app_id'],
-                region: config['aws_mobile_analytics_app_region']
+                AWSPinpoint: {
+                    appId: config['aws_mobile_analytics_app_id'],
+                    region: config['aws_mobile_analytics_app_region']
+                }
             };
             amplifyConfig.Analytics = Analytics;
         }

@@ -14,6 +14,7 @@
 import { ConsoleLogger as Logger, Kinesis} from '../../Common';
 import Cache from '../../Cache';
 import { AnalyticsProvider } from '../types';
+import Auth from '../../Auth';
 
 const logger = new Logger('AWSKineisProvider');
 
@@ -79,11 +80,17 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
      * record an event
      * @param {Object} params - the params of an event
      */
-    public record(params): Promise<boolean> {
+    public async record(params): Promise<boolean> {
+        const credentials = await this._getCredentials();
+        if (!credentials) return Promise.resolve(false);
+
+        Object.assign(params, { config: this._config, credentials });
+
         return this._putToBuffer(params);
     }
 
     public updateEndpoint(params) {
+        logger.debug('updateEndpoint is not implemented in Kinesis provider');
         return Promise.resolve(true);
     }
 
@@ -104,11 +111,12 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 
     private _sendFromBuffer(events) {
         // collapse events by credentials
+        // events = [ {params} ]
         const eventsGroups = [];
         let preCred = null;
         let group = [];
         for (let i = 0; i < events.length; i += 1) {
-            let cred = events[i].config.credentials;
+            let cred = events[i].credentials;
             if (i == 0) {
                 group.push(events[i]);
                 preCred = cred;
@@ -137,9 +145,9 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
             return;
         }
 
-        const { config } = group[0];
+        const { config, credentials } = group[0];
 
-        const initClients = this._init(config);
+        const initClients = this._init(config, credentials);
         if (!initClients) return false;
 
         const records = {};
@@ -170,23 +178,19 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         });
     }
 
-    private _init(config) {
+    private _init(config, credentials) {
         logger.debug('init clients');
-        if (!config.credentials) {
-            logger.debug('no credentials provided by config, abort this init');
-            return false;
-        }
 
         if (this._kinesis
             && this._config.credentials 
-            && this._config.credentials.sessionToken === config.credentials.sessionToken
-            && this._config.credentials.identityId === config.credentials.identityId) {
+            && this._config.credentials.sessionToken === credentials.sessionToken
+            && this._config.credentials.identityId === credentials.identityId) {
             logger.debug('no change for analytics config, directly return from init');
             return true;
         }
 
-        this._config = Object.assign(this._config, config);
-        const { region, credentials } = this._config;
+        this._config.credentials = credentials;
+        const { region } = config;
         logger.debug('initialize kinesis with credentials', credentials);
         this._kinesis = new Kinesis({
             apiVersion: '2013-12-02',
@@ -195,5 +199,23 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         });
 
         return true;
+    }
+
+    /**
+     * @private
+     * check if current credentials exists
+     */
+    private _getCredentials() {
+        const that = this;
+        return Auth.currentCredentials()
+            .then(credentials => {
+                if (!credentials) return null;
+                logger.debug('set credentials for analytics', that._config.credentials);
+                return Auth.essentialCredentials(credentials);
+            })
+            .catch(err => {
+                logger.debug('ensure credentials error', err);
+                return null;
+            });
     }
 }

@@ -48,12 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
-<<<<<<< HEAD
 var AWSPinpointProvider_1 = require("./Providers/AWSPinpointProvider");
-var Auth_1 = require("../Auth");
-=======
-var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
->>>>>>> analytics-refactor
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 var dispatchAnalyticsEvent = function (event, data) {
     Common_1.Hub.dispatch('analytics', { event: event, data: data }, 'Analytics');
@@ -84,8 +79,8 @@ var AnalyticsClass = /** @class */ (function () {
             this._disabled = true;
         }
         // for backward compatibility
-        if (!this._config['AWSAnalytics']) {
-            this._config['AWSAnalytics'] = Object.assign({}, this._config);
+        if (!this._config['AWSPinpoint']) {
+            this._config['AWSPinpoint'] = Object.assign({}, this._config);
         }
         this._pluggables.map(function (pluggable) {
             pluggable.configure(_this._config[pluggable.getProviderName()]);
@@ -94,6 +89,7 @@ var AnalyticsClass = /** @class */ (function () {
             this.addPluggable(new AWSPinpointProvider_1.default());
         }
         dispatchAnalyticsEvent('configured', null);
+        logger.debug('current configuration', this._config);
         return this._config;
     };
     /**
@@ -167,25 +163,6 @@ var AnalyticsClass = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var params;
             return __generator(this, function (_a) {
-<<<<<<< HEAD
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        ensureCredentails = _a.sent();
-                        if (!ensureCredentails)
-                            return [2 /*return*/, Promise.resolve(false)];
-                        timestamp = new Date().getTime();
-                        provider = null;
-                        // for compatibility
-                        if (typeof event === 'string') {
-                            provider = 'AWSPinpoint';
-                        }
-                        else {
-                            provider = event['provider'];
-                        }
-                        params = { event: event, attributes: attributes, metrics: metrics, timestamp: timestamp, config: this._config, provider: provider };
-                        return [2 /*return*/, this._sendEvent(params)];
-=======
                 params = null;
                 // this is just for compatibility, going to be deprecated
                 if (typeof event === 'string') {
@@ -195,12 +172,11 @@ var AnalyticsClass = /** @class */ (function () {
                             attributes: provider,
                             metrics: metrics
                         },
-                        provider: undefined
+                        provider: 'AWSPinpoint'
                     };
                 }
                 else {
                     params = { event: event, provider: provider };
->>>>>>> analytics-refactor
                 }
                 return [2 /*return*/, this._sendEvent(params)];
             });
@@ -210,33 +186,8 @@ var AnalyticsClass = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var event;
             return __generator(this, function (_a) {
-<<<<<<< HEAD
-                switch (_a.label) {
-                    case 0:
-                        if (this._disabled) {
-                            logger.debug('Analytics has been disabled');
-                            return [2 /*return*/, Promise.resolve()];
-                        }
-                        return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        ensureCredentails = _a.sent();
-                        if (!ensureCredentails)
-                            return [2 /*return*/, Promise.resolve(false)];
-                        timestamp = new Date().getTime();
-                        conf = Object.assign(this._config, config);
-                        params = { event: '_update_endpoint', timestamp: timestamp, config: conf };
-                        provider = config.provider ? config.provider : 'AWSPinpoint';
-                        this._pluggables.map(function (pluggable) {
-                            if (pluggable.getProviderName() === provider) {
-                                return pluggable.updateEndpoint(params);
-                            }
-                        });
-                        return [2 /*return*/, Promise.reject('no available provider to update endpoint')];
-                }
-=======
                 event = Object.assign({ name: '_update_endpoint' }, attrs);
                 return [2 /*return*/, this.record(event, provider)];
->>>>>>> analytics-refactor
             });
         });
     };

@@ -427,10 +427,7 @@ var AuthClass = /** @class */ (function () {
      * @return - A promise resolve if success
      */
     AuthClass.prototype.setPreferredMFA = function (user, mfaMethod) {
-        var smsMfaSettings = {
-            PreferredMfa: false,
-            Enabled: false
-        };
+        var smsMfaSettings = null;
         var totpMfaSettings = {
             PreferredMfa: false,
             Enabled: false
@@ -869,7 +866,7 @@ var AuthClass = /** @class */ (function () {
                         logger.debug('cannot get user attributes');
                         return [3 /*break*/, 14];
                     case 13:
-                        this.user = Object.assign({}, user, { attributes: attributes });
+                        this.user = Object.assign(user, { attributes: attributes });
                         return [2 /*return*/, this.user];
                     case 14: return [2 /*return*/];
                 }

@@ -27,6 +27,7 @@ const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
 const interval = 5*1000; // 5s
 const RESEND_LIMIT = 5;
 
+// params: { event: {name: , .... }, timeStamp, config, resendLimits }
 export default class AWSPinpointProvider implements AnalyticsProvider {
     private _config;
     private mobileAnalytics;
@@ -390,10 +391,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      * generate client context with endpoint Id and app Id provided
      */
     private _generateClientContext(config) {
-        const { endpointId, appId, clientInfo } = config;
+        const { endpointId, appId } = config;
 
         const clientContext = config.clientContext || {};
-
+        const clientInfo = this._clientInfo;
         const clientCtx = {
             client: {
                 client_id: clientContext.clientId || endpointId,
@@ -428,7 +429,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         return Auth.currentCredentials()
             .then(credentials => {
                 if (!credentials) return null;
-                logger.debug('set credentials for analytics', that._config.credentials);
+                logger.debug('set credentials for analytics', credentials);
                 return Auth.essentialCredentials(credentials);
             })
             .catch(err => {

@@ -63,6 +63,7 @@ var PubSub_1 = require("../PubSub");
 var RestClient_1 = require("./RestClient");
 var Auth_1 = require("../Auth");
 var Logger_1 = require("../Common/Logger");
+var Cache_1 = require("../Cache");
 var logger = new Logger_1.ConsoleLogger('API');
 exports.graphqlOperation = function (query, variables) {
     if (variables === void 0) { variables = {}; }
@@ -385,7 +386,7 @@ var APIClass = /** @class */ (function () {
     };
     APIClass.prototype._headerBasedAuth = function (defaultAuthenticationType) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, _b, authenticationType, apiKey, headers, credentialsOK, _c, session;
+            var _a, _b, authenticationType, apiKey, headers, credentialsOK, _c, federatedInfo, session;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
@@ -398,33 +399,44 @@ var APIClass = /** @class */ (function () {
                         switch (_c) {
                             case 'API_KEY': return [3 /*break*/, 2];
                             case 'AWS_IAM': return [3 /*break*/, 3];
-                            case 'AMAZON_COGNITO_USER_POOLS': return [3 /*break*/, 4];
+                            case 'OPENID_CONNECT': return [3 /*break*/, 4];
+                            case 'AMAZON_COGNITO_USER_POOLS': return [3 /*break*/, 6];
                         }
-                        return [3 /*break*/, 6];
+                        return [3 /*break*/, 8];
                     case 2:
                         headers = {
                             Authorization: null,
                             'X-Api-Key': apiKey
                         };
-                        return [3 /*break*/, 7];
+                        return [3 /*break*/, 9];
                     case 3:
                         if (!credentialsOK) {
                             throw new Error('No credentials');
                         }
-                        return [3 /*break*/, 7];
-                    case 4: return [4 /*yield*/, Auth_1.default.currentSession()];
+                        return [3 /*break*/, 9];
+                    case 4: return [4 /*yield*/, Cache_1.default.getItem('federatedInfo')];
                     case 5:
+                        federatedInfo = _d.sent();
+                        if (!federatedInfo || !federatedInfo.token) {
+                            throw new Error('No federated jwt');
+                        }
+                        headers = {
+                            Authorization: federatedInfo.token
+                        };
+                        return [3 /*break*/, 9];
+                    case 6: return [4 /*yield*/, Auth_1.default.currentSession()];
+                    case 7:
                         session = _d.sent();
                         headers = {
                             Authorization: session.getAccessToken().getJwtToken()
                         };
-                        return [3 /*break*/, 7];
-                    case 6:
+                        return [3 /*break*/, 9];
+                    case 8:
                         headers = {
                             Authorization: null,
                         };
-                        return [3 /*break*/, 7];
-                    case 7: return [2 /*return*/, headers];
+                        return [3 /*break*/, 9];
+                    case 9: return [2 /*return*/, headers];
                 }
             });
         });

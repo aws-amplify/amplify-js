@@ -9,7 +9,7 @@ export default class Parser {
         // Analytics
         if (config['aws_mobile_analytics_app_id']) {
             const Analytics = {
-                AWSAnalytics: {
+                AWSPinpoint: {
                     appId: config['aws_mobile_analytics_app_id'],
                     region: config['aws_mobile_analytics_app_region']
                 }

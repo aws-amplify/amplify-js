@@ -62,8 +62,8 @@ export default class AnalyticsClass {
         }
 
         // for backward compatibility
-        if (!this._config['AWSAnalytics']) {
-            this._config['AWSAnalytics'] = Object.assign({}, this._config);
+        if (!this._config['AWSPinpoint']) {
+            this._config['AWSPinpoint'] = Object.assign({}, this._config);
         }
 
         this._pluggables.map((pluggable) => {
@@ -75,6 +75,7 @@ export default class AnalyticsClass {
         }
 
         dispatchAnalyticsEvent('configured', null);
+        logger.debug('current configuration', this._config);
         return this._config;
     }
 

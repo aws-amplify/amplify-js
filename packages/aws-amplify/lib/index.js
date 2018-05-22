@@ -38,7 +38,6 @@ exports.JS = Common_1.JS;
 exports.ClientDevice = Common_1.ClientDevice;
 exports.Signer = Common_1.Signer;
 exports.I18n = Common_1.I18n;
-exports.ServiceWorker = Common_1.ServiceWorker;
 exports.default = Common_1.Amplify;
 Common_1.Amplify.Auth = Auth_1.default;
 Common_1.Amplify.Analytics = Analytics_1.default;
