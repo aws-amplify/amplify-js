@@ -264,11 +264,12 @@ onAlbumImageSelected( event ) {
 
 You can use custom styling for AWS Amplify components. Just import your custom *styles.css* that overrides the default styles which can be found in `/node_modules/aws-amplify-angular/theme.css`.
 
-## Angular 6 Compatibility
+## Angular 6 Support
 
-At this time the newest version of Angular (6.x) does not provide the shim for the node ```global``` built-in that previous versions provided.  Certain Amplify dependencies rely on this shim.  While we evaluate the best path forward to address this issue, you have a couple of options for re-creating the shim in your Angular 6 app in order to make it compatible with Amplify.
+Currently, the newest version of Angular (6.x) does not provide the shim for the  `global` object, which was provided in previous versions. Specific AWS Amplify dependencies rely on this shim.  While we evaluate the best path forward to address this issue, you have a couple of options for re-creating the shim in your Angular 6 app to make it compatible with Amplify.
 
 1.  Add the following to your polyfills.ts: ```(window as any).global = window;```.
+
 2.  Add the following script to your index.html ```<head>``` tag:
 ``` 
     <script>
