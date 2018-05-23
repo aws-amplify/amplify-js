@@ -3,12 +3,8 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
-
 jobs:
   build:
-    dependencies:
-      pre:
-        - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
     branches:
       only:
         - master
@@ -32,7 +28,7 @@ jobs:
       #    - v1-dependencies-{{ checksum "package.json" }}
       #    # fallback to using the latest cache if no exact match is found
       #    - v1-dependencies-
-      #- run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
       - run: yarn config set workspaces-experimental true
       - run: yarn
       - run: yarn run bootstrap
