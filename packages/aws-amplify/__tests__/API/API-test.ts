@@ -11,13 +11,6 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
-jest.mock('../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
-
 import axios from 'axios';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
