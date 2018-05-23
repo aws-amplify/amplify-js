@@ -130,6 +130,7 @@ describe('ServiceWorker test', () => {
             return expect(serviceWorker.enablePush('publickKey')).resolves.toBe(subscription);
         });
         test('can enable push when user is not subscribed', async () => {
+            jest.setTimeout(10000);
             const subscription = null;
 
             const bla = {
