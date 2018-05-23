@@ -26,4 +26,11 @@ jobs:
       - run: git config --global user.email $GITHUB_EMAIL
       - run: git config --global user.name $GITHUB_USER
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-      - run: yarn run publish
+      - run: 
+          name: "Publish to Amplify Package"
+          command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              yarn publish
+            else
+              echo "Skipping deploy."
+            fi
