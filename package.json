@@ -11,7 +11,8 @@
     "build": "lerna exec yarn build",
     "clean": "lerna run -- clean",
     "format": "lerna run -- format",
-    "lint": "lerna run -- lint"
+    "lint": "lerna run -- lint",
+    "publish": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable"
   },
   "pre-commit": [
     "pre-commit"

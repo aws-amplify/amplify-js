@@ -13,14 +13,11 @@
   <a href="https://npmjs.org/aws-amplify">
     <img src="https://img.shields.io/npm/dm/aws-amplify.svg" alt="npm downloads" height="18">
   </a>
-  <a href="https://travis-ci.org/aws/aws-amplify">
-    <img src="https://travis-ci.org/aws/aws-amplify.svg?branch=master" alt="build:started">
-  </a>
-  <a href="https://circleci.com/gh/aws/aws-amplify">
-    <img src="https://img.shields.io/circleci/project/github/aws/aws-amplify.svg" alt="build:started">
-  </a>
   <a href="https://codecov.io/gh/aws/aws-amplify">
     <img src="https://codecov.io/gh/aws/aws-amplify/branch/master/graph/badge.svg" />
+  </a>
+  <a href="https://circleci.com/gh/aws/aws-amplify">
+    <img src="https://circleci.com/gh/aws/aws-amplify.svg?style=svg" alt="build:started">
   </a>
 </p>
 

@@ -10,16 +10,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+
+ // import polyfill for server environment
 import '../Polyfills';
 
-const Linking = {};
-const AppState = {
-    addEventListener(action, handler) {
-        return;
-    }
-};
+const StorageHelper = window.localStorage;
 
-// if not in react native, just use local storage
-const AsyncStorage = window.localStorage;
-
-export { Linking, AppState, AsyncStorage };
+export default StorageHelper;

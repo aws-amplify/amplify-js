@@ -5,6 +5,9 @@
 version: 2
 jobs:
   build:
+    branches:
+      only:
+        - master
     docker:
       # specify the version you desire here
       - image: circleci/node:8.11
@@ -39,3 +42,4 @@ jobs:
       - run: yarn test --scope aws-amplify
       - run: yarn test --scope aws-amplify-react
       - run: yarn coverage
+      - run: yarn publish
