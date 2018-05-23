@@ -39,9 +39,9 @@ jobs:
       #      - node_modules
       #    key: v1-dependencies-{{ checksum "package.json" }}
         
-      #- run: yarn run test --scope aws-amplify
-      #- run: yarn run test --scope aws-amplify-react
-      #- run: yarn run coverage
+      - run: yarn run test --scope aws-amplify
+      - run: yarn run test --scope aws-amplify-react
+      - run: yarn run coverage
       - run: git config --global user.email $GITHUB_EMAIL
       - run: git config --global user.name $GITHUB_USER
       - run: yarn run publish
