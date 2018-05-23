@@ -148,6 +148,6 @@ describe('ServiceWorker test', () => {
             await serviceWorker.register();
 
             return expect(serviceWorker.enablePush('publickKey')).resolves.toBe(subscription);
-        }, 10);
+        }, 20000);
     });
 });
