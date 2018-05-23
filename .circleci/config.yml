@@ -20,21 +20,21 @@ jobs:
       - checkout
 
       # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+      #- restore_cache:
+      #    keys:
+      #    - v1-dependencies-{{ checksum "package.json" }}
+      #    # fallback to using the latest cache if no exact match is found
+      #    - v1-dependencies-
 
       - run: yarn config set workspaces-experimental true
       - run: yarn
       - run: yarn bootstrap
       - run: yarn build
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+      #- save_cache:
+      #    paths:
+      #      - node_modules
+      #    key: v1-dependencies-{{ checksum "package.json" }}
         
       - run: yarn test --scope aws-amplify
       - run: yarn test --scope aws-amplify-react
