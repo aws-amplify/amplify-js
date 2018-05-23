@@ -3,10 +3,10 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
+dependencies:
+  pre:
+    - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
 jobs:
-  dependencies:
-    pre:
-      - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
   build:
     branches:
       only:
