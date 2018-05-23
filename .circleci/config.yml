@@ -4,6 +4,9 @@
 #
 version: 2
 jobs:
+  dependencies:
+    pre:
+      - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
   build:
     branches:
       only:
@@ -42,4 +45,6 @@ jobs:
       - run: yarn run test --scope aws-amplify
       - run: yarn run test --scope aws-amplify-react
       - run: yarn run coverage
+      - run: git config --global user.email $GITHUB_EMAIL
+      - run: git config --global user.name $GITHUB_USER
       - run: yarn run publish
