@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.12-unstable.15"></a>
+## [0.2.12-unstable.15](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.12-unstable.14...aws-amplify-react-native@0.2.12-unstable.15) (2018-05-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="0.2.12-unstable.14"></a>
+## [0.2.12-unstable.14](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.12-unstable.13...aws-amplify-react-native@0.2.12-unstable.14) (2018-05-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="0.2.12-unstable.13"></a>
+## [0.2.12-unstable.13](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.12-unstable.12...aws-amplify-react-native@0.2.12-unstable.13) (2018-05-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="0.2.12-unstable.12"></a>
+## [0.2.12-unstable.12](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.12-unstable.11...aws-amplify-react-native@0.2.12-unstable.12) (2018-05-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="0.2.12-unstable.11"></a>
+## [0.2.12-unstable.11](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.12-unstable.10...aws-amplify-react-native@0.2.12-unstable.11) (2018-05-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="0.2.12-unstable.10"></a>
+## [0.2.12-unstable.10](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.11...aws-amplify-react-native@0.2.12-unstable.10) (2018-05-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
 <a name="0.2.12-unstable.9"></a>
 ## [0.2.12-unstable.9](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.12-unstable.8...aws-amplify-react-native@0.2.12-unstable.9) (2018-05-24)
 
