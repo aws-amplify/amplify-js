@@ -23,7 +23,8 @@ jobs:
           name: "Publish to Amplify Package"
           command: |
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              yarn publish
+              yarn run publish:$CIRCLE_BRANCH
+              git push --follow-tags
             else
               echo "Skipping deploy."
             fi
