@@ -4,19 +4,7 @@
 #
 version: 2
 jobs:
-  build:
-    docker:
-      - image: circleci/node:8.11
-    steps:
-      - checkout
-      - run: yarn config set workspaces-experimental true
-      - run: yarn
-      - run: yarn run bootstrap
-      - run: yarn run build
-      - run: yarn run test --scope aws-amplify
-      - run: yarn run test --scope aws-amplify-react
-      - run: yarn run coverage
-  publish:
+  build-and-publish:
     docker:
       - image: circleci/node:8.11
     steps:
@@ -24,6 +12,13 @@ jobs:
       - run: git config --global user.email $GITHUB_EMAIL
       - run: git config --global user.name $GITHUB_USER
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run: yarn config set workspaces-experimental true
+      - run: yarn
+      - run: yarn run bootstrap
+      - run: yarn run build
+      - run: yarn run test --scope aws-amplify
+      - run: yarn run test --scope aws-amplify-react
+      - run: yarn run coverage
       - run:
           name: "Publish to Amplify Package"
           command: |
@@ -34,15 +29,9 @@ jobs:
             fi
 workflows:
   version: 2
-  build-and-publish:
+  build-and-publish-wf:
     jobs:
-      - build:
-          filters:
-            tags:
-              ignore: /@[0-9]+(\.[0-9]+)*(\-.+)?$/
-      - publish:
-          requires:
-            - build
+      - build-and-publish:
           filters:
             tags:
               ignore: /@[0-9]+(\.[0-9]+)*(\-.+)?$/
