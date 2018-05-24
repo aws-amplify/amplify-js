@@ -9,6 +9,8 @@ jobs:
       - image: circleci/node:8.11
     steps:
       - checkout
+      - run: echo $GITHUB_EMAIL
+      - run: echo $GITHUB_USER
       - run: git config --global user.email $GITHUB_EMAIL
       - run: git config --global user.name $GITHUB_USER
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
