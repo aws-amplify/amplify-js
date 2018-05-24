@@ -27,3 +27,6 @@ jobs:
             else
               echo "Skipping deploy."
             fi
+      - run:
+          command: git push --follow-tags
+          when: on_fail 
