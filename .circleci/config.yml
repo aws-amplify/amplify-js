@@ -20,7 +20,7 @@ jobs:
     docker:
       - image: circleci/node:8.11
     steps:
-      # - checkout
+      - checkout
       - run: git config --global user.email $GITHUB_EMAIL
       - run: git config --global user.name $GITHUB_USER
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
@@ -37,6 +37,9 @@ workflows:
   build-and-publish:
     jobs:
       - build
+          filters:
+            tags:
+              ignore: /@[0-9]+(\.[0-9]+)*(\-.+)?$/
       - publish:
           requires:
             - build
