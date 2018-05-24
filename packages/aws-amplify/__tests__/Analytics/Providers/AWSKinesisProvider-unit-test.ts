@@ -59,5 +59,29 @@ describe('kinesis provider test', () => {
             expect(await analytics.record('params')).toBe(false);
             spyon.mockClear();
         });
+
+        test('record happy case', async () => {
+            const analytics = new KinesisProvider();
+        
+            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                    return Promise.resolve(credentials);
+                });
+     
+
+            await analytics.record({
+                event: {
+                    data: {
+                        data: 'data'
+                    },
+                    streamName: 'stream'
+                },
+                config: {}
+            });
+
+            jest.advanceTimersByTime(6000);
+
+            spyon.mockClear();
+        });
+
     });
 });

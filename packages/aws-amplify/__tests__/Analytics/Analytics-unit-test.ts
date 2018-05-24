@@ -5,11 +5,11 @@ jest.mock('../../src/Common/Builder', () => {
 });
 
 import { AWS, ClientDevice, Parser } from '../../src/Common';
-import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from '../../src/Analytics/types';
+import { AnalyticsOptions, EventAttributes, EventMetrics } from '../../src/Analytics/types';
 import { default as Analytics } from "../../src/Analytics/Analytics";
 import { ConsoleLogger as Logger } from '../../src/Common/Logger';
 import Auth from '../../src/Auth/Auth';
-import AWSAnalyticsProvider from '../../src/Analytics/Providers/AWSAnalyticsProvider';
+import AWSAnalyticsProvider from '../../src/Analytics/Providers/AWSPinpointProvider';
 
 const options: AnalyticsOptions = {
     appId: 'appId',
@@ -44,7 +44,7 @@ describe("Analytics test", () => {
             const spyon2 = jest.spyOn(Parser, 'parseMobilehubConfig').mockImplementationOnce(() => {
                 return {
                     Analytics: {
-                        AWSAnalytics: {
+                        AWSPinpoint: {
                             appId: 'appId'
                         }
                     }
@@ -52,7 +52,7 @@ describe("Analytics test", () => {
             });
             const spyon3 = jest.spyOn(AWSAnalyticsProvider.prototype, 'configure').mockImplementationOnce(() => { return; });
 
-            expect(analytics.configure({attr: 'attr'})).toEqual({ AWSAnalytics: {appId: 'appId'}, attr: 'attr'});
+            expect(analytics.configure({attr: 'attr'})).toEqual({ AWSPinpoint: {appId: 'appId'}, attr: 'attr'});
 
             spyon.mockClear();
             spyon2.mockClear();
