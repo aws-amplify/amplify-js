@@ -36,7 +36,7 @@ workflows:
   version: 2
   build-and-publish:
     jobs:
-      - build
+      - build:
           filters:
             tags:
               ignore: /@[0-9]+(\.[0-9]+)*(\-.+)?$/
