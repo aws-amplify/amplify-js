@@ -13,9 +13,9 @@ jobs:
       - run: yarn
       - run: yarn run bootstrap
       - run: yarn run build
-      # - run: yarn run test --scope aws-amplify
-      # - run: yarn run test --scope aws-amplify-react
-      # - run: yarn run coverage
+      - run: yarn run test --scope aws-amplify
+      - run: yarn run test --scope aws-amplify-react
+      - run: yarn run coverage
       - run:
           name: "Publish to Amplify Package"
           command: |
@@ -27,6 +27,3 @@ jobs:
             else
               echo "Skipping deploy."
             fi
-      - run:
-          command: git push --follow-tags
-          when: on_fail 
