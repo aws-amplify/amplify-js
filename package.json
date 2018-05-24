@@ -12,7 +12,9 @@
     "clean": "lerna run -- clean",
     "format": "lerna run -- format",
     "lint": "lerna run -- lint",
-    "publish": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable"
+    "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable",
+    "publish:beta": "lerna publish --conventional-commits --yes --independent --npm-tag=beta",
+    "publish:release": "lerna publish --conventional-commits --yes --independent"
   },
   "pre-commit": [
     "pre-commit"
