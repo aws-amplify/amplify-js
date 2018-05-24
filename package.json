@@ -12,7 +12,7 @@
     "clean": "lerna run -- clean",
     "format": "lerna run -- format",
     "lint": "lerna run -- lint",
-    "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --force-publish $(ls packages/) --message 'Publish [ci skip]'",
+    "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'Publish [ci skip]'",
     "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'Publish [ci skip]'",
     "publish:release": "lerna publish --conventional-commits --yes --independent --message 'Publish [ci skip]'"
   },
