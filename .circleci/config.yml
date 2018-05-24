@@ -17,8 +17,8 @@ jobs:
       - run: yarn run test --scope aws-amplify-react
       - run: yarn run coverage
   publish:
-    # docker:
-    #   - image: circleci/node:8.11
+    docker:
+      - image: circleci/node:8.11
     steps:
       # - checkout
       - run: git config --global user.email $GITHUB_EMAIL
