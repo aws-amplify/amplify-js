@@ -4,11 +4,19 @@
 #
 version: 2
 jobs:
-  build-and-publish:
+  build:
     docker:
       - image: circleci/node:8.11
     steps:
       - checkout
+      - run:
+          name: "Check if already published"
+          command: |
+            X=$(git tag --contains HEAD | grep -E '@[0-9]+(\.[0-9]+)*(\-.+)?$')
+            if [ -n "$X" ]; then
+              echo "Already published"
+              exit 0
+            fi
       - run: echo $GITHUB_EMAIL
       - run: echo $GITHUB_USER
       - run: git config --global user.email $GITHUB_EMAIL
@@ -29,12 +37,3 @@ jobs:
             else
               echo "Skipping deploy."
             fi
-workflows:
-  version: 2
-  build-and-publish-wf:
-    jobs:
-      - build-and-publish:
-          context: org-global
-          filters:
-            tags:
-              ignore: /@[0-9]+(\.[0-9]+)*(\-.+)?$/
