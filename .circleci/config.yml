@@ -9,16 +9,6 @@ jobs:
       - image: circleci/node:8.11
     steps:
       - checkout
-      - run:
-          name: "Check if already published"
-          command: |
-            X=$(git tag --contains HEAD | grep -E '@[0-9]+(\.[0-9]+)*(\-.+)?$')
-            if [ -n "$X" ]; then
-              echo "Already published"
-              exit 0
-            fi
-      - run: echo $GITHUB_EMAIL
-      - run: echo $GITHUB_USER
       - run: git config --global user.email $GITHUB_EMAIL
       - run: git config --global user.name $GITHUB_USER
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
