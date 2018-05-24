@@ -25,6 +25,8 @@ import Platform from '../Common/Platform';
 
 const logger = new Logger('Analytics');
 let startsessionRecorded = false;
+let authConfigured = false;
+let analyticsConfigured = false;
 
 let _instance: AnalyticsClass = null;
 
@@ -54,6 +56,18 @@ if (Platform.isReactNative) {
     });
 }
 
+// send a session start event if autoSessionRecord is enabled
+const sessionRecord = () => {
+    const config = Analytics.configure();
+    startsessionRecorded = true;
+    if (config.autoSessionRecord) {
+        Analytics.startSession().catch(e => {
+            logger.debug('start Session error', e);
+        });
+    } else {
+        logger.debug('auto Session record is diasabled');
+    }            
+};
 
 Analytics.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;
@@ -98,22 +112,25 @@ const authEvent = (payload) => {
             Analytics.record('_userauth.auth_fail');
             break;
         case 'configured':
-            if (!startsessionRecorded) {
-                startsessionRecorded = true;
-                Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
+            authConfigured = true;
+            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
+                sessionRecord();
             }
             break;
     }
 };
 
 const analyticsEvent = (payload) => {
-    const { eventType } = payload;
-    if (!eventType) return;
+    const { event } = payload;
+    if (!event) return;
 
-     switch(eventType) {
-         case 'session_start':
-             Analytics.startSession();
-             break;
+     switch(event) {
+         case 'configured':
+            analyticsConfigured = true;
+            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
+                sessionRecord();
+            }
+            break;
      }
 };
 
