@@ -41,5 +41,13 @@ Amplify.Logger = Logger;
 Amplify.ServiceWorker = ServiceWorker;
 
 export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
-export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider, AWSPinpointProvider, AWSKinesisProvider };
+export { 
+    AuthClass, 
+    AnalyticsClass, 
+    APIClass, 
+    StorageClass, 
+    AnalyticsProvider, 
+    AWSPinpointProvider, 
+    AWSKinesisProvider 
+};
 export { graphqlOperation };

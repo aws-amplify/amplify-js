@@ -116,8 +116,8 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         let preCred = null;
         let group = [];
         for (let i = 0; i < events.length; i += 1) {
-            let cred = events[i].credentials;
-            if (i == 0) {
+            const cred = events[i].credentials;
+            if (i === 0) {
                 group.push(events[i]);
                 preCred = cred;
             } else {
@@ -161,20 +161,23 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
             }
 
             const Data = JSON.stringify(evt.data);
-            const PartitionKey = evt.partitionKey || ('partition-' + this._config.credentials.identityId);
+            const PartitionKey = evt.partitionKey || ('partition-' + credentials.identityId);
             const record = { Data, PartitionKey };
             records[streamName].push(record);
         });
 
         Object.keys(records).map(streamName => {
-            logger.debug('putting records to kinesis with records', records[streamName])
-            this._kinesis.putRecords({
-                Records: records[streamName],
-                StreamName: streamName
-            }, (err, data)=> {
-                if (err) logger.debug('Failed to upload records to Kinesis', err);
-                else logger.debug('Upload records to stream', streamName);
-            });
+            logger.debug('putting records to kinesis with records', records[streamName]);
+            this._kinesis.putRecords(
+                {
+                    Records: records[streamName],
+                    StreamName: streamName
+                }, 
+                (err, data)=> {
+                    if (err) logger.debug('Failed to upload records to Kinesis', err);
+                    else logger.debug('Upload records to stream', streamName);
+                }
+            );
         });
     }
 
