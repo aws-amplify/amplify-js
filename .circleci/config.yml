@@ -9,9 +9,9 @@ jobs:
       - image: circleci/node:8.11
     steps:
       - checkout
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
       - run: git config --global user.email $GITHUB_EMAIL
       - run: git config --global user.name $GITHUB_USER
-      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
       - run: yarn config set workspaces-experimental true
       - run: yarn
       - run: yarn run bootstrap
