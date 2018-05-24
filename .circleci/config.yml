@@ -16,6 +16,11 @@ jobs:
       - run: yarn run test --scope aws-amplify
       - run: yarn run test --scope aws-amplify-react
       - run: yarn run coverage
+  publish:
+    # docker:
+    #   - image: circleci/node:8.11
+    steps:
+      # - checkout
       - run: git config --global user.email $GITHUB_EMAIL
       - run: git config --global user.name $GITHUB_USER
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
@@ -29,4 +34,15 @@ jobs:
             fi
       - run:
           command: git push --follow-tags
-          when: on_fail 
+          when: on_fail
+workflows:
+  version: 2
+  build-and-publish:
+    jobs:
+      - build
+      - publish:
+          requires:
+            - build
+          filters:
+            tags:
+              ignore: /@[0-9]+(\.[0-9]+)*(\-.+)?$/
