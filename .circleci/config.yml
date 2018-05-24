@@ -34,6 +34,7 @@ workflows:
   build-and-publish-wf:
     jobs:
       - build-and-publish:
+          context: org-global
           filters:
             tags:
               ignore: /@[0-9]+(\.[0-9]+)*(\-.+)?$/
