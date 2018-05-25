@@ -2,6 +2,57 @@
 <!--LATEST=0.3.3-->
 <!--ENTRYINSERT-->
 
+## 05/18/2018
+* amazon-cognito-identity-js - 2.0.6
+    * Bug Fix: Roll back crypto-browserify to 1.0.9 #857
+
+* aws-amplify - 0.4.1
+    * Enhancement: Storage protected level #780
+    * Enhancement: OIDC support for graphql #861
+    * Enhancment: Analytics client context configurable #855
+    * Bug Fix: fix: setPreferredMFA method throws error when setting totp with no cellphone #859
+
+* aws-amplify-react - 0.1.47
+    * Bug Fix: jump to confirm user if sign in with unconfirmed user #777
+
+## 05/15/2018
+* aws-ampify-react - v0.1.46
+    * Bug Fix: revert the change of regenerator-runtime in Connect.js
+    
+## 05/15/2018
+* amazon-cognito-identity-js - v2.0.5
+    * Enhancement: Update crypto browserify to v3.0.0 #731
+    * Enhancement: Callback with error if error thrown due to network #605
+
+* aws-amplify - v0.4.0
+    * Bug Fix: To return an empty object instead of undefined if auth is not configured. #714
+    * Bug Fix: Analytics retry issue #644
+    * Bug Fix: Adds the ability to sign custom graphql requests. #743
+    * Bug Fix: Changed refreshing federated token logic #797
+    * Bug Fix: API fixes: escape characters on url and query strings #782
+    * Bug Fix: Set graphql dependency version to exactly 0.13.0 #800
+    * Bug Fix: [RN] Get guest credentials identity cached into AsyncStorage #835
+    * Enhancement: Add support for developer authenticated strategies #425
+    * Enhancement: Auth current authenticated user enhancement #713
+    * Enhancement: Allow the developer to provide an identity id #665
+    * Enhancement: Move amplify config into common module #763
+    * Enhancement: Add isAllResponse to custom authorizer request in API #664
+    * Enhancement: Add peerDependencies for graphql #832
+    * Feature: Add ServiceWorker utility class #831
+    * Feature: federated sign in for react native #818
+
+* aws-ampify-react - v0.1.45
+    * Bug Fix: Fix Auth completeNewPassword #736
+    * Enhancement: Add hidden style #757
+    * Enhancement: Import sdk on need #770
+
+* aws-amplify-react-native - 0.2.11
+    * Feature: federated sign in for react native #818
+
+* aws-ampify-angular - v0.1.1:
+    * Bug Fix: angular sign in mfa check #759
+
+
 ## 04/24/2018
 * aws-amplify - v0.3.3
     * remove unused variable #670

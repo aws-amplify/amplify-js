@@ -19,7 +19,8 @@ import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
 import Platform from '../Common/Platform';
 
-const logger = new Logger('RestClient');
+const logger = new Logger('RestClient'),
+    url = require('url');
 
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -36,9 +37,9 @@ restClient.get('...')
 */
 export class RestClient {
     private _options;
-    private _region: string = 'us-east-1'; // this will be updated by config
-    private _service: string = 'execute-api'; // this can be updated by config
-
+    private _region: string = 'us-east-1'; // this will be updated by endpoint function
+    private _service: string = 'execute-api'; // this can be updated by endpoint function
+    private _custom_header = undefined; // this can be updated by endpoint function
     /**
     * @param {RestClientOptions} [options] - Instance options
     */
@@ -95,7 +96,10 @@ export class RestClient {
 
         params['signerServiceInfo'] = extraParams.signerServiceInfo;
 
-        params.headers = { ...libraryHeaders, ...extraParams.headers };
+        // custom_header callback
+        const custom_header = this._custom_header ? await this._custom_header() : undefined;
+        
+        params.headers = { ...libraryHeaders, ...(custom_header),...extraParams.headers };
 
         // Do not sign the request if client has added 'Authorization' header,
         // which means custom authorizer.
@@ -107,11 +111,11 @@ export class RestClient {
                 return acc;
                 // tslint:disable-next-line:align
             }, {});
-            return this._request(params);
+            return this._request(params, isAllResponse);
         }
 
         return Auth.currentCredentials()
-            .then(credentials => this._signed(params, credentials, isAllResponse));
+            .then(credentials => this._signed({...params, ...extraParams}, credentials, isAllResponse));
     }
 
     /**
@@ -182,6 +186,11 @@ export class RestClient {
     endpoint(apiName: string) {
         const cloud_logic_array = this._options.endpoints;
         let response = '';
+        
+        if(!Array.isArray(cloud_logic_array)) {
+            return response;
+        }
+
         cloud_logic_array.forEach((v) => {
             if (v.name === apiName) {
                 response = v.endpoint;
@@ -192,6 +201,13 @@ export class RestClient {
                 }
                 if (typeof v.service === 'string') {
                     this._service = v.service || 'execute-api';
+                } else {
+                    this._service = 'execute-api';
+                }
+                if (typeof v.custom_header === 'function') {
+                    this._custom_header = v.custom_header;
+                } else {
+                    this._custom_header = undefined;
                 }
             }
         });
@@ -203,7 +219,17 @@ export class RestClient {
     private _signed(params, credentials, isAllResponse) {
 
         const { signerServiceInfo: signerServiceInfoParams, ...otherParams } = params;
-
+        
+        // Intentionally discarding search
+        const { search, ...parsedUrl } = url.parse(otherParams.url, true, true);
+        otherParams.url = url.format({
+            ...parsedUrl,
+            query: {
+                ...parsedUrl.query,
+                ...(otherParams.queryStringParameters || {})
+            }
+        });
+        
         const endpoint_region: string = this._region || this._options.region;
         const endpoint_service: string = this._service || this._options.service;
 

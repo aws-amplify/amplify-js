@@ -21,7 +21,10 @@ if (!(<any>global).window) {
         WebSocket: (<any>global).WebSocket,
         ArrayBuffer: (<any>global).ArrayBuffer,
         addEventListener(){ },
-        navigator: { onLine: true }
+        navigator: { onLine: true },
+        location: {
+            href: ''
+        }
     };
 }
 if (!(<any>global).localStorage) {

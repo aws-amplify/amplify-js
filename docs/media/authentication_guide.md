@@ -316,6 +316,45 @@ return (
     <Authenticator federated={federated}>
 )
 ```
+
+For React Native, you can use `Auth.federatedSignIn()` to get your federated identity from Cognito. You need to provide a valid JWT token from the third provider. You can also use it with `Authenticator` so that your login status will be automatically persisted by that component.
+
+Federated Sign in with Facebook Example:
+```js
+import Expo from 'expo';
+import Amplify, { Auth } from 'aws-amplify';
+import { Authenticator } from 'aws-amplify-react-native';
+
+export default class App extends React.Component {
+  async signIn() {
+    const { type, token, expires } = await Expo.Facebook.logInWithReadPermissionsAsync('YOUR_FACEBOOK_APP_ID', {
+        permissions: ['public_profile'],
+      });
+    if (type === 'success') {
+      // sign in with federated identity
+      Auth.federatedSignIn('facebook', { token, expires_at: expires}, { name: 'USER_NAME' })
+        .then(credentials => {
+          console.log('get aws credentials', credentials);
+        }).catch(e => {
+          console.log(e);
+        });
+    }
+  }
+
+  // ...
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <Authenticator>
+        </Authenticator>
+        <Button title="FBSignIn" onPress={this.signIn.bind(this)} />
+      </View>
+    );
+  }
+}
+```
+
 #### Customize UI
 
 In order to customize the UI for Federated Identities sign-in, you can use `withFederated` component. The following code shows how you customize the login buttons and the layout for social sign-in.

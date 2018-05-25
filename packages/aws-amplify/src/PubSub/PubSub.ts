@@ -64,7 +64,7 @@ export default class PubSub {
      * @param {Object} pluggable - an instance of the plugin
      */
     public async addPluggable(pluggable: PubSubProvider) {
-        if (pluggable) {
+        if (pluggable && pluggable.getCategory() === 'PubSub') {
             this._pluggables.push(pluggable);
 
             const config = pluggable.configure(this._options);
