@@ -1,3 +1,14 @@
 {
-  "presets": ["es2015", "react", "es2017"]
+  "plugins": ["transform-object-rest-spread"],
+  "presets": [
+    "react",
+    [
+      "env",
+      {
+        "targets": {
+          "browsers": ["last 2 versions"]
+        }
+      }
+    ]
+  ]
 }

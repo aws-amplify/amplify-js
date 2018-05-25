@@ -175,4 +175,10 @@ describe('AmplifyUi test', () => {
         wrapper.setProps({ theme: 'theme' });
         expect(wrapper).toMatchSnapshot();
     });
+
+    test('allow theme className extension', () => {
+        const wrapper = shallow(<UI.NavButton/>);
+        wrapper.setProps({ theme: { className: 'test_theme_class' } });
+        expect(wrapper).toMatchSnapshot();
+    });
 });

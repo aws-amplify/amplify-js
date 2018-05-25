@@ -22,7 +22,7 @@ export const Container = (props) => {
     const style = propStyle(props, theme.container);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-container" style={style}>
+        <div {...p} className={themedClassName("amplify-container", theme.container)} style={style}>
             {props.children}
         </div>
     )
@@ -32,7 +32,7 @@ export const FormContainer = (props) => {
     const theme = props.theme || AmplifyTheme;
     const style = propStyle(props, theme.formContainer);
     return beforeAfter(
-        <div className="amplify-form-container" style={style}>
+        <div className={themedClassName("amplify-form-container", theme.formContainer)} style={style}>
             {props.children}
         </div>
     )
@@ -44,7 +44,7 @@ export const FormSection = (props) => {
     return (
         <FormContainer theme={theme}>
             {beforeAfter(
-                <div className="amplify-form-section" style={style}>
+                <div className={themedClassName("amplify-form-section", theme.formSection)} style={style}>
                     {props.children}
                 </div>
             )}
@@ -57,7 +57,7 @@ export const ErrorSection = (props) => {
     const style = propStyle(props, theme.errorSection);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-error-section" style={style}>
+        <div {...p} className={themedClassName("amplify-error-section", theme.errorSection)} style={style}>
             <ErrorSectionContent>
                 {props.children}
             </ErrorSectionContent>
@@ -69,7 +69,7 @@ export const ErrorSectionContent = (props) => {
     const theme = props.theme || AmplifyTheme;
     const style = propStyle(props, theme.errorSectionContent);
     return beforeAfter(
-        <span className="amplify-error-section-content" style={style}>
+        <span className={themedClassName("amplify-error-section-content", theme.errorSectionContent)} style={style}>
             {props.children}
         </span>
     )
@@ -80,7 +80,7 @@ export const SectionHeader = (props) => {
     const style = propStyle(props, theme.sectionHeader);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-section-header" style={style}>
+        <div {...p} className={themedClassName("amplify-section-header", theme.sectionHeader)} style={style}>
             <SectionHeaderContent theme={theme}>
                 {props.children}
             </SectionHeaderContent>
@@ -92,7 +92,7 @@ export const SectionHeaderContent = (props) => {
     const theme = props.theme || AmplifyTheme;
     const style = propStyle(props, theme.sectionHeaderContent);
     return beforeAfter(
-        <span className="amplify-section-header-content" style={style}>
+        <span className={themedClassName("amplify-section-header-content", theme.sectionHeaderContent)} style={style}>
             {props.children}
         </span>
     )
@@ -103,7 +103,7 @@ export const SectionFooter = (props) => {
     const style = propStyle(props, theme.sectionFooter);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-section-footer" style={style}>
+        <div {...p} className={themedClassName("amplify-section-footer", theme.sectionFooter)} style={style}>
             <SectionFooterContent>
                 {props.children}
             </SectionFooterContent>
@@ -115,7 +115,7 @@ export const SectionFooterContent = (props) => {
     const theme = props.theme || AmplifyTheme;
     const style = propStyle(props, theme.sectionFooterContent);
     return beforeAfter(
-        <span className="amplify-section-footer-content" style={style}>
+        <span className={themedClassName("amplify-section-footer-content", theme.sectionFooterContent)} style={style}>
             {props.children}
         </span>
     )
@@ -126,7 +126,7 @@ export const SectionBody = (props) => {
     const style = propStyle(props, theme.sectionBody);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-section-body" style={style}>
+        <div {...p} className={themedClassName("amplify-section-body", theme.sectionBody)} style={style}>
             {props.children}
         </div>
     )
@@ -137,7 +137,7 @@ export const ActionRow = (props) => {
     const style = propStyle(props, theme.actionRow);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-action-row" style={style}>
+        <div {...p} className={themedClassName("amplify-action-row", theme.actionRow)} style={style}>
             {props.children}
         </div>
     )
@@ -148,7 +148,7 @@ export const FormRow = (props) => {
     const style = propStyle(props, theme.formRow);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-form-row" style={style}>
+        <div {...p} className={themedClassName("amplify-form-row", theme.formRow)} style={style}>
             {props.children}
         </div>
     )
@@ -163,7 +163,7 @@ export const InputRow = (props) => {
             {beforeAfter(
                 <input
                     {...p}
-                    className="amplify-input"
+                    className={themedClassName("amplify-input", theme.input)}
                     style={style}
                 />
             )}
@@ -196,7 +196,7 @@ export const Radio = (props) => {
             <input
                 {...p}
                 type="radio"
-                className="amplify-radio"
+                className={themedClassName("amplify-radio", theme.radio)}
                 style={style}
             />
     )
@@ -227,7 +227,7 @@ export const Checkbox = (props) => {
         <input
             {...p}
             type="checkbox"
-            className="amplify-checkbox"
+            className={themedClassName("amplify-checkbox", theme.checkbox)}
             style={style}
         />
     )
@@ -245,7 +245,7 @@ export const MessageRow = (props) => {
 export const MessageContent = (props) => {
     const theme = props.theme || AmplifyTheme;
     return beforeAfter(
-        <span className="amplify-message-content" style={theme.messageContent}>
+        <span className={themedClassName("amplify-message-content", theme.messageContent)} style={theme.messageContent}>
             {props.children}
         </span>
     )
@@ -253,8 +253,9 @@ export const MessageContent = (props) => {
 
 export const ButtonRow = (props) => {
     const theme = props.theme || AmplifyTheme;
+    const { className, ...style } = theme.actionRow || {}
     return beforeAfter(
-        <div className="amplify-action-row" style={theme.actionRow}>
+        <div className={themedClassName("amplify-action-row", { className })} style={style}>
             <Button {...props} />
         </div>
     )
@@ -265,7 +266,7 @@ export const Button = (props) => {
     const style = propStyle(props, theme.button);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <button {...p} className="amplify-button" style={style}>
+        <button {...p} className={themedClassName("amplify-button", theme.button)} style={style}>
             <ButtonContent theme={theme}>{props.children}</ButtonContent>
         </button>
     )
@@ -273,8 +274,9 @@ export const Button = (props) => {
 
 export const ButtonContent = (props) => {
     const theme = props.theme || AmplifyTheme;
+    const { className, ...style } = theme.buttonContent || {}
     return beforeAfter(
-        <span className="amplify-button-content" style={theme.buttonContent}>
+        <span className={themedClassName("amplify-button-content", { className })} style={style}>
             {props.children}
         </span>
     )
@@ -286,7 +288,7 @@ export const SignInButton = (props) => {
     const p = JS.objectLessAttributes(props, 'theme');
 
     return beforeAfter(
-        <button {...p} className="amplify-signin-button" style={style}>
+        <button {...p} className={themedClassName("amplify-signin-button", theme.signInButton)} style={style}>
             {props.children}
         </button>
     )
@@ -297,7 +299,7 @@ export const Link = (props) => {
     const style = propStyle(props, theme.a);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <a {...p} className="amplify-a" style={style}>{props.children}</a>
+        <a {...p} className={themedClassName("amplify-a", theme.a)} style={style}>{props.children}</a>
     )
 }
 
@@ -306,7 +308,7 @@ export const Label = (props) => {
     const style = propStyle(props, theme.label);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <label {...p} className="amplify-label" style={style}>{props.children}</label>
+        <label {...p} className={themedClassName("amplify-label", theme.label)} style={style}>{props.children}</label>
     )
 }
 
@@ -315,7 +317,7 @@ export const Space = (props) => {
     const style = propStyle(props, theme.space);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <span {...p} className="amplify-space" style={style}>{props.children}</span>
+        <span {...p} className={themedClassName("amplify-space", theme.space)} style={style}>{props.children}</span>
     )
 }
 
@@ -324,7 +326,7 @@ export const NavBar = (props) => {
     const style = propStyle(props, theme.navBar);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-nav-bar" style={style}>
+        <div {...p} className={themedClassName("amplify-nav-bar", theme.navBar)} style={style}>
             {props.children}
         </div>
     )
@@ -335,7 +337,7 @@ export const Nav = (props) => {
     const style = propStyle(props, theme.nav);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-nav" style={style}>
+        <div {...p} className={themedClassName("amplify-nav", theme.nav)} style={style}>
             {props.children}
         </div>
     )
@@ -346,7 +348,7 @@ export const NavRight = (props) => {
     const style = propStyle(props, theme.navRight);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-nav-right" style={style}>
+        <div {...p} className={themedClassName("amplify-nav-right", theme.navRight)} style={style}>
             {props.children}
         </div>
     )
@@ -357,7 +359,7 @@ export const NavItem = (props) => {
     const style = propStyle(props, theme.navItem);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className="amplify-nav-item" style={style}>
+        <div {...p} className={themedClassName("amplify-nav-item", theme.navItem)} style={style}>
             {props.children}
         </div>
     )
@@ -368,7 +370,7 @@ export const NavButton = (props) => {
     const style = propStyle(props, theme.navButton);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <button {...p} className="amplify-nav-button" style={style}>
+        <button {...p} className={themedClassName("amplify-nav-button", theme.navButton)} style={style}>
             {beforeAfter(
                 <span style={theme.navButtonContent}>{props.children}</span>
             )}
@@ -393,11 +395,19 @@ export const beforeAfter = (el) => {
 export const propStyle = (props, themeStyle) => {
     const { id, style } = props;
     const styl = Object.assign({}, style, themeStyle);
+    delete styl.className
     if (!id) { return styl; }
 
     const selector = '#' + id;
     Object.assign(styl, styl[selector]);
     return styl;
+}
+
+export const themedClassName = (defaultClassName, theme) => {
+    if (!theme || !theme.className) {
+        return defaultClassName;
+    }
+    return `${defaultClassName} ${theme.className || ''}`
 }
 
 export const transparent1X1 = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';

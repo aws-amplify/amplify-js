@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`AmplifyUi test allow theme className extension 1`] = `
+<button
+  className="amplify-nav-button test_theme_class"
+  style={Object {}}
+>
+  <span />
+</button>
+`;
+
 exports[`AmplifyUi test render ActionRow correctly 1`] = `
 <div
   className="amplify-action-row"
