@@ -132,7 +132,7 @@ export default class CognitoUserPool {
    * @returns {CognitoUser} the user retrieved from storage
    */
   getCurrentUser() {
-    const lastUserKey = `${this.getStoragePrefix}.LastAuthUser`;
+    const lastUserKey = `${this.getStoragePrefix()}.LastAuthUser`;
 
     const lastAuthUser = this.storage.getItem(lastUserKey);
     if (lastAuthUser) {
