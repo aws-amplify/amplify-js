@@ -73,6 +73,14 @@ Amplify.configure({
             make: 'xxxxx',
             locale: 'xxxxx'
         }
+    // OPTIONAL - the size of the buffer which is used to store events
+        bufferSize: 1000
+    // OPTIONAL - the number of the events per flush
+        flushSize: 100
+    // OPTIONAL - the interval between per flush
+        flushInterval: 5000 // 5s
+    // OPTIONAL - the resend limits per event
+        resendLimit: 5
     } 
 });
 ```
@@ -100,7 +108,7 @@ To record a custom tracking event, call the `record` method:
 ```js
 import { Analytics } from 'aws-amplify';
 
-Analytics.record('albumVisit');
+Analytics.record({ name: 'albumVisit' });
 ```
 
 ### Record a Custom Tracking Event with Attributes
@@ -110,7 +118,10 @@ The `record` method lets you add additional attributes to an event. For example,
 ```js
 import { Analytics } from 'aws-amplify';
 
-Analytics.record('albumVisit', { genre: '', artist: '' });
+Analytics.record({
+    name: 'albumVisit', 
+    attributes: { genre: '', artist: '' }
+});
 ```
 
 ### Record Engagement Metrics
@@ -120,7 +131,11 @@ Metrics data can also be added to an event:
 ```js
 import { Analytics } from 'aws-amplify';
 
-Analytics.record('albumVisit', {}, { minutesListened: 30 });
+Analytics.record({
+    name: 'albumVisit', 
+    attributes: {}, 
+    metrics: { minutesListened: 30 }
+});
 ```
 
 ### Disable/Enable Analytics
@@ -144,13 +159,19 @@ You can use following events to record Sign-ins, Sign-ups, and Authentication fa
 import { Analytics } from 'aws-amplify';
 
 // Sign-in event
-Analytics.record('_userauth.sign_in');
+Analytics.record({
+    name: '_userauth.sign_in'
+});
 
 // Sign-up event
-Analytics.record('_userauth.sign_up');
+Analytics.record({
+    name: '_userauth.sign_up'
+});
 
 // Authentication failure event
-Analytics.record('_userauth.auth_fail');
+Analytics.record({
+    name: '_userauth.auth_fail'
+});
 ```
 
 ### Update User Attributes

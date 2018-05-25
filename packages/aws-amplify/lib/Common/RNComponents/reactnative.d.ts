@@ -1,2 +1,2 @@
-import { Linking, AppState, AsyncStorage } from 'react-native';
-export { Linking, AppState, AsyncStorage };
+import { Linking, AppState } from 'react-native';
+export { Linking, AppState };

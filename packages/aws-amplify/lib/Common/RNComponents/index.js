@@ -20,7 +20,4 @@ var AppState = {
     }
 };
 exports.AppState = AppState;
-// if not in react native, just use local storage
-var AsyncStorage = window.localStorage;
-exports.AsyncStorage = AsyncStorage;
 //# sourceMappingURL=index.js.map

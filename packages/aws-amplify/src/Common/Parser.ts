@@ -9,10 +9,8 @@ export default class Parser {
         // Analytics
         if (config['aws_mobile_analytics_app_id']) {
             const Analytics = {
-                AWSPinpoint: {
-                    appId: config['aws_mobile_analytics_app_id'],
-                    region: config['aws_mobile_analytics_app_region']
-                }
+                appId: config['aws_mobile_analytics_app_id'],
+                region: config['aws_mobile_analytics_app_region']
             };
             amplifyConfig.Analytics = Analytics;
         }

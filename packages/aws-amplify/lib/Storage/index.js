@@ -30,6 +30,5 @@ if (!_instance) {
     };
 }
 var Storage = _instance;
-Common_1.Amplify.register(Storage);
 exports.default = Storage;
 //# sourceMappingURL=index.js.map

@@ -61,13 +61,14 @@ export default class AnalyticsClass {
             this._disabled = true;
         }
 
-        // for backward compatibility
-        if (!this._config['AWSPinpoint']) {
-            this._config['AWSPinpoint'] = Object.assign({}, this._config);
-        }
-
         this._pluggables.map((pluggable) => {
-            pluggable.configure(this._config[pluggable.getProviderName()]);
+            // for backward compatibility
+            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
+                pluggable.configure(this._config);  
+            } else {
+                pluggable.configure(this._config[pluggable.getProviderName()]);
+            }
+            
         });
 
         if (this._pluggables.length === 0) {
@@ -86,7 +87,13 @@ export default class AnalyticsClass {
     public async addPluggable(pluggable: AnalyticsProvider) {
         if (pluggable && pluggable.getCategory() === 'Analytics') {
             this._pluggables.push(pluggable);
-            const config = pluggable.configure(this._config[pluggable.getProviderName()]);
+            let config = {};
+            // for backward compatibility
+            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
+                config = pluggable.configure(this._config);  
+            } else {
+                config = pluggable.configure(this._config[pluggable.getProviderName()]);
+            }
             return Promise.resolve(config);
         }
     }
