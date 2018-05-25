@@ -73,6 +73,14 @@ Amplify.configure({
             make: 'xxxxx',
             locale: 'xxxxx'
         }
+    // OPTIONAL - the size of the buffer which is used to store events
+        bufferSize: 1000
+    // OPTIONAL - the number of the events per flush
+        flushSize: 100
+    // OPTIONAL - the interval between per flush
+        flushInterval: 5000 // 5s
+    // OPTIONAL - the resend limits per event
+        resendLimit: 5
     } 
 });
 ```
