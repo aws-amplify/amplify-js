@@ -1107,6 +1107,10 @@ export default class CognitoUser {
     });
   }
 
+  getStoragePrefix() {
+    return `${this.pool.getStoragePrefix()}.${this.username}`;
+  }
+
   /**
    * This is used to get a session, either from the session object
    * or from  the local storage, or by using a refresh token
@@ -1123,7 +1127,7 @@ export default class CognitoUser {
       return callback(null, this.signInUserSession);
     }
 
-    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username}`;
+    const keyPrefix = this.getStoragePrefix();
     const idTokenKey = `${keyPrefix}.idToken`;
     const accessTokenKey = `${keyPrefix}.accessToken`;
     const refreshTokenKey = `${keyPrefix}.refreshToken`;
@@ -1175,12 +1179,13 @@ export default class CognitoUser {
   refreshSession(refreshToken, callback) {
     const authParameters = {};
     authParameters.REFRESH_TOKEN = refreshToken.getToken();
-    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
-    const lastUserKey = `${keyPrefix}.LastAuthUser`;
+    const poolKeyPrefix = this.pool.getStoragePrefix();
+    const lastUserKey = `${poolKeyPrefix}.LastAuthUser`;
 
     if (this.storage.getItem(lastUserKey)) {
       this.username = this.storage.getItem(lastUserKey);
-      const deviceKeyKey = `${keyPrefix}.${this.username}.deviceKey`;
+      const keyPrefix = this.getStoragePrefix();
+      const deviceKeyKey = `${keyPrefix}.deviceKey`;
       this.deviceKey = this.storage.getItem(deviceKeyKey);
       authParameters.DEVICE_KEY = this.deviceKey;
     }
@@ -1218,12 +1223,13 @@ export default class CognitoUser {
    * @returns {void}
    */
   cacheTokens() {
-    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
-    const idTokenKey = `${keyPrefix}.${this.username}.idToken`;
-    const accessTokenKey = `${keyPrefix}.${this.username}.accessToken`;
-    const refreshTokenKey = `${keyPrefix}.${this.username}.refreshToken`;
-    const clockDriftKey = `${keyPrefix}.${this.username}.clockDrift`;
-    const lastUserKey = `${keyPrefix}.LastAuthUser`;
+    const keyPrefix = this.getStoragePrefix();
+    const idTokenKey = `${keyPrefix}.idToken`;
+    const accessTokenKey = `${keyPrefix}.accessToken`;
+    const refreshTokenKey = `${keyPrefix}.refreshToken`;
+    const clockDriftKey = `${keyPrefix}.clockDrift`;
+    const poolKeyPrefix = this.pool.getStoragePrefix();
+    const lastUserKey = `${poolKeyPrefix}.LastAuthUser`;
 
     this.storage.setItem(idTokenKey, this.signInUserSession.getIdToken().getJwtToken());
     this.storage.setItem(accessTokenKey, this.signInUserSession.getAccessToken().getJwtToken());
@@ -1237,7 +1243,7 @@ export default class CognitoUser {
    * @returns {void}
    */
   cacheDeviceKeyAndPassword() {
-    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username}`;
+    const keyPrefix = this.getStoragePrefix();
     const deviceKeyKey = `${keyPrefix}.deviceKey`;
     const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
     const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1252,7 +1258,7 @@ export default class CognitoUser {
    * @returns {void}
    */
   getCachedDeviceKeyAndPassword() {
-    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username}`;
+    const keyPrefix = this.getStoragePrefix();
     const deviceKeyKey = `${keyPrefix}.deviceKey`;
     const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
     const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1269,7 +1275,7 @@ export default class CognitoUser {
    * @returns {void}
    */
   clearCachedDeviceKeyAndPassword() {
-    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username}`;
+    const keyPrefix = this.getStoragePrefix();
     const deviceKeyKey = `${keyPrefix}.deviceKey`;
     const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
     const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1284,11 +1290,12 @@ export default class CognitoUser {
    * @returns {void}
    */
   clearCachedTokens() {
-    const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
-    const idTokenKey = `${keyPrefix}.${this.username}.idToken`;
-    const accessTokenKey = `${keyPrefix}.${this.username}.accessToken`;
-    const refreshTokenKey = `${keyPrefix}.${this.username}.refreshToken`;
-    const lastUserKey = `${keyPrefix}.LastAuthUser`;
+    const keyPrefix = this.getStoragePrefix();
+    const idTokenKey = `${keyPrefix}.idToken`;
+    const accessTokenKey = `${keyPrefix}.accessToken`;
+    const refreshTokenKey = `${keyPrefix}.refreshToken`;
+    const poolKeyPrefix = this.pool.getStoragePrefix();
+    const lastUserKey = `${poolKeyPrefix}.LastAuthUser`;
 
     this.storage.removeItem(idTokenKey);
     this.storage.removeItem(accessTokenKey);

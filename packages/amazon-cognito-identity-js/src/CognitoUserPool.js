@@ -116,6 +116,15 @@ export default class CognitoUserPool {
     });
   }
 
+  /**
+   * method for getting the storage prefix
+   *
+   * @returns {string} the storage prefix
+   */
+  getStoragePrefix() {
+    return `CognitoIdentityServiceProvider.${this.getClientId()}`;
+  }
+
 
   /**
    * method for getting the current user of the application from the local storage
@@ -123,7 +132,7 @@ export default class CognitoUserPool {
    * @returns {CognitoUser} the user retrieved from storage
    */
   getCurrentUser() {
-    const lastUserKey = `CognitoIdentityServiceProvider.${this.clientId}.LastAuthUser`;
+    const lastUserKey = `${this.getStoragePrefix}.LastAuthUser`;
 
     const lastAuthUser = this.storage.getItem(lastUserKey);
     if (lastAuthUser) {
