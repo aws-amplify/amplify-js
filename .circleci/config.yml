@@ -1,0 +1,29 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.11
+    steps:
+      - checkout
+      - run: yarn config set workspaces-experimental true
+      - run: yarn
+      - run: yarn run bootstrap
+      - run: yarn run build
+      - run: yarn run test --scope aws-amplify
+      - run: yarn run test --scope aws-amplify-react
+      - run: yarn run coverage
+      - run:
+          name: "Publish to Amplify Package"
+          command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+              git config --global user.email $GITHUB_EMAIL
+              git config --global user.name $GITHUB_USER
+              yarn run publish:$CIRCLE_BRANCH
+            else
+              echo "Skipping deploy."
+            fi
