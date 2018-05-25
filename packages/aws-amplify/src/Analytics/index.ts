@@ -57,7 +57,7 @@ if (Platform.isReactNative) {
 }
 
 // send a session start event if autoSessionRecord is enabled
-const sessionRecord = () => {
+const autoSessionRecord = () => {
     const config = Analytics.configure();
     startsessionRecorded = true;
     if (config.autoSessionRecord) {
@@ -114,7 +114,7 @@ const authEvent = (payload) => {
         case 'configured':
             authConfigured = true;
             if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                sessionRecord();
+                autoSessionRecord();
             }
             break;
     }
@@ -128,7 +128,7 @@ const analyticsEvent = (payload) => {
          case 'configured':
             analyticsConfigured = true;
             if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                sessionRecord();
+                autoSessionRecord();
             }
             break;
      }
