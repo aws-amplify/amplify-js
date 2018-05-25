@@ -4,16 +4,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private mobileAnalytics;
     private pinpointClient;
     private _sessionId;
-    private _buffer;
-    private _clientInfo;
     constructor(config?: any);
-    /**
-     * @private
-     * @param params - params for the event recording
-     * Put events into buffer
-     */
-    private _putToBuffer(params);
-    private _sendFromBuffer(params);
     /**
      * get the category of the plugin
      */
@@ -53,21 +44,45 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * @param config
      * Init the clients
      */
-    private _initClients(config, credentials);
+    private _init(config);
     private _getEndpointId(cacheKey);
+    /**
+     * @private
+     * Init the MobileAnalytics client
+     */
+    private _initMobileAnalytics();
+    /**
+     * @private
+     * Init Pinpoint with configuration and update pinpoint client endpoint
+     * @return - A promise resolves if endpoint updated successfully
+     */
+    private _initPinpoint();
     /**
      * EndPoint request
      * @return {Object} - The request of updating endpoint
      */
-    private _endpointRequest(config, event);
+    _endpointRequest(): {
+        Address: any;
+        Attributes: any;
+        ChannelType: string;
+        Demographic: {
+            AppVersion: any;
+            Make: any;
+            Model: any;
+            ModelVersion: any;
+            Platform: any;
+        };
+        OptOut: any;
+        RequestId: any;
+        EffectiveDate: string;
+        User: {
+            UserId: any;
+            UserAttributes: any;
+        };
+    };
     /**
      * @private
      * generate client context with endpoint Id and app Id provided
      */
-    private _generateClientContext(config);
-    /**
-     * @private
-     * check if current credentials exists
-     */
-    private _getCredentials();
+    private _generateClientContext();
 }

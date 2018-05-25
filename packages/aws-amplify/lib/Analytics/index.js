@@ -18,15 +18,12 @@ var Common_1 = require("../Common");
 var Platform_1 = require("../Common/Platform");
 var logger = new Common_1.ConsoleLogger('Analytics');
 var startsessionRecorded = false;
-var authConfigured = false;
-var analyticsConfigured = false;
 var _instance = null;
 if (!_instance) {
     logger.debug('Create Analytics Instance');
     _instance = new Analytics_1.default();
 }
 var Analytics = _instance;
-Common_1.Amplify.register(Analytics);
 exports.default = Analytics;
 // listen on app state change
 var dispatchAppStateEvent = function (event, data) {
@@ -81,27 +78,20 @@ var authEvent = function (payload) {
             Analytics.record('_userauth.auth_fail');
             break;
         case 'configured':
-            authConfigured = true;
-            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
+            if (!startsessionRecorded) {
                 startsessionRecorded = true;
-                Analytics.updateEndpoint({}).then(function () {
-                    Analytics.startSession();
-                });
+                Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
             }
             break;
     }
 };
 var analyticsEvent = function (payload) {
-    var event = payload.event;
-    if (!event)
+    var eventType = payload.eventType;
+    if (!eventType)
         return;
-    switch (event) {
-        case 'configured':
-            analyticsConfigured = true;
-            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                startsessionRecorded = true;
-                Analytics.startSession();
-            }
+    switch (eventType) {
+        case 'session_start':
+            Analytics.startSession();
             break;
     }
 };

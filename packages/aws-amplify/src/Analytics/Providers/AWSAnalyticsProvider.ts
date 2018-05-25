@@ -23,8 +23,8 @@ const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException
 
 // events buffer
 const BUFFER_SIZE = 1000;
-const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-const interval = 5*1000; // 5s
+const FLUSH_SIZE = 100;
+const FLUSH_INTERVAL = 5*1000; // 5s
 const RESEND_LIMIT = 5;
 
 // params: { event: {name: , .... }, timeStamp, config, resendLimits }
@@ -37,25 +37,37 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private _buffer;
     private _clientInfo;
 
+    private _timer;
+
     constructor(config?) {
         this._buffer = [];
         this._config = config? config : {};
-
-        // events batch
-        const that = this;
-
+        this._config.bufferSize = this._config.bufferSize || BUFFER_SIZE;
+        this._config.flushSize = this._config.flushSize || FLUSH_SIZE;
+        this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
+        this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
         this._clientInfo = ClientDevice.clientInfo();
 
         // flush event buffer
-        setInterval(
+        this._setupTimer();
+    }
+
+    private _setupTimer() {
+        if (this._timer) {
+            clearInterval(this._timer);
+        }
+        const { flushSize, flushInterval } = this._config;
+        const that = this;
+        this._timer = setInterval(
             () => {
-                const size = this._buffer.length < MAX_SIZE_PER_FLUSH ? this._buffer.length : MAX_SIZE_PER_FLUSH;
+                const size = this._buffer.length <  flushSize? this._buffer.length : flushSize;
                 for (let i = 0; i < size; i += 1) {
                     const params = this._buffer.shift();
                     that._sendFromBuffer(params);
                 } 
             },
-            interval);
+            flushInterval
+        );
     }
 
     /**
@@ -64,7 +76,8 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * Put events into buffer
      */
     private _putToBuffer(params) {
-        if (this._buffer.length < BUFFER_SIZE) {
+        const { bufferSize } = this._config;
+        if (this._buffer.length < bufferSize) {
             this._buffer.push(params);
             return Promise.resolve(true);
         } else {
@@ -76,7 +89,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
     private async _sendFromBuffer(params) {
         const { event, config } = params;
 
-        const { appId, region } = config;
+        const { appId, region, resendLimit } = config;
         const cacheKey = this.getProviderName() + '_' + appId;
         config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
 
@@ -98,7 +111,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         
         if (!success) {
             params.resendLimits = typeof params.resendLimits === 'number' ? 
-                params.resendLimits : RESEND_LIMIT;
+                params.resendLimits : resendLimit;
             if (params.resendLimits > 0) {
                 logger.debug(
                     `resending event ${params.eventName} with ${params.resendLimits} retry times left`);
@@ -132,6 +145,8 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         logger.debug('configure Analytics', config);
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
+
+        this._setupTimer();
         return this._config;
     }
 
@@ -392,10 +407,10 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * generate client context with endpoint Id and app Id provided
      */
     private _generateClientContext(config) {
-        const { endpointId, appId, clientInfo } = config;
+        const { endpointId, appId } = config;
 
         const clientContext = config.clientContext || {};
-
+        const clientInfo = this._clientInfo;
         const clientCtx = {
             client: {
                 client_id: clientContext.clientId || endpointId,
