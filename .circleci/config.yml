@@ -16,17 +16,14 @@ jobs:
       - run: yarn run test --scope aws-amplify
       - run: yarn run test --scope aws-amplify-react
       - run: yarn run coverage
-      - run: git config --global user.email $GITHUB_EMAIL
-      - run: git config --global user.name $GITHUB_USER
-      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
       - run:
           name: "Publish to Amplify Package"
           command: |
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+              git config --global user.email $GITHUB_EMAIL
+              git config --global user.name $GITHUB_USER
               yarn run publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
             fi
-      - run:
-          command: git push --follow-tags
-          when: on_fail 
