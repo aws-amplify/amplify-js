@@ -410,7 +410,10 @@ var AuthClass = /** @class */ (function () {
      * @return - A promise resolve if success
      */
     AuthClass.prototype.setPreferredMFA = function (user, mfaMethod) {
-        var smsMfaSettings = null;
+        var smsMfaSettings = {
+            PreferredMfa: false,
+            Enabled: false
+        };
         var totpMfaSettings = {
             PreferredMfa: false,
             Enabled: false
@@ -827,30 +830,8 @@ var AuthClass = /** @class */ (function () {
                         return [2 /*return*/, this.user];
                     case 8:
                         e_6 = _b.sent();
-<<<<<<< HEAD
-                        throw 'not authenticated';
-                    case 9:
-                        attributes = {};
-                        _b.label = 10;
-                    case 10:
-                        _b.trys.push([10, 12, 13, 14]);
-                        _a = this.attributesToObject;
-                        return [4 /*yield*/, this.userAttributes(user)];
-                    case 11:
-                        attributes = _a.apply(this, [_b.sent()]);
-                        return [3 /*break*/, 14];
-                    case 12:
-                        e_7 = _b.sent();
-                        logger.debug('cannot get user attributes');
-                        return [3 /*break*/, 14];
-                    case 13:
-                        this.user = Object.assign(user, { attributes: attributes });
-                        return [2 /*return*/, this.user];
-                    case 14: return [2 /*return*/];
-=======
                         return [2 /*return*/, Promise.reject('not authenticated')];
                     case 9: return [2 /*return*/];
->>>>>>> analytics-refactor
                 }
             });
         });

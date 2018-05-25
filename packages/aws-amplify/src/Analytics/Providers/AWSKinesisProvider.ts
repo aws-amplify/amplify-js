@@ -20,8 +20,8 @@ const logger = new Logger('AWSKineisProvider');
 
 // events buffer
 const BUFFER_SIZE = 1000;
-const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-const interval = 5*1000; // 5s
+const FLUSH_SIZE = 100;
+const FLUSH_INTERVAL = 5*1000; // 5s
 const RESEND_LIMIT = 5;
 
 export default class AWSKinesisProvider implements AnalyticsProvider {
@@ -29,18 +29,32 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
     private _config;
     private _kinesis;
     private _buffer;
+    private _timer;
 
     constructor(config?) {
         this._buffer = [];
         this._config = config? config : {};
+        this._config.bufferSize = this._config.bufferSize || BUFFER_SIZE;
+        this._config.flushSize = this._config.flushSize || FLUSH_SIZE;
+        this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
+        this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
 
         // events batch
         const that = this;
 
-        // flush event buffer
-        setInterval(
+         // flush event buffer
+        this._setupTimer();
+    }
+
+    private _setupTimer() {
+        if (this._timer) {
+            clearInterval(this._timer);
+        }
+        const { flushSize, flushInterval } = this._config;
+        const that = this;
+        this._timer = setInterval(
             () => {
-                const size = this._buffer.length < MAX_SIZE_PER_FLUSH ? this._buffer.length : MAX_SIZE_PER_FLUSH;
+                const size = this._buffer.length <  flushSize? this._buffer.length : flushSize;
                 const events = [];
                 for (let i = 0; i < size; i += 1) {
                     const params = this._buffer.shift();
@@ -48,7 +62,8 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
                 } 
                 that._sendFromBuffer(events);
             },
-            interval);
+            flushInterval
+        );
     }
 
     /**
@@ -73,6 +88,8 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         logger.debug('configure Analytics', config);
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
+
+        this._setupTimer();
         return this._config;
     }
 

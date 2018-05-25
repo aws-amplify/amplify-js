@@ -48,12 +48,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
-<<<<<<< HEAD
-var AWSPinpointProvider_1 = require("./Providers/AWSPinpointProvider");
-=======
 var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
 var Auth_1 = require("../Auth");
->>>>>>> analytics-refactor
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
 // events buffer
 var BUFFER_SIZE = 1000;
@@ -100,26 +96,13 @@ var AnalyticsClass = /** @class */ (function () {
         if (conf['disabled']) {
             this._disabled = true;
         }
-<<<<<<< HEAD
-        // for backward compatibility
-        if (!this._config['AWSPinpoint']) {
-            this._config['AWSPinpoint'] = Object.assign({}, this._config);
-        }
-=======
->>>>>>> analytics-refactor
         this._pluggables.map(function (pluggable) {
             pluggable.configure(conf);
         });
         if (this._pluggables.length === 0) {
-            this.addPluggable(new AWSPinpointProvider_1.default());
+            this.addPluggable(new AWSAnalyticsProvider_1.default());
         }
-<<<<<<< HEAD
-        dispatchAnalyticsEvent('configured', null);
-        logger.debug('current configuration', this._config);
-        return this._config;
-=======
         return conf;
->>>>>>> analytics-refactor
     };
     /**
      * add plugin into Analytics category
@@ -215,22 +198,6 @@ var AnalyticsClass = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var ensureCredentails, timestamp, params;
             return __generator(this, function (_a) {
-<<<<<<< HEAD
-                params = null;
-                // this is just for compatibility, going to be deprecated
-                if (typeof event === 'string') {
-                    params = {
-                        'event': {
-                            name: event,
-                            attributes: provider,
-                            metrics: metrics
-                        },
-                        provider: 'AWSPinpoint'
-                    };
-                }
-                else {
-                    params = { event: event, provider: provider };
-=======
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this._getCredentials()];
                     case 1:
@@ -240,7 +207,6 @@ var AnalyticsClass = /** @class */ (function () {
                         timestamp = new Date().getTime();
                         params = { eventName: eventName, attributes: attributes, metrics: metrics, timestamp: timestamp, config: this._config };
                         return [2 /*return*/, this._putToBuffer(params)];
->>>>>>> analytics-refactor
                 }
             });
         });
@@ -298,13 +264,6 @@ var AnalyticsClass = /** @class */ (function () {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
         }
-<<<<<<< HEAD
-        var provider = params.provider ? params.provider : 'AWSPinpoint';
-        this._pluggables.map(function (pluggable) {
-            if (pluggable.getProviderName() === provider) {
-                pluggable.record(params);
-            }
-=======
         if (this._buffer.length < BUFFER_SIZE) {
             this._buffer.push(params);
             return Promise.resolve();
@@ -332,7 +291,6 @@ var AnalyticsClass = /** @class */ (function () {
             .catch(function (err) {
             logger.debug('ensure credentials error', err);
             return false;
->>>>>>> analytics-refactor
         });
     };
     return AnalyticsClass;
