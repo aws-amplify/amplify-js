@@ -18,8 +18,8 @@ function check(authState: Subject<AuthState>) {
 };
 
 function listen(authState: Subject<AuthState>) {
-  const { Auth } = Amplify.configure(null);
-  if(Auth && Auth.oauth){
+  const config = Amplify.configure(null);
+  if (config.Auth && config.Auth.oauth){
     Hub.listen('auth', {
       onHubCapsule: capsule => {
         const { channel, payload } = capsule;
