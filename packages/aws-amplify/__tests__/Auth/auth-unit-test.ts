@@ -168,12 +168,6 @@ jest.mock('amazon-cognito-auth-js/lib/CognitoAuth', () => {
     return CognitoAuth;
 });
 
-jest.mock('../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
 import { AuthOptions, SignUpParams } from '../../src/Auth/types';
 import Auth from '../../src/Auth/Auth';
 import Cache from '../../src/Cache';

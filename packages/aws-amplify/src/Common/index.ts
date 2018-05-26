@@ -27,6 +27,7 @@ export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export { default as Amplify } from './Amplify';
 export * from './RNComponents';
 export { default as ServiceWorker } from './ServiceWorker';
+export { default as StorageHelper } from './StorageHelper';
 
 import Platform from './Platform';
 export const Constants = {

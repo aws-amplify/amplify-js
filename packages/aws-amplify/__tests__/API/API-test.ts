@@ -11,13 +11,6 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
-jest.mock('../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
-
 import axios from 'axios';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
@@ -358,7 +351,7 @@ describe('API test', () => {
                 myoption: 'myoption'
             }
 
-            expect(api.configure(options)).toEqual({ "myoption": "myoption" });
+            expect(api.configure(options)).toEqual({ "endpoints": [], "myoption": "myoption" });
         });
 
         test('with aws_project_region', () => {
@@ -399,6 +392,47 @@ describe('API test', () => {
             await api.get('apiName', 'path', 'init');
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
+
+        });
+
+        test('custom_header', async () => {
+            Logger.LOG_LEVEL = 'DEBUG';
+            const custom_config = {
+                API: {
+                    endpoints: [
+                        {
+                            name: 'apiName',
+                            endpoint: 'https://www.amazonaws.com',
+                            custom_header: () => { return { Authorization: 'mytoken' }}
+                        }
+                    ]
+                }
+            };
+            const api = new API({});
+            api.configure(custom_config);
+            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('cred');
+                });
+            });
+
+            const spyonRequest = jest.spyOn(RestClient.prototype, '_request').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res({});
+                });
+            });
+            console.log('api options', JSON.stringify(api._options, null, 2));
+            await api.get('apiName', 'path', {});
+
+            expect(spyonRequest).toBeCalledWith({
+                "data": null, 
+                "headers": {"Authorization": "mytoken"}, 
+                "host": "www.amazonaws.compath", 
+                "method": "GET", 
+                "path": "/", 
+                "signerServiceInfo": undefined, 
+                "url": "https://www.amazonaws.compath"
+            }    , undefined);
 
         });
 

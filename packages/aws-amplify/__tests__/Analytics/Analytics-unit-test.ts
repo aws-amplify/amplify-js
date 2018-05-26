@@ -1,9 +1,3 @@
-jest.mock('../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
 import { AWS, ClientDevice, Parser } from '../../src/Common';
 import { AnalyticsOptions, SessionState, EventAttributes, EventMetrics } from '../../src/Analytics/types';
 import { default as Analytics } from "../../src/Analytics/Analytics";
