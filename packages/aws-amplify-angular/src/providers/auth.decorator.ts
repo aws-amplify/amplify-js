@@ -1,6 +1,7 @@
 import { Subject } from 'rxjs/Subject';
 import Amplify, { Logger, Hub } from 'aws-amplify';
 import { AuthState } from './auth.state';
+import _ from 'lodash';
 
 const logger = new Logger('AuthDecorator');
 
@@ -19,7 +20,7 @@ function check(authState: Subject<AuthState>) {
 
 function listen(authState: Subject<AuthState>) {
   const config = Amplify.configure(null);
-  if (config.Auth && config.Auth.oauth){
+  if (_.has(config, 'Auth.oauth')) {
     Hub.listen('auth', {
       onHubCapsule: capsule => {
         const { channel, payload } = capsule;
