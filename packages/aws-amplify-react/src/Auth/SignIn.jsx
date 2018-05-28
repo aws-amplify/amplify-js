@@ -72,7 +72,12 @@ export default class SignIn extends AuthPiece {
                 }
             })
             .catch(err => {
-                this.error(err)
+                if (err.code === 'UserNotConfirmedException') {
+                    logger.debug('the user is not confirmed');
+                    this.changeState('confirmSignUp');
+                } else {
+                    this.error(err);
+                }
             });
     }
 

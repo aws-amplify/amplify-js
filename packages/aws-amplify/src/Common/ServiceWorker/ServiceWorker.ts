@@ -115,7 +115,7 @@ class ServiceWorkerClass {
                         resolve(subscription);
                     } else {
                         this._logger.debug(`User is NOT subscribed to push`);
-                        this._registration.pushManager.subscribe({
+                        return this._registration.pushManager.subscribe({
                             'userVisibleOnly': true,
                             'applicationServerKey': this._urlB64ToUint8Array(publicKey)
                         }).then((subscription) => {
