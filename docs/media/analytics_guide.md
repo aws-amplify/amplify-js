@@ -59,7 +59,20 @@ Amplify.configure({
     // OPTIONAL -  Customized endpoint
         endpointId: 'XXXXXXXXXXXX',
     // OPTIONAL - disable Analytics if true
-        disabled: false
+        disabled: false,
+    // OPTIONAL - client context
+        clientContext: {
+            clientId: 'xxxxx',
+            appTitle: 'xxxxx',
+            appVersionName: 'xxxxx',
+            appVersionCode: 'xxxxx',
+            appPackageName: 'xxxxx',
+            platform: 'xxxxx',
+            platformVersion: 'xxxxx',
+            model: 'xxxxx',
+            make: 'xxxxx',
+            locale: 'xxxxx'
+        }
     } 
 });
 ```

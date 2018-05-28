@@ -11,16 +11,11 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
     return Pinpoint;
 });
 
-jest.mock('../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
-
 import axios from 'axios';
+import { CognitoIdentityCredentials } from 'aws-sdk';
 
 import API, { graphqlOperation } from '../../src/API/API';
+import AuthClass from '../../src/Auth/Auth';
 import Auth from '../../src/Auth';
 import { RestClient } from '../../src/API/RestClient';
 import { print } from 'graphql/language/printer';
@@ -28,6 +23,7 @@ import { parse } from 'graphql/language/parser';
 import PubSub from '../../src/PubSub/PubSub';
 import { Signer, ConsoleLogger as Logger } from '../../src/Common/';
 import { anonOperationNotAloneMessage } from 'graphql/validation/rules/LoneAnonymousOperation';
+import Cache from '../../src/Cache/';
 
 jest.mock('axios');
 
@@ -103,6 +99,95 @@ describe('API test', () => {
             const headers = {
                 Authorization: null,
                 'X-Api-Key': apiKey
+            };
+
+            const body = {
+                query,
+                variables,
+            };
+
+            const init = {
+                headers,
+                body,
+                signerServiceInfo: {
+                    service: 'appsync',
+                    region,
+                }
+            };
+
+            await api.graphql(graphqlOperation(GetEvent, variables));
+
+            expect(spyon).toBeCalledWith(url, init);
+        });
+
+        test('happy-case-query-oidc', async () => {
+            const spyonAuth = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('cred');
+                });
+            });
+
+            const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementation(() => {
+                return new Promise((res, rej) => {
+                    res('cred');
+                });
+            })
+
+            const cache_config = {
+                capacityInBytes : 3000,
+                itemMaxSize : 800,
+                defaultTTL : 3000000,
+                defaultPriority : 5,
+                warningThreshold : 0.8,
+                storage: window.localStorage
+            };
+            
+            Cache.configure(cache_config);
+
+            const auth = new AuthClass({
+                identityPoolId: 'identityPoolId'
+            });
+
+            await auth.federatedSignIn('provider', {token: 'id_token'});
+
+            const spyon = jest.spyOn(RestClient.prototype, 'post')
+                .mockImplementationOnce((url, init) => {
+                    return new Promise((res, rej) => {
+                        res({})
+                    });
+                });
+            
+            const api = new API(config);
+            const url = 'https://appsync.amazonaws.com',
+                region = 'us-east-2',
+                variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+            api.configure({
+                aws_appsync_graphqlEndpoint: url,
+                aws_appsync_region: region,
+                aws_appsync_authenticationType: 'OPENID_CONNECT',
+            })
+            const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
+                getEvent(id: $id) {
+                    id
+                    name
+                    where
+                    when
+                    description
+                    comments(nextToken: $nextToken) {
+                      items {
+                        commentId
+                        content
+                        createdAt
+                      }
+                    }
+                  }
+                }`;
+
+            const doc = parse(GetEvent);
+            const query = print(doc);
+
+            const headers = {
+                Authorization: 'id_token'
             };
 
             const body = {
@@ -266,7 +351,7 @@ describe('API test', () => {
                 myoption: 'myoption'
             }
 
-            expect(api.configure(options)).toEqual({ "myoption": "myoption" });
+            expect(api.configure(options)).toEqual({ "endpoints": [], "myoption": "myoption" });
         });
 
         test('with aws_project_region', () => {
@@ -307,6 +392,47 @@ describe('API test', () => {
             await api.get('apiName', 'path', 'init');
 
             expect(spyon2).toBeCalledWith('endpointpath', 'init');
+
+        });
+
+        test('custom_header', async () => {
+            Logger.LOG_LEVEL = 'DEBUG';
+            const custom_config = {
+                API: {
+                    endpoints: [
+                        {
+                            name: 'apiName',
+                            endpoint: 'https://www.amazonaws.com',
+                            custom_header: () => { return { Authorization: 'mytoken' }}
+                        }
+                    ]
+                }
+            };
+            const api = new API({});
+            api.configure(custom_config);
+            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('cred');
+                });
+            });
+
+            const spyonRequest = jest.spyOn(RestClient.prototype, '_request').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res({});
+                });
+            });
+            console.log('api options', JSON.stringify(api._options, null, 2));
+            await api.get('apiName', 'path', {});
+
+            expect(spyonRequest).toBeCalledWith({
+                "data": null, 
+                "headers": {"Authorization": "mytoken"}, 
+                "host": "www.amazonaws.compath", 
+                "method": "GET", 
+                "path": "/", 
+                "signerServiceInfo": undefined, 
+                "url": "https://www.amazonaws.compath"
+            }    , undefined);
 
         });
 
