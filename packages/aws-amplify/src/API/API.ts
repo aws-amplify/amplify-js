@@ -21,6 +21,7 @@ import { RestClient as RestClass } from './RestClient';
 import Auth from '../Auth';
 import { ConsoleLogger as Logger } from '../Common/Logger';
 import { GraphQLOptions, GraphQLResult } from './types';
+import Cache from '../Cache';
 
 const logger = new Logger('API');
 
@@ -53,7 +54,7 @@ export default class APIClass {
     configure(options) {
         let opt = options ? options.API || options : {};
         logger.debug('configure API', { opt });
-
+        
         if (opt['aws_project_region']) {
             if (opt['aws_cloud_logic_custom']) {
                 const custom = opt['aws_cloud_logic_custom'];
@@ -65,6 +66,18 @@ export default class APIClass {
                 header: {},
             });
         }
+        
+        if(!Array.isArray(opt.endpoints)) {
+            opt.endpoints = [];
+        }
+
+        // Check if endpoints has custom_headers and validate if is a function
+        opt.endpoints.forEach((endpoint) => {
+            if (typeof endpoint.custom_header !== 'undefined' && typeof endpoint.custom_header !== 'function') {
+                logger.warn('API ' + endpoint.name + ', custom_header should be a function');
+                endpoint.custom_header = undefined;
+            }
+        });
 
         if (typeof opt.graphql_headers !== 'undefined' && typeof opt.graphql_headers !== 'function') {
             logger.warn('graphql_headers should be a function');
@@ -264,9 +277,9 @@ export default class APIClass {
         return this._api.endpoint(apiName);
     }
 
-    private async _headerBasedAuth() {
+    private async _headerBasedAuth(defaultAuthenticationType?) {
         const {
-            aws_appsync_authenticationType: authenticationType,
+            aws_appsync_authenticationType: authenticationType = defaultAuthenticationType,
             aws_appsync_apiKey: apiKey,
         } = this._options;
         let headers = {};
@@ -282,6 +295,14 @@ export default class APIClass {
                 break;
             case 'AWS_IAM':
                 if (!credentialsOK) { throw new Error('No credentials'); }
+                break;
+            case 'OPENID_CONNECT':
+                const federatedInfo = await Cache.getItem('federatedInfo');
+
+                if (!federatedInfo || !federatedInfo.token) { throw new Error('No federated jwt'); }
+                headers = {
+                    Authorization: federatedInfo.token
+                };
                 break;
             case 'AMAZON_COGNITO_USER_POOLS':
                 const session = await Auth.currentSession();
@@ -334,6 +355,7 @@ export default class APIClass {
             aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
             graphql_headers = () => ({}),
             graphql_endpoint: customGraphqlEndpoint,
+            graphql_endpoint_iam_region: customEndpointRegion
         } = this._options;
 
         const doc = parse(queryStr);
@@ -341,7 +363,9 @@ export default class APIClass {
 
         const headers = {
             ...(!customGraphqlEndpoint && await this._headerBasedAuth()),
-            ...(customGraphqlEndpoint && { Authorization: null }),
+            ...(customGraphqlEndpoint &&
+                (customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null })
+            ),
             ... await graphql_headers({ query: doc, variables })
         };
 
@@ -354,8 +378,8 @@ export default class APIClass {
             headers,
             body,
             signerServiceInfo: {
-                service: 'appsync',
-                region,
+                service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
+                region: !customGraphqlEndpoint ? region : customEndpointRegion
             }
         };
 

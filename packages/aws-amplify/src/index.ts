@@ -23,59 +23,12 @@ import {
     JS,
     ClientDevice,
     Signer,
-    I18n
+    I18n,
+    Amplify,
+    ServiceWorker
 } from './Common';
 
-const logger = new Logger('Amplify');
-
-export default class Amplify {
-    static Auth: AuthClass = null;
-    static Analytics: AnalyticsClass = null;
-    static API: APIClass = null;
-    static Storage: StorageClass = null;
-    static I18n = null;
-    static Cache = null;
-    static PubSub = null;
-
-    static Logger = null;
-
-    static configure(config) {
-        if (!config) { return; }
-        Auth.configure(config);
-        I18n.configure(config);
-        Analytics.configure(config);
-        API.configure(config);
-        Storage.configure(config);
-        Cache.configure(config);
-        PubSub.configure(config);
-
-        return config;
-    }
-
-    static addPluggable(pluggable) {
-        if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
-            const category = pluggable.getCategory();
-            switch (category) {
-                case 'Analytics':
-                    Analytics.addPluggable(pluggable);
-                    break;
-                case 'Auth':
-                    break;
-                case 'API':
-                    break;
-                case 'Cache':
-                    break;
-                case 'Storage':
-                    break;
-                case 'PubSub':
-                    PubSub.addPluggable(pluggable);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-}
+export default Amplify;
 
 Amplify.Auth = Auth;
 Amplify.Analytics = Analytics;
@@ -84,9 +37,9 @@ Amplify.Storage = Storage;
 Amplify.I18n = I18n;
 Amplify.Cache = Cache;
 Amplify.PubSub = PubSub;
-
 Amplify.Logger = Logger;
+Amplify.ServiceWorker = ServiceWorker;
 
-export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
+export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer, ServiceWorker };
 export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider };
 export { graphqlOperation };

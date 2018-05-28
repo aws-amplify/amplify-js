@@ -13,7 +13,7 @@
 
 import StorageClass from './Storage';
 
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger, Amplify } from '../Common';
 
 const logger = new Logger('Storage');
 
@@ -35,5 +35,7 @@ if (!_instance) {
 }
 
 const Storage = _instance;
+Amplify.register(Storage);
+
 export default Storage;
 export { StorageClass };

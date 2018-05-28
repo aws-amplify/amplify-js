@@ -52,12 +52,6 @@ jest.mock('aws-sdk/clients/s3', () => {
     return S3;
 });
 
-jest.mock('../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
 import Storage from '../../src/Storage/Storage';
 import { Hub } from '../../src/Common';
 import Auth from '../../src/Auth/Auth';
@@ -226,6 +220,25 @@ describe('Storage', () => {
             expect.assertions(2);
             expect(await storage.get('key', { expires: 1200 })).toBe('url');
             expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "public/key", "Expires": 1200});
+
+            spyon.mockClear();
+            curCredSpyOn.mockClear();
+        });
+
+        test('get object with identityId option', async () => {
+            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res({});
+                    });
+                });
+
+            const storage = new Storage(options);
+            const spyon = jest.spyOn(S3.prototype, 'getSignedUrl');
+
+            expect.assertions(2);
+            expect(await storage.get('key', { level: 'protected', identityId: 'identityId' })).toBe('url');
+            expect(spyon).toBeCalledWith('getObject', {"Bucket": "bucket", "Key": "protected/identityId/key" });
 
             spyon.mockClear();
             curCredSpyOn.mockClear();
