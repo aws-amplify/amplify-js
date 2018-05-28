@@ -247,4 +247,23 @@ describe('SignIn', () => {
         });
         
     });
+
+    describe('sign in test', () => {
+        test('UserNotConfirmedException, change state to confirmSignUp', async () => {
+            const wrapper = shallow(<SignIn/>);
+            const signIn = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'signIn').mockImplementationOnce(() => {
+                return Promise.reject({
+                    code: 'UserNotConfirmedException'
+                });
+            });
+
+            const spyon2 = jest.spyOn(signIn, 'changeState');
+            await signIn.signIn();
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        })
+    });
 })
