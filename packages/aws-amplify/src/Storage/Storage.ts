@@ -74,11 +74,11 @@ export default class StorageClass {
     }
 
     /**
-    * Get a presigned URL of the file
-    * @param {String} key - key of the object
-    * @param {Object} [options] - { level : private|protected|public }
-    * @return - A promise resolves to Amazon S3 presigned URL on success
-    */
+     * Get a presigned URL of the file
+     * @param {String} key - key of the object
+     * @param {Object} [options] - { level : private|protected|public }
+     * @return - A promise resolves to Amazon S3 presigned URL on success
+     */
     public async get(key: string, options?): Promise<Object> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
@@ -316,9 +316,11 @@ export default class StorageClass {
         const { credentials, level } = options;
 
         const customPrefix = options.customPrefix || {};
-        const privatePath = (customPrefix.private || 'private/') + credentials.identityId + '/';
-        const protectedPath = (customPrefix.protected || 'protected/') + credentials.identityId + '/';
-        const publicPath = customPrefix.public || 'public/';
+        const identityId = options.identityId || credentials.identityId;
+        const privatePath = (customPrefix.private !== undefined ? customPrefix.private : 'private/') + identityId + '/';
+        const protectedPath = (customPrefix.protected !== undefined ?
+            customPrefix.protected : 'protected/') + identityId + '/';
+        const publicPath = customPrefix.public !== undefined ? customPrefix.public : 'public/';
 
         switch (level) {
             case 'private':
