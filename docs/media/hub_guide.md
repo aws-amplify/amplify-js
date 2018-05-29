@@ -51,36 +51,28 @@ AWS Amplify Authentication module publishes in `auth` channel when 'signIn', 'si
 ```js
 import { Hub, Logger } from 'aws-amplify';
 
-const logger = new Logger('MyClass');
+const alex = new Logger('Alexander_the_auth_watcher');
 
-class MyClass {
-    constructor() {
-        Hub.listen('auth', this, 'MyListener');
-    }
+log.onHubCapsule = (capsule) => {
 
-    onHubCapsule(capsule) {
-        const { channel, payload } = capsule;
-        if (channel === 'auth') { onAuthEvent(payload); }
-    }
+    const { event, data } = capsule.payload;
 
-    onAuthEvent(payload) {
-        const { event, data } = payload;
-        switch (event) {
-            case 'signIn':
-                logger.debug('user signed in');
-                break;
-            case 'signUp':
-                logger.debug('user signed up');
-                break;
-            case 'signOut':
-                logger.debug('user signed out');
-                break;
-            case 'signIn_failure':
-                logger.debug('user sign in failed');
-                break;
-        }
-    }
-}
+    switch (event) {
+        case 'signIn':
+            alex.error('user signed in'); //[ERROR] Alexander_the_auth_watcher - user signed in
+            break;
+        case 'signUp':
+            alex.error('user signed up');
+            break;
+        case 'signOut':
+            alex.error('user signed out');
+            break;
+        case 'signIn_failure':
+            alex.error('user sign in failed');
+            break;
+}}
+
+    Hub.listen('auth', alex);
 ```
 
 ### API Reference
