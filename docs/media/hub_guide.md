@@ -55,9 +55,8 @@ const alex = new Logger('Alexander_the_auth_watcher');
 
 alex.onHubCapsule = (capsule) => {
 
-    const { event, data } = capsule.payload;
-
-    switch (event) {
+    switch (capsule.payload.event) {
+    
         case 'signIn':
             alex.error('user signed in'); //[ERROR] Alexander_the_auth_watcher - user signed in
             break;
@@ -70,9 +69,11 @@ alex.onHubCapsule = (capsule) => {
         case 'signIn_failure':
             alex.error('user sign in failed');
             break;
-}}
+            
+    }
+}
 
-    Hub.listen('auth', alex);
+Hub.listen('auth', alex);
 ```
 
 ### API Reference
