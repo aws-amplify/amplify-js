@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.2-unstable.18"></a>
+## [0.4.2-unstable.18](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.17...aws-amplify@0.4.2-unstable.18) (2018-05-29)
+
+
+### Bug Fixes
+
+* **Storage:** allowing to set an empty value as prefix for the S3 Key ([#931](https://github.com/aws/aws-amplify/issues/931)) ([240e50b](https://github.com/aws/aws-amplify/commit/240e50b))
+
+
+
+
 <a name="0.4.2-unstable.17"></a>
 ## [0.4.2-unstable.17](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.16...aws-amplify@0.4.2-unstable.17) (2018-05-24)
 
