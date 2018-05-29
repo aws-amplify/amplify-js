@@ -210,9 +210,13 @@ You can create your custom class and plug it to Analytics module, so that any An
 In your class, just implement `AnalyticsProvider`:
 
 ```js
-import { AnalyticsProvider } from 'aws-amplify';
+import { Analytics, AnalyticsProvider } from 'aws-amplify';
 
 export default class MyAnalyticsProvider implements AnalyticsProvider {
+    // category and provider name
+    static category = 'Analytics';
+    static providerName = 'MyAnalytics';
+
     // you need to implement these four methods
     // configure your provider
     configure(config: object): object;
@@ -230,14 +234,22 @@ export default class MyAnalyticsProvider implements AnalyticsProvider {
 
 You can now add your own Analytics plugin now by using:
 ```js
+// add the plugin
+Analytics.addPluggable(new MyAnalyticsProvider());
+
+// get the plugin
+Analytics.getPluggable(MyAnalyticsProvider.providerName);
+
+// remove the plulgin
+Analytics.removePluggable(MyAnalyticsProvider.providerName);
+
 // send configuration into Amplify
-Amplify.configure({
-    Analytics: { 
+Analytics.configure({
+    YOUR_PLUGIN_NAME: { 
         // My Analytics provider configuration 
     }
 });
-// use the plugin
-Amplify.addPluggable(new MyAnalyticsProvider());
+
 ```
 
 Please note that the default provider (Amazon Pinpoint) for the extended category (Analytics) will be in use when you call `Analytics.record()`.

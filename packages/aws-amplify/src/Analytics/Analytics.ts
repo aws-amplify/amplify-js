@@ -98,6 +98,42 @@ export default class AnalyticsClass {
     }
 
     /**
+     * Get the plugin object
+     * @param providerName - the name of the plugin 
+     */
+    public getPluggable(providerName) {
+        this._pluggables.map(pluggable => {
+            if (pluggable.getProviderName() === providerName) {
+                return pluggable;
+            }
+        });
+        logger.debug('No plugin found with providerName', providerName);
+        return null;
+    }
+
+    /**
+     * Remove the plugin object
+     * @param providerName - the name of the plugin
+     */
+    public removePluggable(providerName) {
+        let idx = 0;
+        while (idx < this._pluggables.length) {
+            if (this._pluggables[idx].getProviderName() === providerName) {
+                break;
+            }
+            idx += 1;
+        }
+
+        if (idx === this._pluggables.length) {
+            logger.debug('No plugin found with providerName', providerName);
+            return;
+        } else {
+            this._pluggables.splice(idx, idx + 1);
+            return;
+        }
+    }
+
+    /**
      * stop sending events
      */
     public disable() {
