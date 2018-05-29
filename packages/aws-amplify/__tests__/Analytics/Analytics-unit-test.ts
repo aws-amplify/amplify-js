@@ -123,4 +123,28 @@ describe("Analytics test", () => {
             analytics.enable();
         });
     });
+
+    describe('getPluggable test', () => {
+        test('happy case', () => {
+            const analytics = new Analytics();
+
+            const provider = new AWSAnalyticsProvider();
+            analytics.addPluggable(provider);
+
+            expect(analytics.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSAnalyticsProvider);
+        });
+    });
+
+    describe('removePluggable test', () => {
+        test('happy case', () => {
+            const analytics = new Analytics();
+
+            const provider = new AWSAnalyticsProvider();
+            analytics.addPluggable(provider);
+
+            analytics.removePluggable(provider.getProviderName());
+
+            expect(analytics.getPluggable(provider.getProviderName())).toBeNull();
+        });
+    });
 });

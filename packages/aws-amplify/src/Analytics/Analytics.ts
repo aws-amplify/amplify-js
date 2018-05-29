@@ -61,7 +61,7 @@ export default class AnalyticsClass {
             this._disabled = true;
         }
 
-        this._pluggables.map((pluggable) => {
+        this._pluggables.forEach((pluggable) => {
             // for backward compatibility
             if (pluggable.getProviderName() === 'AWSAnalytics' && !this._config['AWSAnalytics']) {
                 pluggable.configure(this._config);  
@@ -83,7 +83,7 @@ export default class AnalyticsClass {
      * add plugin into Analytics category
      * @param {Object} pluggable - an instance of the plugin
      */
-    public async addPluggable(pluggable: AnalyticsProvider) {
+    public addPluggable(pluggable: AnalyticsProvider) {
         if (pluggable && pluggable.getCategory() === 'Analytics') {
             this._pluggables.push(pluggable);
             let config = {};
@@ -93,7 +93,7 @@ export default class AnalyticsClass {
             } else {
                 config = pluggable.configure(this._config[pluggable.getProviderName()]);
             }
-            return Promise.resolve(config);
+            return config;
         }
     }
 
@@ -102,11 +102,13 @@ export default class AnalyticsClass {
      * @param providerName - the name of the plugin 
      */
     public getPluggable(providerName) {
-        this._pluggables.map(pluggable => {
+        for (let i = 0; i < this._pluggables.length; i += 1) {
+            const pluggable = this._pluggables[i];
             if (pluggable.getProviderName() === providerName) {
                 return pluggable;
             }
-        });
+        }
+      
         logger.debug('No plugin found with providerName', providerName);
         return null;
     }
@@ -210,7 +212,7 @@ export default class AnalyticsClass {
         }
         const provider = params.provider? params.provider: 'AWSAnalytics';
         
-        this._pluggables.map((pluggable) => {
+        this._pluggables.forEach((pluggable) => {
             if (pluggable.getProviderName() === provider) {
                 pluggable.record(params);
             }
