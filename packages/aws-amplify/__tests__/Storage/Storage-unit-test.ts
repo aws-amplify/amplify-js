@@ -206,6 +206,37 @@ describe('Storage', () => {
             curCredSpyOn.mockClear();
         });
 
+        test('sets an empty custom public key', async () => {
+            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res({
+                            identityId: 'id'
+                        });
+                    });
+                });
+            const storage = new Storage(options);
+            const spy = jest.spyOn(S3.prototype, 'getSignedUrl');
+            await storage.get('my_key', {customPrefix: {public: ''}});
+            expect(spy).toHaveBeenCalledWith('getObject', {"Bucket": "bucket", "Key": "my_key"});
+        });
+
+        test('sets a custom key for public accesses', async () => {
+            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+                .mockImplementationOnce(() => {
+                    return new Promise((res, rej) => {
+                        res({
+                            identityId: 'id'
+                        });
+                    });
+                });
+
+            const storage = new Storage(options);
+            const spy = jest.spyOn(S3.prototype, 'getSignedUrl');
+            await storage.get('my_key', {customPrefix: {public: '123/'}});
+            expect(spy).toHaveBeenCalledWith('getObject', {"Bucket": "bucket", "Key": "123/my_key"});
+        });
+
         test('get object with expires option', async () => {
             const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
                 .mockImplementationOnce(() => {
