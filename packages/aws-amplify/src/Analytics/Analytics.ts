@@ -15,7 +15,8 @@ import {
     ClientDevice,
     ConsoleLogger as Logger,
     missingConfig,
-    Parser
+    Hub,
+    Parser,
 } from '../Common';
 import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
 import Platform from '../Common/Platform';
@@ -24,6 +25,10 @@ import Auth from '../Auth';
 import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 
 const logger = new Logger('AnalyticsClass');
+
+const dispatchAnalyticsEvent = (event, data) => {
+    Hub.dispatch('analytics', { event, data }, 'Analytics');
+};
 
 // events buffer
 const BUFFER_SIZE = 1000;
@@ -39,6 +44,7 @@ export default class AnalyticsClass {
     private _provider;
     private _pluggables: AnalyticsProvider[];
     private _disabled;
+    private _autoSessionRecord;
 
     /**
      * Initialize Analtyics
@@ -70,19 +76,26 @@ export default class AnalyticsClass {
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
      */
-    public configure(config) {
+    public configure(config?) {
         logger.debug('configure Analytics');
+        if (!config) return this._config;
+
         const amplifyConfig = Parser.parseMobilehubConfig(config);
         const conf = Object.assign({}, this._config, amplifyConfig.Analytics, config);
 
         const clientInfo:any = ClientDevice.clientInfo();
         conf['clientInfo'] = conf['client_info']? conf['client_info'] : clientInfo;
 
-        this._config = conf;
-
         if (conf['disabled']) {
             this._disabled = true;
         }
+
+        if (conf['autoSessionRecord'] === undefined) {
+            conf['autoSessionRecord'] = true;
+        }
+        
+        this._config = conf;
+
         this._pluggables.map((pluggable) => {
             pluggable.configure(conf);
         });
@@ -91,6 +104,7 @@ export default class AnalyticsClass {
             this.addPluggable(new AWSAnalyticsProvider());
         }
 
+        dispatchAnalyticsEvent('configured', null);
         return conf;
     }
 
