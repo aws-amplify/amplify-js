@@ -53,7 +53,7 @@ import { Hub, Logger } from 'aws-amplify';
 
 const alex = new Logger('Alexander_the_auth_watcher');
 
-log.onHubCapsule = (capsule) => {
+alex.onHubCapsule = (capsule) => {
 
     const { event, data } = capsule.payload;
 
