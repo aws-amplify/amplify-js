@@ -227,10 +227,11 @@ ga.signIn().then(googleUser => {
 });
 ```
 
-To get the jwt token after signed in, you can use the `Cache`:
+After the federated login, you can retrieve related JWT token from the local cache using the *Cache* module: 
 ```js
 import { Cache } from 'aws-amplify';
 
+// Run this after the sign-in
 Cache.getItem('federatedInfo').then(federatedInfo => {
      const { token } = federatedInfo;
 });
