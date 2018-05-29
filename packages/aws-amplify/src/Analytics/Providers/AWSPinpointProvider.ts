@@ -29,6 +29,9 @@ const RESEND_LIMIT = 5;
 
 // params: { event: {name: , .... }, timeStamp, config, resendLimits }
 export default class AWSPinpointProvider implements AnalyticsProvider {
+    static category = 'Analytics';
+    static providerName = 'AWSPinpoint';
+
     private _config;
     private mobileAnalytics;
     private pinpointClient;
@@ -125,15 +128,15 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
     /**
      * get the category of the plugin
      */
-    public getCategory(): string {
-        return 'Analytics';
+    getCategory(): string {
+        return AWSPinpointProvider.category;
     }
 
     /**
      * get provider name of the plugin
      */
-    public getProviderName(): string {
-        return 'AWSPinpoint';
+    getProviderName(): string {
+        return AWSPinpointProvider.providerName;
     }
 
     /**

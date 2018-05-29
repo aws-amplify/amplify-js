@@ -96,7 +96,7 @@ describe("AnalyticsProvider test", () => {
         test('happy case', () => {
             const analytics = new AnalyticsProvider();
 
-            expect(analytics.configure({appId: 'appId'})).toEqual({appId: 'appId'});
+            expect(analytics.configure({appId: 'appId'})).toEqual({"appId": "appId", "bufferSize": 1000, "flushInterval": 5000, "flushSize": 100, "resendLimit": 5});
         });
     });
 
