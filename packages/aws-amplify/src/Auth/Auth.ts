@@ -22,11 +22,13 @@ import {
     Hub,
     JS,
     Parser,
-    Credentials
+    Credentials,
+    StorageHelper
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
 import { ICognitoUserPoolData, ICognitoUserData } from 'amazon-cognito-identity-js';
+import '../Common/Polyfills';
 
 const logger = new Logger('AuthClass');
 
@@ -365,10 +367,7 @@ export default class AuthClass {
      * @return - A promise resolve if success
      */
     public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
-        let smsMfaSettings = {
-            PreferredMfa : false,
-            Enabled : false
-        };
+        let smsMfaSettings = null;
         let totpMfaSettings = {
             PreferredMfa : false,
             Enabled : false
@@ -736,7 +735,7 @@ export default class AuthClass {
             } catch (e) {
                 logger.debug('cannot get user attributes');
             } finally {
-                this.user = Object.assign({}, user, { attributes });
+                this.user = Object.assign(user, { attributes });
                 return this.user;
             }
         }
@@ -1080,7 +1079,7 @@ export default class AuthClass {
         }
         return obj;
     }
-
+    
     private createCognitoUser(username: string): Cognito.CognitoUser {
         const userData: ICognitoUserData = {
             Username: username,

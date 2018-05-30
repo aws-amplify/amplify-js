@@ -1,4 +1,5 @@
 import { ConsoleLogger as Logger } from './Logger';
+import StorageHelper from './StorageHelper';
 import { AWS } from './Facet';
 import JS from './JS';
 import Platform from './Platform';
@@ -172,16 +173,18 @@ export class Credentials {
         return true;
     }
 
-    private _setCredentialsForGuest() {
+    private async _setCredentialsForGuest() {
         logger.debug('setting credentials for guest');
         const { identityPoolId, region, mandatorySignIn } = this._config;
         if (mandatorySignIn) {
             return Promise.reject('cannot get guest credentials when mandatory signin enabled');
         }
 
+        const identityId = await StorageHelper.getItem('CognitoIdentityId-' + identityPoolId);
         const credentials = new AWS.CognitoIdentityCredentials(
             {
-            IdentityPoolId: identityPoolId
+            IdentityPoolId: identityPoolId,
+            IdentityId: identityId? identityId: undefined
         },  {
             region
         });
@@ -259,9 +262,10 @@ export class Credentials {
 
     private _loadCredentials(credentials, source, authenticated, info) {
         const that = this;
+        const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
             credentials.getPromise().then(
-                () => {
+                async () => {
                     logger.debug('Load credentials successfully', credentials);
                     that._credentials = credentials;
                     that._credentials.authenticated = authenticated;
@@ -283,6 +287,16 @@ export class Credentials {
                             }, 
                             { priority: 1 }
                         );
+                    }
+                    if (source === 'guest') {
+                        try {
+                            await StorageHelper.setItem(
+                                'CognitoIdentityId-' + identityPoolId, 
+                                credentials.identityId
+                            );
+                        } catch (e) {
+                            logger.debug('Failed to cache identityId', e);
+                        }
                     }
                     res(that._credentials);
                 },

@@ -24,7 +24,8 @@ import {
     ClientDevice,
     Signer,
     I18n,
-    Amplify
+    Amplify,
+    ServiceWorker
 } from './Common';
 
 export default Amplify;
@@ -37,7 +38,8 @@ Amplify.I18n = I18n;
 Amplify.Cache = Cache;
 Amplify.PubSub = PubSub;
 Amplify.Logger = Logger;
+Amplify.ServiceWorker = ServiceWorker;
 
-export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
+export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer, ServiceWorker };
 export { AuthClass, AnalyticsClass, APIClass, StorageClass, AnalyticsProvider };
 export { graphqlOperation };
