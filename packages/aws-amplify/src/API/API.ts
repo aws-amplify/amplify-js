@@ -61,6 +61,7 @@ export default class APIClass {
                 opt.endpoints = (typeof custom === 'string') ? JSON.parse(custom)
                     : custom;
             }
+            
             opt = Object.assign({}, opt, {
                 region: opt['aws_project_region'],
                 header: {},
