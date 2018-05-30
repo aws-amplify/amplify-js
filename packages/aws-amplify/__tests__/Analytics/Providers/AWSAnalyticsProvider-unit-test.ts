@@ -24,13 +24,6 @@ jest.mock('aws-sdk/clients/mobileanalytics', () => {
     return MobileAnalytics;
 });
 
-
-jest.mock('../../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
 jest.mock('uuid', () => {
     const mockfn = () => {return 'sessionId'};
     return { v1: mockfn };

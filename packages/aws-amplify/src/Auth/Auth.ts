@@ -24,11 +24,13 @@ import {
     GoogleOAuth,
     JS,
     Parser,
-    AsyncStorage
+    AsyncStorage,
+    StorageHelper
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
 import { ICognitoUserPoolData, ICognitoUserData } from 'amazon-cognito-identity-js';
+import '../Common/Polyfills';
 
 const logger = new Logger('AuthClass');
 
@@ -66,7 +68,6 @@ export default class AuthClass {
 
     private _refreshHandlers = {};
     private _gettingCredPromise = null;
-    private _localStorage = window.localStorage;
 
     /**
      * Initialize Auth with AWS configurations
@@ -77,10 +78,6 @@ export default class AuthClass {
         // refresh token
         this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
         this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
-
-        if (Platform.isReactNative) {
-            this._localStorage = AsyncStorage;
-        }
 
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
@@ -1207,7 +1204,7 @@ export default class AuthClass {
             return Promise.reject('cannot get guest credentials when mandatory signin enabled');
         }
 
-        const identityId = await this._localStorage.getItem('CognitoIdentityId-' + identityPoolId);
+        const identityId = await StorageHelper.getItem('CognitoIdentityId-' + identityPoolId);
         const credentials = new CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
@@ -1299,7 +1296,7 @@ export default class AuthClass {
                     }
                     if (source === 'guest') {
                         try {
-                            await this._localStorage.setItem(
+                            await StorageHelper.setItem(
                                 'CognitoIdentityId-' + identityPoolId, 
                                 credentials.identityId
                             );
