@@ -277,6 +277,28 @@ async function head() {
 head();
 ```
 
+### Custom Request Headers
+
+When working with a REST endpoint, you may need to set request headers for authorization purposes. This is done by passing a `custom_header` function into the configuration:
+
+```js
+Amplify.configure({
+  API: {
+    endpoints: [
+      {
+        name: "sampleCloudApi",
+        endpoint: "https://xyz.execute-api.us-east-1.amazonaws.com/Development",
+        custom_header: async () => { 
+          return { Authorization : 'token' } 
+          // Alternatively, with Cognito User Pools use this:
+          // return { (await Auth.currentSession()).idToken.jwtToken } 
+        }
+      }
+    ]
+  }
+});
+```
+
 ## Working with GraphQL Endpoints
 
 AWS Amplify API Module supports GraphQL endpoints via an easy-to-use GraphQL client.
@@ -336,21 +358,6 @@ Amplify.configure({
     graphql_headers: async () => ({
       'My-Custom-Header': 'my value'
     })
-  }
-});
-```
-
-### Signing a GraphQL request to authenticate with AWS Identity Access Management (IAM).
-
-Amplify provides the ability to sign requests for IAM authentication.  
-
-Add the following to your configuration statement to enable this for GraphQL requests that are processed through AWS API Gateway:
-
-```js
-Amplify.configure({
-  API: {
-    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
-    graphql_endpoint_iam_region: 'my_graphql_apigateway_region'
   }
 });
 ```
@@ -579,6 +586,21 @@ const subscription = API.graphql(
 // Stop receiving data updates from the subscription
 subscription.unsubscribe();
 
+```
+
+### Signing Request with IAM
+
+Amplify provides the ability to sign requests automatically with AWS Identity Access Management (IAM) for GraphQL requests that are processed through AWS API Gateway.
+
+Add *graphql_endpoint_iam_region* parameter to your GraphQL configuration statement to enable signing: 
+
+```js
+Amplify.configure({
+  API: {
+    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
+    graphql_endpoint_iam_region: 'my_graphql_apigateway_region'
+  }
+});
 ```
 
 ### React Components

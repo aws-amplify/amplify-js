@@ -227,6 +227,16 @@ ga.signIn().then(googleUser => {
 });
 ```
 
+After the federated login, you can retrieve related JWT token from the local cache using the *Cache* module: 
+```js
+import { Cache } from 'aws-amplify';
+
+// Run this after the sign-in
+Cache.getItem('federatedInfo').then(federatedInfo => {
+     const { token } = federatedInfo;
+});
+```
+
 Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenId. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `accounts.your-openid-provider.com`.
 
  NOTE: Federated Identity HOCs are not yet available on React Native.
