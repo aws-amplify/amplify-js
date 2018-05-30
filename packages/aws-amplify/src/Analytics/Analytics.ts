@@ -15,11 +15,7 @@ import {
     ConsoleLogger as Logger,
     missingConfig,
     Hub,
-<<<<<<< HEAD
     Parser
-=======
-    Parser,
->>>>>>> upstream/master
 } from '../Common';
 import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
 import Platform from '../Common/Platform';
@@ -33,14 +29,6 @@ const dispatchAnalyticsEvent = (event, data) => {
     Hub.dispatch('analytics', { event, data }, 'Analytics');
 };
 
-<<<<<<< HEAD
-=======
-// events buffer
-const BUFFER_SIZE = 1000;
-const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-const interval = 5*1000; // 5s
-const RESEND_LIMIT = 5;
->>>>>>> upstream/master
 /**
 * Provide mobile analytics client functions
 */
