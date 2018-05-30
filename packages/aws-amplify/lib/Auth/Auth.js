@@ -940,9 +940,11 @@ var AuthClass = /** @class */ (function () {
                 return this.currentSession()
                     .then(function (session) {
                     logger.debug('getting session success', session);
+                    dispatchAuthEvent('signIn');
                     return _this._setCredentialsFromSession(session);
                 }).catch(function (error) {
                     logger.debug('getting session failed', error);
+                    dispatchAuthEvent('signOut');
                     return _this._setCredentialsForGuest();
                 });
             }
