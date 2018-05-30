@@ -65,7 +65,7 @@ export default class AuthClass {
     constructor(config: AuthOptions) {
         this.configure(config);
 
-        this.currentSession = this.currentSession.bind(this);
+        this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
@@ -807,8 +807,44 @@ export default class AuthClass {
      * Get authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
-    public currentUserCredentials() : Promise<any> {
-        return Credentials.currentUserCredentials();
+    public currentUserCredentials() {
+        const that = this;
+        logger.debug('Getting current user credentials');
+        if (Platform.isReactNative) {
+            // asyncstorage
+            return Cache.getItem('federatedInfo')
+                .then((federatedInfo) => {
+                    if (federatedInfo) {
+                        // refresh the jwt token here if necessary
+                        return Credentials.refreshFederatedToken(federatedInfo);
+                    } else {
+                        return that.currentSession()
+                            .then(session => {
+                                return Credentials.set(session, 'session');
+                            }).catch((error) => {
+                                return Credentials.set(null, 'guest');
+                            });
+                    }
+                }).catch((error) => {
+                    return Promise.reject(error);
+                });
+        } else {
+            // first to check whether there is federation info in the local storage
+            const federatedInfo = Cache.getItem('federatedInfo');
+            if (federatedInfo) {
+                // refresh the jwt token here if necessary
+                return Credentials.refreshFederatedToken(federatedInfo);
+            } else {
+                return this.currentSession()
+                    .then(session => {
+                        logger.debug('getting session success', session);
+                        return Credentials.set(session, 'session');
+                    }).catch((error) => {
+                        logger.debug('getting session failed', error);
+                        return Credentials.set(null, 'guest');
+                    });
+            }
+        }
     }
 
 

@@ -1060,21 +1060,9 @@ describe('auth unit test', () => {
             spyon.mockClear();
         })
     });
-    
 
     describe('currentUserCredentials test', () => {
-        const auth = new Auth(authOptions);
-        const spyon = jest.spyOn(Credentials, 'currentUserCredentials').mockImplementationOnce(() => {
-            return;
-        });
-
-        auth.currentUserCredentials();
-
-        expect(spyon).toBeCalled();
-    });
-
-    describe.skip('currentUserCredentials test', () => {
-        test('with federated info and not expired', async () => {
+        test('with federated info', async () => {
             const auth = new Auth(authOptions);
 
             const spyon = jest.spyOn(Cache, 'getItem')
@@ -1085,109 +1073,64 @@ describe('auth unit test', () => {
                     }
                 });
 
+            const spyon2 = jest.spyOn(Credentials, 'refreshFederatedToken').mockImplementationOnce(() => {
+                return Promise.resolve('cred');
+            });
+
             expect.assertions(1);
-            expect(await auth.currentUserCredentials()).not.toBeUndefined();
+            expect(await auth.currentUserCredentials()).toBe('cred');
 
             spyon.mockClear();
+            spyon2.mockClear();
         });
 
-        test('with federated info and not expired, then refresh it successfully', async () => {
+        test('with cognito session', async () => {
             const auth = new Auth(authOptions);
 
             const spyon = jest.spyOn(Cache, 'getItem')
                 .mockImplementationOnce(() => {
-                    return {
-                        provider: 'google',
-                        token: 'token',
-                        expires_at: (new Date().getTime()) * 2
-                    }
+                    return null;
                 });
 
-            auth._refreshHandlers = {}
-            
+            const spyon2 = jest.spyOn(auth, 'currentSession').mockImplementationOnce(() => {
+                return Promise.resolve('session');
+            });
+
+            const spyon3 = jest.spyOn(Credentials, 'set').mockImplementationOnce(() => {
+                return Promise.resolve('cred');
+            });
+
             expect.assertions(1);
-            expect(await auth.currentUserCredentials()).not.toBeUndefined();
+            expect(await auth.currentUserCredentials()).toBe('cred');
 
             spyon.mockClear();
+            spyon2.mockClear();
+            spyon3.mockClear();
         });
 
-        test('with federated info and expired, then refresh it successfully', async () => {
+        test('with guest', async () => {
             const auth = new Auth(authOptions);
 
             const spyon = jest.spyOn(Cache, 'getItem')
                 .mockImplementationOnce(() => {
-                    return {
-                        provider: 'google',
-                        token: 'token',
-                        expires_at: 0
-                    }
+                    return null;
                 });
 
-            auth._refreshHandlers = {
-                google: () => {
-                    return Promise.resolve({
-                        token: 'new_token',
-                        expires_at: 1
-                    });
-                }
-            }
+            const spyon2 = jest.spyOn(auth, 'currentSession').mockImplementationOnce(() => {
+                return Promise.reject('err');
+            });
+
+            const spyon3 = jest.spyOn(Credentials, 'set').mockImplementationOnce(() => {
+                return Promise.resolve('cred');
+            });
+
             expect.assertions(1);
-            expect(await auth.currentUserCredentials()).not.toBeUndefined();
+            expect(await auth.currentUserCredentials()).toBe('cred');
 
             spyon.mockClear();
+            spyon2.mockClear();
+            spyon3.mockClear();
         });
-
-        test('with federated info and expired, no refresh handler provided', async () => {
-            const auth = new Auth(authOptions);
-
-            const spyon = jest.spyOn(Cache, 'getItem')
-                .mockImplementationOnce(() => {
-                    return {
-                        provider: 'google',
-                        token: 'token',
-                        expires_at: 0
-                    }
-                });
-
-            auth._refreshHandlers = null;
-            expect.assertions(1);
-            try {
-                await auth.currentUserCredentials();
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
-
-            spyon.mockClear();
-        });
-
-        test('with federated info and expired, then refresh failed', async () => {
-            const auth = new Auth(authOptions);
-
-            const spyon = jest.spyOn(Cache, 'getItem')
-                .mockImplementationOnce(() => {
-                    return {
-                        provider: 'google',
-                        token: 'token',
-                        expires_at: 0
-                    }
-                });
-
-            auth._refreshHandlers = {
-                google: () => {
-                    return Promise.reject('err');
-                }
-            }
-            expect.assertions(1);
-            try {
-                await auth.currentUserCredentials();
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
-
-            spyon.mockClear();
-        });
-
-
     });
 
     describe('currentCrendentials', () => {
@@ -1201,26 +1144,6 @@ describe('auth unit test', () => {
         expect(spyon).toBeCalled();
         spyon.mockClear();
     });
-
-    describe.skip('currentCrendentials', () => {
-        test('happy case when auth has credentials', async () => {
-            const auth = new Auth(authOptions);
-            const cred = new CognitoIdentityCredentials({
-                    IdentityPoolId: 'identityPoolId',
-                }, {
-                    region: 'region'
-                });
-            cred.expired = false;
-            cred.expireTime = (new Date().getTime()) * 2;
-
-            auth['credentials'] = cred;
-
-            expect.assertions(1);
-            expect(await auth.currentCredentials()).not.toBeNull();
-
-        });
-    });
-
 
     describe('verifyUserAttribute test', () => {
         test('happy case', async () => {

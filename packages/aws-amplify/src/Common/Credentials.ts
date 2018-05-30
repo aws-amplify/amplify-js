@@ -78,50 +78,10 @@ export class Credentials {
         }
 
         logger.debug('need to get a new credential or refresh the existing one');
-        return this.currentUserCredentials();
+        return this._authClass.currentUserCredentials();
     }
 
-    public currentUserCredentials() {
-        const that = this;
-        logger.debug('Getting current user credentials');
-        if (Platform.isReactNative) {
-            // asyncstorage
-            return this._cacheClass.getItem('federatedInfo')
-                .then((federatedInfo) => {
-                    if (federatedInfo) {
-                        // refresh the jwt token here if necessary
-                        return that._refreshFederatedToken(federatedInfo);
-                    } else {
-                        return that._authClass.currentSession()
-                            .then(session => {
-                                return that._setCredentialsFromSession(session);
-                            }).catch((error) => {
-                                return that._setCredentialsForGuest();
-                            });
-                    }
-                }).catch((error) => {
-                    return Promise.reject(error);
-                });
-        } else {
-            // first to check whether there is federation info in the local storage
-            const federatedInfo = this._cacheClass.getItem('federatedInfo');
-            if (federatedInfo) {
-                // refresh the jwt token here if necessary
-                return this._refreshFederatedToken(federatedInfo);
-            } else {
-                return this._authClass.currentSession()
-                    .then(session => {
-                        logger.debug('getting session success', session);
-                        return this._setCredentialsFromSession(session);
-                    }).catch((error) => {
-                        logger.debug('getting session failed', error);
-                        return this._setCredentialsForGuest();
-                    });
-            }
-        }
-    }
-    
-    private _refreshFederatedToken(federatedInfo) {
+    public refreshFederatedToken(federatedInfo) {
         logger.debug('Getting federated credentials');
         const { provider, user } = federatedInfo;
         let token = federatedInfo.token;

@@ -2,8 +2,8 @@ import { Credentials } from '../../src/Common/Credentials';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authClass = {
-    currentSession() {
-        return Promise.resolve();
+    currentUserCredentials() {
+        return Promise.resolve('cred');
     }
 }
 
@@ -70,41 +70,29 @@ describe('Credentials test', () => {
         });
 
         test('credentials not in memory or being expired', async () => {
-            const spyon = jest.spyOn(Credentials.prototype, 'currentUserCredentials').mockImplementationOnce(() => {
-                return Promise.resolve('cred');
-            });
             const credentials = new Credentials(null);
             
+            credentials.setAuthClass(authClass);
             expect(await credentials.get()).toBe('cred');
-
-            spyon.mockClear();
         });
     });
 
-    describe('currentUserCredentials test', () => {
-        test('session case', async () => {
-            const session = {
-                getIdToken() {
-                    return {
-                        getJwtToken() {
-                            return 'token';
-                        }
-                    }
-                }
-            };
+   describe.skip('refreshFederatedToken test', () => {
+        test('federated info and not expired, then refresh it successfully', async () => {
+            const credentials = new Credentials(null);
+        });
 
-            const credentials = new Credentials(options);
-            const spyon = jest.spyOn(authClass, 'currentSession').mockImplementationOnce(() => {
-                return Promise.resolve(session);
-            });
+        test('federated info and expired, then refresh it successfully', async () => {
+            const credentials = new Credentials(null);
+        });
 
-            credentials.setAuthClass(authClass);
-            credentials.setCacheClass(cacheClass);
+        test('with federated info and expired, no refresh handler provided', async () => {
+            const credentials = new Credentials(null);
+        });
 
-            expect(await credentials.currentUserCredentials()).not.toBeNull();
-
-            spyon.mockClear();
-
-        });   
+        test('with federated info and expired, then refresh failed', async () => {
+            const credentials = new Credentials(null);
+        });
     });
+
 });
