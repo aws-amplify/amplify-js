@@ -18,7 +18,7 @@ When used with `AwsIOTProvider`, PubSub is capable of signing request according 
 To use in your app, import `AWSIoTProvider`:
 
 ```js
-import { PubSub } from 'aws-amplify';
+import Amplify, { PubSub } from 'aws-amplify';
 import { AWSIoTProvider } from 'aws-amplify/lib/PubSub/Providers';
 ```
 
