@@ -14,7 +14,7 @@ After registering the service worker, the ServiceWorker module will listen and a
 Import *ServiceWorker* and instantiate a new instance (you can have mulitple workers on different scopes):
 ```js
 import { ServiceWorker } from 'aws-amplify';
-const serviceWorker = new ServiceWorker();
+const myServiceWorker = new ServiceWorker();
 ```
 
 ## Working with the API
