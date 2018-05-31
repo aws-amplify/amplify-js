@@ -153,7 +153,7 @@ public class RNPushNotificationHelper {
                 if (msg == null) {
                     // this happens when a 'data' notification is received - we do not synthesize a local notification in this case
                     Log.d(LOG_TAG, "Cannot send to notification centre because there is no 'message' field in: " + bundle);
-                    return;   
+                    return;
                 }
             }
 
@@ -286,6 +286,13 @@ public class RNPushNotificationHelper {
                 String color = bundle.getString("color");
                 if (color != null) {
                     notification.setColor(Color.parseColor(color));
+                }
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                String channelId = bundle.getString("android_channel_id");
+                if (channelId != null) {
+                    notification.setChannelId(channelId);
                 }
             }
 
