@@ -261,6 +261,14 @@ amazon-cognito-auth-js@^1.1.9:
   version "1.1.9"
   resolved "https://registry.yarnpkg.com/amazon-cognito-auth-js/-/amazon-cognito-auth-js-1.1.9.tgz#f230508aac15bf06da152a39fc426d063a72cfa6"
 
+amazon-cognito-identity-js@^2.0.0:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-2.0.6.tgz#a98ab8df96e3f0205e0ddad5c75360fdfcd45e5b"
+  dependencies:
+    buffer "4.9.1"
+    crypto-browserify "1.0.9"
+    js-cookie "^2.1.4"
+
 amdefine@>=0.0.4, amdefine@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
@@ -569,18 +577,7 @@ awesome-typescript-loader@^4.0.1:
     mkdirp "^0.5.1"
     source-map-support "^0.5.3"
 
-aws-amplify@^0.2.14:
-  version "0.2.15"
-  resolved "https://registry.yarnpkg.com/aws-amplify/-/aws-amplify-0.2.15.tgz#8ea5364e4082ebbd845aa8a4544dc760639b45ca"
-  dependencies:
-    amazon-cognito-identity-js "^2.0.0"
-    aws-sdk "2.198.0"
-    axios "^0.17.0"
-    paho-mqtt "^1.0.4"
-    uuid "^3.2.1"
-    zen-observable "^0.8.6"
-
-aws-amplify@^0.3, aws-amplify@^0.3.x:
+aws-amplify@^0.3:
   version "0.3.4"
   resolved "https://registry.yarnpkg.com/aws-amplify/-/aws-amplify-0.3.4.tgz#fc7e9398a51f6d071f3e3dd50017509b67efedfc"
   dependencies:
@@ -1581,7 +1578,7 @@ base64-arraybuffer@0.1.5:
   version "0.1.5"
   resolved "https://registry.npmjs.org/base64-arraybuffer/-/base64-arraybuffer-0.1.5.tgz#73926771923b5a19747ad666aa5cd4bf9c6e9ce8"
 
-base64-js@0.0.8, base64-js@~0.0.4:
+base64-js@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-0.0.8.tgz#1101e9544f4a76b1bc3b26d452ca96d7a35e7978"
 
@@ -1913,13 +1910,6 @@ buffer@^5.0.6:
   dependencies:
     base64-js "^1.0.2"
     ieee754 "^1.1.4"
-
-buffer@~2.3.2:
-  version "2.3.4"
-  resolved "https://registry.yarnpkg.com/buffer/-/buffer-2.3.4.tgz#7e4af5a23c15e13fcbfd5c5a1ec974cb61668a4c"
-  dependencies:
-    base64-js "~0.0.4"
-    ieee754 "~1.1.1"
 
 buildmail@4.0.1:
   version "4.0.1"
@@ -2747,12 +2737,9 @@ cryptiles@3.x.x:
   dependencies:
     boom "5.x.x"
 
-crypto-browserify@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/crypto-browserify/-/crypto-browserify-3.0.0.tgz#5d42e013137c658bcc74de792d2d96268aeaa883"
-  dependencies:
-    ripemd160 "0.2.0"
-    sha.js "2.1.6"
+crypto-browserify@1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/crypto-browserify/-/crypto-browserify-1.0.9.tgz#cc5449685dfb85eb11c9828acc7cb87ab5bbfcc0"
 
 crypto-browserify@3.3.0:
   version "3.3.0"
@@ -4762,10 +4749,6 @@ iconv-lite@0.4.19, iconv-lite@^0.4.17, iconv-lite@~0.4.13:
 ieee754@^1.1.4:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
-
-ieee754@~1.1.1:
-  version "1.1.11"
-  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.11.tgz#c16384ffe00f5b7835824e67b6f2bd44a5229455"
 
 iferr@^0.1.5:
   version "0.1.5"
@@ -8856,12 +8839,6 @@ setprototypeof@1.0.3:
 setprototypeof@1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.1.0.tgz#d0bd85536887b6fe7c0d818cb962d9d91c54e656"
-
-sha.js@2.1.6:
-  version "2.1.6"
-  resolved "https://registry.yarnpkg.com/sha.js/-/sha.js-2.1.6.tgz#20e6eb81f3e66f081ddf84dd8f0464bea6c02fd4"
-  dependencies:
-    buffer "~2.3.2"
 
 sha.js@2.2.6:
   version "2.2.6"
