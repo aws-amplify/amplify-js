@@ -24,13 +24,6 @@ jest.mock('aws-sdk/clients/mobileanalytics', () => {
     return MobileAnalytics;
 });
 
-
-jest.mock('../../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
 jest.mock('uuid', () => {
     const mockfn = () => {return 'sessionId'};
     return { v1: mockfn };
@@ -153,6 +146,35 @@ describe("AnalyticsProvider test", () => {
     describe('record test', () => {
         test('custom events', async () => {
             const analytics = new AnalyticsProvider();
+            const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
+                callback(null, 'data');
+            });
+
+            const params = {eventName: 'custom event', config: options, timestamp};
+            await analytics.record(params);
+            expect(spyon).toBeCalled();
+            expect(spyon.mock.calls[0][0].events[0].eventType).toBe('custom event');
+
+            await analytics.record(params);
+            spyon.mockClear();
+        });
+
+        test('custom events with client context', async () => {
+            const analytics = new AnalyticsProvider();
+            analytics.configure({
+                clientContext: {
+                    clientId: 'xxxxx',
+                    appTitle: 'xxxxx',
+                    appVersionName: 'xxxxx',
+                    appVersionCode: 'xxxxx',
+                    appPackageName: 'xxxxx',
+                    platform: 'xxxxx',
+                    platformVersion: 'xxxxx',
+                    model: 'xxxxx',
+                    make: 'xxxxx',
+                    locale: 'xxxxx'
+                }
+            })
             const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
                 callback(null, 'data');
             });

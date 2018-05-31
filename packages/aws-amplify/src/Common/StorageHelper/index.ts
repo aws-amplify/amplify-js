@@ -11,24 +11,9 @@
  * and limitations under the License.
  */
 
-const Platform = {
-	'userAgent': 'aws-amplify/0.4.x js',
-	'product': '',
-	'navigator': null,
-	'isReactNative': false
-};
-if (typeof navigator !== 'undefined' && navigator.product) {
-	Platform.product = navigator.product || '';
-	Platform.navigator = navigator || null;
-	switch(navigator.product) {
-		case 'ReactNative':
-			Platform.userAgent = 'aws-amplify/0.4.x react-native';
-			Platform.isReactNative = true;
-			break;
-		default:
-			Platform.userAgent = 'aws-amplify/0.4.x js';
-			Platform.isReactNative = false;
-			break;
-	}
-}
-export default Platform;
+ // import polyfill for server environment
+import '../Polyfills';
+
+const StorageHelper = window.localStorage;
+
+export default StorageHelper;
