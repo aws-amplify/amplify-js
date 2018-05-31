@@ -255,7 +255,7 @@
 	// Offcanvas
 	$( '.offcanvas-toggle' ).on( 'click', function() {
 		$( 'body' ).toggleClass( 'offcanvas-expanded' );
-	} );
+	});
 
 	// Handle click on tabs
 	$('ul.tabs li').click(function(event, stopPropogation){
@@ -280,17 +280,40 @@
 
 	$.urlParam = function(name){
 		var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-		return results[1] || 0;
-	}
+
+		if ( results && results[ 1 ] )
+			return results[ 1 ];
+		else	
+			return 0;
+	};
 
 	// Open tabs when the page is launched with the query params 
-	if ($.urlParam('platform')) {
+	if ( $.urlParam( 'platform' )) {
 		var platform = $.urlParam('platform');
 		if (platform) {
 			$('li.tab-link.'+ platform ).trigger('click');
 		}
 	}
 
+	// Handle click for notification bar
+	$( 	'div.row.notification-bar a' )
+		.click( function( event ) {
+			Cookies.set('notificationStatus', 'hidden', { expires: 15 } );
+			$( 'div.row.notification-bar' ).hide();
+
+			if ( ! this.className === 'link-button' ) {
+				return false;
+			}
+		}
+	);
+
+	var showNotificationBar = function () {
+		if ( !Cookies.get('notificationStatus', 'hidden') ) {
+			$( 'div.row.notification-bar' ).show();
+		}
+	}
+
+	showNotificationBar();
 
 }( jQuery ) );
 
