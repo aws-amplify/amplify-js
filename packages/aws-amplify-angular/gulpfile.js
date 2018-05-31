@@ -3,10 +3,7 @@ const gulp = require('gulp');
 const inlineTemplates = require('gulp-inline-ng2-template');
 const exec = require('child_process').exec;
 
-/**
- * Inline templates configuration.
- * @see  https://github.com/ludohenin/gulp-inline-ng2-template
- */
+
 const INLINE_TEMPLATES = {
   SRC: './src/**/*.ts',
   DIST: './tmp/src-inlined',
