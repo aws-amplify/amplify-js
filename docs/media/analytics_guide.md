@@ -60,6 +60,8 @@ Amplify.configure({
         endpointId: 'XXXXXXXXXXXX',
     // OPTIONAL - disable Analytics if true
         disabled: false,
+    // OPTIONAL - allow auto session events recording, by default is true
+        autoSessionRecord: true,
     // OPTIONAL - client context
         clientContext: {
             clientId: 'xxxxx',
