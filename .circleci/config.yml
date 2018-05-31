@@ -15,7 +15,6 @@ jobs:
       - run: yarn run build
       - run: yarn run test --scope aws-amplify
       - run: yarn run test --scope aws-amplify-react
-      - run: yarn run test --scope aws-amplify-angular
       - run: yarn run coverage
       - run:
           name: "Publish to Amplify Package"
