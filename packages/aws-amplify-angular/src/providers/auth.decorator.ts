@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs/Subject';
-import Amplify, { Logger } from 'aws-amplify';
-
+import Amplify, { Logger, Hub } from 'aws-amplify';
 import { AuthState } from './auth.state';
+import _ from 'lodash';
 
 const logger = new Logger('AuthDecorator');
 
@@ -16,6 +16,22 @@ function check(authState: Subject<AuthState>) {
       logger.debug('no authenticated user', err);
       authState.next({ state: 'signedOut', user: null });
     });
+};
+
+function listen(authState: Subject<AuthState>) {
+  const config = Amplify.configure(null);
+  if (_.has(config, 'Auth.oauth')) {
+    Hub.listen('auth', {
+      onHubCapsule: capsule => {
+        const { channel, payload } = capsule;
+        if (channel === 'auth') {
+          const { username } = payload.data;
+          logger.debug('authentication oauth event', payload);
+          authState.next({ state: payload.event, user: { username: username} });
+        }
+      }
+    }, 'angularAuthListener');
+  }
 };
 
 function decorateSignIn(authState: Subject<AuthState>) {
@@ -112,6 +128,7 @@ function decorateConfirmSignUp(authState: Subject<AuthState>) {
 
 export function authDecorator(authState: Subject<AuthState>) {
   check(authState);
+  listen(authState);
 
   decorateSignIn(authState);
   decorateSignOut(authState);
