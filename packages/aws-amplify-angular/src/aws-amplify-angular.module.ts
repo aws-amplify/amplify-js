@@ -19,6 +19,16 @@ import {
   FormComponent
 } from './components';
 
+
+import { HeroJobAdComponent }   from './components/authenticator/hero-job-add.component';
+import { AdBannerComponent }    from './components/authenticator/ad.banner.component';
+import { HeroProfileComponent } from './components/authenticator/hero-profile.component';
+import { AdDirective }          from './directives/ad.directive';
+import { AdService }            from './providers/ad.service';
+
+
+
+
 @NgModule({
   imports: [
     CommonModule
@@ -35,9 +45,13 @@ import {
     ConfirmSignUpComponent,
     ForgotPasswordComponent,
     GreetingsComponent,
-    FormComponent
+    FormComponent,
+    AdBannerComponent,
+    HeroJobAdComponent,
+    HeroProfileComponent,
+    AdDirective 
   ],
-  providers: [ AmplifyService ],
+  providers: [ AmplifyService, AdService ],
   exports: [
   	PhotoPickerComponent,
     S3ImageComponent,
