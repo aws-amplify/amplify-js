@@ -25,8 +25,8 @@ import { AdBannerComponent }    from './components/authenticator/ad.banner.compo
 import { HeroProfileComponent } from './components/authenticator/hero-profile.component';
 import { AdDirective }          from './directives/ad.directive';
 import { AdService }            from './providers/ad.service';
-
-
+import { AdComponent } from './components/authenticator/ad.component'
+import { AppComponent } from './components/authenticator/app.component'
 
 
 @NgModule({
@@ -49,7 +49,8 @@ import { AdService }            from './providers/ad.service';
     AdBannerComponent,
     HeroJobAdComponent,
     HeroProfileComponent,
-    AdDirective 
+    AdDirective,
+    AppComponent
   ],
   providers: [ AmplifyService, AdService ],
   exports: [
@@ -63,7 +64,12 @@ import { AdService }            from './providers/ad.service';
     SignUpComponent,
     ConfirmSignUpComponent,
     ForgotPasswordComponent,
-    GreetingsComponent
+    GreetingsComponent,
+    AdBannerComponent,
+    HeroJobAdComponent,
+    HeroProfileComponent,
+    AdDirective,
+    AppComponent
   ]
 })
 export class AmplifyAngularModule { }
