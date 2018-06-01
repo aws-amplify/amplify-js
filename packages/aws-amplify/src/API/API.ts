@@ -54,18 +54,31 @@ export default class APIClass {
     configure(options) {
         let opt = options ? options.API || options : {};
         logger.debug('configure API', { opt });
-
+        
         if (opt['aws_project_region']) {
             if (opt['aws_cloud_logic_custom']) {
                 const custom = opt['aws_cloud_logic_custom'];
                 opt.endpoints = (typeof custom === 'string') ? JSON.parse(custom)
                     : custom;
             }
+            
             opt = Object.assign({}, opt, {
                 region: opt['aws_project_region'],
                 header: {},
             });
         }
+        
+        if(!Array.isArray(opt.endpoints)) {
+            opt.endpoints = [];
+        }
+
+        // Check if endpoints has custom_headers and validate if is a function
+        opt.endpoints.forEach((endpoint) => {
+            if (typeof endpoint.custom_header !== 'undefined' && typeof endpoint.custom_header !== 'function') {
+                logger.warn('API ' + endpoint.name + ', custom_header should be a function');
+                endpoint.custom_header = undefined;
+            }
+        });
 
         if (typeof opt.graphql_headers !== 'undefined' && typeof opt.graphql_headers !== 'function') {
             logger.warn('graphql_headers should be a function');
@@ -272,8 +285,6 @@ export default class APIClass {
         } = this._options;
         let headers = {};
 
-        const credentialsOK = await this._ensureCredentials();
-
         switch (authenticationType) {
             case 'API_KEY':
                 headers = {
@@ -282,6 +293,7 @@ export default class APIClass {
                 };
                 break;
             case 'AWS_IAM':
+                const credentialsOK = await this._ensureCredentials();
                 if (!credentialsOK) { throw new Error('No credentials'); }
                 break;
             case 'OPENID_CONNECT':

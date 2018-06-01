@@ -57,6 +57,20 @@ if (Platform.isReactNative) {
     });
 }
 
+// send a session start event if autoSessionRecord is enabled
+const autoSessionRecord = () => {
+    const config = Analytics.configure();
+    startsessionRecorded = true;
+    if (config.autoSessionRecord) {
+        Analytics.updateEndpoint({}).then(() => {
+            Analytics.startSession().catch(e => {
+                logger.debug('start Session error', e);
+            });
+        });
+    } else {
+        logger.debug('auto Session record is diasabled');
+    }            
+};
 
 Analytics.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;
@@ -103,10 +117,7 @@ const authEvent = (payload) => {
         case 'configured':
             authConfigured = true;
             if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                startsessionRecorded = true;
-                Analytics.updateEndpoint({}).then(() => {
-                    Analytics.startSession();
-                });
+                autoSessionRecord();
             }
             break;
     }
@@ -117,11 +128,10 @@ const analyticsEvent = (payload) => {
     if (!event) return;
 
      switch(event) {
-        case 'configured':
+         case 'configured':
             analyticsConfigured = true;
             if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                startsessionRecorded = true;
-                Analytics.startSession();
+                autoSessionRecord();
             }
             break;
      }

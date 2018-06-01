@@ -1,9 +1,3 @@
-jest.mock('../../src/Common/Builder', () => {
-    return {
-        default: null
-    };
-});
-
 import { AWS, ClientDevice, Parser } from '../../src/Common';
 import { AnalyticsOptions, EventAttributes, EventMetrics } from '../../src/Analytics/types';
 import { default as Analytics } from "../../src/Analytics/Analytics";
@@ -52,8 +46,8 @@ describe("Analytics test", () => {
             });
             const spyon3 = jest.spyOn(AWSAnalyticsProvider.prototype, 'configure').mockImplementationOnce(() => { return; });
 
-            expect(analytics.configure({attr: 'attr'})).toEqual({ AWSPinpoint: {appId: 'appId'}, attr: 'attr'});
-
+            expect(analytics.configure({attr: 'attr'})).toEqual({ AWSPinpoint: {appId: 'appId'}, attr: 'attr', "autoSessionRecord": true});
+          
             spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();

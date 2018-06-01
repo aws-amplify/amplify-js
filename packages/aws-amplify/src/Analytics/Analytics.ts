@@ -37,6 +37,7 @@ export default class AnalyticsClass {
     private _provider;
     private _pluggables: AnalyticsProvider[];
     private _disabled;
+    private _autoSessionRecord;
 
     /**
      * Initialize Analtyics
@@ -52,13 +53,19 @@ export default class AnalyticsClass {
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
      */
-    public configure(config) {
+    public configure(config?) {
         logger.debug('configure Analytics');
+        if (!config) return this._config;
+
         const amplifyConfig = Parser.parseMobilehubConfig(config);
         this._config = Object.assign({}, this._config, amplifyConfig.Analytics, config);
 
         if (this._config['disabled']) {
             this._disabled = true;
+        }
+
+        if (this._config['autoSessionRecord'] === undefined) {
+            this._config['autoSessionRecord'] = true;
         }
 
         this._pluggables.forEach((pluggable) => {
@@ -68,7 +75,6 @@ export default class AnalyticsClass {
             } else {
                 pluggable.configure(this._config[pluggable.getProviderName()]);
             }
-            
         });
 
         if (this._pluggables.length === 0) {
