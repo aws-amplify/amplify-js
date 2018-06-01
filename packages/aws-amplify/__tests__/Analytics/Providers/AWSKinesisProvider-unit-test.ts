@@ -44,7 +44,7 @@ describe('kinesis provider test', () => {
         test('happy case', () => {
             const analytics = new KinesisProvider();
 
-            expect(analytics.configure({region: 'region1'})).toEqual({region: 'region1'});
+            expect(analytics.configure({region: 'region1'})).toEqual({"bufferSize": 1000, "flushInterval": 5000, "flushSize": 100, "region": "region1", "resendLimit": 5});
         });
     });
 
