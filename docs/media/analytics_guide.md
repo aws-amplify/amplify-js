@@ -54,7 +54,6 @@ Manual setup enables you to use your existing Amazon Pinpoint resources in your 
 ```js
 import { Analytics } from 'aws-amplify';
 
-<<<<<<< HEAD
 Analytics.configure({
     // OPTIONAL - disable Analytics if true
     disabled: false,
