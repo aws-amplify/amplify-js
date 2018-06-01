@@ -158,7 +158,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 
     private _sendEvents(group) {
         if (group.length === 0) {
-            logger.debug('events array is empty, directly return');
+            //logger.debug('events array is empty, directly return');
             return;
         }
 
