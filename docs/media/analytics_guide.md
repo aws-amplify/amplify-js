@@ -3,13 +3,17 @@
 
 # Analytics
 
-AWS Amplify Analytics module helps you to easily collect analytics data for you app. Analytics data includes user sessions and other custom events that you want to track in your app.
+AWS Amplify Analytics module helps you to easily collect analytics data for you app. For now Analytics is available with AWS Pinpoint and AWS Kinesis providers.
 
-## Installation and Configuration
+## AWS Pinpoint provider
+
+AWS Pinpoint enables you to send Analytics data includes user sessions and other custom events that you want to track in your app.
+
+### Installation and Configuration
 
 Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. Here is how you can enable Analytics category for your app.
 
-### Automated Setup
+#### Automated Setup
 
 Automated Setup works with `awsmobile-cli` to create your analytics backend. After configuring your backend, you can create a project with fully functioning Analytics category.
 
@@ -43,58 +47,54 @@ import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
 ```
 
-### Manual Setup
+#### Manual Setup
 
-Manual setup enables you to use your existing Amazon Pinpoint credentials in your app:
+Manual setup enables you to use your existing Amazon Pinpoint resources in your app:
 
 ```js
-import Amplify from 'aws-amplify';
+import { Analytics } from 'aws-amplify';
 
-Amplify.configure({
-    Analytics: {
-    // OPTIONAL -  Amazon Pinpoint App Client ID.
-    appId: 'XXXXXXXXXXabcdefghij1234567890ab',
-    
-    // OPTIONAL -  Amazon service region.
-    region: 'XX-XXXX-X',
-    
-    // OPTIONAL -  Customized endpoint.
-    endpointId: 'XXXXXXXXXXXX',
-    
-    // OPTIONAL - Analytics is disabled if true.
+Analytics.configure({
+    // OPTIONAL - disable Analytics if true
     disabled: false,
-    
     // OPTIONAL - Allow recording session events. Default is true.
     autoSessionRecord: true,
-    
-    // OPTIONAL - Client context
-    clientContext: {
-        clientId: 'xxxxx',
-        appTitle: 'xxxxx',
-        appVersionName: 'xxxxx',
-        appVersionCode: 'xxxxx',
-        appPackageName: 'xxxxx',
-        platform: 'xxxxx',
-        platformVersion: 'xxxxx',
-        model: 'xxxxx',
-        make: 'xxxxx',
-        locale: 'xxxxx'
-    }
-    
-    // Buffer settings used for reporting analytics events.
-    
-    // OPTIONAL - The buffer size for events in number of items.
-    bufferSize: 1000,
-    
-    // OPTIONAL - The interval in milisecons to perform a buffer check and flush if necessary.
-    flushInterval: 5000, // 5s 
-    
-    // OPTIONAL - The number of events to be deleted from the buffer when flushed.
-    flushSize: 100,
-    
-    // OPTIONAL - The limit for failed recording retries.
-    resendLimit: 5
-        
+
+    AWSPinpoint: {
+        // OPTIONAL -  Amazon Pinpoint App Client ID
+        appId: 'XXXXXXXXXXabcdefghij1234567890ab',
+        // OPTIONAL -  Amazon service region
+        region: 'XX-XXXX-X',
+        // OPTIONAL -  Customized endpoint
+        endpointId: 'XXXXXXXXXXXX',
+        // OPTIONAL - client context
+        clientContext: {
+            clientId: 'xxxxx',
+            appTitle: 'xxxxx',
+            appVersionName: 'xxxxx',
+            appVersionCode: 'xxxxx',
+            appPackageName: 'xxxxx',
+            platform: 'xxxxx',
+            platformVersion: 'xxxxx',
+            model: 'xxxxx',
+            make: 'xxxxx',
+            locale: 'xxxxx'
+        },
+
+        // Buffer settings used for reporting analytics events.
+
+        // OPTIONAL - The buffer size for events in number of items.
+        bufferSize: 1000,
+
+        // OPTIONAL - The interval in milisecons to perform a buffer check and flush if necessary.
+        flushInterval: 5000, // 5s 
+
+        // OPTIONAL - The number of events to be deleted from the buffer when flushed.
+        flushSize: 100,
+
+        // OPTIONAL - The limit for failed recording retries.
+        resendLimit: 5
+        }
     } 
 });
 ```
@@ -109,13 +109,13 @@ $ awsmobile console
 
 On the AWS Mobile Hub console, click **Messaging and Analytics** option under 'Backend' section.
 
-## Working with the API
+### Working with the API
 
-### Collect Session Data
+#### Collect Session Data
 
 Once configured, the Analytics module will start collecting user session data without any additional code. 
 
-### Recording a Custom Tracking Event
+#### Recording a Custom Tracking Event
 
 To record a custom tracking event, call the `record` method:
 
@@ -125,7 +125,7 @@ import { Analytics } from 'aws-amplify';
 Analytics.record({ name: 'albumVisit' });
 ```
 
-### Record a Custom Tracking Event with Attributes
+#### Record a Custom Tracking Event with Attributes
 
 The `record` method lets you add additional attributes to an event. For example, in order to record *artist* information with an *albumVisit* event:
 
@@ -138,7 +138,7 @@ Analytics.record({
 });
 ```
 
-### Record Engagement Metrics
+#### Record Engagement Metrics
 
 Metrics data can also be added to an event:
 
@@ -152,7 +152,7 @@ Analytics.record({
 });
 ```
 
-### Disable/Enable Analytics
+#### Disable/Enable Analytics
 
 You can disable or enable Analytics module as follows:
 ```js
@@ -165,7 +165,7 @@ Analytics.disable();
 Analytics.enable();
 ```
 
-### Record Authentication Events
+#### Record Authentication Events
 
 You can use following events to record Sign-ins, Sign-ups, and Authentication failures.
 
@@ -188,7 +188,7 @@ Analytics.record({
 });
 ```
 
-### Update User Attributes
+#### Update User Attributes
 
 In order to update User Attributes, use `updateEndpoint()` method as following:
 
@@ -211,10 +211,85 @@ Analytics.updateEndpoint({
 })
 ```
 
-### API Reference
+#### API Reference
 
 For the complete API documentation for Analytics module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/analyticsclass.html)
 {: .callout .callout--info}
+
+
+## AWS Kinesis provider
+
+AWS Kinesis enables you to send Analytics data like click events into specific stream and process in real time.
+
+### Installation and Configuration
+
+Please make sure you have your IAM role with the proper policy to put records into your Kinesis stream.
+Example policy:
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kinesis:PutRecord",
+                "kinesis:PutRecords"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+#### Manual Setup
+
+You need to add `AWSKinesisProvider` into `Analytics` Category with the configuration:
+```js
+import { Analytics, AWSKinesisProvider } from 'aws-amplify';
+
+Analytics.addPluggable(new AWSKinesisProvider({
+    // OPTIONAL -  Amazon service region
+        region: 'XX-XXXX-X',
+    // OPTIONAL - the size of the buffer which is used to store events
+        bufferSize: 1000
+    // OPTIONAL - the number of the events per flush
+        flushSize: 100
+    // OPTIONAL - the interval between per flush
+        flushInterval: 5000 // 5s
+    // OPTIONAL - the resend limits per event
+        resendLimit: 5
+    }));
+
+// Or you can configure after adding it to the Analytics module
+Analytics.configure({
+    AWSKinesis: {
+    // OPTIONAL -  Amazon service region
+        region: 'XX-XXXX-X',
+    // OPTIONAL - the size of the buffer which is used to store events
+        bufferSize: 1000
+    // OPTIONAL - the number of the events per flush
+        flushSize: 100
+    // OPTIONAL - the interval between per flush
+        flushInterval: 5000 // 5s
+    // OPTIONAL - the resend limits per event
+        resendLimit: 5
+    } 
+});
+```
+
+### Working with the API
+
+#### Put record
+
+You can send a record with any data to a kinesis stream:
+```js
+Analytics.record({
+    data: { // the data blob
+    },
+    partitionKey: 'myPartitionKey' // OPTIONAL
+    streamName: 'myKinesisStream'
+}, 'AWSKinesis');
+```
 
 ## Customization
 

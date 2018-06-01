@@ -18,7 +18,7 @@ import Auth from '../../Auth';
 import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
 
-const logger = new Logger('AWSAnalyticsProvider');
+const logger = new Logger('AWSPinpointProvider');
 const NON_RETRYABLE_EXCEPTIONS = ['BadRequestException', 'SerializationException', 'ValidationException'];
 
 // events buffer
@@ -28,10 +28,9 @@ const FLUSH_INTERVAL = 5*1000; // 5s
 const RESEND_LIMIT = 5;
 
 // params: { event: {name: , .... }, timeStamp, config, resendLimits }
-
-export default class AWSAnalyticsProvider implements AnalyticsProvider {
+export default class AWSPinpointProvider implements AnalyticsProvider {
     static category = 'Analytics';
-    static providerName = 'AWSAnalytics';
+    static providerName = 'AWSPinpoint';
 
     private _config;
     private mobileAnalytics;
@@ -130,14 +129,14 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
      * get the category of the plugin
      */
     getCategory(): string {
-        return AWSAnalyticsProvider.category;
+        return AWSPinpointProvider.category;
     }
 
     /**
      * get provider name of the plugin
      */
     getProviderName(): string {
-        return AWSAnalyticsProvider.providerName;
+        return AWSPinpointProvider.providerName;
     }
 
     /**
