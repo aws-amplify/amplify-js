@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs/Subject';
 import Amplify, { Logger, Hub } from 'aws-amplify';
 import { AuthState } from './auth.state';
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 const logger = new Logger('AuthDecorator');
 
