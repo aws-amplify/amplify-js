@@ -81,6 +81,7 @@
       "json",
       "jsx"
     ],
+    "timers": "fake",
     "setupFiles": [
       "./__mocks__/SessionStorage.js",
       "./__mocks__/LocalStorage.js"

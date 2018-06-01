@@ -52,29 +52,49 @@ import Amplify from 'aws-amplify';
 
 Amplify.configure({
     Analytics: {
-    // OPTIONAL -  Amazon Pinpoint App Client ID
-        appId: 'XXXXXXXXXXabcdefghij1234567890ab',
-    // OPTIONAL -  Amazon service region
-        region: 'XX-XXXX-X',
-    // OPTIONAL -  Customized endpoint
-        endpointId: 'XXXXXXXXXXXX',
-    // OPTIONAL - disable Analytics if true
-        disabled: false,
-    // OPTIONAL - allow auto session events recording, by default is true
-        autoSessionRecord: true,
-    // OPTIONAL - client context
-        clientContext: {
-            clientId: 'xxxxx',
-            appTitle: 'xxxxx',
-            appVersionName: 'xxxxx',
-            appVersionCode: 'xxxxx',
-            appPackageName: 'xxxxx',
-            platform: 'xxxxx',
-            platformVersion: 'xxxxx',
-            model: 'xxxxx',
-            make: 'xxxxx',
-            locale: 'xxxxx'
-        }
+    // OPTIONAL -  Amazon Pinpoint App Client ID.
+    appId: 'XXXXXXXXXXabcdefghij1234567890ab',
+    
+    // OPTIONAL -  Amazon service region.
+    region: 'XX-XXXX-X',
+    
+    // OPTIONAL -  Customized endpoint.
+    endpointId: 'XXXXXXXXXXXX',
+    
+    // OPTIONAL - Analytics is disabled if true.
+    disabled: false,
+    
+    // OPTIONAL - Allow recording session events. Default is true.
+    autoSessionRecord: true,
+    
+    // OPTIONAL - Client context
+    clientContext: {
+        clientId: 'xxxxx',
+        appTitle: 'xxxxx',
+        appVersionName: 'xxxxx',
+        appVersionCode: 'xxxxx',
+        appPackageName: 'xxxxx',
+        platform: 'xxxxx',
+        platformVersion: 'xxxxx',
+        model: 'xxxxx',
+        make: 'xxxxx',
+        locale: 'xxxxx'
+    }
+    
+    // Buffer settings used for reporting analytics events.
+    
+    // OPTIONAL - The buffer size for events in number of items.
+    bufferSize: 1000,
+    
+    // OPTIONAL - The interval in milisecons to perform a buffer check and flush if necessary.
+    flushInterval: 5000, // 5s 
+    
+    // OPTIONAL - The number of events to be deleted from the buffer when flushed.
+    flushSize: 100,
+    
+    // OPTIONAL - The limit for failed recording retries.
+    resendLimit: 5
+        
     } 
 });
 ```
@@ -102,7 +122,7 @@ To record a custom tracking event, call the `record` method:
 ```js
 import { Analytics } from 'aws-amplify';
 
-Analytics.record('albumVisit');
+Analytics.record({ name: 'albumVisit' });
 ```
 
 ### Record a Custom Tracking Event with Attributes
@@ -112,7 +132,10 @@ The `record` method lets you add additional attributes to an event. For example,
 ```js
 import { Analytics } from 'aws-amplify';
 
-Analytics.record('albumVisit', { genre: '', artist: '' });
+Analytics.record({
+    name: 'albumVisit', 
+    attributes: { genre: '', artist: '' }
+});
 ```
 
 ### Record Engagement Metrics
@@ -122,7 +145,11 @@ Metrics data can also be added to an event:
 ```js
 import { Analytics } from 'aws-amplify';
 
-Analytics.record('albumVisit', {}, { minutesListened: 30 });
+Analytics.record({
+    name: 'albumVisit', 
+    attributes: {}, 
+    metrics: { minutesListened: 30 }
+});
 ```
 
 ### Disable/Enable Analytics
@@ -146,13 +173,19 @@ You can use following events to record Sign-ins, Sign-ups, and Authentication fa
 import { Analytics } from 'aws-amplify';
 
 // Sign-in event
-Analytics.record('_userauth.sign_in');
+Analytics.record({
+    name: '_userauth.sign_in'
+});
 
 // Sign-up event
-Analytics.record('_userauth.sign_up');
+Analytics.record({
+    name: '_userauth.sign_up'
+});
 
 // Authentication failure event
-Analytics.record('_userauth.auth_fail');
+Analytics.record({
+    name: '_userauth.auth_fail'
+});
 ```
 
 ### Update User Attributes
@@ -191,9 +224,13 @@ You can create your custom class and plug it to Analytics module, so that any An
 In your class, just implement `AnalyticsProvider`:
 
 ```js
-import { AnalyticsProvider } from 'aws-amplify';
+import { Analytics, AnalyticsProvider } from 'aws-amplify';
 
 export default class MyAnalyticsProvider implements AnalyticsProvider {
+    // category and provider name
+    static category = 'Analytics';
+    static providerName = 'MyAnalytics';
+
     // you need to implement these four methods
     // configure your provider
     configure(config: object): object;
@@ -209,16 +246,24 @@ export default class MyAnalyticsProvider implements AnalyticsProvider {
 }
 ```
 
-You can now add your own Analytics plugin now by using:
+You can now register your own Analytics plugin as follows:
 ```js
+// add the plugin
+Analytics.addPluggable(new MyAnalyticsProvider());
+
+// get the plugin
+Analytics.getPluggable(MyAnalyticsProvider.providerName);
+
+// remove the plulgin
+Analytics.removePluggable(MyAnalyticsProvider.providerName);
+
 // send configuration into Amplify
-Amplify.configure({
-    Analytics: { 
+Analytics.configure({
+    YOUR_PLUGIN_NAME: { 
         // My Analytics provider configuration 
     }
 });
-// use the plugin
-Amplify.addPluggable(new MyAnalyticsProvider());
+
 ```
 
 Please note that the default provider (Amazon Pinpoint) for the extended category (Analytics) will be in use when you call `Analytics.record()`.
