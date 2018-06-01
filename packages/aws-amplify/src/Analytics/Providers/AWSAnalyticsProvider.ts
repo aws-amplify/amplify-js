@@ -437,7 +437,7 @@ export default class AWSAnalyticsProvider implements AnalyticsProvider {
         return Auth.currentCredentials()
             .then(credentials => {
                 if (!credentials) return null;
-                logger.debug('set credentials for analytics', that._config.credentials);
+                logger.debug('set credentials for analytics', credentials);
                 return Auth.essentialCredentials(credentials);
             })
             .catch(err => {
