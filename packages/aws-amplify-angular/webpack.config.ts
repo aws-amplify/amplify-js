@@ -25,6 +25,7 @@ export default {
     angularExternals(),
     rxjsExternals(),
     'aws-amplify'
+
   ],
   devtool: 'source-map',
   module: {

@@ -1,1 +1,1 @@
-export { AdDirective } from './ad.directive';
+export { DynamicComponentDirective } from './dynamic.component.directive';

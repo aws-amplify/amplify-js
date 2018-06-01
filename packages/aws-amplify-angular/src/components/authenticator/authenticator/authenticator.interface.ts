@@ -1,4 +1,4 @@
-export interface AdComponent {
+export class AuthInterface {
   data: any;
 }
 

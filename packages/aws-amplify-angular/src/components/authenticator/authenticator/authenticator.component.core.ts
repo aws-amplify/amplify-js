@@ -1,5 +1,5 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { AmplifyService, AuthState } from '../../providers';
+import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
 
@@ -44,10 +44,10 @@ const template = `
 `
 
 @Component({
-  selector: 'amplify-authenticator',
+  selector: 'amplify-authenticator-core',
   template: template
 })
-export class AuthenticatorComponent {
+export class AuthenticatorComponentCore {
   authState: AuthState = {
     state: 'signIn',
     user: null

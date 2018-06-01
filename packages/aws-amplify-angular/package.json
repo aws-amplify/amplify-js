@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "0.2.18",
+  "version": "0.2.64",
   "description": "AWS Amplify Angular Components",
   "main": "lib/index.js",
   "module": "./lib/index.js",
@@ -32,6 +32,7 @@
     "css-loader": "^0.28.1",
     "gulp": "^3.9.1",
     "gulp-inline-ng2-template": "^4.0.0",
+    "ionic-angular": "^3.9.2",
     "jasmine": "^2.99.0",
     "jasmine-core": "^2.99.1",
     "jasmine-spec-reporter": "^4.2.1",
