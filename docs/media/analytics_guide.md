@@ -52,37 +52,49 @@ import Amplify from 'aws-amplify';
 
 Amplify.configure({
     Analytics: {
-    // OPTIONAL -  Amazon Pinpoint App Client ID
-        appId: 'XXXXXXXXXXabcdefghij1234567890ab',
-    // OPTIONAL -  Amazon service region
-        region: 'XX-XXXX-X',
-    // OPTIONAL -  Customized endpoint
-        endpointId: 'XXXXXXXXXXXX',
-    // OPTIONAL - disable Analytics if true
-        disabled: false,
-    // OPTIONAL - allow auto session events recording, by default is true
-        autoSessionRecord: true,
-    // OPTIONAL - client context
-        clientContext: {
-            clientId: 'xxxxx',
-            appTitle: 'xxxxx',
-            appVersionName: 'xxxxx',
-            appVersionCode: 'xxxxx',
-            appPackageName: 'xxxxx',
-            platform: 'xxxxx',
-            platformVersion: 'xxxxx',
-            model: 'xxxxx',
-            make: 'xxxxx',
-            locale: 'xxxxx'
-        }
-    // OPTIONAL - the size of the buffer which is used to store events
-        bufferSize: 1000
-    // OPTIONAL - the number of the events per flush
-        flushSize: 100
-    // OPTIONAL - the interval between per flush
-        flushInterval: 5000 // 5s
-    // OPTIONAL - the resend limits per event
-        resendLimit: 5
+    // OPTIONAL -  Amazon Pinpoint App Client ID.
+    appId: 'XXXXXXXXXXabcdefghij1234567890ab',
+    
+    // OPTIONAL -  Amazon service region.
+    region: 'XX-XXXX-X',
+    
+    // OPTIONAL -  Customized endpoint.
+    endpointId: 'XXXXXXXXXXXX',
+    
+    // OPTIONAL - Analytics is disabled if true.
+    disabled: false,
+    
+    // OPTIONAL - Allow recording session events. Default is true.
+    autoSessionRecord: true,
+    
+    // OPTIONAL - Client context
+    clientContext: {
+        clientId: 'xxxxx',
+        appTitle: 'xxxxx',
+        appVersionName: 'xxxxx',
+        appVersionCode: 'xxxxx',
+        appPackageName: 'xxxxx',
+        platform: 'xxxxx',
+        platformVersion: 'xxxxx',
+        model: 'xxxxx',
+        make: 'xxxxx',
+        locale: 'xxxxx'
+    }
+    
+    // Buffer settings used for reporting analytics events.
+    
+    // OPTIONAL - The buffer size for events in number of items.
+    bufferSize: 1000,
+    
+    // OPTIONAL - The interval in milisecons to perform a buffer check and flush if necessary.
+    flushInterval: 5000, // 5s 
+    
+    // OPTIONAL - The number of events to be deleted from the buffer when flushed.
+    flushSize: 100,
+    
+    // OPTIONAL - The limit for failed recording retries.
+    resendLimit: 5
+        
     } 
 });
 ```
@@ -234,7 +246,7 @@ export default class MyAnalyticsProvider implements AnalyticsProvider {
 }
 ```
 
-You can now add your own Analytics plugin now by using:
+You can now register your own Analytics plugin as follows:
 ```js
 // add the plugin
 Analytics.addPluggable(new MyAnalyticsProvider());
