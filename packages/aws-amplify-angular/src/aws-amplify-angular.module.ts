@@ -8,18 +8,23 @@ import {
   S3AlbumComponent
 } from './components/storage';
 import {
-  SignInComponent,
+  SignInComponentCore,
+  SignInComponentIonic,
   AuthenticatorComponentCore,
   RequireNewPasswordComponent,
   ConfirmSignInComponent,
   SignUpComponent,
+  
   ConfirmSignUpComponent,
   ForgotPasswordComponent,
   GreetingsComponent,
   FormComponent,
   AuthenticatorComponent,
-  AuthInterface,
-  AuthenticatorIonicComponent
+  AuthClass,
+  AuthenticatorIonicComponent,
+
+  SignUpComponentIonic
+
 } from './components';
 
 import { DynamicComponentDirective }          from './directives/dynamic.component.directive';
@@ -38,7 +43,7 @@ import {IonicModule } from 'ionic-angular';
   	PhotoPickerComponent,
     S3ImageComponent,
     S3AlbumComponent,
-    SignInComponent,
+    SignInComponentCore,
     AuthenticatorComponentCore,
     RequireNewPasswordComponent,
     ConfirmSignInComponent,
@@ -49,18 +54,23 @@ import {IonicModule } from 'ionic-angular';
     FormComponent,
     DynamicComponentDirective,
     AuthenticatorComponent,
-    AuthenticatorIonicComponent
+    AuthenticatorIonicComponent,
+    SignInComponentIonic,
+    SignUpComponentIonic
   ],
   entryComponents: [
     AuthenticatorComponentCore,
-    AuthenticatorIonicComponent
+    AuthenticatorIonicComponent,
+    SignInComponentIonic,
+
+    SignUpComponentIonic
   ],
   providers: [ AmplifyService ],
   exports: [
   	PhotoPickerComponent,
     S3ImageComponent,
     S3AlbumComponent,
-    SignInComponent,
+    SignInComponentCore,
     AuthenticatorComponentCore,
     RequireNewPasswordComponent,
     ConfirmSignInComponent,
@@ -70,7 +80,10 @@ import {IonicModule } from 'ionic-angular';
     GreetingsComponent,
     AuthenticatorComponent,
     DynamicComponentDirective,
-    AuthenticatorIonicComponent
+    AuthenticatorIonicComponent,
+    SignInComponentIonic,
+
+    SignUpComponentIonic
   ]
 })
 export class AmplifyAngularModule { }

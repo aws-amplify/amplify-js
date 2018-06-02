@@ -5,10 +5,10 @@ const template = `
 
   <div class="amplify-authenticator">
 
-    <amplify-auth-sign-in
+    <amplify-auth-sign-in-core
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
-    ></amplify-auth-sign-in>
+    ></amplify-auth-sign-in-core>
 
     <amplify-auth-require-new-password
       *ngIf="!shouldHide('RequireNewPassword')"

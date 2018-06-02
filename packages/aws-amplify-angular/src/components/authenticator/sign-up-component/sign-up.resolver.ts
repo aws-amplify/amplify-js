@@ -2,19 +2,19 @@ import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestro
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
-import { AuthClass } from './authenticator.class';
-import {AuthenticatorIonicComponent} from './authenticator.component.ionic'
-import { AuthenticatorComponentCore } from './authenticator.component.core';
+import { SignUpClass } from './sign-up.class';
+import { SignUpComponentIonic } from './sign-up.component.ionic'
+import { SignUpComponentCore } from './sign-up.component.core';
 
 @Component({
-  selector: 'amplify-authenticator',
+  selector: 'amplify-auth-sign-up',
   template: `
               <div>
                 <ng-template component-host></ng-template>
               </div>
             `
 })
-export class AuthenticatorComponent implements OnInit, OnDestroy {
+export class SignUpComponent implements OnInit, OnDestroy {
   @Input() ionic: boolean
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
@@ -28,7 +28,7 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.ionic ? new ComponentMount(AuthenticatorIonicComponent,{}) : new ComponentMount(AuthenticatorComponentCore, {});
+    let authComponent = this.ionic ? new ComponentMount(SignUpComponentIonic,{authState: ''}) : new ComponentMount(SignUpComponentCore, {authState: ''});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 
@@ -36,8 +36,7 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
     viewContainerRef.clear();
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
-    (<AuthClass>componentRef.instance).data = authComponent.data;
+    (<SignUpClass>componentRef.instance).data = authComponent.data;
   }
 }
-
 

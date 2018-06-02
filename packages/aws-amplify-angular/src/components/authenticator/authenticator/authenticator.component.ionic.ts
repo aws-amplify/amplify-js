@@ -6,16 +6,15 @@ import { AuthenticatorComponentCore } from '../authenticator/authenticator.compo
 
 const template = `
 
-  <ion-content class="amplify-authenticator-ionic">
-
-    HELLO I AM IONIC
-    <amplify-auth-sign-in
-    
+  <div>
+    <amplify-auth-sign-in-ionic [authState]="authState"></amplify-auth-sign-in-ionic>
+  </div>
+  <div>
+    <amplify-auth-sign-up-ionic
+    *ngIf="!shouldHide('SignUp')"
     [authState]="authState"
-  ></amplify-auth-sign-in>
-    
-
-  </ion-content>
+    ></amplify-auth-sign-up-ionic>
+  </div>
 `
 
 @Component({
