@@ -40,7 +40,7 @@ Amplify.PubSub = PubSub;
 Amplify.Logger = Logger;
 Amplify.ServiceWorker = ServiceWorker;
 
-export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer };
+export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer, ServiceWorker };
 export { 
     AuthClass, 
     AnalyticsClass, 
