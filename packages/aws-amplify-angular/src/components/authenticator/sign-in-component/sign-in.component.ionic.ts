@@ -79,9 +79,7 @@ export class SignInComponentIonic extends SignInComponentCore {
 
 
   constructor(amplifyService: AmplifyService) {
-    super(amplifyService);
-    // this.amplifyService = amplifyService;
-    
+    super(amplifyService);    
   }
 
 

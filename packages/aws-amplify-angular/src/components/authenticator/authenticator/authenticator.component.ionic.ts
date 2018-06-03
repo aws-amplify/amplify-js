@@ -15,6 +15,24 @@ const template = `
     [authState]="authState"
     ></amplify-auth-sign-up-ionic>
   </div>
+  <div>
+    <amplify-auth-confirm-sign-up-ionic
+    *ngIf="!shouldHide('ConfirmSignUp')"
+    [authState]="authState"
+    ></amplify-auth-confirm-sign-up-ionic>
+  </div>
+  <div>
+    <amplify-auth-confirm-sign-in-ionic
+    *ngIf="!shouldHide('ConfirmSignIn')"
+    [authState]="authState"
+    ></amplify-auth-confirm-sign-in-ionic>
+  </div>
+  <div>
+    <amplify-auth-forgot-password-ionic
+    *ngIf="!shouldHide('ForgotPassword')"
+    [authState]="authState"
+    ></amplify-auth-forgot-password-ionic>
+  </div>
 `
 
 @Component({
@@ -31,22 +49,6 @@ export class AuthenticatorIonicComponent extends AuthenticatorComponentCore {
 
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
-    this.amplifyService = amplifyService;
-    this.subscribe();
-  }
-
-  @Input()
-  hide: string[] = [];
-
-  subscribe() {
-    this.amplifyService.authStateChange$
-      .subscribe(state => {
-        this.authState = state
-      });
-  }
-
-  shouldHide(comp) {
-    return this.hide.filter(item => item === comp)
-      .length > 0;
+    
   }
 }

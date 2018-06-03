@@ -71,7 +71,7 @@ const template = `
         >Confirm a Code</a>
       </div>
     </div>
-    <button ion-button class="amplify-form-button"
+    <button ion-button 
       (click)="onSignUp()"
     >Sign Up</button>
   </div>

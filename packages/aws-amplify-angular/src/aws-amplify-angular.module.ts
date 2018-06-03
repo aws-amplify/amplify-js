@@ -8,22 +8,33 @@ import {
   S3AlbumComponent
 } from './components/storage';
 import {
-  SignInComponentCore,
-  SignInComponentIonic,
   AuthenticatorComponentCore,
   RequireNewPasswordComponent,
-  ConfirmSignInComponent,
-  SignUpComponent,
-  
-  ConfirmSignUpComponent,
-  ForgotPasswordComponent,
   GreetingsComponent,
   FormComponent,
   AuthenticatorComponent,
   AuthClass,
   AuthenticatorIonicComponent,
 
-  SignUpComponentIonic
+  ConfirmSignInComponent,
+  ConfirmSignInComponentCore,
+  ConfirmSignInComponentIonic,
+
+  ConfirmSignUpComponent,
+  ConfirmSignUpComponentCore,
+  ConfirmSignUpComponentIonic,
+
+  SignUpComponent,
+  SignUpComponentCore,
+  SignUpComponentIonic,
+
+  SignInComponent,
+  SignInComponentCore,
+  SignInComponentIonic,
+
+  ForgotPasswordComponent,
+  ForgotPasswordComponentCore,
+  ForgotPasswordComponentIonic
 
 } from './components';
 
@@ -46,7 +57,6 @@ import {IonicModule } from 'ionic-angular';
     SignInComponentCore,
     AuthenticatorComponentCore,
     RequireNewPasswordComponent,
-    ConfirmSignInComponent,
     SignUpComponent,
     ConfirmSignUpComponent,
     ForgotPasswordComponent,
@@ -56,14 +66,33 @@ import {IonicModule } from 'ionic-angular';
     AuthenticatorComponent,
     AuthenticatorIonicComponent,
     SignInComponentIonic,
-    SignUpComponentIonic
+    SignUpComponentIonic,
+    SignUpComponentCore,
+    ConfirmSignUpComponentCore,
+    ConfirmSignUpComponentIonic,
+    ForgotPasswordComponent,
+    ForgotPasswordComponentCore,
+    ForgotPasswordComponentIonic,
+    ConfirmSignInComponent,
+    ConfirmSignInComponentCore,
+    ConfirmSignInComponentIonic,
   ],
   entryComponents: [
     AuthenticatorComponentCore,
     AuthenticatorIonicComponent,
     SignInComponentIonic,
-
-    SignUpComponentIonic
+    SignUpComponentIonic,
+    SignUpComponentCore,
+    ConfirmSignUpComponent,
+    ConfirmSignUpComponentCore,
+    ConfirmSignUpComponentIonic,
+    SignUpComponent,
+    ForgotPasswordComponent,
+    ForgotPasswordComponentCore,
+    ForgotPasswordComponentIonic,
+    ConfirmSignInComponent,
+    ConfirmSignInComponentCore,
+    ConfirmSignInComponentIonic,
   ],
   providers: [ AmplifyService ],
   exports: [
@@ -73,8 +102,6 @@ import {IonicModule } from 'ionic-angular';
     SignInComponentCore,
     AuthenticatorComponentCore,
     RequireNewPasswordComponent,
-    ConfirmSignInComponent,
-    SignUpComponent,
     ConfirmSignUpComponent,
     ForgotPasswordComponent,
     GreetingsComponent,
@@ -82,8 +109,20 @@ import {IonicModule } from 'ionic-angular';
     DynamicComponentDirective,
     AuthenticatorIonicComponent,
     SignInComponentIonic,
+    ConfirmSignUpComponent,
+    ConfirmSignUpComponentCore,
+    ConfirmSignUpComponentIonic,
 
-    SignUpComponentIonic
+    SignUpComponent,
+    SignUpComponentIonic,
+
+    ConfirmSignInComponent,
+    ConfirmSignInComponentCore,
+    ConfirmSignInComponentIonic,
+
+    ForgotPasswordComponent,
+    ForgotPasswordComponentCore,
+    ForgotPasswordComponentIonic
   ]
 })
 export class AmplifyAngularModule { }
