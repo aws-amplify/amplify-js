@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.2-unstable.32"></a>
+## [0.4.2-unstable.32](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.31...aws-amplify@0.4.2-unstable.32) (2018-06-04)
+
+
+### Bug Fixes
+
+* **API:** query string for non signed requests ([#801](https://github.com/aws/aws-amplify/issues/801)) ([6746368](https://github.com/aws/aws-amplify/commit/6746368))
+
+
+
+
 <a name="0.4.2-unstable.31"></a>
 ## [0.4.2-unstable.31](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.30...aws-amplify@0.4.2-unstable.31) (2018-06-02)
 
