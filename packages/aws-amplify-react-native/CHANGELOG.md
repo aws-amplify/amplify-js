@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.13-unstable.15"></a>
+## [0.2.13-unstable.15](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.13-unstable.14...aws-amplify-react-native@0.2.13-unstable.15) (2018-06-04)
+
+
+### Bug Fixes
+
+* **pushNotification:** revert the change in pr 952 ([2e03162](https://github.com/aws/aws-amplify/commit/2e03162))
+
+
+
+
 <a name="0.2.13-unstable.14"></a>
 ## [0.2.13-unstable.14](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.13-unstable.13...aws-amplify-react-native@0.2.13-unstable.14) (2018-06-04)
 
