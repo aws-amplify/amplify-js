@@ -431,7 +431,7 @@ describe('API test', () => {
                 "method": "GET", 
                 "path": "/", 
                 "signerServiceInfo": undefined, 
-                "url": "https://www.amazonaws.compath"
+                "url": "https://www.amazonaws.compath/"
             }    , undefined);
 
         });
@@ -536,7 +536,7 @@ describe('API test', () => {
             }
             await api.get('apiName', '/items', init);
             const expectedParams = {"data": null, "headers": {"Authorization": "apikey"}, "host": undefined, "method": "GET", "path": "/", "signerServiceInfo": undefined, "url": "endpoint/items?ke%3Ay3=val%3Aue%203"};
-            expect(spyonRequest).toBeCalledWith( expectedParams );
+            expect(spyonRequest).toBeCalledWith( expectedParams, undefined );
         });
         test('query-string on init and url', async () => {
             const resp = {data: [{name: 'Bob'}]};
