@@ -289,13 +289,6 @@ public class RNPushNotificationHelper {
                 }
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                String channelId = bundle.getString("android_channel_id");
-                if (channelId != null) {
-                    notification.setChannelId(channelId);
-                }
-            }
-
             int notificationID = Integer.parseInt(notificationIdString);
 
             PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
