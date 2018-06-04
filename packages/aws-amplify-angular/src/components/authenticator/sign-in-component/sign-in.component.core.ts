@@ -117,7 +117,6 @@ export class SignInComponentCore {
   }
 
   onSignUp() {
-    alert('onSignUp');
     const user = this.username? { username: this.username } : null;
     this.amplifyService.setAuthState({ state: 'signUp', user: user });
   }

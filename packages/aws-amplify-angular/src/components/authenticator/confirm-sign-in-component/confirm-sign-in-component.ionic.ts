@@ -14,16 +14,19 @@ const template = `
       </div>
     </div>
 
-    <div class="amplify-form-row">
-      <input #code
-        (keyup)="setCode(code.value)"
-        (keyup.enter)="onConfirm()"
-        class="amplify-form-input"
-        type="text"
-        placeholder="Code"
-      />
-    </div>
-    <button class="amplify-form-button"
+    <ion-list>
+      <ion-item>
+        <ion-label stacked>Code</ion-label>
+        <ion-input 
+          #code
+          type="text" 
+          (keyup)="setCode(code.value)"
+          (keyup.enter)="onConfirm()"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <button ion-button
       (click)="onConfirm()"
     >Confirm</button>
   </div>

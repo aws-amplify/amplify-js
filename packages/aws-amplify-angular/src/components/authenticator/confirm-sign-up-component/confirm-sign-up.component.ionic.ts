@@ -16,24 +16,25 @@ const template = `
 
     </div>
 
-    <div class="amplify-form-row">
-      <input
+    <ion-list>
+      <ion-item>
+        <ion-label stacked>Username</ion-label>
+        <ion-input type="text" 
         (keyup)="setUsername($event.target.value)"
-        class="amplify-form-input"
-        type="text"
-        placeholder="Username"
-        [value]="username"
-      />
-    </div>
-    <div class="amplify-form-row">
-      <input #code
-        (keyup)="setCode(code.value)"
-        (keyup.enter)="onConfirm()"
-        class="amplify-form-input"
-        type="text"
-        placeholder="Code"
-      />
-    </div>
+          [value]="username"
+        ></ion-input>
+      </ion-item>
+    
+      <ion-item>
+        <ion-label stacked>Code</ion-label>
+        <ion-input 
+          #code
+          type="text" 
+          (keyup)="setCode(code.value)"
+          (keyup.enter)="onConfirm()"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
       
     <button ion-button
       (click)="onConfirm()">Confirm</button>
