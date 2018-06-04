@@ -63,7 +63,8 @@ export default function withFacebook(Comp) {
         }
 
         componentDidMount() {
-            this.createScript();
+            const { facebook_app_id } = this.props;
+            if (facebook_app_id) this.createScript();
         }
 
         fbAsyncInit() {

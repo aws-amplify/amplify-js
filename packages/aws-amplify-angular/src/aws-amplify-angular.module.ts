@@ -15,7 +15,8 @@ import {
   SignUpComponent,
   ConfirmSignUpComponent,
   ForgotPasswordComponent,
-  GreetingsComponent
+  GreetingsComponent,
+  FormComponent
 } from './components';
 
 @NgModule({
@@ -33,7 +34,8 @@ import {
     SignUpComponent,
     ConfirmSignUpComponent,
     ForgotPasswordComponent,
-    GreetingsComponent
+    GreetingsComponent,
+    FormComponent
   ],
   providers: [ AmplifyService ],
   exports: [

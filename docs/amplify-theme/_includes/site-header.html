@@ -17,7 +17,7 @@
 		</ul><!-- /.offcanvas__nav -->
 	</div><!-- /.offcanvas -->
 {% endif %}
- 
+
 {% if site.amplify.header.logo.text or site.amplify.header.logo.image or site.amplify.header.nav %}
 	<header class="site-header">
 		<div class="container">
@@ -63,5 +63,17 @@
 				</div><!-- /.col -->
 			</div><!-- /.row -->
 		</div><!-- /.container -->
+		<div class="row notification-bar">
+			<div class="col-xs-11">
+				🚀 Check out our new support for 
+				<a  href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/service_workers_guide?utm_source=web-workers&utm_campaign=notification-bar"
+					class="link-button">
+					Service Workers 
+				</a> to build high-quality PWAs.
+			</div class="col-xs-1">
+			<div class="close-button">
+				<a href=''><i class="icon icon--x"></i></a>
+			</div>
+		</div>
 	</header><!-- /.site-header -->
 {% endif %}

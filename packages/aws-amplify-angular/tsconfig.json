@@ -1,32 +1,33 @@
 {
   "compilerOptions": {
-    "outDir": "./lib/",
-    "allowSyntheticDefaultImports": true,
-    "declaration": false,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "lib": [
-      "dom",
-      "es2015",
-      "esnext"
-    ],
+    "target": "es5",
     "module": "es2015",
     "moduleResolution": "node",
+    "noEmit": true,
     "sourceMap": true,
-    "target": "es5"
+    "declaration": true,
+    "noImplicitAny": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": [
+      "es2015",
+      "dom",
+      "esnext"
+    ],
+    "typeRoots" : [
+      "./node_modules/@types"
+    ],
+    "types": [
+      "webpack",
+      "webpack-env"
+    ]
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.css",
-    "src/**/*.html"
+    "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
     "src/**/*.spec.ts",
-    "src/**/__tests__/*.ts"
-  ],
-  "compileOnSave": false,
-  "atom": {
-    "rewriteTsconfig": false
-  }
+    "node_modules",
+    "lib"
+  ]
 }

@@ -37,9 +37,9 @@ restClient.get('...')
 */
 export class RestClient {
     private _options;
-    private _region: string = 'us-east-1'; // this will be updated by config
-    private _service: string = 'execute-api'; // this can be updated by config
-
+    private _region: string = 'us-east-1'; // this will be updated by endpoint function
+    private _service: string = 'execute-api'; // this can be updated by endpoint function
+    private _custom_header = undefined; // this can be updated by endpoint function
     /**
     * @param {RestClientOptions} [options] - Instance options
     */
@@ -96,7 +96,10 @@ export class RestClient {
 
         params['signerServiceInfo'] = extraParams.signerServiceInfo;
 
-        params.headers = { ...libraryHeaders, ...extraParams.headers };
+        // custom_header callback
+        const custom_header = this._custom_header ? await this._custom_header() : undefined;
+        
+        params.headers = { ...libraryHeaders, ...(custom_header),...extraParams.headers };
 
         // Intentionally discarding search
         const { search, ...parsedUrl } = urlLib.parse(url, true, true);
@@ -118,8 +121,8 @@ export class RestClient {
                 return acc;
                 // tslint:disable-next-line:align
             }, {});
+            return this._request(params, isAllResponse);
 
-            return this._request(params);
         }
 
         return Auth.currentCredentials()
@@ -194,6 +197,11 @@ export class RestClient {
     endpoint(apiName: string) {
         const cloud_logic_array = this._options.endpoints;
         let response = '';
+        
+        if(!Array.isArray(cloud_logic_array)) {
+            return response;
+        }
+
         cloud_logic_array.forEach((v) => {
             if (v.name === apiName) {
                 response = v.endpoint;
@@ -204,6 +212,13 @@ export class RestClient {
                 }
                 if (typeof v.service === 'string') {
                     this._service = v.service || 'execute-api';
+                } else {
+                    this._service = 'execute-api';
+                }
+                if (typeof v.custom_header === 'function') {
+                    this._custom_header = v.custom_header;
+                } else {
+                    this._custom_header = undefined;
                 }
             }
         });

@@ -43,7 +43,7 @@ Import the configuration file and load it in your `main.ts`, which is the entry 
 ```js
 import Amplify from 'aws-amplify';
 import awsmobile from './aws-exports';
-Amplify.configure(aws_exports);
+Amplify.configure(awsmobile);
 ```
 
 When working with underlying `aws-js-sdk`, the "node" package should be included in *types* compiler option. Please make sure that you edit `tsconfig.app.json` file in your source file folder, e.g. *src/tsconfig.app.json*.
@@ -263,3 +263,18 @@ onAlbumImageSelected( event ) {
 ### Custom Styles
 
 You can use custom styling for AWS Amplify components. Just import your custom *styles.css* that overrides the default styles which can be found in `/node_modules/aws-amplify-angular/theme.css`.
+
+## Angular 6 Support
+
+Currently, the newest version of Angular (6.x) does not provide the shim for the  `global` object, which was provided in previous versions. Specific AWS Amplify dependencies rely on this shim.  While we evaluate the best path forward to address this issue, you have a couple of options for re-creating the shim in your Angular 6 app to make it compatible with Amplify.
+
+1.  Add the following to your polyfills.ts: ```(window as any).global = window;```.
+
+2.  Add the following script to your index.html ```<head>``` tag:
+``` 
+    <script>
+        if (global === undefined) {
+            var global = window;
+        }
+    </script>
+  ```

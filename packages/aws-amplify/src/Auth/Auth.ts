@@ -23,11 +23,14 @@ import {
     FacebookOAuth,
     GoogleOAuth,
     JS,
-    Parser
+    Parser,
+    AsyncStorage,
+    StorageHelper
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
 import { ICognitoUserPoolData, ICognitoUserData } from 'amazon-cognito-identity-js';
+import '../Common/Polyfills';
 
 const logger = new Logger('AuthClass');
 
@@ -364,10 +367,7 @@ export default class AuthClass {
      * @return - A promise resolve if success
      */
     public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
-        let smsMfaSettings = {
-            PreferredMfa : false,
-            Enabled : false
-        };
+        let smsMfaSettings = null;
         let totpMfaSettings = {
             PreferredMfa : false,
             Enabled : false
@@ -736,7 +736,7 @@ export default class AuthClass {
             } catch (e) {
                 logger.debug('cannot get user attributes');
             } finally {
-                this.user = Object.assign({}, user, { attributes });
+                this.user = Object.assign(user, { attributes });
                 return this.user;
             }
         }
@@ -1197,16 +1197,18 @@ export default class AuthClass {
         }
     }
 
-    private _setCredentialsForGuest() {
+    private async _setCredentialsForGuest() {
         logger.debug('setting credentials for guest');
         const { identityPoolId, region, mandatorySignIn } = this._config;
         if (mandatorySignIn) {
             return Promise.reject('cannot get guest credentials when mandatory signin enabled');
         }
 
+        const identityId = await StorageHelper.getItem('CognitoIdentityId-' + identityPoolId);
         const credentials = new CognitoIdentityCredentials(
             {
-            IdentityPoolId: identityPoolId
+            IdentityPoolId: identityPoolId,
+            IdentityId: identityId? identityId: undefined
         },  {
             region
         });
@@ -1235,7 +1237,7 @@ export default class AuthClass {
     }
 
     
-    private _setCredentialsFromFederation(params) {
+    private async _setCredentialsFromFederation(params) {
         const { provider, token, identity_id, user, expires_at } = params;
         const domains = {
             'google': 'accounts.google.com',
@@ -1263,15 +1265,20 @@ export default class AuthClass {
             region
         });
 
-        Cache.setItem('federatedInfo', { provider, token, identity_id, user, expires_at }, { priority: 1 });
+        try {
+            await Cache.setItem('federatedInfo', { provider, token, identity_id, user, expires_at }, { priority: 1 });
+        } catch (e) {
+            logger.debug('Failed to cache federated info with', e);
+        }
         return this._loadCredentials(credentials, 'federated', true, user);
     }
 
     private _loadCredentials(credentials, source, authenticated, rawUser) {
         const that = this;
+        const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
             credentials.getPromise().then(
-                () => {
+                async () => {
                     logger.debug('Load credentials successfully', credentials);
                     that.credentials = credentials;
                     that.credentials.authenticated = authenticated;
@@ -1281,7 +1288,21 @@ export default class AuthClass {
                             { id: this.credentials.identityId },
                             rawUser
                         );
-                        Cache.setItem('federatedUser', that.user, { priority: 1 });
+                        try {
+                            await Cache.setItem('federatedUser', that.user, { priority: 1 });
+                        } catch(e) {
+                            logger.debug('Failed to cache federated user info', e);
+                        }
+                    }
+                    if (source === 'guest') {
+                        try {
+                            await StorageHelper.setItem(
+                                'CognitoIdentityId-' + identityPoolId, 
+                                credentials.identityId
+                            );
+                        } catch (e) {
+                            logger.debug('Failed to cache identityId', e);
+                        }
                     }
                     res(that.credentials);
                 },
