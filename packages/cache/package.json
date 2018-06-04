@@ -1,7 +1,7 @@
 {
-  "name": "@aws-amplify/core",
-  "version": "0.1.2",
-  "description": "Core category of aws-amplify",
+  "name": "@aws-amplify/cache",
+  "version": "0.1.0",
+  "description": "Cache category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -14,9 +14,7 @@
     "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {
-    "./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
-    "./lib/RNComponents": "./lib/RNComponents/reactnative.js",
-    "./lib/Common/StorageHelper": "./lib/StorageHelper/reactnative.js"
+    "./lib/index.js": "./lib/reactnative.js"
   },
   "repository": {
     "type": "git",
@@ -54,8 +52,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "url": "^0.11.0",
-    "aws-sdk": "2.198.0"
+    "@aws-amplify/core": "^0.1.0"
   },
   "jest": {
     "transform": {
@@ -68,6 +65,10 @@
       "js",
       "json",
       "jsx"
+    ],
+    "setupFiles": [
+      "./__mocks__/SessionStorage.js",
+      "./__mocks__/LocalStorage.js"
     ],
     "testEnvironment": "jsdom",
     "mapCoverage": true,
