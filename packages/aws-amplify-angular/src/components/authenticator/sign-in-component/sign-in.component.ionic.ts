@@ -4,7 +4,6 @@ import { SignInComponentCore } from './sign-in.component.core';
 import { includes } from '../common';
 
 const template = `
-IONIC VERSION
 <div class="amplify-form-container" *ngIf="_show">
   <div class="amplify-form-header"></div>
   <div class="amplify-form-body">
