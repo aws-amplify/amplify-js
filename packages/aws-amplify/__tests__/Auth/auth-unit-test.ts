@@ -160,8 +160,9 @@ import { AuthOptions, SignUpParams } from '../../src/Auth/types';
 import Auth from '../../src/Auth/Auth';
 import Cache from '../../src/Cache';
 import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
-import { CognitoIdentityCredentials, Credentials } from 'aws-sdk';
+import { CognitoIdentityCredentials } from 'aws-sdk';
 import GoogleOAuth from '../../src/Common/OAuthHelper/GoogleOAuth';
+import { Credentials } from '../../src/Common';
 
 const authOptions : AuthOptions = {
     userPoolId: "awsUserPoolsId",
@@ -203,8 +204,6 @@ describe('auth unit test', () => {
         test('happy case with string attrs', async () => {
             const spyon = jest.spyOn(CognitoUserPool.prototype, "signUp");
             const auth = new Auth(authOptions);
-
-            expect.assertions(1);
             expect(await auth.signUp('username', 'password', 'email','phone')).toBe('signUpResult');
 
             spyon.mockClear();
@@ -951,7 +950,9 @@ describe('auth unit test', () => {
                 Pool: userPool
             });
             const spyon = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
-                return 'federated_user';
+                return {
+                    user: 'federated_user'
+                };
             });
 
             expect.assertions(1);
@@ -1061,7 +1062,7 @@ describe('auth unit test', () => {
     });
 
     describe('currentUserCredentials test', () => {
-        test('with federated info and not expired', async () => {
+        test('with federated info', async () => {
             const auth = new Auth(authOptions);
 
             const spyon = jest.spyOn(Cache, 'getItem')
@@ -1072,130 +1073,77 @@ describe('auth unit test', () => {
                     }
                 });
 
+            const spyon2 = jest.spyOn(Credentials, 'refreshFederatedToken').mockImplementationOnce(() => {
+                return Promise.resolve('cred');
+            });
+
             expect.assertions(1);
-            expect(await auth.currentUserCredentials()).not.toBeUndefined();
+            expect(await auth.currentUserCredentials()).toBe('cred');
 
             spyon.mockClear();
+            spyon2.mockClear();
         });
 
-        test('with federated info and not expired, then refresh it successfully', async () => {
+        test('with cognito session', async () => {
             const auth = new Auth(authOptions);
 
             const spyon = jest.spyOn(Cache, 'getItem')
                 .mockImplementationOnce(() => {
-                    return {
-                        provider: 'google',
-                        token: 'token',
-                        expires_at: (new Date().getTime()) * 2
-                    }
+                    return null;
                 });
 
-            auth._refreshHandlers = {}
-            
+            const spyon2 = jest.spyOn(auth, 'currentSession').mockImplementationOnce(() => {
+                return Promise.resolve('session');
+            });
+
+            const spyon3 = jest.spyOn(Credentials, 'set').mockImplementationOnce(() => {
+                return Promise.resolve('cred');
+            });
+
             expect.assertions(1);
-            expect(await auth.currentUserCredentials()).not.toBeUndefined();
+            expect(await auth.currentUserCredentials()).toBe('cred');
 
             spyon.mockClear();
+            spyon2.mockClear();
+            spyon3.mockClear();
         });
 
-        test('with federated info and expired, then refresh it successfully', async () => {
+        test('with guest', async () => {
             const auth = new Auth(authOptions);
 
             const spyon = jest.spyOn(Cache, 'getItem')
                 .mockImplementationOnce(() => {
-                    return {
-                        provider: 'google',
-                        token: 'token',
-                        expires_at: 0
-                    }
+                    return null;
                 });
 
-            auth._refreshHandlers = {
-                google: () => {
-                    return Promise.resolve({
-                        token: 'new_token',
-                        expires_at: 1
-                    });
-                }
-            }
+            const spyon2 = jest.spyOn(auth, 'currentSession').mockImplementationOnce(() => {
+                return Promise.reject('err');
+            });
+
+            const spyon3 = jest.spyOn(Credentials, 'set').mockImplementationOnce(() => {
+                return Promise.resolve('cred');
+            });
+
             expect.assertions(1);
-            expect(await auth.currentUserCredentials()).not.toBeUndefined();
+            expect(await auth.currentUserCredentials()).toBe('cred');
 
             spyon.mockClear();
+            spyon2.mockClear();
+            spyon3.mockClear();
         });
-
-        test('with federated info and expired, no refresh handler provided', async () => {
-            const auth = new Auth(authOptions);
-
-            const spyon = jest.spyOn(Cache, 'getItem')
-                .mockImplementationOnce(() => {
-                    return {
-                        provider: 'google',
-                        token: 'token',
-                        expires_at: 0
-                    }
-                });
-
-            auth._refreshHandlers = null;
-            expect.assertions(1);
-            try {
-                await auth.currentUserCredentials();
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
-
-            spyon.mockClear();
-        });
-
-        test('with federated info and expired, then refresh failed', async () => {
-            const auth = new Auth(authOptions);
-
-            const spyon = jest.spyOn(Cache, 'getItem')
-                .mockImplementationOnce(() => {
-                    return {
-                        provider: 'google',
-                        token: 'token',
-                        expires_at: 0
-                    }
-                });
-
-            auth._refreshHandlers = {
-                google: () => {
-                    return Promise.reject('err');
-                }
-            }
-            expect.assertions(1);
-            try {
-                await auth.currentUserCredentials();
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
-
-            spyon.mockClear();
-        });
-
-
     });
 
     describe('currentCrendentials', () => {
-        test('happy case when auth has credentials', async () => {
-            const auth = new Auth(authOptions);
-            const cred = new CognitoIdentityCredentials({
-                    IdentityPoolId: 'identityPoolId',
-                }, {
-                    region: 'region'
-                });
-            cred.expired = false;
-            cred.expireTime = (new Date().getTime()) * 2;
-
-            auth['credentials'] = cred;
-
-            expect.assertions(1);
-            expect(await auth.currentCredentials()).not.toBeNull();
-
+        const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+            return;
         });
-    });
 
+        const auth = new Auth(authOptions);
+
+        auth.currentCredentials();
+        expect(spyon).toBeCalled();
+        spyon.mockClear();
+    });
 
     describe('verifyUserAttribute test', () => {
         test('happy case', async () => {
@@ -1595,7 +1543,6 @@ describe('auth unit test', () => {
                 Username: 'username',
                 Pool: userPool
             });
-            auth['credentials_source'] = 'aws';
 
             const spyon = jest.spyOn(Auth.prototype, 'currentUserPoolUser')
                 .mockImplementationOnce(() => {
@@ -1620,10 +1567,13 @@ describe('auth unit test', () => {
                 });
 
             const spyon3 = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
-                auth['credentials'] = {
+                return Promise.resolve({
                     identityId: 'identityId'
-                }
-                return Promise.resolve();
+                });
+            });
+
+            const spyon4 = jest.spyOn(Credentials, 'getCredSource').mockImplementationOnce(() => {
+                return 'aws';
             });
 
             expect.assertions(1);
@@ -1640,6 +1590,8 @@ describe('auth unit test', () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
+            spyon4.mockClear();
         });
 
         test('return empty object if error happens', async () => {
@@ -1647,11 +1599,6 @@ describe('auth unit test', () => {
             const user = new CognitoUser({
                 Username: 'username',
                 Pool: userPool
-            });
-            auth['credentials_source'] = 'aws';
-            auth['credentials'] = new CognitoIdentityCredentials({
-                IdentityPoolId: 'identityPoolId',
-                IdentityId: 'identityId'
             });
 
             const spyon = jest.spyOn(Auth.prototype, 'currentUserPoolUser')
@@ -1670,11 +1617,24 @@ describe('auth unit test', () => {
                     });
                 });
 
+            const spyon3 = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementationOnce(() => {
+                return Promise.resolve({
+                    IdentityPoolId: 'identityPoolId',
+                    identityId: 'identityId'
+                });
+            });
+
+            const spyon4 = jest.spyOn(Credentials, 'getCredSource').mockImplementationOnce(() => {
+                return 'aws';
+            });
+
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toEqual({});
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
+            spyon4.mockClear();
         });
 
         test('no credentials source', async () => {
@@ -1683,11 +1643,15 @@ describe('auth unit test', () => {
                 Username: 'username',
                 Pool: userPool
             });
-            auth['credentials_source'] = null;
 
+            const spyon = jest.spyOn(Credentials, 'getCredSource').mockImplementationOnce(() => {
+                return null;
+            });
 
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toEqual(null);
+
+            spyon.mockClear();
         });
 
         test('no current userpool user', async () => {
@@ -1705,10 +1669,15 @@ describe('auth unit test', () => {
                     });
                 });
 
+            const spyon2 = jest.spyOn(Credentials, 'getCredSource').mockImplementationOnce(() => {
+                return 'aws';
+            });
+
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toBeNull();
 
             spyon.mockClear();
+            spyon2.mockClear();
         });
 
         test('federated user', async () => {
@@ -1717,11 +1686,16 @@ describe('auth unit test', () => {
                 Username: 'username',
                 Pool: userPool
             });
-            auth['credentials_source'] = 'federated';
             auth['user'] = 'federated_user';
+
+            const spyon = jest.spyOn(Credentials, 'getCredSource').mockImplementationOnce(() => {
+                return 'federated';
+            });
 
             expect.assertions(1);
             expect(await auth.currentUserInfo()).toBe('federated_user');
+
+            spyon.mockClear();
         });
     });
 
@@ -1751,24 +1725,16 @@ describe('auth unit test', () => {
     });
 
     describe('federatedSignIn test', () => {
-        test('happy case', () => {
+        test('happy case', async () => {
             const auth = new Auth(authOptions);
 
-            const spyon = jest.spyOn(Cache, 'setItem').mockImplementationOnce(() => {
-                return;
+            const spyon = jest.spyOn(Credentials, 'set').mockImplementationOnce(() => {
+                return Promise.resolve('cred');
             });
 
-            auth.federatedSignIn('google', {token: 'token', expires_at: 'expires_at'}, 'user');
+            await auth.federatedSignIn('google', {token: 'token', expires_at: 'expires_at'}, 'user');
 
-            expect(spyon).toBeCalledWith('federatedInfo', {
-                provider: 'google',
-                token: 'token',
-                user: 'user',
-                expires_at: 'expires_at'
-            },
-            {
-                priority: 1
-            });
+            expect(spyon).toBeCalled();
             spyon.mockClear();
         });
     });
