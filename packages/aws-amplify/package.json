@@ -60,11 +60,7 @@
     "@types/paho-mqtt": "^1.0.3",
     "@types/zen-observable": "^0.5.3",
     "amazon-cognito-auth-js": "^1.1.9",
-<<<<<<< HEAD
     "amazon-cognito-identity-js": "^2.0.8",
-=======
-    "amazon-cognito-identity-js": "^2.0.7-unstable.35",
->>>>>>> origin
     "aws-sdk": "2.198.0",
     "axios": "^0.17.0",
     "graphql": "0.13.0",
