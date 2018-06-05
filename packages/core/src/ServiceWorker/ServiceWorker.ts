@@ -10,8 +10,8 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { ConsoleLogger as Logger, Amplify } from '../../Common';
-
+import { ConsoleLogger as Logger } from '../Logger';
+import Amplify from '../Amplify';
 /**
  * Provides a means to registering a service worker in the browser
  * and communicating with it via postMessage events.

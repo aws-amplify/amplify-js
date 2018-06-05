@@ -39,7 +39,7 @@ class InMemoryStorage {
         const keys = Object.keys(this.store);
         return keys[i];
     }
-};
+}
 
 if (!(<any>global).window) {
     (<any>global).window = {
