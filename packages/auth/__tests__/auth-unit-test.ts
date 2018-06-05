@@ -1,16 +1,3 @@
-jest.mock('aws-sdk/clients/pinpoint', () => {
-    const Pinpoint = () => {
-        var pinpoint = null;
-        return pinpoint;
-    }
-
-    Pinpoint.prototype.updateEndpoint = (params, callback) => {
-        callback(null, 'data');
-    }
-
-    return Pinpoint;
-});
-
 jest.mock('amazon-cognito-identity-js/lib/CognitoUserSession', () => {
     const CognitoUserSession = () => {}
 
@@ -156,13 +143,12 @@ jest.mock('amazon-cognito-auth-js/lib/CognitoAuth', () => {
     return CognitoAuth;
 });
 
-import { AuthOptions, SignUpParams } from '../../src/Auth/types';
-import Auth from '../../src/Auth/Auth';
-import Cache from '../../src/Cache';
+import { AuthOptions, SignUpParams } from '../src/types';
+import Auth from '../src/Auth';
+import Cache from '@aws-amplify/cache';
 import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials } from 'aws-sdk';
-import GoogleOAuth from '../../src/Common/OAuthHelper/GoogleOAuth';
-import { Credentials } from '../../src/Common';
+import { Credentials, GoogleOAuth } from '@aws-amplify/core';
 
 const authOptions : AuthOptions = {
     userPoolId: "awsUserPoolsId",
