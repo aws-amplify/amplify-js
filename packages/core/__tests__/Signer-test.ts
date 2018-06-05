@@ -1,16 +1,3 @@
-jest.mock('aws-sdk/clients/pinpoint', () => {
-    const Pinpoint = () => {
-        var pinpoint = null;
-        return pinpoint;
-    }
-
-    Pinpoint.prototype.updateEndpoint = (params, callback) => {
-        callback(null, 'data');
-    }
-
-    return Pinpoint;
-});
-
 jest.mock('url', () => {
     return {
         parse() {
@@ -21,7 +8,7 @@ jest.mock('url', () => {
     }
 });
 
-jest.mock('../../src/Common/Facet', () => {
+jest.mock('../src/Facet', () => {
     let ret = {util:{crypto:{lib:{}}}};
     ret['util']['crypto']['lib']['createHmac'] = () => {
         const update = () => {
@@ -46,8 +33,8 @@ jest.mock('../../src/Common/Facet', () => {
     }; 
 });
 
-import Signer from '../../src/Common/Signer';
-import AWS from '../../src/Common';
+import Signer from '../src/Signer';
+import AWS from '../src';
 
 
 describe('Signer test', () => {

@@ -1,4 +1,4 @@
-import { ServiceWorker } from "../../src/Common";
+import { ServiceWorker } from "../src";
 
 describe('ServiceWorker test', () => {
     describe('Error conditions', () => {

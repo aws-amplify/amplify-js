@@ -1,4 +1,4 @@
-import { I18n } from '../../src/Common/I18n/I18n';
+import { I18n } from '../src/I18n/I18n';
 
 describe('I18n test', () => {
     describe('setLanguage', () => {

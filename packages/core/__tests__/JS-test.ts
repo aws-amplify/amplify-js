@@ -1,4 +1,4 @@
-import JS from '../../src/Common/JS';
+import JS from '../src/JS';
 
 describe('JS test', () => {
     describe('isEmpty test', () => {

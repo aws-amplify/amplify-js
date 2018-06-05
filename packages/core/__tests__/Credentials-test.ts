@@ -1,4 +1,4 @@
-import { Credentials } from '../../src/Common/Credentials';
+import { Credentials } from '../src/Credentials';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authClass = {

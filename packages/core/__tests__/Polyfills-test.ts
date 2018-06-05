@@ -1,6 +1,6 @@
 (<any>global).localStorage = null;
 
-import '../../src/Common/Polyfills';
+import '../src/Polyfills';
 
 describe('Polyfills unit test', () => {
     describe('add-get remove-get case', () => {

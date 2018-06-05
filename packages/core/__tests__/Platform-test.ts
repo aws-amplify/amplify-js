@@ -1,4 +1,4 @@
-import Platform from '../../src/Common/Platform';
+import Platform from '../src/Platform';
 
 describe('Platform test', () => {
     describe('isReactNative test', () => {
