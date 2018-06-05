@@ -12,7 +12,7 @@
  */
 import {
     ConsoleLogger as Logger,
-} from '../../Common';
+} from '../Logger';
 import '../Polyfills';
 
 const logger = new Logger('CognitoCredentials');

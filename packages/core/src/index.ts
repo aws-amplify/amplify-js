@@ -13,6 +13,7 @@
 
 import { AWS } from './Facet';
 import { ConsoleLogger as Logger } from './Logger';
+import './Polyfills';
 
 export * from './Facet';
 export { default as ClientDevice } from './ClientDevice';
@@ -29,13 +30,14 @@ export * from './RNComponents';
 export { default as Credentials } from './Credentials';
 export { default as ServiceWorker } from './ServiceWorker';
 export { default as StorageHelper } from './StorageHelper';
+export { default as Platform } from './Platform';
 
 import Platform from './Platform';
 export const Constants = {
     'userAgent': Platform.userAgent
 };
 
-const logger = new Logger('Common');
+const logger = new Logger('Core');
 
 if (AWS['util']) {
     AWS['util'].userAgent = () => {

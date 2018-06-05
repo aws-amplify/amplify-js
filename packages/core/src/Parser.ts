@@ -1,5 +1,5 @@
 import { AmplifyConfig } from './types';
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger } from './Logger';
 
 const logger = new Logger('Parser');
 

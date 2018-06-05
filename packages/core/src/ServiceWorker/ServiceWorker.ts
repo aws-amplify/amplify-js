@@ -172,9 +172,11 @@ class ServiceWorkerClass {
         this._serviceWorker.addEventListener('statechange', event => {
             const currentState = this._serviceWorker.state;
             this._logger.debug(`ServiceWorker statechange: ${currentState}`);
-            Amplify.Analytics.record('ServiceWorker', {
-                'state': currentState
-            });
+            if (typeof Amplify.Analytics.record === 'function') {
+                Amplify.Analytics.record('ServiceWorker', {
+                    'state': currentState
+                });
+            }
         });
         this._serviceWorker.addEventListener('message', event => {
             this._logger.debug(`ServiceWorker message event: ${event}`);
