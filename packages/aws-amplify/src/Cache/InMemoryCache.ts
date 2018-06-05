@@ -93,6 +93,10 @@ export class InMemoryCache extends StorageCache implements ICache {
         this.curSizeInBytes = 0;
         this.maxPriority = 5;
 
+        this.getItem = this.getItem.bind(this);
+        this.setItem = this.setItem.bind(this);
+        this.removeItem = this.removeItem.bind(this);
+
         // initialize list for every priority
         for (let i = 0; i < this.maxPriority; i += 1) {
             this.cacheList[i] = new CacheList();
