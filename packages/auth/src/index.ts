@@ -13,7 +13,7 @@
 
 import AuthClass from './Auth';
 
-import { ConsoleLogger as Logger, Credentials, Amplify } from '../Common';
+import { ConsoleLogger as Logger, Credentials, Amplify } from '@aws-amplify/core';
 
 const logger = new Logger('Auth');
 

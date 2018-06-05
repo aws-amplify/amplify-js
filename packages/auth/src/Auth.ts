@@ -15,33 +15,28 @@ import { AuthOptions, FederatedResponse } from './types';
 
 import {
     AWS,
-    Cognito,
-    CognitoHostedUI,
     ConsoleLogger as Logger,
     Constants,
     Hub,
     JS,
     Parser,
     Credentials,
-    StorageHelper
-} from '../Common';
-import Platform from '../Common/Platform';
-import Cache from '../Cache';
-import { ICognitoUserPoolData, ICognitoUserData } from 'amazon-cognito-identity-js';
-import '../Common/Polyfills';
-
-const logger = new Logger('AuthClass');
-
-const { CognitoAuth } = CognitoHostedUI;
-
-const {
+    StorageHelper,
+    Platform,
+} from '@aws-amplify/core';
+import Cache from '@aws-amplify/cache';
+import {
     CookieStorage,
     CognitoUserPool,
     CognitoUserAttribute,
     CognitoUser,
     AuthenticationDetails,
-} = Cognito;
+    ICognitoUserPoolData,
+    ICognitoUserData
+} from 'amazon-cognito-identity-js';
+import { CognitoAuth } from 'amazon-cognito-auth-js';
 
+const logger = new Logger('AuthClass');
 const dispatchAuthEvent = (event, data) => {
     Hub.dispatch('auth', { event, data }, 'Auth');
 };
@@ -1116,7 +1111,7 @@ export default class AuthClass {
         return obj;
     }
     
-    private createCognitoUser(username: string): Cognito.CognitoUser {
+    private createCognitoUser(username: string): CognitoUser {
         const userData: ICognitoUserData = {
             Username: username,
             Pool: this.userPool,
