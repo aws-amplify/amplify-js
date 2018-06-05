@@ -120,6 +120,9 @@ exports[`Authenticator normal case render if no error 1`] = `
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -366,6 +369,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -614,6 +620,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -860,6 +869,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1108,6 +1120,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -1354,6 +1369,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1602,6 +1620,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -1848,6 +1869,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2096,6 +2120,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -2342,6 +2369,9 @@ exports[`Authenticator normal case render if no error 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2588,6 +2618,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -2834,6 +2867,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3082,6 +3118,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -3328,6 +3367,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3576,6 +3618,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -3822,6 +3867,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4070,6 +4118,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -4316,6 +4367,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4564,6 +4618,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -4810,6 +4867,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -5057,6 +5117,9 @@ exports[`Authenticator normal case render if no error with children 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -5301,6 +5364,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
         "marginBottom": "20px",
         "textAlign": "left",
         "width": "400px",
+      },
+      "hidden": Object {
+        "display": "none",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -5549,6 +5615,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -5795,6 +5864,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6043,6 +6115,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -6289,6 +6364,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6537,6 +6615,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -6783,6 +6864,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -7031,6 +7115,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -7278,6 +7365,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -7524,6 +7614,9 @@ exports[`Authenticator normal case render with hidedefault 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",

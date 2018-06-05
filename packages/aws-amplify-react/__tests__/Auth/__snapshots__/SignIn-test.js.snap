@@ -120,6 +120,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -360,6 +363,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -603,6 +609,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -850,6 +859,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -1095,6 +1107,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -1337,6 +1352,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -1582,6 +1600,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -1823,6 +1844,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2073,6 +2097,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -2327,6 +2354,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -2577,6 +2607,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -2817,6 +2850,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3060,6 +3096,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -3307,6 +3346,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -3552,6 +3594,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -3794,6 +3839,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -4039,6 +4087,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -4280,6 +4331,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -4530,6 +4584,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -4784,6 +4841,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -5034,6 +5094,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -5274,6 +5337,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -5517,6 +5583,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -5764,6 +5833,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -6009,6 +6081,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -6251,6 +6326,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -6496,6 +6574,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -6737,6 +6818,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -6987,6 +7071,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -7241,6 +7328,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",

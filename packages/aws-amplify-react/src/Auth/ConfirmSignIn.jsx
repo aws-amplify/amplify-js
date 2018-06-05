@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import { Auth, I18n, Logger, JS } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
