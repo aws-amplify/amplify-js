@@ -3,9 +3,9 @@
 
 # Analytics
 
-AWS Amplify Analytics module helps you to easily collect analytics data for you app. For now Analytics is available with AWS Pinpoint and AWS Kinesis providers.
+AWS Amplify Analytics module helps you to collect analytics data for your app easily. Analytics is available with [Amazon Pinpoint](#using-amazon-pinpoint) and [Amazon Kinesis](#using-amazon-kinesis), and also you can add your custom provider as a [plugin](#using-a-custom-plugin).
 
-## AWS Pinpoint provider
+## Using Amazon Pinpoint
 
 AWS Pinpoint enables you to send Analytics data includes user sessions and other custom events that you want to track in your app.
 
@@ -32,7 +32,7 @@ $ awsmobile init
 $ awsmobile push #Update your backend 
 ```
 
-*awsmobile init* will enable Analytics module by default for your backend. In case you want to enable/disable it manually, you can use:
+*awsmobile init* enables Analytics module by default for your backend. In case you want to enable/disable it manually, you can use:
 
 ```bash
 $ awsmobile analytics enable 
@@ -49,7 +49,7 @@ Amplify.configure(aws_exports);
 
 #### Manual Setup
 
-Manual setup enables you to use your existing Amazon Pinpoint resources in your app:
+The manual setup enables you to use your existing Amazon Pinpoint resources in your app:
 
 ```js
 import { Analytics } from 'aws-amplify';
@@ -99,7 +99,9 @@ Analytics.configure({
 });
 ```
 
-In the above configuration you are required to pass in an *Amazon Pinpoint App Client ID* so that the library can retrieve base credentials for a user even in an un-authenticated state. After successfully configuring your credentials, the library will automatically track some default metrics for you, without any effort on your part. 
+In the above configuration, you are required to pass in an *Amazon Pinpoint App Client ID* so that the library can retrieve base credentials for a user even in an unauthenticated state. 
+
+After successfully configuring your credentials, the library automatically tracks some default metrics for you, without any effort on your part. 
 
 User session analytics data is automatically collected and sent to Amazon Pinpoint. To see these data, please visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/), or run following cli command to launch AWS Mobile Hub console:
 
@@ -113,7 +115,7 @@ On the AWS Mobile Hub console, click **Messaging and Analytics** option under 'B
 
 #### Collect Session Data
 
-Once configured, the Analytics module will start collecting user session data without any additional code. 
+Once configured, the Analytics module starts collecting user session data without any additional code. 
 
 #### Recording a Custom Tracking Event
 
@@ -127,7 +129,7 @@ Analytics.record({ name: 'albumVisit' });
 
 #### Record a Custom Tracking Event with Attributes
 
-The `record` method lets you add additional attributes to an event. For example, in order to record *artist* information with an *albumVisit* event:
+The `record` method lets you add additional attributes to an event. For example, to record *artist* information with an *albumVisit* event:
 
 ```js
 import { Analytics } from 'aws-amplify';
@@ -217,14 +219,24 @@ For the complete API documentation for Analytics module, visit our [API Referenc
 {: .callout .callout--info}
 
 
-## AWS Kinesis provider
+## Using Amazon Kinesis
 
-AWS Kinesis enables you to send Analytics data like click events into specific stream and process in real time.
+Amazon Kinesis Analytics plugin enables you to send Analytics data to an [Amazon Kinesis](https://aws.amazon.com/kinesis) stream for real-time processing.
 
 ### Installation and Configuration
 
-Please make sure you have your IAM role with the proper policy to put records into your Kinesis stream.
-Example policy:
+*AWSKinesisProvider* plugin is available with aws-amplify package. You can import the plugin and register with the Analytics category as follows: 
+
+```js
+import { Analytics, AWSKinesisProvider } from 'aws-amplify';
+Analytics.addPluggable(new AWSKinesisProvider());
+
+```
+
+Please make sure that you have a defined an IAM user and a related IAM policy to put records into your Kinesis stream.
+{: .callout .callout--warning}
+
+An example IAM policy for Amazon Kinesis:
 ```json
 {
     "Version": "2012-10-17",
@@ -241,62 +253,56 @@ Example policy:
 }
 ```
 
-#### Manual Setup
+For more information about IAM user roles and policies, please visit [Amazon Kinesis Developer Documentation](https://docs.aws.amazon.com/streams/latest/dev/learning-kinesis-module-one-iam.html).
 
-You need to add `AWSKinesisProvider` into `Analytics` Category with the configuration:
+Provide plugin configuration parameters with `Analytics.configure()` before using your Kinesis in your app:
+
 ```js
-import { Analytics, AWSKinesisProvider } from 'aws-amplify';
 
-Analytics.addPluggable(new AWSKinesisProvider({
-    // OPTIONAL -  Amazon service region
-        region: 'XX-XXXX-X',
-    // OPTIONAL - the size of the buffer which is used to store events
-        bufferSize: 1000
-    // OPTIONAL - the number of the events per flush
-        flushSize: 100
-    // OPTIONAL - the interval between per flush
-        flushInterval: 5000 // 5s
-    // OPTIONAL - the resend limits per event
-        resendLimit: 5
-    }));
-
-// Or you can configure after adding it to the Analytics module
+// Configure the plugin after adding it to the Analytics module
 Analytics.configure({
     AWSKinesis: {
-    // OPTIONAL -  Amazon service region
+
+        // OPTIONAL -  Amazon Kinesis service region
         region: 'XX-XXXX-X',
-    // OPTIONAL - the size of the buffer which is used to store events
+        
+        // OPTIONAL - The interval in milisecons to perform a buffer check and flush if necessary.
         bufferSize: 1000
-    // OPTIONAL - the number of the events per flush
+        
+        // OPTIONAL - The number of events to be deleted from the buffer when flushed.
         flushSize: 100
-    // OPTIONAL - the interval between per flush
+        
+        // OPTIONAL - The interval in milliseconds to perform a buffer check and flush if necessary.
         flushInterval: 5000 // 5s
-    // OPTIONAL - the resend limits per event
+        
+        // OPTIONAL - The limit for failed recording retries.
         resendLimit: 5
     } 
 });
+
 ```
 
 ### Working with the API
 
-#### Put record
+You can send a data to an Amazon Kinesis stream with the *record()* method:
 
-You can send a record with any data to a kinesis stream:
 ```js
 Analytics.record({
-    data: { // the data blob
+    data: { 
+        // The data blob to put into the record
     },
-    partitionKey: 'myPartitionKey' // OPTIONAL
+    // OPTIONAL
+    partitionKey: 'myPartitionKey', 
     streamName: 'myKinesisStream'
 }, 'AWSKinesis');
 ```
 
-## Customization
 
-### Create a Custom Analytics Plugin
-You can create your custom class and plug it to Analytics module, so that any Analytics event can also be handled by your custom methods. This may be helpful when you need to integrate your app with a custom analytics backend.  
+## Using a Custom Plugin
 
-In your class, just implement `AnalyticsProvider`:
+You can create your custom class and plug it into Analytics module. This may be helpful when you need to integrate your app with a custom analytics backend.
+
+To create a plugin,just implement `AnalyticsProvider` interface:
 
 ```js
 import { Analytics, AnalyticsProvider } from 'aws-amplify';
@@ -321,7 +327,8 @@ export default class MyAnalyticsProvider implements AnalyticsProvider {
 }
 ```
 
-You can now register your own Analytics plugin as follows:
+You can now register your plugin as follows:
+
 ```js
 // add the plugin
 Analytics.addPluggable(new MyAnalyticsProvider());
@@ -341,5 +348,5 @@ Analytics.configure({
 
 ```
 
-Please note that the default provider (Amazon Pinpoint) for the extended category (Analytics) will be in use when you call `Analytics.record()`.
+Please note that the default provider (Amazon Pinpoint) is in use when you call `Analytics.record()`. To use your plugin, provide the plugin name in your method call, such as `Analytics.record({..},'myPlugin')`. 
 {: .callout .callout--info}
