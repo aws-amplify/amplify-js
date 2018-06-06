@@ -50,10 +50,10 @@ export default class Authenticator extends Component {
 
     handleStateChange(state, data) {
         logger.debug('authenticator state change ' + state, data);
-        if (state === this.state.auth) { return; }
+        if (state === this.state.authState) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
-        this.setState({ auth: state, authData: data, error: null });
+        this.setState({ authState: state, authData: data, error: null });
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
