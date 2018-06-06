@@ -120,6 +120,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -360,6 +363,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -606,6 +612,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -850,6 +859,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -1097,6 +1109,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -1337,6 +1352,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -1579,6 +1597,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -1823,6 +1844,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
               "textAlign": "left",
               "width": "400px",
             },
+            "hidden": Object {
+              "display": "none",
+            },
             "input": Object {
               "backgroundColor": "#fff",
               "backgroundImage": "none",
@@ -2064,6 +2088,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -2310,6 +2337,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -2551,6 +2581,9 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",

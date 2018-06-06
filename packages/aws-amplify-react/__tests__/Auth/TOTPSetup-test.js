@@ -64,10 +64,10 @@ describe('TOTPSetup', () => {
             const wrapper = shallow(<TOTPSetup/>);
             const TOTPSetupInstance = wrapper.instance();
 
-            const spyon = jest.spyOn(TOTPSetupInstance, 'changeState');
+            const spyon = jest.spyOn(TOTPSetupInstance, 'checkContact');
             TOTPSetupInstance.onTOTPEvent('Setup TOTP', 'SUCCESS', 'user');
 
-            expect(spyon).toBeCalledWith('signedIn', 'user');
+            expect(spyon).toBeCalledWith('user');
             spyon.mockClear();
         });
 
@@ -80,6 +80,54 @@ describe('TOTPSetup', () => {
 
             expect(spyon).not.toBeCalled();
             spyon.mockClear();
+        });
+    });
+
+    describe('checkContact test', () => {
+        test('contact verified', async () => {
+            const wrapper = shallow(<TOTPSetup/>);
+            const totpSetup = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
+                return Promise.resolve({
+                    verified: {
+                        email: 'xxx@xxx.com'
+                    }
+                })
+            });
+
+            const spyon2 = jest.spyOn(totpSetup, 'changeState');
+
+            await totpSetup.checkContact({
+                user: 'user'
+            });
+            
+            expect(spyon2).toBeCalledWith('signedIn', {user: 'user'});
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('contact not verified', async () => {
+            const wrapper = shallow(<TOTPSetup/>);
+            const totpSetup = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
+                return Promise.resolve({
+                    verified: {}
+                })
+            });
+
+            const spyon2 = jest.spyOn(totpSetup, 'changeState');
+
+            await totpSetup.checkContact({
+                user: 'user'
+            });
+            
+            expect(spyon2).toBeCalledWith('verifyContact', {user: 'user', 'verified': {}});
+
+            spyon.mockClear();
+            spyon2.mockClear();
         });
     });
 })

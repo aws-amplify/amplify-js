@@ -124,6 +124,9 @@ exports[`FederatedButtons test render test render with correct authState 1`] = `
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -375,6 +378,9 @@ exports[`FederatedButtons test render test render with correct authState and onl
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -622,6 +628,9 @@ exports[`FederatedButtons test render test render with correct authState and onl
         "marginBottom": "20px",
         "textAlign": "left",
         "width": "400px",
+      },
+      "hidden": Object {
+        "display": "none",
       },
       "input": Object {
         "backgroundColor": "#fff",
@@ -873,6 +882,9 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -1113,6 +1125,9 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -1357,6 +1372,9 @@ exports[`FederatedSignIn test render test render nothing with no federated prop 
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -1604,6 +1622,9 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -1844,6 +1865,9 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2088,6 +2112,9 @@ exports[`FederatedSignIn test render test render with correct authState 1`] = `
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
