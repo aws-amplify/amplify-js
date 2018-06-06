@@ -118,7 +118,9 @@ export default class Greetings extends AuthPiece {
 
     onHubCapsule(capsule) {
         const { channel, payload, source } = capsule;
-        if (channel === 'auth' && payload.event === 'configured') { this.checkUser(); }
+        if (channel === 'auth' && (payload.event === 'configured' || payload.event === 'cognitoHostedUI')) { 
+            this.checkUser(); 
+        }
     }
 
     inGreeting(name) { return 'Hello ' + name; }
