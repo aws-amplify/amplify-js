@@ -111,13 +111,14 @@ describe.only('VerifyContent test', () => {
             const wrapper = shallow(<VerifyContact/>);
             const props = {
                 authState: 'verifyContact',
+                authData: 'user',
                 theme: 'theme'
             }
             wrapper.setProps(props);
 
             wrapper.find(Link).simulate('click');
 
-            expect(spyon).toBeCalledWith('signedIn');
+            expect(spyon).toBeCalledWith('signedIn', 'user');
 
             spyon.mockClear();
         });

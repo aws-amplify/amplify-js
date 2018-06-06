@@ -37,6 +37,7 @@ export default class VerifyContact extends AuthPiece {
         this._validAuthStates = ['verifyContact'];
         this.verify = this.verify.bind(this);
         this.submit = this.submit.bind(this);
+        this.skip = this.skip.bind(this);
 
         this.state = { verifyAttr: null }
     }
@@ -66,6 +67,10 @@ export default class VerifyContact extends AuthPiece {
                 this.setState({ verifyAttr: null });
             })
             .catch(err => this.error(err));
+    }
+
+    skip() {
+        this.changeState('signedIn', this.props.authData);
     }
 
     verifyView() {
@@ -123,7 +128,7 @@ export default class VerifyContact extends AuthPiece {
     }
 
     showComponent(theme) {
-        const { authData, hide } = this.props;
+        const { hide } = this.props;
         if (hide && hide.includes(VerifyContact)) { return null; }
 
         return (
@@ -136,7 +141,7 @@ export default class VerifyContact extends AuthPiece {
                     { this.state.verifyAttr? this.submitView() : this.verifyView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signedIn')}>
+                    <Link theme={theme} onClick={this.skip}>
                         {I18n.get('Skip')}
                     </Link>
                 </SectionFooter>
