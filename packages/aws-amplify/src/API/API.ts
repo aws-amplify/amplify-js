@@ -61,6 +61,7 @@ export default class APIClass {
                 opt.endpoints = (typeof custom === 'string') ? JSON.parse(custom)
                     : custom;
             }
+            
             opt = Object.assign({}, opt, {
                 region: opt['aws_project_region'],
                 header: {},
@@ -284,8 +285,6 @@ export default class APIClass {
         } = this._options;
         let headers = {};
 
-        const credentialsOK = await this._ensureCredentials();
-
         switch (authenticationType) {
             case 'API_KEY':
                 headers = {
@@ -294,6 +293,7 @@ export default class APIClass {
                 };
                 break;
             case 'AWS_IAM':
+                const credentialsOK = await this._ensureCredentials();
                 if (!credentialsOK) { throw new Error('No credentials'); }
                 break;
             case 'OPENID_CONNECT':

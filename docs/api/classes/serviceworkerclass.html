@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>OAuth | aws-amplify</title>
+	<title>ServiceWorkerClass | aws-amplify</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -915,26 +915,26 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
-		<li class="current tsd-kind-interface">
-			<a href="oauth.html" class="tsd-kind-icon">OAuth</a>
+		<li class="current tsd-kind-class">
+			<a href="serviceworkerclass.html" class="tsd-kind-icon">Service<wbr>Worker<wbr>Class</a>
 			<ul>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="oauth.html#domain" class="tsd-kind-icon">domain</a>
+				<li class=" tsd-kind-constructor tsd-parent-kind-class">
+					<a href="serviceworkerclass.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="oauth.html#options" class="tsd-kind-icon">options</a>
+				<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+					<a href="serviceworkerclass.html#serviceworker" class="tsd-kind-icon">service<wbr>Worker</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="oauth.html#redirectsignin" class="tsd-kind-icon">redirect<wbr>Sign<wbr>In</a>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="serviceworkerclass.html#_setuplisteners" class="tsd-kind-icon">_setup<wbr>Listeners</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="oauth.html#redirectsignout" class="tsd-kind-icon">redirect<wbr>Sign<wbr>Out</a>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="serviceworkerclass.html#enablepush" class="tsd-kind-icon">enable<wbr>Push</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="oauth.html#responsetype" class="tsd-kind-icon">response<wbr>Type</a>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="serviceworkerclass.html#register" class="tsd-kind-icon">register</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="oauth.html#scope" class="tsd-kind-icon">scope</a>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="serviceworkerclass.html#send" class="tsd-kind-icon">send</a>
 				</li>
 			</ul>
 		</li>
@@ -942,11 +942,25 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Provides a means to registering a service worker in the browser
+						and communicating with it via postMessage events.
+					<a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/">https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/</a></p>
+				</div>
+				<p>postMessage events are currently not supported in all browsers. See:
+				<a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API">https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API</a></p>
+				<p>At the minmum this class will register the service worker and listen
+					and attempt to dispatch messages on state change and record analytics
+				events based on the service worker lifecycle.</p>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">OAuth</span>
+					<span class="target">ServiceWorkerClass</span>
 				</li>
 			</ul>
 		</section>
@@ -955,80 +969,194 @@ img { max-width: 100%; }
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
 					<section class="tsd-index-section ">
-						<h3>Properties</h3>
+						<h3>Constructors</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="oauth.html#domain" class="tsd-kind-icon">domain</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="oauth.html#options" class="tsd-kind-icon">options</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="oauth.html#redirectsignin" class="tsd-kind-icon">redirect<wbr>Sign<wbr>In</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="oauth.html#redirectsignout" class="tsd-kind-icon">redirect<wbr>Sign<wbr>Out</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="oauth.html#responsetype" class="tsd-kind-icon">response<wbr>Type</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="oauth.html#scope" class="tsd-kind-icon">scope</a></li>
+							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="serviceworkerclass.html#constructor" class="tsd-kind-icon">constructor</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section ">
+						<h3>Accessors</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="serviceworkerclass.html#serviceworker" class="tsd-kind-icon">service<wbr>Worker</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section ">
+						<h3>Methods</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="serviceworkerclass.html#_setuplisteners" class="tsd-kind-icon">_setup<wbr>Listeners</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="serviceworkerclass.html#enablepush" class="tsd-kind-icon">enable<wbr>Push</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="serviceworkerclass.html#register" class="tsd-kind-icon">register</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="serviceworkerclass.html#send" class="tsd-kind-icon">send</a></li>
 						</ul>
 					</section>
 				</div>
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
-			<h2>Properties</h2>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="domain" class="tsd-anchor"></a>
-				<h3>domain</h3>
-				<div class="tsd-signature tsd-kind-icon">domain<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Auth/types/Auth.ts#L60">Auth/types/Auth.ts:60</a></li>
-					</ul>
-				</aside>
+			<h2>Constructors</h2>
+			<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+				<a name="constructor" class="tsd-anchor"></a>
+				<h3>constructor</h3>
+				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Service<wbr>Worker<wbr>Class<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="serviceworkerclass.html" class="tsd-signature-type">ServiceWorkerClass</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Common/ServiceWorker/ServiceWorker.ts#L43">Common/ServiceWorker/ServiceWorker.ts:43</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <a href="serviceworkerclass.html" class="tsd-signature-type">ServiceWorkerClass</a></h4>
+					</li>
+				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="options" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> options</h3>
-				<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Accessors</h2>
+			<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+				<a name="serviceworker" class="tsd-anchor"></a>
+				<h3>service<wbr>Worker</h3>
+				<div class="tsd-signature tsd-kind-icon">service<wbr>Worker<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Auth/types/Auth.ts#L65">Auth/types/Auth.ts:65</a></li>
+						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Common/ServiceWorker/ServiceWorker.ts#L50">Common/ServiceWorker/ServiceWorker.ts:50</a></li>
 					</ul>
 				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Get the currently active service worker</p>
+					</div>
+				</div>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="redirectsignin" class="tsd-anchor"></a>
-				<h3>redirect<wbr>Sign<wbr>In</h3>
-				<div class="tsd-signature tsd-kind-icon">redirect<wbr>Sign<wbr>In<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Auth/types/Auth.ts#L62">Auth/types/Auth.ts:62</a></li>
-					</ul>
-				</aside>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Methods</h2>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="_setuplisteners" class="tsd-anchor"></a>
+				<h3>_setup<wbr>Listeners</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">_setup<wbr>Listeners<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Common/ServiceWorker/ServiceWorker.ts#L171">Common/ServiceWorker/ServiceWorker.ts:171</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Listen for service worker state change and message events
+								<a href="https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/state">https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/state</a></p>
+							</div>
+						</div>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="redirectsignout" class="tsd-anchor"></a>
-				<h3>redirect<wbr>Sign<wbr>Out</h3>
-				<div class="tsd-signature tsd-kind-icon">redirect<wbr>Sign<wbr>Out<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Auth/types/Auth.ts#L63">Auth/types/Auth.ts:63</a></li>
-					</ul>
-				</aside>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="enablepush" class="tsd-anchor"></a>
+				<h3>enable<wbr>Push</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">enable<wbr>Push<span class="tsd-signature-symbol">(</span>publicKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Common/ServiceWorker/ServiceWorker.ts#L106">Common/ServiceWorker/ServiceWorker.ts:106</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Enable web push notifications. If not subscribed, a new subscription will
+									be created and registered.
+									Test Push Server: <a href="https://web-push-codelab.glitch.me/">https://web-push-codelab.glitch.me/</a>
+									Push Server Libraries: <a href="https://github.com/web-push-libs/">https://github.com/web-push-libs/</a>
+								API Doc: <a href="https://developers.google.com/web/fundamentals/codelabs/push-notifications/">https://developers.google.com/web/fundamentals/codelabs/push-notifications/</a></p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>publicKey: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						<pre><code>- resolve(<span class="hljs-name">PushSubscription</span>)
+</code></pre><ul>
+							<li>reject(Error)</li>
+						</ul>
+					</li>
+				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="responsetype" class="tsd-anchor"></a>
-				<h3>response<wbr>Type</h3>
-				<div class="tsd-signature tsd-kind-icon">response<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Auth/types/Auth.ts#L64">Auth/types/Auth.ts:64</a></li>
-					</ul>
-				</aside>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="register" class="tsd-anchor"></a>
+				<h3>register</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">register<span class="tsd-signature-symbol">(</span>filePath<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, scope<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Common/ServiceWorker/ServiceWorker.ts#L66">Common/ServiceWorker/ServiceWorker.ts:66</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Register the service-worker.js file in the browser
+									Make sure the service-worker.js is part of the build
+									for example with Angular, modify the angular-cli.json file
+								and add to &quot;assets&quot; array &quot;service-worker.js&quot;</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> filePath: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;/service-worker.js&quot;</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> scope: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;/&quot;</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						<pre><code>- resolve(<span class="hljs-name">ServiceWorkerRegistration</span>)
+- reject(<span class="hljs-name">Error</span>)
+</code></pre>
+					</li>
+				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="scope" class="tsd-anchor"></a>
-				<h3>scope</h3>
-				<div class="tsd-signature tsd-kind-icon">scope<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Auth/types/Auth.ts#L61">Auth/types/Auth.ts:61</a></li>
-					</ul>
-				</aside>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="send" class="tsd-anchor"></a>
+				<h3>send</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">send<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/aws/aws-amplify/blob/64274cc/packages/aws-amplify/src/Common/ServiceWorker/ServiceWorker.ts#L161">Common/ServiceWorker/ServiceWorker.ts:161</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Send a message to the service worker. The service worker needs
+									to implement `self.addEventListener(&#39;message&#39;) to handle the
+								message. This <strong><em>currently</em></strong> does not work in Safari or IE.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>message: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
 			</section>
 		</section>
 		<footer class="with-border-bottom">
