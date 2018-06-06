@@ -117,7 +117,7 @@ describe.only('VerifyContent test', () => {
 
             wrapper.find(Link).simulate('click');
 
-            expect(spyon).toBeCalledWith('signedIn');
+           expect(spyon).toBeCalled();
 
             spyon.mockClear();
         });
@@ -157,11 +157,12 @@ describe.only('VerifyContent test', () => {
             const wrapper = shallow(<VerifyContact/>);
             const verifyContact = wrapper.instance();
             verifyContact.inputs = {
-                contact: 'contact'
+                contact: true,
+                checkedValue: 'email'
             }
 
             await verifyContact.verify();
-            expect(spyon).toBeCalledWith('contact');
+            expect(spyon).toBeCalledWith('email');
 
             spyon.mockClear();
         });
