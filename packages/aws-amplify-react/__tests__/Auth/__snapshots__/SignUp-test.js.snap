@@ -120,6 +120,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -360,6 +363,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -603,6 +609,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -850,6 +859,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -1094,6 +1106,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -1341,6 +1356,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -1586,6 +1604,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -1827,6 +1848,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -2071,6 +2095,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2321,6 +2348,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -2575,6 +2605,9 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",

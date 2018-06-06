@@ -155,6 +155,7 @@ export default class AuthClass {
                             logger.debug('sign in without aws credentials', e);
                         } finally {
                             dispatchAuthEvent('signIn', that.user);
+                            dispatchAuthEvent('cognitoHostedUI', that.user);
                         }
                     });
                 },

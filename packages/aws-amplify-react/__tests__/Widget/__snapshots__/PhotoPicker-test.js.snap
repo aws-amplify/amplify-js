@@ -8,6 +8,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
     src={true}
     style={
       Object {
+        "display": "none",
         "maxWidth": "100%",
       }
     }
@@ -132,6 +133,9 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -383,6 +387,9 @@ exports[`PhotoPicker test render test render without previewSrc 1`] = `
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
