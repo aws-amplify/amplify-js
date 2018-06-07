@@ -1,16 +1,3 @@
-jest.mock('aws-sdk/clients/pinpoint', () => {
-    const Pinpoint = () => {
-        var pinpoint = null;
-        return pinpoint;
-    }
-
-    Pinpoint.prototype.updateEndpoint = (params, callback) => {
-        callback(null, 'data');
-    }
-
-    return Pinpoint;
-});
-
 jest.mock('aws-sdk/clients/s3', () => {
     const S3 = () => {};
 
@@ -52,9 +39,8 @@ jest.mock('aws-sdk/clients/s3', () => {
     return S3;
 });
 
-import Storage from '../../src/Storage/Storage';
-import { Hub } from '../../src/Common';
-import Auth from '../../src/Auth/Auth';
+import Storage from '../src/Storage';
+import { Hub, Credentials } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 
 const options = {

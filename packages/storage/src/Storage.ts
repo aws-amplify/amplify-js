@@ -15,10 +15,9 @@ import {
     AWS,
     S3,
     ConsoleLogger as Logger,
-    Hub
-} from '../Common';
-
-import Auth from '../Auth';
+    Hub,
+    Credentials
+} from '@aws-amplify/core';
 import { StorageOptions } from './types';
 
 const logger = new Logger('StorageClass');
@@ -294,10 +293,10 @@ export default class StorageClass {
         // will cause bug if another user logged in without refreshing page
         // if (this._options.credentials) { return Promise.resolve(true); }
 
-        return Auth.currentCredentials()
+        return Credentials.get()
             .then(credentials => {
                 if (!credentials) return false;
-                const cred = Auth.essentialCredentials(credentials);
+                const cred = Credentials.shear(credentials);
                 logger.debug('set credentials for storage', cred);
                 this._options.credentials = cred;
 
