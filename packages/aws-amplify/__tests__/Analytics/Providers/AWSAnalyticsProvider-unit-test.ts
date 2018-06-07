@@ -30,7 +30,7 @@ jest.mock('uuid', () => {
 })
 
 import { Pinpoint, AWS, MobileAnalytics, JS } from '../../../src/Common';
-import AnalyticsProvider from "../../../src/Analytics/Providers/AWSAnalyticsProvider";
+import AnalyticsProvider from "../../../src/Analytics/Providers/AWSPinpointProvider";
 import { ConsoleLogger as Logger } from '../../../src/Common/Logger';
 import Auth from '../../../src/Auth';
 import Cache from '../../../src/Cache';
@@ -81,7 +81,7 @@ describe("AnalyticsProvider test", () => {
         test('happy case', () => {
             const analytics = new AnalyticsProvider();
 
-            expect(analytics.getProviderName()).toBe('AWSAnalytics');
+            expect(analytics.getProviderName()).toBe('AWSPinpoint');
         });
     });
 

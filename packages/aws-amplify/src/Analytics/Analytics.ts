@@ -17,7 +17,7 @@ import {
     Hub,
     Parser
 } from '../Common';
-import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
+import AWSPinpointProvider from './Providers/AWSPinpointProvider';
 import Platform from '../Common/Platform';
 import Auth from '../Auth';
 
@@ -70,7 +70,7 @@ export default class AnalyticsClass {
 
         this._pluggables.forEach((pluggable) => {
             // for backward compatibility
-            if (pluggable.getProviderName() === 'AWSAnalytics' && !this._config['AWSAnalytics']) {
+            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
                 pluggable.configure(this._config);  
             } else {
                 pluggable.configure(this._config[pluggable.getProviderName()]);
@@ -78,10 +78,11 @@ export default class AnalyticsClass {
         });
 
         if (this._pluggables.length === 0) {
-            this.addPluggable(new AWSAnalyticsProvider());
+            this.addPluggable(new AWSPinpointProvider());
         }
 
         dispatchAnalyticsEvent('configured', null);
+        logger.debug('current configuration', this._config);
         return this._config;
     }
 
@@ -94,7 +95,7 @@ export default class AnalyticsClass {
             this._pluggables.push(pluggable);
             let config = {};
             // for backward compatibility
-            if (pluggable.getProviderName() === 'AWSAnalytics' && !this._config['AWSAnalytics']) {
+            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
                 config = pluggable.configure(this._config);  
             } else {
                 config = pluggable.configure(this._config[pluggable.getProviderName()]);
@@ -197,7 +198,7 @@ export default class AnalyticsClass {
                     attributes: provider, 
                     metrics
                 }, 
-                provider: undefined
+                provider: 'AWSPinpoint'
             };
         } else {
             params = { event, provider };
@@ -216,7 +217,8 @@ export default class AnalyticsClass {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
         }
-        const provider = params.provider? params.provider: 'AWSAnalytics';
+
+        const provider = params.provider? params.provider: 'AWSPinpoint';
         
         this._pluggables.forEach((pluggable) => {
             if (pluggable.getProviderName() === provider) {

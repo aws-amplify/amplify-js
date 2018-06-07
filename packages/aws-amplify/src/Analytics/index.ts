@@ -41,6 +41,7 @@ Amplify.register(Analytics);
 export default Analytics;
 export { AnalyticsProvider };
 export { AnalyticsClass };
+export * from './Providers';
 
 // listen on app state change
 const dispatchAppStateEvent = (event, data) => {

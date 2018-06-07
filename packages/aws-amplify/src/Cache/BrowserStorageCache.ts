@@ -34,6 +34,9 @@ export class BrowserStorageCache extends StorageCache implements ICache {
         const cacheConfig = config ? Object.assign({}, defaultConfig, config) : defaultConfig;
         super(cacheConfig);
         this.config.storage = cacheConfig.storage;
+        this.getItem = this.getItem.bind(this);
+        this.setItem = this.setItem.bind(this);
+        this.removeItem = this.removeItem.bind(this);
         logger.debug('Using AsyncStorageCache');
     }
 

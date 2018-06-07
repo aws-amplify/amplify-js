@@ -90,7 +90,7 @@ describe('RequireNewPassword test', () => {
                     res('user');
                 });
             });
-            const spyon2 = jest.spyOn(RequireNewPassword.prototype, 'changeState').mockImplementationOnce(() => { return; });
+            const spyon2 = jest.spyOn(RequireNewPassword.prototype, 'checkContact').mockImplementationOnce(() => { return; });
 
             const wrapper = shallow(<RequireNewPassword/>);
             const requireNewPassword = wrapper.instance();
@@ -106,7 +106,7 @@ describe('RequireNewPassword test', () => {
                                         'password', 
                                         'requiredAttributes');
 
-            expect(spyon2).toBeCalledWith('signedIn', 'user');
+            expect(spyon2).toBeCalledWith('user');
             spyon.mockClear();
         });
 
@@ -207,6 +207,54 @@ describe('RequireNewPassword test', () => {
             }
 
             await requireNewPassword.change();
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+    });
+
+    describe('checkContact test', () => {
+        test('contact verified', async () => {
+            const wrapper = shallow(<RequireNewPassword/>);
+            const rnp = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
+                return Promise.resolve({
+                    verified: {
+                        email: 'xxx@xxx.com'
+                    }
+                })
+            });
+
+            const spyon2 = jest.spyOn(rnp, 'changeState');
+
+            await rnp.checkContact({
+                user: 'user'
+            });
+            
+            expect(spyon2).toBeCalledWith('signedIn', {user: 'user'});
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('contact not verified', async () => {
+            const wrapper = shallow(<RequireNewPassword/>);
+            const rnp = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
+                return Promise.resolve({
+                    verified: {}
+                })
+            });
+
+            const spyon2 = jest.spyOn(rnp, 'changeState');
+
+            await rnp.checkContact({
+                user: 'user'
+            });
+            
+            expect(spyon2).toBeCalledWith('verifyContact', {user: 'user', 'verified': {}});
 
             spyon.mockClear();
             spyon2.mockClear();

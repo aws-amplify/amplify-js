@@ -32,6 +32,9 @@ class AsyncStorageCache extends StorageCache implements ICache {
   constructor(config?) {
     const cache_config = config ? Object.assign({}, defaultConfig, config) : defaultConfig;
     super(cache_config);
+    this.getItem = this.getItem.bind(this);
+    this.setItem = this.setItem.bind(this);
+    this.removeItem = this.removeItem.bind(this);
     logger.debug('Using AsyncStorageCache');
   }
 
