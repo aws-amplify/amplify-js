@@ -83,7 +83,7 @@ describe('Storage', () => {
 
     describe('get test', async () => {
         test('get object without download', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -102,7 +102,7 @@ describe('Storage', () => {
         });
 
         test('get object with tracking', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -124,7 +124,7 @@ describe('Storage', () => {
         });
 
         test('get object with download successfully', async() => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -146,7 +146,7 @@ describe('Storage', () => {
         });
 
         test('get object with download with failure', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -172,7 +172,7 @@ describe('Storage', () => {
         });
 
         test('get object with private option', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({
@@ -193,7 +193,7 @@ describe('Storage', () => {
         });
 
         test('sets an empty custom public key', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({
@@ -208,7 +208,7 @@ describe('Storage', () => {
         });
 
         test('sets a custom key for public accesses', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({
@@ -224,7 +224,7 @@ describe('Storage', () => {
         });
 
         test('get object with expires option', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -243,7 +243,7 @@ describe('Storage', () => {
         });
 
         test('get object with identityId option', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -262,7 +262,7 @@ describe('Storage', () => {
         });
 
         test('credentials not ok', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         rej('err');
@@ -285,7 +285,7 @@ describe('Storage', () => {
         test('always ask for the current credentials', async () => {
             const storage = new Storage(options);
 
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({
@@ -296,7 +296,7 @@ describe('Storage', () => {
 
             await storage.get('key', { downloaded: false });
 
-            const curCredSpyOn2 = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn2 = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({
@@ -315,7 +315,7 @@ describe('Storage', () => {
 
     describe('put test', () => {
         test('put object succefully', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -338,7 +338,7 @@ describe('Storage', () => {
         });
 
         test('put object with track', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -365,7 +365,7 @@ describe('Storage', () => {
         });
 
         test('put object failed', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -390,7 +390,7 @@ describe('Storage', () => {
         });
 
         test('put object with private and contenttype specified', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({
@@ -415,7 +415,7 @@ describe('Storage', () => {
         });
 
         test('credentials not ok', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         rej('err');
@@ -437,7 +437,7 @@ describe('Storage', () => {
 
     describe('remove test', () => {
         test('remove object successfully', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -456,7 +456,7 @@ describe('Storage', () => {
         });
 
         test('remove object with track', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -478,7 +478,7 @@ describe('Storage', () => {
         });
 
         test('remove object failed', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -503,7 +503,7 @@ describe('Storage', () => {
         });
 
         test('remove object with private', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({
@@ -524,7 +524,7 @@ describe('Storage', () => {
         });
 
         test('credentials not ok', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         rej('err');
@@ -546,7 +546,7 @@ describe('Storage', () => {
 
     describe('list test', () => {
         test('list object successfully', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -570,7 +570,7 @@ describe('Storage', () => {
         });
 
         test('list object with track', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -599,7 +599,7 @@ describe('Storage', () => {
         });
 
         test('list object failed', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         res({});
@@ -624,7 +624,7 @@ describe('Storage', () => {
         });
 
         test('credentials not ok', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
                         rej('err');
