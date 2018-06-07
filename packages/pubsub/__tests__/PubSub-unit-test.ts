@@ -1,7 +1,7 @@
-import PubSub from '../../src/PubSub/PubSub';
-import { MqttOverWSProvider, AWSIoTProvider } from '../../src/PubSub/Providers';
-import Amplify from '../../src/';
-import Auth from '../../src/Auth/Auth';
+import PubSub from '../src/PubSub';
+import { MqttOverWSProvider, AWSIoTProvider } from '../src/Providers';
+// import Amplify from '../../src/';
+import { Credentials } from '@aws-amplify/core';
 import { Client } from 'paho-mqtt';
 jest.mock('paho-mqtt');
 
@@ -15,7 +15,7 @@ const credentials = {
     authenticated: true
 }
 
-const spyon = jest.spyOn(Auth.prototype, 'currentCredentials').mockImplementation(() => {
+const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
     return new Promise((res, rej) => {
         res(credentials);
     })

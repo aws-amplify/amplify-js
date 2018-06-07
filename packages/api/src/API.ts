@@ -14,7 +14,7 @@ import { OperationDefinitionNode, GraphQLError } from 'graphql';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
-import PubSub from '../PubSub';
+import PubSub from '@aws-amplify/pubsub';
 
 import { RestClient as RestClass } from './RestClient';
 

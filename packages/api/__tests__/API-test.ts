@@ -6,7 +6,7 @@ import Auth from '@aws-amplify/auth';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import PubSub from '../../src/PubSub/PubSub';
+import PubSub from '@aws-amplify/pubsub';
 import { Signer, ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { anonOperationNotAloneMessage } from 'graphql/validation/rules/LoneAnonymousOperation';
 import Cache from '@aws-amplify/cache';

@@ -60,6 +60,9 @@
     "@aws-amplify/core": "^0.1.0",
     "@aws-amplify/cache": "^0.1.0"
   },
+  "peerdependencies": {
+    "@aws-amplify/pubsub": "^0.1.0"
+  },
   "jest": {
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>../../node_modules/ts-jest/preprocessor.js"
