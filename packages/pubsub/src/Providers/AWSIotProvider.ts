@@ -11,8 +11,7 @@
  * and limitations under the License.
  */
 import { MqttOverWSProvider } from './MqttOverWSProvider';
-import Auth from '../../Auth';
-import { Signer } from '../../Common';
+import { Signer, Credentials } from '@aws-amplify/core';
 
 const SERVICE_NAME = 'iotdevicegateway';
 
@@ -33,7 +32,7 @@ export class AWSIoTProvider extends MqttOverWSProvider {
             const { accessKeyId: access_key,
                 secretAccessKey: secret_key,
                 sessionToken: session_token,
-            } = await Auth.currentCredentials();
+            } = await Credentials.get();
 
             const result = Signer.signUrl(endpoint, { access_key, secret_key, session_token }, serviceInfo);
 
