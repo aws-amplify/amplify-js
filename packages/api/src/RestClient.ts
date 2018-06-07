@@ -11,13 +11,11 @@
  * and limitations under the License.
  */
 
-import Signer from '../Common/Signer';
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger, Signer } from '@aws-amplify/core';
 
-import Auth from '../Auth';
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
-import Platform from '../Common/Platform';
+import { Platform, Credentials } from '@aws-amplify/core';
 
 const logger = new Logger('RestClient'),
     urlLib = require('url');
@@ -125,7 +123,7 @@ export class RestClient {
 
         }
 
-        return Auth.currentCredentials()
+        return Credentials.get()
             .then(credentials => this._signed({ ...params, ...extraParams }, credentials, isAllResponse));
     }
 

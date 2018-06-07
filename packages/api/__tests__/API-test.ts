@@ -1,29 +1,15 @@
-jest.mock('aws-sdk/clients/pinpoint', () => {
-    const Pinpoint = () => {
-        var pinpoint = null;
-        return pinpoint;
-    }
-
-    Pinpoint.prototype.updateEndpoint = (params, callback) => {
-        callback(null, 'data');
-    }
-
-    return Pinpoint;
-});
-
 import axios from 'axios';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
-import API, { graphqlOperation } from '../../src/API/API';
-import AuthClass from '../../src/Auth/Auth';
-import Auth from '../../src/Auth';
-import { RestClient } from '../../src/API/RestClient';
+import API, { graphqlOperation } from '../src/API';
+import Auth from '@aws-amplify/auth';
+import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import PubSub from '../../src/PubSub/PubSub';
-import { Signer, ConsoleLogger as Logger } from '../../src/Common/';
+import { Signer, ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { anonOperationNotAloneMessage } from 'graphql/validation/rules/LoneAnonymousOperation';
-import Cache from '../../src/Cache/';
+import Cache from '@aws-amplify/cache';
 
 jest.mock('axios');
 
@@ -121,7 +107,7 @@ describe('API test', () => {
         });
 
         test('happy-case-query-oidc', async () => {
-            const spyonAuth = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -144,11 +130,11 @@ describe('API test', () => {
             
             Cache.configure(cache_config);
 
-            const auth = new AuthClass({
-                identityPoolId: 'identityPoolId'
-            });
+            // const auth = new AuthClass({
+            //     identityPoolId: 'identityPoolId'
+            // });
 
-            await auth.federatedSignIn('provider', {token: 'id_token'});
+            await Auth.federatedSignIn('provider', {token: 'id_token'});
 
             const spyon = jest.spyOn(RestClient.prototype, 'post')
                 .mockImplementationOnce((url, init) => {

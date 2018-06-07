@@ -18,10 +18,10 @@ import PubSub from '../PubSub';
 
 import { RestClient as RestClass } from './RestClient';
 
-import Auth from '../Auth';
-import { ConsoleLogger as Logger } from '../Common/Logger';
+import Auth from '@aws-amplify/auth';
+import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { GraphQLOptions, GraphQLResult } from './types';
-import Cache from '../Cache';
+import Cache from '@aws-amplify/cache';
 
 const logger = new Logger('API');
 
@@ -446,10 +446,10 @@ export default class APIClass {
      * @private
      */
     _ensureCredentials() {
-        return Auth.currentCredentials()
+        return Credentials.get()
             .then(credentials => {
                 if (!credentials) return false;
-                const cred = Auth.essentialCredentials(credentials);
+                const cred = Credentials.shear(credentials);
                 logger.debug('set credentials for api', cred);
 
                 return credentials;

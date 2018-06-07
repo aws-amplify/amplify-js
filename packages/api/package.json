@@ -54,6 +54,11 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
+    "axios": "^0.17.0",
+    "graphql": "0.13.0",
+    "@aws-amplify/auth": "^0.1.0",
+    "@aws-amplify/core": "^0.1.0",
+    "@aws-amplify/cache": "^0.1.0"
   },
   "jest": {
     "transform": {

@@ -1,26 +1,12 @@
-
-jest.mock('aws-sdk/clients/pinpoint', () => {
-    const Pinpoint = () => {
-        var pinpoint = null;
-        return pinpoint;
-    }
-
-    Pinpoint.prototype.updateEndpoint = (params, callback) => {
-        callback(null, 'data');
-    }
-
-    return Pinpoint;
-});
-
-jest.mock('../../src/Common/Signer', () => {
+jest.mock('@aws-amplify/core', () => {
     return {
-        default: {
+        Signer: {
             sign: () => {
                 return {
                     data: 'data',
                     headers: {}
                 };
-            }
+            }   
         }
     }
 });
@@ -37,13 +23,12 @@ jest.mock('axios', () => {
     }
 });
 
-import { RestClient } from '../../src/API/RestClient';
+import { RestClient } from '../src/RestClient';
 import * as AWS from 'aws-sdk';
-import Signer from '../../src/Common/Signer';
-import Auth from '../../src/Auth';
+import { Signer, Credentials }  from '@aws-amplify/core';
 import axios from 'axios';
 
-const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementation(() => {
+const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
     return new Promise((res, rej) => {
         res({
             secretAccessKey: 'secretAccessKey',
