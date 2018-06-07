@@ -10,10 +10,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { ConsoleLogger as Logger, Pinpoint, ClientDevice, MobileAnalytics} from '../../Common';
-import Platform from '../../Common/Platform';
-import Cache from '../../Cache';
-import Auth from '../../Auth';
+import { ConsoleLogger as Logger, Pinpoint, ClientDevice, MobileAnalytics, Platform, Credentials} from '@aws-amplify/core';
+
+import Cache from '@aws-amplify/cache';
 
 import { AnalyticsProvider } from '../types';
 import { v1 as uuid } from 'uuid';
@@ -433,11 +432,11 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     private _getCredentials() {
         const that = this;
-        return Auth.currentCredentials()
+        return Credentials.get()
             .then(credentials => {
                 if (!credentials) return null;
                 logger.debug('set credentials for analytics', credentials);
-                return Auth.essentialCredentials(credentials);
+                return Credentials.shear(credentials);
             })
             .catch(err => {
                 logger.debug('ensure credentials error', err);

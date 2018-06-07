@@ -1,7 +1,7 @@
 {
-  "name": "@aws-amplify/analytics",
+  "name": "@aws-amplify/storage",
   "version": "0.1.0",
-  "description": "Analytics category of aws-amplify",
+  "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -12,6 +12,11 @@
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
+  },
+  "react-native": {
+    "./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
+    "./lib/RNComponents": "./lib/RNComponents/reactnative.js",
+    "./lib/Common/StorageHelper": "./lib/StorageHelper/reactnative.js"
   },
   "repository": {
     "type": "git",
@@ -49,9 +54,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "uuid": "^3.2.1",
-    "@aws-amplify/core": "^0.1.0",
-    "@aws-amplify/cache": "^0.1.0"
+    "@aws-amplify/core": "^0.1.0"
   },
   "jest": {
     "transform": {

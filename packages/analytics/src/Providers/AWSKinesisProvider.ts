@@ -11,10 +11,9 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Kinesis} from '../../Common';
-import Cache from '../../Cache';
+import { ConsoleLogger as Logger, Kinesis, Credentials} from '@aws-amplify/core';
+import Cache from '@aws-amplify/cache';
 import { AnalyticsProvider } from '../types';
-import Auth from '../../Auth';
 
 const logger = new Logger('AWSKineisProvider');
 
@@ -227,11 +226,11 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
      */
     private _getCredentials() {
         const that = this;
-        return Auth.currentCredentials()
+        return Credentials.get()
             .then(credentials => {
                 if (!credentials) return null;
                 logger.debug('set credentials for analytics', that._config.credentials);
-                return Auth.essentialCredentials(credentials);
+                return Credentials.shear(credentials);
             })
             .catch(err => {
                 logger.debug('ensure credentials error', err);

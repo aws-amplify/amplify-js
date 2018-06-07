@@ -1,9 +1,7 @@
-import { AWS, ClientDevice, Parser } from '../../src/Common';
-import { AnalyticsOptions, EventAttributes, EventMetrics } from '../../src/Analytics/types';
-import { default as Analytics } from "../../src/Analytics/Analytics";
-import { ConsoleLogger as Logger } from '../../src/Common/Logger';
-import Auth from '../../src/Auth/Auth';
-import AWSAnalyticsProvider from '../../src/Analytics/Providers/AWSPinpointProvider';
+import { AWS, ClientDevice, Parser, ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import { AnalyticsOptions, EventAttributes, EventMetrics } from '../src/types';
+import { default as Analytics } from "../src/Analytics";
+import AWSAnalyticsProvider from '../src/Providers/AWSPinpointProvider';
 
 const options: AnalyticsOptions = {
     appId: 'appId',

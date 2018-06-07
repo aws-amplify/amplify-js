@@ -29,11 +29,10 @@ jest.mock('uuid', () => {
     return { v1: mockfn };
 })
 
-import { Pinpoint, AWS, MobileAnalytics, JS } from '../../../src/Common';
-import AnalyticsProvider from "../../../src/Analytics/Providers/AWSPinpointProvider";
-import { ConsoleLogger as Logger } from '../../../src/Common/Logger';
-import Auth from '../../../src/Auth';
-import Cache from '../../../src/Cache';
+import { Pinpoint, AWS, MobileAnalytics, JS, Credentials } from '@aws-amplify/core';
+import AnalyticsProvider from "../../src/Providers/AWSPinpointProvider";
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import Cache from '@aws-amplify/core';
 
 const credentials = {
     accessKeyId: 'accessKeyId',
@@ -97,7 +96,7 @@ describe("AnalyticsProvider test", () => {
         test('record without credentials', async () => {
             const analytics = new AnalyticsProvider();
 
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
            
@@ -108,7 +107,7 @@ describe("AnalyticsProvider test", () => {
         test('record happy case', async () => {
             const analytics = new AnalyticsProvider();
         
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                     return Promise.resolve(credentials);
                 });
      
@@ -130,7 +129,7 @@ describe("AnalyticsProvider test", () => {
         test('start session happy case', async () => {
             const analytics = new AnalyticsProvider();
         
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                     return Promise.resolve(credentials);
                 });
      
@@ -152,7 +151,7 @@ describe("AnalyticsProvider test", () => {
         test('stop session happy case', async () => {
             const analytics = new AnalyticsProvider();
         
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                     return Promise.resolve(credentials);
                 });
      
@@ -174,7 +173,7 @@ describe("AnalyticsProvider test", () => {
         test('updateEndpoint happy case', async () => {
             const analytics = new AnalyticsProvider();
         
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                     return Promise.resolve(credentials);
                 });
      

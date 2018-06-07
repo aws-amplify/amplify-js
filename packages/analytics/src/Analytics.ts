@@ -15,11 +15,10 @@ import {
     ConsoleLogger as Logger,
     missingConfig,
     Hub,
-    Parser
-} from '../Common';
+    Parser,
+    Platform
+} from '@aws-amplify/core';
 import AWSPinpointProvider from './Providers/AWSPinpointProvider';
-import Platform from '../Common/Platform';
-import Auth from '../Auth';
 
 import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
 

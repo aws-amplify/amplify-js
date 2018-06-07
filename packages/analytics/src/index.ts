@@ -19,9 +19,9 @@ import {
     Hub,
     Linking,
     AppState,
-    Amplify
-} from '../Common';
-import Platform from '../Common/Platform';
+    Amplify,
+    Platform
+} from '@aws-amplify/core';
 
 const logger = new Logger('Analytics');
 let startsessionRecorded = false;

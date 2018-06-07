@@ -295,6 +295,21 @@ export class Credentials {
         }
         await this._cacheClass.removeItem('federatedInfo');
     }
+
+    /**
+     * Compact version of credentials
+     * @param {Object} credentials
+     * @return {Object} - Credentials
+     */
+    public shear(credentials) {
+        return {
+            accessKeyId: credentials.accessKeyId,
+            sessionToken: credentials.sessionToken,
+            secretAccessKey: credentials.secretAccessKey,
+            identityId: credentials.identityId,
+            authenticated: credentials.authenticated
+        };
+    }
 }
 
 const instance = new Credentials(null);

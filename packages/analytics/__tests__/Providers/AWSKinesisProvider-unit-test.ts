@@ -11,9 +11,8 @@ jest.mock('aws-sdk/clients/kinesis', () => {
     return Kinesis;
 });
 
-import { Pinpoint, AWS, MobileAnalytics, JS } from '../../../src/Common';
-import KinesisProvider from "../../../src/Analytics/Providers/AWSKinesisProvider";
-import Auth from '../../../src/Auth';
+import { Pinpoint, AWS, MobileAnalytics, JS, Credentials } from '@aws-amplify/core';
+import KinesisProvider from "../../src/Providers/AWSKinesisProvider";
 
 const credentials = {
     accessKeyId: 'accessKeyId',
@@ -52,7 +51,7 @@ describe('kinesis provider test', () => {
         test('record without credentials', async () => {
             const analytics = new KinesisProvider();
 
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
         
@@ -63,7 +62,7 @@ describe('kinesis provider test', () => {
         test('record happy case', async () => {
             const analytics = new KinesisProvider();
         
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                     return Promise.resolve(credentials);
                 });
      
