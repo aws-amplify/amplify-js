@@ -27,6 +27,7 @@ export default class SignOut extends AuthPiece {
         this.signOut = this.signOut.bind(this);
         this.googleSignOut = this.googleSignOut.bind(this);
         this.facebookSignOut = this.facebookSignOut.bind(this);
+        this.checkUser = this.checkUser.bind(this);
         this.onHubCapsule = this.onHubCapsule.bind(this);
 
         this.state = {
@@ -90,6 +91,29 @@ export default class SignOut extends AuthPiece {
                 return Promise.resolve(null);
             }
         });
+    }
+
+    checkUser() {
+        const that = this;
+        const { authState } = this.state;
+        return Auth.currentAuthenticatedUser()
+            .then(user => {
+                if (!that._isMounted) { return; }
+                if (authState !== 'signedIn') {
+                    this.setState({
+                        authState: 'signedIn',
+                        authData: user
+                    });
+                    this.changeState('signedIn', user);
+                }
+            })
+            .catch(err => {
+                if (!that._isMounted) { return; }
+                if (!authState || authState === 'signedIn') {
+                    this.setState({ authState: 'signIn' });
+                    this.changeState('signIn');
+                }
+            });
     }
 
     onHubCapsule(capsule) {
