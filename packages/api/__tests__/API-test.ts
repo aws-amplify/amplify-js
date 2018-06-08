@@ -38,7 +38,7 @@ describe('API test', () => {
 
     describe('graphql test', () => {
         test('happy-case-query', async () => {
-            const spyonAuth = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -130,9 +130,9 @@ describe('API test', () => {
             
             Cache.configure(cache_config);
 
-            // const auth = new AuthClass({
-            //     identityPoolId: 'identityPoolId'
-            // });
+            Auth.configure({
+                identityPoolId: 'identityPoolId'
+            })
 
             await Auth.federatedSignIn('provider', {token: 'id_token'});
 
@@ -196,7 +196,7 @@ describe('API test', () => {
         });
 
         test.skip('happy-case-subscription', (done) => {
-            const spyonAuth = jest.spyOn(Auth, 'currentCredentials').mockImplementation(() => {
+            const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementation(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -267,7 +267,7 @@ describe('API test', () => {
         });
 
         test('happy case mutation', async () => {
-            const spyonAuth = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -363,7 +363,7 @@ describe('API test', () => {
     describe('get test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -396,7 +396,7 @@ describe('API test', () => {
             };
             const api = new API({});
             api.configure(custom_config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -443,7 +443,7 @@ describe('API test', () => {
                 session_token: 'token'
             };
 
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementation(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
                 return new Promise((res, rej) => {
                     res(creds);
                 });
@@ -493,7 +493,7 @@ describe('API test', () => {
                 session_token: 'token'
             };
 
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementation(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
                 return new Promise((res, rej) => {
                     res(creds);
                 });
@@ -545,7 +545,7 @@ describe('API test', () => {
                 session_token: 'token'
             };
 
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementation(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
                 return new Promise((res, rej) => {
                     res(creds);
                 });
@@ -576,7 +576,7 @@ describe('API test', () => {
 
         test('endpoint length 0', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -599,7 +599,7 @@ describe('API test', () => {
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err no current credentials');
                 });
@@ -646,7 +646,7 @@ describe('API test', () => {
                 aws_cloud_logic_custom
             };
 
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -667,7 +667,7 @@ describe('API test', () => {
         });
 
         test.skip('endpoint length 0', async () => {
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -691,7 +691,7 @@ describe('API test', () => {
         });
 
         test('cred not ready', async () => {
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
                 });
@@ -732,7 +732,7 @@ describe('API test', () => {
     describe('put test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -752,7 +752,7 @@ describe('API test', () => {
 
         test.skip('endpoint length 0', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -775,7 +775,7 @@ describe('API test', () => {
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
                 });
@@ -815,7 +815,7 @@ describe('API test', () => {
     describe('patch test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -836,7 +836,7 @@ describe('API test', () => {
 
         test.skip('endpoint length 0', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -859,7 +859,7 @@ describe('API test', () => {
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
                 });
@@ -899,7 +899,7 @@ describe('API test', () => {
     describe('del test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -920,7 +920,7 @@ describe('API test', () => {
 
         test.skip('endpoint length 0', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -943,7 +943,7 @@ describe('API test', () => {
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
                 });
@@ -983,7 +983,7 @@ describe('API test', () => {
     describe('head test', () => {
         test('happy case', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -1003,7 +1003,7 @@ describe('API test', () => {
 
         test.skip('endpoint length 0', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
                 });
@@ -1026,7 +1026,7 @@ describe('API test', () => {
 
         test('cred not ready', async () => {
             const api = new API(config);
-            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     rej('err');
                 });

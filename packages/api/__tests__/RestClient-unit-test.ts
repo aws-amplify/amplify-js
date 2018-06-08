@@ -1,6 +1,6 @@
-jest.mock('@aws-amplify/core', () => {
+jest.mock('@aws-amplify/core/lib/Signer', () => {
     return {
-        Signer: {
+        default: {
             sign: () => {
                 return {
                     data: 'data',

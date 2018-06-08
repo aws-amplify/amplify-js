@@ -11,11 +11,10 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Signer } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Signer, Platform, Credentials } from '@aws-amplify/core';
 
 import { RestClientOptions, AWSCredentials, apiOptions } from './types';
 import axios from 'axios';
-import { Platform, Credentials } from '@aws-amplify/core';
 
 const logger = new Logger('RestClient'),
     urlLib = require('url');
