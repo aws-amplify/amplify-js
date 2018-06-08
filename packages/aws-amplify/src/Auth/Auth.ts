@@ -604,8 +604,7 @@ export default class AuthClass {
                 return new Promise((resolve, reject) => {
                     for (const key in attributes) {
                         if ( key !== 'sub' &&
-                            key.indexOf('_verified') < 0 &&
-                            attributes[key] ) {
+                            key.indexOf('_verified')) {
                             attr = {
                                 'Name': key,
                                 'Value': attributes[key]
