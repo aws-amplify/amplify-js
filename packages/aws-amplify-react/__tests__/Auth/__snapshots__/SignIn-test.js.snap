@@ -7461,6 +7461,12 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
 </FormSection>
 `;
 
+exports[`SignIn normal case render correctly with hide 1`] = `""`;
+
+exports[`SignIn normal case render correctly with hide 2`] = `""`;
+
+exports[`SignIn normal case render correctly with hide 3`] = `""`;
+
 exports[`SignIn null case with other authState render corrently 1`] = `""`;
 
 exports[`SignIn null case with other authState render corrently 2`] = `""`;
