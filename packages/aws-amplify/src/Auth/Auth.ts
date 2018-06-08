@@ -135,7 +135,8 @@ export default class AuthClass {
                     TokenScopesArray: oauth.scope,
                     RedirectUriSignIn: oauth.redirectSignIn,
                     RedirectUriSignOut: oauth.redirectSignOut,
-                    ResponseType: oauth.responseType
+                    ResponseType: oauth.responseType,
+                    Storage: this.userPool.Storage
                 },
                 oauth.options
             );
