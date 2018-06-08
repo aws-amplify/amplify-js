@@ -2713,6 +2713,8 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
 </FormSection>
 `;
 
+exports[`ConfirmSignIn normal case render correctly with hide 1`] = `""`;
+
 exports[`ConfirmSignIn null case with other authState render corrently 1`] = `""`;
 
 exports[`ConfirmSignIn null case with other authState render corrently 2`] = `""`;
