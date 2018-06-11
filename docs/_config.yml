@@ -118,14 +118,16 @@ category_list:
           services:
             - title: Amazon Pinpoint,
               url: https://aws.amazon.com/pinpoint/
+            - title: Amazon Kinesis,
+              url: https://aws.amazon.com/kinesis/
             - title: Custom Plugin
-              url: https://aws.github.io/aws-amplify/media/analytics_guide#create-a-custom-analytics-plugin
+              url: https://aws.github.io/aws-amplify/media/analytics_guide#using-a-custom-plugin
         - title: API 
           excerpt: A simple and secure solution for making HTTP requests using REST and GraphQL, with support for real-time data.
           cta: Read more
           class: aws-icon-ps-60-database-server
           url: '/media/api_guide'    
-          services:
+          services: 
             - title: Amazon API Gateway,
               url: https://aws.amazon.com/api-gateway
             - title: AWS AppSync

@@ -7,13 +7,13 @@ AWS Amplify API module provides a simple solution when making HTTP requests. It 
 
 API module supports REST and GraphQL endpoints.
 
-## Working with REST Endpoints
-The API module can be used out of the box for creating signed requests against Amazon API Gateway, when the API Authorization is set to `AWS_IAM`. 
+## Working with REST
+The API module can be used out of the box for creating signed requests against Amazon API Gateway when the API Authorization is set to `AWS_IAM`. 
 
 Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for initial setup.
 {: .callout .callout--info}
 
-In API configuration, you are required to pass in an *Amazon Cognito Identity Pool ID*, allowing AWS Amplify to retrieve base credentials for a user even in an un-authenticated state. The configuration also requires a list of your APIs, comprised of a friendly name for the API and the endpoint URL. 
+In API configuration, you are required to pass in an *Amazon Cognito Identity Pool ID*, allowing AWS Amplify to retrieve base credentials for a user even in an unauthenticated state. The configuration also requires a list of your APIs, comprised of a friendly name for the API and the endpoint URL. 
 
 Amazon Cognito Identity Pool is required to have access to the API using *Amazon IAM*. You can configure it manually, or let AWS Mobile Hub do it for you with [Automated Setup](#automated-setup). For manual configuration, please see [Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started.html) developer guide for more details.
 
@@ -41,7 +41,7 @@ Amplify.configure(aws_exports);
 
 ### Manual Setup
 
-In manual configuration, you need to provide your AWS Resource credentials to `Amplify.configure()`:
+In the manual configuration, you need to provide your AWS Resource credentials to `Amplify.configure()`:
 
 ```js
 import Amplify, { API } from 'aws-amplify';
@@ -103,12 +103,12 @@ For more information related to invoking AWS Lambda functions, see [AWS Lambda D
 For more information about working with AWS Lambda without Amazon API Gateway, see [this post](https://forum.serverless.com/t/directly-proxying-lambda-via-cloudfront-without-api-gateway/3808).
 {: .callout .callout--info}
 
- **NOTE** In order to call regional service endpoints, your Amazon Cognito role needs to be configured with appropriate access for the related service. See [AWS Cognito Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) for more details.
+ **NOTE** To call regional service endpoints, your Amazon Cognito role needs to be configured with appropriate access for the related service. See [AWS Cognito Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) for more details.
  {: .callout .callout--warning}
 
 ### Using the API Client
 
-To invoke an API, you will need the name for the related endpoint. If you manually configure the API, you already have a name for the endpoint. If you use Automated Setup or configure your API on AWS Mobile Hub, you can check the API name in the Mobile Hub console by clicking **Cloud Logic** tile. 
+To invoke an API, you need the name for the related endpoint. If you manually configure the API, you already have a name for the endpoint. If you use Automated Setup or configure your API on AWS Mobile Hub, you can check the API name in the Mobile Hub console by clicking **Cloud Logic** tile. 
 
 The following code sample assumes you have used Automated Setup.
 
@@ -152,7 +152,56 @@ async function getData() {
 getData();
 ```
 
+**Using Query Parameters**
+
+To use query parameters with *get* method, you can pass them in `queryStringParameters` parameter in your method call:
+
+```js
+let items = await API.get('myCloudApi', '/items', {
+  'queryStringParameters': {
+    'order': 'byPrice'
+  }
+});
+```
+
+**Accessing Query Parameters in Cloud API**
+
+If you are using a Cloud API which is generated with AWS Mobile CLI (or AWS Mobile Hub), your backend is created with Lambda Proxy Integration, and you can access your query parameters within your Lambda function via the *event* object:
+
+```js
+exports.handler = function(event, context, callback) {
+    console.log (event.queryStringParameters);
+}
+```
+
+Alternatively, you can update your backend file which is locates at `awsmobilejs/backend/cloud-api/[your-lambda-function]/app.js` with the middleware:
+
+```js
+var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
+app.use(awsServerlessExpressMiddleware.eventContext())
+```
+
+In your request handler use `req.apiGateway.event`:
+
+```js
+app.get('/items', function(req, res) {
+  // req.apiGateway.event.queryStringParameters
+  res.json(req.apiGateway.event)
+});
+```
+
+Then you can use query parameters in your path as follows:
+
+```js
+API.get('sampleCloudApi', '/items?q=test');
+```
+
+To learn more about Lambda Proxy Integration, please visit [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html).
+{: .callout .callout--info}
+
 #### **POST**
+
+Posts data to the API endpoint:
 
 ```js
 let apiName = 'MyApiName'; // replace this with your api name.
@@ -187,6 +236,8 @@ postData();
 
 #### **PUT**
 
+When used together with [Cloud API](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/web-access-apis.html), PUT method can be used to create or update records. It updates the record if a matching record is found, otherwise a new record will be created.
+
 ```js
 let apiName = 'MyApiName'; // replace this with your api name.
 let path = '/path'; // replace this with the path you have configured on your API
@@ -202,7 +253,7 @@ API.put(apiName, path, myInit).then(response => {
 });
 ```
 
-Example with async/await
+Example with async/await:
 
 ```js
 async function putData() { 
@@ -216,6 +267,18 @@ async function putData() {
 }
 
 putData();
+```
+
+Update a record:
+
+```js
+const params = {
+    body: {
+        itemId: '12345',
+        itemDesc: ' update description'
+    }
+}
+const apiResponse = await API.put('MyTableCRUD', '/manage-items', params);
 ```
 
 #### **DELETE**
@@ -299,7 +362,11 @@ Amplify.configure({
 });
 ```
 
-## Working with GraphQL Endpoints
+### Unauthenticated Requests
+
+You can use API category to access API Gateway endpoints that doesn't require authentication. In this case, you need to allow unauthenticated identities in your Amazon Cognito Identity Pool settings. For more information, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html#enable-or-disable-unauthenticated-identities).
+ 
+## Working with GraphQL
 
 AWS Amplify API Module supports GraphQL endpoints via an easy-to-use GraphQL client.
 
@@ -329,7 +396,7 @@ Amplify.configure({
 
 #### Set Custom Request Headers for Graphql 
 
-When working with a GraphQL endpoint, you will need to set request headers for authorization purposes. This is done by passing a `graphql_headers` function into the configuration:
+When working with a GraphQL endpoint, you need to set request headers for authorization purposes. This is done by passing a `graphql_headers` function into the configuration:
 
 ```js
 Amplify.configure({
@@ -352,7 +419,7 @@ To create an AWS AppSync API, please visit [AWS AppSync Console](https://aws.ama
 
 #### Automated Configuration with CLI
 
-After creating your AWS AppSync API, following command will enable AppSync GraphQL API in your  project:
+After creating your AWS AppSync API, following command enables AppSync GraphQL API in your  project:
 
 ```bash
 $ awsmobile appsync enable
@@ -371,7 +438,7 @@ $ awsmobile appsync configure
   AMAZON_COGNITO_USER_POOLS 
 ```
 
-Enabling AppSync will create a local folder which you can find AppSync configuration files under `/awsmobilejs/backend/appsync` folder that is automatically synced with AppSync when you run `awsmobile push` command.
+Enabling AppSync creates a local folder which you can find AppSync configuration files under `/awsmobilejs/backend/appsync` folder that is automatically synced with AppSync when you run `awsmobile push` command.
 
 Note: AWS AppSync API keys expire seven days after creation, and using API_KEY authentication is only suggested for development.
 {: .callout .callout--info}
@@ -513,7 +580,7 @@ console.log(oneEvent);
 
 #### Mutations
 
-Mutations are used to create or update data with GraphQL. A sample mutation query to create a new *Event* in a calendar app will look like this:
+Mutations are used to create or update data with GraphQL. A sample mutation query to create a new *Event* in a calendar app looks like this:
 
 ```js
 import Amplify, { API, graphqlOperation } from "aws-amplify";
@@ -685,4 +752,4 @@ If you have used *awsmobile* CLI or *AWS Mobile Hub* to create your API, you can
 4. Then click the *Actions* dropdown menu and select **Enable CORS**
 5. Add your custom header (e.g. my-custom-header) on the text field Access-Control-Allow-Headers, separated by commas, like: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,my-custom-header'.
 6. Click on 'Enable CORS and replace existing CORS headers' and confirm.
-7. Finally, similar to step 3, click the Actions dropdown menu and then select **Deploy API**. Select **Development** on deployment stage and then **Deploy**. (Deployment could take a couple of minutes).
+7. Finally, similar to step 3, click the Actions dropdown menu and then select **Deploy API**.  Select **Development** on deployment stage and then **Deploy**. (Deployment could take a couple of minutes).

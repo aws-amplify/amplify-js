@@ -298,22 +298,40 @@
 	// Handle click for notification bar
 	$( 	'div.row.notification-bar a' )
 		.click( function( event ) {
-			Cookies.set('notificationStatus', 'hidden', { expires: 15 } );
+			Cookies.set('notificationMessage_LastReceived', new String( new Date() ) );
+			Cookies.set('notificationStatus', 'none');
 			$( 'div.row.notification-bar' ).hide();
 
-			if ( ! this.className === 'link-button' ) {
+			if ( this.className == 'link-button' ) {
+				// go to link
+			} else {
 				return false;
 			}
 		}
 	);
 
-	var showNotificationBar = function () {
-		if ( !Cookies.get('notificationStatus', 'hidden') ) {
+	var showNotificationBar = function ( messageDate ) {
+
+		var lastMessageReceived;
+		
+		if (Cookies.get('notificationMessage_LastReceived')) {
+			lastMessageReceived = new Date( Cookies.get('notificationMessage_LastReceived'));
+		} else {
+			lastMessageReceived = new Date('January 1, 2017 12:00:00') ;
+		} 
+		
+		// new message reveived
+		if ( messageDate.getTime() > lastMessageReceived.getTime() ){
 			$( 'div.row.notification-bar' ).show();
+			Cookies.set('notificationStatus', 'received');
+		} else {
+			// do nothing
 		}
+
 	}
 
-	showNotificationBar();
+	// Update time to display a new message
+	showNotificationBar( new Date('June 5, 2018 15:03:00') );
 
 }( jQuery ) );
 

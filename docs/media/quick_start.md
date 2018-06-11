@@ -142,6 +142,14 @@ $ awsmobile configure
 
 If prompted for credentials, follow the steps provided by the CLI. For more information, see [Provide IAM credentials to AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html){:target="_blank"}.
 
+AWS Mobile CLI uses `yarn` package manager to install dependencies. You can install `yarn` with npm:
+
+```bash
+$ npm install -g yarn
+```
+
+Please see other [installation options for *yarn*](https://yarnpkg.com/en/docs/install) for more information.
+
 ## Set up Your Backend
 
 AWS Amplify connects to AWS Mobile Hub to work with Amazon Web Services. 
@@ -248,6 +256,14 @@ Amplify.configure(aws_exports);
 ```
 
 If you used Manual Setup with existing AWS Resources, you will need to call `Amplify.configure()` with your custom configuration details as described in *Manual Setup* section.
+
+##### Using TypeScript
+
+If you are using TypeScript, importing the configuration file is done differently. You can rename **aws-exports.js** to **aws-exports.ts** and use import statement. Alternatively, you can use:
+
+```js
+const aws_exports = require('../../aws-exports').default;
+```
 
 ## Adding Services to Your Backend
 
