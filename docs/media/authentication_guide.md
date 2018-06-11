@@ -616,7 +616,7 @@ export default withAuthenticator(App, true);
 
 ### Custom Authorization Flows and Passwordless Login
 
-You can use custom authorization flows to implement passwordless logins. To initiate a custom authorization flow call `signIn` without a password. You can customize the authentication flow for the User Pool using Lambda triggers. To respond to a custom challenge use the `sendCustomChallengeAnswer` method.
+Cognito User Pools also support custom authorization flows. Using these gives you complete control over the authorization process and even allows passwordless logins. To initiate a custom authorization flow call `signIn` without a password. A custom challenge can be responded to using the `sendCustomChallengeAnswer` method.
 
 ```js
 import { Auth } from 'aws-amplify';
@@ -632,6 +632,64 @@ Auth.signIn(username)
         }
     })
     .catch(err => console.log(err));
+```
+
+### Customizing the authentication flow of a User Pool
+
+You can customize the authentication flow for the User Pool using Lambda triggers. See [Custom Authentication Challenge Lambda Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-challenge.html) in the Amazon Cognito Developer Guide.
+
+Below are example Lambda that may help you.
+
+#### Create Auth Challenge
+```js
+export const handler = async (event) => {
+    if (!event.request.session || event.request.session.length === 0) {
+        event.response.publicChallengeParameters = {
+            captchaUrl: "url/123.jpg",
+        };
+        event.response.privateChallengeParameters = {
+            answer: "5",
+        };
+        event.response.challengeMetadata = "CAPTCHA_CHALLENGE";
+    }
+
+    return event;
+};
+```
+
+#### Define Auth Challenge
+```
+export const handler = async (event) => {
+    if (!event.request.session || event.request.session.length === 0) {
+        // If we don't have a session or it is empty then send a CUSTOM_CHALLENGE
+        event.response.challengeName = "CUSTOM_CHALLENGE";
+        event.response.failAuthentication = false;
+        event.response.issueTokens = false;
+    } else if (event.request.session.length === 1 && event.request.session[0].challengeResult === true) {
+        // If we passed the CUSTOM_CHALLENGE then issue token
+        event.response.failAuthentication = false;
+        event.response.issueTokens = true;
+    } else {
+        // Something is wrong. Fail authentication
+        event.response.failAuthentication = true;
+        event.response.issueTokens = false;
+    }
+
+    return event;
+};
+```
+
+#### Verify Auth Challenge Response
+```js
+export const handler = async (event, context) => {
+    if (event.request.privateChallengeParameters.answer === event.request.challengeAnswer) {
+        event.response.answerCorrect = true;
+    } else {
+        event.response.answerCorrect = false;
+    }
+
+    return event;
+};
 ```
 
 ### Working with User Attributes
