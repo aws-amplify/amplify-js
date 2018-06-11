@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Kinesis, Credentials} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials} from '@aws-amplify/core';
+import * as Kinesis from 'aws-sdk/clients/kinesis';
 import Cache from '@aws-amplify/cache';
 import { AnalyticsProvider } from '../types';
 

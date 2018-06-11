@@ -11,11 +11,11 @@
  * and limitations under the License.
  */
 
-// import * as AWS from 'aws-sdk/global';
-import * as S3 from 'aws-sdk/clients/s3';
+// import * as S3 from 'aws-sdk/clients/s3';
 import * as AWS from 'aws-sdk/global';
-import * as Pinpoint from 'aws-sdk/clients/pinpoint';
-import * as Kinesis from 'aws-sdk/clients/kinesis';
-import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
+// import * as Pinpoint from 'aws-sdk/clients/pinpoint';
+// import * as Kinesis from 'aws-sdk/clients/kinesis';
+// import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 
-export {AWS, S3, Pinpoint, MobileAnalytics, Kinesis };
+// export {AWS, S3, Pinpoint, MobileAnalytics, Kinesis };
+export { AWS };

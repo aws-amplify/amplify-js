@@ -54,6 +54,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
+    "aws-sdk": "2.198.0",
     "@aws-amplify/core": "^0.1.0"
   },
   "jest": {

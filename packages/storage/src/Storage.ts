@@ -13,11 +13,11 @@
 
 import {
     AWS,
-    S3,
     ConsoleLogger as Logger,
     Hub,
     Credentials
 } from '@aws-amplify/core';
+import * as S3 from 'aws-sdk/clients/s3';
 import { StorageOptions } from './types';
 
 const logger = new Logger('StorageClass');
