@@ -614,33 +614,16 @@ class App extends Component {
 export default withAuthenticator(App, true);
 ```
 
-### Custom Authorization Flows and Passwordless Login
+### Customizing Authentication Flow
 
-Cognito User Pools also support custom authorization flows. Using these gives you complete control over the authorization process and even allows passwordless logins. To initiate a custom authorization flow call `signIn` without a password. A custom challenge can be responded to using the `sendCustomChallengeAnswer` method.
+Amazon Cognito User Pools support customizing the authentication flow to enable new challenge types, in addition to a password, to verify the identity of users. These challenge types may include CAPTCHAs or dynamic challenge questions. 
 
-```js
-import { Auth } from 'aws-amplify';
+#### Creating a Custom Challange
 
-Auth.signIn(username)
-    .then(user => {
-        if (user.challengeName === 'CUSTOM_CHALLENGE') {
-            Auth.sendCustomChallengeAnswer(user, answer)
-                .then(user => console.log(user))
-                .catch(err => console.log(err));
-        } else {
-            console.log(user);
-        }
-    })
-    .catch(err => console.log(err));
-```
+To define your challenges for custom authentication flow, you need to implement Lambda triggers for Amazon Cognito.
 
-### Customizing the authentication flow of a User Pool
+For example, following Lambda creates a CAPTCHA as a challenge to the user. The URL for the CAPTCHA image and  the expected answer is added to the private challenge parameters:
 
-You can customize the authentication flow for the User Pool using Lambda triggers. See [Custom Authentication Challenge Lambda Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-challenge.html) in the Amazon Cognito Developer Guide.
-
-Below are example Lambda that may help you.
-
-#### Create Auth Challenge
 ```js
 export const handler = async (event) => {
     if (!event.request.session || event.request.session.length === 0) {
@@ -652,44 +635,33 @@ export const handler = async (event) => {
         };
         event.response.challengeMetadata = "CAPTCHA_CHALLENGE";
     }
-
     return event;
 };
 ```
+Please note that this Lambda trigger is invoked to create a challenge to present to the user. In addition, you will need another Lambda trigger to validate the challange responses.  
 
-#### Define Auth Challenge
-```
-export const handler = async (event) => {
-    if (!event.request.session || event.request.session.length === 0) {
-        // If we don't have a session or it is empty then send a CUSTOM_CHALLENGE
-        event.response.challengeName = "CUSTOM_CHALLENGE";
-        event.response.failAuthentication = false;
-        event.response.issueTokens = false;
-    } else if (event.request.session.length === 1 && event.request.session[0].challengeResult === true) {
-        // If we passed the CUSTOM_CHALLENGE then issue token
-        event.response.failAuthentication = false;
-        event.response.issueTokens = true;
-    } else {
-        // Something is wrong. Fail authentication
-        event.response.failAuthentication = true;
-        event.response.issueTokens = false;
-    }
+For more information about working with Lambda Triggers for custom authentication challenge, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-challenge.html).
+{: .callout .callout--info}
 
-    return event;
-};
-```
+#### Using a Custom Challange 
 
-#### Verify Auth Challenge Response
+To initiate a custom authorization flow in your app, call `signIn` without a password. A custom challenge needs to be answered using the `sendCustomChallengeAnswer` method:
+
 ```js
-export const handler = async (event, context) => {
-    if (event.request.privateChallengeParameters.answer === event.request.challengeAnswer) {
-        event.response.answerCorrect = true;
-    } else {
-        event.response.answerCorrect = false;
-    }
+import { Auth } from 'aws-amplify';
+let challangeResponse = "the answer for the challenge";
 
-    return event;
-};
+Auth.signIn(username)
+    .then(user => {
+        if (user.challengeName === 'CUSTOM_CHALLENGE') {
+            Auth.sendCustomChallengeAnswer(user, challangeResponse)
+                .then(user => console.log(user))
+                .catch(err => console.log(err));
+        } else {
+            console.log(user);
+        }
+    })
+    .catch(err => console.log(err));
 ```
 
 ### Working with User Attributes
