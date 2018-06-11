@@ -13,11 +13,6 @@
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
-  "react-native": {
-    "./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
-    "./lib/RNComponents": "./lib/RNComponents/reactnative.js",
-    "./lib/Common/StorageHelper": "./lib/StorageHelper/reactnative.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aws/aws-amplify.git"
