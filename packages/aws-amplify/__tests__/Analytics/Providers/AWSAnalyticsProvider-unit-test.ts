@@ -30,8 +30,10 @@ jest.mock('uuid', () => {
 })
 
 import { Pinpoint, AWS, MobileAnalytics, JS } from '../../../src/Common';
-import AnalyticsProvider from "../../../src/Analytics/Providers/AWSAnalyticsProvider";
+import AnalyticsProvider from "../../../src/Analytics/Providers/AWSPinpointProvider";
 import { ConsoleLogger as Logger } from '../../../src/Common/Logger';
+import Auth from '../../../src/Auth';
+import Cache from '../../../src/Cache';
 
 const credentials = {
     accessKeyId: 'accessKeyId',
@@ -56,7 +58,15 @@ const options = {
     endpointId: 'endpointId',
     region: 'region'
 };
+const timeSpyOn = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => {
+    return 1526939075455;
+});
+
+const timeSpyOn2 = jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => {
+    return 'isoString';
+});
 const timestamp = new Date().getTime();
+
 
 describe("AnalyticsProvider test", () => {
     describe('getCategory test', () => {
@@ -71,7 +81,7 @@ describe("AnalyticsProvider test", () => {
         test('happy case', () => {
             const analytics = new AnalyticsProvider();
 
-            expect(analytics.getProviderName()).toBe('AWSAnalytics');
+            expect(analytics.getProviderName()).toBe('AWSPinpoint');
         });
     });
 
@@ -79,11 +89,112 @@ describe("AnalyticsProvider test", () => {
         test('happy case', () => {
             const analytics = new AnalyticsProvider();
 
-            expect(analytics.configure({appId: 'appId'})).toEqual({appId: 'appId'});
+            expect(analytics.configure({appId: 'appId'})).toEqual({"appId": "appId", "bufferSize": 1000, "flushInterval": 5000, "flushSize": 100, "resendLimit": 5});
         });
     });
 
-    describe('startsession test', () => {
+    describe('record test', () => {
+        test('record without credentials', async () => {
+            const analytics = new AnalyticsProvider();
+
+            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                return Promise.reject('err');
+            });
+           
+            expect(await analytics.record('params')).toBe(false);
+            spyon.mockClear();
+        });
+
+        test('record happy case', async () => {
+            const analytics = new AnalyticsProvider();
+        
+            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                    return Promise.resolve(credentials);
+                });
+     
+
+            await analytics.record({
+                event: {
+                    name: 'customEvents'
+                },
+                config: {
+                    endpointId: 'endpointId'
+                }
+            });
+
+            jest.advanceTimersByTime(6000);
+
+            spyon.mockClear();
+        });
+
+        test('start session happy case', async () => {
+            const analytics = new AnalyticsProvider();
+        
+            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                    return Promise.resolve(credentials);
+                });
+     
+
+            await analytics.record({
+                event: {
+                    name: '_session_start'
+                },
+                config: {
+                    endpointId: 'endpointId'
+                }
+            });
+
+            jest.advanceTimersByTime(6000);
+
+            spyon.mockClear();
+        });
+
+        test('stop session happy case', async () => {
+            const analytics = new AnalyticsProvider();
+        
+            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                    return Promise.resolve(credentials);
+                });
+     
+
+            await analytics.record({
+                event: {
+                    name: '_session_stop'
+                },
+                config: {
+                    endpointId: 'endpointId'
+                }
+            });
+
+            jest.advanceTimersByTime(6000);
+
+            spyon.mockClear();
+        });
+
+        test('updateEndpoint happy case', async () => {
+            const analytics = new AnalyticsProvider();
+        
+            const spyon = jest.spyOn(Auth, 'currentCredentials').mockImplementationOnce(() => {
+                    return Promise.resolve(credentials);
+                });
+     
+
+            await analytics.record({
+                event: {
+                    name: '_update_endpoint'
+                },
+                config: {
+                    endpointId: 'endpointId'
+                }
+            });
+
+            jest.advanceTimersByTime(6000);
+
+            spyon.mockClear();
+        });
+    });
+
+    describe.skip('startsession test', () => {
         test('happy case', async () => {
             const analytics = new AnalyticsProvider();
             const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
@@ -112,7 +223,7 @@ describe("AnalyticsProvider test", () => {
             spyon.mockClear();
         });
     });
-    describe('stopSession test', () => {
+    describe.skip('stopSession test', () => {
         test('happy case', async () => {
             const analytics = new AnalyticsProvider();
             const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
@@ -143,7 +254,7 @@ describe("AnalyticsProvider test", () => {
 
 
 
-    describe('record test', () => {
+    describe.skip('record test', () => {
         test('custom events', async () => {
             const analytics = new AnalyticsProvider();
             const spyon = jest.spyOn(MobileAnalytics.prototype, 'putEvents').mockImplementationOnce((params, callback) => {
@@ -221,7 +332,7 @@ describe("AnalyticsProvider test", () => {
         });
     });
 
-    describe('updateEndpoint test', () => {
+    describe.skip('updateEndpoint test', () => {
         test('happy case', async () => {
             const analytics = new AnalyticsProvider();
             const spyon = jest.spyOn(Pinpoint.prototype, 'updateEndpoint').mockImplementationOnce((params, callback) => {

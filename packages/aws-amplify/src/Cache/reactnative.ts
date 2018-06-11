@@ -11,7 +11,10 @@
  * and limitations under the License.
  */
 
+import { Credentials } from '../Common';
 import {default as Cache, AsyncStorageCache} from './AsyncStorageCache';
 
 export { AsyncStorageCache };
 export default Cache;
+
+Credentials.setCacheClass(Cache);

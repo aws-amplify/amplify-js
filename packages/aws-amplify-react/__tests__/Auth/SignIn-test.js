@@ -36,6 +36,19 @@ describe('SignIn', () => {
             }
         });
 
+        test('render correctly with hide', () => {
+            for (var i = 0; i < acceptedStates.length; i += 1){
+                const wrapper = shallow(<SignIn/>);
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: AmplifyTheme,
+                    hide: [SignIn]
+                });
+
+                expect(wrapper).toMatchSnapshot();
+            }
+        });
+
         test('when clicking signIn and new password required', async () => {
             const wrapper = shallow(<SignIn/>);
             wrapper.setProps({
