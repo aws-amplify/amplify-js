@@ -20,6 +20,7 @@ export { default as Authenticator } from './Authenticator';
 export { default as AuthPiece } from './AuthPiece';
 export { default as SignIn } from './SignIn';
 export { default as ConfirmSignIn } from './ConfirmSignIn';
+export { default as SignOut } from './SignOut';
 export { default as RequireNewPassword } from './RequireNewPassword';
 export { default as SignUp } from './SignUp';
 export { default as ConfirmSignUp } from './ConfirmSignUp';

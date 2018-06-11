@@ -469,12 +469,12 @@ describe('S3Album test', () => {
         test('happy case with contentType string', async () => {
             let spyon = jest.spyOn(Storage, 'list').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    res([{data: 'data'}]);
+                    res([{data: 'data', key: 'data-1'}]);
                 });
             });
             let wrapper = await mount(<S3Album contentType='string'/>);
 
-            expect(wrapper.state('items')).toEqual([{"contentType": "string", "data": "data"}]);
+            expect(wrapper.state('items')).toEqual([{"contentType": "string", "data": "data", "key": "data-1"}]);
 
             spyon.mockClear();
             await wrapper.unmount();

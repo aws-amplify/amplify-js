@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import { Auth, I18n, Logger, JS } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -34,9 +34,22 @@ export default class ConfirmSignIn extends AuthPiece {
 
         this._validAuthStates = ['confirmSignIn'];
         this.confirm = this.confirm.bind(this);
+        this.checkContact = this.checkContact.bind(this);
         this.state = {
             mfaType: 'SMS'
         }
+    }
+
+    checkContact(user) {
+        Auth.verifiedContact(user)
+            .then(data => {
+                if (!JS.isEmpty(data.verified)) {
+                    this.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    this.changeState('verifyContact', user);
+                }
+            });
     }
 
     confirm() {
@@ -44,7 +57,9 @@ export default class ConfirmSignIn extends AuthPiece {
         const { code } = this.inputs;
         const mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
         Auth.confirmSignIn(user, code, mfaType)
-            .then(() => this.changeState('signedIn', user))
+            .then(() => {
+                this.checkContact(user);
+            })
             .catch(err => this.error(err));
     }
 

@@ -681,6 +681,96 @@ class App extends Component {
 export default withAuthenticator(App, true);
 ```
 
+### Customizing Authentication Flow
+
+Amazon Cognito User Pools support customizing the authentication flow to enable new challenge types, in addition to a password, to verify the identity of users. These challenge types may include CAPTCHAs or dynamic challenge questions. 
+
+To define your challenges for custom authentication flow, you need to implement Lambda triggers for Amazon Cognito.
+
+#### Creating a CAPTCHA
+
+The following Lambda creates a CAPTCHA as a challenge to the user. The URL for the CAPTCHA image and  the expected answer is added to the private challenge parameters:
+
+```js
+export const handler = async (event) => {
+    if (!event.request.session || event.request.session.length === 0) {
+        event.response.publicChallengeParameters = {
+            captchaUrl: "url/123.jpg",
+        };
+        event.response.privateChallengeParameters = {
+            answer: "5",
+        };
+        event.response.challengeMetadata = "CAPTCHA_CHALLENGE";
+    }
+    return event;
+};
+```
+
+#### Defining a Custom Challange
+
+This example defines a custom challenge:
+
+```js
+export const handler = async (event) => {
+    if (!event.request.session || event.request.session.length === 0) {
+        // If we don't have a session or it is empty then send a CUSTOM_CHALLENGE
+        event.response.challengeName = "CUSTOM_CHALLENGE";
+        event.response.failAuthentication = false;
+        event.response.issueTokens = false;
+    } else if (event.request.session.length === 1 && event.request.session[0].challengeResult === true) {
+        // If we passed the CUSTOM_CHALLENGE then issue token
+        event.response.failAuthentication = false;
+        event.response.issueTokens = true;
+    } else {
+        // Something is wrong. Fail authentication
+        event.response.failAuthentication = true;
+        event.response.issueTokens = false;
+    }
+
+    return event;
+};
+```
+
+**Verify Challenge Response** 
+
+This Lambda is used to verify a challange answer:
+
+```js
+export const handler = async (event, context) => {
+    if (event.request.privateChallengeParameters.answer === event.request.challengeAnswer) {
+        event.response.answerCorrect = true;
+    } else {
+        event.response.answerCorrect = false;
+    }
+
+    return event;
+};
+```
+
+For more information about working with Lambda Triggers for custom authentication challenge, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-challenge.html).
+{: .callout .callout--info}
+
+#### Using a Custom Challange 
+
+To initiate a custom authorization flow in your app, call `signIn` without a password. A custom challenge needs to be answered using the `sendCustomChallengeAnswer` method:
+
+```js
+import { Auth } from 'aws-amplify';
+let challangeResponse = "the answer for the challenge";
+
+Auth.signIn(username)
+    .then(user => {
+        if (user.challengeName === 'CUSTOM_CHALLENGE') {
+            Auth.sendCustomChallengeAnswer(user, challangeResponse)
+                .then(user => console.log(user))
+                .catch(err => console.log(err));
+        } else {
+            console.log(user);
+        }
+    })
+    .catch(err => console.log(err));
+```
+
 ### Working with User Attributes
 
 You can pass user attributes during sign up:

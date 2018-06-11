@@ -42,16 +42,16 @@ export default class VerifyContact extends AuthPiece {
     }
 
     verify() {
-        const { contact } = this.inputs;
+        const { contact, checkedValue } = this.inputs;
         if (!contact) {
             this.error('Neither Email nor Phone Number selected');
             return;
         }
 
-        Auth.verifyCurrentUserAttribute(contact)
+        Auth.verifyCurrentUserAttribute(checkedValue)
             .then(data => {
                 logger.debug(data);
-                this.setState({ verifyAttr: contact });
+                this.setState({ verifyAttr: checkedValue });
             })
             .catch(err => this.error(err));
     }
@@ -136,7 +136,7 @@ export default class VerifyContact extends AuthPiece {
                     { this.state.verifyAttr? this.submitView() : this.verifyView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signedIn')}>
+                    <Link theme={theme} onClick={() => this.changeState('signedIn', authData)}>
                         {I18n.get('Skip')}
                     </Link>
                 </SectionFooter>
