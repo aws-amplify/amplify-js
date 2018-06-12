@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { AuthOptions, FederatedResponse } from './types';
+import { AuthOptions, FederatedResponse, ConfirmSignUpOptions } from './types';
 
 import {
     AWS,
@@ -236,16 +236,17 @@ export default class AuthClass {
      * Send the verfication code to confirm sign up
      * @param {String} username - The username to be confirmed
      * @param {String} code - The verification code
-     * @param {Object} options - other options for confirm signup
+     * @param {ConfirmSignUpOptions} options - other options for confirm signup
      * @return - A promise resolves callback data if success
      */
-    public confirmSignUp(username: string, code: string, options?: any): Promise<any> {
+    public confirmSignUp(username: string, code: string, options?: ConfirmSignUpOptions): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!code) { return Promise.reject('Code cannot be empty'); }
 
         const user = this.createCognitoUser(username);
-        const forceAliasCreation = options && options.forceAliasCreation? options.forceAliasCreation : true;
+        const forceAliasCreation = options && typeof options.forceAliasCreation === 'boolean'
+            ? options.forceAliasCreation : true;
 
         return new Promise((resolve, reject) => {
             user.confirmRegistration(code, forceAliasCreation, function(err, data) {
