@@ -2738,6 +2738,8 @@ exports[`signUp normal case render correctly with authState signUp 1`] = `
 </FormSection>
 `;
 
+exports[`signUp normal case render correctly with hide 1`] = `""`;
+
 exports[`signUp null case with other authState render corrently 1`] = `""`;
 
 exports[`signUp null case with other authState render corrently 2`] = `""`;
