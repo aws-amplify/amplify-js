@@ -236,9 +236,10 @@ export default class AuthClass {
      * Send the verfication code to confirm sign up
      * @param {String} username - The username to be confirmed
      * @param {String} code - The verification code
+     * @param {Boolean} [forceAliasCreation=true] - force user confirmation irrespective of existing alias
      * @return - A promise resolves callback data if success
      */
-    public confirmSignUp(username: string, code: string): Promise<any> {
+    public confirmSignUp(username: string, code: string, forceAliasCreation?: boolean = true): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!code) { return Promise.reject('Code cannot be empty'); }
@@ -246,7 +247,7 @@ export default class AuthClass {
         const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
             
-            user.confirmRegistration(code, true, function(err, data) {
+            user.confirmRegistration(code, forceAliasCreation, function(err, data) {
                 if (err) { reject(err); } else { resolve(data); }
             });
         });
