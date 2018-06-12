@@ -140,6 +140,10 @@ export class Credentials {
             return Promise.reject('cannot get guest credentials when mandatory signin enabled');
         }
 
+        if (!identityPoolId) {
+            logger.debug('No Cognito Federated Identity pool provided');
+            return Promise.reject('No Cognito Federated Identity pool provided');
+        }
         const identityId = await StorageHelper.getItem('CognitoIdentityId-' + identityPoolId);
         const credentials = new AWS.CognitoIdentityCredentials(
             {
@@ -184,6 +188,10 @@ export class Credentials {
         logins[domain] = token;
 
         const { identityPoolId, region } = this._config;
+        if (!identityPoolId) {
+            logger.debug('No Cognito Federated Identity pool provided');
+            return Promise.reject('No Cognito Federated Identity pool provided');
+        }
         const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
@@ -205,6 +213,10 @@ export class Credentials {
         logger.debug('set credentials from session');
         const idToken = session.getIdToken().getJwtToken();
         const { region, userPoolId, identityPoolId } = this._config;
+        if (!identityPoolId) {
+            logger.debug('No Cognito Federated Identity pool provided');
+            return Promise.reject('No Cognito Federated Identity pool provided');
+        }
         const key = 'cognito-idp.' + region + '.amazonaws.com/' + userPoolId;
         const logins = {};
         logins[key] = idToken;

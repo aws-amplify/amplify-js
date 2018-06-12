@@ -74,8 +74,6 @@ export default class AuthClass {
         logger.debug('configure Auth');
         const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Auth, config);
         this._config = conf;
-
-        if (!this._config.identityPoolId) { logger.debug('Do not have identityPoolId yet.'); }
         const { 
             userPoolId, 
             userPoolWebClientId, 
@@ -179,7 +177,11 @@ export default class AuthClass {
      */
     public signUp(params): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
-
+        if (typeof params === 'string') {
+            return Promise.reject(
+                'Please stop using the deprecated method. Check latest doc: https://aws.github.io/aws-amplify/media/authentication_guide#sign-up'
+            );
+        }
         const { username, password } = params;
         const attributes : object[] = [];
         let validationData: object[] = null;
