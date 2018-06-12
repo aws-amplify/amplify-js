@@ -111,7 +111,8 @@ Auth.signUp({
 
 // Collect confirmation code, then
 Auth.confirmSignUp(username, code, {
-    forceAliasCreation: true    // optional, Allow migrating from an existing email / phone number. By default is true
+    // Optional. Force user confirmation irrespective of existing alias. By default set to True.
+    forceAliasCreation: true    
 }).then(data => console.log(data))
 .catch(err => console.log(err));
 ```
