@@ -110,9 +110,10 @@ Auth.signUp({
     .catch(err => console.log(err));
 
 // Collect confirmation code, then
-Auth.confirmSignUp(username, code)
-    .then(data => console.log(data))
-    .catch(err => console.log(err));
+Auth.confirmSignUp(username, code, {
+    forceAliasCreation: true    // optional, Allow migrating from an existing email / phone number. By default is true
+}).then(data => console.log(data))
+.catch(err => console.log(err));
 ```
 
 #### Sign Out
