@@ -27,7 +27,17 @@ import {
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
-import { ICognitoUserPoolData, ICognitoUserData, ISignUpResult, CognitoUser, MFAOption } from 'amazon-cognito-identity-js';
+import { 
+    ICognitoUserPoolData, 
+    ICognitoUserData, 
+    ISignUpResult, 
+    CognitoUser, 
+    MFAOption,
+    CognitoUserSession,
+    IAuthenticationCallback,
+    ICognitoUserAttributeData,
+    CognitoUserAttribute
+} from 'amazon-cognito-identity-js';
 import '../Common/Polyfills';
 
 const logger = new Logger('AuthClass');
@@ -37,7 +47,6 @@ const { CognitoAuth } = CognitoHostedUI;
 const {
     CookieStorage,
     CognitoUserPool,
-    CognitoUserAttribute,
     AuthenticationDetails,
 } = Cognito;
 
@@ -292,7 +301,10 @@ export default class AuthClass {
      * @param {} reject - function called when rejecting the current step
      * @return - an object with the callback methods for user authentication
      */
-    private authCallbacks(user: CognitoUser, resolve: (value?: CognitoUser) => void, reject: (value?: any) => void) {
+    private authCallbacks(
+        user: CognitoUser, 
+        resolve: (value?: CognitoUser) => void, reject: (value?: any) => void
+    ): IAuthenticationCallback {
         const that = this;
         return {
             onSuccess: async (session) => {
@@ -546,7 +558,7 @@ export default class AuthClass {
      * @param {string} challengeAnswer - challenge answer
      * @return - A promise resolves is success
      */
-    public verifyTotpToken(user, challengeAnswer) {
+    public verifyTotpToken(user: CognitoUser, challengeAnswer: string): Promise<CognitoUserSession> {
         logger.debug('verfication totp token', user, challengeAnswer);
         return new Promise((res, rej) => {
             user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
@@ -567,7 +579,11 @@ export default class AuthClass {
      * @param {Object} user - The CognitoUser object
      * @param {String} code - The confirmation code
      */
-    public confirmSignIn(user: any, code: string, mfaType: string | null): Promise<any> {
+    public confirmSignIn(
+        user: CognitoUser, 
+        code: string, 
+        mfaType?: 'SMS_MFA'|'SOFTWARE_TOKEN_MFA'|null
+    ): Promise<CognitoUser> {
         if (!code) { return Promise.reject('Code cannot be empty'); }
 
         const that = this;
@@ -597,10 +613,10 @@ export default class AuthClass {
     }
 
     public completeNewPassword(
-        user: any,
+        user: CognitoUser,
         password: string,
         requiredAttributes: any
-    ): Promise<any> {
+    ): Promise<CognitoUser> {
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
         const that = this;
@@ -645,7 +661,7 @@ export default class AuthClass {
      * @param {CognitoUser} user - The CognitoUser object
      * @param {String} challengeResponses - The confirmation code
      */
-    public sendCustomChallengeAnswer(user, challengeResponses: string): Promise<any> {
+    public sendCustomChallengeAnswer(user:CognitoUser, challengeResponses: string): Promise<CognitoUser> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!challengeResponses) { return Promise.reject('Challenge response cannot be empty'); }
 
@@ -660,45 +676,43 @@ export default class AuthClass {
      * @param {CognitoUser} - The currently logged in user object
      * @return {Promise}
      **/
-    public updateUserAttributes(user, attributes:object): Promise<any> {
-        let attr:object = {};
-        const attributeList:Array<object> = [];
-        return this.userSession(user)
-            .then(session => {
-                return new Promise((resolve, reject) => {
-                    for (const key in attributes) {
-                        if ( key !== 'sub' &&
-                            key.indexOf('_verified') < 0) {
-                            attr = {
-                                'Name': key,
-                                'Value': attributes[key]
-                            };
-                            attributeList.push(attr);
-                        }
+    public updateUserAttributes(user: CognitoUser, attributes:object): Promise<string> {
+        const attributeList:ICognitoUserAttributeData[] = [];
+        const that = this;
+        return new Promise((resolve, reject) => {
+            that.userSession(user).then(session => {
+                for (const key in attributes) {
+                    if ( key !== 'sub' &&
+                        key.indexOf('_verified') < 0) {
+                        const attr:ICognitoUserAttributeData = {
+                            'Name': key,
+                            'Value': attributes[key]
+                        };
+                        attributeList.push(attr);
                     }
-                    user.updateAttributes(attributeList, (err,result) => {
-                        if (err) { reject(err); } else { resolve(result); }
-                    });
+                }
+                user.updateAttributes(attributeList, (err,result) => {
+                    if (err) { reject(err); } else { resolve(result); }
                 });
             });
+        });
     }
     /**
      * Return user attributes
      * @param {Object} user - The CognitoUser object
      * @return - A promise resolves to user attributes if success
      */
-    public userAttributes(user): Promise<any> {
-        return this.userSession(user)
-            .then(session => {
-                return new Promise((resolve, reject) => {
-                    user.getUserAttributes((err, attributes) => {
-                        if (err) { reject(err); } else { resolve(attributes); }
-                    });
+    public userAttributes(user:CognitoUser): Promise<CognitoUserAttribute[]> {
+        return new Promise((resolve, reject) => {
+            this.userSession(user).then(session => {
+                user.getUserAttributes((err, attributes) => {
+                    if (err) { reject(err); } else { resolve(attributes); }
                 });
             });
+        });
     }
 
-    public verifiedContact(user) {
+    public verifiedContact(user: CognitoUser) {
         const that = this;
         return this.userAttributes(user)
             .then(attributes => {
@@ -730,35 +744,33 @@ export default class AuthClass {
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    public currentUserPoolUser(): Promise<any> {
+    public currentUserPoolUser(): Promise<CognitoUser> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         let user = null;
-        if (Platform.isReactNative) {
-            const that = this;
-            return this.getSyncedUser().then(user => {
-                if (!user) { return Promise.reject('No current user in userPool'); }
-                return new Promise((resolve, reject) => {
+        const that = this;
+        return new Promise((resolve, reject) => {
+            if (Platform.isReactNative) {
+                that.getSyncedUser().then(user => {
+                    if (!user) { reject('No current user in userPool'); }
                     user.getSession(function(err, session) {
                         if (err) { reject(err); } else { resolve(user); }
                     });
                 });
-            });
-        } else {
-            user = this.userPool.getCurrentUser();
-            if (!user) { return Promise.reject('No current user in userPool'); }
-            return new Promise((resolve, reject) => {
+            } else {
+                user = this.userPool.getCurrentUser();
+                if (!user) { return reject('No current user in userPool'); }
                 user.getSession(function(err, session) {
                     if (err) { reject(err); } else { resolve(user); }
                 });
-            });
-        }
+            }
+        });
     }
 
     /**
      * Return the current user after synchornizing AsyncStorage
      * @return - A promise with the current authenticated user
      **/
-    private getSyncedUser(): Promise<any> {
+    private getSyncedUser(): Promise<CognitoUser> {
         const that = this;
         return (this._userPoolStorageSync || Promise.resolve()).then(result => {
             if (!that.userPool) {
@@ -772,7 +784,7 @@ export default class AuthClass {
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success
      */
-    public async currentAuthenticatedUser(): Promise<any> {
+    public async currentAuthenticatedUser(): Promise<CognitoUser|any> {
         logger.debug('getting current authenticted user');
         let federatedUser = null;
         try {
@@ -809,7 +821,7 @@ export default class AuthClass {
      * Get current user's session
      * @return - A promise resolves to session object if success
      */
-    public currentSession() : Promise<any> {
+    public currentSession() : Promise<CognitoUserSession> {
         let user:any;
         const that = this;
         logger.debug('Getting current session');
@@ -837,7 +849,7 @@ export default class AuthClass {
      * @param {Object} user - The CognitoUser object
      * @return - A promise resolves to the session
      */
-    public userSession(user) : Promise<any> {
+    public userSession(user) : Promise<CognitoUserSession> {
         return new Promise((resolve, reject) => {
             logger.debug('Getting the session from this user:', user);
             user.getSession(function(err, session) {
