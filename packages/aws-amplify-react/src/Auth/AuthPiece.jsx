@@ -78,6 +78,7 @@ export default class AuthPiece extends Component {
         const { name, value, type, checked } = evt.target;
         const check_type = ['radio', 'checkbox'].includes(type);
         this.inputs[name] = check_type? checked : value;
+        this.inputs['checkedValue'] = check_type? value: null;
     }
 
     render() {

@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
   s.license = { :file => 'LICENSE.txt' }
   s.homepage = "https://github.com/aws/amazon-cognito-identity-js"
   s.author = "Amazon"
-  
+
   s.summary = "Amazon Cognito Identity SDK for JavaScript"
   s.description = <<-DESC
                     The Amazon Cognito Identity SDK for JavaScript allows JavaScript enabled applications to sign-up users, authenticate users, view, delete, and update user attributes within the Amazon Cognito Identity service.
@@ -15,5 +15,6 @@ Pod::Spec.new do |s|
 
   s.source = { :git => "https://github.com/aws/amazon-cognito-identity-js.git", :tag => s.version.to_s }
   s.source_files     = 'ios/RNAWSCognito.{h,m}'
+  s.dependency 'React'
   s.dependency 'JKBigInteger2', '0.0.5'
 end

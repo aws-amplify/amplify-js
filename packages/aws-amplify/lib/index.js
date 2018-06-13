@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Analytics_1 = require("./Analytics");
 exports.Analytics = Analytics_1.default;
 exports.AnalyticsClass = Analytics_1.AnalyticsClass;
+exports.AWSPinpointProvider = Analytics_1.AWSPinpointProvider;
+exports.AWSKinesisProvider = Analytics_1.AWSKinesisProvider;
 var Auth_1 = require("./Auth");
 exports.Auth = Auth_1.default;
 exports.AuthClass = Auth_1.AuthClass;
@@ -36,63 +38,15 @@ exports.JS = Common_1.JS;
 exports.ClientDevice = Common_1.ClientDevice;
 exports.Signer = Common_1.Signer;
 exports.I18n = Common_1.I18n;
-var logger = new Common_1.ConsoleLogger('Amplify');
-var Amplify = /** @class */ (function () {
-    function Amplify() {
-    }
-    Amplify.configure = function (config) {
-        if (!config) {
-            return;
-        }
-        Auth_1.default.configure(config);
-        Common_1.I18n.configure(config);
-        Analytics_1.default.configure(config);
-        API_1.default.configure(config);
-        Storage_1.default.configure(config);
-        Cache_1.default.configure(config);
-        PubSub_1.default.configure(config);
-        return config;
-    };
-    Amplify.addPluggable = function (pluggable) {
-        if (pluggable && pluggable['getCategory'] && typeof pluggable['getCategory'] === 'function') {
-            var category = pluggable.getCategory();
-            switch (category) {
-                case 'Analytics':
-                    Analytics_1.default.addPluggable(pluggable);
-                    break;
-                case 'Auth':
-                    break;
-                case 'API':
-                    break;
-                case 'Cache':
-                    break;
-                case 'Storage':
-                    break;
-                case 'PubSub':
-                    PubSub_1.default.addPluggable(pluggable);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-    Amplify.Auth = null;
-    Amplify.Analytics = null;
-    Amplify.API = null;
-    Amplify.Storage = null;
-    Amplify.I18n = null;
-    Amplify.Cache = null;
-    Amplify.PubSub = null;
-    Amplify.Logger = null;
-    return Amplify;
-}());
-exports.default = Amplify;
-Amplify.Auth = Auth_1.default;
-Amplify.Analytics = Analytics_1.default;
-Amplify.API = API_1.default;
-Amplify.Storage = Storage_1.default;
-Amplify.I18n = Common_1.I18n;
-Amplify.Cache = Cache_1.default;
-Amplify.PubSub = PubSub_1.default;
-Amplify.Logger = Common_1.ConsoleLogger;
+exports.ServiceWorker = Common_1.ServiceWorker;
+exports.default = Common_1.Amplify;
+Common_1.Amplify.Auth = Auth_1.default;
+Common_1.Amplify.Analytics = Analytics_1.default;
+Common_1.Amplify.API = API_1.default;
+Common_1.Amplify.Storage = Storage_1.default;
+Common_1.Amplify.I18n = Common_1.I18n;
+Common_1.Amplify.Cache = Cache_1.default;
+Common_1.Amplify.PubSub = PubSub_1.default;
+Common_1.Amplify.Logger = Common_1.ConsoleLogger;
+Common_1.Amplify.ServiceWorker = Common_1.ServiceWorker;
 //# sourceMappingURL=index.js.map

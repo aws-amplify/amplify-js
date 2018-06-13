@@ -120,6 +120,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -360,6 +363,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -604,6 +610,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -845,6 +854,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -1103,6 +1115,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
               "textAlign": "left",
               "width": "400px",
             },
+            "hidden": Object {
+              "display": "none",
+            },
             "input": Object {
               "backgroundColor": "#fff",
               "backgroundImage": "none",
@@ -1344,6 +1359,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -1588,6 +1606,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -1837,6 +1858,9 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
         "textAlign": "left",
         "width": "400px",
       },
+      "hidden": Object {
+        "display": "none",
+      },
       "input": Object {
         "backgroundColor": "#fff",
         "backgroundImage": "none",
@@ -2077,6 +2101,9 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
           "marginBottom": "20px",
           "textAlign": "left",
           "width": "400px",
+        },
+        "hidden": Object {
+          "display": "none",
         },
         "input": Object {
           "backgroundColor": "#fff",
@@ -2321,6 +2348,9 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -2562,6 +2592,9 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
