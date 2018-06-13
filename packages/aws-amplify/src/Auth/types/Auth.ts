@@ -64,3 +64,7 @@ export interface OAuth {
     responseType: string,
     options?: object
 }
+
+export interface ConfirmSignUpOptions {
+    forceAliasCreation?: boolean
+}

@@ -110,9 +110,11 @@ Auth.signUp({
     .catch(err => console.log(err));
 
 // Collect confirmation code, then
-Auth.confirmSignUp(username, code)
-    .then(data => console.log(data))
-    .catch(err => console.log(err));
+Auth.confirmSignUp(username, code, {
+    // Optional. Force user confirmation irrespective of existing alias. By default set to True.
+    forceAliasCreation: true    
+}).then(data => console.log(data))
+.catch(err => console.log(err));
 ```
 
 #### Sign Out
