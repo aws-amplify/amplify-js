@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { AuthOptions, FederatedResponse } from './types';
+import { AuthOptions, FederatedResponse, SignUpParams } from './types';
 
 import {
     AWS,
@@ -27,7 +27,7 @@ import {
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
-import { ICognitoUserPoolData, ICognitoUserData } from 'amazon-cognito-identity-js';
+import { ICognitoUserPoolData, ICognitoUserData, ISignUpResult, CognitoUser, MFAOption } from 'amazon-cognito-identity-js';
 import '../Common/Polyfills';
 
 const logger = new Logger('AuthClass');
@@ -38,7 +38,6 @@ const {
     CookieStorage,
     CognitoUserPool,
     CognitoUserAttribute,
-    CognitoUser,
     AuthenticationDetails,
 } = Cognito;
 
@@ -184,7 +183,7 @@ export default class AuthClass {
      * @param {String[]} restOfAttrs - for the backward compatability
      * @return - A promise resolves callback data if success
      */
-    public signUp(params: string | object, ...restOfAttrs: string[]): Promise<any> {
+    public signUp(params: string | SignUpParams, ...restOfAttrs: string[]): Promise<ISignUpResult> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
 
         let username : string = null;
@@ -257,7 +256,7 @@ export default class AuthClass {
      * @param {String} username - The username to be confirmed
      * @return - A promise resolves data if success
      */
-    public resendSignUp(username: string): Promise<any> {
+    public resendSignUp(username: string): Promise<string> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
 
@@ -275,7 +274,7 @@ export default class AuthClass {
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser
      */
-    public signIn(username: string, password?: string): Promise<any> {
+    public signIn(username: string, password?: string): Promise<CognitoUser> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
 
@@ -293,7 +292,7 @@ export default class AuthClass {
      * @param {} reject - function called when rejecting the current step
      * @return - an object with the callback methods for user authentication
      */
-    private authCallbacks(user, resolve: (value?: any) => void, reject: (value?: any) => void) {
+    private authCallbacks(user: CognitoUser, resolve: (value?: CognitoUser) => void, reject: (value?: any) => void) {
         const that = this;
         return {
             onSuccess: async (session) => {
@@ -311,7 +310,7 @@ export default class AuthClass {
                     resolve(user);
                 }
             },
-        onFailure: (err) => {
+            onFailure: (err) => {
                 logger.debug('signIn failure', err);
                 dispatchAuthEvent('signIn_failure', err);
                 reject(err);
@@ -364,7 +363,7 @@ export default class AuthClass {
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser object if success or mfa required
      */
-    private signInWithPassword(username: string, password: string): Promise<any> {
+    private signInWithPassword(username: string, password: string): Promise<CognitoUser> {
         const user = this.createCognitoUser(username);
         const authDetails = new AuthenticationDetails({
             Username: username,
@@ -381,7 +380,7 @@ export default class AuthClass {
      * @param {String} username - The username to be signed in
      * @return - A promise resolves the CognitoUser object if success or mfa required
      */
-    private signInWithoutPassword(username: string): Promise<any> {
+    private signInWithoutPassword(username: string): Promise<CognitoUser> {
         const user = this.createCognitoUser(username);
         user.setAuthenticationFlowType('CUSTOM_AUTH');
         const authDetails = new AuthenticationDetails({
@@ -398,7 +397,7 @@ export default class AuthClass {
      * @param {CognitoUser} user - the current user
      * @return - A promise resolves the current preferred mfa option if success
      */
-    public getMFAOptions(user : any) : Promise<any> {
+    public getMFAOptions(user : CognitoUser) : Promise<MFAOption[]> {
         return new Promise((res, rej) => {
             user.getMFAOptions((err, mfaOptions) => {
                 if (err) {
@@ -417,7 +416,7 @@ export default class AuthClass {
      * @param {string} mfaMethod - preferred mfa method
      * @return - A promise resolve if success
      */
-    public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
+    public setPreferredMFA(user : CognitoUser, mfaMethod : 'TOTP'|'SMS'|'NOMFA'): Promise<string> {
         let smsMfaSettings = null;
         let totpMfaSettings = {
             PreferredMfa : false,
@@ -490,7 +489,7 @@ export default class AuthClass {
      * @param {CognitoUser} user - the current user
      * @return - A promise resolves is success
      */
-    public disableSMS(user : any) : Promise<any> {
+    public disableSMS(user : CognitoUser) : Promise<string> {
         return new Promise((res, rej) => {
             user.disableMFA((err, data) => {
                 if (err) {
@@ -508,7 +507,7 @@ export default class AuthClass {
      * @param {CognitoUser} user - the current user
      * @return - A promise resolves is success
      */
-    public enableSMS(user) {
+    public enableSMS(user: CognitoUser): Promise<string> {
         return new Promise((res, rej) => {
             user.enableMFA((err, data) => {
                 if (err) {
@@ -526,7 +525,7 @@ export default class AuthClass {
      * @param {CognitoUser} user - the current user
      * @return - A promise resolves with the secret code if success
      */
-    public setupTOTP(user) {
+    public setupTOTP(user: CognitoUser): Promise<string> {
         return new Promise((res, rej) => {
             user.associateSoftwareToken({
                 onFailure: (err) => {

@@ -17,9 +17,10 @@
 * Parameters for user sign up
 */
 export interface SignUpParams {
-    username: string;
-    password: string;
-    SignupAttributes?: Object;
+    username: string,
+    password: string,
+    attributes?: object,
+    validationData?: Array<any>,
 }
 
 /**
@@ -28,9 +29,9 @@ export interface SignUpParams {
 export interface AuthOptions {
     userPoolId: string,
     userPoolWebClientId: string,
-    identityPoolId: string,
+    identityPoolId?: string,
     region?: string,
-    mandatorySignIn: boolean
+    mandatorySignIn?: boolean
     cookieStorage?: ICookieStorageData,
     oauth?: OAuth,
     refreshHandlers?: object
@@ -64,3 +65,5 @@ export interface OAuth {
     responseType: string,
     options?: object
 }
+
+
