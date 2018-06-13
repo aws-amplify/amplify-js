@@ -61,8 +61,8 @@ var StorageCache_1 = require("./StorageCache");
 var CacheUtils_1 = require("./Utils/CacheUtils");
 var react_native_1 = require("react-native");
 exports.AsyncStorage = react_native_1.AsyncStorage;
-var Logger_1 = require("../Common/Logger");
-var logger = new Logger_1.ConsoleLogger('AsyncStorageCache');
+var Common_1 = require("../Common");
+var logger = new Common_1.ConsoleLogger('AsyncStorageCache');
 /*
  * Customized cache which based on the AsyncStorage with LRU implemented
  */
@@ -77,9 +77,6 @@ var AsyncStorageCache = /** @class */ (function (_super) {
         var _this = this;
         var cache_config = config ? Object.assign({}, CacheUtils_1.defaultConfig, config) : CacheUtils_1.defaultConfig;
         _this = _super.call(this, cache_config) || this;
-        _this.getItem = _this.getItem.bind(_this);
-        _this.setItem = _this.setItem.bind(_this);
-        _this.removeItem = _this.removeItem.bind(_this);
         logger.debug('Using AsyncStorageCache');
         return _this;
     }

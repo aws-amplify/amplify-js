@@ -11,9 +11,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
 Object.defineProperty(exports, "__esModule", { value: true });
 var Analytics_1 = require("./Analytics");
 exports.AnalyticsClass = Analytics_1.default;
@@ -21,17 +18,13 @@ var Common_1 = require("../Common");
 var Platform_1 = require("../Common/Platform");
 var logger = new Common_1.ConsoleLogger('Analytics');
 var startsessionRecorded = false;
-var authConfigured = false;
-var analyticsConfigured = false;
 var _instance = null;
 if (!_instance) {
     logger.debug('Create Analytics Instance');
     _instance = new Analytics_1.default();
 }
 var Analytics = _instance;
-Common_1.Amplify.register(Analytics);
 exports.default = Analytics;
-__export(require("./Providers"));
 // listen on app state change
 var dispatchAppStateEvent = function (event, data) {
     Common_1.Hub.dispatch('appState', { event: event, data: data }, 'AppState');
@@ -44,21 +37,6 @@ if (Platform_1.default.isReactNative) {
         }
     });
 }
-// send a session start event if autoSessionRecord is enabled
-var autoSessionRecord = function () {
-    var config = Analytics.configure();
-    startsessionRecorded = true;
-    if (config.autoSessionRecord) {
-        Analytics.updateEndpoint({}).then(function () {
-            Analytics.startSession().catch(function (e) {
-                logger.debug('start Session error', e);
-            });
-        });
-    }
-    else {
-        logger.debug('auto Session record is diasabled');
-    }
-};
 Analytics.onHubCapsule = function (capsule) {
     var channel = capsule.channel, payload = capsule.payload, source = capsule.source;
     logger.debug('on hub capsule ' + channel, payload);
@@ -100,23 +78,20 @@ var authEvent = function (payload) {
             Analytics.record('_userauth.auth_fail');
             break;
         case 'configured':
-            authConfigured = true;
-            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                autoSessionRecord();
+            if (!startsessionRecorded) {
+                startsessionRecorded = true;
+                Common_1.Hub.dispatch('analytics', { eventType: 'session_start' }, 'Analytics');
             }
             break;
     }
 };
 var analyticsEvent = function (payload) {
-    var event = payload.event;
-    if (!event)
+    var eventType = payload.eventType;
+    if (!eventType)
         return;
-    switch (event) {
-        case 'configured':
-            analyticsConfigured = true;
-            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                autoSessionRecord();
-            }
+    switch (eventType) {
+        case 'session_start':
+            Analytics.startSession();
             break;
     }
 };

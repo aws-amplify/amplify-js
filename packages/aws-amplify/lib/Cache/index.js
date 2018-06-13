@@ -12,11 +12,9 @@
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = require("../Common");
 var BrowserStorageCache_1 = require("./BrowserStorageCache");
 exports.BrowserStorageCache = BrowserStorageCache_1.default;
 var InMemoryCache_1 = require("./InMemoryCache");
 exports.InMemoryCache = InMemoryCache_1.default;
 exports.default = BrowserStorageCache_1.default;
-Common_1.Credentials.setCacheClass(BrowserStorageCache_1.default);
 //# sourceMappingURL=index.js.map

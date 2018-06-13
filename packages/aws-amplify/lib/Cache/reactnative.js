@@ -12,9 +12,7 @@
  * and limitations under the License.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Common_1 = require("../Common");
 var AsyncStorageCache_1 = require("./AsyncStorageCache");
 exports.AsyncStorageCache = AsyncStorageCache_1.AsyncStorageCache;
 exports.default = AsyncStorageCache_1.default;
-Common_1.Credentials.setCacheClass(AsyncStorageCache_1.default);
 //# sourceMappingURL=reactnative.js.map

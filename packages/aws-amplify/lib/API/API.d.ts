@@ -84,7 +84,7 @@ export default class APIClass {
     * @return {string} - The endpoint of the api
     */
     endpoint(apiName: any): Promise<any>;
-    private _headerBasedAuth(defaultAuthenticationType?);
+    private _headerBasedAuth();
     /**
      * Executes a GraphQL operation
      *
