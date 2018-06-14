@@ -154,6 +154,10 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
         callback(null, 'session');
     }
 
+    CognitoUser.prototype.getUsername = () => {
+        return 'username';
+    }
+
     return CognitoUser;
 });
 
@@ -1189,7 +1193,7 @@ describe('auth unit test', () => {
             });
 
             expect.assertions(1);
-            expect(await auth.verifyUserAttribute(user, {})).toBe("success");
+            expect(await auth.verifyUserAttribute(user, {})).toBeUndefined();
 
             spyon.mockClear();
 
@@ -1605,7 +1609,7 @@ describe('auth unit test', () => {
     });
 
     describe('currentUserInfo test', () => {
-        test('happy case with aws or userpool source', async () => {
+        test.only('happy case with aws or userpool source', async () => {
             const auth = new Auth(authOptions);
             const user = new CognitoUser({
                 Username: 'username',
@@ -1615,9 +1619,7 @@ describe('auth unit test', () => {
             const spyon = jest.spyOn(Auth.prototype, 'currentUserPoolUser')
                 .mockImplementationOnce(() => {
                     return new Promise((res, rej) => {
-                        res({
-                            username: 'username'
-                        });
+                        res(user);
                     });
                 });
 

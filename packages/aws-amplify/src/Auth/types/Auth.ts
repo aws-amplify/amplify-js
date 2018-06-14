@@ -57,6 +57,14 @@ export interface FederatedResponse {
     expires_at: number
 }
 
+/**
+ * interface for federatedUser
+ */
+export interface FederatedUser {
+    name: string,
+    email?: string
+}
+
 export interface OAuth {
     domain : string,
 	scope : Array<string>,

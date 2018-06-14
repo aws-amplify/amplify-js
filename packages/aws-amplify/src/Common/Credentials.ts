@@ -4,6 +4,7 @@ import { AWS } from './Facet';
 import JS from './JS';
 import Platform from './Platform';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
+import { ICredentials } from './types';
 
 const logger = new Logger('Credentials');
 
@@ -57,7 +58,7 @@ export class Credentials {
         logger.debug('picking up credentials');
         if (!this._gettingCredPromise || !this._gettingCredPromise.isPending()) {
             logger.debug('getting new cred promise');
-            if (AWS.config && AWS.config.credentials && AWS.config.credentials instanceof Credentials) {
+            if (AWS.config && AWS.config.credentials && AWS.config.credentials instanceof AWS.Credentials) {
                 this._gettingCredPromise = JS.makeQuerablePromise(this._setCredentialsFromAWS());
             } else {
                 this._gettingCredPromise = JS.makeQuerablePromise(this._keepAlive());
@@ -201,7 +202,7 @@ export class Credentials {
         );
     }
 
-    private _setCredentialsFromSession(session) {
+    private _setCredentialsFromSession(session): Promise<ICredentials> {
         logger.debug('set credentials from session');
         const idToken = session.getIdToken().getJwtToken();
         const { region, userPoolId, identityPoolId } = this._config;
@@ -220,7 +221,7 @@ export class Credentials {
         return this._loadCredentials(credentials, 'userPool', true, null);
     }
 
-    private _loadCredentials(credentials, source, authenticated, info) {
+    private _loadCredentials(credentials, source, authenticated, info): Promise<ICredentials> {
         const that = this;
         const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
@@ -268,7 +269,7 @@ export class Credentials {
         });
     }
 
-    public set(params, source) {
+    public set(params, source): Promise<ICredentials> {
         if (source === 'session') {
             return this._setCredentialsFromSession(params);
         } else if (source === 'federation') {
