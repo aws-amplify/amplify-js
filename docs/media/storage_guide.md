@@ -219,6 +219,9 @@ readFile(imagePath).then(buffer => {
 });
 ```
 
+When a networking error happens during the upload, Storage module retries upload for a maximum of  4 attempts. If the upload fails after all retries, you will get an error.
+{: .callout .callout--info}
+
 #### Get
 
 Retrieves a publicly accessible URL for data stored.
@@ -320,6 +323,7 @@ Storage.list('photos/', {level: 'private'})
     .then(result => console.log(result))
     .catch(err => console.log(err));
 ```
+
 
 #### API Reference
 

@@ -452,7 +452,9 @@ Amplify.configure(aws_config);
 
 #### Manual Configuration
 
-As an alternative to automatic configuration, you can manually enter configuration parameters in your app. Authentication type options are API_KEY, AWS_IAM, AMAZON_COGNITO_USER_POOLS and OPENID_CONNECT.
+As an alternative to automatic configuration, you can manually enter configuration parameters in your app. Authentication type options are `API_KEY`, `AWS_IAM`, `AMAZON_COGNITO_USER_POOLS` and `OPENID_CONNECT`.
+
+##### Using API_KEY
 
 ```js
 let myAppConfig = {
@@ -466,6 +468,7 @@ let myAppConfig = {
 
 Amplify.configure(myAppConfig);
 ```
+##### Using AWS_IAM
 
 ```js
 let myAppConfig = {
@@ -479,6 +482,8 @@ let myAppConfig = {
 Amplify.configure(myAppConfig);
 ```
 
+##### Using AMAZON_COGNITO_USER_POOLS
+
 ```js
 let myAppConfig = {
     // ...
@@ -490,6 +495,8 @@ let myAppConfig = {
 
 Amplify.configure(myAppConfig);
 ```
+
+##### Using OPENID_CONNECT
 
 ```js
 let myAppConfig = {
@@ -609,7 +616,7 @@ console.log(newEvent);
 
 #### Subscriptions
 
-Subscriptions are a GraphQL feature allowing the server to send data to its clients when a specific event happens. You can enable real-time data integration in your app with a subscription. 
+Subscriptions is a GraphQL feature allowing the server to send data to its clients when a specific event happens. You can enable real-time data integration in your app with a subscription. 
 
 ```js
 import Amplify, { API, graphqlOperation } from "aws-amplify";
@@ -632,6 +639,26 @@ const subscription = API.graphql(
 // Stop receiving data updates from the subscription
 subscription.unsubscribe();
 
+```
+
+When using **AWS AppSync** subscriptions, be sure that your AppSync configuration is at the root of the configuration object, instead of being under API: 
+
+```js
+Amplify.configure({
+  Auth: {
+    identityPoolId: 'xxx',
+    region: 'xxx' ,
+    cookieStorage: {
+      domain: 'xxx',
+      path: 'xxx',
+      secure: true
+    }
+  },
+  aws_appsync_graphqlEndpoint: 'xxxx',
+  aws_appsync_region: 'xxxx',
+  aws_appsync_authenticationType: 'xxxx',
+  aws_appsync_apiKey: 'xxxx'
+});
 ```
 
 ### Signing Request with IAM

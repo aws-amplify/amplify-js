@@ -274,7 +274,7 @@
 
 		// Find other tab classes in page and trigger click respectively
 		// Without propogating
-		$('li.tab-link.' + tab_id).not ('.current').trigger('click',[true]);
+		// $('li.tab-link.' + tab_id).not ('.current').trigger('click',[true]);
 
 	});
 

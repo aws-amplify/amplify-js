@@ -39,6 +39,28 @@ import aws_exports from './aws-exports'; // specify the location of aws-exports.
 Amplify.configure(aws_exports);
 ```
 
+##### Customizing Sign-in Options
+
+You can customize sign-in options by using `-p` parameter. The CLI will ask you the options to create your custom sign-in attributes:
+
+```sh
+$ awsmobile user-signin enable -p
+
+? Sign-in is currently disabled, what do you want to do next Go to advance settings
+? Which sign-in method you want to configure Cognito UserPools (currently disabled)
+? How are users going to login Email
+? Password minimum length (number of characters) 8
+? Password character requirements uppercase, lowercase, numbers
+
+$ awsmobile push
+```
+
+##### Updating User Pool Attributes
+
+Currently, once you create a Cognito User Pool, you won't be able to change the standard attributes at a later time. If you need to modify User Pool attributes, you can remove the user pool with `awsmobile user-signin disable` and create a new User Pool with the CLI.
+
+![Cognito Settings](./images/cognito_user_pool_standart_attributes.png){: style="max-height:400px;"}
+
 ### Manual Setup
 
 With manual setup, you need to use your AWS Resource credentials to configure your app:

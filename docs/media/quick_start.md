@@ -65,10 +65,18 @@ AWS Amplify is available as an npm package. Run the following commands at the ro
 
 <div class="nav-tab install" data-group='install'>
 <ul class="tabs">
+    <li class="tab-link angular" data-tab="angular">Angular</li>
+    <li class="tab-link purejs" data-tab="purejs">JavaScript (no library)</li>
     <li class="tab-link react current" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
-    <li class="tab-link angular" data-tab="angular">Angular</li>
 </ul>
+<div id="purejs" class="tab-content">
+
+```bash
+$ npm install --save aws-amplify
+```
+
+</div>
 <div id="react" class="tab-content current">
 
 ```bash
@@ -257,7 +265,21 @@ Amplify.configure(aws_exports);
 
 If you used Manual Setup with existing AWS Resources, you will need to call `Amplify.configure()` with your custom configuration details as described in *Manual Setup* section.
 
-##### Using TypeScript
+### Using with Script Tag
+
+If you are importing AWS Amplify library with a **HTML script tag**, please add the following definition in your code, and access categories with `Amplify` prefix, e.g., **Amplify.Analytics.configure** instead of **Analytics.configure**:
+
+```js
+const Amplify = window['aws-amplify'];
+
+Amplify.Analytics.configure({
+    // ....
+ });
+```
+
+See a sample app which uses script tag [here](https://jsfiddle.net/0gmqtq7g/226/).
+
+### Using with TypeScript
 
 If you are using TypeScript, importing the configuration file is done differently. You can rename **aws-exports.js** to **aws-exports.ts** and use import statement. Alternatively, you can use:
 

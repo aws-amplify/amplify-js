@@ -278,3 +278,9 @@ Currently, the newest version of Angular (6.x) does not provide the shim for the
         }
     </script>
   ```
+
+## Tutorials
+
+Learn more with tutorials:
+
+- [How to use AWS Amplify and Angular to Build Cloud Enabled JavaScript Applications](https://medium.freecodecamp.org/building-cloud-enabled-javascript-applications-with-aws-amplify-angular-682547fc6477){: target='_new'}
