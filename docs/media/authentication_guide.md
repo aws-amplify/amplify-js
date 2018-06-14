@@ -164,9 +164,11 @@ Auth.signUp({
     .catch(err => console.log(err));
 
 // After retrieveing the confirmation code from the user
-Auth.confirmSignUp(username, code)
-    .then(data => console.log(data))
-    .catch(err => console.log(err));
+Auth.confirmSignUp(username, code, {
+    // Optional. Force user confirmation irrespective of existing alias. By default set to True.
+    forceAliasCreation: true    
+}).then(data => console.log(data))
+  .catch(err => console.log(err));
 ```
 
 **Forcing Email Uniqueness in Cognito User Pools**
@@ -403,7 +405,7 @@ Then, in the component's constructor,  implement `showComponent(theme) {}` in li
 
 ### Federated Identities (Social Sign-in)
 
-**Availibility Note**
+**Availability Note**
 Currently, our federated identity components only support Google, Facebook and Amazon identities. Please see our[ Setup Guide for Federated Identities]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/federated_identity_setup).
 {: .callout .callout--info}
 
