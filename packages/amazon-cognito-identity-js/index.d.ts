@@ -15,6 +15,10 @@ declare module "amazon-cognito-identity-js" {
         selectMFAType?: (challengeName: any, challengeParameters: any) => void
     }
 
+    export interface IMfaSettings {
+        PreferredMfa: boolean,
+        Enabled: boolean
+    }
     export interface IAuthenticationDetailsData {
         Username: string;
         Password?: string;
@@ -97,7 +101,7 @@ declare module "amazon-cognito-identity-js" {
                 onFailure: (err: any) => void
             }): void;
         public verifySoftwareToken(totpCode: string, friendlyDeviceName: string, callbacks: {onSuccess: (session: CognitoUserSession) => void, onFailure: (err: Error) => void}): void;
-        public setUserMfaPreference(smsMfaSettings: string[], softwareTokenMfaSettings: string[], callback: NodeCallback<Error, string>): void;
+        public setUserMfaPreference(smsMfaSettings: IMfaSettings, softwareTokenMfaSettings: IMfaSettings, callback: NodeCallback<Error, string>): void;
     }
 
     export interface MFAOption {

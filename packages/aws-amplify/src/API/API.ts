@@ -452,7 +452,7 @@ export default class APIClass {
                 const cred = Auth.essentialCredentials(credentials);
                 logger.debug('set credentials for api', cred);
 
-                return credentials;
+                return true;
             })
             .catch(err => {
                 logger.warn('ensure credentials error', err);
