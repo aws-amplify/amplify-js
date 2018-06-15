@@ -35,9 +35,26 @@ export default class SignIn extends AuthPiece {
 
         this.checkContact = this.checkContact.bind(this);
         this.signIn = this.signIn.bind(this);
+        this.onKeyDown = this.onKeyDown.bind(this);
 
         this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
         this.state = {};
+    }
+
+    componentWillMount() {
+        window.addEventListener('keydown', this.onKeyDown);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.onKeyDown);
+    }
+
+    onKeyDown(e) {
+        if (this.props.authState === 'signIn') {
+            if (e.keyCode === 13) { // when press enter
+                this.signIn();
+            }
+        }
     }
 
     checkContact(user) {

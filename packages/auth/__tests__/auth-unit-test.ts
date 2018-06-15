@@ -321,6 +321,16 @@ describe('auth unit test', () => {
             spyon.mockClear();
         });
 
+        test('with options', async () => {
+            const spyon = jest.spyOn(CognitoUser.prototype, "confirmRegistration");
+            const auth = new Auth(authOptions);
+
+            expect.assertions(1);
+            expect(await auth.confirmSignUp('username', 'code', {forceAliasCreation: false})).toBe('Success');
+
+            spyon.mockClear();
+        });
+
         test('callback err', async () => {
              const spyon = jest.spyOn(CognitoUser.prototype, "confirmRegistration")
                 .mockImplementationOnce((confirmationCode, forceAliasCreation, callback) => {
