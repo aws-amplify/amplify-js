@@ -1,6 +1,10 @@
 {
   "name": "aws-amplify",
+<<<<<<< HEAD
+  "version": "1.0.1",
+=======
   "version": "0.4.2-unstable.43",
+>>>>>>> upstream/master
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -14,12 +18,6 @@
     "generate-docs-local": "typedoc --out docs src",
     "generate-docs-root": "typedoc --out ../../docs src"
   },
-  "react-native": {
-    "./lib/Cache": "./lib/Cache/reactnative.js",
-    "./lib/Common/ClientDevice": "./lib/Common/ClientDevice/reactnative.js",
-    "./lib/Common/RNComponents": "./lib/Common/RNComponents/reactnative.js",
-    "./lib/Common/StorageHelper": "./lib/Common/StorageHelper/reactnative.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aws/aws-amplify.git"
@@ -31,8 +29,6 @@
   },
   "homepage": "https://github.com/aws/aws-amplify#readme",
   "devDependencies": {
-    "@types/graphql": "^0.13.0",
-    "@types/jest": "^20.0.8",
     "@types/node": "^8.10.15",
     "awesome-typescript-loader": "^3.2.2",
     "babel-loader": "^7.1.2",
@@ -57,47 +53,12 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@types/paho-mqtt": "^1.0.3",
-    "@types/zen-observable": "^0.5.3",
-    "amazon-cognito-auth-js": "^1.1.9",
-    "amazon-cognito-identity-js": "^2.0.7-unstable.45",
-    "aws-sdk": "2.198.0",
-    "axios": "^0.17.0",
-    "graphql": "0.13.0",
-    "paho-mqtt": "^1.0.4",
-    "url": "^0.11.0",
-    "uuid": "^3.2.1",
-    "zen-observable": "^0.8.6"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>../../node_modules/ts-jest/preprocessor.js"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json",
-      "jsx"
-    ],
-    "timers": "fake",
-    "setupFiles": [
-      "./__mocks__/SessionStorage.js",
-      "./__mocks__/LocalStorage.js"
-    ],
-    "testEnvironment": "jsdom",
-    "mapCoverage": true,
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ]
+    "@aws-amplify/api": "^0.1.0",
+    "@aws-amplify/analytics": "^0.1.0",
+    "@aws-amplify/auth": "^0.1.0",
+    "@aws-amplify/cache": "^0.1.0",
+    "@aws-amplify/core": "^0.1.0",
+    "@aws-amplify/storage": "^0.1.0",
+    "@aws-amplify/pubsub": "^0.1.0"
   }
 }
