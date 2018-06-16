@@ -19,5 +19,6 @@ import * as Pinpoint from 'aws-sdk/clients/pinpoint';
 import * as Kinesis from 'aws-sdk/clients/kinesis';
 import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
 import * as CognitoHostedUI from 'amazon-cognito-auth-js';
+import * as LexRuntime from 'aws-sdk/clients/lexruntime';
 
-export {AWS, S3, Cognito, Pinpoint, MobileAnalytics, Kinesis, CognitoHostedUI };
+export {AWS, S3, Cognito, Pinpoint, MobileAnalytics, Kinesis, CognitoHostedUI, LexRuntime };
