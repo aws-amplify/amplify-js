@@ -34,6 +34,17 @@ describe('signUp', () => {
             }
         });
 
+        test('render correctly with hide', () => {
+            for (var i = 0; i < acceptedStates.length; i += 1){
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: AmplifyTheme,
+                    hide: [SignUp]
+                });
+                expect(wrapper).toMatchSnapshot();
+            }
+        });
+
         test('when clicking signUp', async () => {
             const wrapper = shallow(<SignUp/>);
             wrapper.setProps({

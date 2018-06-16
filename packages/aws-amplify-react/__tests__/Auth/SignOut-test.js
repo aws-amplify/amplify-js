@@ -30,7 +30,7 @@ jest.mock('aws-sdk/clients/pinpoint', () => {
 });
 */
 
-import Greetings from '../../src/Auth/Greetings';
+import SignOut from '../../src/Auth/SignOut';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
@@ -52,10 +52,10 @@ const deniedStates = [
     'verifyContact'
 ];
 
-describe('Greetings', () => {
+describe('SignOut', () => {
     describe('normal case', () => {
         test('render correctly with authState signedIn', () => {
-            const wrapper = shallow(<Greetings/>);
+            const wrapper = shallow(<SignOut/>);
             for (var i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
@@ -66,19 +66,31 @@ describe('Greetings', () => {
         });
 
         test('render correctly with hide', () => {
-            const wrapper = shallow(<Greetings/>);
+            const wrapper = shallow(<SignOut/>);
             for (var i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: 'theme',
-                    hide: [Greetings]
+                    hide: [SignOut]
+                });
+                expect(wrapper).toMatchSnapshot();
+            }
+        });
+
+        test('render correctly with empty hide', () => {
+            const wrapper = shallow(<SignOut/>);
+            for (var i = 0; i < acceptedStates.length; i += 1){
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: 'theme',
+                    hide: []
                 });
                 expect(wrapper).toMatchSnapshot();
             }
         });
 
         test('render name from attributes', () => {
-            const wrapper = shallow(<Greetings/>);
+            const wrapper = shallow(<SignOut/>);
             wrapper.setProps({
                 authState: 'signedIn',
                 theme: 'theme'
@@ -98,8 +110,8 @@ describe('Greetings', () => {
     });
 
    
-    test('render corrently with other authStates', () => {
-        const wrapper = shallow(<Greetings/>);
+    test('render correctly with other authStates', () => {
+        const wrapper = shallow(<SignOut/>);
         
         for (var i = 0; i < deniedStates.length; i += 1){
             wrapper.setProps({
@@ -113,28 +125,28 @@ describe('Greetings', () => {
 
     describe('signOut test', () => {
         test('happy case', async () => {
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
+            const wrapper = shallow(<SignOut/>);
+            const signOut = wrapper.instance();
 
             const spyon = jest.spyOn(Auth, 'signOut').mockImplementationOnce(() => {
                 return Promise.resolve();
             });
 
-            await greetings.signOut();
+            await signOut.signOut();
 
             expect(spyon).toBeCalled();
             spyon.mockClear();
         });
 
         test('error case', async () => {
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
+            const wrapper = shallow(<SignOut/>);
+            const signOut = wrapper.instance();
 
             const spyon = jest.spyOn(Auth, 'signOut').mockImplementationOnce(() => {
                 return Promise.reject('error');
             });
 
-            await greetings.signOut();
+            await signOut.signOut();
 
             expect(spyon).toBeCalled();
             spyon.mockClear();
@@ -155,20 +167,20 @@ describe('Greetings', () => {
                 }
             };
 
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
+            const wrapper = shallow(<SignOut/>);
+            const signOut = wrapper.instance();
 
-            await greetings.googleSignOut();
+            await signOut.googleSignOut();
 
             expect(mockFn).toBeCalled();
         });
 
         test('no auth2', async () => {
             window.gapi = null;
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
+            const wrapper = shallow(<SignOut/>);
+            const signOut = wrapper.instance();
 
-            expect(await greetings.googleSignOut()).toBeNull();
+            expect(await signOut.googleSignOut()).toBeNull();
         });
 
         test('no googleAuth', async () => {
@@ -180,10 +192,10 @@ describe('Greetings', () => {
                 }
             };
 
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
+            const wrapper = shallow(<SignOut/>);
+            const signOut = wrapper.instance();
 
-            await greetings.googleSignOut();
+            await signOut.googleSignOut();
         });
     });
 
@@ -200,10 +212,10 @@ describe('Greetings', () => {
                 }
             }
 
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
+            const wrapper = shallow(<SignOut/>);
+            const signOut = wrapper.instance();
             
-            await greetings.facebookSignOut()
+            await signOut.facebookSignOut()
         });
 
         test('not connected', async () => {
@@ -217,26 +229,51 @@ describe('Greetings', () => {
                     callback('response');
                 }
             }
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
+            const wrapper = shallow(<SignOut/>);
+            const signOut = wrapper.instance();
             
-            await greetings.facebookSignOut()
+            await signOut.facebookSignOut()
         });
     });
 
     describe('checkUser test', () => {
         test('happy case', async () => {
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
+            const wrapper = shallow(<SignOut/>);
+            const signOut = wrapper.instance();
 
             const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
                 return Promise.resolve('user');
             })
 
-            await greetings.checkUser();
+            await signOut.checkUser();
 
             expect(spyon).toBeCalled();
         });
         
+        test('no user case', async () => {
+            const wrapper = shallow(<SignOut/>);
+            const signOut = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.reject('no user');
+            })
+
+            await signOut.checkUser();
+
+            expect(spyon).toBeCalled();
+        });
+        
+        test('check user on mount', async () => {
+            const wrapper = shallow(<SignOut/>);
+            const signOut = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            })
+
+            await signOut.componentDidMount();
+
+            expect(spyon).toBeCalled();
+        });
     });
 });

@@ -15,12 +15,12 @@ import React, { Component } from 'react';
 import { Auth, I18n, Logger, Hub } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
-import { NavBar, Nav, NavRight, NavItem, NavButton } from '../AmplifyUI';
+import { NavButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 
-const logger = new Logger('Greetings');
+const logger = new Logger('SignOut');
 
-export default class Greetings extends AuthPiece {
+export default class SignOut extends AuthPiece {
     constructor(props) {
         super(props);
 
@@ -123,59 +123,22 @@ export default class Greetings extends AuthPiece {
         }
     }
 
-    inGreeting(name) { return 'Hello ' + name; }
-    outGreeting() { return ''; }
-
-    userGreetings(theme) {
-        const user = this.state.authData;
-        const greeting = this.props.inGreeting || this.inGreeting;
-        // get name from attributes first
-        const nameFromAttr = user.attributes? 
-            (user.attributes.name || 
-            (user.attributes.given_name? 
-                (user.attributes.given_name + ' ' + user.attributes.family_name) : undefined))
-            : undefined;
-
-        const name = nameFromAttr || user.name || user.username;
-        const message = (typeof greeting === 'function')? greeting(name) : greeting;
-        return (
-            <span>
-                <NavItem theme={theme}>{message}</NavItem>
-                <NavButton
-                    theme={theme}
-                    onClick={this.signOut}
-                >{I18n.get('Sign Out')}
-                </NavButton>
-
-            </span>
-        )
-    }
-
-    noUserGreetings(theme) {
-        const greeting = this.props.outGreeting || this.outGreeting;
-        const message = (typeof greeting === 'function')? greeting() : greeting;
-        return message? <NavItem theme={theme}>{message}</NavItem> : null;
-    }
-
     render() {
         const { hide } = this.props;
-        if (hide && hide.includes(Greetings)) { return null; }
+        if (hide && hide.includes(SignOut)) { return null; }
 
         const { authState } = this.state;
         const signedIn = (authState === 'signedIn');
 
         const theme = this.props.theme || AmplifyTheme;
-        const greeting = signedIn? this.userGreetings(theme) : this.noUserGreetings(theme);
-        if (!greeting) { return null; }
+        if (!signedIn) { return null; }
 
         return (
-            <NavBar theme={theme}>
-                <Nav theme={theme}>
-                    <NavRight theme={theme}>
-                        {greeting}
-                    </NavRight>
-                </Nav>
-            </NavBar>
+            <NavButton
+                theme={theme}
+                onClick={this.signOut}
+            >{I18n.get('Sign Out')}
+            </NavButton>
         )
     }
 }

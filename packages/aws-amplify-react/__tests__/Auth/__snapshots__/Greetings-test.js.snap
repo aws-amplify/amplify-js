@@ -2,6 +2,8 @@
 
 exports[`Greetings normal case render correctly with authState signedIn 1`] = `""`;
 
+exports[`Greetings normal case render correctly with hide 1`] = `""`;
+
 exports[`Greetings normal case render name from attributes 1`] = `
 <NavBar
   theme="theme"

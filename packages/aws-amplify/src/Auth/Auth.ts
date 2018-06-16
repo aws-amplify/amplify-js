@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { AuthOptions, FederatedResponse } from './types';
+import { AuthOptions, FederatedResponse, ConfirmSignUpOptions } from './types';
 
 import {
     AWS,
@@ -135,7 +135,8 @@ export default class AuthClass {
                     TokenScopesArray: oauth.scope,
                     RedirectUriSignIn: oauth.redirectSignIn,
                     RedirectUriSignOut: oauth.redirectSignOut,
-                    ResponseType: oauth.responseType
+                    ResponseType: oauth.responseType,
+                    Storage: this.userPool.Storage
                 },
                 oauth.options
             );
@@ -155,6 +156,7 @@ export default class AuthClass {
                             logger.debug('sign in without aws credentials', e);
                         } finally {
                             dispatchAuthEvent('signIn', that.user);
+                            dispatchAuthEvent('cognitoHostedUI', that.user);
                         }
                     });
                 },
@@ -234,17 +236,20 @@ export default class AuthClass {
      * Send the verfication code to confirm sign up
      * @param {String} username - The username to be confirmed
      * @param {String} code - The verification code
+     * @param {ConfirmSignUpOptions} options - other options for confirm signup
      * @return - A promise resolves callback data if success
      */
-    public confirmSignUp(username: string, code: string): Promise<any> {
+    public confirmSignUp(username: string, code: string, options?: ConfirmSignUpOptions): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!code) { return Promise.reject('Code cannot be empty'); }
 
         const user = this.createCognitoUser(username);
+        const forceAliasCreation = options && typeof options.forceAliasCreation === 'boolean'
+            ? options.forceAliasCreation : true;
+
         return new Promise((resolve, reject) => {
-            
-            user.confirmRegistration(code, true, function(err, data) {
+            user.confirmRegistration(code, forceAliasCreation, function(err, data) {
                 if (err) { reject(err); } else { resolve(data); }
             });
         });
@@ -273,72 +278,121 @@ export default class AuthClass {
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser
      */
-    public signIn(username: string, password: string): Promise<any> {
+    public signIn(username: string, password?: string): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
-        if (!password) { return Promise.reject('Password cannot be empty'); }
 
+        if (password) {
+            return this.signInWithPassword(username, password);
+        } else {
+            return this.signInWithoutPassword(username);
+        }
+    }
+
+    /**
+     * Return an object with the authentication callbacks
+     * @param {CognitoUser} user - the cognito user object
+     * @param {} resolve - function called when resolving the current step
+     * @param {} reject - function called when rejecting the current step
+     * @return - an object with the callback methods for user authentication
+     */
+    private authCallbacks(user, resolve: (value?: any) => void, reject: (value?: any) => void) {
+        const that = this;
+        return {
+            onSuccess: async (session) => {
+                logger.debug(session);
+                delete(user['challengeName']);
+                delete(user['challengeParam']);
+                try {
+                    const cred = await Credentials.set(session, 'session');
+                    logger.debug('succeed to get cognito credentials', cred);
+                } catch (e) {
+                    logger.debug('cannot get cognito credentials', e);
+                } finally {
+                    that.user = user;
+                    dispatchAuthEvent('signIn', user);
+                    resolve(user);
+                }
+            },
+        onFailure: (err) => {
+                logger.debug('signIn failure', err);
+                dispatchAuthEvent('signIn_failure', err);
+                reject(err);
+            },
+            customChallenge: (challengeParam) => {
+                logger.debug('signIn custom challenge answer required');
+                user['challengeName'] = 'CUSTOM_CHALLENGE';
+                user['challengeParam'] = challengeParam;
+                resolve(user);
+            },
+            mfaRequired: (challengeName, challengeParam) => {
+                logger.debug('signIn MFA required');
+                user['challengeName'] = challengeName;
+                user['challengeParam'] = challengeParam;
+                resolve(user);
+            },
+            mfaSetup: (challengeName, challengeParam) => {
+                logger.debug('signIn mfa setup', challengeName);
+                user['challengeName'] = challengeName;
+                user['challengeParam'] = challengeParam;
+                resolve(user);
+            },
+            newPasswordRequired: (userAttributes, requiredAttributes) => {
+                logger.debug('signIn new password');
+                user['challengeName'] = 'NEW_PASSWORD_REQUIRED';
+                user['challengeParam'] = {
+                    userAttributes,
+                    requiredAttributes
+                };
+                resolve(user);
+            },
+            totpRequired: (challengeName, challengeParam) => {
+                logger.debug('signIn totpRequired');
+                user['challengeName'] = challengeName;
+                user['challengeParam'] = challengeParam;
+                resolve(user);
+            },
+            selectMFAType: (challengeName, challengeParam) => {
+                logger.debug('signIn selectMFAType', challengeName);
+                user['challengeName'] = challengeName;
+                user['challengeParam'] = challengeParam;
+                resolve(user);
+            }
+        };
+    }
+
+    /**
+     * Sign in with a password
+     * @param {String} username - The username to be signed in
+     * @param {String} password - The password of the username
+     * @return - A promise resolves the CognitoUser object if success or mfa required
+     */
+    private signInWithPassword(username: string, password: string): Promise<any> {
         const user = this.createCognitoUser(username);
         const authDetails = new AuthenticationDetails({
             Username: username,
             Password: password
         });
 
-        const that = this;
         return new Promise((resolve, reject) => {
-            user.authenticateUser(authDetails, {
-                onSuccess: async (session) => {
-                    logger.debug(session);
-                    try {
-                        const cred = await Credentials.set(session, 'session');
-                        logger.debug('succeed to get cognito credentials', cred);
-                    } catch (e) {
-                        logger.debug('cannot get cognito credentials', e);
-                    } finally {
-                        that.user = user;
-                        dispatchAuthEvent('signIn', user);
-                        resolve(user);
-                    }
-                },
-                onFailure: (err) => {
-                    logger.debug('signIn failure', err);
-                    dispatchAuthEvent('signIn_failure', err);
-                    reject(err);
-                },
-                mfaRequired: (challengeName, challengeParam) => {
-                    logger.debug('signIn MFA required');
-                    user['challengeName'] = challengeName;
-                    user['challengeParam'] = challengeParam;
-                    resolve(user);
-                },
-                newPasswordRequired: (userAttributes, requiredAttributes) => {
-                    logger.debug('signIn new password');
-                    user['challengeName'] = 'NEW_PASSWORD_REQUIRED';
-                    user['challengeParam'] = {
-                        userAttributes,
-                        requiredAttributes
-                    };
-                    resolve(user);
-                },
-                mfaSetup: (challengeName, challengeParam) => {
-                    logger.debug('signIn mfa setup', challengeName);
-                    user['challengeName'] = challengeName;
-                    user['challengeParam'] = challengeParam;
-                    resolve(user);
-                },
-                totpRequired: (challengeName, challengeParam) => {
-                    logger.debug('signIn totpRequired');
-                    user['challengeName'] = challengeName;
-                    user['challengeParam'] = challengeParam;
-                    resolve(user);
-                },
-                selectMFAType: (challengeName, challengeParam) => {
-                    logger.debug('signIn selectMFAType', challengeName);
-                    user['challengeName'] = challengeName;
-                    user['challengeParam'] = challengeParam;
-                    resolve(user);
-                }
-            });
+            user.authenticateUser(authDetails, this.authCallbacks(user, resolve, reject));
+        });
+    }
+
+    /**
+     * Sign in without a password
+     * @param {String} username - The username to be signed in
+     * @return - A promise resolves the CognitoUser object if success or mfa required
+     */
+    private signInWithoutPassword(username: string): Promise<any> {
+        const user = this.createCognitoUser(username);
+        user.setAuthenticationFlowType('CUSTOM_AUTH');
+        const authDetails = new AuthenticationDetails({
+            Username: username,
+        });
+
+        return new Promise((resolve, reject) => {
+            user.initiateAuth(authDetails, this.authCallbacks(user, resolve, reject));
         });
     }
 
@@ -591,6 +645,21 @@ export default class AuthClass {
     }
 
     /**
+     * Send the answer to a custom challenge
+     * @param {CognitoUser} user - The CognitoUser object
+     * @param {String} challengeResponses - The confirmation code
+     */
+    public sendCustomChallengeAnswer(user, challengeResponses: string): Promise<any> {
+        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!challengeResponses) { return Promise.reject('Challenge response cannot be empty'); }
+
+        const that = this;
+        return new Promise((resolve, reject) => {
+            user.sendCustomChallengeAnswer(challengeResponses, this.authCallbacks(user, resolve, reject));
+        });
+    }
+
+    /**
      * Update an authenticated users' attributes
      * @param {CognitoUser} - The currently logged in user object
      * @return {Promise}
@@ -603,8 +672,7 @@ export default class AuthClass {
                 return new Promise((resolve, reject) => {
                     for (const key in attributes) {
                         if ( key !== 'sub' &&
-                            key.indexOf('_verified') < 0 &&
-                            attributes[key] ) {
+                            key.indexOf('_verified') < 0) {
                             attr = {
                                 'Name': key,
                                 'Value': attributes[key]

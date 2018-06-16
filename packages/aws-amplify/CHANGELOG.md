@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.2-unstable.43"></a>
+## [0.4.2-unstable.43](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.42...aws-amplify@0.4.2-unstable.43) (2018-06-13)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.2-unstable.42"></a>
+## [0.4.2-unstable.42](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.41...aws-amplify@0.4.2-unstable.42) (2018-06-13)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.2-unstable.41"></a>
+## [0.4.2-unstable.41](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.40...aws-amplify@0.4.2-unstable.41) (2018-06-12)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.2-unstable.40"></a>
+## [0.4.2-unstable.40](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.39...aws-amplify@0.4.2-unstable.40) (2018-06-11)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.2-unstable.39"></a>
+## [0.4.2-unstable.39](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.38...aws-amplify@0.4.2-unstable.39) (2018-06-08)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.2-unstable.38"></a>
+## [0.4.2-unstable.38](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.37...aws-amplify@0.4.2-unstable.38) (2018-06-08)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.2-unstable.37"></a>
+## [0.4.2-unstable.37](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.36...aws-amplify@0.4.2-unstable.37) (2018-06-07)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.2-unstable.36"></a>
+## [0.4.2-unstable.36](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.35...aws-amplify@0.4.2-unstable.36) (2018-06-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
 <a name="0.4.2-unstable.35"></a>
 ## [0.4.2-unstable.35](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.34...aws-amplify@0.4.2-unstable.35) (2018-06-05)
 

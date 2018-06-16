@@ -6,7 +6,7 @@ declare module "amazon-cognito-identity-js" {
 
     export interface IAuthenticationDetailsData {
         Username: string;
-        Password: string;
+        Password?: string;
     }
 
     export class AuthenticationDetails {
@@ -43,6 +43,17 @@ declare module "amazon-cognito-identity-js" {
         public getSession(callback: Function): any;
         public refreshSession(refreshToken: CognitoRefreshToken, callback: NodeCallback<any, any>): void;
         public authenticateUser(authenticationDetails: AuthenticationDetails,
+                                callbacks: {
+                                    onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void,
+                                    onFailure: (err: any) => void,
+                                    newPasswordRequired?: (userAttributes: any, requiredAttributes: any) => void,
+                                    mfaRequired?: (challengeName: any, challengeParameters: any) => void,
+                                    totpRequired?: (challengeName: any, challengeParameters: any) => void,
+                                    customChallenge?: (challengeParameters: any) => void,
+                                    mfaSetup?: (challengeName: any, challengeParameters: any) => void,
+                                    selectMFAType?: (challengeName: any, challengeParameters: any) => void
+                                }): void;
+        public initiateAuth(authenticationDetails: AuthenticationDetails,
                                 callbacks: {
                                     onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void,
                                     onFailure: (err: any) => void,
