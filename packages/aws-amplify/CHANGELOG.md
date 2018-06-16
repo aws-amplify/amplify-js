@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.2-unstable.44"></a>
+## [0.4.2-unstable.44](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.43...aws-amplify@0.4.2-unstable.44) (2018-06-16)
+
+
+### Features
+
+* **interactions:** Interactions category ([#1042](https://github.com/aws/aws-amplify/issues/1042)) ([befb336](https://github.com/aws/aws-amplify/commit/befb336))
+
+
+
+
 <a name="0.4.2-unstable.43"></a>
 ## [0.4.2-unstable.43](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.42...aws-amplify@0.4.2-unstable.43) (2018-06-13)
 
