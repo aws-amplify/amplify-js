@@ -327,6 +327,28 @@ Amplify.configure({
 
 ```
 
+
+#### Set Custom Request Headers for REST endpoint
+
+When working with a GraphQL endpoint, you will need to set request headers for authorization purposes. This is done by passing a `graphql_headers` function into the configuration:
+
+```js
+Amplify.configure({
+  API: {
+    endpoints: [
+      {
+        name: "sampleCloudApi",
+        endpoint: "https://xyz.execute-api.us-east-1.amazonaws.com/Development",
+        custom_header: async () => { 
+          return { Authorization : 'token' } 
+          // Using Cognito UserPools use this instead: return { (await Auth.currentSession()).idToken.jwtToken } 
+        }
+      }
+    ]
+  }
+});
+```
+
 #### Set Custom Request Headers for Graphql 
 
 When working with a GraphQL endpoint, you will need to set request headers for authorization purposes. This is done by passing a `graphql_headers` function into the configuration:
