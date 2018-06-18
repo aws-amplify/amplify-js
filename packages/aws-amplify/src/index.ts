@@ -17,6 +17,7 @@ import Storage, { StorageClass } from './Storage';
 import API, { APIClass, graphqlOperation } from './API';
 import PubSub from './PubSub';
 import Cache from './Cache';
+import Interactions from './Interactions';
 import {
     ConsoleLogger as Logger,
     Hub,
@@ -39,8 +40,25 @@ Amplify.Cache = Cache;
 Amplify.PubSub = PubSub;
 Amplify.Logger = Logger;
 Amplify.ServiceWorker = ServiceWorker;
+Amplify.Interactions = Interactions;
 
-export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer, ServiceWorker };
+export { 
+    Auth, 
+    Analytics, 
+    Storage,
+    API, 
+    PubSub, 
+    I18n, 
+    Logger, 
+    Hub, 
+    Cache, 
+    JS, 
+    ClientDevice, 
+    Signer, 
+    ServiceWorker, 
+    Interactions 
+};
+
 export { 
     AuthClass, 
     AnalyticsClass, 
