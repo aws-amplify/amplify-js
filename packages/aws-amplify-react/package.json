@@ -50,7 +50,7 @@
     "graphql": "0.13.0"
   },
   "dependencies": {
-    "aws-amplify": "^0.4.2-unstable.44",
+    "aws-amplify": "^0.4.2-unstable.45",
     "qrcode.react": "^0.8.0",
     "regenerator-runtime": "^0.11.1"
   }
