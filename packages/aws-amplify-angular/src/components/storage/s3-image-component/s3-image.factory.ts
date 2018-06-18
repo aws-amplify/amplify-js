@@ -1,0 +1,43 @@
+import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+
+import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
+import { ComponentMount }      from '../../component.mount';
+import { S3ImageClass } from './s3-image.class';
+import { S3ImageComponentIonic } from './s3-image.component.ionic'
+import { S3ImageComponentCore } from './s3-image.component.core';
+
+@Component({
+  selector: 'amplify-s3-image',
+  template: `
+              <div>
+                <ng-template component-host></ng-template>
+              </div>
+            `
+})
+export class S3ImageComponent implements OnInit, OnDestroy {
+  @Input() framework: string
+  @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
+
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+
+  ngOnInit() {
+    this.loadComponent();
+  }
+
+  ngOnDestroy() {}
+
+  loadComponent() {
+
+    let authComponent = this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3ImageComponentIonic,{}) : new ComponentMount(S3ImageComponentCore, {});
+
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+
+    let viewContainerRef = this.componentHost.viewContainerRef;
+    viewContainerRef.clear();
+
+    let componentRef = viewContainerRef.createComponent(componentFactory);
+    (<S3ImageClass>componentRef.instance).data = authComponent.data;
+  }
+}
+
+
