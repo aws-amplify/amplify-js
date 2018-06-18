@@ -1,5 +1,4 @@
 import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
-import { IonicModule } from 'ionic-angular'
 
 import { AmplifyService, AuthState } from '../../../providers';
 import { AuthenticatorComponentCore } from '../authenticator/authenticator.component.core';
@@ -32,6 +31,12 @@ const template = `
     *ngIf="!shouldHide('ForgotPassword')"
     [authState]="authState"
     ></amplify-auth-forgot-password-ionic>
+  </div>
+  <div>
+    <amplify-auth-greetings-ionic
+      *ngIf="!shouldHide('Greetings')"
+      [authState]="authState"
+    ></amplify-auth-greetings-ionic>
   </div>
 `
 

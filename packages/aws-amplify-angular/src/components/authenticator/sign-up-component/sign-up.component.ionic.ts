@@ -71,9 +71,9 @@ const template = `
         >Confirm a Code</a>
       </div>
     </div>
-    <button ion-button 
+    <ion-button 
       (click)="onSignUp()"
-    >Sign Up</button>
+    >Sign Up</ion-button>
   </div>
   <div class="amplify-form-footer">
     <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>

@@ -1,128 +1,51 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AmplifyService } from './providers/amplify.service';
-
-import {
-  PhotoPickerComponent,
-  S3ImageComponent,
-  S3AlbumComponent
-} from './components/storage';
-import {
-  AuthenticatorComponentCore,
-  RequireNewPasswordComponent,
-  GreetingsComponent,
-  FormComponent,
-  AuthenticatorComponent,
-  AuthClass,
-  AuthenticatorIonicComponent,
-
-  ConfirmSignInComponent,
-  ConfirmSignInComponentCore,
-  ConfirmSignInComponentIonic,
-
-  ConfirmSignUpComponent,
-  ConfirmSignUpComponentCore,
-  ConfirmSignUpComponentIonic,
-
-  SignUpComponent,
-  SignUpComponentCore,
-  SignUpComponentIonic,
-
-  SignInComponent,
-  SignInComponentCore,
-  SignInComponentIonic,
-
-  ForgotPasswordComponent,
-  ForgotPasswordComponentCore,
-  ForgotPasswordComponentIonic
-
-} from './components';
+import * as components from './components';
 
 import { DynamicComponentDirective }          from './directives/dynamic.component.directive';
 
 
-import {IonicModule } from 'ionic-angular';
-
-
+const exportables = [
+  components.AuthenticatorComponent,
+  components.AuthenticatorComponentCore,
+  components.ConfirmSignInComponent,
+  components.ConfirmSignInComponentCore,
+  components.ConfirmSignUpComponent,
+  components.ConfirmSignUpComponentCore,
+  components.ForgotPasswordComponent,
+  components.ForgotPasswordComponentCore,
+  components.GreetingComponent,
+  components.GreetingComponentCore,
+  components.PhotoPickerComponent,
+  components.PhotoPickerComponentCore,
+  components.S3AlbumComponent,
+  components.S3AlbumComponentCore,
+  components.S3ImageComponent,
+  components.S3ImageComponentCore,
+  components.SignInComponent,
+  components.SignInComponentCore,
+  components.SignUpComponent,
+  components.SignUpComponentCore
+]
 
 @NgModule({
   imports: [
-    CommonModule,
-    IonicModule
+    CommonModule
   ],
   declarations: [
-  	PhotoPickerComponent,
-    S3ImageComponent,
-    S3AlbumComponent,
-    SignInComponentCore,
-    AuthenticatorComponentCore,
-    RequireNewPasswordComponent,
-    SignUpComponent,
-    ConfirmSignUpComponent,
-    ForgotPasswordComponent,
-    GreetingsComponent,
-    FormComponent,
     DynamicComponentDirective,
-    AuthenticatorComponent,
-    AuthenticatorIonicComponent,
-    SignInComponentIonic,
-    SignUpComponentIonic,
-    SignUpComponentCore,
-    ConfirmSignUpComponentCore,
-    ConfirmSignUpComponentIonic,
-    ForgotPasswordComponent,
-    ForgotPasswordComponentCore,
-    ForgotPasswordComponentIonic,
-    ConfirmSignInComponent,
-    ConfirmSignInComponentCore,
-    ConfirmSignInComponentIonic,
+    components.FormComponent,
+    components.RequireNewPasswordComponent,
+    ...exportables,
   ],
   entryComponents: [
-    AuthenticatorComponentCore,
-    AuthenticatorIonicComponent,
-    SignInComponentIonic,
-    SignUpComponentIonic,
-    SignUpComponentCore,
-    ConfirmSignUpComponent,
-    ConfirmSignUpComponentCore,
-    ConfirmSignUpComponentIonic,
-    SignUpComponent,
-    ForgotPasswordComponent,
-    ForgotPasswordComponentCore,
-    ForgotPasswordComponentIonic,
-    ConfirmSignInComponent,
-    ConfirmSignInComponentCore,
-    ConfirmSignInComponentIonic,
+    ...exportables
   ],
   providers: [ AmplifyService ],
   exports: [
-  	PhotoPickerComponent,
-    S3ImageComponent,
-    S3AlbumComponent,
-    SignInComponentCore,
-    AuthenticatorComponentCore,
-    RequireNewPasswordComponent,
-    ConfirmSignUpComponent,
-    ForgotPasswordComponent,
-    GreetingsComponent,
-    AuthenticatorComponent,
-    DynamicComponentDirective,
-    AuthenticatorIonicComponent,
-    SignInComponentIonic,
-    ConfirmSignUpComponent,
-    ConfirmSignUpComponentCore,
-    ConfirmSignUpComponentIonic,
-
-    SignUpComponent,
-    SignUpComponentIonic,
-
-    ConfirmSignInComponent,
-    ConfirmSignInComponentCore,
-    ConfirmSignInComponentIonic,
-
-    ForgotPasswordComponent,
-    ForgotPasswordComponentCore,
-    ForgotPasswordComponentIonic
+    ...exportables,
+    components.RequireNewPasswordComponent,
   ]
 })
 export class AmplifyAngularModule { }

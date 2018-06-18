@@ -30,6 +30,11 @@ const template = `
     [authState]="authState"
     ></amplify-auth-forgot-password-core>
 
+    <amplify-auth-greetings-core
+    *ngIf="!shouldHide('Greetings')"
+    [authState]="authState"
+    ></amplify-auth-greetings-core>
+
   </div>
 `
 
@@ -39,11 +44,6 @@ const template = `
 // [authState]="authState"
 // ></amplify-auth-require-new-password-core>
 
-
-// <amplify-auth-greetings-core
-// *ngIf="!shouldHide('Greetings')"
-// [authState]="authState"
-// ></amplify-auth-greetings-core>
 
 @Component({
   selector: 'amplify-authenticator-core',

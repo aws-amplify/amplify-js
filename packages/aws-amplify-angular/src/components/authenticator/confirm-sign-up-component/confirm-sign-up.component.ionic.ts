@@ -36,10 +36,10 @@ const template = `
       </ion-item>
     </ion-list>
       
-    <button ion-button
-      (click)="onConfirm()">Confirm</button>
-    <button ion-button
-      (click)="onResend()">Resend</button>
+    <ion-button
+      (click)="onConfirm()">Confirm</ion-button>
+    <ion-button
+      (click)="onResend()">Resend</ion-button>
 
   </div>
 

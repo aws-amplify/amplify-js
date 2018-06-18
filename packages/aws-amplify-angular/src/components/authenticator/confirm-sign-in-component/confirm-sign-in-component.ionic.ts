@@ -26,9 +26,9 @@ const template = `
       </ion-item>
     </ion-list>
 
-    <button ion-button
+    <ion-button
       (click)="onConfirm()"
-    >Confirm</button>
+    >Confirm</ion-button>
   </div>
   <div class="amplify-form-footer">
     <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>

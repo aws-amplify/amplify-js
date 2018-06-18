@@ -49,12 +49,12 @@ const template = `
   </ion-list>
 
     <div class="amplify-form-row">
-    <button ion-button
+    <ion-button
       (click)="onSend()"
-    >Send Code</button>
-    <button ion-button
+    >Send Code</ion-button>
+    <ion-button
       (click)="onSubmit()"
-    >Submit</button>
+    >Submit</ion-button>
     </div>
   </div>
   <div class="amplify-form-footer">

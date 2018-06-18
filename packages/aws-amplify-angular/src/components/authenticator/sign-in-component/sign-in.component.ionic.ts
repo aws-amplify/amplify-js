@@ -56,9 +56,9 @@ const template = `
 
     </div>
 
-    <button ion-button
+    <ion-button
       (click)="onSignIn()"
-    >Sign In</button>
+    >Sign In</ion-button>
 
   </div>
 

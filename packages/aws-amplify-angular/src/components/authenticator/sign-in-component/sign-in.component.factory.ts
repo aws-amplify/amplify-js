@@ -15,7 +15,7 @@ import { SignInComponentCore } from './sign-in.component.core';
             `
 })
 export class SignInComponent implements OnInit, OnDestroy {
-  @Input() ionic: boolean
+  @Input() framework: string
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -28,7 +28,7 @@ export class SignInComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.ionic ? new ComponentMount(SignInComponentIonic,{authState: ''}) : new ComponentMount(SignInComponentCore, {authState: ''});
+    let authComponent = this.framework === 'ionic' ? new ComponentMount(SignInComponentIonic,{authState: ''}) : new ComponentMount(SignInComponentCore, {authState: ''});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 
