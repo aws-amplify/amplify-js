@@ -1619,7 +1619,7 @@ describe('auth unit test', () => {
     });
 
     describe('currentUserInfo test', () => {
-        test.only('happy case with aws or userpool source', async () => {
+        test('happy case with aws or userpool source', async () => {
             const auth = new Auth(authOptions);
             const user = new CognitoUser({
                 Username: 'username',
