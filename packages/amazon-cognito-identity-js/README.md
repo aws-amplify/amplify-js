@@ -281,7 +281,7 @@ The usage examples below use the unqualified names for types in the Amazon Cogni
     var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
     cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: function (result) {
-            console.log('access token + ' + result.getAccessToken().getJwtToken());
+            var accessToken = result.getAccessToken().getJwtToken();
 
             //POTENTIAL: Region needs to be set if not already set previously elsewhere.
             AWS.config.region = '<region>';
@@ -754,7 +754,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 
         cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: function (result) {
-                console.log('access token + ' + result.getAccessToken().getJwtToken());
+                var accessToken = result.getAccessToken().getJwtToken();
             },
 
             onFailure: function(err) {
