@@ -88,6 +88,7 @@ export default class ForgotPassword extends AuthPiece {
                     theme={theme}
                     key="code"
                     name="code"
+                    autoComplete="off"
                     onChange={this.handleInputChange}
                 />
                 <InputRow

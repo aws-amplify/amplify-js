@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.2-unstable.46"></a>
+## [0.4.2-unstable.46](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.45...aws-amplify@0.4.2-unstable.46) (2018-06-18)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.2-unstable.45"></a>
+## [0.4.2-unstable.45](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.44...aws-amplify@0.4.2-unstable.45) (2018-06-18)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.2-unstable.44"></a>
+## [0.4.2-unstable.44](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.43...aws-amplify@0.4.2-unstable.44) (2018-06-16)
+
+
+### Features
+
+* **interactions:** Interactions category ([#1042](https://github.com/aws/aws-amplify/issues/1042)) ([befb336](https://github.com/aws/aws-amplify/commit/befb336))
+
+
+
+
+<a name="0.4.2-unstable.43"></a>
+## [0.4.2-unstable.43](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.42...aws-amplify@0.4.2-unstable.43) (2018-06-13)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.2-unstable.42"></a>
+## [0.4.2-unstable.42](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.41...aws-amplify@0.4.2-unstable.42) (2018-06-13)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
 <a name="0.4.2-unstable.41"></a>
 ## [0.4.2-unstable.41](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.40...aws-amplify@0.4.2-unstable.41) (2018-06-12)
 
