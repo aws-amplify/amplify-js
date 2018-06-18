@@ -12,7 +12,7 @@
  */
 import InteractionsClass from './Interactions';
 
-import { ConsoleLogger as Logger, Amplify } from '../Common';
+import { ConsoleLogger as Logger, Amplify } from '@aws-amplify/core';
 
 const logger = new Logger('Interactions');
 

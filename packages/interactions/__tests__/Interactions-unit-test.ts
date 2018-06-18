@@ -19,10 +19,10 @@ jest.mock('aws-sdk/clients/lexruntime', () => {
     return LexRuntime;
 });
 
-import Interactions from '../../src/Interactions/Interactions';
+import Interactions from '../src/Interactions';
 import { findInterfacesAddedToObjectTypes } from 'graphql/utilities/findBreakingChanges';
-import Auth from '../../src/Auth/Auth';
-import { AWSLexProvider, AbstractInteractionsProvider } from '../../src/Interactions/Providers';
+import { AWSLexProvider, AbstractInteractionsProvider } from '../src/Providers';
+import { Credentials } from '@aws-amplify/core';
 
 class AWSLexProvider2 extends AWSLexProvider {
     getProviderName() { return 'AWSLexProvider2'; }
@@ -70,7 +70,7 @@ describe('Interactions', () => {
         });
 
         test('aws-exports configuration and send message to existing bot', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementationOnce(() => Promise.resolve({ identityId: '1234' }));
 
             const awsmobile = {
@@ -92,7 +92,7 @@ describe('Interactions', () => {
         });
 
         test('aws-exports configuration with two bots and send message to existing bot', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
             const awsmobile = {
@@ -121,7 +121,7 @@ describe('Interactions', () => {
         });
 
         test('Interactions configuration with two bots and send message to existing bot and fullfil', async () => {
-            const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+            const curCredSpyOn = jest.spyOn(Credentials, 'get')
                 .mockImplementation(() => Promise.resolve({ identityId: '1234' }));
             const configuration = {
                 Interactions: {
@@ -157,7 +157,7 @@ describe('Interactions', () => {
 
         describe('Sending messages to bot', () => {
             test('Interactions configuration and send message to existing bot and call onComplete from Interaction.onComplete', async () => {
-                const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+                const curCredSpyOn = jest.spyOn(Credentials, 'get')
                     .mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
                 const onComplete = jest.fn((err, confirmation) => { });

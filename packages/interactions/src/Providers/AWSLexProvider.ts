@@ -13,9 +13,9 @@
 
 import { AbstractInteractionsProvider } from './InteractionsProvider';
 import { InteractionsOptions, InteractionsResponse } from '../types';
-import { ConsoleLogger as Logger, LexRuntime, AWS } from '../../Common';
+import * as LexRuntime from 'aws-sdk/clients/lexruntime';
+import { ConsoleLogger as Logger, AWS, Credentials } from '@aws-amplify/core';
 import { registerHelper } from 'handlebars';
-import Auth from '../../Auth';
 
 const logger = new Logger('AWSLexProvider');
 
@@ -38,7 +38,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
             if (!this._config[botname]) {
                 return rej('Bot ' + botname + ' does not exist');
             }
-            const credentials = await Auth.currentCredentials();
+            const credentials = await Credentials.get();
             if (!credentials) { return rej('No credentials'); }
             AWS.config.update({
                 credentials
