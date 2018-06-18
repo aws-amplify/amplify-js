@@ -85,6 +85,7 @@ export default class ConfirmSignIn extends AuthPiece {
                         theme={theme}
                         key="code"
                         name="code"
+                        autoComplete="off"
                         onChange={this.handleInputChange}
                     />
                     <ButtonRow theme={theme} onClick={this.confirm}>

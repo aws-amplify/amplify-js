@@ -17,6 +17,7 @@ import Storage, { StorageClass } from '@aws-amplify/storage';
 import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
+import Interactions from './Interactions';
 import {
     ConsoleLogger as Logger,
     Hub,
@@ -39,8 +40,25 @@ Amplify.Cache = Cache;
 Amplify.PubSub = PubSub;
 Amplify.Logger = Logger;
 Amplify.ServiceWorker = ServiceWorker;
+Amplify.Interactions = Interactions;
 
-export { Auth, Analytics, Storage, API, PubSub, I18n, Logger, Hub, Cache, JS, ClientDevice, Signer, ServiceWorker };
+export { 
+    Auth, 
+    Analytics, 
+    Storage,
+    API, 
+    PubSub, 
+    I18n, 
+    Logger, 
+    Hub, 
+    Cache, 
+    JS, 
+    ClientDevice, 
+    Signer, 
+    ServiceWorker, 
+    Interactions 
+};
+
 export { 
     AuthClass, 
     AnalyticsClass, 
