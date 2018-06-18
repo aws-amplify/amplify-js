@@ -196,7 +196,7 @@ describe('Interactions', () => {
                 expect(onComplete).toBeCalledWith(null, { "slots": { "m1": "hi", "m2": "done" } });
             });
             test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async () => {
-                const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
+                const curCredSpyOn = jest.spyOn(Credentials, 'get')
                     .mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
                 const onComplete = jest.fn((err, confirmation) => { });
