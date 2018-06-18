@@ -17,7 +17,7 @@ import Storage, { StorageClass } from '@aws-amplify/storage';
 import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
-import Interactions from './Interactions';
+import Interactions from '@aws-amplify/interactions';
 import {
     ConsoleLogger as Logger,
     Hub,

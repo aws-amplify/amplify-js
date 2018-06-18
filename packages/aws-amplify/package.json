@@ -55,6 +55,7 @@
     "@aws-amplify/cache": "^0.1.0",
     "@aws-amplify/core": "^0.1.0",
     "@aws-amplify/storage": "^0.1.0",
-    "@aws-amplify/pubsub": "^0.1.0"
+    "@aws-amplify/pubsub": "^0.1.0",
+    "@aws-amplify/interactions": "^0.1.0"
   }
 }
