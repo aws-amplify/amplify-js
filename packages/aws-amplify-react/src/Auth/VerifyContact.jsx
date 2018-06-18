@@ -115,6 +115,7 @@ export default class VerifyContact extends AuthPiece {
                     theme={theme}
                     key="code"
                     name="code"
+                    autoComplete="off"
                     onChange={this.handleInputChange}
                 />
                 <ButtonRow theme={theme} onClick={this.submit}>{I18n.get('Submit')}</ButtonRow>
