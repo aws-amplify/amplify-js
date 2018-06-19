@@ -15,7 +15,7 @@ import StorageCache from './StorageCache';
 import {defaultConfig, getCurrTime} from './Utils/CacheUtils';
 import { AsyncStorage } from 'react-native';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger } from '../Common/Logger';
 
 const logger = new Logger('AsyncStorageCache');
 
@@ -32,6 +32,9 @@ class AsyncStorageCache extends StorageCache implements ICache {
   constructor(config?) {
     const cache_config = config ? Object.assign({}, defaultConfig, config) : defaultConfig;
     super(cache_config);
+    this.getItem = this.getItem.bind(this);
+    this.setItem = this.setItem.bind(this);
+    this.removeItem = this.removeItem.bind(this);
     logger.debug('Using AsyncStorageCache');
   }
 

@@ -32,7 +32,8 @@ export interface AuthOptions {
     region?: string,
     mandatorySignIn: boolean
     cookieStorage?: ICookieStorageData,
-    oauth?: OAuth
+    oauth?: OAuth,
+    refreshHandlers?: object
 }
 
 /**
@@ -49,6 +50,8 @@ export interface MfaRequiredDetails {
 export interface FederatedResponse {
     // access token
     token: string,
+    // identity id
+    identity_id?: string,
     // the universal time when token expired
     expires_at: number
 }
@@ -60,4 +63,8 @@ export interface OAuth {
 	redirectSignOut : string,
     responseType: string,
     options?: object
+}
+
+export interface ConfirmSignUpOptions {
+    forceAliasCreation?: boolean
 }

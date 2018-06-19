@@ -24,9 +24,6 @@
 		margin-left:-4px;
 	}
 }
- 
-
-
 
 /* ----- Small grid ----- */
 @media (min-width: $screen-sm-min) {
@@ -67,7 +64,14 @@
 
 .sections-list-wrapper {
 	.dev-guide {
+		.category-header {
+			font-size: 13px;
+			margin-left: 12px;
+			color: orange;
+		}
+		.in-this-page {
 
+		}
 	}
 	.section-header {
 		padding-left: 0px;
@@ -107,4 +111,32 @@
 	padding-left: 15px;
 	padding-right: 15px;
 	right: 20px;
+}
+
+.notification-bar{
+	
+	// controlled by JS
+	display: none;
+
+	background:#ffb850;
+	color:black;
+	text-align: center;
+	margin-top: -3px;
+	opacity: 0.94;
+	font-size: 16px;
+	padding-top: 5px;
+
+	a {
+		text-decoration: underline;
+	}
+	.close-button{
+		float: right;
+		i {
+			font-size: 25px;
+			margin-right: 20px;
+		}
+		a {
+			text-decoration: none;
+		}
+	}
 }

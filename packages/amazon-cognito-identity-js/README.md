@@ -91,14 +91,14 @@ migration.
     // Example setup for your project:
     // The entry module that requires or imports the rest of your project.
     // Must start with `./`!
-    entry: './src/entry',
+    entry: './src/entry.js',
     // Place output files in `./dist/my-app.js`
     output: {
-      path: 'dist',
+      path: __dirname + '/dist',
       filename: 'my-app.js'
     },
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.json$/,
           loader: 'json-loader'
@@ -106,6 +106,13 @@ migration.
       ]
     }
   };
+  ```
+
+* Create the following directory where `webpack.config.js` resides, and create the entry file:
+
+  ```
+  > mkdir -p src
+  > touch src/entry.js
   ```
 
 * Add the following into your `package.json`

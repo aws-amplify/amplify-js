@@ -95,7 +95,7 @@ describe('ConfirmSignIn', () => {
                 });
 
             const wrapper = shallow(<ConfirmSignIn/>);
-            const spyon2 = jest.spyOn(wrapper.instance(), 'changeState');
+            const spyon2 = jest.spyOn(wrapper.instance(), 'checkContact');
             wrapper.setProps({
                 authState: acceptedStates[0],
                 theme: AmplifyTheme,
@@ -115,7 +115,7 @@ describe('ConfirmSignIn', () => {
             expect.assertions(3);
             expect(spyon.mock.calls[0][0]).toBe('user');
             expect(spyon.mock.calls[0][1]).toBe('123456');
-            expect(spyon2).toBeCalledWith('signedIn', 'user');
+            expect(spyon2).toBeCalled();
 
             spyon.mockClear();
             spyon2.mockClear();
@@ -136,4 +136,52 @@ describe('ConfirmSignIn', () => {
             spyon2.mockClear();
         });
     });
-})
+
+    describe('checkContact test', () => {
+        test('contact verified', async () => {
+            const wrapper = shallow(<ConfirmSignIn/>);
+            const confirmSignIn = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
+                return Promise.resolve({
+                    verified: {
+                        email: 'xxx@xxx.com'
+                    }
+                })
+            });
+
+            const spyon2 = jest.spyOn(confirmSignIn, 'changeState');
+
+            await confirmSignIn.checkContact({
+                user: 'user'
+            });
+            
+            expect(spyon2).toBeCalledWith('signedIn', {user: 'user'});
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('contact not verified', async () => {
+            const wrapper = shallow(<ConfirmSignIn/>);
+            const confirmSignIn = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'verifiedContact').mockImplementationOnce(() => {
+                return Promise.resolve({
+                    verified: {}
+                })
+            });
+
+            const spyon2 = jest.spyOn(confirmSignIn, 'changeState');
+
+            await confirmSignIn.checkContact({
+                user: 'user'
+            });
+            
+            expect(spyon2).toBeCalledWith('verifyContact', {user: 'user', 'verified': {}});
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+    });
+});

@@ -2,16 +2,68 @@
 ---
 # PubSub
 
-AWS Amplify PubSub module provides connectivity with cloud-based message-oriented middleware. You can use PubSub to pass messages between your app instances and your app's backend for creating real-time interactive experiences.
+The AWS Amplify PubSub category provides connectivity with cloud-based message-oriented middleware. You can use PubSub to pass messages between your app instances and your app's backend creating real-time interactive experiences.
 
-PubSub is available with **AWS IoT** and **Generic MQTT Over WebSocket Provider**. 
+PubSub is available with **AWS IoT** and **Generic MQTT Over WebSocket Providers**. 
 
-With AWS IoT, AWS Amplify PubSub module automatically signs your HTTP requests when sending your messages.
+With AWS IoT, AWS Amplify's PubSub automatically signs your HTTP requests when sending your messages.
 {: .callout .callout--info}
 
 ## Installation and Configuration
 
+### AWS IoT
+
+When used with `AwsIOTProvider`, PubSub is capable of signing request according to [Signature Version 4](https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
+
+To use in your app, import `AWSIoTProvider`:
+
+```js
+import Amplify, { PubSub } from 'aws-amplify';
+import { AWSIoTProvider } from 'aws-amplify/lib/PubSub/Providers';
+```
+
+Define your endpoint and region in your configuration:
+
+```js
+// Apply plugin with configuration
+Amplify.addPluggable(new AWSIoTProvider({
+     aws_pubsub_region: '<YOUR-AWS-REGION>',
+     aws_pubsub_endpoint: 'wss://xxxxxxxxxxxxx.iot.<YOUR-AWS-REGION>.amazonaws.com/mqtt',
+   }));
+```
+
+**Create IAM policies for AWS IoT**
+
+To use PubSub with AWS IoT, you will need to create the necessary IAM policies in the AWS IoT Console, and attach them to your Amazon Cognito Identity. 
+
+Go to IoT Core and choose *Secure* from the left navigation pane. Then navigate to *Create Policy*. The following `myIOTPolicy` policy will allow full access to all the topics.
+
+![Alt text](images/iot_attach_policy.png?raw=true "Title")
+
+
+**Attach your policy to your Amazon Cognito Identity**
+
+The next step is attaching the policy to your *Cognito Identity*. 
+
+You can retrieve *Cognito Identity Id* from your `aws-exports.js` file in `aws_cognito_identity_pool_id` property. 
+
+Alternatively, you can retrieve the `Cognito Identity Id` of a logged in user with Auth Module:
+```
+    Auth.currentCredentials().then((info) => {
+      const cognitoIdentityId = info._identityId;
+    });
+```
+
+Then, you need to send your *Cognito Identity Id* to the AWS backend and attach `myIOTPolicy`. You can do this with the following [AWS CLI](https://aws.amazon.com/cli/) command:
+
+```bash
+aws iot attach-principal-policy --policy-name 'myIOTPolicy' --principal '<YOUR_COGNITO_IDENTITY_ID>'
+```
+
+### Third Party MQTT Providers
+
 Import PubSub module and related service provider plugin to your app:
+
 ```js
 import { PubSub } from 'aws-amplify';
 import { MqttOverWSProvider } from "aws-amplify/lib/PubSub/Providers";

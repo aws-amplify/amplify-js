@@ -107,8 +107,8 @@ exclude: [ 'README.md', 'CHANGELOG.md' ]
 permalink: /:title
 
 category_list:
-    - category: CloudConnectivity
-      title: Cloud Connectivity
+    - category: CloudFeatures
+      title: Cloud Features
       subs:
         - title: Analytics 
           excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
@@ -116,19 +116,17 @@ category_list:
           class: aws-icon-ps-60-pie-bar-charts 
           url: '/media/analytics_guide'
           services:
-            - title: AWS Pinpoint,
+            - title: Amazon Pinpoint,
               url: https://aws.amazon.com/pinpoint/
-            - title: AWS Kinesis,
-              url: https://aws.amazon.com/kinesis/
             - title: Custom Plugin
               url: https://aws.github.io/aws-amplify/media/analytics_guide#create-a-custom-analytics-plugin
         - title: API 
-          excerpt: A simple and secure solution for making HTTP requests using REST and GraphQL.
+          excerpt: A simple and secure solution for making HTTP requests using REST and GraphQL, with support for real-time data.
           cta: Read more
           class: aws-icon-ps-60-database-server
           url: '/media/api_guide'    
           services:
-            - title: AWS API Gateway,
+            - title: Amazon API Gateway,
               url: https://aws.amazon.com/api-gateway
             - title: AWS AppSync
               url: https://aws.amazon.com/appsync
@@ -138,40 +136,50 @@ category_list:
           class: aws-icon-ps-60-shield-circle
           url: '/media/authentication_guide'
           services:
-            - title: AWS Cognito ,
+            - title: Amazon Cognito,
               url: https://aws.amazon.com/cognito/
             - title: OAuth 2.0 ,
               url: https://aws.amazon.com/cognito/
             - title: Custom Plugin
               url:  
+        - title: Hosting 
+          excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
+          cta: Read more
+          class: aws-icon-ps-60-network-nodes
+          url: '/media/hosting_guide'   
+          services:
+              - title: Amazon CloudFront
+                url: https://aws.amazon.com/cloudfront/
         - title: PubSub 
           excerpt: Connect your app to message-oriented middleware on the cloud.
           cta: Read more
           class: aws-icon-ps-60-circular-circuit
           url: '/media/pub_sub_guide'   
           services:
-              - title: Generic MQTT ,
-                url: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html#mqtt
-              - title: AWS IoT (Coming soon)
+              - title: AWS IoT,
                 url: https://aws.amazon.com/iot/
+              - title: Generic MQTT,
+                url: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html#mqtt
+              - title: Custom Plugin
+                url:  
         - title: Push Notifications 
           excerpt: Push notifications with campaign analytics and targeting.
           cta: Read more
           class: aws-icon-ps-60-bubble-gear
           url: '/media/push_notifications_setup'   
           services:
-              - title: AWS Pinpoint
+              - title: Amazon Pinpoint
                 url: https://aws.amazon.com/pinpoint/
         - title: Storage 
-          excerpt: A simple mechanism for managing user content in public or private storage.
+          excerpt: A simple mechanism for managing user content in public, protected or private storage.
           cta: Read more
           class: aws-icon-ps-60-file-box
           url: '/media/storage_guide'   
           services:
-              - title: AWS S3
+              - title: Amazon S3
                 url: https://aws.amazon.com/s3/
-    -  category: Utilities
-       title: Utilities
+    -  category: UtilityModules
+       title: Utility Modules
        subs:
         - title: Cache 
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
@@ -189,6 +197,10 @@ category_list:
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide'  
+        - title: Service Worker 
+          excerpt: A utility class to work with PWA and Service Worker APIs. 
+          cta: Read more
+          url: '/media/service_workers_guide'  
     -  category: CLI
        title: CLI
        subs:
@@ -196,6 +208,29 @@ category_list:
           excerpt: A CLI to create and manage your app's backend. 
           cta: Read more
           url: '/media/cli_guide'       
+    -  category: Front-end Support
+       title: Front-end Support
+       subs:
+        - title: Angular 
+          excerpt: Angular support package.
+          cta: Read more
+          url: '/media/angular_guide' 
+        - title: React 
+          excerpt: React support package.
+          cta: Read more
+          url: '/media/react_guide' 
+        - title: React Native
+          excerpt: React Native support package.
+          cta: Read more
+          url: '/media/react_native_guide' 
+        - title: Vue.js
+          excerpt: Vue.j starter app.
+          cta: Read more
+          url: '/media/vuejs_guide' 
+        - title: Ionic
+          excerpt: Ionic starter app and component support.
+          cta: Read more
+          url: '/media/ionic_guide' 
 
 defaults:
   -

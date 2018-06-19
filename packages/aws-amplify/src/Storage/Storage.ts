@@ -76,7 +76,7 @@ export default class StorageClass {
     /**
     * Get a presigned URL of the file
     * @param {String} key - key of the object
-    * @param {Object} [options] - { level : private|public }
+    * @param {Object} [options] - { level : private|protected|public }
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
     public async get(key: string, options?): Promise<Object> {
@@ -141,7 +141,7 @@ export default class StorageClass {
      * Put a file in S3 bucket specified to configure method
      * @param {Stirng} key - key of the object
      * @param {Object} object - File to be put in Amazon S3 bucket
-     * @param {Object} [options] - { level : private|public, contentType: MIME Types }
+     * @param {Object} [options] - { level : private|protected|public, contentType: MIME Types }
      * @return - promise resolves to object on success
      */
     public async put(key: string, object, options?): Promise<Object> {
@@ -195,7 +195,7 @@ export default class StorageClass {
     /**
      * Remove the object for specified key
      * @param {String} key - key of the object
-     * @param {Object} [options] - { level : private|public }
+     * @param {Object} [options] - { level : private|protected|public }
      * @return - Promise resolves upon successful removal of the object
      */
     public async remove(key: string, options?): Promise<any> {
@@ -237,7 +237,7 @@ export default class StorageClass {
     /**
      * List bucket objects relative to the level and prefix specified
      * @param {String} path - the path that contains objects
-     * @param {Object} [options] - { level : private|public }
+     * @param {Object} [options] - { level : private|protected|public }
      * @return - Promise resolves to list of keys for all objects in path
      */
     public async list(path, options?): Promise<any> {
@@ -314,13 +314,21 @@ export default class StorageClass {
      */
     private _prefix(options) {
         const { credentials, level } = options;
+
+        const customPrefix = options.customPrefix || {};
+        const identityId = options.identityId || credentials.identityId;
+        const privatePath = (customPrefix.private !== undefined ? customPrefix.private : 'private/') + identityId + '/';
+        const protectedPath = (customPrefix.protected !== undefined ?
+            customPrefix.protected : 'protected/') + identityId + '/';
+        const publicPath = customPrefix.public !== undefined ? customPrefix.public : 'public/';
+
         switch (level) {
             case 'private':
-                return `private/${credentials.identityId}/`;
+                return privatePath;
             case 'protected':
-                return `protected/${credentials.identityId}/`;
+                return protectedPath;
             default:
-                return 'public/';
+                return publicPath;
         }
     }
 

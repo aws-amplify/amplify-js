@@ -36,6 +36,19 @@ describe('SignIn', () => {
             }
         });
 
+        test('render correctly with hide', () => {
+            for (var i = 0; i < acceptedStates.length; i += 1){
+                const wrapper = shallow(<SignIn/>);
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: AmplifyTheme,
+                    hide: [SignIn]
+                });
+
+                expect(wrapper).toMatchSnapshot();
+            }
+        });
+
         test('when clicking signIn and new password required', async () => {
             const wrapper = shallow(<SignIn/>);
             wrapper.setProps({
@@ -246,5 +259,24 @@ describe('SignIn', () => {
             }
         });
         
+    });
+
+    describe('sign in test', () => {
+        test('UserNotConfirmedException, change state to confirmSignUp', async () => {
+            const wrapper = shallow(<SignIn/>);
+            const signIn = wrapper.instance();
+
+            const spyon = jest.spyOn(Auth, 'signIn').mockImplementationOnce(() => {
+                return Promise.reject({
+                    code: 'UserNotConfirmedException'
+                });
+            });
+
+            const spyon2 = jest.spyOn(signIn, 'changeState');
+            await signIn.signIn();
+
+            spyon.mockClear();
+            spyon2.mockClear();
+        })
     });
 })

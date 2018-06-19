@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import { Auth, I18n, Logger, JS } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -34,6 +34,19 @@ export default class RequireNewPassword extends AuthPiece {
 
         this._validAuthStates = ['requireNewPassword'];
         this.change = this.change.bind(this);
+        this.checkContact = this.checkContact.bind(this);
+    }
+
+    checkContact(user) {
+        Auth.verifiedContact(user)
+            .then(data => {
+                if (!JS.isEmpty(data.verified)) {
+                    this.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    this.changeState('verifyContact', user);
+                }
+            });
     }
 
     change() {
@@ -45,9 +58,13 @@ export default class RequireNewPassword extends AuthPiece {
                 logger.debug('complete new password', user);
                 if (user.challengeName === 'SMS_MFA') {
                     this.changeState('confirmSignIn', user);
+                } else if (user.challengeName === 'MFA_SETUP') {
+                    logger.debug('TOTP setup', user.challengeParam);
+                    this.changeState('TOTPSetup', user);
                 } else {
-                    this.changeState('signedIn', user);
+                    this.checkContact(user);
                 }
+                
             })
             .catch(err => this.error(err));
     }

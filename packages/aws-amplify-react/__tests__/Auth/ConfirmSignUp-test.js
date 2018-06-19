@@ -33,6 +33,18 @@ describe('ConfirmSignIn', () => {
             }
         });
 
+        test('render correctly with hide', () => {
+            const wrapper = shallow(<ConfirmSignUp/>);
+            for (var i = 0; i < acceptedStates.length; i += 1){
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: AmplifyTheme,
+                    hide: [ConfirmSignUp]
+                });
+                expect(wrapper).toMatchSnapshot();
+            }
+        });
+
         test('simulate clicking confirm button with username already defined in auth data', async () => {
             const spyon = jest.spyOn(Auth, 'confirmSignUp')
                 .mockImplementation((user, code) => {

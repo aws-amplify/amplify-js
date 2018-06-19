@@ -1,8 +1,101 @@
 # Changelog for AWS Amplify
-<!--LATEST=0.2.8-->
+<!--LATEST=0.3.3-->
 <!--ENTRYINSERT-->
 
-##04/12/2018
+## 05/18/2018
+* amazon-cognito-identity-js - 2.0.6
+    * Bug Fix: Roll back crypto-browserify to 1.0.9 #857
+
+* aws-amplify - 0.4.1
+    * Enhancement: Storage protected level #780
+    * Enhancement: OIDC support for graphql #861
+    * Enhancment: Analytics client context configurable #855
+    * Bug Fix: fix: setPreferredMFA method throws error when setting totp with no cellphone #859
+
+* aws-amplify-react - 0.1.47
+    * Bug Fix: jump to confirm user if sign in with unconfirmed user #777
+
+## 05/15/2018
+* aws-ampify-react - v0.1.46
+    * Bug Fix: revert the change of regenerator-runtime in Connect.js
+    
+## 05/15/2018
+* amazon-cognito-identity-js - v2.0.5
+    * Enhancement: Update crypto browserify to v3.0.0 #731
+    * Enhancement: Callback with error if error thrown due to network #605
+
+* aws-amplify - v0.4.0
+    * Bug Fix: To return an empty object instead of undefined if auth is not configured. #714
+    * Bug Fix: Analytics retry issue #644
+    * Bug Fix: Adds the ability to sign custom graphql requests. #743
+    * Bug Fix: Changed refreshing federated token logic #797
+    * Bug Fix: API fixes: escape characters on url and query strings #782
+    * Bug Fix: Set graphql dependency version to exactly 0.13.0 #800
+    * Bug Fix: [RN] Get guest credentials identity cached into AsyncStorage #835
+    * Enhancement: Add support for developer authenticated strategies #425
+    * Enhancement: Auth current authenticated user enhancement #713
+    * Enhancement: Allow the developer to provide an identity id #665
+    * Enhancement: Move amplify config into common module #763
+    * Enhancement: Add isAllResponse to custom authorizer request in API #664
+    * Enhancement: Add peerDependencies for graphql #832
+    * Feature: Add ServiceWorker utility class #831
+    * Feature: federated sign in for react native #818
+
+* aws-ampify-react - v0.1.45
+    * Bug Fix: Fix Auth completeNewPassword #736
+    * Enhancement: Add hidden style #757
+    * Enhancement: Import sdk on need #770
+
+* aws-amplify-react-native - 0.2.11
+    * Feature: federated sign in for react native #818
+
+* aws-ampify-angular - v0.1.1:
+    * Bug Fix: angular sign in mfa check #759
+
+
+## 04/24/2018
+* aws-amplify - v0.3.3
+    * remove unused variable #670
+    * Enhancement: Configurable Storage prefix #611 #332 #668
+    * Enhancement: Analytics events resending limit #590
+    * Bug Fix: Cannot sign in after Auth.completeNewPassword #589
+    * Bug Fix: Declare type dependencies #629
+    * Bug Fix: API GraphQL connect fix #652
+    * Feature: OAuth / Cognito Hosted UI #565 #480 #311 #45 #542 #376 #710
+    * Enhancement: add docs for protected storage level #626
+    * Enhancement: Dispatch failure event for pwd completion error #694
+    * Bug Fix: Sign out and i18n #700
+    * Enhancement: Initial commit of documentation change #708
+    * Bug Fix: use NetworkError code in aws-cognito-identity #706
+    
+* aws-amplify-react - v0.1.43
+    * Feature: OAuth / Cognito Hosted UI HOCs #565 #480 #311 #45 #542 #376
+
+## 04/19/2018
+* amazon-cognito-identity-js - v2.0.4@beta
+    * Add declartion for SetUserMFAPreference #667
+    * Enhancement: Callback with error if error thrown due to network #605
+    * Bug Fix: Callback with error if error thrown due to network #605
+    
+* aws-amplify - v0.3.2@beta
+    * Enhancement: Configurable Storage prefix #611 #332 #668
+    * Enhancement: Analytics events resending limit #590
+    * Bug Fix: Cannot sign in after Auth.completeNewPassword #589
+    * Bug Fix: Declare type dependencies #629
+    * Bug Fix: API GraphQL connect fix #652
+    * Feature: OAuth / Cognito Hosted UI #565 #480 #311 #45 #542 #376
+    
+* aws-amplify-react - v0.1.42@beta
+    * Feature: OAuth / Cognito Hosted UI HOCs #565 #480 #311 #45 #542 #376
+
+
+## 04/16/2018
+* aws-amplify-angular - v0.1.0
+    * Feature: Component `<amplify-authenticator></amplify-authenticator>`
+    * Feature: Provider `AmplifyService`
+
+
+## 04/12/2018
 * aws-amplify - v0.3.0
     * Feature: Adding graphql support #645.
     * Bug Fix: Analytics retry issue #644.
@@ -13,7 +106,7 @@
     * Bug Fix: Keyboard dismiss fix #530
     
 
-##04/11/2018
+## 04/11/2018
 * aws-amplify - v0.2.15
     * Enhancement: Preserve error context when loading Cognito credentials. #577
     * Enhancement: Increase test coverage for PubSub. #588
@@ -37,7 +130,7 @@
     * Enhancement: Analytics turn on/off #479
     * Enhancement: Add params.ContentDisposition to Storage.put() #501
     * Enhancement: Make Storage operations options optional #527
-    * Enhaneement: Adding custom federated auth provider #540
+    * Enhancement: Adding custom federated auth provider #540
     * Feature: Initial implementation of PubSub category #460
     * Bug Fix: Retrieving credentials only once when reloading pages #486
     * Bug Fix: Sign out fix #511

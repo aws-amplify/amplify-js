@@ -19,7 +19,7 @@ import {
 
 import StorageCache from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
-import { ConsoleLogger as Logger } from '../Common';
+import { ConsoleLogger as Logger } from '../Common/Logger';
 
 const logger = new Logger('InMemoryCache');
 
@@ -92,6 +92,10 @@ export class InMemoryCache extends StorageCache implements ICache {
         this.cacheList = [];
         this.curSizeInBytes = 0;
         this.maxPriority = 5;
+
+        this.getItem = this.getItem.bind(this);
+        this.setItem = this.setItem.bind(this);
+        this.removeItem = this.removeItem.bind(this);
 
         // initialize list for every priority
         for (let i = 0; i < this.maxPriority; i += 1) {

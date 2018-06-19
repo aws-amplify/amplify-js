@@ -64,6 +64,37 @@ describe('Greetings', () => {
                 expect(wrapper).toMatchSnapshot();
             }
         });
+
+        test('render correctly with hide', () => {
+            const wrapper = shallow(<Greetings/>);
+            for (var i = 0; i < acceptedStates.length; i += 1){
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: 'theme',
+                    hide: [Greetings]
+                });
+                expect(wrapper).toMatchSnapshot();
+            }
+        });
+
+        test('render name from attributes', () => {
+            const wrapper = shallow(<Greetings/>);
+            wrapper.setProps({
+                authState: 'signedIn',
+                theme: 'theme'
+            });
+
+            wrapper.setState({
+                authData: {
+                    attributes: {
+                        name: 'name'
+                    }
+                },
+                authState: 'signedIn'
+            })  
+
+            expect(wrapper).toMatchSnapshot();
+        })
     });
 
    
