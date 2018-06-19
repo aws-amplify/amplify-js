@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { Credentials } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import BrowserStorageCache from './BrowserStorageCache';
 import InMemoryCache from './InMemoryCache';
 import { CacheConfig } from './types';
@@ -19,4 +19,4 @@ import { CacheConfig } from './types';
 export { BrowserStorageCache, InMemoryCache, CacheConfig };
 export default BrowserStorageCache;
 
-Credentials.setCacheClass(BrowserStorageCache);
+Amplify.register(BrowserStorageCache);

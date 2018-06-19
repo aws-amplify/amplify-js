@@ -51,6 +51,10 @@ export default class StorageClass {
         logger.debug('Storage Options', this._options);
     }
 
+    public getModuleName() {
+        return 'Storage';
+    }
+
     /**
      * Configure Storage part with aws configuration
      * @param {Object} config - Configuration of the Storage

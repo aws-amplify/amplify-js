@@ -42,6 +42,10 @@ class I18n {
         return _config;
     }
 
+    static getModuleName(){
+        return 'I18n';
+    }
+
    /**
     * @static
     * @method

@@ -14,12 +14,8 @@ import { OperationDefinitionNode, GraphQLError } from 'graphql';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
-import PubSub from '@aws-amplify/pubsub';
-
 import { RestClient as RestClass } from './RestClient';
-
-import Auth from '@aws-amplify/auth';
-import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials, Amplify } from '@aws-amplify/core';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 
@@ -36,6 +32,7 @@ export default class APIClass {
      */
     private _options;
     private _api = null;
+    private _pubSub = Amplify.PubSub;
 
     /**
      * Initialize Storage with AWS configurations
@@ -44,6 +41,10 @@ export default class APIClass {
     constructor(options) {
         this._options = options;
         logger.debug('API Options', this._options);
+    }
+
+    public getModuleName() {
+        return 'API';
     }
 
     /**
@@ -305,11 +306,14 @@ export default class APIClass {
                 };
                 break;
             case 'AMAZON_COGNITO_USER_POOLS':
-                const session = await Auth.currentSession();
-
-                headers = {
-                    Authorization: session.getAccessToken().getJwtToken()
-                };
+                if (Amplify.Auth && typeof Amplify.Auth.currentSession === 'function') {
+                    const session = await Amplify.Auth.currentSession();
+                    headers = {
+                        Authorization: session.getAccessToken().getJwtToken()
+                    };
+                } else {
+                    throw new Error('No Auth module registered in Amplify');
+                }
                 break;
             default:
                 headers = {
@@ -416,30 +420,35 @@ export default class APIClass {
     }
 
     private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
-        return new Observable(observer => {
+        if (Amplify.PubSub && typeof Amplify.PubSub.subscribe == 'function') {
+            return new Observable(observer => {
 
-            let handle = null;
+                let handle = null;
 
-            (async () => {
-                const {
-                    extensions: { subscription }
-                } = await this._graphql({ query, variables });
+                (async () => {
+                    const {
+                        extensions: { subscription }
+                    } = await this._graphql({ query, variables });
 
-                const { newSubscriptions } = subscription;
+                    const { newSubscriptions } = subscription;
 
-                const newTopics = Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+                    const newTopics = Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
 
-                const observable = PubSub.subscribe(newTopics, subscription);
+                    const observable = Amplify.PubSub.subscribe(newTopics, subscription);
 
-                handle = observable.subscribe(observer);
-            })();
+                    handle = observable.subscribe(observer);
+                })();
 
-            return () => {
-                if (handle) {
-                    handle.unsubscribe();
-                }
-            };
-        });
+                return () => {
+                    if (handle) {
+                        handle.unsubscribe();
+                    }
+                };
+            });
+        } else {
+            logger.debug('No pubsub module applied for subscription');
+            throw new Error('No pubsub module applied for subscription');
+        }
     }
 
     /**

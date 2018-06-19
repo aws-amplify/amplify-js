@@ -11,10 +11,10 @@
  * and limitations under the License.
  */
 
-import { Credentials } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import {default as Cache, AsyncStorageCache} from './AsyncStorageCache';
 
 export { AsyncStorageCache };
 export default Cache;
 
-Credentials.setCacheClass(Cache);
+Amplify.register(Cache);

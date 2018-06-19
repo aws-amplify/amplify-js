@@ -49,14 +49,13 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "axios": "^0.17.0",
+    "@types/zen-observable": "^0.5.3",
+    "zen-observable": "^0.8.6",
     "graphql": "0.13.0",
+    "axios": "^0.17.0",
     "@aws-amplify/auth": "^0.1.0",
     "@aws-amplify/core": "^0.1.0",
     "@aws-amplify/cache": "^0.1.0"
-  },
-  "peerdependencies": {
-    "@aws-amplify/pubsub": "^0.1.0"
   },
   "jest": {
     "transform": {

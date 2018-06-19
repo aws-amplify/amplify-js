@@ -41,6 +41,10 @@ export default class StorageCache {
         this.checkConfig();
     }
 
+    public getModuleName() {
+        return 'Cache';
+    }
+
     private checkConfig(): void {
         // check configuration
         if (!isInteger(this.config.capacityInBytes)) {

@@ -35,6 +35,11 @@ export default class PubSub {
         this._options = options;
         logger.debug('PubSub Options', this._options);
         this._pluggables = [];
+        this.subscribe = this.subscribe.bind(this);
+    }
+
+    public getModuleName() {
+        return 'PubSub';
     }
 
     /**

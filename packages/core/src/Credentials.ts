@@ -4,6 +4,7 @@ import { AWS } from './Facet';
 import JS from './JS';
 import Platform from './Platform';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
+import Amplify from './Amplify';
 
 const logger = new Logger('Credentials');
 
@@ -12,22 +13,12 @@ export class Credentials {
     private _credentials;
     private _credentials_source;
     private _gettingCredPromise = null;
-    private _authClass = null;
-    private _cacheClass = null;
     private _refreshHandlers = {};
 
     constructor(config) {
         this.configure(config);
         this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
         this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
-    }
-
-    public setAuthClass(auth) {
-        this._authClass = auth;
-    }
-
-    public setCacheClass(cache) {
-        this._cacheClass = cache;
     }
 
     public getCredSource() {
@@ -78,7 +69,11 @@ export class Credentials {
         }
 
         logger.debug('need to get a new credential or refresh the existing one');
-        return this._authClass.currentUserCredentials();
+        if (Amplify.Auth && typeof Amplify.Auth.currentUserCredentials === 'function') {
+            return Amplify.Auth.currentUserCredentials();
+        } else {
+            return Promise.reject('No Auth module registered in Amplify');
+        }
     }
 
     public refreshFederatedToken(federatedInfo) {
@@ -248,17 +243,21 @@ export class Credentials {
                             info.user
                         );
                         const { provider, token, expires_at, identity_id } = info;
-                        this._cacheClass.setItem(
-                            'federatedInfo', 
-                            { 
-                                provider, 
-                                token, 
-                                user, 
-                                expires_at, 
-                                identity_id 
-                            }, 
-                            { priority: 1 }
-                        );
+                        if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
+                            Amplify.Cache.setItem(
+                                'federatedInfo', 
+                                { 
+                                    provider, 
+                                    token, 
+                                    user, 
+                                    expires_at, 
+                                    identity_id 
+                                }, 
+                                { priority: 1 }
+                            );
+                        } else {
+                            rej('No Cache module registered in Amplify');
+                        }
                     }
                     if (source === 'guest') {
                         try {
@@ -305,7 +304,11 @@ export class Credentials {
             });
             credentials.clearCachedId();
         }
-        await this._cacheClass.removeItem('federatedInfo');
+        if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
+            await Amplify.Cache.removeItem('federatedInfo');
+        } else {
+            return Promise.reject('No Cache module registered in Amplify');
+        }
     }
 
     /**

@@ -23,6 +23,11 @@ export default class Amplify {
     static register(comp) {
         logger.debug('component registed in amplify', comp);
         this._components.push(comp);
+        if (typeof comp.getModuleName === 'function') {
+            Amplify[comp.getModuleName()] = comp;
+        } else {
+            logger.debug('no getModuleName method for component', comp);
+        }
     }
 
     static configure(config) {

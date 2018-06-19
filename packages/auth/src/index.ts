@@ -25,7 +25,6 @@ if (!_instance) {
 }
 
 const Auth = _instance;
-Credentials.setAuthClass(Auth);
 Amplify.register(Auth);
 
 export default Auth;

@@ -48,6 +48,9 @@ export default class AnalyticsClass {
         this._disabled = false;
     }
 
+    public getModuleName() {
+        return 'Analytics';
+    }
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics

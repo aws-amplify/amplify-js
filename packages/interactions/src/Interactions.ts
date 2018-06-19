@@ -32,6 +32,10 @@ export default class Interactions {
         this._pluggables = {};
     }
 
+    public getModuleName() {
+        return 'Interactions';
+    }
+
     /**
      * 
      * @param {InteractionsOptions} options - Configuration object for Interactions

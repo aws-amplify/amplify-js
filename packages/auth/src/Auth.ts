@@ -69,6 +69,10 @@ export default class AuthClass {
         }
     }
 
+    public getModuleName() {
+        return 'Auth';
+    }
+
     configure(config) {
         if (!config) return this._config || {};
         logger.debug('configure Auth');
@@ -371,7 +375,7 @@ export default class AuthClass {
         const user = this.createCognitoUser(username);
         user.setAuthenticationFlowType('CUSTOM_AUTH');
         const authDetails = new AuthenticationDetails({
-            Username: username,
+            Username: username
         });
 
         return new Promise((resolve, reject) => {
