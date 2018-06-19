@@ -54,6 +54,16 @@ export default class PushNotification {
         else if (Platform.OS === 'ios') this.initializeIOS();
     }
 
+    getInitialNotification() {
+        return new Promise(resolve => {
+            if (Platform.OS === 'ios') {
+                PushNotificationIOS.getInitialNotification().then(notification => resolve(notification ? notification.getData() : null));
+            } else {
+                RNPushNotification.getInitialNotification().then(notification => resolve(notification.dataJSON ? JSON.parse(notification.dataJSON) : null));
+            }
+        });
+    }
+
     onNotification(handler) {
         if (typeof handler === 'function') {
             // check platform
