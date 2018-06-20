@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/aws/aws-amplify#readme",
   "devDependencies": {
-    "@types/graphql": "^0.13.0",
+    "@types/graphql": "0.11.7",
     "@types/jest": "^20.0.8",
     "@types/node": "^8.10.15",
     "awesome-typescript-loader": "^3.2.2",
@@ -63,7 +63,7 @@
     "amazon-cognito-identity-js": "^2.0.10-unstable.0",
     "aws-sdk": "2.198.0",
     "axios": "^0.17.0",
-    "graphql": "0.13.0",
+    "graphql": "0.11.7",
     "paho-mqtt": "^1.0.4",
     "url": "^0.11.0",
     "uuid": "^3.2.1",
