@@ -5,6 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest --coverage --updateSnapshot",
+    "cypress": "cypress run",
+    "cypress:open": "cypress open",
     "build": "npm run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
     "build-with-test": "npm test && npm run build",
     "clean": "rimraf dist"
