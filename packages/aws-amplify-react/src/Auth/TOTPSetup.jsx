@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import { Auth, I18n, Logger, JS } from 'aws-amplify';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -37,6 +37,19 @@ export default class TOTPSetup extends AuthPiece {
 
         this._validAuthStates = ['TOTPSetup'];
         this.onTOTPEvent = this.onTOTPEvent.bind(this);
+        this.checkContact = this.checkContact.bind(this);
+    }
+
+    checkContact(user) {
+        Auth.verifiedContact(user)
+            .then(data => {
+                if (!JS.isEmpty(data.verified)) {
+                    this.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    this.changeState('verifyContact', user);
+                }
+            });
     }
 
     onTOTPEvent(event, data, user) {
@@ -44,7 +57,7 @@ export default class TOTPSetup extends AuthPiece {
         //const user = this.props.authData;
         if (event === 'Setup TOTP') {
             if (data === 'SUCCESS') {
-                this.changeState('signedIn', user);
+                this.checkContact(user);
             }
         }
     }

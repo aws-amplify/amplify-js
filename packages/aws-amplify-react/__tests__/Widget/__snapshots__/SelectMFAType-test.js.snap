@@ -121,6 +121,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -361,6 +364,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -605,6 +611,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -845,6 +854,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -1094,6 +1106,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
                 "textAlign": "left",
                 "width": "400px",
               },
+              "hidden": Object {
+                "display": "none",
+              },
               "input": Object {
                 "backgroundColor": "#fff",
                 "backgroundImage": "none",
@@ -1339,6 +1354,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
                 "marginBottom": "20px",
                 "textAlign": "left",
                 "width": "400px",
+              },
+              "hidden": Object {
+                "display": "none",
               },
               "input": Object {
                 "backgroundColor": "#fff",
@@ -1586,6 +1604,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
                 "textAlign": "left",
                 "width": "400px",
               },
+              "hidden": Object {
+                "display": "none",
+              },
               "input": Object {
                 "backgroundColor": "#fff",
                 "backgroundImage": "none",
@@ -1828,6 +1849,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
                 "marginBottom": "20px",
                 "textAlign": "left",
                 "width": "400px",
+              },
+              "hidden": Object {
+                "display": "none",
               },
               "input": Object {
                 "backgroundColor": "#fff",
@@ -2072,6 +2096,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -2332,6 +2359,9 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -2572,6 +2602,9 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -2816,6 +2849,9 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -3056,6 +3092,9 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -3305,6 +3344,9 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
                 "textAlign": "left",
                 "width": "400px",
               },
+              "hidden": Object {
+                "display": "none",
+              },
               "input": Object {
                 "backgroundColor": "#fff",
                 "backgroundImage": "none",
@@ -3551,6 +3593,9 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
                 "textAlign": "left",
                 "width": "400px",
               },
+              "hidden": Object {
+                "display": "none",
+              },
               "input": Object {
                 "backgroundColor": "#fff",
                 "backgroundImage": "none",
@@ -3793,6 +3838,9 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
                 "marginBottom": "20px",
                 "textAlign": "left",
                 "width": "400px",
+              },
+              "hidden": Object {
+                "display": "none",
               },
               "input": Object {
                 "backgroundColor": "#fff",
@@ -4045,6 +4093,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
           "textAlign": "left",
           "width": "400px",
         },
+        "hidden": Object {
+          "display": "none",
+        },
         "input": Object {
           "backgroundColor": "#fff",
           "backgroundImage": "none",
@@ -4285,6 +4336,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
             "marginBottom": "20px",
             "textAlign": "left",
             "width": "400px",
+          },
+          "hidden": Object {
+            "display": "none",
           },
           "input": Object {
             "backgroundColor": "#fff",
@@ -4529,6 +4583,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
             "textAlign": "left",
             "width": "400px",
           },
+          "hidden": Object {
+            "display": "none",
+          },
           "input": Object {
             "backgroundColor": "#fff",
             "backgroundImage": "none",
@@ -4769,6 +4826,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",
@@ -5018,6 +5078,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
                 "textAlign": "left",
                 "width": "400px",
               },
+              "hidden": Object {
+                "display": "none",
+              },
               "input": Object {
                 "backgroundColor": "#fff",
                 "backgroundImage": "none",
@@ -5263,6 +5326,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
                 "marginBottom": "20px",
                 "textAlign": "left",
                 "width": "400px",
+              },
+              "hidden": Object {
+                "display": "none",
               },
               "input": Object {
                 "backgroundColor": "#fff",
@@ -5510,6 +5576,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
                 "textAlign": "left",
                 "width": "400px",
               },
+              "hidden": Object {
+                "display": "none",
+              },
               "input": Object {
                 "backgroundColor": "#fff",
                 "backgroundImage": "none",
@@ -5752,6 +5821,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
                 "marginBottom": "20px",
                 "textAlign": "left",
                 "width": "400px",
+              },
+              "hidden": Object {
+                "display": "none",
               },
               "input": Object {
                 "backgroundColor": "#fff",
@@ -5996,6 +6068,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
               "marginBottom": "20px",
               "textAlign": "left",
               "width": "400px",
+            },
+            "hidden": Object {
+              "display": "none",
             },
             "input": Object {
               "backgroundColor": "#fff",

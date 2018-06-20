@@ -11,9 +11,12 @@
  * and limitations under the License.
  */
 
+import { Credentials } from '../Common';
 import BrowserStorageCache from './BrowserStorageCache';
 import InMemoryCache from './InMemoryCache';
 import { CacheConfig } from './types';
 
 export { BrowserStorageCache, InMemoryCache, CacheConfig };
 export default BrowserStorageCache;
+
+Credentials.setCacheClass(BrowserStorageCache);
