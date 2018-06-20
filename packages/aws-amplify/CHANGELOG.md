@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.5-unstable.0"></a>
+## [0.4.5-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.47...aws-amplify@0.4.5-unstable.0) (2018-06-20)
+
+
+### Bug Fixes
+
+* **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
+* **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
+* **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
+
+
+
+
 <a name="0.4.4"></a>
 ## [0.4.4](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.33...aws-amplify@0.4.4) (2018-06-04)
 <a name="0.4.2-unstable.47"></a>
