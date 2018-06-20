@@ -1,13 +1,21 @@
 import { Credentials } from '../src/Credentials';
+import Amplify from '../src/Amplify';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authClass = {
+    getModuleName() {
+        return 'Auth';
+    }
     currentUserCredentials() {
         return Promise.resolve('cred');
     }
 }
 
 const cacheClass = {
+    getModuleName() {
+        return 'Cache';
+    }
+
     getItem() {
         return null;
     }
@@ -41,14 +49,6 @@ describe('Credentials test', () => {
         });
     });
 
-    describe('setAuthClass and setCacheClass', () => {
-        test('happy case', () => {
-            const credentials = new Credentials(null);
-            credentials.setAuthClass(authClass);
-            credentials.setCacheClass(cacheClass);
-        });
-    });
-
     describe('getCredSource test', () => {
         test('happy case', () => {
             const credentials = new Credentials(null);
@@ -60,7 +60,10 @@ describe('Credentials test', () => {
 
     describe('get test', () => {
         test('credentials in the memory and not expired', async () => {
+            Amplify.register(authClass);
+            Amplify.register(cacheClass);
             const credentials = new Credentials(null);
+            
             credentials['_credentials'] = {
                 expired: false,
                 expireTime: new Date().getTime() + 20*60*1000
@@ -72,7 +75,6 @@ describe('Credentials test', () => {
         test('credentials not in memory or being expired', async () => {
             const credentials = new Credentials(null);
             
-            credentials.setAuthClass(authClass);
             expect(await credentials.get()).toBe('cred');
         });
     });

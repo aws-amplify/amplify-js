@@ -183,8 +183,10 @@ export default class AuthClass {
     public signUp(params): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (typeof params === 'string') {
+            const message = 'Please stop using the deprecated method.' +  
+                'Check latest doc: https://aws.github.io/aws-amplify/media/authentication_guide#sign-up';
             return Promise.reject(
-                'Please stop using the deprecated method. Check latest doc: https://aws.github.io/aws-amplify/media/authentication_guide#sign-up'
+                message
             );
         }
         const { username, password } = params;

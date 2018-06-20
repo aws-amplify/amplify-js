@@ -199,14 +199,6 @@ const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 
 
 describe('auth unit test', () => {
     describe('signUp', () => {
-        test('happy case with string attrs', async () => {
-            const spyon = jest.spyOn(CognitoUserPool.prototype, "signUp");
-            const auth = new Auth(authOptions);
-            expect(await auth.signUp('username', 'password', 'email','phone')).toBe('signUpResult');
-
-            spyon.mockClear();
-        });
-
         test('happy case with object attr', async () => {
             const spyon = jest.spyOn(CognitoUserPool.prototype, "signUp");
             const auth = new Auth(authOptions);
@@ -220,7 +212,7 @@ describe('auth unit test', () => {
                     otherAttrs: 'otherAttrs'
                 }
             };
-            expect.assertions(1);
+        
             expect(await auth.signUp(attrs)).toBe('signUpResult');
 
             spyon.mockClear();
@@ -256,7 +248,16 @@ describe('auth unit test', () => {
 
             expect.assertions(1);
             try {
-                await auth.signUp('username', 'password', 'email', 'phone');
+                const attrs = {
+                    username: 'username',
+                    password: 'password',
+                    attributes: {
+                        email: 'email',
+                        phone_number: 'phone_number',
+                        otherAttrs: 'otherAttrs'
+                    }
+                };
+                await auth.signUp(attrs);
             } catch (e) {
                 expect(e).toBe('err');
             }

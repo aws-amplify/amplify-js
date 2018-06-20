@@ -420,7 +420,7 @@ export default class APIClass {
     }
 
     private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
-        if (Amplify.PubSub && typeof Amplify.PubSub.subscribe == 'function') {
+        if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
             return new Observable(observer => {
 
                 let handle = null;
