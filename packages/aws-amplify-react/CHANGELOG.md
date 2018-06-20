@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.51"></a>
+## [0.1.51](https://github.com/aws/aws-amplify/compare/aws-amplify-react@0.1.48-unstable.47...aws-amplify-react@0.1.51) (2018-06-20)
+
+
+### Bug Fixes
+
+* **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
+* **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
+
+
+
+
 <a name="0.1.50"></a>
 ## [0.1.50](https://github.com/aws/aws-amplify/compare/aws-amplify-react@0.1.48-unstable.33...aws-amplify-react@0.1.50) (2018-06-04)
 
