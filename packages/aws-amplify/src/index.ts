@@ -11,13 +11,13 @@
  * and limitations under the License.
  */
 
-import Analytics, { AnalyticsClass, AnalyticsProvider, AWSPinpointProvider, AWSKinesisProvider } from './Analytics';
-import Auth, { AuthClass } from './Auth';
-import Storage, { StorageClass } from './Storage';
-import API, { APIClass, graphqlOperation } from './API';
-import PubSub from './PubSub';
-import Cache from './Cache';
-import Interactions from './Interactions';
+import Analytics, { AnalyticsClass, AnalyticsProvider, AWSPinpointProvider, AWSKinesisProvider } from '@aws-amplify/analytics';
+import Auth, { AuthClass } from '@aws-amplify/auth';
+import Storage, { StorageClass } from '@aws-amplify/storage';
+import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
+import PubSub from '@aws-amplify/pubsub';
+import Cache from '@aws-amplify/cache';
+import Interactions from '@aws-amplify/interactions';
 import {
     ConsoleLogger as Logger,
     Hub,
@@ -27,7 +27,7 @@ import {
     I18n,
     Amplify,
     ServiceWorker
-} from './Common';
+} from '@aws-amplify/core';
 
 export default Amplify;
 
