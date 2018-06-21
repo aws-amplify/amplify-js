@@ -930,3 +930,15 @@ const map = (message) => {
 ```
 
 You may notice in `AmplifyMessageMap.js` it also handles internationalization. This topic is covered in our [I18n Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/i18n_guide).
+
+## Using modularized module
+
+If you only need to use Auth, you can do: `npm install @aws-amplify/auth` which will only install the Auth module for you.
+
+Then in your code, you can import the Auth module by:
+```js
+import Auth from '@aws-amplify/auth';
+
+Auth.configure();
+
+```

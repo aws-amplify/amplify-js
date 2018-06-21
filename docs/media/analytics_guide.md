@@ -354,10 +354,12 @@ Please note that the default provider (Amazon Pinpoint) is in use when you call 
 ## Using modularized module
 
 If you only need to use Analytics, you can do: `npm install @aws-amplify/analytics` which will only install the Analytics module for you.
+Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.
 
 Then in your code, you can import the Analytics module by:
 ```js
 import Analytics from '@aws-amplify/analytics';
 
 Analytics.configure();
+
 ```
