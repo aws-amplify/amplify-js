@@ -350,3 +350,14 @@ Analytics.configure({
 
 Please note that the default provider (Amazon Pinpoint) is in use when you call `Analytics.record()`. To use your plugin, provide the plugin name in your method call, such as `Analytics.record({..},'myPlugin')`. 
 {: .callout .callout--info}
+
+## Using modularized module
+
+If you only need to use Analytics, you can do: `npm install @aws-amplify/analytics` which will only install the Analytics module for you.
+
+Then in your code, you can import the Analytics module by:
+```js
+import Analytics from '@aws-amplify/analytics';
+
+Analytics.configure();
+```
