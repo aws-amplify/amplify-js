@@ -29,7 +29,7 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework.toLowerCase() === 'ionic' ? new ComponentMount(PhotoPickerIonicComponent,{}) : new ComponentMount(PhotoPickerComponentCore, {});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(PhotoPickerIonicComponent,{}) : new ComponentMount(PhotoPickerComponentCore, {});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

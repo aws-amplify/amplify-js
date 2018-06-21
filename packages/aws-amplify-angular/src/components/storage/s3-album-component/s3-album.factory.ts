@@ -28,7 +28,7 @@ export class S3AlbumComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3AlbumComponentIonic,{}) : new ComponentMount(S3AlbumComponentCore, {});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3AlbumComponentIonic,{}) : new ComponentMount(S3AlbumComponentCore, {});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

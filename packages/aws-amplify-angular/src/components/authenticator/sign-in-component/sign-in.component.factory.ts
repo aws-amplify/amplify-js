@@ -28,7 +28,7 @@ export class SignInComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework === 'ionic' ? new ComponentMount(SignInComponentIonic,{authState: ''}) : new ComponentMount(SignInComponentCore, {authState: ''});
+    let authComponent = this.framework && this.framework === 'ionic' ? new ComponentMount(SignInComponentIonic,{authState: ''}) : new ComponentMount(SignInComponentCore, {authState: ''});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

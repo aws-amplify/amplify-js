@@ -28,7 +28,7 @@ export class ConfirmSignUpComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ConfirmSignUpComponentIonic,{authState: ''}) : new ComponentMount(ConfirmSignUpComponentCore, {authState: ''});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ConfirmSignUpComponentIonic,{authState: ''}) : new ComponentMount(ConfirmSignUpComponentCore, {authState: ''});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

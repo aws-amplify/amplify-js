@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "0.2.172",
+  "version": "0.2.176",
   "description": "AWS Amplify Angular Components",
   "main": "lib/index.js",
   "module": "./lib/index.js",

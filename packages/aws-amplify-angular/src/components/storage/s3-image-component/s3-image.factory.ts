@@ -28,7 +28,7 @@ export class S3ImageComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3ImageComponentIonic,{}) : new ComponentMount(S3ImageComponentCore, {});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3ImageComponentIonic,{}) : new ComponentMount(S3ImageComponentCore, {});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

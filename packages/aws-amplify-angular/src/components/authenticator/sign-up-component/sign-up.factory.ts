@@ -28,7 +28,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework.toLowerCase() === 'ionic' ? new ComponentMount(SignUpComponentIonic,{authState: ''}) : new ComponentMount(SignUpComponentCore, {authState: ''});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(SignUpComponentIonic,{authState: ''}) : new ComponentMount(SignUpComponentCore, {authState: ''});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

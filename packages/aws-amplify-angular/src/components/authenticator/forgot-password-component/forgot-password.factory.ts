@@ -28,7 +28,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ForgotPasswordComponentIonic,{authState: ''}) : new ComponentMount(ForgotPasswordComponentCore, {authState: ''});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ForgotPasswordComponentIonic,{authState: ''}) : new ComponentMount(ForgotPasswordComponentCore, {authState: ''});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

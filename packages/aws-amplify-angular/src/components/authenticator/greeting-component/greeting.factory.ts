@@ -28,7 +28,7 @@ export class GreetingComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework.toLowerCase() === 'ionic' ? new ComponentMount(GreetingComponentIonic,{authState: ''}) : new ComponentMount(GreetingComponentCore, {authState: ''});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(GreetingComponentIonic,{authState: ''}) : new ComponentMount(GreetingComponentCore, {authState: ''});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 
