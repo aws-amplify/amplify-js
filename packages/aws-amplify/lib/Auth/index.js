@@ -22,5 +22,7 @@ if (!_instance) {
     _instance = new Auth_1.default(null);
 }
 var Auth = _instance;
+Common_1.Credentials.setAuthClass(Auth);
+Common_1.Amplify.register(Auth);
 exports.default = Auth;
 //# sourceMappingURL=index.js.map

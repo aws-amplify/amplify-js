@@ -67,9 +67,9 @@
   dependencies:
     "@types/node" "*"
 
-"@types/graphql@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.13.0.tgz#78a33a7f429a06a64714817d9130d578e0f35ecb"
+"@types/graphql@0.11.7":
+  version "0.11.7"
+  resolved "http://localhost:4873/@types%2fgraphql/-/graphql-0.11.7.tgz#da39a2f7c74e793e32e2bb7b3b68da1691532dd5"
 
 "@types/handlebars@4.0.31":
   version "4.0.31"
@@ -4798,6 +4798,12 @@ graceful-fs@~1, graceful-fs@~1.2.0:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-1.2.3.tgz#15a4806a57547cb2d2dbf27f42e89a8c3451b364"
 
+graphql@0.11.7:
+  version "0.11.7"
+  resolved "http://localhost:4873/graphql/-/graphql-0.11.7.tgz#e5abaa9cb7b7cccb84e9f0836bf4370d268750c6"
+  dependencies:
+    iterall "1.1.3"
+
 graphql@0.13.0:
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.13.0.tgz#d1b44a282279a9ce0a6ec1037329332f4c1079b6"
@@ -5826,6 +5832,10 @@ istanbul@0.4.5, istanbul@^0.4.0:
     supports-color "^3.1.0"
     which "^1.1.1"
     wordwrap "^1.0.0"
+
+iterall@1.1.3:
+  version "1.1.3"
+  resolved "http://localhost:4873/iterall/-/iterall-1.1.3.tgz#1cbbff96204056dde6656e2ed2e2226d0e6d72c9"
 
 iterall@1.1.x:
   version "1.1.4"

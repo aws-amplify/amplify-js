@@ -18,6 +18,7 @@ export interface AuthOptions {
     mandatorySignIn: boolean;
     cookieStorage?: ICookieStorageData;
     oauth?: OAuth;
+    refreshHandlers?: object;
 }
 /**
 * Details for multi-factor authentication
@@ -31,6 +32,7 @@ export interface MfaRequiredDetails {
  */
 export interface FederatedResponse {
     token: string;
+    identity_id?: string;
     expires_at: number;
 }
 export interface OAuth {
@@ -40,4 +42,7 @@ export interface OAuth {
     redirectSignOut: string;
     responseType: string;
     options?: object;
+}
+export interface ConfirmSignUpOptions {
+    forceAliasCreation?: boolean;
 }

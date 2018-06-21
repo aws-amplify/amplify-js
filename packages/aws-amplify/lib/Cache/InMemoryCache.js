@@ -24,8 +24,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = require("./Utils");
 var StorageCache_1 = require("./StorageCache");
-var Common_1 = require("../Common");
-var logger = new Common_1.ConsoleLogger('InMemoryCache');
+var Logger_1 = require("../Common/Logger");
+var logger = new Logger_1.ConsoleLogger('InMemoryCache');
 /**
  * provide an object as the in-memory cache
  */
@@ -82,6 +82,9 @@ var InMemoryCache = /** @class */ (function (_super) {
         _this.cacheList = [];
         _this.curSizeInBytes = 0;
         _this.maxPriority = 5;
+        _this.getItem = _this.getItem.bind(_this);
+        _this.setItem = _this.setItem.bind(_this);
+        _this.removeItem = _this.removeItem.bind(_this);
         // initialize list for every priority
         for (var i = 0; i < _this.maxPriority; i += 1) {
             _this.cacheList[i] = new Utils_1.CacheList();

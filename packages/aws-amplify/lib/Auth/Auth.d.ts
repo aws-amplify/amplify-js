@@ -1,4 +1,5 @@
-import { AuthOptions, FederatedResponse } from './types';
+import { AuthOptions, FederatedResponse, ConfirmSignUpOptions } from './types';
+import '../Common/Polyfills';
 /**
 * Provide authentication steps
 */
@@ -7,17 +8,14 @@ export default class AuthClass {
     private _userPoolStorageSync;
     private userPool;
     private _cognitoAuthClient;
-    private credentials;
-    private credentials_source;
     private user;
-    private _refreshHandlers;
     private _gettingCredPromise;
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
      */
     constructor(config: AuthOptions);
-    configure(config: any): AuthOptions;
+    configure(config: any): {};
     /**
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String | object} params - The user attirbutes used for signin
@@ -29,9 +27,10 @@ export default class AuthClass {
      * Send the verfication code to confirm sign up
      * @param {String} username - The username to be confirmed
      * @param {String} code - The verification code
+     * @param {ConfirmSignUpOptions} options - other options for confirm signup
      * @return - A promise resolves callback data if success
      */
-    confirmSignUp(username: string, code: string): Promise<any>;
+    confirmSignUp(username: string, code: string, options?: ConfirmSignUpOptions): Promise<any>;
     /**
      * Resend the verification code
      * @param {String} username - The username to be confirmed
@@ -44,7 +43,28 @@ export default class AuthClass {
      * @param {String} password - The password of the username
      * @return - A promise resolves the CognitoUser
      */
-    signIn(username: string, password: string): Promise<any>;
+    signIn(username: string, password?: string): Promise<any>;
+    /**
+     * Return an object with the authentication callbacks
+     * @param {CognitoUser} user - the cognito user object
+     * @param {} resolve - function called when resolving the current step
+     * @param {} reject - function called when rejecting the current step
+     * @return - an object with the callback methods for user authentication
+     */
+    private authCallbacks(user, resolve, reject);
+    /**
+     * Sign in with a password
+     * @param {String} username - The username to be signed in
+     * @param {String} password - The password of the username
+     * @return - A promise resolves the CognitoUser object if success or mfa required
+     */
+    private signInWithPassword(username, password);
+    /**
+     * Sign in without a password
+     * @param {String} username - The username to be signed in
+     * @return - A promise resolves the CognitoUser object if success or mfa required
+     */
+    private signInWithoutPassword(username);
     /**
      * get user current preferred mfa option
      * @param {CognitoUser} user - the current user
@@ -91,6 +111,12 @@ export default class AuthClass {
     confirmSignIn(user: any, code: string, mfaType: string | null): Promise<any>;
     completeNewPassword(user: any, password: string, requiredAttributes: any): Promise<any>;
     /**
+     * Send the answer to a custom challenge
+     * @param {CognitoUser} user - The CognitoUser object
+     * @param {String} challengeResponses - The confirmation code
+     */
+    sendCustomChallengeAnswer(user: any, challengeResponses: string): Promise<any>;
+    /**
      * Update an authenticated users' attributes
      * @param {CognitoUser} - The currently logged in user object
      * @return {Promise}
@@ -136,8 +162,7 @@ export default class AuthClass {
      * Get authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
-    currentUserCredentials(): Promise<any>;
-    private _refreshFederatedToken(federatedInfo);
+    currentUserCredentials(): any;
     currentCredentials(): Promise<any>;
     /**
      * Initiate an attribute confirmation request
@@ -200,6 +225,7 @@ export default class AuthClass {
      * For federated login
      * @param {String} provider - federation login provider
      * @param {FederatedResponse} response - response should have the access token
+     * the identity id (optional)
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */
@@ -217,13 +243,5 @@ export default class AuthClass {
         authenticated: any;
     };
     private attributesToObject(attributes);
-    private pickupCredentials();
-    private _setCredentialsFromAWS();
-    private _setCredentialsForGuest();
-    private _setCredentialsFromSession(session);
-    private _setCredentialsFromFederation(params);
-    private _loadCredentials(credentials, source, authenticated, rawUser);
-    private keepAlive();
     private createCognitoUser(username);
-    private _isExpired(credentials);
 }
