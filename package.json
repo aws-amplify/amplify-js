@@ -7,6 +7,7 @@
     "pre-commit": "lerna exec yarn test --scope aws-amplify",
     "test": "lerna exec yarn test",
     "cypress": "lerna exec yarn cypress",
+    "cypress:open": "lerna exec yarn cypress:open",
     "coverage": "codecov",
     "docs": "typedoc packages/aws-amplify/src --excludePrivate --ignoreCompilerErrors --mode file --theme docs/amplify-theme/typedoc --out docs/api",
     "build": "lerna exec yarn build",
