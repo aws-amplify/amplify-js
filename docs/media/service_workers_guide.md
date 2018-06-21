@@ -127,3 +127,14 @@ You can see those analytics events are related metrics in Amazon Pinpoint consol
 
 For the complete API documentation for ServiceWorker module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/serviceworkerclass.html)
 {: .callout .callout--info}
+
+
+## Using modularized module
+
+If you only need to use ServiceWorker, you can do: `npm install @aws-amplify/core` which will only install the Core module which contains the ServiceWorkder module.
+
+Then in your code, you can import the Analytics module by:
+```js
+import { ServiceWorker } from '@aws-amplify/core';
+
+```

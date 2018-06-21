@@ -12,7 +12,7 @@
  */
 
 import { NativeModules, DeviceEventEmitter, AsyncStorage, PushNotificationIOS, Platform } from 'react-native';
-import { Logger, Analytics } from 'aws-amplify';
+import { ConsoleLogger as Logger, Amplify } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
 
@@ -21,6 +21,9 @@ const REMOTE_NOTIFICATION_RECEIVED = 'remoteNotificationReceived';
 const REMOTE_TOKEN_RECEIVED = 'remoteTokenReceived';
 
 export default class PushNotification {
+    private _config;
+    private handlers;
+
     constructor(config) {
         if (config) {
             this.configure(config);
@@ -32,18 +35,19 @@ export default class PushNotification {
         this.handleCampaignPush = this.handleCampaignPush.bind(this)
     }
 
+    getModuleName() {
+        return "Pushnotification";
+    }
+
     configure(config) {
         let conf = config ? config.PushNotification || config : {};
 
         if (conf['aws_mobile_analytics_app_id']) {
             conf = {
                 appId: conf['aws_mobile_analytics_app_id'],
-                region: conf['aws_project_region'],
-                identityPoolId: conf['aws_cognito_identity_pool_id']
             };
         }
 
-        conf.region = 'us-east-1';
         this._config = Object.assign({}, this._config, conf);
 
         if (Platform.OS === 'android') this.initializeAndroid();
@@ -108,7 +112,11 @@ export default class PushNotification {
 
         const eventType = (message.foreground)?'_campaign.received_foreground':'_campaign.received_background';
 
-        Analytics.record(eventType, attributes);
+        if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
+            Amplify.Analytics.record(eventType, attributes);
+        } else {
+            logger.debug('Analytics module is not registered into Amplify');
+        }
     }
 
     updateEndpoint(token) {
@@ -127,12 +135,17 @@ export default class PushNotification {
                     Address: token,
                     OptOut: 'NONE'
                 }
-                Analytics.updateEndpoint(config).then((data) => {
-                    logger.debug('update endpoint success, setting token into cache')
-                    AsyncStorage.setItem(cacheKey, token);
-                }).catch(e => {
-                    return;
-                });
+                if (Amplify.Analytics && typeof Amplify.Analytics.updateEndpoint === 'function') {
+                    Amplify.Analytics.updateEndpoint(config).then((data) => {
+                        logger.debug('update endpoint success, setting token into cache')
+                        AsyncStorage.setItem(cacheKey, token);
+                    }).catch(e => {
+                        // ........
+                        logger.debug('update endpoint failed', e);
+                    });
+                } else {
+                    logger.debug('Analytics module is not registered into Amplify');
+                }
             }
         }).catch(e => {
             logger.debug('set device token in cache failed', e);
@@ -142,7 +155,7 @@ export default class PushNotification {
     // only for android
     addEventListenerForAndroid(event, handler) {
         const that = this;
-        listener = DeviceEventEmitter.addListener(event, function (data) {
+        const listener = DeviceEventEmitter.addListener(event, function (data) {
             // for on notification
             if (event === REMOTE_NOTIFICATION_RECEIVED) {
                 handler(that.parseMessagefromAndroid(data));

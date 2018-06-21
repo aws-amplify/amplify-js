@@ -686,3 +686,18 @@ If you have used *awsmobile* CLI or *AWS Mobile Hub* to create your API, you can
 5. Add your custom header (e.g. my-custom-header) on the text field Access-Control-Allow-Headers, separated by commas, like: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,my-custom-header'.
 6. Click on 'Enable CORS and replace existing CORS headers' and confirm.
 7. Finally, similar to step 3, click the Actions dropdown menu and then select **Deploy API**. Select **Development** on deployment stage and then **Deploy**. (Deployment could take a couple of minutes).
+
+
+## Using modularized module
+
+If you only need to use Api, you can do: `npm install @aws-amplify/api` which will only install the Api module for you.
+Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.
+Note: if you're using Graphql, please also install `@aws-amplify/pubsub`
+
+Then in your code, you can import the Api module by:
+```js
+import Api from '@aws-amplify/api';
+
+Api.configure();
+
+```

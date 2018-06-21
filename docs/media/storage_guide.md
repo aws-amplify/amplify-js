@@ -605,3 +605,16 @@ If you want to have custom *private* path prefix like *myPrivatePrefix/*, you ne
 ]
 ```
 This ensures only the authenticated users has the access to the objects under the path.
+
+## Using modularized module
+
+If you only need to use Storage, you can do: `npm install @aws-amplify/storage` which will only install the Storage module for you.
+Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.
+
+Then in your code, you can import the Storage module by:
+```js
+import Storage from '@aws-amplify/storage';
+
+Storage.configure();
+
+```

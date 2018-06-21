@@ -11,19 +11,10 @@
  * and limitations under the License.
  */
 import NotificationClass from './PushNotification';
+import { ConsoleLogger as Logger, Amplify } from '@aws-amplify/core';
 
 const _instance = new NotificationClass(null);
 const PushNotification = _instance;
 
+Amplify.register(PushNotification);
 export default PushNotification;
-
-// a hook for app state change
-PushNotification.onHubCapsule = (capsule) => {
-    const { channel, payload, source } = capsule;
-    logger.debug('on hub capsule ' + channel, payload);
-
-    switch(channel) {
-        case 'appState':
-            break;
-    };
-}
