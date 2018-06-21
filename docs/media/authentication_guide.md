@@ -62,7 +62,9 @@ Amplify.configure({
             expires: 365,
         // OPTIONAL - Cookie secure flag
             secure: true
-        }
+        },
+    // OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
+        authenticationFlowType: 'USER_PASSWORD_AUTH'
     }
 });
 ```
@@ -616,6 +618,25 @@ class App extends Component {
 export default withAuthenticator(App, true);
 ```
 
+### Switching Authentication Flow Type
+
+There are two different types of authentication flow supported: `USER_SRP_AUTH` and `USER_PASSWORD_AUTH`. `USER_SRP_AUTH` is used by default and utilizes the SRP protocol (Secure Remote Password) to encrypt the password on the client before it's sent to the back-end. It is a more secure way of sending user credentials over the network and is therefore the recommended approach.
+
+The `USER_PASSWORD_AUTH` flow will send user credentials unencrypted to the back-end. If you want to migrate users to Cognito using the "Migration" trigger, and avoid forcing users to reset their passwords, you need to use this authentication flow type as the Lambda function invoked by the trigger has to be able to verify the supplied user credentials.
+
+To configure `Auth` to use the `USER_PASSWORD_AUTH` flow, add it as a string value to the property `authenticationFlowType`:
+
+```js
+Auth.configure({
+    // other configurations...
+    // ...
+    authenticationFlowType: 'USER_PASSWORD_AUTH',
+})
+```
+
+NOTE: In order for your Cognito User Pool to accept authentication requests using `USER_PASSWORD_AUTH`, your Cognito app client
+has to be configured to allow that flow. In the AWS Console, this is done by ticking the checkbox at _General settings > App clients > Show Details (for the affected client) > Enable username-password (non-SRP) flow ..._. If you're using the AWS cli or Cloudformation, update your app client by adding `USER_PASSWORD_AUTH` to the list of "Explicit Auth Flows".
+
 ### Customizing Authentication Flow
 
 Amazon Cognito User Pools support customizing the authentication flow to enable new challenge types, in addition to a password, to verify the identity of users. These challenge types may include CAPTCHAs or dynamic challenge questions. 
@@ -705,6 +726,12 @@ Auth.signIn(username)
     })
     .catch(err => console.log(err));
 ```
+
+### Migrating Users to Cognito
+
+Cognito provides a trigger to seamlessly migrate users from your existing user directory to Cognito. You configure your Cognito User Pool's "Migration" trigger to invoke a Lambda function whenever a user that does not already exist in the user pool signs in or resets their password. In short, the Lambda function should validate the user credentials against your existing user directory and return a response object containing user attributes and status on success, or an error message on error. There's a good documentation [here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-import-using-lambda.html) on how to set up this migration flow and a more detailed instruction [here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html#cognito-user-pools-lambda-trigger-syntax-user-migration) on how the lambda should handle request and response objects.
+
+The default authentication flow encrypts the user password before it's sent to Cognito, meaning your triggered Lambda won't receive a user password that can be validated. If you want to be able to migrate users on signin, you need to configure your user pool and application to use the `USER_PASSWORD_AUTH` authentication flow. See section [Changing Authentication Flow Type](#changing-authentication-flow-type) for instructions.
 
 ### Working with User Attributes
 
