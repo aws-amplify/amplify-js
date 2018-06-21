@@ -5,7 +5,6 @@ import API, { graphqlOperation } from '../src/API';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import PubSub from '@aws-amplify/pubsub';
 import { Signer, ConsoleLogger as Logger, Credentials, Amplify } from '@aws-amplify/core';
 import { anonOperationNotAloneMessage } from 'graphql/validation/rules/LoneAnonymousOperation';
 import Cache from '@aws-amplify/cache';
@@ -19,6 +18,10 @@ const config = {
 
     }
 };
+
+const Auth = {
+
+}
 
 describe('API test', () => {
 
@@ -35,7 +38,7 @@ describe('API test', () => {
         "paths": ["/todos", "/todos/123"]
     }];
 
-    describe.skip('graphql test', () => {
+    describe('graphql test', () => {
         test('happy-case-query', async () => {
             const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
@@ -105,7 +108,7 @@ describe('API test', () => {
             expect(spyon).toBeCalledWith(url, init);
         });
 
-        test.skip('happy-case-query-oidc', async () => {
+        test('happy-case-query-oidc', async () => {
             const spyonAuth = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
                     res('cred');
@@ -129,11 +132,11 @@ describe('API test', () => {
             
             Cache.configure(cache_config);
 
-            Auth.configure({
-                identityPoolId: 'identityPoolId'
-            })
-
-            await Auth.federatedSignIn('provider', {token: 'id_token'});
+            const spyonCache = jest.spyOn(Cache, 'getItem').mockImplementationOnce(() => {
+                return {
+                    token: 'id_token'
+                }
+            });
 
             const spyon = jest.spyOn(RestClient.prototype, 'post')
                 .mockImplementationOnce((url, init) => {
@@ -192,6 +195,8 @@ describe('API test', () => {
             await api.graphql(graphqlOperation(GetEvent, variables));
 
             expect(spyon).toBeCalledWith(url, init);
+
+            spyonCache.mockClear();
         });
 
         test.skip('happy-case-subscription', (done) => {
