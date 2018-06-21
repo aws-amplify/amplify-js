@@ -5,6 +5,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <a name="0.1.5"></a>
 ## [0.1.5](https://github.com/aws/aws-amplify/compare/aws-amplify-angular@0.1.4...aws-amplify-angular@0.1.5) (2018-06-20)
+<a name="0.1.5-unstable.0"></a>
+## [0.1.5-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-angular@0.1.4...aws-amplify-angular@0.1.5-unstable.0) (2018-06-20)
 
 
 
