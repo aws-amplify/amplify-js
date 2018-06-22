@@ -79,7 +79,6 @@ export default class Interactions {
                 throw new Error('Bot ' + pluggable.getProviderName() + ' already plugged');
             }
         }
-        throw new Error('Bot ' + pluggable.getProviderName() + ' has wrong category');
     }
 
     public async send(botname: string, message: string | Object) {
