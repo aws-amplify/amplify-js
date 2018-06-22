@@ -186,7 +186,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-<<<<<<< HEAD
 * **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
 * **aws-amplify:** Fix missing ServiceWorker export ([acbf754](https://github.com/aws/aws-amplify/commit/acbf754))
 
@@ -200,7 +199,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 **Note:** Version bump only for package aws-amplify
-=======
 * **API:** query string for non signed requests ([#801](https://github.com/aws/aws-amplify/issues/801)) ([6746368](https://github.com/aws/aws-amplify/commit/6746368))
 
 
@@ -216,7 +214,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
->>>>>>> origin
 
 <a name="0.4.2-unstable.30"></a>
 ## [0.4.2-unstable.30](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.29...aws-amplify@0.4.2-unstable.30) (2018-06-01)

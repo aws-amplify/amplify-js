@@ -183,10 +183,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package aws-amplify-react
 
-<<<<<<< HEAD
 <a name="0.1.48"></a>
 ## [0.1.48](https://github.com/aws/aws-amplify/compare/aws-amplify-react@0.1.48-unstable.30...aws-amplify-react@0.1.48) (2018-06-01)
-=======
 <a name="0.1.48-unstable.32"></a>
 ## [0.1.48-unstable.32](https://github.com/aws/aws-amplify/compare/aws-amplify-react@0.1.48-unstable.31...aws-amplify-react@0.1.48-unstable.32) (2018-06-04)
 
@@ -197,7 +195,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <a name="0.1.48-unstable.31"></a>
 ## [0.1.48-unstable.31](https://github.com/aws/aws-amplify/compare/aws-amplify-react@0.1.48-unstable.30...aws-amplify-react@0.1.48-unstable.31) (2018-06-02)
->>>>>>> origin
 
 
 

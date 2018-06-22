@@ -183,13 +183,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package aws-amplify-react-native
 
-<<<<<<< HEAD
 <a name="0.2.13"></a>
 ## [0.2.13](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.13-unstable.12...aws-amplify-react-native@0.2.13) (2018-06-01)
-=======
 <a name="0.2.13-unstable.13"></a>
 ## [0.2.13-unstable.13](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.13-unstable.12...aws-amplify-react-native@0.2.13-unstable.13) (2018-06-02)
->>>>>>> origin
 
 
 
