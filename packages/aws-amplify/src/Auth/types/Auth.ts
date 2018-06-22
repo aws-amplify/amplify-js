@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
- import { ICookieStorageData } from "amazon-cognito-identity-js";
+ import { ICookieStorageData, CognitoUserAttribute } from "amazon-cognito-identity-js";
 
 /**
 * Parameters for user sign up
@@ -20,7 +20,7 @@ export interface SignUpParams {
     username: string,
     password: string,
     attributes?: object,
-    validationData?: Array<any>,
+    validationData?: CognitoUserAttribute[],
 }
 
 /**
