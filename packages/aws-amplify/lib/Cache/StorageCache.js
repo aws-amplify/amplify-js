@@ -13,8 +13,8 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = require("./Utils");
-var Common_1 = require("../Common");
-var logger = new Common_1.ConsoleLogger('StorageCache');
+var Logger_1 = require("../Common/Logger");
+var logger = new Logger_1.ConsoleLogger('StorageCache');
 /**
  * Initialization of the cache
  *

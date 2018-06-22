@@ -53,6 +53,7 @@ var ConfirmSignIn = function (_AuthPiece) {
 
         _this._validAuthStates = ['confirmSignIn'];
         _this.confirm = _this.confirm.bind(_this);
+        _this.checkContact = _this.checkContact.bind(_this);
         _this.state = {
             mfaType: 'SMS'
         };
@@ -60,18 +61,32 @@ var ConfirmSignIn = function (_AuthPiece) {
     }
 
     _createClass(ConfirmSignIn, [{
+        key: 'checkContact',
+        value: function checkContact(user) {
+            var _this2 = this;
+
+            _awsAmplify.Auth.verifiedContact(user).then(function (data) {
+                if (!_awsAmplify.JS.isEmpty(data.verified)) {
+                    _this2.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    _this2.changeState('verifyContact', user);
+                }
+            });
+        }
+    }, {
         key: 'confirm',
         value: function confirm() {
-            var _this2 = this;
+            var _this3 = this;
 
             var user = this.props.authData;
             var code = this.inputs.code;
 
             var mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
             _awsAmplify.Auth.confirmSignIn(user, code, mfaType).then(function () {
-                return _this2.changeState('signedIn', user);
+                _this3.checkContact(user);
             }).catch(function (err) {
-                return _this2.error(err);
+                return _this3.error(err);
             });
         }
     }, {
@@ -85,7 +100,7 @@ var ConfirmSignIn = function (_AuthPiece) {
     }, {
         key: 'showComponent',
         value: function showComponent(theme) {
-            var _this3 = this;
+            var _this4 = this;
 
             var _props = this.props,
                 hide = _props.hide,
@@ -112,6 +127,7 @@ var ConfirmSignIn = function (_AuthPiece) {
                         theme: theme,
                         key: 'code',
                         name: 'code',
+                        autoComplete: 'off',
                         onChange: this.handleInputChange
                     }),
                     _react2.default.createElement(
@@ -126,7 +142,7 @@ var ConfirmSignIn = function (_AuthPiece) {
                     _react2.default.createElement(
                         _AmplifyUI.Link,
                         { theme: theme, onClick: function onClick() {
-                                return _this3.changeState('signIn');
+                                return _this4.changeState('signIn');
                             } },
                         _awsAmplify.I18n.get('Back to Sign In')
                     )

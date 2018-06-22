@@ -335,9 +335,11 @@ var StorageClass = /** @class */ (function () {
     StorageClass.prototype._prefix = function (options) {
         var credentials = options.credentials, level = options.level;
         var customPrefix = options.customPrefix || {};
-        var privatePath = (customPrefix.private || 'private/') + credentials.identityId + '/';
-        var protectedPath = (customPrefix.protected || 'protected/') + credentials.identityId + '/';
-        var publicPath = customPrefix.public || 'public/';
+        var identityId = options.identityId || credentials.identityId;
+        var privatePath = (customPrefix.private !== undefined ? customPrefix.private : 'private/') + identityId + '/';
+        var protectedPath = (customPrefix.protected !== undefined ?
+            customPrefix.protected : 'protected/') + identityId + '/';
+        var publicPath = customPrefix.public !== undefined ? customPrefix.public : 'public/';
         switch (level) {
             case 'private':
                 return privatePath;

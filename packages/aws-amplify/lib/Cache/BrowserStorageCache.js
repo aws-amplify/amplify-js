@@ -24,8 +24,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Utils_1 = require("./Utils");
 var StorageCache_1 = require("./StorageCache");
-var Common_1 = require("../Common");
-var logger = new Common_1.ConsoleLogger('Cache');
+var Logger_1 = require("../Common/Logger");
+var logger = new Logger_1.ConsoleLogger('Cache');
 /**
  * Customized storage based on the SessionStorage or LocalStorage with LRU implemented
  */
@@ -40,6 +40,9 @@ var BrowserStorageCache = /** @class */ (function (_super) {
         var cacheConfig = config ? Object.assign({}, Utils_1.defaultConfig, config) : Utils_1.defaultConfig;
         _this = _super.call(this, cacheConfig) || this;
         _this.config.storage = cacheConfig.storage;
+        _this.getItem = _this.getItem.bind(_this);
+        _this.setItem = _this.setItem.bind(_this);
+        _this.removeItem = _this.removeItem.bind(_this);
         logger.debug('Using AsyncStorageCache');
         return _this;
     }

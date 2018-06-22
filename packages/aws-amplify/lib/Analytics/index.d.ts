@@ -4,3 +4,4 @@ declare const Analytics: AnalyticsClass;
 export default Analytics;
 export { AnalyticsProvider };
 export { AnalyticsClass };
+export * from './Providers';

@@ -69,7 +69,7 @@ var Common_1 = require("../Common");
 var Auth_1 = require("../Auth");
 var axios_1 = require("axios");
 var Platform_1 = require("../Common/Platform");
-var logger = new Common_1.ConsoleLogger('RestClient');
+var logger = new Common_1.ConsoleLogger('RestClient'), urlLib = require('url');
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
 * Sign request with AWS credentials if available
@@ -88,8 +88,9 @@ var RestClient = /** @class */ (function () {
     * @param {RestClientOptions} [options] - Instance options
     */
     function RestClient(options) {
-        this._region = 'us-east-1'; // this will be updated by config
-        this._service = 'execute-api'; // this can be updated by config
+        this._region = 'us-east-1'; // this will be updated by endpoint function
+        this._service = 'execute-api'; // this can be updated by endpoint function
+        this._custom_header = undefined; // this can be updated by endpoint function
         var endpoints = options.endpoints;
         this._options = options;
         logger.debug('API Options', this._options);
@@ -112,47 +113,62 @@ var RestClient = /** @class */ (function () {
     RestClient.prototype.ajax = function (url, method, init) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var parsed_url, params, libraryHeaders, userAgent, extraParams, isAllResponse;
-            return __generator(this, function (_a) {
-                logger.debug(method + ' ' + url);
-                parsed_url = this._parseUrl(url);
-                params = {
-                    method: method,
-                    url: url,
-                    host: parsed_url.host,
-                    path: parsed_url.path,
-                    headers: {},
-                    data: null
-                };
-                libraryHeaders = {};
-                if (Platform_1.default.isReactNative) {
-                    userAgent = Platform_1.default.userAgent || 'aws-amplify/0.1.x';
-                    libraryHeaders = {
-                        'User-Agent': userAgent
-                    };
-                }
-                extraParams = Object.assign({}, init);
-                isAllResponse = init ? init.response : null;
-                if (extraParams.body) {
-                    libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
-                    params.data = JSON.stringify(extraParams.body);
-                }
-                params['signerServiceInfo'] = extraParams.signerServiceInfo;
-                params.headers = __assign({}, libraryHeaders, extraParams.headers);
-                // Do not sign the request if client has added 'Authorization' header,
-                // which means custom authorizer.
-                if (typeof params.headers['Authorization'] !== 'undefined') {
-                    params.headers = Object.keys(params.headers).reduce(function (acc, k) {
-                        if (params.headers[k]) {
-                            acc[k] = params.headers[k];
+            var parsed_url, params, libraryHeaders, userAgent, extraParams, isAllResponse, custom_header, _a, _b, search, parsedUrl;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        logger.debug(method + ' ' + url);
+                        parsed_url = this._parseUrl(url);
+                        params = {
+                            method: method,
+                            url: url,
+                            host: parsed_url.host,
+                            path: parsed_url.path,
+                            headers: {},
+                            data: null
+                        };
+                        libraryHeaders = {};
+                        if (Platform_1.default.isReactNative) {
+                            userAgent = Platform_1.default.userAgent || 'aws-amplify/0.1.x';
+                            libraryHeaders = {
+                                'User-Agent': userAgent
+                            };
                         }
-                        return acc;
-                        // tslint:disable-next-line:align
-                    }, {});
-                    return [2 /*return*/, this._request(params)];
+                        extraParams = Object.assign({}, init);
+                        isAllResponse = init ? init.response : null;
+                        if (extraParams.body) {
+                            libraryHeaders['content-type'] = 'application/json; charset=UTF-8';
+                            params.data = JSON.stringify(extraParams.body);
+                        }
+                        params['signerServiceInfo'] = extraParams.signerServiceInfo;
+                        if (!this._custom_header) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this._custom_header()];
+                    case 1:
+                        _a = _c.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        _a = undefined;
+                        _c.label = 3;
+                    case 3:
+                        custom_header = _a;
+                        params.headers = __assign({}, libraryHeaders, (custom_header), extraParams.headers);
+                        _b = urlLib.parse(url, true, true), search = _b.search, parsedUrl = __rest(_b, ["search"]);
+                        params.url = urlLib.format(__assign({}, parsedUrl, { query: __assign({}, parsedUrl.query, (extraParams.queryStringParameters || {})) }));
+                        // Do not sign the request if client has added 'Authorization' header,
+                        // which means custom authorizer.
+                        if (typeof params.headers['Authorization'] !== 'undefined') {
+                            params.headers = Object.keys(params.headers).reduce(function (acc, k) {
+                                if (params.headers[k]) {
+                                    acc[k] = params.headers[k];
+                                }
+                                return acc;
+                                // tslint:disable-next-line:align
+                            }, {});
+                            return [2 /*return*/, this._request(params, isAllResponse)];
+                        }
+                        return [2 /*return*/, Auth_1.default.currentCredentials()
+                                .then(function (credentials) { return _this._signed(__assign({}, params, extraParams), credentials, isAllResponse); })];
                 }
-                return [2 /*return*/, Auth_1.default.currentCredentials()
-                        .then(function (credentials) { return _this._signed(params, credentials, isAllResponse); })];
             });
         });
     };
@@ -219,6 +235,9 @@ var RestClient = /** @class */ (function () {
         var _this = this;
         var cloud_logic_array = this._options.endpoints;
         var response = '';
+        if (!Array.isArray(cloud_logic_array)) {
+            return response;
+        }
         cloud_logic_array.forEach(function (v) {
             if (v.name === apiName) {
                 response = v.endpoint;
@@ -230,6 +249,15 @@ var RestClient = /** @class */ (function () {
                 }
                 if (typeof v.service === 'string') {
                     _this._service = v.service || 'execute-api';
+                }
+                else {
+                    _this._service = 'execute-api';
+                }
+                if (typeof v.custom_header === 'function') {
+                    _this._custom_header = v.custom_header;
+                }
+                else {
+                    _this._custom_header = undefined;
                 }
             }
         });

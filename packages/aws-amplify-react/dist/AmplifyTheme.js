@@ -269,6 +269,10 @@ var Col12 = exports.Col12 = {
     width: '100%'
 };
 
+var Hidden = exports.Hidden = {
+    display: 'none'
+};
+
 var Bootstrap = {
     container: Container,
 
@@ -308,7 +312,9 @@ var Bootstrap = {
     col9: Col9,
     col10: Col10,
     col11: Col11,
-    col12: Col12
+    col12: Col12,
+
+    hidden: Hidden
 };
 
 exports.default = Bootstrap;
