@@ -184,7 +184,9 @@ export default class PushNotification {
                 treatment_id: dataPayload['pinpoint.campaign.treatment_id']
             };
             const pinpoint = {
-                campaign
+                campaign,
+                deeplink: dataPayload['pinpoint.deeplink'],
+                url: dataPayload['pinpoint.url'],
             };
             ret = {
                 title: dataPayload['pinpoint.notification.title'],
