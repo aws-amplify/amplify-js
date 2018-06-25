@@ -63,6 +63,7 @@ var PubSub_1 = require("../PubSub");
 var RestClient_1 = require("./RestClient");
 var Auth_1 = require("../Auth");
 var Logger_1 = require("../Common/Logger");
+var Cache_1 = require("../Cache");
 var logger = new Logger_1.ConsoleLogger('API');
 exports.graphqlOperation = function (query, variables) {
     if (variables === void 0) { variables = {}; }
@@ -100,6 +101,16 @@ var APIClass = /** @class */ (function () {
                 header: {},
             });
         }
+        if (!Array.isArray(opt.endpoints)) {
+            opt.endpoints = [];
+        }
+        // Check if endpoints has custom_headers and validate if is a function
+        opt.endpoints.forEach(function (endpoint) {
+            if (typeof endpoint.custom_header !== 'undefined' && typeof endpoint.custom_header !== 'function') {
+                logger.warn('API ' + endpoint.name + ', custom_header should be a function');
+                endpoint.custom_header = undefined;
+            }
+        });
         if (typeof opt.graphql_headers !== 'undefined' && typeof opt.graphql_headers !== 'function') {
             logger.warn('graphql_headers should be a function');
             opt.graphql_headers = undefined;
@@ -383,48 +394,58 @@ var APIClass = /** @class */ (function () {
             });
         });
     };
-    APIClass.prototype._headerBasedAuth = function () {
+    APIClass.prototype._headerBasedAuth = function (defaultAuthenticationType) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, authenticationType, apiKey, headers, credentialsOK, _b, session;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var _a, _b, authenticationType, apiKey, headers, _c, credentialsOK, federatedInfo, session;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
-                        _a = this._options, authenticationType = _a.aws_appsync_authenticationType, apiKey = _a.aws_appsync_apiKey;
+                        _a = this._options, _b = _a.aws_appsync_authenticationType, authenticationType = _b === void 0 ? defaultAuthenticationType : _b, apiKey = _a.aws_appsync_apiKey;
                         headers = {};
-                        return [4 /*yield*/, this._ensureCredentials()];
-                    case 1:
-                        credentialsOK = _c.sent();
-                        _b = authenticationType;
-                        switch (_b) {
-                            case 'API_KEY': return [3 /*break*/, 2];
-                            case 'AWS_IAM': return [3 /*break*/, 3];
-                            case 'AMAZON_COGNITO_USER_POOLS': return [3 /*break*/, 4];
+                        _c = authenticationType;
+                        switch (_c) {
+                            case 'API_KEY': return [3 /*break*/, 1];
+                            case 'AWS_IAM': return [3 /*break*/, 2];
+                            case 'OPENID_CONNECT': return [3 /*break*/, 4];
+                            case 'AMAZON_COGNITO_USER_POOLS': return [3 /*break*/, 6];
                         }
-                        return [3 /*break*/, 6];
-                    case 2:
+                        return [3 /*break*/, 8];
+                    case 1:
                         headers = {
                             Authorization: null,
                             'X-Api-Key': apiKey
                         };
-                        return [3 /*break*/, 7];
+                        return [3 /*break*/, 9];
+                    case 2: return [4 /*yield*/, this._ensureCredentials()];
                     case 3:
+                        credentialsOK = _d.sent();
                         if (!credentialsOK) {
                             throw new Error('No credentials');
                         }
-                        return [3 /*break*/, 7];
-                    case 4: return [4 /*yield*/, Auth_1.default.currentSession()];
+                        return [3 /*break*/, 9];
+                    case 4: return [4 /*yield*/, Cache_1.default.getItem('federatedInfo')];
                     case 5:
-                        session = _c.sent();
+                        federatedInfo = _d.sent();
+                        if (!federatedInfo || !federatedInfo.token) {
+                            throw new Error('No federated jwt');
+                        }
+                        headers = {
+                            Authorization: federatedInfo.token
+                        };
+                        return [3 /*break*/, 9];
+                    case 6: return [4 /*yield*/, Auth_1.default.currentSession()];
+                    case 7:
+                        session = _d.sent();
                         headers = {
                             Authorization: session.getAccessToken().getJwtToken()
                         };
-                        return [3 /*break*/, 7];
-                    case 6:
+                        return [3 /*break*/, 9];
+                    case 8:
                         headers = {
                             Authorization: null,
                         };
-                        return [3 /*break*/, 7];
-                    case 7: return [2 /*return*/, headers];
+                        return [3 /*break*/, 9];
+                    case 9: return [2 /*return*/, headers];
                 }
             });
         });
@@ -452,17 +473,17 @@ var APIClass = /** @class */ (function () {
     APIClass.prototype._graphql = function (_a) {
         var queryStr = _a.query, variables = _a.variables;
         return __awaiter(this, void 0, void 0, function () {
-            var _b, region, appSyncGraphqlEndpoint, _c, graphql_headers, customGraphqlEndpoint, doc, query, headers, _d, _e, body, init, endpoint, error, response, err_1, errors;
-            return __generator(this, function (_f) {
-                switch (_f.label) {
+            var _b, region, appSyncGraphqlEndpoint, _c, graphql_headers, customGraphqlEndpoint, customEndpointRegion, doc, query, headers, _d, _e, _f, _g, body, init, endpoint, error, response, err_1, errors;
+            return __generator(this, function (_h) {
+                switch (_h.label) {
                     case 0:
                         if (!!this._api) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.createInstance()];
                     case 1:
-                        _f.sent();
-                        _f.label = 2;
+                        _h.sent();
+                        _h.label = 2;
                     case 2:
-                        _b = this._options, region = _b.aws_appsync_region, appSyncGraphqlEndpoint = _b.aws_appsync_graphqlEndpoint, _c = _b.graphql_headers, graphql_headers = _c === void 0 ? function () { return ({}); } : _c, customGraphqlEndpoint = _b.graphql_endpoint;
+                        _b = this._options, region = _b.aws_appsync_region, appSyncGraphqlEndpoint = _b.aws_appsync_graphqlEndpoint, _c = _b.graphql_headers, graphql_headers = _c === void 0 ? function () { return ({}); } : _c, customGraphqlEndpoint = _b.graphql_endpoint, customEndpointRegion = _b.graphql_endpoint_iam_region;
                         doc = parser_1.parse(queryStr);
                         query = printer_1.print(doc);
                         _d = [{}];
@@ -470,14 +491,28 @@ var APIClass = /** @class */ (function () {
                         if (!_e) return [3 /*break*/, 4];
                         return [4 /*yield*/, this._headerBasedAuth()];
                     case 3:
-                        _e = (_f.sent());
-                        _f.label = 4;
+                        _e = (_h.sent());
+                        _h.label = 4;
                     case 4:
-                        _d = _d.concat([(_e),
-                            (customGraphqlEndpoint && { Authorization: null })]);
-                        return [4 /*yield*/, graphql_headers({ query: doc, variables: variables })];
+                        _d = _d.concat([(_e)]);
+                        _f = customGraphqlEndpoint;
+                        if (!_f) return [3 /*break*/, 8];
+                        if (!customEndpointRegion) return [3 /*break*/, 6];
+                        return [4 /*yield*/, this._headerBasedAuth('AWS_IAM')];
                     case 5:
-                        headers = __assign.apply(void 0, _d.concat([_f.sent()]));
+                        _g = _h.sent();
+                        return [3 /*break*/, 7];
+                    case 6:
+                        _g = { Authorization: null };
+                        _h.label = 7;
+                    case 7:
+                        _f = (_g);
+                        _h.label = 8;
+                    case 8:
+                        _d = _d.concat([(_f)]);
+                        return [4 /*yield*/, graphql_headers({ query: doc, variables: variables })];
+                    case 9:
+                        headers = __assign.apply(void 0, _d.concat([_h.sent()]));
                         body = {
                             query: query,
                             variables: variables,
@@ -486,8 +521,8 @@ var APIClass = /** @class */ (function () {
                             headers: headers,
                             body: body,
                             signerServiceInfo: {
-                                service: 'appsync',
-                                region: region,
+                                service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
+                                region: !customGraphqlEndpoint ? region : customEndpointRegion
                             }
                         };
                         endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
@@ -498,23 +533,23 @@ var APIClass = /** @class */ (function () {
                                 errors: [error],
                             };
                         }
-                        _f.label = 6;
-                    case 6:
-                        _f.trys.push([6, 8, , 9]);
+                        _h.label = 10;
+                    case 10:
+                        _h.trys.push([10, 12, , 13]);
                         return [4 /*yield*/, this._api.post(endpoint, init)];
-                    case 7:
-                        response = _f.sent();
-                        return [3 /*break*/, 9];
-                    case 8:
-                        err_1 = _f.sent();
+                    case 11:
+                        response = _h.sent();
+                        return [3 /*break*/, 13];
+                    case 12:
+                        err_1 = _h.sent();
                         response = {
                             data: {},
                             errors: [
                                 new graphql_1.GraphQLError(err_1.message)
                             ]
                         };
-                        return [3 /*break*/, 9];
-                    case 9:
+                        return [3 /*break*/, 13];
+                    case 13:
                         errors = response.errors;
                         if (errors && errors.length) {
                             throw response;

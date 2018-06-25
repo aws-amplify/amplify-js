@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AmplifyService } from './providers/amplify.service';
 import * as components from './components';
-
 import { DynamicComponentDirective }          from './directives/dynamic.component.directive';
 
 
@@ -28,6 +27,7 @@ const exportables = [
   components.SignUpComponent,
   components.SignUpComponentCore
 ]
+
 
 @NgModule({
   imports: [
