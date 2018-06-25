@@ -58,8 +58,6 @@
   },
   "dependencies": {
     "@ionic/angular": "^4.0.0-alpha.7",
-    "@types/lodash": "^4.14.106",
-    "karma-jasmine-html-reporter": "^1.1.0",
-    "karma-phantomjs-launcher": "^1.0.4"
+    "@types/lodash": "^4.14.106"
   }
 }
