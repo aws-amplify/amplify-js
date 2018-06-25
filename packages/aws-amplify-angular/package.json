@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "0.2.176",
+  "version": "0.1.2-unstable.4",
   "description": "AWS Amplify Angular Components",
   "main": "lib/index.js",
   "module": "./lib/index.js",
@@ -58,6 +58,8 @@
   },
   "dependencies": {
     "@ionic/angular": "^4.0.0-alpha.7",
-    "@types/lodash": "^4.14.106"
+    "@types/lodash": "^4.14.106",
+    "karma-jasmine-html-reporter": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.4"
   }
 }
