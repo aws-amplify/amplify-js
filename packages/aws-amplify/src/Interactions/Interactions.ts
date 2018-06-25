@@ -23,7 +23,7 @@ export default class Interactions {
 
     /**
      * Initialize PubSub with AWS configurations
-     * 
+     *
      * @param {InteractionsOptions} options - Configuration object for Interactions
      */
     constructor(options: InteractionsOptions) {
@@ -33,7 +33,7 @@ export default class Interactions {
     }
 
     /**
-     * 
+     *
      * @param {InteractionsOptions} options - Configuration object for Interactions
      * @return {Object} - The current configuration
      */
@@ -58,7 +58,7 @@ export default class Interactions {
         if (!this._pluggables.AWSLexProvider && bots_config &&
             Object.keys(bots_config).
                 map(key => bots_config[key]).
-                find(bot => !bot.providerName || bot.providerName === 'AWSLexProvider')) {
+                some(bot => !bot.providerName || bot.providerName === 'AWSLexProvider')) {
             this._pluggables.AWSLexProvider = new AWSLexProvider();
         }
 
