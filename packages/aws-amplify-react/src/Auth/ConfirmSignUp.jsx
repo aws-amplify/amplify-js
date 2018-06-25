@@ -82,6 +82,7 @@ export default class ConfirmSignUp extends AuthPiece {
                         theme={theme}
                         key="code"
                         name="code"
+                        autoComplete="off"
                         onChange={this.handleInputChange}
                     />
                     <ActionRow theme={theme}>

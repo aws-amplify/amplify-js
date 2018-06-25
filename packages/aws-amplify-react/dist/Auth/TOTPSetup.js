@@ -61,17 +61,32 @@ var TOTPSetup = function (_AuthPiece) {
 
         _this._validAuthStates = ['TOTPSetup'];
         _this.onTOTPEvent = _this.onTOTPEvent.bind(_this);
+        _this.checkContact = _this.checkContact.bind(_this);
         return _this;
     }
 
     _createClass(TOTPSetup, [{
+        key: 'checkContact',
+        value: function checkContact(user) {
+            var _this2 = this;
+
+            _awsAmplify.Auth.verifiedContact(user).then(function (data) {
+                if (!_awsAmplify.JS.isEmpty(data.verified)) {
+                    _this2.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    _this2.changeState('verifyContact', user);
+                }
+            });
+        }
+    }, {
         key: 'onTOTPEvent',
         value: function onTOTPEvent(event, data, user) {
             logger.debug('on totp event', event, data);
             //const user = this.props.authData;
             if (event === 'Setup TOTP') {
                 if (data === 'SUCCESS') {
-                    this.changeState('signedIn', user);
+                    this.checkContact(user);
                 }
             }
         }

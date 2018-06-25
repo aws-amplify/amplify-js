@@ -12,13 +12,12 @@
  */
 
 import {
-    ClientDevice,
     ConsoleLogger as Logger,
     missingConfig,
     Hub,
-    Parser,
+    Parser
 } from '../Common';
-import AWSAnalyticsProvider from './Providers/AWSAnalyticsProvider';
+import AWSPinpointProvider from './Providers/AWSPinpointProvider';
 import Platform from '../Common/Platform';
 import Auth from '../Auth';
 
@@ -30,17 +29,11 @@ const dispatchAnalyticsEvent = (event, data) => {
     Hub.dispatch('analytics', { event, data }, 'Analytics');
 };
 
-// events buffer
-const BUFFER_SIZE = 1000;
-const MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-const interval = 5*1000; // 5s
-const RESEND_LIMIT = 5;
 /**
 * Provide mobile analytics client functions
 */
 export default class AnalyticsClass {
     private _config;
-    private _buffer;
     private _provider;
     private _pluggables: AnalyticsProvider[];
     private _disabled;
@@ -51,25 +44,9 @@ export default class AnalyticsClass {
      * @param config - Configuration of the Analytics
      */
     constructor() {
-        this._buffer = [];
         this._config = {};
         this._pluggables = [];
         this._disabled = false;
-        // default one
-
-        // events batch
-        const that = this;
-
-        // flush event buffer
-        setInterval(
-            () => {
-                const size = this._buffer.length < MAX_SIZE_PER_FLUSH ? this._buffer.length : MAX_SIZE_PER_FLUSH;
-                for (let i = 0; i < size; i += 1) {
-                    const params = this._buffer.shift();
-                    that._sendFromBuffer(params);
-                }
-            },
-            interval);
     }
 
     /**
@@ -81,46 +58,87 @@ export default class AnalyticsClass {
         if (!config) return this._config;
 
         const amplifyConfig = Parser.parseMobilehubConfig(config);
-        const conf = Object.assign({}, this._config, amplifyConfig.Analytics, config);
+        this._config = Object.assign({}, this._config, amplifyConfig.Analytics, config);
 
-        const clientInfo:any = ClientDevice.clientInfo();
-        conf['clientInfo'] = conf['client_info']? conf['client_info'] : clientInfo;
-
-        if (conf['disabled']) {
+        if (this._config['disabled']) {
             this._disabled = true;
         }
 
-        if (conf['autoSessionRecord'] === undefined) {
-            conf['autoSessionRecord'] = true;
+        if (this._config['autoSessionRecord'] === undefined) {
+            this._config['autoSessionRecord'] = true;
         }
-        
-        this._config = conf;
 
-        this._pluggables.map((pluggable) => {
-            pluggable.configure(conf);
+        this._pluggables.forEach((pluggable) => {
+            // for backward compatibility
+            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
+                pluggable.configure(this._config);  
+            } else {
+                pluggable.configure(this._config[pluggable.getProviderName()]);
+            }
         });
 
         if (this._pluggables.length === 0) {
-            this.addPluggable(new AWSAnalyticsProvider());
+            this.addPluggable(new AWSPinpointProvider());
         }
 
         dispatchAnalyticsEvent('configured', null);
-        return conf;
+        logger.debug('current configuration', this._config);
+        return this._config;
     }
 
     /**
      * add plugin into Analytics category
      * @param {Object} pluggable - an instance of the plugin
      */
-    public async addPluggable(pluggable: AnalyticsProvider) {
-        const ensureCredentails = await this._getCredentials();
-        if (!ensureCredentails) return Promise.resolve(false);
-
+    public addPluggable(pluggable: AnalyticsProvider) {
         if (pluggable && pluggable.getCategory() === 'Analytics') {
             this._pluggables.push(pluggable);
-            // pluggable.configure(this._config);
-            const config = pluggable.configure(this._config);
-            return Promise.resolve(config);
+            let config = {};
+            // for backward compatibility
+            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
+                config = pluggable.configure(this._config);  
+            } else {
+                config = pluggable.configure(this._config[pluggable.getProviderName()]);
+            }
+            return config;
+        }
+    }
+
+    /**
+     * Get the plugin object
+     * @param providerName - the name of the plugin 
+     */
+    public getPluggable(providerName) {
+        for (let i = 0; i < this._pluggables.length; i += 1) {
+            const pluggable = this._pluggables[i];
+            if (pluggable.getProviderName() === providerName) {
+                return pluggable;
+            }
+        }
+      
+        logger.debug('No plugin found with providerName', providerName);
+        return null;
+    }
+
+    /**
+     * Remove the plugin object
+     * @param providerName - the name of the plugin
+     */
+    public removePluggable(providerName) {
+        let idx = 0;
+        while (idx < this._pluggables.length) {
+            if (this._pluggables[idx].getProviderName() === providerName) {
+                break;
+            }
+            idx += 1;
+        }
+
+        if (idx === this._pluggables.length) {
+            logger.debug('No plugin found with providerName', providerName);
+            return;
+        } else {
+            this._pluggables.splice(idx, idx + 1);
+            return;
         }
     }
 
@@ -139,35 +157,28 @@ export default class AnalyticsClass {
     }
 
     /**
-     * Record Session start
-     * @return - A promise which resolves if buffer doesn't overflow
-     */
-    public async startSession() {
-        const ensureCredentails = await this._getCredentials();
-        if (!ensureCredentails) return Promise.resolve(false);
-
-        const timestamp = new Date().getTime();
-        const params = { eventName: '_session_start', timestamp, config: this._config };
-        return this._putToBuffer(params);
-    }
-
-    /**
     * Receive a capsule from Hub
     * @param {any} capsuak - The message from hub
     */
    public onHubCapsule(capsule: any): void {}
 
+
+    /**
+     * Record Session start
+     * @return - A promise which resolves if buffer doesn't overflow
+     */
+    public async startSession(provider?: string) {
+        const params = { event: { name: '_session_start' },  provider };
+        return this._sendEvent(params);
+    }
+
     /**
      * Record Session stop
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    public async stopSession() {
-        const ensureCredentails = await this._getCredentials();
-        if (!ensureCredentails) return Promise.resolve(false);
-
-        const timestamp = new Date().getTime();
-        const params = { eventName: '_session_stop', timestamp, config: this._config };
-        return this._putToBuffer(params);
+    public async stopSession(provider?: string) {
+        const params = { event: { name: '_session_stop' }, provider };
+        return this._sendEvent(params);
     }
 
     /**
@@ -177,88 +188,44 @@ export default class AnalyticsClass {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    public async record(eventName: string, attributes?: EventAttributes, metrics?: EventMetrics) {
-        const ensureCredentails = await this._getCredentials();
-        if (!ensureCredentails) return Promise.resolve(false);
-
-        const timestamp = new Date().getTime();
-        const params = { eventName, attributes, metrics, timestamp, config: this._config };
-        return this._putToBuffer(params);
+    public async record(event: string | object, provider? , metrics?: EventMetrics) {
+        let params = null;
+        // this is just for compatibility, going to be deprecated
+        if (typeof event === 'string') {
+            params =  {
+                'event': {
+                    name: event, 
+                    attributes: provider, 
+                    metrics
+                }, 
+                provider: 'AWSPinpoint'
+            };
+        } else {
+            params = { event, provider };
+        }
+        return this._sendEvent(params);
     }
 
-    public async updateEndpoint(config) {
-        const ensureCredentails = await this._getCredentials();
-        if (!ensureCredentails) return Promise.resolve(false);
+    public async updateEndpoint(attrs, provider?) {
+        const event = Object.assign({ name: '_update_endpoint' }, attrs);
 
-        const timestamp = new Date().getTime();
-        const conf = Object.assign(this._config, config);
-        const params = { eventName: '_update_endpoint', timestamp, config: conf };
-        return this._putToBuffer(params);
+        return this.record(event, provider);
     }
 
-    /**
-     * @private
-     * @param {Object} params - params for the event recording
-     * Send events from buffer
-     */
-    private _sendFromBuffer(params) {
-        const that = this;
-        this._pluggables.map((pluggable) => {
-            pluggable.record(params)
-                .then(success => {
-                    if (!success) {
-                        params.resendLimits = typeof params.resendLimits === 'number' ? 
-                            params.resendLimits : RESEND_LIMIT;
-                        if (params.resendLimits > 0) {
-                            logger.debug(
-                                `resending event ${params.eventName} with ${params.resendLimits} retry times left`);
-                            params.resendLimits -= 1;
-                            that._putToBuffer(params);
-                        } else {
-                            logger.debug(`retry times used up for event ${params.eventName}`);
-                        }
-                    }
-                });
-        });
-    }
-
-    /**
-     * @private
-     * @param params - params for the event recording
-     * Put events into buffer
-     */
-    private _putToBuffer(params) {
+    private _sendEvent(params) {
         if (this._disabled) {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
         }
-        if (this._buffer.length < BUFFER_SIZE) {
-            this._buffer.push(params);
-            return Promise.resolve();
-        }
-        else return Promise.reject('exceed buffer size');
-    }
 
-    /**
-     * @private
-     * check if current credentials exists
-     */
-    private _getCredentials() {
-        const that = this;
-        return Auth.currentCredentials()
-            .then(credentials => {
-                if (!credentials) return false;
-                const cred = Auth.essentialCredentials(credentials);
+        const provider = params.provider? params.provider: 'AWSPinpoint';
+        
+        this._pluggables.forEach((pluggable) => {
+            if (pluggable.getProviderName() === provider) {
+                pluggable.record(params);
+            }
+        });
 
-                that._config.credentials = cred;
-                // that._config.endpointId = cred.identityId;
-                // logger.debug('set endpointId for analytics', that._config.endpointId);
-                logger.debug('set credentials for analytics', that._config.credentials);
-                return true;
-            })
-            .catch(err => {
-                logger.debug('ensure credentials error', err);
-                return false;
-            });
+        return Promise.resolve();
     }
 }

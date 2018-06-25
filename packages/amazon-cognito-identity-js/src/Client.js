@@ -64,12 +64,12 @@ export default class Client {
       })
       .catch(err => {
         // default to return 'UnknownError'
-        let error = { code: 'UnknownError', message: 'Unkown error' };
+        let error = { code: 'UnknownError', message: 'Unknown error' };
 
         // first check if we have a service error
         if (response && response.headers && response.headers.get('x-amzn-errortype')) {
           try {
-            const code = (response.headers.get('x-amz-errortype')).split(':')[0];
+            const code = (response.headers.get('x-amzn-errortype')).split(':')[0];
             error = {
               code,
               name: code,
@@ -78,6 +78,11 @@ export default class Client {
             };
           } catch (ex) {
               // pass through so it doesn't get swallowed if we can't parse it
+              error = {
+                code: 'UnknownError',
+                message: response.headers.get('x-amzn-errortype'),
+              }
+              return callback(error);
           }
         // otherwise check if error is Network error
         } else if (err instanceof Error && err.message === 'Network error') {

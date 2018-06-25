@@ -64,16 +64,18 @@ var VerifyContact = function (_AuthPiece) {
         value: function verify() {
             var _this2 = this;
 
-            var contact = this.inputs.contact;
+            var _inputs = this.inputs,
+                contact = _inputs.contact,
+                checkedValue = _inputs.checkedValue;
 
             if (!contact) {
                 this.error('Neither Email nor Phone Number selected');
                 return;
             }
 
-            _awsAmplify.Auth.verifyCurrentUserAttribute(contact).then(function (data) {
+            _awsAmplify.Auth.verifyCurrentUserAttribute(checkedValue).then(function (data) {
                 logger.debug(data);
-                _this2.setState({ verifyAttr: contact });
+                _this2.setState({ verifyAttr: checkedValue });
             }).catch(function (err) {
                 return _this2.error(err);
             });
@@ -150,6 +152,7 @@ var VerifyContact = function (_AuthPiece) {
                     theme: theme,
                     key: 'code',
                     name: 'code',
+                    autoComplete: 'off',
                     onChange: this.handleInputChange
                 }),
                 _react2.default.createElement(
@@ -196,7 +199,7 @@ var VerifyContact = function (_AuthPiece) {
                     _react2.default.createElement(
                         _AmplifyUI.Link,
                         { theme: theme, onClick: function onClick() {
-                                return _this4.changeState('signedIn');
+                                return _this4.changeState('signedIn', authData);
                             } },
                         _awsAmplify.I18n.get('Skip')
                     )

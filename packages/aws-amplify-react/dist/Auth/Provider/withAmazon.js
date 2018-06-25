@@ -102,7 +102,9 @@ function withAmazon(Comp) {
         }, {
             key: 'componentDidMount',
             value: function componentDidMount() {
-                this.createScript();
+                var amazon_client_id = this.props.amazon_client_id;
+
+                if (amazon_client_id) this.createScript();
             }
         }, {
             key: 'createScript',

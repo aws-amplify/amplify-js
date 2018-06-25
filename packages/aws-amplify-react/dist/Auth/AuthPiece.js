@@ -131,6 +131,7 @@ var AuthPiece = function (_Component) {
 
             var check_type = ['radio', 'checkbox'].includes(type);
             this.inputs[name] = check_type ? checked : value;
+            this.inputs['checkedValue'] = check_type ? value : null;
         }
     }, {
         key: 'render',
