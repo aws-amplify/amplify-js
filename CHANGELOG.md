@@ -7,6 +7,7 @@
 * [aws-amplify](./packages/aws-amplify/CHANGELOG.md)
 * [aws-amplify-react](./packages/aws-amplify-react/CHANGELOG.md)
 * [aws-amplify-react-native](./packages/aws-amplify-react-native/CHANGELOG.md)
+* [aws-amplify-angular](./packages/aws-amplify-angular/CHANGELOG.md)
 
 ## 05/18/2018
 * amazon-cognito-identity-js - 2.0.6
