@@ -74,7 +74,7 @@ jobs:
             git clone $AUTH_CLONE_URL
             cd aws-amplify-cypress-auth
             yarn
-            awsmobile configure aws $IAM_ACCESS_KEY $IAM_SECRET_KEY us-east-1
+            awsmobile configure aws $IAM_ACCESS_KEY $IAM_SECRET_KEY $CLI_REGION
             awsmobile init --yes $AUTH_MOBILE_HUB_PROJECT_ID
             yarn link aws-amplify
             yarn link aws-amplify-react
@@ -88,6 +88,10 @@ jobs:
           name: "Run cypress tests for aws-amplify-react"
           command: |
             yarn cypress --scope aws-amplify-react
+      - store_artifacts:
+          path: cypress/videos
+      - store_artifacts:
+          path: cypress/screenshots
   deploy:
     <<: *defaults
     steps:
@@ -120,6 +124,7 @@ workflows:
           filters:
             branches:
               only:
+                - release
                 - master
           requires:
             - unit_test
