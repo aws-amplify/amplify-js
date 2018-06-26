@@ -5,7 +5,7 @@
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "test": "tslint 'src/**/*.ts' && jest --coverage --maxWorkers 2",
     "build-with-test": "npm run clean && npm test && tsc && webpack -p",
     "build": "npm run clean && tsc && webpack -p",
     "clean": "rimraf lib lib-esm dist",
