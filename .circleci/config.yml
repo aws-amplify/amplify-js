@@ -98,7 +98,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 
+          keys: 
             - amplify-ssh-deps-{{ .Branch }}
             - amplify-ssh-deps
       - run:
