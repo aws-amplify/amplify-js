@@ -31,11 +31,7 @@ jobs:
             - ~/.cache  ## cache both yarn and Cypress
       - persist_to_workspace:
           root: .
-          paths:
-            - node_modules
-            - packages
-            - package.json
-            - lerna.json
+          paths: .
   unit_test:
     <<: *defaults
     steps:
