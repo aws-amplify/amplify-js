@@ -23,7 +23,10 @@ export function trackUpdate(Comp, trackerName) {
 
         componentDidUpdate(prevProps, prevState) {
             const attributes = Object.assign({}, this.props, this.state);
-            Analytics.record(this.trackerName, attributes);
+            Analytics.record({
+                name: this.trackerName, 
+                attributes
+            });
         }
 
         render() {

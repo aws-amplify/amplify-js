@@ -173,8 +173,11 @@ class ServiceWorkerClass {
             const currentState = this._serviceWorker.state;
             this._logger.debug(`ServiceWorker statechange: ${currentState}`);
             if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
-                Amplify.Analytics.record('ServiceWorker', {
-                    'state': currentState
+                Amplify.Analytics.record({
+                    name: 'ServiceWorker',
+                    attributes: {
+                        'state': currentState
+                    }
                 });
             }
         });

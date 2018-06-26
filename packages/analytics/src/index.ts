@@ -95,7 +95,11 @@ const storageEvent = (payload) => {
     const { attrs, metrics } = payload;
     if (!attrs) return;
 
-    Analytics.record('Storage', attrs, metrics);
+    Analytics.record({
+        name: 'Storage', 
+        attributes: attrs, 
+        metrics
+    });
 };
 
 const authEvent = (payload) => {
@@ -104,15 +108,21 @@ const authEvent = (payload) => {
 
     switch(event) {
         case 'signIn':
-            Analytics.record('_userauth.sign_in');
+            Analytics.record({
+                name: '_userauth.sign_in'
+            });
             break;
         case 'signUp':
-            Analytics.record('_userauth.sign_up');
+            Analytics.record({
+                name: '_userauth.sign_up'
+            });
             break;
         case 'signOut':
             break;
         case 'signIn_failure':
-            Analytics.record('_userauth.auth_fail');
+            Analytics.record({
+                name: '_userauth.auth_fail'
+            });
             break;
         case 'configured':
             authConfigured = true;
