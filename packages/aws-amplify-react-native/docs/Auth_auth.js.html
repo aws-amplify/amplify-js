@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>JSDoc: Source: Auth/Auth.js</title>
@@ -15,18 +16,18 @@
 
 <body>
 
-<div id="main">
+    <div id="main">
 
-    <h1 class="page-title">Source: Auth/Auth.js</h1>
-
-    
+        <h1 class="page-title">Source: Auth/Auth.js</h1>
 
 
 
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/*
+
+
+
+        <section>
+            <article>
+                <pre class="prettyprint source linenums"><code>/*
  * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
@@ -133,7 +134,7 @@ class AuthClass {
      * @return {Promise} - A promise resolves callback data if success
      */
     signUp(username, password, email, phone_number) {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return Promise.reject(new Error('No userPool')); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
@@ -155,7 +156,7 @@ class AuthClass {
      * @return {Promise} - A promise resolves callback data if success
      */
     confirmSignUp(username, code) {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return Promise.reject(new Error('No userPool')); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!code) { return Promise.reject('Code cannot be empty'); }
 
@@ -176,7 +177,7 @@ class AuthClass {
      * @return {Promise} - A promise resolves data if success
      */
     resendSignUp(username) {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return Promise.reject(new Error('No userPool')); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
 
         const user = new CognitoUser({
@@ -192,12 +193,12 @@ class AuthClass {
 
     /**
      * Sign in
-     * @param {String} username - The username to be signed in 
+     * @param {String} username - The username to be signed in
      * @param {String} password - The password of the username
      * @return {Promise} - A promise resolves the CognitoUser object if success or mfa required
      */
     signIn(username, password) {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return Promise.reject(new Error('No userPool')); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
 
@@ -321,7 +322,7 @@ class AuthClass {
      * @return {Promise} - A promise resolves to curret CognitoUser if success
      */
     currentUser() {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return Promise.reject(new Error('No userPool')); }
 
         const user = this.userPool.getCurrentUser();
         return user? Promise.resolve(user) : Promise.reject('UserPool doesnot have current user');
@@ -332,7 +333,7 @@ class AuthClass {
      * @return {Promise} - A promise resolves to curret authenticated CognitoUser if success
      */
     currentAuthenticatedUser() {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return Promise.reject(new Error('No userPool')); }
 
         const user = this.userPool.getCurrentUser();
         if (!user) { return Promise.reject('No current user'); }
@@ -346,10 +347,10 @@ class AuthClass {
 
     /**
      * Get current user's session
-     * @return {Promise} - A promise resolves to session object if success 
+     * @return {Promise} - A promise resolves to session object if success
      */
     currentUserSession() {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return Promise.reject(new Error('No userPool')); }
 
         const user = this.userPool.getCurrentUser();
         if (!user) { return Promise.reject('No current user'); }
@@ -464,7 +465,7 @@ class AuthClass {
      * @return {Promise} - A promise resolved if success
      */
     signOut() {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return Promise.reject(new Error('No userPool')); }
 
         const user = this.userPool.getCurrentUser();
         if (!user) { return Promise.resolve(); }
@@ -482,10 +483,10 @@ class AuthClass {
     /**
      * Initiate a forgot password request
      * @param {String} username - the username to change password
-     * @return {Promise} - A promise resolves if success 
+     * @return {Promise} - A promise resolves if success
      */
     forgotPassword(username) {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return Promise.reject(new Error('No userPool')); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
 
         const user = new CognitoUser({
@@ -508,13 +509,13 @@ class AuthClass {
 
     /**
      * Confirm a new password using a confirmation Code
-     * @param {String} username - The username 
+     * @param {String} username - The username
      * @param {String} code - The confirmation code
      * @param {String} password - The new password
      * @return {Promise} - A promise that resolves if success
      */
     forgotPasswordSubmit(username, code, password) {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!this.userPool) { return Promise.reject(new Error('No userPool')); }
         if (!username) { return Promise.reject('Username cannot be empty'); }
         if (!code) { return Promise.reject('Code cannot be empty'); }
         if (!password) { return Promise.reject('Password cannot be empty'); }
@@ -619,7 +620,7 @@ class AuthClass {
 
     /**
      * Compact version of credentials
-     * @param {Object} credentials 
+     * @param {Object} credentials
      * @return {Object} - Credentials
      */
     essentialCredentials(credentials) {
@@ -646,25 +647,62 @@ class AuthClass {
 
 export default AuthClass;
 </code></pre>
-        </article>
-    </section>
+            </article>
+        </section>
 
 
 
 
-</div>
+    </div>
 
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AnalyticsClass.html">AnalyticsClass</a></li><li><a href="API.html">API</a></li><li><a href="AsyncStorageCache.html">AsyncStorageCache</a></li><li><a href="AuthClass.html">AuthClass</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="I18nClass.html">I18nClass</a></li><li><a href="RestClient.html">RestClient</a></li><li><a href="Signer.html">Signer</a></li><li><a href="StorageCache.html">StorageCache</a></li><li><a href="StorageClass.html">StorageClass</a></li></ul>
-</nav>
+    <nav>
+        <h2>
+            <a href="index.html">Home</a>
+        </h2>
+        <h3>Classes</h3>
+        <ul>
+            <li>
+                <a href="AnalyticsClass.html">AnalyticsClass</a>
+            </li>
+            <li>
+                <a href="API.html">API</a>
+            </li>
+            <li>
+                <a href="AsyncStorageCache.html">AsyncStorageCache</a>
+            </li>
+            <li>
+                <a href="AuthClass.html">AuthClass</a>
+            </li>
+            <li>
+                <a href="ConsoleLogger.html">ConsoleLogger</a>
+            </li>
+            <li>
+                <a href="I18nClass.html">I18nClass</a>
+            </li>
+            <li>
+                <a href="RestClient.html">RestClient</a>
+            </li>
+            <li>
+                <a href="Signer.html">Signer</a>
+            </li>
+            <li>
+                <a href="StorageCache.html">StorageCache</a>
+            </li>
+            <li>
+                <a href="StorageClass.html">StorageClass</a>
+            </li>
+        </ul>
+    </nav>
 
-<br class="clear">
+    <br class="clear">
 
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Nov 21 2017 10:31:36 GMT-0800 (PST)
-</footer>
+    <footer>
+        Documentation generated by
+        <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Nov 21 2017 10:31:36 GMT-0800 (PST)
+    </footer>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+    <script> prettyPrint(); </script>
+    <script src="scripts/linenumber.js"> </script>
 </body>
+
 </html>
