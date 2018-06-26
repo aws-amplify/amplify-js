@@ -57,11 +57,14 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 
                 this.aws_lex.postText(params, (err, data) => {
                     if (err) {
-                        throw err;
+                        rej(err);
+                        return;
+
                     } else {
                         // Check if state is fulfilled to resolve onFullfilment promise
-                        if (data.dialogState === 'ReadyForFulfillment') {
-                            logger.debug('ReadyForFulfillment');
+                        logger.debug('postText state', data.dialogState);
+                        res(data);
+                        if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
                             if (typeof this._botsCompleteCallback[botname] === 'function') {
                                 this._botsCompleteCallback[botname](null, { slots: data.slots });
                             }
@@ -82,7 +85,6 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
                             }
                         }
 
-                        res(data);
                     }
                 });
             } else {
