@@ -53,13 +53,28 @@ var RequireNewPassword = function (_AuthPiece) {
 
         _this._validAuthStates = ['requireNewPassword'];
         _this.change = _this.change.bind(_this);
+        _this.checkContact = _this.checkContact.bind(_this);
         return _this;
     }
 
     _createClass(RequireNewPassword, [{
+        key: 'checkContact',
+        value: function checkContact(user) {
+            var _this2 = this;
+
+            _awsAmplify.Auth.verifiedContact(user).then(function (data) {
+                if (!_awsAmplify.JS.isEmpty(data.verified)) {
+                    _this2.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    _this2.changeState('verifyContact', user);
+                }
+            });
+        }
+    }, {
         key: 'change',
         value: function change() {
-            var _this2 = this;
+            var _this3 = this;
 
             var user = this.props.authData;
             var password = this.inputs.password;
@@ -68,18 +83,21 @@ var RequireNewPassword = function (_AuthPiece) {
             _awsAmplify.Auth.completeNewPassword(user, password, requiredAttributes).then(function (user) {
                 logger.debug('complete new password', user);
                 if (user.challengeName === 'SMS_MFA') {
-                    _this2.changeState('confirmSignIn', user);
+                    _this3.changeState('confirmSignIn', user);
+                } else if (user.challengeName === 'MFA_SETUP') {
+                    logger.debug('TOTP setup', user.challengeParam);
+                    _this3.changeState('TOTPSetup', user);
                 } else {
-                    _this2.changeState('signedIn', user);
+                    _this3.checkContact(user);
                 }
             }).catch(function (err) {
-                return _this2.error(err);
+                return _this3.error(err);
             });
         }
     }, {
         key: 'showComponent',
         value: function showComponent(theme) {
-            var _this3 = this;
+            var _this4 = this;
 
             var hide = this.props.hide;
 
@@ -119,7 +137,7 @@ var RequireNewPassword = function (_AuthPiece) {
                     _react2.default.createElement(
                         _AmplifyUI.Link,
                         { theme: theme, onClick: function onClick() {
-                                return _this3.changeState('signIn');
+                                return _this4.changeState('signIn');
                             } },
                         _awsAmplify.I18n.get('Back to Sign In')
                     )
