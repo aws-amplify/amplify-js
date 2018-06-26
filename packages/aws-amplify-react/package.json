@@ -7,6 +7,8 @@
     "test": "jest --coverage --updateSnapshot --maxWorkers 2",
     "build": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
     "watch": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files --watch",
+    "cypress": "cypress run",
+    "cypress:open": "cypress open",
     "build-with-test": "npm test && npm run build",
     "clean": "rimraf dist"
   },
