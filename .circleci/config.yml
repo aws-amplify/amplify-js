@@ -29,6 +29,7 @@ jobs:
           key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
             - ~/.cache  ## cache both yarn and Cypress
+            - ~/.ssh
       - persist_to_workspace:
           root: .
           paths: .
