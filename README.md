@@ -112,7 +112,7 @@ __Without AWS__
 ```js
 Amplify.configure({
   API: {
-    graphql_endpoint: 'https:/www.example.com/my-graphql-endpoint'
+    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint'
   }
 });
 ```
@@ -221,7 +221,7 @@ To access a GraphQL API with your app, you need to make sure to configure the en
 // Configure a custom GraphQL endpoint
 Amplify.configure({
   API: {
-    graphql_endpoint: 'https:/www.example.com/my-graphql-endpoint'
+    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint'
   }
 });
 

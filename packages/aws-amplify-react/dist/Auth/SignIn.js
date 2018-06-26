@@ -55,6 +55,7 @@ var SignIn = function (_AuthPiece) {
 
         _this.checkContact = _this.checkContact.bind(_this);
         _this.signIn = _this.signIn.bind(_this);
+        _this.onKeyDown = _this.onKeyDown.bind(_this);
 
         _this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
         _this.state = {};
@@ -62,6 +63,26 @@ var SignIn = function (_AuthPiece) {
     }
 
     _createClass(SignIn, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            window.addEventListener('keydown', this.onKeyDown);
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            window.removeEventListener('keydown', this.onKeyDown);
+        }
+    }, {
+        key: 'onKeyDown',
+        value: function onKeyDown(e) {
+            if (this.props.authState === 'signIn') {
+                if (e.keyCode === 13) {
+                    // when press enter
+                    this.signIn();
+                }
+            }
+        }
+    }, {
         key: 'checkContact',
         value: function checkContact(user) {
             var _this2 = this;
@@ -99,7 +120,12 @@ var SignIn = function (_AuthPiece) {
                     _this3.checkContact(user);
                 }
             }).catch(function (err) {
-                _this3.error(err);
+                if (err.code === 'UserNotConfirmedException') {
+                    logger.debug('the user is not confirmed');
+                    _this3.changeState('confirmSignUp');
+                } else {
+                    _this3.error(err);
+                }
             });
         }
     }, {

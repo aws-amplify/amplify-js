@@ -48,14 +48,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var Common_1 = require("../Common");
-var AWSAnalyticsProvider_1 = require("./Providers/AWSAnalyticsProvider");
-var Auth_1 = require("../Auth");
+var AWSPinpointProvider_1 = require("./Providers/AWSPinpointProvider");
 var logger = new Common_1.ConsoleLogger('AnalyticsClass');
-// events buffer
-var BUFFER_SIZE = 1000;
-var MAX_SIZE_PER_FLUSH = BUFFER_SIZE * 0.1;
-var interval = 5 * 1000; // 5s
-var RESEND_LIMIT = 5;
+var dispatchAnalyticsEvent = function (event, data) {
+    Common_1.Hub.dispatch('analytics', { event: event, data: data }, 'Analytics');
+};
 /**
 * Provide mobile analytics client functions
 */
@@ -65,68 +62,95 @@ var AnalyticsClass = /** @class */ (function () {
      * @param config - Configuration of the Analytics
      */
     function AnalyticsClass() {
-        var _this = this;
-        this._buffer = [];
         this._config = {};
         this._pluggables = [];
         this._disabled = false;
-        // default one
-        // events batch
-        var that = this;
-        // flush event buffer
-        setInterval(function () {
-            var size = _this._buffer.length < MAX_SIZE_PER_FLUSH ? _this._buffer.length : MAX_SIZE_PER_FLUSH;
-            for (var i = 0; i < size; i += 1) {
-                var params = _this._buffer.shift();
-                that._sendFromBuffer(params);
-            }
-        }, interval);
     }
     /**
      * configure Analytics
      * @param {Object} config - Configuration of the Analytics
      */
     AnalyticsClass.prototype.configure = function (config) {
+        var _this = this;
         logger.debug('configure Analytics');
+        if (!config)
+            return this._config;
         var amplifyConfig = Common_1.Parser.parseMobilehubConfig(config);
-        var conf = Object.assign({}, this._config, amplifyConfig.Analytics, config);
-        var clientInfo = Common_1.ClientDevice.clientInfo();
-        conf['clientInfo'] = conf['client_info'] ? conf['client_info'] : clientInfo;
-        this._config = conf;
-        if (conf['disabled']) {
+        this._config = Object.assign({}, this._config, amplifyConfig.Analytics, config);
+        if (this._config['disabled']) {
             this._disabled = true;
         }
-        this._pluggables.map(function (pluggable) {
-            pluggable.configure(conf);
+        if (this._config['autoSessionRecord'] === undefined) {
+            this._config['autoSessionRecord'] = true;
+        }
+        this._pluggables.forEach(function (pluggable) {
+            // for backward compatibility
+            if (pluggable.getProviderName() === 'AWSPinpoint' && !_this._config['AWSPinpoint']) {
+                pluggable.configure(_this._config);
+            }
+            else {
+                pluggable.configure(_this._config[pluggable.getProviderName()]);
+            }
         });
         if (this._pluggables.length === 0) {
-            this.addPluggable(new AWSAnalyticsProvider_1.default());
+            this.addPluggable(new AWSPinpointProvider_1.default());
         }
-        return conf;
+        dispatchAnalyticsEvent('configured', null);
+        logger.debug('current configuration', this._config);
+        return this._config;
     };
     /**
      * add plugin into Analytics category
      * @param {Object} pluggable - an instance of the plugin
      */
     AnalyticsClass.prototype.addPluggable = function (pluggable) {
-        return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, config;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        ensureCredentails = _a.sent();
-                        if (!ensureCredentails)
-                            return [2 /*return*/, Promise.resolve(false)];
-                        if (pluggable) {
-                            this._pluggables.push(pluggable);
-                            config = pluggable.configure(this._config);
-                            return [2 /*return*/, Promise.resolve(config)];
-                        }
-                        return [2 /*return*/];
-                }
-            });
-        });
+        if (pluggable && pluggable.getCategory() === 'Analytics') {
+            this._pluggables.push(pluggable);
+            var config = {};
+            // for backward compatibility
+            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
+                config = pluggable.configure(this._config);
+            }
+            else {
+                config = pluggable.configure(this._config[pluggable.getProviderName()]);
+            }
+            return config;
+        }
+    };
+    /**
+     * Get the plugin object
+     * @param providerName - the name of the plugin
+     */
+    AnalyticsClass.prototype.getPluggable = function (providerName) {
+        for (var i = 0; i < this._pluggables.length; i += 1) {
+            var pluggable = this._pluggables[i];
+            if (pluggable.getProviderName() === providerName) {
+                return pluggable;
+            }
+        }
+        logger.debug('No plugin found with providerName', providerName);
+        return null;
+    };
+    /**
+     * Remove the plugin object
+     * @param providerName - the name of the plugin
+     */
+    AnalyticsClass.prototype.removePluggable = function (providerName) {
+        var idx = 0;
+        while (idx < this._pluggables.length) {
+            if (this._pluggables[idx].getProviderName() === providerName) {
+                break;
+            }
+            idx += 1;
+        }
+        if (idx === this._pluggables.length) {
+            logger.debug('No plugin found with providerName', providerName);
+            return;
+        }
+        else {
+            this._pluggables.splice(idx, idx + 1);
+            return;
+        }
     };
     /**
      * stop sending events
@@ -141,49 +165,33 @@ var AnalyticsClass = /** @class */ (function () {
         this._disabled = false;
     };
     /**
-     * Record Session start
-     * @return - A promise which resolves if buffer doesn't overflow
-     */
-    AnalyticsClass.prototype.startSession = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, timestamp, params;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        ensureCredentails = _a.sent();
-                        if (!ensureCredentails)
-                            return [2 /*return*/, Promise.resolve(false)];
-                        timestamp = new Date().getTime();
-                        params = { eventName: '_session_start', timestamp: timestamp, config: this._config };
-                        return [2 /*return*/, this._putToBuffer(params)];
-                }
-            });
-        });
-    };
-    /**
     * Receive a capsule from Hub
     * @param {any} capsuak - The message from hub
     */
     AnalyticsClass.prototype.onHubCapsule = function (capsule) { };
     /**
+     * Record Session start
+     * @return - A promise which resolves if buffer doesn't overflow
+     */
+    AnalyticsClass.prototype.startSession = function (provider) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params;
+            return __generator(this, function (_a) {
+                params = { event: { name: '_session_start' }, provider: provider };
+                return [2 /*return*/, this._sendEvent(params)];
+            });
+        });
+    };
+    /**
      * Record Session stop
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    AnalyticsClass.prototype.stopSession = function () {
+    AnalyticsClass.prototype.stopSession = function (provider) {
         return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, timestamp, params;
+            var params;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        ensureCredentails = _a.sent();
-                        if (!ensureCredentails)
-                            return [2 /*return*/, Promise.resolve(false)];
-                        timestamp = new Date().getTime();
-                        params = { eventName: '_session_stop', timestamp: timestamp, config: this._config };
-                        return [2 /*return*/, this._putToBuffer(params)];
-                }
+                params = { event: { name: '_session_stop' }, provider: provider };
+                return [2 /*return*/, this._sendEvent(params)];
             });
         });
     };
@@ -194,104 +202,50 @@ var AnalyticsClass = /** @class */ (function () {
      * @param {Object} [metrics] - Event metrics
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    AnalyticsClass.prototype.record = function (eventName, attributes, metrics) {
+    AnalyticsClass.prototype.record = function (event, provider, metrics) {
         return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, timestamp, params;
+            var params;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        ensureCredentails = _a.sent();
-                        if (!ensureCredentails)
-                            return [2 /*return*/, Promise.resolve(false)];
-                        timestamp = new Date().getTime();
-                        params = { eventName: eventName, attributes: attributes, metrics: metrics, timestamp: timestamp, config: this._config };
-                        return [2 /*return*/, this._putToBuffer(params)];
+                params = null;
+                // this is just for compatibility, going to be deprecated
+                if (typeof event === 'string') {
+                    params = {
+                        'event': {
+                            name: event,
+                            attributes: provider,
+                            metrics: metrics
+                        },
+                        provider: 'AWSPinpoint'
+                    };
                 }
+                else {
+                    params = { event: event, provider: provider };
+                }
+                return [2 /*return*/, this._sendEvent(params)];
             });
         });
     };
-    AnalyticsClass.prototype.updateEndpoint = function (config) {
+    AnalyticsClass.prototype.updateEndpoint = function (attrs, provider) {
         return __awaiter(this, void 0, void 0, function () {
-            var ensureCredentails, timestamp, conf, params;
+            var event;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._getCredentials()];
-                    case 1:
-                        ensureCredentails = _a.sent();
-                        if (!ensureCredentails)
-                            return [2 /*return*/, Promise.resolve(false)];
-                        timestamp = new Date().getTime();
-                        conf = Object.assign(this._config, config);
-                        params = { eventName: '_update_endpoint', timestamp: timestamp, config: conf };
-                        return [2 /*return*/, this._putToBuffer(params)];
-                }
+                event = Object.assign({ name: '_update_endpoint' }, attrs);
+                return [2 /*return*/, this.record(event, provider)];
             });
         });
     };
-    /**
-     * @private
-     * @param {Object} params - params for the event recording
-     * Send events from buffer
-     */
-    AnalyticsClass.prototype._sendFromBuffer = function (params) {
-        var that = this;
-        this._pluggables.map(function (pluggable) {
-            pluggable.record(params)
-                .then(function (success) {
-                if (!success) {
-                    params.resendLimits = typeof params.resendLimits === 'number' ?
-                        params.resendLimits : RESEND_LIMIT;
-                    if (params.resendLimits > 0) {
-                        logger.debug("resending event " + params.eventName + " with " + params.resendLimits + " retry times left");
-                        params.resendLimits -= 1;
-                        that._putToBuffer(params);
-                    }
-                    else {
-                        logger.debug("retry times used up for event " + params.eventName);
-                    }
-                }
-            });
-        });
-    };
-    /**
-     * @private
-     * @param params - params for the event recording
-     * Put events into buffer
-     */
-    AnalyticsClass.prototype._putToBuffer = function (params) {
+    AnalyticsClass.prototype._sendEvent = function (params) {
         if (this._disabled) {
             logger.debug('Analytics has been disabled');
             return Promise.resolve();
         }
-        if (this._buffer.length < BUFFER_SIZE) {
-            this._buffer.push(params);
-            return Promise.resolve();
-        }
-        else
-            return Promise.reject('exceed buffer size');
-    };
-    /**
-     * @private
-     * check if current credentials exists
-     */
-    AnalyticsClass.prototype._getCredentials = function () {
-        var that = this;
-        return Auth_1.default.currentCredentials()
-            .then(function (credentials) {
-            if (!credentials)
-                return false;
-            var cred = Auth_1.default.essentialCredentials(credentials);
-            that._config.credentials = cred;
-            // that._config.endpointId = cred.identityId;
-            // logger.debug('set endpointId for analytics', that._config.endpointId);
-            logger.debug('set credentials for analytics', that._config.credentials);
-            return true;
-        })
-            .catch(function (err) {
-            logger.debug('ensure credentials error', err);
-            return false;
+        var provider = params.provider ? params.provider : 'AWSPinpoint';
+        this._pluggables.forEach(function (pluggable) {
+            if (pluggable.getProviderName() === provider) {
+                pluggable.record(params);
+            }
         });
+        return Promise.resolve();
     };
     return AnalyticsClass;
 }());

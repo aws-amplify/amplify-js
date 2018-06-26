@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { Auth, Analytics, Logger } from 'aws-amplify';
+import { Auth, Analytics, Logger, Hub } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 import Loading from './Loading';
@@ -59,10 +59,20 @@ export default class Authenticator extends React.Component {
 
         this.handleStateChange = this.handleStateChange.bind(this);
         this.checkUser = this.checkUser.bind(this);
+        this.onHubCapsule = this.onHubCapsule.bind(this);
+
+        Hub.listen('auth', this);
     }
 
     componentWillMount() {
         this.checkUser();
+    }
+
+    onHubCapsule(capsule) {
+        const { channel, payload, source } = capsule;
+        if (channel === 'auth') {
+            this.checkUser();
+        }
     }
 
     handleStateChange(state, data) {
@@ -90,12 +100,17 @@ export default class Authenticator extends React.Component {
     }
 
     checkUser() {
+        const { authState } = this.state;
+        const statesJumpToSignIn = ['signedIn', 'signedOut', 'loading'];
         Auth.currentAuthenticatedUser().then(user => {
-            const state = user ? 'signedIn' : 'signIn';
-            this.handleStateChange(state, user);
+            if (user) {
+                this.handleStateChange('signedIn', null);
+            } else {
+                if (statesJumpToSignIn.includes(authState)) this.handleStateChange('signIn', null);
+            }
         }).catch(err => {
-            this.handleStateChange('signIn', null);
-            logger.error(err);
+            if (statesJumpToSignIn.includes(authState)) this.handleStateChange('signIn', null);
+            logger.debug(err);
         });
     }
 
