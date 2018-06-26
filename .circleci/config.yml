@@ -26,9 +26,13 @@ jobs:
       - run: yarn run build
       - run: yarn run coverage
       - save_cache:
-          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+          key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-            - ~/.cache  ## cache both yarn and Cypress
+            - ~/.cache ## cache both yarn and Cypress
+      - save_cache:
+          key: amplify-ssh-deps-{{ .Branch }}
+          paths:
+            - ~/.ssh
       - persist_to_workspace:
           root: .
           paths: .
@@ -45,7 +49,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+          key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: "Link aws-amplify"
           command: |
@@ -93,6 +97,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
+      - restore_cache:
+          key: 
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
       - run:
           name: "Publish to Amplify Package"
           command: |
