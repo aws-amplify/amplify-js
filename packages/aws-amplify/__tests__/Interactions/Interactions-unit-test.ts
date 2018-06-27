@@ -19,9 +19,9 @@ jest.mock('aws-sdk/clients/lexruntime', () => {
     return LexRuntime;
 });
 
-global.setTimeout = jest.fn((callback, time) => {
-    callback();
-});
+// global.setTimeout = jest.fn((callback, time) => {
+//     callback();
+// });
 
 import Interactions from '../../src/Interactions/Interactions';
 import Auth from '../../src/Auth/Auth';
@@ -189,7 +189,7 @@ describe('Interactions', () => {
                 interactions.onComplete('BookTripMOBILEHUB', onCompleteCallback);
                 await interactions.send('BookTripMOBILEHUB', 'hi')
                 const response = await interactions.send('BookTripMOBILEHUB', 'done');
-
+                jest.runAllTimers();
                 expect(response).toEqual({
                     dialogState: 'ReadyForFulfillment',
                     message: 'echo:done',
@@ -231,7 +231,7 @@ describe('Interactions', () => {
 
                 await interactions.send('BookTripMOBILEHUB', 'hi')
                 const response = await interactions.send('BookTripMOBILEHUB', 'done');
-
+                jest.runAllTimers();
                 expect(response).toEqual({
                     dialogState: 'ReadyForFulfillment',
                     message: 'echo:done',
