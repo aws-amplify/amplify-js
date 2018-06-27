@@ -57,32 +57,35 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 
                 this.aws_lex.postText(params, (err, data) => {
                     if (err) {
-                        throw err;
+                        rej(err);
+                        return;
+
                     } else {
                         // Check if state is fulfilled to resolve onFullfilment promise
-                        if (data.dialogState === 'ReadyForFulfillment') {
-                            logger.debug('ReadyForFulfillment');
+                        logger.debug('postText state', data.dialogState);
+                        if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
                             if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                this._botsCompleteCallback[botname](null, { slots: data.slots });
+                                setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
                             }
-
-                            if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                this._config[botname].onComplete(null, { slots: data.slots });
-                            }
-                        }
-
-                        if (data.dialogState === 'Failed') {
                             
+                            if (this._config && typeof this._config[botname].onComplete === 'function') {
+                                setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
+                            }
+                        }
+                        
+                        res(data);
+                        if (data.dialogState === 'Failed') {
+
                             if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                this._botsCompleteCallback[botname]({ err: 'Bot conversation failed' });
+                                setTimeout(
+                                    () => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
                             }
 
                             if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                this._config[botname].onComplete('Bot conversation failed');
+                                setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
                             }
                         }
 
-                        res(data);
                     }
                 });
             } else {

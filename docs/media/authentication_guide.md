@@ -176,7 +176,7 @@ Auth.confirmSignUp(username, code, {
 When your User Pool sign-in options are set to "*Username*", and "*Also allow sign in with verified email address*", *signUp()* creates a new user account without validating email uniqueness. In this case you will have multiple user pool identities and previous account's attribute is changed to *email_verified : false*. 
 
 To restrict signups with unique email, you can change your User Pool settings in your user pool's *Attributes* settings as following:
-![User Pool Settings](./images/cognito_user_pool_settings.png){: style="max-height:300px;"}
+![User Pool Settings](images/cognito_user_pool_settings.png){: style="max-height:300px;"}
 
 #### Sign Out
 ```js
