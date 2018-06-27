@@ -19,10 +19,6 @@ jest.mock('aws-sdk/clients/lexruntime', () => {
     return LexRuntime;
 });
 
-// global.setTimeout = jest.fn((callback, time) => {
-//     callback();
-// });
-
 import Interactions from '../../src/Interactions/Interactions';
 import Auth from '../../src/Auth/Auth';
 import { AWSLexProvider, AbstractInteractionsProvider } from '../../src/Interactions/Providers';
