@@ -132,7 +132,7 @@ Interactions.onComplete(botName, handleComplete );
 
 ## Using UI Components
 
-For React and React Native apps, the simplest way to add a conversational UI into your app is to use our *ChatBot* High Order Component.
+For React and React Native apps, the simplest way to add a conversational UI into your app is to use our *ChatBot* Component.
 
 *ChatBot* automatically renders a complete chat messaging interface that can be used out-of-the-box, or it can be customized using theming support. 
 
@@ -140,7 +140,7 @@ For React and React Native apps, the simplest way to add a conversational UI int
 
 When using React, you can use *ChatBot* with following properties;
 
-```js
+```html
 <ChatBot
     title="My Bot"
     theme={myTheme}
@@ -222,7 +222,7 @@ export default App;
 
 When using React Native, you can use *ChatBot* with following properties;
 
-```js
+```html
 <ChatBot
     botName={botName}
     welcomeMessage={welcomeMessage}
