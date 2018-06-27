@@ -61,7 +61,7 @@ export default class Client {
             statusCode: response.status,
             message: response.statusText
           }
-          throw error;
+          callback(error);
         }
       })
       .then(data => {
