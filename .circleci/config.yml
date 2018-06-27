@@ -134,4 +134,3 @@ workflows:
                 - master
           requires:
             - unit_test
-            - integration_test_auth
