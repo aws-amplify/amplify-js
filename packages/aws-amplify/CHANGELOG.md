@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.8-unstable.0"></a>
+## [0.4.8-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.7-unstable.2...aws-amplify@0.4.8-unstable.0) (2018-06-27)
+
+
+### Bug Fixes
+
+* **interactions:** check fulfilled state to trigger onComplete callback ([#1122](https://github.com/aws/aws-amplify/issues/1122)) ([c24b1f1](https://github.com/aws/aws-amplify/commit/c24b1f1))
+
+
+
+
 <a name="0.4.7"></a>
 ## [0.4.7](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.7-unstable.2...aws-amplify@0.4.7) (2018-06-27)
 
