@@ -17,7 +17,7 @@ Regardless of how you create your chatbot, you can edit your bot in Amazon Lex c
 
 To create a chatbot with AWS Mobile Hub, follow these steps;
 
-1. Go to [AWS Mobile Hub console](https://aws.amazon.com/lex/mobile).
+1. Go to [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home).
 
 2. Create a new Mobile Hub project or select an existing project to add a bot.
 
@@ -33,7 +33,7 @@ To create a chatbot with AWS Mobile Hub, follow these steps;
 6. Click *Create a Bot*. Your bot is now ready to be integrated into your app.
 
 **Editing Your Bot**
-You can edit your bot and add new utterances or integrate with other AWS services by visiting [Amazon Lex console](https://console.aws.amazon.com/lex) any time.
+You can edit your bot and add new utterances or integrate with other AWS services by visiting [Amazon Lex console](https://console.aws.amazon.com/lex) any time.  
 ![Mobile Hub](./images/interactions_lex_console_edit_bot.jpg){: class="screencap" style="max-height:600px;"}
 {: .callout .callout--info}
 
