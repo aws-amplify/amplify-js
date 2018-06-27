@@ -26,9 +26,13 @@ jobs:
       - run: yarn run build
       - run: yarn run coverage
       - save_cache:
-          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+          key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-            - ~/.cache  ## cache both yarn and Cypress
+            - ~/.cache ## cache both yarn and Cypress
+      - save_cache:
+          key: amplify-ssh-deps-{{ .Branch }}
+          paths:
+            - ~/.ssh
       - persist_to_workspace:
           root: .
           paths: .
@@ -45,7 +49,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+          key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: "Link aws-amplify"
           command: |
@@ -66,7 +70,9 @@ jobs:
           name: "Clone auth test package, initialize mobilehub via cli, and link amplify packages"
           command: |
             mkdir ~/.ssh
+            echo $SSH_HOST_PUBLIC_KEY
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+            echo $AUTH_CLONE_URL
             git clone $AUTH_CLONE_URL
             cd aws-amplify-cypress-auth
             yarn
@@ -93,6 +99,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
+      - restore_cache:
+          keys: 
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
       - run:
           name: "Publish to Amplify Package"
           command: |
@@ -124,4 +134,3 @@ workflows:
                 - master
           requires:
             - unit_test
-            - integration_test_auth
