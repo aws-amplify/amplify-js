@@ -181,7 +181,7 @@ If you are having issues when using Aurelia, please see the following [Stack Ove
 ## Usage
 
 The usage examples below use the unqualified names for types in the Amazon Cognito Identity SDK for JavaScript. Remember to import or qualify access to any of these types:
-
+    
 ```javascript
     // When using loose Javascript files:
     var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
