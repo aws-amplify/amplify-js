@@ -3,7 +3,7 @@
 
 # Angular
 
-AWS Amplify provides Angular Components with `aws-amplify-angular` npm package.
+AWS Amplify provides Angular Components with [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
 
 ## Installation and Configuration
 
@@ -25,7 +25,7 @@ $ npm install -g awsmobile-cli
 $ awsmobile init
 $ awsmobile user-signin enable
 $ awsmobile user-files enable
-$ awsmobile push # Update your backend
+$ awsmobile push # Updates your backend
 ```
 
 After creating your backend, the configuration file is copied to `/awsmobilejs/#current-backend-info/aws-exports.js`, and the source folder you have identified in the `awmobile init` command.

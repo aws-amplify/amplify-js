@@ -64,14 +64,17 @@ amplify:
         logo:
             text: AWS Amplify
             image: true
+            platform: for JavaScript
         nav:
             - item_name: Quick Start
               item_url: '/media/quick_start'
             - item_name: Docs
               item_url: '/media/developer_guide'
+#            - item_name: Tutorials
+#              item_url: '/media/tutorials'
             - item_name: API
               item_url: '/api/'
-            - item_name: Github
+            - item_name: 
               item_icon: github
               item_external_url: 'https://github.com/aws/aws-amplify'
     footer:
@@ -152,6 +155,14 @@ category_list:
           services:
               - title: Amazon CloudFront
                 url: https://aws.amazon.com/cloudfront/
+        - title: Interactions 
+          excerpt: Create conversational bots powered by deep learning technologies.
+          cta: Read more
+          class: aws-icon-ps-60-bubble-gear
+          url: '/media/interactions_guide'   
+          services:
+              - title: Amazon Lex
+                url: https://aws.amazon.com/lex/
         - title: PubSub 
           excerpt: Connect your app to message-oriented middleware on the cloud.
           cta: Read more
@@ -167,7 +178,7 @@ category_list:
         - title: Push Notifications 
           excerpt: Push notifications with campaign analytics and targeting.
           cta: Read more
-          class: aws-icon-ps-60-bubble-gear
+          class: aws-icon-ps-60-device-message
           url: '/media/push_notifications_setup'   
           services:
               - title: Amazon Pinpoint
