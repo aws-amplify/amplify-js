@@ -59,7 +59,7 @@ $ awsmobile push
 
 Currently, once you create a Cognito User Pool, you won't be able to change the standard attributes at a later time. If you need to modify User Pool attributes, you can remove the user pool with `awsmobile user-signin disable` and create a new User Pool with the CLI.
 
-![Cognito Settings](./images/cognito_user_pool_standart_attributes.png){: style="max-height:400px;"}
+![Cognito Settings]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/cognito_user_pool_standart_attributes.png){: style="max-height:400px;"}
 
 ### Manual Setup
 
