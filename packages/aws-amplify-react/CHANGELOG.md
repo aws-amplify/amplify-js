@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.53"></a>
+## [0.1.53](https://github.com/aws/aws-amplify/compare/aws-amplify-react@0.1.53-unstable.2...aws-amplify-react@0.1.53) (2018-06-27)
+
+
+### Features
+
+* **interactions:** Interactions UI components for react and react native ([#1105](https://github.com/aws/aws-amplify/issues/1105)) ([57de248](https://github.com/aws/aws-amplify/commit/57de248))
+
+
+
+
 <a name="0.1.53-unstable.2"></a>
 ## [0.1.53-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@0.1.53-unstable.1...aws-amplify-react@0.1.53-unstable.2) (2018-06-26)
 
