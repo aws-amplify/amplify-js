@@ -63,25 +63,26 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
                     } else {
                         // Check if state is fulfilled to resolve onFullfilment promise
                         logger.debug('postText state', data.dialogState);
-                        res(data);
                         if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
                             if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                this._botsCompleteCallback[botname](null, { slots: data.slots });
+                                setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
                             }
-
+                            
                             if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                this._config[botname].onComplete(null, { slots: data.slots });
+                                setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
                             }
                         }
-
+                        
+                        res(data);
                         if (data.dialogState === 'Failed') {
-                            
+
                             if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                this._botsCompleteCallback[botname]({ err: 'Bot conversation failed' });
+                                setTimeout(
+                                    () => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
                             }
 
                             if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                this._config[botname].onComplete('Bot conversation failed');
+                                setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
                             }
                         }
 

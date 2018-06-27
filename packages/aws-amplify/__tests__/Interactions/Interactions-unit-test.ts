@@ -19,8 +19,11 @@ jest.mock('aws-sdk/clients/lexruntime', () => {
     return LexRuntime;
 });
 
+global.setTimeout = jest.fn((callback, time) => {
+    callback();
+});
+
 import Interactions from '../../src/Interactions/Interactions';
-import { findInterfacesAddedToObjectTypes } from 'graphql/utilities/findBreakingChanges';
 import Auth from '../../src/Auth/Auth';
 import { AWSLexProvider, AbstractInteractionsProvider } from '../../src/Interactions/Providers';
 
@@ -156,11 +159,14 @@ describe('Interactions', () => {
         });
 
         describe('Sending messages to bot', () => {
-            test('Interactions configuration and send message to existing bot and call onComplete from Interaction.onComplete', async () => {
+            test('Interactions configuration and send message to existing bot and call onComplete from Interaction.onComplete', async (done) => {
                 const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                    .mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-
-                const onComplete = jest.fn((err, confirmation) => { });
+                .mockImplementation(() => Promise.resolve({ identityId: '1234' }));
+                
+                const onCompleteCallback = jest.fn((err, confirmation) => { 
+                    expect(confirmation).toEqual({ "slots": { "m1": "hi", "m2": "done" } });
+                    done(); 
+                });
 
                 const configuration = {
                     Interactions: {
@@ -180,7 +186,7 @@ describe('Interactions', () => {
                 const config = interactions.configure(configuration);
 
                 expect(config).toEqual(configuration.Interactions);
-                interactions.onComplete('BookTripMOBILEHUB', onComplete);
+                interactions.onComplete('BookTripMOBILEHUB', onCompleteCallback);
                 await interactions.send('BookTripMOBILEHUB', 'hi')
                 const response = await interactions.send('BookTripMOBILEHUB', 'done');
 
@@ -193,14 +199,16 @@ describe('Interactions', () => {
                     }
                 });
 
-                expect(onComplete).toBeCalledWith(null, { "slots": { "m1": "hi", "m2": "done" } });
             });
-            test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async () => {
+            test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async (done) => {
                 const curCredSpyOn = jest.spyOn(Auth.prototype, 'currentCredentials')
-                    .mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-
-                const onComplete = jest.fn((err, confirmation) => { });
-
+                .mockImplementation(() => Promise.resolve({ identityId: '1234' }));
+                
+                const onCompleteCallback = jest.fn((err, confirmation) => { 
+                    expect(confirmation).toEqual({ "slots": { "m1": "hi", "m2": "done" } });
+                    done(); 
+                });
+                    
                 const configuration = {
                     Interactions: {
                         'bots': {
@@ -208,7 +216,7 @@ describe('Interactions', () => {
                                 "name": "BookTripMOBILEHUB",
                                 "alias": "$LATEST",
                                 "region": "us-east-1",
-                                "onComplete": onComplete
+                                "onComplete": onCompleteCallback
                             }
 
                         }
@@ -233,7 +241,6 @@ describe('Interactions', () => {
                     }
                 });
 
-                expect(onComplete).toBeCalledWith(null, { "slots": { "m1": "hi", "m2": "done" } });
             });
 
             test('aws-exports configuration and send message to not existing bot', async () => {
@@ -271,7 +278,7 @@ describe('Interactions', () => {
                 expect(config).toEqual({"aws_bots": "enable", "aws_bots_config": [{"alias": "$LATEST", "bot-template": "bot-trips", "commands-help": ["Book a car", "Reserve a car", "Make a car reservation", "Book a hotel", "Reserve a room", "I want to make a hotel reservation"], "description": "Bot to make reservations for a visit to a city.", "name": "BookTripMOBILEHUB", "region": "us-east-1"}], "aws_project_name": "bots", "aws_project_region": "us-east-1", "bots": {"BookTripMOBILEHUB": {"alias": "$LATEST", "bot-template": "bot-trips", "commands-help": ["Book a car", "Reserve a car", "Make a car reservation", "Book a hotel", "Reserve a room", "I want to make a hotel reservation"], "description": "Bot to make reservations for a visit to a city.", "name": "BookTripMOBILEHUB", "region": "us-east-1"}}});
 
                 try {
-                    await interactions.onComplete('BookTrip');
+                    await interactions.onComplete('BookTrip', () => {});
                 } catch (err) {
                     expect(err.message).toEqual('Bot BookTrip does not exist');
                 }

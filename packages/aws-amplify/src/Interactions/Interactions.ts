@@ -106,7 +106,7 @@ export default class Interactions {
             throw new Error('Bot ' + botProvider +
                 ' does not have valid pluggin did you try addPluggable first?');
         }
-        return this._pluggables[botProvider].onComplete(botname, callback);
+        this._pluggables[botProvider].onComplete(botname, callback);
 
     }
 }
