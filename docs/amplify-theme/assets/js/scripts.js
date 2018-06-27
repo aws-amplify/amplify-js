@@ -330,8 +330,8 @@
 
 	}
 
-	// Update time to display a new message
-	showNotificationBar( new Date('June 5, 2018 15:03:00') );
+	// When the last message is received. Typicaly the announcement time
+	showNotificationBar( new Date('June 26, 2018 11:42:00') );
 
 }( jQuery ) );
 
