@@ -22,19 +22,19 @@ To create a chatbot with AWS Mobile Hub, follow these steps;
 2. Create a new Mobile Hub project or select an existing project to add a bot.
 
 3. Go to your project details. Under *Add More Backend Features* section, select *Conversational Bots* option box.
-![Mobile Hub](./images/interactions_mobile_hub_add.jpg){: class="screencap" style="max-height:600px;"}  
+![Mobile Hub](images/interactions_mobile_hub_add.jpg){: class="screencap" style="max-height:600px;"}  
 
 4. Select one of the three sample bots or select *Import a bot* to use an existing bot. When you to import a bot, a list of your existing Amazon Lex bots will be displayed.
-![Mobile Hub](./images/interactions_mobile_hub_select_bot.jpg){: class="screencap" style="max-height:400px;"}
+![Mobile Hub2](images/interactions_mobile_hub_select_bot.jpg){: class="screencap" style="max-height:400px;"}
 
 5. When you select a sample bot, Mobile Hub creates your bot on Amazon Lex with sample intents and utterances. An intent performs an action in response to a natural language user input, while an utterance is a set of spoken or typed phrases that invoke your intent. You can learn more about how Amazon Lex chatbots work from the [Amazon Lex Developer guide](https://docs.aws.amazon.com/lex/latest/dg/what-is.html).
-![Mobile Hub](./images/interactions_mobile_hub_sample_bot.jpg){: class="screencap" style="max-height:600px;"}
+![Mobile Hub3](images/interactions_mobile_hub_sample_bot.jpg){: class="screencap" style="max-height:600px;"}
 
 6. Click *Create a Bot*. Your bot is now ready to be integrated into your app.
 
 **Editing Your Bot**
 You can edit your bot and add new utterances or integrate with other AWS services by visiting [Amazon Lex console](https://console.aws.amazon.com/lex) any time.  
-![Mobile Hub](./images/interactions_lex_console_edit_bot.jpg){: class="screencap" style="max-height:600px;"}
+![Mobile Hub4](images/interactions_lex_console_edit_bot.jpg){: class="screencap" style="max-height:600px;"}
 {: .callout .callout--info}
 
 ## Installation and Configuration
