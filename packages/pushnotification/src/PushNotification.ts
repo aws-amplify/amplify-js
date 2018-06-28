@@ -195,22 +195,10 @@ export default class PushNotification {
         let ret = null;
         const dataPayload = dataObj.data;
         if (dataPayload['pinpoint.campaign.campaign_id']) {
-            const campaign = {
-                campaign_id: dataPayload['pinpoint.campaign.campaign_id'],
-                campaign_activity_id: dataPayload['pinpoint.campaign.campaign_activity_id'],
-                treatment_id: dataPayload['pinpoint.campaign.treatment_id']
-            };
-            const pinpoint = {
-                campaign,
-                deeplink: dataPayload['pinpoint.deeplink'],
-                url: dataPayload['pinpoint.url'],
-            };
             ret = {
                 title: dataPayload['pinpoint.notification.title'],
                 body: dataPayload['pinpoint.notification.body'],
-                data: {
-                    pinpoint
-                },
+                data: dataPayload,
                 foreground: dataObj.foreground
             };
         }
