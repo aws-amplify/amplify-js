@@ -28,6 +28,7 @@
     "@types/zen-observable": "^0.5.3",
     "angular2-template-loader": "^0.6.2",
     "awesome-typescript-loader": "^4.0.1",
+    "aws-amplify": "^0.4.8-unstable.3",
     "compression-webpack-plugin": "^1.1.11",
     "css-loader": "^0.28.1",
     "gulp": "^3.9.1",
@@ -57,7 +58,6 @@
   },
   "dependencies": {
     "@ionic/angular": "^4.0.0-alpha.7",
-    "@types/lodash": "^4.14.106",
-    "aws-amplify": "0.4.8-unstable.3"
+    "@types/lodash": "^4.14.106"
   }
 }
