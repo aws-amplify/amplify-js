@@ -45,10 +45,6 @@ const template = `
   template: template
 })
 export class AuthenticatorIonicComponent extends AuthenticatorComponentCore {
-  authState: AuthState = {
-    state: 'signIn',
-    user: null
-  };
 
   amplifyService: AmplifyService;
 

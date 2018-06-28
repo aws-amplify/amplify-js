@@ -33,6 +33,7 @@ var Cache_1 = require("./Cache");
 exports.Cache = Cache_1.default;
 var Interactions_1 = require("./Interactions");
 exports.Interactions = Interactions_1.default;
+exports.InteractionsClass = Interactions_1.InteractionsClass;
 var Common_1 = require("./Common");
 exports.Logger = Common_1.ConsoleLogger;
 exports.Hub = Common_1.Hub;

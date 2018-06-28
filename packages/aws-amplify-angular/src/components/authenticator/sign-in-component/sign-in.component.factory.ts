@@ -5,6 +5,8 @@ import { ComponentMount }      from '../../component.mount';
 import { SignInClass } from './sign-in.class';
 import { SignInComponentIonic } from './sign-in.component.ionic'
 import { SignInComponentCore } from './sign-in.component.core';
+import { AuthState } from '../../../providers';
+import { authDecorator } from '../../../providers/auth.decorator';
 
 @Component({
   selector: 'amplify-auth-sign-in',
@@ -15,7 +17,8 @@ import { SignInComponentCore } from './sign-in.component.core';
             `
 })
 export class SignInComponent implements OnInit, OnDestroy {
-  @Input() framework: string
+  @Input() framework: string;
+  @Input() authState: AuthState;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -28,7 +31,7 @@ export class SignInComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework === 'ionic' ? new ComponentMount(SignInComponentIonic,{authState: ''}) : new ComponentMount(SignInComponentCore, {authState: ''});
+    let authComponent = this.framework && this.framework === 'ionic' ? new ComponentMount(SignInComponentIonic,{authState: this.authState}) : new ComponentMount(SignInComponentCore, {authState: this.authState});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

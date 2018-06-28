@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AmplifyService } from './providers/amplify.service';
 import * as components from './components';
 
-import { DynamicComponentDirective }          from './directives/dynamic.component.directive';
+import { DynamicComponentDirective } from './directives/dynamic.component.directive';
 
 
 import { IonicModule } from '@ionic/angular';
@@ -19,6 +19,7 @@ const exportables = [
   components.S3ImageComponentIonic,
   components.SignInComponentIonic,
   components.SignUpComponentIonic,
+  components.ChatbotComponentIonic
 ]
 
 @NgModule({

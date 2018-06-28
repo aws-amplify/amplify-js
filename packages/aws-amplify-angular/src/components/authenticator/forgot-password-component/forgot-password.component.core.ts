@@ -78,6 +78,14 @@ export class ForgotPasswordComponentCore {
   }
 
   @Input()
+  set data(data: any) {
+    this._authState = data.authState;
+    this._show = data.authState.state === 'forgotPassword';
+
+    this.username = data.authState.user? data.authState.user.username || '' : '';
+  }
+
+  @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = authState.state === 'forgotPassword';

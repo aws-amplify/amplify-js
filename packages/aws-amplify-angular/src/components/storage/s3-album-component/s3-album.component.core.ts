@@ -32,6 +32,19 @@ export class S3AlbumComponentCore {
     this.selected.emit(event);
   }
 
+  @Input() set data(data: any){
+    if (!data.path) { return; }
+    const that = this;
+    this.amplifyService.storage()
+      .list(data.path)
+      .then(res => {
+        that.list = res.map(item => {
+          return { path: item.key };
+        });
+      })
+      .catch(err => console.error(err));
+  }
+
   @Input() set path(path: string) {
     if (!path) { return; }
     const that = this;

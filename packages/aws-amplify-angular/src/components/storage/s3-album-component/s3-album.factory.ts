@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
@@ -15,7 +15,10 @@ import { S3AlbumComponentCore } from './s3-album.component.core';
             `
 })
 export class S3AlbumComponent implements OnInit, OnDestroy {
-  @Input() framework: string
+  @Input() framework: string;
+  @Input() path: string;
+  @Output()
+  selected: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -28,15 +31,20 @@ export class S3AlbumComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3AlbumComponentIonic,{}) : new ComponentMount(S3AlbumComponentCore, {});
+    let albumComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3AlbumComponentIonic,{path: this.path}) : new ComponentMount(S3AlbumComponentCore, {path: this.path});
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(albumComponent.component);
 
     let viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
-    (<S3AlbumClass>componentRef.instance).data = authComponent.data;
+    (<S3AlbumClass>componentRef.instance).data = albumComponent.data;
+
+    componentRef.instance.selected.subscribe((e) => {
+      this.selected.emit(e);
+    })
+
   }
 }
 

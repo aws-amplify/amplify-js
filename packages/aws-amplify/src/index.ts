@@ -17,7 +17,7 @@ import Storage, { StorageClass } from './Storage';
 import API, { APIClass, graphqlOperation } from './API';
 import PubSub from './PubSub';
 import Cache from './Cache';
-import Interactions from './Interactions';
+import Interactions, { InteractionsClass } from './Interactions';
 import {
     ConsoleLogger as Logger,
     Hub,
@@ -63,7 +63,8 @@ export {
     AuthClass, 
     AnalyticsClass, 
     APIClass, 
-    StorageClass, 
+    StorageClass,
+    InteractionsClass, 
     AnalyticsProvider, 
     AWSPinpointProvider, 
     AWSKinesisProvider 

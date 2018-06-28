@@ -28,6 +28,7 @@ export class GreetingComponentCore {
 
   @Input()
   authState: AuthState;
+  
 
   subscribe() {
     this.amplifyService.authStateChange$

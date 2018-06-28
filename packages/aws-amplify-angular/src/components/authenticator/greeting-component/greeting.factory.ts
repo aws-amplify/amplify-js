@@ -5,6 +5,7 @@ import { ComponentMount }      from '../../component.mount';
 import { GreetingClass } from './greeting.class';
 import { GreetingComponentIonic } from './greeting.component.ionic'
 import { GreetingComponentCore } from './greeting.component.core';
+import { AuthState } from '../../../providers';
 
 @Component({
   selector: 'amplify-auth-greetings',
@@ -15,7 +16,8 @@ import { GreetingComponentCore } from './greeting.component.core';
             `
 })
 export class GreetingComponent implements OnInit, OnDestroy {
-  @Input() framework: string
+  @Input() framework: string;
+  @Input() authState: AuthState;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -28,7 +30,7 @@ export class GreetingComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(GreetingComponentIonic,{authState: ''}) : new ComponentMount(GreetingComponentCore, {authState: ''});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(GreetingComponentIonic,{authState: this.authState}) : new ComponentMount(GreetingComponentCore, {authState: this.authState});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

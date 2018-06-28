@@ -29,6 +29,16 @@ export class S3ImageComponentCore {
   }
 
   @Input()
+  set data(data:any){
+    if (!data.imagePath) { return; }
+
+    this.amplifyService.storage()
+      .get(data.imagePath)
+      .then(url => this.url = url)
+      .catch(err => console.error(err));
+  }
+
+  @Input()
   set path(imagePath: string) {
     if (!imagePath) { return; }
 

@@ -28,10 +28,6 @@ const template = `
   template: template
 })
 export class PhotoPickerIonicComponent extends PhotoPickerComponentCore {
-  authState: AuthState = {
-    state: 'signIn',
-    user: null
-  };
 
   amplifyService: AmplifyService;
 

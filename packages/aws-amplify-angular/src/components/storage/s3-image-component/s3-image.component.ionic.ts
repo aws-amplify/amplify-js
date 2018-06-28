@@ -15,10 +15,6 @@ const template = `
   template: template
 })
 export class S3ImageComponentIonic extends S3ImageComponentCore {
-  authState: AuthState = {
-    state: 'signIn',
-    user: null
-  };
 
   amplifyService: AmplifyService;
 

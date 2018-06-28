@@ -5,6 +5,7 @@ import { ComponentMount }      from '../../component.mount';
 import { ConfirmSignUpClass } from './confirm-sign-up.class';
 import { ConfirmSignUpComponentIonic } from './confirm-sign-up.component.ionic'
 import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
+import { AuthState } from '../../../providers';
 
 @Component({
   selector: 'amplify-auth-confirm-sign-up',
@@ -15,7 +16,8 @@ import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
             `
 })
 export class ConfirmSignUpComponent implements OnInit, OnDestroy {
-  @Input() framework: string
+  @Input() framework: string;
+  @Input() authState: AuthState;
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -28,7 +30,7 @@ export class ConfirmSignUpComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ConfirmSignUpComponentIonic,{authState: ''}) : new ComponentMount(ConfirmSignUpComponentCore, {authState: ''});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ConfirmSignUpComponentIonic,{authState: this.authState}) : new ComponentMount(ConfirmSignUpComponentCore, {authState: this.authState});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

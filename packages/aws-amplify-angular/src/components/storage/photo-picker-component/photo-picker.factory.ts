@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
@@ -16,10 +16,17 @@ import { String } from 'aws-sdk/clients/cognitoidentity';
             `
 })
 export class PhotoPickerComponent implements OnInit, OnDestroy {
-  @Input() framework: String
+  @Input() framework: String;
+  @Input() url: string;
+  @Output()
+  picked: EventEmitter<string> = new EventEmitter<string>();
+  @Output()
+  loaded: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) { 
+    
+  }
 
   ngOnInit() {
     this.loadComponent();
@@ -27,17 +34,28 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {}
 
+
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(PhotoPickerIonicComponent,{}) : new ComponentMount(PhotoPickerComponentCore, {});
+    let photoPickerComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(PhotoPickerIonicComponent,{url: this.url}) : new ComponentMount(PhotoPickerComponentCore, {url: this.url});
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(photoPickerComponent.component);
 
     let viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
-    (<PhotoPickerClass>componentRef.instance).data = authComponent.data;
+    (<PhotoPickerClass>componentRef.instance).data = photoPickerComponent.data;
+
+    componentRef.instance.picked.subscribe((e) => {
+      console.log('this.picked', this.picked)
+      this.picked.emit(e);
+    })
+
+    componentRef.instance.loaded.subscribe((e) => {
+      this.loaded.emit(e);
+    })
+
   }
 }
 

@@ -27,5 +27,6 @@ const Interactions = _instance;
 Amplify.register(Interactions);
 
 export default Interactions;
+export {InteractionsClass};
 
 export * from './Providers/AWSLexProvider';

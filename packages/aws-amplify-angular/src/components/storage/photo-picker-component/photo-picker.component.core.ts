@@ -34,11 +34,18 @@ export class PhotoPickerComponentCore {
     this.hasPhoto = true;
   }
 
+  @Input()
+  set data(data: any) {
+    this.photoUrl = data.url;
+    this.hasPhoto = true;
+  }
+
   @Output()
   picked: EventEmitter<string> = new EventEmitter<string>();
 
   @Output()
   loaded: EventEmitter<string> = new EventEmitter<string>();
+  
 
   pick(evt) {
     const file = evt.target.files[0];

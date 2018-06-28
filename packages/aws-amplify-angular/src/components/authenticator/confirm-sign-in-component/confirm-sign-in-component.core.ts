@@ -48,6 +48,12 @@ export class ConfirmSignInComponentCore {
   }
 
   @Input()
+  set data(data: any) {
+    this._authState = data.authState;
+    this._show = data.authState.state === 'confirmSignIn';
+  }
+
+  @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = authState.state === 'confirmSignIn';

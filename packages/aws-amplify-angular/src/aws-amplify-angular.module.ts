@@ -25,7 +25,9 @@ const exportables = [
   components.SignInComponent,
   components.SignInComponentCore,
   components.SignUpComponent,
-  components.SignUpComponentCore
+  components.SignUpComponentCore,
+  components.ChatBotComponent,
+  components.ChatbotComponentCore
 ]
 
 
