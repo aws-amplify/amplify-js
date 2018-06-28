@@ -1,19 +1,19 @@
 /*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- * 
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- * 
- *     http://aws.amazon.com/asl/
- * 
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License. 
- */
+* Copyright 2016 Amazon.com,
+* Inc. or its affiliates. All Rights Reserved.
+* 
+* Licensed under the Amazon Software License (the "License").
+* You may not use this file except in compliance with the
+* License. A copy of the License is located at
+* 
+*     http://aws.amazon.com/asl/
+* 
+* or in the "license" file accompanying this file. This file is
+* distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+* CONDITIONS OF ANY KIND, express or implied. See the License
+* for the specific language governing permissions and
+* limitations under the License. 
+*/
 !function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.AmazonCognitoIdentity=t():e.AmazonCognitoIdentity=t()}(this,function(){return function(e){function t(r){if(n[r])return n[r].exports;var i=n[r]={exports:{},id:r,loaded:!1};return e[r].call(i.exports,i,i.exports,t),i.loaded=!0,i.exports}var n={};return t.m=e,t.c=n,t.p="",t(0)}([function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}t.__esModule=!0;var i=n(19);Object.defineProperty(t,"AuthenticationDetails",{enumerable:!0,get:function(){return r(i).default}});var o=n(3);Object.defineProperty(t,"AuthenticationHelper",{enumerable:!0,get:function(){return r(o).default}});var s=n(5);Object.defineProperty(t,"CognitoAccessToken",{enumerable:!0,get:function(){return r(s).default}});var a=n(6);Object.defineProperty(t,"CognitoIdToken",{enumerable:!0,get:function(){return r(a).default}});var u=n(8);Object.defineProperty(t,"CognitoRefreshToken",{enumerable:!0,get:function(){return r(u).default}});var c=n(9);Object.defineProperty(t,"CognitoUser",{enumerable:!0,get:function(){return r(c).default}});var h=n(10);Object.defineProperty(t,"CognitoUserAttribute",{enumerable:!0,get:function(){return r(h).default}});var f=n(21);Object.defineProperty(t,"CognitoUserPool",{enumerable:!0,get:function(){return r(f).default}});var l=n(11);Object.defineProperty(t,"CognitoUserSession",{enumerable:!0,get:function(){return r(l).default}});var p=n(22);Object.defineProperty(t,"CookieStorage",{enumerable:!0,get:function(){return r(p).default}});var d=n(12);Object.defineProperty(t,"DateHelper",{enumerable:!0,get:function(){return r(d).default}})},function(e,t,n){(function(e){/*!
 	* The buffer module from node.js, for the browser.
 	*
