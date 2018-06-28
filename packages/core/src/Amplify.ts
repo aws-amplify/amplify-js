@@ -22,7 +22,7 @@ export default class Amplify {
     static ServiceWorker = null;
 
     static register(comp) {
-        logger.debug('component registed in amplify', comp);
+        logger.debug('component registered in amplify', comp);
         this._components.push(comp);
         if (typeof comp.getModuleName === 'function') {
             Amplify[comp.getModuleName()] = comp;
