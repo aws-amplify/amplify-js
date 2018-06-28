@@ -114,7 +114,10 @@ export default class PushNotification {
         const eventType = (message.foreground)?'_campaign.received_foreground':'_campaign.received_background';
 
         if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
-            Amplify.Analytics.record(eventType, attributes);
+            Amplify.Analytics.record({
+                name: eventType, 
+                attributes
+            });
         } else {
             logger.debug('Analytics module is not registered into Amplify');
         }

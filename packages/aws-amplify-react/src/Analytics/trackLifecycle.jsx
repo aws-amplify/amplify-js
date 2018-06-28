@@ -35,7 +35,10 @@ export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
         track(event) {
             const filtered = this.trackEvents.filter(item => item === event);
             if (filtered.length > 0) {
-                Analytics.record(this.trackerName, { event: event });
+                Analytics.record({
+                    name: this.trackerName, 
+                    attributes: { event: event }
+                });
             }
         }
 

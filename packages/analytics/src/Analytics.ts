@@ -71,12 +71,7 @@ export default class AnalyticsClass {
         }
 
         this._pluggables.forEach((pluggable) => {
-            // for backward compatibility
-            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
-                pluggable.configure(this._config);  
-            } else {
-                pluggable.configure(this._config[pluggable.getProviderName()]);
-            }
+            pluggable.configure(this._config[pluggable.getProviderName()]);
         });
 
         if (this._pluggables.length === 0) {
@@ -95,14 +90,7 @@ export default class AnalyticsClass {
     public addPluggable(pluggable: AnalyticsProvider) {
         if (pluggable && pluggable.getCategory() === 'Analytics') {
             this._pluggables.push(pluggable);
-            let config = {};
-            // for backward compatibility
-            if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
-                config = pluggable.configure(this._config);  
-            } else {
-                config = pluggable.configure(this._config[pluggable.getProviderName()]);
-            }
-            return config;
+            return pluggable.configure(this._config[pluggable.getProviderName()]);
         }
     }
 
@@ -185,26 +173,14 @@ export default class AnalyticsClass {
 
     /**
      * Record one analytic event and send it to Pinpoint
-     * @param {String} name - The name of the event
-     * @param {Object} [attributs] - Attributes of the event
-     * @param {Object} [metrics] - Event metrics
+     * @param {object} event - The event object
+     * @param {string} provider - the provider name
      * @return - A promise which resolves if buffer doesn't overflow
      */
-    public async record(event: string | object, provider? , metrics?: EventMetrics) {
+    public async record(event: object, provider?: string) {
         let params = null;
-        // this is just for compatibility, going to be deprecated
-        if (typeof event === 'string') {
-            params =  {
-                'event': {
-                    name: event, 
-                    attributes: provider, 
-                    metrics
-                }, 
-                provider: 'AWSPinpoint'
-            };
-        } else {
-            params = { event, provider };
-        }
+        params = { event, provider };
+        
         return this._sendEvent(params);
     }
 
