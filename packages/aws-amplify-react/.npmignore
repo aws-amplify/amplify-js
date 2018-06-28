@@ -10,5 +10,5 @@ test_Setup/**
 .DS_Store
 *.log
 prepend-license.js
-cypress/*
+cypress/**
 cypress.json
