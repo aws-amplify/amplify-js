@@ -4,8 +4,11 @@
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest --coverage --updateSnapshot",
-    "build": "npm run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
+    "test": "jest --coverage --updateSnapshot --maxWorkers 2",
+    "build": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
+    "watch": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files --watch",
+    "cypress": "cypress run",
+    "cypress:open": "cypress open",
     "build-with-test": "npm test && npm run build",
     "clean": "rimraf dist"
   },
@@ -50,7 +53,11 @@
     "graphql": "0.13.0"
   },
   "dependencies": {
+<<<<<<< HEAD
     "aws-amplify": "^1.0.0",
+=======
+    "aws-amplify": "^0.4.8-unstable.3",
+>>>>>>> origin
     "qrcode.react": "^0.8.0",
     "regenerator-runtime": "^0.11.1"
   }

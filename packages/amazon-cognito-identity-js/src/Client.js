@@ -64,7 +64,7 @@ export default class Client {
       })
       .catch(err => {
         // default to return 'UnknownError'
-        let error = { code: 'UnknownError', message: 'Unkown error' };
+        let error = { code: 'UnknownError', message: 'Unknown error' };
 
         // first check if we have a service error
         if (response && response.headers && response.headers.get('x-amzn-errortype')) {

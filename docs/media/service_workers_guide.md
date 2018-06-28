@@ -41,7 +41,7 @@ This method will enable web push notifications for your app. If your app is not 
 You need a web push service provider to generate the public key, and sending the actual push notifications. To test push messages with a non-production environment, you can follow [this tutorial](https://developers.google.com/web/fundamentals/codelabs/push-notifications/).
 {: .callout .callout--info}
 
-#### Handling a Push Notification
+### Handling a Push Notification
 
 To handle incoming push notifications in your service worker, your script should register an event handler for `push` event.
 

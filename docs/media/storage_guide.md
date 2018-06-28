@@ -148,6 +148,7 @@ Storage.configure({
 Puts data into Amazon S3.
 
 Public level:
+
 ```js
 Storage.put('test.txt', 'Hello')
     .then (result => console.log(result))
@@ -155,6 +156,7 @@ Storage.put('test.txt', 'Hello')
 ```
 
 Protected level:
+
 ```js
 Storage.put('test.txt', 'Protected Content', {
     level: 'protected',
@@ -165,6 +167,7 @@ Storage.put('test.txt', 'Protected Content', {
 ```
 
 Private level:
+
 ```js
 Storage.put('test.txt', 'Private Content', {
     level: 'private',
@@ -174,7 +177,8 @@ Storage.put('test.txt', 'Private Content', {
 .catch(err => console.log(err));
 ```
 
-Upload an image from browser:
+Upload an image in the browser:
+
 ```js
 class S3ImageUpload extends React.Component {
   onChange(e) {
@@ -197,7 +201,8 @@ class S3ImageUpload extends React.Component {
 }
 ```
 
-Upload an image from react-native app:
+Upload an image in React Native app:
+
 ```js
 import RNFetchBlob from 'react-native-fetch-blob';
 
@@ -213,6 +218,9 @@ readFile(imagePath).then(buffer => {
     console.log(e);
 });
 ```
+
+When a networking error happens during the upload, Storage module retries upload for a maximum of  4 attempts. If the upload fails after all retries, you will get an error.
+{: .callout .callout--info}
 
 #### Get
 
@@ -315,6 +323,7 @@ Storage.list('photos/', {level: 'private'})
     .then(result => console.log(result))
     .catch(err => console.log(err));
 ```
+
 
 #### API Reference
 

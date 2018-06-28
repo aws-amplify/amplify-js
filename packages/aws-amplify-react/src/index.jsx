@@ -20,6 +20,7 @@ export * from './Analytics';
 export * from './Storage';
 export * from './Widget';
 export * from './API';
+export * from './Interactions';
 
 export { default as AmplifyTheme } from './AmplifyTheme';
 export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
