@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "0.1.254",
+  "version": "0.1.6",
   "description": "AWS Amplify Angular Components",
   "main": "lib/index.js",
   "module": "./lib/index.js",
@@ -58,6 +58,6 @@
   "dependencies": {
     "@ionic/angular": "^4.0.0-alpha.7",
     "@types/lodash": "^4.14.106",
-    "aws-amplify": "^0.4.15"
+    "aws-amplify": "0.4.8-unstable.3"
   }
 }
