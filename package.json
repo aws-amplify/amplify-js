@@ -13,6 +13,7 @@
     "format": "lerna run -- format",
     "lint": "lerna run -- lint",
     "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]'",
+    "publish:version-1.0.0": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]'",
     "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]'",
     "publish:release": "lerna publish --conventional-commits --cd-version=patch --yes --independent --message 'chore(release): Publish [ci skip]'"
   },
