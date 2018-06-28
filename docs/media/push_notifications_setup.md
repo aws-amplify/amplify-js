@@ -5,7 +5,7 @@
 
 AWS Amplify Push Notifications module allows you to integrate push notifications in your app with Amazon Pinpoint targeting and campaign management support.
 
-Push Notifications are currently supported only for *React Native*.
+Push Notifications are currently supported only for *React Native*. For handling Web Push Notification with Service Workers, visit our [Service Workers Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/service_workers_guide#handling-a-push-notification).
 {: .callout .callout--info}
 
 This guide provides a step-by-step introduction to start working with push notifications in React Native with Amazon Pinpoint. Amazon Pinpoint helps you to monitor your app's usage, create messaging campaigns targeted to specific user segments or demographics, and collect interaction metrics with push notifications. 
@@ -20,7 +20,7 @@ Setup instructions are provided for Android and iOS, and configuration for both 
 3. Push Notification module is integrated with [AWS Amplify Analytics module]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide) to be able to track notifications. Make sure that you have configured the Analytics module in your app before configuring Push Notification module.
 3. For setting up iOS push notifications, you need to download and install Xcode from [Apple Developer Center](https://developer.apple.com/xcode/).
 
-### Setup for Android devices
+### Setup for Android
 
 1. Make sure you have a [Firebase Project](https://console.firebase.google.com) and app setup. 
 
@@ -37,6 +37,7 @@ $ react-native link @aws-amplify/pushnotification
 $ react-native link amazon-cognito-identity-js # link it if you need to Sign in into Cognito user pool
 ```
 That would install required npm modules and link React Native binaries.
+*Please note that linking `aws-amplify-react-native` but not completing the rest of the configuration steps could break your build process. Please be sure that you have completed all the steps before you build your app.*
 
 5. Enable your app in Firebase. To do that, follow those steps:
  - Visit the [Firebase console](https://console.firebase.google.com), and click the Gear icon next to **Project Overview** and click **Project Settings** Remember, if you don't have an existing project, you need to create one in order to continue
@@ -125,7 +126,7 @@ apply plugin: 'com.google.gms.google-services'
   $ yarn/npm run android
 ```
 
-### Setup for IOS device
+### Setup for IOS
 
 1. Setup iOS Push Notifications and create a p12 certificate as instructed here in [Amazon Pinpoint Developer Guide](https://docs.aws.amazon.com/pinpoint/latest/developerguide/apns-setup.html).
  
@@ -140,6 +141,7 @@ $ npm install aws-amplify --save
 $ npm install aws-amplify-react-native --save
 $ react-native link aws-amplify-react-native
 ```
+*Please note that linking `aws-amplify-react-native` but not completing the rest of the configuration steps could break your build process. Please be sure that you have completed all the steps before you build your app.*
 
 4. Open `ios/myapp.xcodeproj` project file with Xcode.
 
