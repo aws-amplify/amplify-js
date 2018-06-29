@@ -43,17 +43,21 @@ Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'pro
 
 ### Automated Setup
 
-To enable your bot in your app, you need to enable *user-signin* in your project because Interactions module needs user credentials to authorize  Amazon Lex.
-
-Run following CLI command to enable *user-signin* and retrieve the updated configuration file for your backend.
+Run following CLI commands to get your chatbox configuration to your local development environment. You will need your app's Mobile Hub project ID.
 
 ```bash
 $ npm install -g awsmobile-cli
 $ cd my-app #Change to your project's root folder
-$ awsmobile init
-$ awsmobile user-signin enable
-$ awsmobile push # Update your backend and retrieve the latest backend configuration files
+$ awsmobile init xxxx-yyyy-4491-bd6e-256d74e2b451 # Use your AWS Mobile Hub project ID
 ```
+
+**Retrieving your AWS Mobile Hub project id**
+To retrieve your Mobile Hub project id, click *Integrate* button on your project in Mobile Hub console.
+![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}
+/media/images/mobile_hub_app_detail.jpg){: class="screencap" style="max-height:350px;"}  
+Then, click download link to get your `aws-exports.js` file which includes your Mobile Hub project id.
+![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/interactions_mobile_hub_configure.jpg){: class="screencap" style="max-height:400px;"}
+{: .callout .callout--info}
 
 In your app's entry point, i.e. App.js, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.
 
@@ -236,7 +240,7 @@ When using React Native, you can use *ChatBot* with following properties;
 />
 ```
 
-Following simple app shows how to use **ChatBot** component in a React app;
+Following simple app shows how to use **ChatBot** component in a React Native app;
 
  ```js
 import React from 'react';
@@ -260,22 +264,22 @@ Amplify.configure({
   }
 });
 
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingTop: StatusBar.currentHeight,
+  },
+});
+
 export default class App extends React.Component {
 
     state = {
         botName: 'BookTripMOBILEHUB',
         welcomeMessage: 'Welcome, what would you like to do today?',
     };
-
-    const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingTop: StatusBar.currentHeight,
-    },
-    });
 
     constructor(props) {
         super(props);
