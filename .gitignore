@@ -11,3 +11,4 @@ packages/**/dist/
 .idea
 *.log
 .npm/
+packages/**/cypress/videos/

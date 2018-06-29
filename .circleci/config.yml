@@ -3,19 +3,106 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
+machine:
+    environment:
+      PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+
+defaults: &defaults
+  working_directory: ~/app
+  docker:
+    - image: cypress/base:10
+      environment:
+          ## this enables colors in the output
+          TERM: xterm
+
 jobs:
   build:
-    docker:
-      - image: circleci/node:8.11
+    <<: *defaults
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
       - run: yarn
       - run: yarn run bootstrap
       - run: yarn run build
+      - run: yarn run coverage
+      - save_cache:
+          key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache ## cache both yarn and Cypress
+      - save_cache:
+          key: amplify-ssh-deps-{{ .Branch }}
+          paths:
+            - ~/.ssh
+      - persist_to_workspace:
+          root: .
+          paths: .
+  unit_test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
       - run: yarn run test --scope aws-amplify
       - run: yarn run test --scope aws-amplify-react
-      - run: yarn run coverage
+  integration_test_auth:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: "Link aws-amplify"
+          command: |
+            cd packages/aws-amplify
+            yarn link
+      - run:
+          name: "Link aws-amplify-react"
+          command: |
+            cd packages/aws-amplify-react
+            yarn link
+      - run:
+          name: "Install awsmobile cli"
+          command: |
+            echo 'export PATH=$(yarn global bin):$PATH' >> $BASH_ENV
+            source $BASH_ENV
+            yarn global add awsmobile-cli
+      - run: 
+          name: "Clone auth test package, initialize mobilehub via cli, and link amplify packages"
+          command: |
+            mkdir ~/.ssh
+            echo $SSH_HOST_PUBLIC_KEY
+            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+            echo $AUTH_CLONE_URL
+            git clone $AUTH_CLONE_URL
+            cd aws-amplify-cypress-auth
+            yarn
+            awsmobile configure aws $IAM_ACCESS_KEY $IAM_SECRET_KEY $CLI_REGION
+            awsmobile init --yes $AUTH_MOBILE_HUB_PROJECT_ID
+            yarn link aws-amplify
+            yarn link aws-amplify-react
+      - run:
+          name: "Start Auth test server in background"
+          command: |
+            cd aws-amplify-cypress-auth
+            yarn start
+          background: true
+      - run:
+          name: "Run cypress tests for aws-amplify-react"
+          command: |
+            yarn cypress --scope aws-amplify-react
+      - store_artifacts:
+          path: cypress/videos
+      - store_artifacts:
+          path: cypress/screenshots
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          keys: 
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
       - run:
           name: "Publish to Amplify Package"
           command: |
@@ -27,3 +114,23 @@ jobs:
             else
               echo "Skipping deploy."
             fi
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - build
+      - unit_test:
+          requires:
+            - build
+      - integration_test_auth:
+          requires:
+            - build
+      - deploy:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+          requires:
+            - unit_test
