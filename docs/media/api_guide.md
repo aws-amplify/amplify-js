@@ -401,8 +401,8 @@ When working with a GraphQL endpoint, you need to set request headers for author
 ```js
 Amplify.configure({
   API: {
-    graphql_headers: async () => ({
-      'My-Custom-Header': 'my value'
+    graphql_headers: () => ({
+        'My-Custom-Header': 'my value'
     })
   }
 });
