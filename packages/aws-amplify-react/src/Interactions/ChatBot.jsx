@@ -3,6 +3,7 @@ import { Interactions } from 'aws-amplify';
 import { Container, FormSection, SectionHeader, SectionBody, SectionFooter } from "../AmplifyUI";
 import { Input, Button } from "../AmplifyTheme";
 import { I18n } from "aws-amplify";
+import regeneratorRuntime from 'regenerator-runtime/runtime';
 
 const styles = {
     itemMe: {
