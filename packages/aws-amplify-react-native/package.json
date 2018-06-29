@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-react-native",
-  "version": "0.2.19-unstable.3",
+  "version": "0.2.19",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "dist/index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "rimraf": "^2.6.2"
   },
   "dependencies": {
-    "aws-amplify": "^0.4.8-unstable.3",
+    "aws-amplify": "^0.4.8",
     "axios": "^0.17.1",
     "babel-preset-es2015": "^6.24.1"
   },

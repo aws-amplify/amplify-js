@@ -15,7 +15,7 @@ import Analytics, { AnalyticsClass, AnalyticsProvider, AWSPinpointProvider, AWSK
 import Auth, { AuthClass } from './Auth';
 import Storage, { StorageClass } from './Storage';
 import API, { APIClass, graphqlOperation } from './API';
-import PubSub from './PubSub';
+import PubSub, { PubSubClass } from './PubSub';
 import Cache from './Cache';
 import Interactions, { InteractionsClass } from './Interactions';
 import {
@@ -64,7 +64,8 @@ export {
     AnalyticsClass, 
     APIClass, 
     StorageClass,
-    InteractionsClass, 
+    PubSubClass,
+    InteractionsClass,
     AnalyticsProvider, 
     AWSPinpointProvider, 
     AWSKinesisProvider 
