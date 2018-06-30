@@ -30,5 +30,3 @@ export default Interactions;
 export {InteractionsClass};
 
 export * from './Providers/AWSLexProvider';
-
-export { InteractionsClass };
