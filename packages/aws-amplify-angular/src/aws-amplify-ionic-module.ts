@@ -19,7 +19,8 @@ const exportables = [
   components.S3ImageComponentIonic,
   components.SignInComponentIonic,
   components.SignUpComponentIonic,
-  components.ChatbotComponentIonic
+  components.ChatbotComponentIonic,
+  components.RequireNewPasswordComponentIonic
 ]
 
 @NgModule({

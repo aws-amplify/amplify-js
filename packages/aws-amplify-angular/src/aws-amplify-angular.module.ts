@@ -27,7 +27,9 @@ const exportables = [
   components.SignUpComponent,
   components.SignUpComponentCore,
   components.ChatBotComponent,
-  components.ChatbotComponentCore
+  components.ChatbotComponentCore,
+  components.RequireNewPasswordComponent,
+  components.RequireNewPasswordComponentCore
 ]
 
 
@@ -38,7 +40,6 @@ const exportables = [
   declarations: [
     DynamicComponentDirective,
     components.FormComponent,
-    components.RequireNewPasswordComponent,
     ...exportables,
   ],
   entryComponents: [
@@ -47,7 +48,6 @@ const exportables = [
   providers: [ AmplifyService ],
   exports: [
     ...exportables,
-    components.RequireNewPasswordComponent,
   ]
 })
 export class AmplifyAngularModule { }
