@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
-import { Auth, Logger } from 'aws-amplify';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '../../Categories';
 import AmplifyTheme from '../../AmplifyTheme';
 import { SignInButton } from '../../AmplifyUI';
 
@@ -39,15 +40,19 @@ export default function withGoogle(Comp) {
             };
 
             const { onStateChange } = this.props;
-            return Auth.federatedSignIn(
-                'google',
-                { token: id_token, expires_at },
-                user
-            ).then(credentials => {
-                if (onStateChange) {
-                    onStateChange('signedIn');
-                }
-            });
+            if (Auth && typeof Auth.federatedSignIn === 'function') {
+                return Auth.federatedSignIn(
+                    'google',
+                    { token: id_token, expires_at },
+                    user
+                ).then(credentials => {
+                    if (onStateChange) {
+                        onStateChange('signedIn');
+                    }
+                });
+            } else {
+                throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            }
         }
 
         componentDidMount() {

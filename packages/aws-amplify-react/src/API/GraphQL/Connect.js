@@ -1,8 +1,7 @@
 import regeneratorRuntime from 'regenerator-runtime/runtime';
 import React, { Component } from 'react';
 import { parse } from 'graphql/language/parser';
-
-import { API } from "aws-amplify";
+import { API } from '../../Categories';
 
 const getOperationType = operation => {
     const doc = parse(operation);
@@ -48,6 +47,10 @@ export default class Connect extends Component {
 
         if (!hasValidQuery && !hasValidMutation && !hasValidSubscription) {
             console.warn('No query, mutation or subscription was specified');
+        }
+
+        if (!API || typeof API.graphql !== 'function') {
+            throw new Error('No API module found, please ensure @aws-amplify/api is imported');
         }
 
         if (hasValidQuery) {

@@ -12,7 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '../Categories';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -48,6 +49,10 @@ export default class VerifyContact extends AuthPiece {
             return;
         }
 
+        if (!Auth || typeof Auth.verifyCurrentUserAttribute !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
         Auth.verifyCurrentUserAttribute(checkedValue)
             .then(data => {
                 logger.debug(data);
@@ -59,6 +64,9 @@ export default class VerifyContact extends AuthPiece {
     submit() {
         const attr = this.state.verifyAttr;
         const { code } = this.inputs;
+        if (!Auth || typeof Auth.verifyCurrentUserAttributeSubmit !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.verifyCurrentUserAttributeSubmit(attr, code)
             .then(data => {
                 logger.debug(data);
