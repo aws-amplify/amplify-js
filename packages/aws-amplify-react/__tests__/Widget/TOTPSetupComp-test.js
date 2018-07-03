@@ -1,6 +1,23 @@
+jest.mock('../../src/Categories', () => {
+    const Auth = {
+        setupTOTP() {
+             return;
+        },
+        verifyTotpToken() {
+            return;
+        },
+        setPreferredMFA() {
+            return;
+        }
+    };
+
+    return {
+        Auth
+    };
+});
+import { Auth } from '../../src/Categories';
 import React, { Component } from 'react';
 import TOTPSetupComp from '../../src/Widget/TOTPSetupComp';
-import { Auth } from 'aws-amplify';
 import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
 import AmplifyTheme from '../../src/AmplifyTheme';
 

@@ -986,6 +986,7 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
       }
     />
     <InputRow
+      autoComplete="off"
       autoFocus={true}
       key="code"
       name="code"
