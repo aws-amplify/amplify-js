@@ -28,7 +28,7 @@
     "@types/zen-observable": "^0.5.3",
     "angular2-template-loader": "^0.6.2",
     "awesome-typescript-loader": "^4.0.1",
-    "aws-amplify": "^0.4.8",
+    "aws-amplify": "^0.3",
     "compression-webpack-plugin": "^1.1.11",
     "css-loader": "^0.28.1",
     "gulp": "^3.9.1",
