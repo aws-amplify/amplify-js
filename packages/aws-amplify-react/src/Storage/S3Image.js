@@ -14,7 +14,7 @@
 import React, { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { Auth } from '../Categories';
+import { Storage } from '../Categories';
 
 import AmplifyTheme from '../AmplifyTheme';
 import { transparent1X1 } from '../AmplifyUI';

@@ -1,9 +1,20 @@
+jest.mock('../../../src/Categories', () => {
+    const Auth = {
+        federatedSignIn() {
+            return;
+        }
+    };
+
+    return {
+        Auth
+    };
+});
+import { Auth } from '../../../src/Categories';
 import React, { Component } from 'react';
 import withGoogle, {
     GoogleButton
 } from '../../../src/Auth/Provider/withGoogle';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 describe('withGoogle test', () => {
     describe('render test', () => {

@@ -1,9 +1,20 @@
+jest.mock('../../src/Categories', () => {
+    const Auth = {
+        signUp() {
+            return;
+        }
+    };
+
+    return {
+        Auth
+    };
+});
+import { Auth } from '../../src/Categories';
 import SignUp from '../../src/Auth/SignUp';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
 import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 const acceptedStates = [
     'signUp'

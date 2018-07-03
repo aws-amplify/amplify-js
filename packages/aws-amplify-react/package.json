@@ -42,7 +42,7 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 80,
+        "branches": 79,
         "functions": 80,
         "lines": 80,
         "statements": 80
@@ -50,10 +50,17 @@
     }
   },
   "peerDependencies": {
-    "graphql": "0.13.0"
+    "graphql": "0.13.0",
+    "@aws-amplify/analytics": "^1.0.0",
+    "@aws-amplify/api": "^1.0.0",
+    "@aws-amplify/auth": "^1.0.0",
+    "@aws-amplify/interactions": "^1.0.0",
+    "@aws-amplify/pubsub": "^1.0.0",
+    "@aws-amplify/storage": "^1.0.0"
   },
   "dependencies": {
-    "aws-amplify": "^1.0.0",
+    "@aws-amplify/core": "^1.0.0",
+    "@aws-amplify/cache": "^1.0.0",
     "qrcode.react": "^0.8.0",
     "regenerator-runtime": "^0.11.1"
   }
