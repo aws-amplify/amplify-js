@@ -35,14 +35,12 @@ const template = `
     [authState]="authState"
     ></amplify-auth-greetings-core>
 
+     <amplify-auth-require-new-password-core
+    *ngIf="!shouldHide('RequireNewPassword')"
+    [authState]="authState"
+    ></amplify-auth-require-new-password-core>
   </div>
 `
-
-
-// <amplify-auth-require-new-password-core
-// *ngIf="!shouldHide('RequireNewPassword')"
-// [authState]="authState"
-// ></amplify-auth-require-new-password-core>
 
 
 @Component({

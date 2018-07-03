@@ -8,7 +8,7 @@ import { RequireNewPasswordComponentCore } from './require-new-password.componen
 import { AuthState } from '../../../providers';
 
 @Component({
-  selector: 'amplify-auth-greetings',
+  selector: 'amplify-auth-require-new-password',
   template: `
               <div>
                 <ng-template component-host></ng-template>

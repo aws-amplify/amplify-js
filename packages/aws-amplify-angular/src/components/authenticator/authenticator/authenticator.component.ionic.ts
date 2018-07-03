@@ -38,6 +38,12 @@ const template = `
       [authState]="authState"
     ></amplify-auth-greetings-ionic>
   </div>
+  <div>
+    <amplify-auth-require-new-password-ionic
+    *ngIf="!shouldHide('RequireNewPassword')"
+    [authState]="authState"
+    ></amplify-auth-require-new-password-ionic>
+  </div>
 `
 
 @Component({

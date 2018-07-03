@@ -35,7 +35,7 @@ const template = `
 `
 
 @Component({
-  selector: 'amplify-auth-require-new-password',
+  selector: 'amplify-auth-require-new-password-core',
   template: template
 })
 export class RequireNewPasswordComponentCore {

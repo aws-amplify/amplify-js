@@ -39,7 +39,7 @@ const template = `
 `
 
 @Component({
-  selector: 'amplify-auth-greetings-ionic',
+  selector: 'amplify-auth-require-new-password-ionic',
   template: template
 })
 export class RequireNewPasswordComponentIonic extends RequireNewPasswordComponentCore {
