@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { I18n } from 'aws-amplify';
+import { I18n } from '@aws-amplify/core';
 
 import dict from './AmplifyI18n';
 

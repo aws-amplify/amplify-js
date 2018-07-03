@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
-import { Auth, Logger } from 'aws-amplify';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '../../Categories';
 import AmplifyTheme from '../../AmplifyTheme';
 import { SignInButton } from '../../AmplifyUI';
 
@@ -52,13 +53,16 @@ export default function withFacebook(Comp) {
                 const user = {
                     name: response.name
                 }
-
-                Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
+                if (Auth && typeof Auth.federatedSignIn === 'function') {
+                    Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
                     .then(credentials => {
                         if (onStateChange) {
                             onStateChange('signedIn');
                         }
                     });
+                } else {
+                    throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+                }
             });
         }
 

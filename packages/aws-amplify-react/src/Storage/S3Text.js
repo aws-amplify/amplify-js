@@ -13,7 +13,8 @@
 
 import React, { Component } from 'react';
 
-import { Storage, Logger } from 'aws-amplify';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '../Categories';
 
 import AmplifyTheme from '../AmplifyTheme';
 import { TextPicker } from '../Widget';
@@ -38,6 +39,9 @@ export default class S3Text extends Component {
     }
 
     getText(key, level, track) {
+        if (!Storage || typeof Storage.get !== 'function') {
+            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+        }
         Storage.get(key, { download: true, level: level? level : 'public', track })
             .then(data => {
                 logger.debug(data);
@@ -63,6 +67,9 @@ export default class S3Text extends Component {
         logger.debug('loading ' + key + '...');
         if (body) {
             const type = contentType || 'text/*';
+            if (!Storage || typeof Storage.put !== 'function') {
+                throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+            }
             const ret = Storage.put(key, body, {
                 contentType: type,
                 level: level? level : 'public',
@@ -95,6 +102,9 @@ export default class S3Text extends Component {
         const { textKey, level, fileToKey, track } = this.props;
         const { file, name, size, type } = data;
         const key = textKey || (path + calcKey(data, fileToKey));
+        if (!Storage || typeof Storage.put !== 'function') {
+            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+        }
         Storage.put(key, file, {
             level: level? level: 'public',
             contentType: type,
