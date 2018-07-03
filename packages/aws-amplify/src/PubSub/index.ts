@@ -29,3 +29,4 @@ Amplify.register(PubSub);
 export default PubSub;
 
 export * from './Providers/AWSIotProvider';
+export { PubSubClass };
