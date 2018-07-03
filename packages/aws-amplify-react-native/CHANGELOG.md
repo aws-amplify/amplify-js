@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.20-unstable.0"></a>
+## [0.2.20-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.19...aws-amplify-react-native@0.2.20-unstable.0) (2018-07-02)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
 <a name="0.2.19"></a>
 ## [0.2.19](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@0.2.19-unstable.5...aws-amplify-react-native@0.2.19) (2018-06-29)
 
