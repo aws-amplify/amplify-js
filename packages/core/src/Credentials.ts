@@ -304,6 +304,9 @@ export class Credentials {
             });
             credentials.clearCachedId();
         }
+        this._credentials = null;
+        this._credentials_source = null;
+
         if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
             await Amplify.Cache.removeItem('federatedInfo');
         } else {

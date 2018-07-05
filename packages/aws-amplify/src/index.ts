@@ -15,9 +15,9 @@ import Analytics, { AnalyticsClass, AnalyticsProvider, AWSPinpointProvider, AWSK
 import Auth, { AuthClass } from '@aws-amplify/auth';
 import Storage, { StorageClass } from '@aws-amplify/storage';
 import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
-import PubSub from '@aws-amplify/pubsub';
+import PubSub, { PubSubClass } from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
-import Interactions from '@aws-amplify/interactions';
+import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
 import {
     ConsoleLogger as Logger,
     Hub,
@@ -63,7 +63,9 @@ export {
     AuthClass, 
     AnalyticsClass, 
     APIClass, 
-    StorageClass, 
+    StorageClass,
+    PubSubClass,
+    InteractionsClass,
     AnalyticsProvider, 
     AWSPinpointProvider, 
     AWSKinesisProvider 

@@ -35,7 +35,7 @@ export default class APIClass {
     private _pubSub = Amplify.PubSub;
 
     /**
-     * Initialize Storage with AWS configurations
+     * Initialize Storage with AWS configuration
      * @param {Object} options - Configuration object for storage
      */
     constructor(options) {
