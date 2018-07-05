@@ -49,16 +49,18 @@ export default function withFacebook(Comp) {
 
             const fb = window.FB;
             fb.api('/me', response => {
-                const user = {
+                let user = {
                     name: response.name
                 }
 
                 Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
                     .then(credentials => {
+                        return Auth.currentAuthenticatedUser();
+                    }).then(authUser => {
                         if (onStateChange) {
-                            onStateChange('signedIn');
+                            onStateChange('signedIn', authUser);
                         }
-                    });
+                    })
             });
         }
 

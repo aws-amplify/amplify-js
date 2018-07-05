@@ -30,24 +30,27 @@ export default function withGoogle(Comp) {
             );
         }
 
-        federatedSignIn(googleUser) {
+        async federatedSignIn(googleUser) {
             const { id_token, expires_at } = googleUser.getAuthResponse();
             const profile = googleUser.getBasicProfile();
-            const user = {
+            let user = {
                 email: profile.getEmail(),
                 name: profile.getName()
             };
 
             const { onStateChange } = this.props;
-            return Auth.federatedSignIn(
+            
+            await Auth.federatedSignIn(
                 'google',
                 { token: id_token, expires_at },
                 user
-            ).then(credentials => {
-                if (onStateChange) {
-                    onStateChange('signedIn');
-                }
-            });
+            );
+
+            user = await Auth.currentAuthenticatedUser();
+
+            if (onStateChange) {
+                onStateChange('signedIn', user);
+            }
         }
 
         componentDidMount() {
