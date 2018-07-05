@@ -65,11 +65,11 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
                         logger.debug('postText state', data.dialogState);
                         if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
                             if (typeof this._botsCompleteCallback[botname] === 'function') {
-                                setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
+                                setTimeout(() => this._botsCompleteCallback[botname](null, data), 0);
                             }
                             
                             if (this._config && typeof this._config[botname].onComplete === 'function') {
-                                setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
+                                setTimeout(() => this._config[botname].onComplete(null, data), 0);
                             }
                         }
                         
