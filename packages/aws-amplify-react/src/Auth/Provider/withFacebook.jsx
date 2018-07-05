@@ -60,7 +60,7 @@ export default function withFacebook(Comp) {
                         if (onStateChange) {
                             onStateChange('signedIn', authUser);
                         }
-                    })
+                    });
             });
         }
 

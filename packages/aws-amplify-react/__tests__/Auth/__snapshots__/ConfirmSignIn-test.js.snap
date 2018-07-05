@@ -738,6 +738,7 @@ exports[`ConfirmSignIn render test render correctly with Props confirmSignIn 1`]
     }
   >
     <InputRow
+      autoComplete="off"
       autoFocus={true}
       key="code"
       name="code"
