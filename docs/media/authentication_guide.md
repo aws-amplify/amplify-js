@@ -336,6 +336,9 @@ Cache.getItem('federatedInfo').then(federatedInfo => {
      const { token } = federatedInfo;
 });
 ```
+
+By default Amplify will automatically refresh the token from Google or Facebook for you so that the AWS credentials will be always valid. But if you are using other federated providers you will need to provide your own refreshing method. 
+
 Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenID. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `accounts.your-openid-provider.com`.
 
  NOTE: Federated Identity HOCs are not yet available on React Native.
