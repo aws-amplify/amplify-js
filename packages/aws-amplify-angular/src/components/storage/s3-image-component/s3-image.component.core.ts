@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { AmplifyService } from '../../providers';
+import { AmplifyService } from '../../../providers';
 
 const template = `
   <img
@@ -10,10 +10,10 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-s3-image',
+  selector: 'amplify-s3-image-core',
   template: template
 })
-export class S3ImageComponent {
+export class S3ImageComponentCore {
   url: any;
   amplifyService: AmplifyService;
 
@@ -26,6 +26,16 @@ export class S3ImageComponent {
 
   onImageClicked() {
     this.selected.emit(this.url);
+  }
+
+  @Input()
+  set data(data:any){
+    if (!data.imagePath) { return; }
+
+    this.amplifyService.storage()
+      .get(data.imagePath)
+      .then(url => this.url = url)
+      .catch(err => console.error(err));
   }
 
   @Input()
