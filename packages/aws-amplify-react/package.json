@@ -51,7 +51,6 @@
     }
   },
   "peerDependencies": {
-    "graphql": "0.13.0",
     "@aws-amplify/analytics": "^1.0.0",
     "@aws-amplify/api": "^1.0.0",
     "@aws-amplify/auth": "^1.0.0",

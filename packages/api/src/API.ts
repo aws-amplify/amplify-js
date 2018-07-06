@@ -324,6 +324,17 @@ export default class APIClass {
 
         return headers;
     }
+    
+    /**
+     * to get the operation type
+     * @param operation 
+     */
+    getGraphqlOperationType(operation) {
+        const doc = parse(operation);
+        const { definitions: [{ operation: operationType },] } = doc
+
+        return operationType;
+    }
 
     /**
      * Executes a GraphQL operation
@@ -418,6 +429,7 @@ export default class APIClass {
 
         return response;
     }
+
 
     private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
