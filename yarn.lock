@@ -397,6 +397,14 @@ amazon-cognito-auth-js@^1.1.9:
   dependencies:
     js-cookie "^2.1.4"
 
+amazon-cognito-identity-js@^2.0.14-unstable.1:
+  version "2.0.14-unstable.1"
+  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-2.0.14-unstable.1.tgz#5cbae33e9a7d4c8f405fb1b1fa8c8008723aa47a"
+  dependencies:
+    buffer "4.9.1"
+    crypto-browserify "1.0.9"
+    js-cookie "^2.1.4"
+
 amdefine@>=0.0.4, amdefine@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
@@ -737,6 +745,22 @@ awesome-typescript-loader@^4.0.1:
     micromatch "^3.0.3"
     mkdirp "^0.5.1"
     source-map-support "^0.5.3"
+
+aws-amplify@0.4.9-unstable.1:
+  version "0.4.9-unstable.1"
+  resolved "https://registry.yarnpkg.com/aws-amplify/-/aws-amplify-0.4.9-unstable.1.tgz#5024d0e5b01761c9bfe81d43fd273c5ed3842e77"
+  dependencies:
+    "@types/paho-mqtt" "^1.0.3"
+    "@types/zen-observable" "^0.5.3"
+    amazon-cognito-auth-js "^1.1.9"
+    amazon-cognito-identity-js "^2.0.14-unstable.1"
+    aws-sdk "2.198.0"
+    axios "^0.17.0"
+    graphql "0.11.7"
+    paho-mqtt "^1.0.4"
+    url "^0.11.0"
+    uuid "^3.2.1"
+    zen-observable "^0.8.6"
 
 aws-sdk@2.198.0:
   version "2.198.0"
