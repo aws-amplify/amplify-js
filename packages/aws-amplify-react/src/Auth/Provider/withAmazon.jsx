@@ -51,18 +51,20 @@ export default function withAmazon(Comp) {
                 const user = {
                     name: userInfo.profile.Name
                 }
-                if (Auth && typeof Auth.federatedSignIn === 'function') {
-                    Auth.federatedSignIn('amazon', { token: access_token, expires_at }, user)
-                    .then(credentials => {
-                        return Auth.currentAuthenticatedUser();
-                    }).then(authUser => {
-                        if (onStateChange) {
-                            onStateChange('signedIn', authUser);
-                        }
-                    });
-                } else {
+                if (!Auth || 
+                    typeof Auth.federatedSignIn !== 'function' || 
+                    typeof Auth.currentAuthenticatedUser !== 'function') {
                     throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
                 }
+
+                Auth.federatedSignIn('amazon', { token: access_token, expires_at }, user)
+                .then(credentials => {
+                    return Auth.currentAuthenticatedUser();
+                }).then(authUser => {
+                    if (onStateChange) {
+                        onStateChange('signedIn', authUser);
+                    }
+                });
             });
         }
 

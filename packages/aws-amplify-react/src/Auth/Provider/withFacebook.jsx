@@ -53,18 +53,20 @@ export default function withFacebook(Comp) {
                 let user = {
                     name: response.name
                 }
-                if (Auth && typeof Auth.federatedSignIn === 'function') {
-                    Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
-                    .then(credentials => {
-                        return Auth.currentAuthenticatedUser();
-                    }).then(authUser => {
-                        if (onStateChange) {
-                            onStateChange('signedIn', authUser);
-                        }
-                    });
-                } else {
+                if (!Auth || 
+                    typeof Auth.federatedSignIn !== 'function' || 
+                    typeof Auth.currentAuthenticatedUser !== 'function') {
                     throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
                 }
+                
+                Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
+                .then(credentials => {
+                    return Auth.currentAuthenticatedUser();
+                }).then(authUser => {
+                    if (onStateChange) {
+                        onStateChange('signedIn', authUser);
+                    }
+                });
             });
         }
 
