@@ -2,6 +2,9 @@ jest.mock('../../../src/Categories', () => {
     const Auth = {
         federatedSignIn() {
             return;
+        },
+        currentAuthenticatedUser() {
+            return;
         }
     };
 
