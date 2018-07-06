@@ -7,7 +7,7 @@ const template = `
 
   <div class="amplify-form-row">
 
-      <div class="amplify-form-cell-left">
+      <div class="amplify-form-cell-left" *ngIf="!shouldHide('SignIn')>
         <a class="amplify-form-link"
           (click)="onSignIn()"
         >Back to Sign In</a>
@@ -53,6 +53,14 @@ export class RequireNewPasswordComponent {
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+  }
+
+  @Input()
+  hide: string[] = [];
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+            .length > 0;
   }
 
   @Input()

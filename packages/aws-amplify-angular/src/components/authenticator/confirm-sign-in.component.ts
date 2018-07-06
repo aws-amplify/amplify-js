@@ -5,7 +5,7 @@ const template = `
 <div class="amplify-form-container" *ngIf="_show">
   <div class="amplify-form-body">
 
-    <div class="amplify-form-row">
+    <div class="amplify-form-row" *ngIf="!shouldHide('SignIn')>
       <div class="amplify-form-cell-left">
         <a class="amplify-form-link"
           (click)="onSignIn()"
@@ -45,6 +45,14 @@ export class ConfirmSignInComponent {
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+  }
+
+  @Input()
+  hide: string[] = [];
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+            .length > 0;
   }
 
   @Input()

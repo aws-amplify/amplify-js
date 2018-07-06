@@ -15,7 +15,7 @@ const template = `
         >Sign In</a>
       </div>
       
-      <div class="amplify-form-cell-right">
+      <div class="amplify-form-cell-right" *ngIf="!shouldHide('SignUp')">
         <a class="amplify-form-link"
           (click)="onSignUp()"
         >Sign Up</a>
@@ -45,7 +45,7 @@ const template = `
 
     <div class="amplify-form-row">
 
-      <div class="amplify-form-cell-right">
+      <div class="amplify-form-cell-right" *ngIf="!shouldHide('ForgotPassword')">
         <a class="amplify-form-link"
           (click)="onForgotPassword()"
         >Forgot Password</a>
@@ -80,6 +80,14 @@ export class SignInComponent {
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
+  }
+
+  @Input()
+  hide: string[] = [];
+
+  shouldHide(comp) {
+    return this.hide.filter(item => item === comp)
+            .length > 0;
   }
 
   @Input()

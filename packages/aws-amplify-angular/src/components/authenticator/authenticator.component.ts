@@ -1,4 +1,4 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../providers';
 
 const template = `
@@ -8,31 +8,37 @@ const template = `
     <amplify-auth-sign-in
       *ngIf="!shouldHide('SignIn')"
       [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-sign-in>
 
     <amplify-auth-require-new-password
       *ngIf="!shouldHide('RequireNewPassword')"
       [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-require-new-password>
 
     <amplify-auth-confirm-sign-in
       *ngIf="!shouldHide('ConfirmSignIn')"
       [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-confirm-sign-in>
 
     <amplify-auth-sign-up
       *ngIf="!shouldHide('SignUp')"
       [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-sign-up>
 
     <amplify-auth-confirm-sign-up
       *ngIf="!shouldHide('ConfirmSignUp')"
       [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-confirm-sign-up>
 
     <amplify-auth-forgot-password
       *ngIf="!shouldHide('ForgotPassword')"
       [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-forgot-password>
 
     <amplify-auth-greetings
