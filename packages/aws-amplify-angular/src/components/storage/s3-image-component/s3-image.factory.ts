@@ -46,5 +46,3 @@ export class S3ImageComponent implements OnInit, OnDestroy {
     })
   }
 }
-
-

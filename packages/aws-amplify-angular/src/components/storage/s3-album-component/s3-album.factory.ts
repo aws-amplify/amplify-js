@@ -47,5 +47,3 @@ export class S3AlbumComponent implements OnInit, OnDestroy {
 
   }
 }
-
-

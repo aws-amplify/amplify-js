@@ -54,5 +54,3 @@ export class ChatBotComponent implements OnInit, OnDestroy {
     })
   }
 }
-
-

@@ -58,5 +58,3 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 
   }
 }
-
-
