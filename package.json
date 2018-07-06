@@ -61,6 +61,5 @@
     },
     "resetMocks": true,
     "verbose": true
-  },
-  "dependencies": {}
+  }
 }
