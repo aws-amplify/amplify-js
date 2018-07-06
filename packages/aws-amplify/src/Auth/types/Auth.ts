@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
- import { ICookieStorageData } from "amazon-cognito-identity-js";
+ import { ICookieStorageData, ICognitoStorage } from "amazon-cognito-identity-js";
 
 /**
 * Parameters for user sign up
@@ -20,6 +20,12 @@ export interface SignUpParams {
     username: string;
     password: string;
     SignupAttributes?: Object;
+}
+
+export interface AuthCache {
+    setItem(),
+    getItem(),
+    removeItem()
 }
 
 /**
@@ -33,7 +39,8 @@ export interface AuthOptions {
     mandatorySignIn: boolean
     cookieStorage?: ICookieStorageData,
     oauth?: OAuth,
-    refreshHandlers?: object
+    refreshHandlers?: object,
+    storage?: ICognitoStorage
 }
 
 /**

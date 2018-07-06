@@ -22,8 +22,7 @@ import {
     Hub,
     JS,
     Parser,
-    Credentials,
-    StorageHelper
+    Credentials
 } from '../Common';
 import Platform from '../Common/Platform';
 import Cache from '../Cache';
@@ -89,17 +88,26 @@ export default class AuthClass {
             region, 
             identityPoolId, 
             mandatorySignIn,
-            refreshHandlers
+            refreshHandlers,
+            storage
         } = this._config;
+
+        if (!this._config.storage) {
+            // backward compatbility
+            if (cookieStorage) this._config.storage = new CookieStorage(cookieStorage);
+            else {
+                this._config.storage = StorageHelper;
+            }
+        }
 
         if (userPoolId) {
             const userPoolData: ICognitoUserPoolData = {
                 UserPoolId: userPoolId,
                 ClientId: userPoolWebClientId,
             };
-            if (cookieStorage) {
-                userPoolData.Storage = new CookieStorage(cookieStorage);
-            }
+           
+            userPoolData.Storage = this._config.storage;
+            
             this.userPool = new CognitoUserPool(userPoolData);
             if (Platform.isReactNative) {
                 const that = this;
@@ -136,7 +144,7 @@ export default class AuthClass {
                     RedirectUriSignIn: oauth.redirectSignIn,
                     RedirectUriSignOut: oauth.redirectSignOut,
                     ResponseType: oauth.responseType,
-                    Storage: this.userPool.Storage
+                    Storage: this._config.storage
                 },
                 oauth.options
             );
@@ -1194,9 +1202,9 @@ export default class AuthClass {
             Pool: this.userPool,
         };
 
-        const { cookieStorage } = this._config;
-        if (cookieStorage) {
-            userData.Storage = new CookieStorage(cookieStorage);
+        const { storage } = this._config;
+        if (storage) {
+            userData.Storage = storage;
         }
 
         return new CognitoUser(userData);
