@@ -11,7 +11,11 @@
  * and limitations under the License.
  */
 
-import Analytics, { AnalyticsClass, AnalyticsProvider, AWSPinpointProvider, AWSKinesisProvider } from '@aws-amplify/analytics';
+import Analytics, { 
+    AnalyticsClass, 
+    AnalyticsProvider, 
+    AWSPinpointProvider, 
+    AWSKinesisProvider } from '@aws-amplify/analytics';
 import Auth, { AuthClass } from '@aws-amplify/auth';
 import Storage, { StorageClass } from '@aws-amplify/storage';
 import API, { APIClass, graphqlOperation } from '@aws-amplify/api';

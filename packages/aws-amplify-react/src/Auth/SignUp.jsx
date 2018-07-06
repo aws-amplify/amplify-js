@@ -41,9 +41,15 @@ export default class SignUp extends AuthPiece {
         if (!Auth || typeof Auth.signUp !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
-        Auth.signUp(username, password, email, phone_number)
-            .then(() => this.changeState('confirmSignUp', username))
-            .catch(err => this.error(err));
+        Auth.signUp({
+            username,
+            password, 
+            attributes: {
+                email, 
+                phone_number
+            }
+        }).then(() => this.changeState('confirmSignUp', username))
+        .catch(err => this.error(err));
     }
 
     showComponent(theme) {

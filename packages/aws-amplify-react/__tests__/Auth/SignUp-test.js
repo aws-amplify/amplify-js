@@ -105,7 +105,7 @@ describe('signUp', () => {
             await wrapper.find(ButtonRow).simulate('click');
 
 
-            expect(spyon).toBeCalledWith('user1','abc','email@amazon.com','+12345678901');
+            expect(spyon).toBeCalledWith({"attributes": {"email": "email@amazon.com", "phone_number": "+12345678901"}, "password": "abc", "username": "user1"});
 
             expect(spyon_changeState).toBeCalled();
             expect(spyon_changeState.mock.calls[0][0]).toBe('confirmSignUp');
