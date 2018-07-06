@@ -331,7 +331,7 @@ export default class APIClass {
      */
     getGraphqlOperationType(operation) {
         const doc = parse(operation);
-        const { definitions: [{ operation: operationType },] } = doc
+        const { definitions: [{ operation: operationType },] } = doc;
 
         return operationType;
     }
