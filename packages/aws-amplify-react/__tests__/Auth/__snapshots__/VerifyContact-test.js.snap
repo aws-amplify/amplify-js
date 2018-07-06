@@ -37,6 +37,7 @@ exports[`VerifyContent test render test render submitView if verifyAttr is set 1
     </MessageRow>
     <div>
       <InputRow
+        autoComplete="off"
         key="code"
         name="code"
         onChange={[Function]}

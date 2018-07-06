@@ -104,6 +104,10 @@ describe('withAmazon test', () => {
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+            
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
                 return new Promise((res, rej) => {
                     res('credentials');
@@ -117,6 +121,7 @@ describe('withAmazon test', () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon_currentUser.mockClear();
         });
 
         test('happy case with onStateChange exists', async () => {
@@ -152,6 +157,10 @@ describe('withAmazon test', () => {
                 onStateChange: mockFn
             });
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
                 return new Promise((res, rej) => {
                     res('credentials');
@@ -162,10 +171,10 @@ describe('withAmazon test', () => {
             await comp.federatedSignIn(response);
 
             expect(spyon).toBeCalledWith('amazon', { expires_at: 0, token: 'access_token' }, {name: 'name' });
-            expect(mockFn).toBeCalledWith('signedIn');
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon_currentUser.mockClear();
         });
 
         test('directly return if access_token is null', async () => {
@@ -186,6 +195,10 @@ describe('withAmazon test', () => {
                 });
             });
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
@@ -194,6 +207,7 @@ describe('withAmazon test', () => {
 
             expect(spyon).not.toBeCalled();
             spyon.mockClear();
+            spyon_currentUser.mockClear();
         });
 
         test('directly return if getting userinfo failed', async () => {
