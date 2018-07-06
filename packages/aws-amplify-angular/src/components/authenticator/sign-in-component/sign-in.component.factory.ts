@@ -42,4 +42,3 @@ export class SignInComponent implements OnInit, OnDestroy {
     (<SignInClass>componentRef.instance).data = authComponent.data;
   }
 }
-

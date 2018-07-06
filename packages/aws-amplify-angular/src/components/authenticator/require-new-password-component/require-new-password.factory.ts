@@ -41,4 +41,3 @@ export class RequireNewPasswordComponent implements OnInit, OnDestroy {
     (<RequireNewPasswordClass>componentRef.instance).data = requireNewPasswordComponent.data;
   }
 }
-

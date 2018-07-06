@@ -40,5 +40,3 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
     (<AuthClass>componentRef.instance).data = authComponent.data;
   }
 }
-
-

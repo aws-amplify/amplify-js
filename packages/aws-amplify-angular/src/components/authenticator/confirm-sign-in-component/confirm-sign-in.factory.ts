@@ -43,4 +43,3 @@ export class ConfirmSignInComponent implements OnInit, OnDestroy {
     (<ConfirmSignInClass>componentRef.instance).data = authComponent.data;
   }
 }
-

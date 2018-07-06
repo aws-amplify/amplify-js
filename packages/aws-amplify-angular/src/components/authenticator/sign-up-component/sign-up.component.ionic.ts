@@ -91,5 +91,4 @@ export class SignUpComponentIonic extends SignUpComponentCore {
     super(amplifyService)
   }
 
-
 }

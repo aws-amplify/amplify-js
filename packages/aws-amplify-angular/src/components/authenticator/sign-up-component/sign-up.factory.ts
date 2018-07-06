@@ -41,4 +41,3 @@ export class SignUpComponent implements OnInit, OnDestroy {
     (<SignUpClass>componentRef.instance).data = authComponent.data;
   }
 }
-

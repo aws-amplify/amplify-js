@@ -41,4 +41,3 @@ export class GreetingComponent implements OnInit, OnDestroy {
     (<GreetingClass>componentRef.instance).data = authComponent.data;
   }
 }
-

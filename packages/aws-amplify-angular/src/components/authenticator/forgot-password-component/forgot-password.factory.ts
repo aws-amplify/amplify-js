@@ -41,4 +41,3 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     (<ForgotPasswordClass>componentRef.instance).data = authComponent.data;
   }
 }
-
