@@ -1,22 +1,22 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { AmplifyService } from '../../providers';
+import { AmplifyService } from '../../../providers';
 
 const template = `
 <div class="amplify-album-container">
-  <amplify-s3-image
+  <amplify-s3-image-core
     class="amplify-image-container"
     *ngFor="let item of list"
     path="{{item.path}}"
     (selected)="onImageSelected($event)"
-  ></amplify-s3-image>
+  ></amplify-s3-image-core>
 </div>
 `;
 
 @Component({
-  selector: 'amplify-s3-album',
+  selector: 'amplify-s3-album-core',
   template: template
 })
-export class S3AlbumComponent {
+export class S3AlbumComponentCore {
   list: Array<Object>;
 
   amplifyService: AmplifyService;
@@ -30,6 +30,19 @@ export class S3AlbumComponent {
 
   onImageSelected(event) {
     this.selected.emit(event);
+  }
+
+  @Input() set data(data: any){
+    if (!data.path) { return; }
+    const that = this;
+    this.amplifyService.storage()
+      .list(data.path)
+      .then(res => {
+        that.list = res.map(item => {
+          return { path: item.key };
+        });
+      })
+      .catch(err => console.error(err));
   }
 
   @Input() set path(path: string) {

@@ -54,10 +54,10 @@ export default function withAmazon(Comp) {
                 if (Auth && typeof Auth.federatedSignIn === 'function') {
                     Auth.federatedSignIn('amazon', { token: access_token, expires_at }, user)
                     .then(credentials => {
-                        logger.debug('getting credentials');
-                        logger.debug(credentials);
+                        return Auth.currentAuthenticatedUser();
+                    }).then(authUser => {
                         if (onStateChange) {
-                            onStateChange('signedIn');
+                            onStateChange('signedIn', authUser);
                         }
                     });
                 } else {
