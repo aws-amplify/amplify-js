@@ -30,15 +30,15 @@ export class RequireNewPasswordComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(RequireNewPasswordComponentIonic,{authState: this.authState}) : new ComponentMount(RequireNewPasswordComponentCore, {authState: this.authState});
+    let requireNewPasswordComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(RequireNewPasswordComponentIonic,{authState: this.authState}) : new ComponentMount(RequireNewPasswordComponentCore, {authState: this.authState});
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(requireNewPasswordComponent.component);
 
     let viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
     let componentRef = viewContainerRef.createComponent(componentFactory);
-    (<RequireNewPasswordClass>componentRef.instance).data = authComponent.data;
+    (<RequireNewPasswordClass>componentRef.instance).data = requireNewPasswordComponent.data;
   }
 }
 
