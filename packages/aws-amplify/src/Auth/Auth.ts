@@ -159,6 +159,7 @@ export default class AuthClass {
                     logger.debug("Cognito Hosted authentication result", result);
                     that.currentSession().then(async (session) => {
                         try {
+                            await Credentials.clear();
                             const cred = await Credentials.set(session, 'session');
                             logger.debug('sign in succefully with', cred);
                         } catch (e) {
@@ -316,6 +317,7 @@ export default class AuthClass {
                 delete(user['challengeName']);
                 delete(user['challengeParam']);
                 try {
+                    await Credentials.clear();
                     const cred = await Credentials.set(session, 'session');
                     logger.debug('succeed to get cognito credentials', cred);
                 } catch (e) {
@@ -597,6 +599,7 @@ export default class AuthClass {
                     onSuccess: async (session) => {
                         logger.debug(session);
                         try {
+                            await Credentials.clear();
                             const cred = await Credentials.set(session, 'session');
                             logger.debug('succeed to get cognito credentials', cred);
                         } catch (e) {
@@ -629,6 +632,7 @@ export default class AuthClass {
                 onSuccess: async (session) => {
                     logger.debug(session);
                     try {
+                        await Credentials.clear();
                         const cred = await Credentials.set(session, 'session');
                         logger.debug('succeed to get cognito credentials', cred);
                     } catch (e) {

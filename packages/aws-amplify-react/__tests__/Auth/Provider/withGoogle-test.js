@@ -161,6 +161,10 @@ describe('withGoogle test', () => {
                     });
                 });
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+
             await comp.federatedSignIn(googleUser);
 
             expect(spyon).toBeCalledWith(
@@ -170,6 +174,7 @@ describe('withGoogle test', () => {
             );
 
             spyon.mockClear();
+            spyon_currentUser.mockClear();
         });
 
         test('happy case with onStateChange exists', async () => {
@@ -215,6 +220,10 @@ describe('withGoogle test', () => {
                     });
                 });
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+
             await comp.federatedSignIn(googleUser);
 
             expect(spyon).toBeCalledWith(
@@ -222,9 +231,10 @@ describe('withGoogle test', () => {
                 { expires_at: 0, token: 'id_token' },
                 { email: 'email', name: 'name' }
             );
-            expect(mockFn).toBeCalledWith('signedIn');
+            expect(mockFn).toBeCalledWith('signedIn', 'user');
 
             spyon.mockClear();
+            spyon_currentUser.mockClear();
         });
     });
 

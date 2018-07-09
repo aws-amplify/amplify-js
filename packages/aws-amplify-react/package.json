@@ -1,17 +1,21 @@
 {
   "name": "aws-amplify-react",
-  "version": "0.1.53-unstable.0",
+  "version": "0.1.55-unstable.1",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest --coverage --updateSnapshot",
-    "build": "npm run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
+    "test": "jest --coverage --updateSnapshot --maxWorkers 2",
+    "build": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files",
+    "watch": "yarn run clean && babel src --presets babel-preset-react --out-dir dist --copy-files --watch",
+    "cypress": "cypress run",
+    "cypress:open": "cypress open",
     "build-with-test": "npm test && npm run build",
     "clean": "rimraf dist"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-jest": "^21.2.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-airbnb": "^2.4.0",
     "babel-preset-env": "^1.6.1",
@@ -50,7 +54,7 @@
     "graphql": "0.13.0"
   },
   "dependencies": {
-    "aws-amplify": "^0.4.7-unstable.0",
+    "aws-amplify": "^0.4.9-unstable.1",
     "qrcode.react": "^0.8.0",
     "regenerator-runtime": "^0.11.1"
   }

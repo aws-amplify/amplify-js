@@ -294,6 +294,8 @@ export class Credentials {
             });
             credentials.clearCachedId();
         }
+        this._credentials = null;
+        this._credentials_source = null;
         await this._cacheClass.removeItem('federatedInfo');
     }
 }
