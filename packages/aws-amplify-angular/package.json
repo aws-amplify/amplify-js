@@ -28,7 +28,7 @@
     "@types/zen-observable": "^0.5.3",
     "angular2-template-loader": "^0.6.2",
     "awesome-typescript-loader": "^4.0.1",
-    "aws-amplify": "^0.4.8",
+    "aws-amplify": "^0.4.9-unstable.2",
     "compression-webpack-plugin": "^1.1.11",
     "css-loader": "^0.28.1",
     "gulp": "^3.9.1",
@@ -57,7 +57,7 @@
     "zone.js": "^0.8.26"
   },
   "dependencies": {
-    "@ionic/angular": "^4.0.0-alpha.7",
+    "@ionic/angular": "4.0.0-alpha.7",
     "@types/lodash": "^4.14.106"
   }
 }
