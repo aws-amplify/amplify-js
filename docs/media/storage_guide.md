@@ -21,7 +21,7 @@ $ npm install -g awsmobile-cli
 $ cd my-app #Change to your project's root folder
 $ awsmobile init
 $ awsmobile user-files enable
-$ awsmobile push #Update your backend 
+$ awsmobile push #Update your backend
 ```
 
 In your app's entry point *i.e. App.js*, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.
@@ -59,7 +59,7 @@ Amplify.configure({
 To make calls to your S3 bucket from your App, you need to setup CORS Policy for your S3 bucket.
 {: .callout .callout--warning}
 
-Following steps will enable your CORS Policy: 
+Following steps will enable your CORS Policy:
 
 1. Go to [Amazon S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's `userfiles` bucket, which is normally named as [Project Name]-userfiles-mobilehub-[App Id]. If you are using an S3 Bucket that is not created by Mobile Hub, that will your upload bucket for your app.
 2. Click on the **Permissions** tab for your bucket, and then click on **CORS configuration** tile.
@@ -79,6 +79,7 @@ Following steps will enable your CORS Policy:
     <ExposeHeader>x-amz-server-side-encryption</ExposeHeader>
     <ExposeHeader>x-amz-request-id</ExposeHeader>
     <ExposeHeader>x-amz-id-2</ExposeHeader>
+    <ExposeHeader>ETag</ExposeHeader>
     <AllowedHeader>*</AllowedHeader>
 </CORSRule>
 </CORSConfiguration>
@@ -242,8 +243,8 @@ Storage.get('test.txt', { level: 'protected' })
 ```
 To get other users' objects
 ```js
-Storage.get('test.txt', { 
-    level: 'protected', 
+Storage.get('test.txt', {
+    level: 'protected',
     identityId: 'xxxxxxx' // the identityId of that user
 })
 .then(result => console.log(result))
@@ -268,14 +269,14 @@ Storage.get('test.txt', {expires: 60})
 
 Delete stored data from the storage bucket.
 
-Public level: 
+Public level:
 ```js
 Storage.remove('test.txt')
     .then(result => console.log(result))
     .catch(err => console.log(err));
 ```
 
-Protected level: 
+Protected level:
 ```js
 Storage.remove('test.txt', {level: 'protected'})
     .then(result => console.log(result))
@@ -309,8 +310,8 @@ Storage.list('photos/', { level: 'protected' })
 ```
 To get other users' objects
 ```js
-Storage.list('photos/', { 
-    level: 'protected', 
+Storage.list('photos/', {
+    level: 'protected',
     identityId: 'xxxxxxx' // the identityId of that user
 })
 .then(result => console.log(result))
@@ -332,7 +333,7 @@ For the complete API documentation for Storage module, visit our [API Reference]
 
 ## Tracking Events
 
-You can enable automatic tracking of storage events such as uploads and downloads, by setting `{ track: true }` when calling the Storage API. 
+You can enable automatic tracking of storage events such as uploads and downloads, by setting `{ track: true }` when calling the Storage API.
 
 (Note: this option is currently only supported in aws-amplify). Enabling this will automatically send Storage events to Amazon Pinpoint and you will be able to see them within the AWS Pinpoint console under Custom Events. The event name will be 'Storage' and in *Event Attributes*, you can see details about the event, e.g. *Storage > Method > Put*.
 
@@ -353,7 +354,7 @@ You can also use the track property directly on [React components](#analytics-fo
 
 ## UI Components for React
 
-`aws-amplify-react` package provides React UI components for common usecases such as picking a file and image previews. 
+`aws-amplify-react` package provides React UI components for common usecases such as picking a file and image previews.
 
 ### Picker
 
@@ -376,7 +377,7 @@ To display a preview, you can use `preview` directive:
 <PhotoPicker preview onLoad={dataURL => console.log(dataURL)} />
 ```
 
-You can retrieve the URL of the image by implementing `onLoad` action. In this case, you may also want to hide the preview:  
+You can retrieve the URL of the image by implementing `onLoad` action. In this case, you may also want to hide the preview:
 
 ```jsx
 <PhotoPicker preview="hidden" onLoad={dataURL => console.log(dataURL)} />
@@ -495,7 +496,7 @@ return (
 
 **Picker**
 
-Set `picker` property to true on `S3Album`. A `Picker` let user select photos or text files from the device. The selected files will be automatically uploaded to the `path`. 
+Set `picker` property to true on `S3Album`. A `Picker` let user select photos or text files from the device. The selected files will be automatically uploaded to the `path`.
 
 ```jsx
 <S3Album path={path} picker />
@@ -536,7 +537,7 @@ Add a photo picker to your components template:
 
 ```html
 
-<amplify-photo-picker 
+<amplify-photo-picker
     (loaded)="onImagePreviewLoaded($event)"
     (picked)="onImageSelected($event)">
 </amplify-photo-picker>
@@ -549,18 +550,18 @@ Add an S3 album component to your template:
 
 ```html
 
-<amplify-s3-album 
+<amplify-s3-album
     path="{{s3ListPath}}"
-    (selected)="onAlbumImageSelected($event)">  			
+    (selected)="onAlbumImageSelected($event)">
 </amplify-s3-album>
 
 ```
 
 See the [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) for usage.
 
-## Customization 
+## Customization
 
-### Customize Upload Path 
+### Customize Upload Path
 
 You can customize your upload path by defining prefixes:
 
