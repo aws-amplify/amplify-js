@@ -94,7 +94,7 @@
     reflect-metadata "^0.1.12"
     tslib "^1.8.1"
 
-"@ionic/angular@^4.0.0-alpha.7":
+"@ionic/angular@4.0.0-alpha.7":
   version "4.0.0-alpha.7"
   resolved "https://registry.yarnpkg.com/@ionic/angular/-/angular-4.0.0-alpha.7.tgz#174aac1df8daa8750c508131f90625bec94d18c4"
   dependencies:
@@ -174,8 +174,8 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.87.tgz#55f92183b048c2c64402afe472f8333f4e319a6b"
 
 "@types/lodash@^4.14.106":
-  version "4.14.110"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.110.tgz#fb07498f84152947f30ea09d89207ca07123461e"
+  version "4.14.111"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.111.tgz#d926250baa9526c0ffe85914dd10363068e7893a"
 
 "@types/marked@0.3.0":
   version "0.3.0"
@@ -395,14 +395,6 @@ amazon-cognito-auth-js@^1.1.9:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/amazon-cognito-auth-js/-/amazon-cognito-auth-js-1.2.3.tgz#98f72b02f45357ef718e329c764c2fba4a2f1206"
   dependencies:
-    js-cookie "^2.1.4"
-
-amazon-cognito-identity-js@^2.0.14-unstable.2:
-  version "2.0.14-unstable.2"
-  resolved "https://registry.yarnpkg.com/amazon-cognito-identity-js/-/amazon-cognito-identity-js-2.0.14-unstable.2.tgz#2a65077802109cc6422b95441f81b5bee7fb3933"
-  dependencies:
-    buffer "4.9.1"
-    crypto-browserify "1.0.9"
     js-cookie "^2.1.4"
 
 amdefine@>=0.0.4, amdefine@^1.0.0:
@@ -745,38 +737,6 @@ awesome-typescript-loader@^4.0.1:
     micromatch "^3.0.3"
     mkdirp "^0.5.1"
     source-map-support "^0.5.3"
-
-aws-amplify@0.4.9-unstable.1:
-  version "0.4.9-unstable.1"
-  resolved "https://registry.yarnpkg.com/aws-amplify/-/aws-amplify-0.4.9-unstable.1.tgz#5024d0e5b01761c9bfe81d43fd273c5ed3842e77"
-  dependencies:
-    "@types/paho-mqtt" "^1.0.3"
-    "@types/zen-observable" "^0.5.3"
-    amazon-cognito-auth-js "^1.1.9"
-    amazon-cognito-identity-js "^2.0.14-unstable.1"
-    aws-sdk "2.198.0"
-    axios "^0.17.0"
-    graphql "0.11.7"
-    paho-mqtt "^1.0.4"
-    url "^0.11.0"
-    uuid "^3.2.1"
-    zen-observable "^0.8.6"
-
-aws-amplify@^0.4.9-unstable.1:
-  version "0.4.9-unstable.2"
-  resolved "https://registry.yarnpkg.com/aws-amplify/-/aws-amplify-0.4.9-unstable.2.tgz#ddf8262e1c5053ed4501ca07f4fd6497e3fae21c"
-  dependencies:
-    "@types/paho-mqtt" "^1.0.3"
-    "@types/zen-observable" "^0.5.3"
-    amazon-cognito-auth-js "^1.1.9"
-    amazon-cognito-identity-js "^2.0.14-unstable.2"
-    aws-sdk "2.198.0"
-    axios "^0.17.0"
-    graphql "0.11.7"
-    paho-mqtt "^1.0.4"
-    url "^0.11.0"
-    uuid "^3.2.1"
-    zen-observable "^0.8.6"
 
 aws-sdk@2.198.0:
   version "2.198.0"
@@ -1418,6 +1378,12 @@ babel-plugin-transform-regenerator@^6.22.0, babel-plugin-transform-regenerator@^
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-regenerator/-/babel-plugin-transform-regenerator-6.26.0.tgz#e0703696fbde27f0a3efcacf8b4dca2f7b3a8f2f"
   dependencies:
     regenerator-transform "^0.10.0"
+
+babel-plugin-transform-runtime@^6.23.0:
+  version "6.23.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-runtime/-/babel-plugin-transform-runtime-6.23.0.tgz#88490d446502ea9b8e7efb0fe09ec4d99479b1ee"
+  dependencies:
+    babel-runtime "^6.22.0"
 
 babel-plugin-transform-strict-mode@^6.24.1:
   version "6.24.1"
@@ -3752,11 +3718,10 @@ enzyme-adapter-react-16@^1.0.3:
     react-test-renderer "^16.0.0-0"
 
 enzyme-adapter-utils@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/enzyme-adapter-utils/-/enzyme-adapter-utils-1.3.0.tgz#d6c85756826c257a8544d362cc7a67e97ea698c7"
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/enzyme-adapter-utils/-/enzyme-adapter-utils-1.4.0.tgz#c403b81e8eb9953658569e539780964bdc98de62"
   dependencies:
-    lodash "^4.17.4"
-    object.assign "^4.0.4"
+    object.assign "^4.1.0"
     prop-types "^15.6.0"
 
 enzyme-to-json@^3.2.1:
@@ -5199,11 +5164,11 @@ hash-base@^3.0.0:
     safe-buffer "^5.0.1"
 
 hash.js@^1.0.0, hash.js@^1.0.3:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/hash.js/-/hash.js-1.1.4.tgz#8b50e1f35d51bd01e5ed9ece4dbe3549ccfa0a3c"
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/hash.js/-/hash.js-1.1.5.tgz#e38ab4b85dfb1e0c40fe9265c0e9b54854c23812"
   dependencies:
     inherits "^2.0.3"
-    minimalistic-assert "^1.0.0"
+    minimalistic-assert "^1.0.1"
 
 hawk@~3.1.3:
   version "3.1.3"
@@ -5255,8 +5220,8 @@ homedir-polyfill@^1.0.1:
     parse-passwd "^1.0.0"
 
 hosted-git-info@^2.1.4, hosted-git-info@^2.5.0:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.6.1.tgz#6e4cee78b01bb849dcf93527708c69fdbee410df"
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.7.1.tgz#97f236977bd6e125408930ff6de3eec6281ec047"
 
 html-comment-regex@^1.1.0:
   version "1.1.1"
@@ -7362,7 +7327,7 @@ min-document@^2.19.0:
   dependencies:
     dom-walk "^0.1.0"
 
-minimalistic-assert@^1.0.0:
+minimalistic-assert@^1.0.0, minimalistic-assert@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/minimalistic-assert/-/minimalistic-assert-1.0.1.tgz#2e194de044626d4a10e7f7fbc00ce73e83e4d5c7"
 
@@ -7574,7 +7539,7 @@ nearley@^2.7.10:
     randexp "0.4.6"
     semver "^5.4.1"
 
-needle@^2.2.0:
+needle@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/needle/-/needle-2.2.1.tgz#b5e325bd3aae8c2678902fa296f729455d1d3a7d"
   dependencies:
@@ -7711,12 +7676,12 @@ node-notifier@^5.2.1:
     which "^1.3.0"
 
 node-pre-gyp@^0.10.0:
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.2.tgz#e8945c20ef6795a20aac2b44f036eb13cf5146e3"
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.3.tgz#3070040716afdc778747b61b6887bf78880b80fc"
   dependencies:
     detect-libc "^1.0.2"
     mkdirp "^0.5.1"
-    needle "^2.2.0"
+    needle "^2.2.1"
     nopt "^4.0.1"
     npm-packlist "^1.1.6"
     npmlog "^4.0.2"

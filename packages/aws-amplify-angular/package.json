@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "0.1.6",
+  "version": "0.1.7-unstable.0",
   "description": "AWS Amplify Angular Components",
   "main": "lib/index.js",
   "module": "./lib/index.js",
@@ -28,7 +28,7 @@
     "@types/zen-observable": "^0.5.3",
     "angular2-template-loader": "^0.6.2",
     "awesome-typescript-loader": "^4.0.1",
-    "aws-amplify": "^0.4.8",
+    "aws-amplify": "^0.4.9-unstable.2",
     "compression-webpack-plugin": "^1.1.11",
     "css-loader": "^0.28.1",
     "gulp": "^3.9.1",
@@ -37,12 +37,6 @@
     "jasmine-core": "^2.99.1",
     "jasmine-spec-reporter": "^4.2.1",
     "json-loader": "^0.5.4",
-    "karma": "^2.0.0",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-coverage-istanbul-reporter": "^1.4.2",
-    "karma-jasmine": "^1.1.1",
-    "karma-mocha-reporter": "^2.2.5",
-    "karma-typescript": "^3.0.12",
     "mocha": "^5.1.0",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.1",
@@ -57,7 +51,7 @@
     "zone.js": "^0.8.26"
   },
   "dependencies": {
-    "@ionic/angular": "^4.0.0-alpha.7",
+    "@ionic/angular": "4.0.0-alpha.7",
     "@types/lodash": "^4.14.106"
   }
 }
