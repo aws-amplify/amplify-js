@@ -5,7 +5,7 @@ const template = `
 <div class="amplify-form-container" *ngIf="_show">
   <div class="amplify-form-body">
 
-    <div class="amplify-form-row" *ngIf="!shouldHide('SignIn')>
+    <div class="amplify-form-row" *ngIf="!shouldHide('SignIn')">
       <div class="amplify-form-cell-left">
         <a class="amplify-form-link"
           (click)="onSignIn()"
