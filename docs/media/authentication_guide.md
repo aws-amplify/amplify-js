@@ -337,7 +337,30 @@ Cache.getItem('federatedInfo').then(federatedInfo => {
 });
 ```
 
-By default Amplify will automatically refresh the token from Google or Facebook for you so that the AWS credentials will be always valid. But if you are using other federated providers you will need to provide your own refreshing method. 
+By default Amplify will automatically refresh the token from Google or Facebook for you so that the AWS credentials will be always valid. But if you are using other federated providers you will need to provide your own refreshing method:
+```js
+import { Auth } from 'aws-amplify';
+
+function your_refresh_method() {
+    // refresh the token
+    // ......
+
+    return new Promise(res, rej => {
+        const data = {
+            token, // the token from the provider
+            expires_at, // the timestamp when the token expires
+            identity_id, // optional, the identityId of the crednetianls
+        }
+        res(data);
+    });
+}
+
+Auth.configure({
+    refreshHandlers: {
+        'developer': your_refresh_method
+    }
+})
+```
 
 Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenID. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `accounts.your-openid-provider.com`.
 
