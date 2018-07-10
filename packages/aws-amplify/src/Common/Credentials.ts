@@ -15,6 +15,8 @@ export class Credentials {
     private _authClass = null;
     private _cacheClass = null;
     private _refreshHandlers = {};
+    private _storage;
+    private _storageSync;
 
     constructor(config) {
         this.configure(config);
@@ -43,6 +45,16 @@ export class Credentials {
         // then we can merge the provided handlers with the current handlers.
         if (refreshHandlers) {
             this._refreshHandlers = { ...this._refreshHandlers,  ...refreshHandlers };
+        }
+
+        this._storage = this._config.storage;
+        if (!this._storage) {
+            this._storage = new StorageHelper().getStorage();
+        }
+        
+        this._storageSync = Promise.resolve();
+        if (typeof this._storage['sync'] === 'function') {
+            this._storageSync = this._storage['sync']();
         }
 
         return this._config;
@@ -140,7 +152,8 @@ export class Credentials {
             return Promise.reject('cannot get guest credentials when mandatory signin enabled');
         }
 
-        const identityId = await StorageHelper.getItem('CognitoIdentityId-' + identityPoolId);
+        await this._storageSync;
+        const identityId = this._storage.getItem('CognitoIdentityId-' + identityPoolId);
         const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
@@ -247,10 +260,21 @@ export class Credentials {
                             }, 
                             { priority: 1 }
                         );
+                        this._storage.setItem(
+                            'aws-amplify-federatedInfo',
+                            JSON.stringify({
+                                provider, 
+                                token, 
+                                user, 
+                                expires_at, 
+                                identity_id 
+                            })
+                        );
                     }
                     if (source === 'guest') {
                         try {
-                            await StorageHelper.setItem(
+                            await this._storageSync;
+                            this._storage.setItem(
                                 'CognitoIdentityId-' + identityPoolId, 
                                 credentials.identityId
                             );
@@ -296,6 +320,7 @@ export class Credentials {
         this._credentials = null;
         this._credentials_source = null;
         await this._cacheClass.removeItem('federatedInfo');
+        this._storage.removeItem('aws-amplify-federatedInfo');
     }
 }
 

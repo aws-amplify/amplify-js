@@ -96,7 +96,10 @@ Amplify.configure({
             expires: 365,
         // OPTIONAL - Cookie secure flag
             secure: true
-        }
+        },
+
+        // OPTIONAL - customized storage object
+        storage: new MyStorage()
     }
 });
 ```
@@ -225,6 +228,28 @@ let session = Auth.currentSession();
 #### Managing Security Tokens
 
 **When using Authentication with AWS Amplify, you don't need to refresh Amazon Cognito tokens manually. The tokens are automatically refreshed by the library when necessary.**
+
+Security Tokens like IdToken or AccessToken are stored in localStorage(Web)/AsyncStorage(React Native) by default. If you want to store those tokens in a more secure place or you are using Amplify in server side, then you can provide your own `storage` object to store those tokens. For example:
+```ts
+class MyStorage {
+    // set item with the key
+    static setItem(key: string, value: string): string;
+    // get item with the key
+    static getItem(key: string): string;
+    // remove item with the key
+    static removeItem(key: string): void;
+    // clear out the storage
+    static clear(): void;
+    // If the storage operations are async(i.e AsyncStorage)
+    // Then you need to sync those items into the memory in this method
+    static sync(): Promise<void>;
+}
+
+// tell Auth to use your storage object
+Auth.configure({
+    storage: MyStorage
+});
+```
 
 If you are using `amazon-cognito-identity-js` package directly in your app, you need to monitor token expiration and refresh your tokens in your code. Following code sample shows how to refresh tokens:
 

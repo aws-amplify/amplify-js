@@ -29,8 +29,8 @@ export interface AuthCache {
 }
 
 /**
-* Auth instance options
-*/
+ * Auth instance options
+ */
 export interface AuthOptions {
     userPoolId: string,
     userPoolWebClientId: string,
