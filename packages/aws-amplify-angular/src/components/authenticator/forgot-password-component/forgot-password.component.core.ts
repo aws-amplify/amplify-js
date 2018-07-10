@@ -64,7 +64,7 @@ const template = `
 export class ForgotPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
-  _hide: [string] = [];
+  _hide: string[] = [];
   username: string;
   code: string;
   password: string;

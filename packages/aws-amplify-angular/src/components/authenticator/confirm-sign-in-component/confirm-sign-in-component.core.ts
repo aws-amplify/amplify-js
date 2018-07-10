@@ -39,7 +39,7 @@ const template = `
 export class ConfirmSignInComponentCore {
   _authState: AuthState;
   _show: boolean;
-  _hide: [string] = [];
+  _hide: string[] = [];
   code: string;
   errorMessage: string;
   amplifyService: AmplifyService;

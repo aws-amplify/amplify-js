@@ -56,7 +56,7 @@ const template = `
 export class ConfirmSignUpComponentCore {
   _authState: AuthState;
   _show: boolean;
-  _hide: [string] = [];
+  _hide: string[] = [];
   username: string;
   code: string;
   errorMessage: string;

@@ -78,6 +78,7 @@ const template = `
 export class SignUpComponentCore {
   _authState: AuthState;
   _show: boolean;
+  _hide: string[] = [];
   username: string;
   password: string;
   email: string;
@@ -89,11 +90,8 @@ export class SignUpComponentCore {
     this.amplifyService = amplifyService;
   }
 
-  @Input()
-  hide: string[] = [];
-
   shouldHide(comp) {
-    return this.hide.filter(item => item === comp)
+    return this._hide.filter(item => item === comp)
             .length > 0;
   }
 
@@ -101,6 +99,12 @@ export class SignUpComponentCore {
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = authState.state === 'signUp';
+  }
+
+  @Input()
+  set data(data: any) {
+    this._authState = data.authState;
+    this._show = data.authState.state === 'signUp';
   }
 
   setUsername(username: string) {

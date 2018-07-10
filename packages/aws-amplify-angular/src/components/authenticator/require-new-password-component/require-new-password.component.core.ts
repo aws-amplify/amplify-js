@@ -43,7 +43,7 @@ const template = `
 export class RequireNewPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
-  _hide: [string] = [];
+  _hide: string[] = [];
   password: string;
   errorMessage: string;
   amplifyService: AmplifyService;
@@ -56,6 +56,13 @@ export class RequireNewPasswordComponentCore {
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = authState.state === 'requireNewPassword';
+  }
+
+  @Input()
+  set data(data: any) {
+    this._authState = data.authState;
+    this._show = data.authState.state === 'requireNewPassword';
+    this._hide = data.hide;
   }
 
   shouldHide(comp) {

@@ -19,7 +19,7 @@ import { authDecorator } from '../../../providers/auth.decorator';
 export class SignInComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
-  @Input() hide: [string] = [];
+  @Input() hide: string[] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
