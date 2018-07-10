@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../providers';
+import { AmplifyService, AuthState } from '../../../providers';
+
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
@@ -27,37 +28,49 @@ const template = `
     <div class="amplify-form-row">
       <input #code
         (keyup)="setCode(code.value)"
-        (keyup.enter)="onConfirm()"
         class="amplify-form-input"
         type="text"
         placeholder="Code"
       />
     </div>
-      
+    <div class="amplify-form-row">
+      <input #password
+        (keyup)="setPassword(password.value)"
+        (keyup.enter)="onSubmit()"
+        class="amplify-form-input"
+        type="password"
+        placeholder="Password"
+      />
+    </div>
+    <div class="amplify-form-row">
     <button class="amplify-form-button"
-      (click)="onConfirm()">Confirm</button>
+      (click)="onSend()"
+    >Send Code</button>
     <button class="amplify-form-button"
-      (click)="onResend()">Resend</button>
-
+      (click)="onSubmit()"
+    >Submit</button>
+    </div>
   </div>
-
   <div class="amplify-form-footer">
     <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>
-
 </div>
 `
 
 @Component({
-  selector: 'amplify-auth-confirm-sign-up',
+  selector: 'amplify-auth-forgot-password-core',
   template: template
 })
-export class ConfirmSignUpComponent {
+export class ForgotPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
+  _hide: [string] = [];
   username: string;
   code: string;
+  password: string;
+
   errorMessage: string;
+
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
@@ -65,17 +78,22 @@ export class ConfirmSignUpComponent {
   }
 
   @Input()
-  hide: string[] = [];
+  set data(data: any) {
+    this._authState = data.authState;
+    this._show = data.authState.state === 'forgotPassword';
+    this._hide = data.hide ? data.hide : [];
+    this.username = data.authState.user? data.authState.user.username || '' : '';
+  }
 
   shouldHide(comp) {
-    return this.hide.filter(item => item === comp)
+    return this._hide.filter(item => item === comp)
             .length > 0;
   }
 
   @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
-    this._show = authState.state === 'confirmSignUp';
+    this._show = authState.state === 'forgotPassword';
 
     this.username = authState.user? authState.user.username || '' : '';
   }
@@ -88,19 +106,27 @@ export class ConfirmSignUpComponent {
     this.code = code;
   }
 
-  onConfirm() {
-    this.amplifyService.auth()
-      .confirmSignUp(
-        this.username,
-        this.code
-      )
-      .then(() => console.log('confirm success'))
+  setPassword(password: string) {
+    this.password = password;
+  }
+
+  onSend() {
+    this.amplifyService.auth().forgotPassword(this.username)
+      .then(() => console.log('code sent'))
       .catch(err => this._setError(err));
   }
 
-  onResend() {
-    this.amplifyService.auth().resendSignUp(this.username)
-      .then(() => console.log('code resent'))
+  onSubmit() {
+    this.amplifyService.auth()
+      .forgotPasswordSubmit(
+        this.username,
+        this.code,
+        this.password
+      )
+      .then(() => {
+        const user = { username: this.username };
+        this.amplifyService.setAuthState({ state: 'signIn', user: user });
+      })
       .catch(err => this._setError(err));
   }
 

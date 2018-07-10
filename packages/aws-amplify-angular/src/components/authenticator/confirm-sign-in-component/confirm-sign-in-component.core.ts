@@ -33,12 +33,13 @@ const template = `
 `
 
 @Component({
-  selector: 'amplify-auth-confirm-sign-in',
+  selector: 'amplify-auth-confirm-sign-in-core',
   template: template
 })
-export class ConfirmSignInComponent {
+export class ConfirmSignInComponentCore {
   _authState: AuthState;
   _show: boolean;
+  _hide: [string];
   code: string;
   errorMessage: string;
   amplifyService: AmplifyService;
@@ -48,17 +49,15 @@ export class ConfirmSignInComponent {
   }
 
   @Input()
-  hide: string[] = [];
-
-  shouldHide(comp) {
-    return this.hide.filter(item => item === comp)
-            .length > 0;
+  set data(data: any) {
+    this._hide = data.hide;
+    this._authState = data.authState;
+    this._show = data.authState.state === 'confirmSignIn';
   }
 
-  @Input()
-  set authState(authState: AuthState) {
-    this._authState = authState;
-    this._show = authState.state === 'confirmSignIn';
+  shouldHide(comp) {
+    return this._hide.filter(item => item === comp)
+            .length > 0;
   }
 
   setCode(code: string) {

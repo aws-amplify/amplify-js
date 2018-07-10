@@ -79,7 +79,7 @@ var Client = function () {
       return callback(error);
     }).catch(function (err) {
       // default to return 'UnknownError'
-      var error = { code: 'UnknownError', message: 'Unkown error' };
+      var error = { code: 'UnknownError', message: 'Unknown error' };
 
       // first check if we have a service error
       if (response && response.headers && response.headers.get('x-amzn-errortype')) {

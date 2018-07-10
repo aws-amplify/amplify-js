@@ -1,20 +1,16 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../providers';
+import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
   <div class="amplify-form-body">
-
   <div class="amplify-form-row">
-
       <div class="amplify-form-cell-left" *ngIf="!shouldHide('SignIn')">
         <a class="amplify-form-link"
           (click)="onSignIn()"
         >Back to Sign In</a>
       </div>
-
     </div>
-
     <div class="amplify-form-row">
       <input #password
         (keyup)="setPassword(password.value)"
@@ -41,12 +37,13 @@ const template = `
 `
 
 @Component({
-  selector: 'amplify-auth-require-new-password',
+  selector: 'amplify-auth-require-new-password-core',
   template: template
 })
-export class RequireNewPasswordComponent {
+export class RequireNewPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
+  _hide: [string] = [];
   password: string;
   errorMessage: string;
   amplifyService: AmplifyService;
@@ -56,17 +53,14 @@ export class RequireNewPasswordComponent {
   }
 
   @Input()
-  hide: string[] = [];
-
-  shouldHide(comp) {
-    return this.hide.filter(item => item === comp)
-            .length > 0;
-  }
-
-  @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
     this._show = authState.state === 'requireNewPassword';
+  }
+
+  shouldHide(comp) {
+    return this._hide.filter(item => item === comp)
+            .length > 0;
   }
 
   setPassword(password: string) {

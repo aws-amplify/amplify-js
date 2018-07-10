@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../providers';
+import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
@@ -72,10 +72,10 @@ const template = `
 `
 
 @Component({
-  selector: 'amplify-auth-sign-up',
+  selector: 'amplify-auth-sign-up-core',
   template: template
 })
-export class SignUpComponent {
+export class SignUpComponentCore {
   _authState: AuthState;
   _show: boolean;
   username: string;
