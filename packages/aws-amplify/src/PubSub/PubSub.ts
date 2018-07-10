@@ -28,7 +28,7 @@ export default class PubSub {
 
     /**
      * Initialize PubSub with AWS configurations
-     * 
+     *
      * @param {PubSubOptions} options - Configuration object for PubSub
      */
     constructor(options: PubSubOptions) {
@@ -39,7 +39,7 @@ export default class PubSub {
 
     /**
      * Configure PubSub part with configurations
-     * 
+     *
      * @param {PubSubOptions} config - Configuration for PubSub
      * @return {Object} - The current configuration
      */
@@ -50,7 +50,7 @@ export default class PubSub {
         this._options = Object.assign({}, this._options, opt);
 
         if (this._options.aws_appsync_graphqlEndpoint && this._options.aws_appsync_region &&
-            !this._pluggables.find(p => p.getProviderName() === 'AWSAppSyncProvider')) {
+            !this._pluggables.some(p => p.getProviderName() === 'AWSAppSyncProvider')) {
             this.addPluggable(new AWSAppSyncProvider());
         }
 
