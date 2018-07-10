@@ -133,7 +133,7 @@ export default class AuthClass {
                     RedirectUriSignIn: oauth.redirectSignIn,
                     RedirectUriSignOut: oauth.redirectSignOut,
                     ResponseType: oauth.responseType,
-                    Storage: this.userPool.Storage
+                    Storage: this.userPool.storage
                 },
                 oauth.options
             );
