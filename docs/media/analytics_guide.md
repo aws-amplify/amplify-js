@@ -86,7 +86,7 @@ Analytics.configure({
         // OPTIONAL - The buffer size for events in number of items.
         bufferSize: 1000,
 
-        // OPTIONAL - The interval in milisecons to perform a buffer check and flush if necessary.
+        // OPTIONAL - The interval in milliseconds to perform a buffer check and flush if necessary.
         flushInterval: 5000, // 5s 
 
         // OPTIONAL - The number of events to be deleted from the buffer when flushed.
@@ -266,14 +266,14 @@ Analytics.configure({
         // OPTIONAL -  Amazon Kinesis service region
         region: 'XX-XXXX-X',
         
-        // OPTIONAL - The interval in milisecons to perform a buffer check and flush if necessary.
-        bufferSize: 1000
+        // OPTIONAL - The buffer size for events in number of items.
+        bufferSize: 1000,
         
         // OPTIONAL - The number of events to be deleted from the buffer when flushed.
-        flushSize: 100
+        flushSize: 100,
         
         // OPTIONAL - The interval in milliseconds to perform a buffer check and flush if necessary.
-        flushInterval: 5000 // 5s
+        flushInterval: 5000, // 5s
         
         // OPTIONAL - The limit for failed recording retries.
         resendLimit: 5
