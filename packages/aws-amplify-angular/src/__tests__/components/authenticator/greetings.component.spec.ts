@@ -5,7 +5,7 @@ import { AmplifyService } from '../../../providers/amplify.service'
 import { GreetingComponentCore } from '../../../components/authenticator/greeting-component/greeting.component.core';
 
 
-describe('GreetingsComponent: ', () => {
+describe('GreetingsComponentCore: ', () => {
 
   let component: GreetingComponentCore;
   let service: AmplifyService;

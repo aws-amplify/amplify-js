@@ -5,7 +5,7 @@ import { AmplifyService } from '../../../providers/amplify.service'
 import { RequireNewPasswordComponentCore } from '../../../components/authenticator/require-new-password-component/require-new-password.component.core';
 
 
-describe('RequireNewPasswordComponent: ', () => {
+describe('RequireNewPasswordComponentCore: ', () => {
 
   let component: RequireNewPasswordComponentCore;
   let service: AmplifyService;

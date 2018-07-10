@@ -5,7 +5,7 @@ import { AmplifyService } from '../../../providers/amplify.service'
 import { ForgotPasswordComponentCore } from '../../../components/authenticator/forgot-password-component/forgot-password.component.core'
 
 
-describe('ForgotPasswordComponent: ', () => {
+describe('ForgotPasswordComponentCore: ', () => {
 
   let component: ForgotPasswordComponentCore;
   let service: AmplifyService;

@@ -5,7 +5,7 @@ import { AmplifyService } from '../../../providers/amplify.service'
 import { SignUpComponentCore } from '../../../components/authenticator/sign-up-component/sign-up.component.core'
 
 
-describe('SignUpComponent: ', () => {
+describe('SignUpComponentCore: ', () => {
 
   let component: SignUpComponentCore;
   let service: AmplifyService;

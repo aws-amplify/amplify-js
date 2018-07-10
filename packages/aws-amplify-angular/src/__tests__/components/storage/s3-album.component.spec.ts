@@ -5,7 +5,7 @@ import { AmplifyService } from '../../../providers/amplify.service'
 import { S3AlbumComponentCore } from '../../../components/storage/s3-album-component/s3-album.component.core'
 
 
-describe('PhotoPickerComponent: ', () => {
+describe('PhotoPickerComponentCore: ', () => {
 
   let component: S3AlbumComponentCore;
   let service: AmplifyService;

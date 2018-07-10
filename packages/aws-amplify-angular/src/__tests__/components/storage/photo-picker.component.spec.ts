@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { PhotoPickerComponentCore } from '../../../components/storage/photo-picker-component/photo-picker.component.core';
 
-    describe('PhotoPickerComponent:', () => {
+    describe('PhotoPickerComponentCore:', () => {
 
       let component: PhotoPickerComponentCore;
       let fixture: ComponentFixture<PhotoPickerComponentCore>;
