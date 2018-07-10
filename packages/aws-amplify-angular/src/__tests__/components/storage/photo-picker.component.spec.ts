@@ -1,25 +1,21 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { PhotoPickerComponent } from '../../../components/storage/photo-picker.component';
+import { PhotoPickerComponentCore } from '../../../components/storage/photo-picker-component/photo-picker.component.core';
 
     describe('PhotoPickerComponent:', () => {
 
-      beforeAll(() => {
-        TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-      })
-
-      let component: PhotoPickerComponent;
-      let fixture: ComponentFixture<PhotoPickerComponent>;
+      let component: PhotoPickerComponentCore;
+      let fixture: ComponentFixture<PhotoPickerComponentCore>;
     
       beforeEach(() => {
     
         TestBed.configureTestingModule({
-          declarations: [PhotoPickerComponent]
+          declarations: [PhotoPickerComponentCore]
         });
     
         // create component and test fixture
-        fixture = TestBed.createComponent(PhotoPickerComponent);
+        fixture = TestBed.createComponent(PhotoPickerComponentCore);
     
         // get test component from the fixture
         component = fixture.componentInstance;

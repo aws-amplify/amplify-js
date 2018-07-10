@@ -2,17 +2,17 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service'
-import { SignInComponent } from '../../../components/authenticator/sign-in.component'
+import { SignInComponentCore } from '../../../components/authenticator/sign-in-component/sign-in.component.core'
 
 
 describe('ConfirmSignUpComponent: ', () => {
 
-  let component: SignInComponent;
+  let component: SignInComponentCore;
   let service: AmplifyService;
 
   beforeEach(() => { 
     service = new AmplifyService();
-    component = new SignInComponent(service);
+    component = new SignInComponentCore(service);
   });
 
   afterEach(() => {

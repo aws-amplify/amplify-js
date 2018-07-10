@@ -2,17 +2,17 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service'
-import { GreetingsComponent } from '../../../components/authenticator/greetings.component'
+import { GreetingComponentCore } from '../../../components/authenticator/greeting-component/greeting.component.core';
 
 
 describe('GreetingsComponent: ', () => {
 
-  let component: GreetingsComponent;
+  let component: GreetingComponentCore;
   let service: AmplifyService;
 
   beforeEach(() => { 
     service = new AmplifyService();
-    component = new GreetingsComponent(service);
+    component = new GreetingComponentCore(service);
   });
 
   afterEach(() => {
