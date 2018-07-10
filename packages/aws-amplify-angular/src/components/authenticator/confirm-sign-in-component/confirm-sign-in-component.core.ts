@@ -1,29 +1,18 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../providers';
+import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
   <div class="amplify-form-body">
 
     <div class="amplify-form-row">
-      
       <div class="amplify-form-cell-left">
         <a class="amplify-form-link"
           (click)="onSignIn()"
         >Back to Sign In</a>
       </div>
-
     </div>
 
-    <div class="amplify-form-row">
-      <input
-        (keyup)="setUsername($event.target.value)"
-        class="amplify-form-input"
-        type="text"
-        placeholder="Username"
-        [value]="username"
-      />
-    </div>
     <div class="amplify-form-row">
       <input #code
         (keyup)="setCode(code.value)"
@@ -33,29 +22,23 @@ const template = `
         placeholder="Code"
       />
     </div>
-      
     <button class="amplify-form-button"
-      (click)="onConfirm()">Confirm</button>
-    <button class="amplify-form-button"
-      (click)="onResend()">Resend</button>
-
+      (click)="onConfirm()"
+    >Confirm</button>
   </div>
-
   <div class="amplify-form-footer">
     <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>
-
 </div>
 `
 
 @Component({
-  selector: 'amplify-auth-confirm-sign-up',
+  selector: 'amplify-auth-confirm-sign-in-core',
   template: template
 })
-export class ConfirmSignUpComponent {
+export class ConfirmSignInComponentCore {
   _authState: AuthState;
   _show: boolean;
-  username: string;
   code: string;
   errorMessage: string;
   amplifyService: AmplifyService;
@@ -65,15 +48,15 @@ export class ConfirmSignUpComponent {
   }
 
   @Input()
-  set authState(authState: AuthState) {
-    this._authState = authState;
-    this._show = authState.state === 'confirmSignUp';
-
-    this.username = authState.user? authState.user.username || '' : '';
+  set data(data: any) {
+    this._authState = data.authState;
+    this._show = data.authState.state === 'confirmSignIn';
   }
 
-  setUsername(username: string) {
-    this.username = username;
+  @Input()
+  set authState(authState: AuthState) {
+    this._authState = authState;
+    this._show = authState.state === 'confirmSignIn';
   }
 
   setCode(code: string) {
@@ -81,18 +64,18 @@ export class ConfirmSignUpComponent {
   }
 
   onConfirm() {
+    const { user } = this._authState;
+    const { challengeName } = user;
+    const mfaType = challengeName === 'SOFTWARE_TOKEN_MFA' ? challengeName : null;
     this.amplifyService.auth()
-      .confirmSignUp(
-        this.username,
-        this.code
+      .confirmSignIn(
+        user,
+        this.code,
+        mfaType
       )
-      .then(() => console.log('confirm success'))
-      .catch(err => this._setError(err));
-  }
-
-  onResend() {
-    this.amplifyService.auth().resendSignUp(this.username)
-      .then(() => console.log('code resent'))
+      .then(() => {
+        this.amplifyService.setAuthState({ state: 'signedIn', user: user });
+      })
       .catch(err => this._setError(err));
   }
 

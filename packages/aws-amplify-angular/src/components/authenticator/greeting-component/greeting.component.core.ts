@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../providers';
+import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
 <div class="amplify-greeting">
@@ -12,10 +12,10 @@ const template = `
 `
 
 @Component({
-  selector: 'amplify-auth-greetings',
+  selector: 'amplify-auth-greetings-core',
   template: template
 })
-export class GreetingsComponent {
+export class GreetingComponentCore {
   signedIn: boolean;
   greeting: string;
 
@@ -28,6 +28,7 @@ export class GreetingsComponent {
 
   @Input()
   authState: AuthState;
+  
 
   subscribe() {
     this.amplifyService.authStateChange$

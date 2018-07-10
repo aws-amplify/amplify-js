@@ -1,45 +1,47 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../providers';
+import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
   <div class="amplify-form-body">
-
-    <div class="amplify-form-row">
+  <div class="amplify-form-row">
       <div class="amplify-form-cell-left">
         <a class="amplify-form-link"
           (click)="onSignIn()"
         >Back to Sign In</a>
       </div>
     </div>
-
     <div class="amplify-form-row">
-      <input #code
-        (keyup)="setCode(code.value)"
-        (keyup.enter)="onConfirm()"
+      <input #password
+        (keyup)="setPassword(password.value)"
+        (keyup.enter)="onSubmit()"
         class="amplify-form-input"
-        type="text"
-        placeholder="Code"
+        type="password"
+        placeholder="Password"
       />
     </div>
-    <button class="amplify-form-button"
-      (click)="onConfirm()"
-    >Confirm</button>
+    
+    <div class="amplify-form-row">
+      <button class="amplify-form-button"
+        (click)="onSubmit()"
+      >Submit</button>
+    </div>
   </div>
   <div class="amplify-form-footer">
     <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>
+  
 </div>
 `
 
 @Component({
-  selector: 'amplify-auth-confirm-sign-in',
+  selector: 'amplify-auth-require-new-password-core',
   template: template
 })
-export class ConfirmSignInComponent {
+export class RequireNewPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
-  code: string;
+  password: string;
   errorMessage: string;
   amplifyService: AmplifyService;
 
@@ -50,25 +52,24 @@ export class ConfirmSignInComponent {
   @Input()
   set authState(authState: AuthState) {
     this._authState = authState;
-    this._show = authState.state === 'confirmSignIn';
+    this._show = authState.state === 'requireNewPassword';
   }
 
-  setCode(code: string) {
-    this.code = code;
+  setPassword(password: string) {
+    this.password = password;
   }
 
-  onConfirm() {
+  onSubmit() {
     const { user } = this._authState;
-    const { challengeName } = user;
-    const mfaType = challengeName === 'SOFTWARE_TOKEN_MFA' ? challengeName : null;
+    const { requiredAttributes } = user.challengeParam;
     this.amplifyService.auth()
-      .confirmSignIn(
+      .completeNewPassword(
         user,
-        this.code,
-        mfaType
+        this.password,
+        requiredAttributes
       )
       .then(() => {
-        this.amplifyService.setAuthState({ state: 'signedIn', user: user });
+        this.amplifyService.setAuthState({ state: 'signIn', user: user });
       })
       .catch(err => this._setError(err));
   }
