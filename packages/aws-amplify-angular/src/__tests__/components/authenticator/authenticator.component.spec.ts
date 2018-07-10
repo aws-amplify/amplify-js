@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service'
-import { AuthenticatorComponent } from '../../../components/authenticator/authenticator.component'
+import { AuthenticatorComponent } from '../../../components/authenticator';
 
 
 describe('AuthenticatorComponent: ', () => {

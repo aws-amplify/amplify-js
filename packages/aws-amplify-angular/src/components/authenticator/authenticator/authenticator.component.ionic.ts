@@ -10,26 +10,30 @@ const template = `
   </div>
   <div>
     <amplify-auth-sign-up-ionic
-    *ngIf="!shouldHide('SignUp')"
-    [authState]="authState"
+      *ngIf="!shouldHide('SignUp')"
+      [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-sign-up-ionic>
   </div>
   <div>
     <amplify-auth-confirm-sign-up-ionic
-    *ngIf="!shouldHide('ConfirmSignUp')"
-    [authState]="authState"
+      *ngIf="!shouldHide('ConfirmSignUp')"
+      [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-confirm-sign-up-ionic>
   </div>
   <div>
     <amplify-auth-confirm-sign-in-ionic
-    *ngIf="!shouldHide('ConfirmSignIn')"
-    [authState]="authState"
+      *ngIf="!shouldHide('ConfirmSignIn')"
+      [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-confirm-sign-in-ionic>
   </div>
   <div>
     <amplify-auth-forgot-password-ionic
-    *ngIf="!shouldHide('ForgotPassword')"
-    [authState]="authState"
+      *ngIf="!shouldHide('ForgotPassword')"
+      [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-forgot-password-ionic>
   </div>
   <div>
@@ -40,8 +44,9 @@ const template = `
   </div>
   <div>
     <amplify-auth-require-new-password-ionic
-    *ngIf="!shouldHide('RequireNewPassword')"
-    [authState]="authState"
+      *ngIf="!shouldHide('RequireNewPassword')"
+      [authState]="authState"
+      [hide]="hide"
     ></amplify-auth-require-new-password-ionic>
   </div>
 `

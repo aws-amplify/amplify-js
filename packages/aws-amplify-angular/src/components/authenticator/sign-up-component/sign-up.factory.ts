@@ -18,6 +18,7 @@ import { AuthState } from '../../../providers';
 export class SignUpComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() authState: AuthState;
+  @Input() hide: [string] = [];
   @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
@@ -30,7 +31,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(SignUpComponentIonic,{authState: this.authState}) : new ComponentMount(SignUpComponentCore, {authState: this.authState});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(SignUpComponentIonic,{hide: this.hide, authState: this.authState}) : new ComponentMount(SignUpComponentCore, {hide: this.hide, authState: this.authState});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

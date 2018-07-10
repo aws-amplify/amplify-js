@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../providers';
+import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
@@ -73,6 +73,14 @@ export class ConfirmSignUpComponentCore {
     this._show = data.authState.state === 'confirmSignUp';
 
     this.username = data.authState.user? data.authState.user.username || '' : '';
+  }
+
+  @Input()
+  set authState(authState: AuthState) {
+    this._authState = authState;
+    this._show = authState.state === 'confirmSignUp';
+
+    this.username = authState.user? authState.user.username || '' : '';
   }
 
   shouldHide(comp) {
