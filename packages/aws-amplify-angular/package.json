@@ -9,10 +9,7 @@
     "build": "gulp inline-templates && npm run ngcompile && npm run cleantemp",
     "cleantemp": "rimraf coverage dist tmp docs",
     "ngcompile": "node_modules/.bin/ngc -p tsconfig-aot.json",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:ci": "jest --runInBand",
-    "test:coverage": "jest --coverage"
+    "test": "jest"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
