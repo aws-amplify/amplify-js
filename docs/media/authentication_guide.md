@@ -295,6 +295,9 @@ const federated = {
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
 
+ NOTE: Federated Identity HOCs are not yet available on React Native.
+ {: .callout .callout--info}
+
 You can also initiate a federated signin process by calling `Auth.federatedSignIn()` method with a specific identity provider in your code:  
 
 ```js
@@ -327,6 +330,10 @@ ga.signIn().then(googleUser => {
 });
 ```
 
+Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenID. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `accounts.your-openid-provider.com`.
+
+**Retrieving JWT Token**
+
 After the federated login, you can retrieve related JWT token from the local cache using the *Cache* module: 
 ```js
 import { Cache } from 'aws-amplify';
@@ -337,19 +344,21 @@ Cache.getItem('federatedInfo').then(federatedInfo => {
 });
 ```
 
-By default Amplify will automatically refresh the token from Google or Facebook for you so that the AWS credentials will be always valid. But if you are using other federated providers you will need to provide your own refreshing method:
+**Refreshing JWT Tokens**
+
+By default, AWS Amplify will automatically refresh the tokens for Google and Facebook, so that your AWS credentials will be valid at all times. But if you are using another federated provider, you will need to provide your own token refresh method:
 ```js
 import { Auth } from 'aws-amplify';
 
-function your_refresh_method() {
-    // refresh the token
+function refreshToken() {
+    // refresh the token here and get the new token info
     // ......
 
     return new Promise(res, rej => {
         const data = {
             token, // the token from the provider
-            expires_at, // the timestamp when the token expires
-            identity_id, // optional, the identityId of the crednetianls
+            expires_at, // the timestamp for the expiration
+            identity_id, // optional, the identityId for the credentials
         }
         res(data);
     });
@@ -357,15 +366,10 @@ function your_refresh_method() {
 
 Auth.configure({
     refreshHandlers: {
-        'developer': your_refresh_method
+        'developer': refreshToken
     }
 })
 ```
-
-Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenID. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `accounts.your-openid-provider.com`.
-
- NOTE: Federated Identity HOCs are not yet available on React Native.
- {: .callout .callout--info}
 
 #### Rendering a Sign Out Button
 
