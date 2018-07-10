@@ -21,10 +21,10 @@ const template = `
 `
 
 @Component({
-  selector: 'amplify-photo-picker',
+  selector: 'amplify-photo-picker-core',
   template: template
 })
-export class PhotoPickerComponent {
+export class PhotoPickerComponentCore {
   photoUrl: string;
   hasPhoto: boolean = false;
   
@@ -34,11 +34,18 @@ export class PhotoPickerComponent {
     this.hasPhoto = true;
   }
 
+  @Input()
+  set data(data: any) {
+    this.photoUrl = data.url;
+    this.hasPhoto = true;
+  }
+
   @Output()
   picked: EventEmitter<string> = new EventEmitter<string>();
 
   @Output()
   loaded: EventEmitter<string> = new EventEmitter<string>();
+  
 
   pick(evt) {
     const file = evt.target.files[0];

@@ -1,0 +1,96 @@
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChatbotComponentCore } from './chatbot.component.core'
+import { AmplifyService } from '../../../providers';
+
+const template = `
+<div class="amplify-interactions-container">
+	<div class="amplify-form-container">
+		<ion-grid>
+			<ion-row *ngIf="chatTitle"> 
+				<ion-col>
+					<ion-row>
+						<ion-col align-self-start>
+							<div>
+								<ion-chip color="primary">
+									<ion-label>{{chatTitle}}</ion-label>
+								</ion-chip>
+							</div>
+						</ion-col>
+						<ion-col align-self-end>
+							&nbsp;
+						</ion-col>
+					</ion-row>
+				</ion-col>
+			</ion-row>
+			<ion-row *ngFor="let message of messages">
+				<ion-col>
+					<ion-row>
+						<ion-col align-self-start>
+							<div>
+								&nbsp;
+							</div>
+						</ion-col>
+						<ion-col align-self-end>
+							<ion-chip>
+								<ion-label>{{message.me}}</ion-label>
+							</ion-chip>
+						</ion-col>
+					</ion-row>
+					<ion-row>
+						<ion-col align-self-start>
+							<ion-chip color="primary">
+								<ion-label>{{message.bot}}</ion-label>
+							</ion-chip>
+						</ion-col>
+						<ion-col align-self-end>
+							<div>
+								&nbsp;
+							</div>
+						</ion-col>
+					</ion-row>
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+
+		<div class="amplify-form-row">
+		    <ion-input #inputValue
+		    	type='text'
+		        class="amplify-form-input"
+		        placeholder="Message"
+		        [value]="inputText"
+		        (keyup.enter)="onSubmit(inputValue.value)"
+		        (change)="onInputChange($event.target.value)"></ion-input>
+		    <ion-button (click)="onSubmit()">Send</ion-button>
+		</div>
+	</div>
+</div>
+`;
+
+const temp=`			
+<div class="amplify-interactions-conversation">
+<ion-chip color="primary">
+	<ion-label>{{chatTitle}}</ion-label>
+</ion-chip>		
+<br>	
+<div *ngFor="let message of messages">
+	<ion-chip>
+		<ion-label>{{message.me}}</ion-label>
+	</ion-chip>
+	<ion-chip color="primary">
+		<ion-label>{{message.bot}}</ion-label>
+	</ion-chip>
+</div>
+</div>
+</div>`
+
+@Component({
+  selector: 'amplify-interactions-ionic',
+  template: template
+})
+export class ChatbotComponentIonic extends ChatbotComponentCore {
+
+  constructor(amplifyService: AmplifyService) {
+    super(amplifyService);    
+  }
+
+}
