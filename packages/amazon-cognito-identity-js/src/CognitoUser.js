@@ -329,32 +329,7 @@ export default class CognitoUser {
               if (errAuthenticate) {
                 return callback.onFailure(errAuthenticate);
               }
-
-              const challengeName = dataAuthenticate.ChallengeName;
-              if (challengeName === 'NEW_PASSWORD_REQUIRED') {
-                this.Session = dataAuthenticate.Session;
-                let userAttributes = null;
-                let rawRequiredAttributes = null;
-                const requiredAttributes = [];
-                const userAttributesPrefix = authenticationHelper
-                  .getNewPasswordRequiredChallengeUserAttributePrefix();
-
-                if (dataAuthenticate.ChallengeParameters) {
-                  userAttributes = JSON.parse(
-                    dataAuthenticate.ChallengeParameters.userAttributes);
-                  rawRequiredAttributes = JSON.parse(
-                    dataAuthenticate.ChallengeParameters.requiredAttributes);
-                }
-
-                if (rawRequiredAttributes) {
-                  for (let i = 0; i < rawRequiredAttributes.length; i++) {
-                    requiredAttributes[i] = rawRequiredAttributes[i].substr(
-                      userAttributesPrefix.length
-                    );
-                  }
-                }
-                return callback.newPasswordRequired(userAttributes, requiredAttributes);
-              }
+              
               return this.authenticateUserInternal(
                 dataAuthenticate,
                 authenticationHelper,
@@ -450,6 +425,32 @@ export default class CognitoUser {
     if (challengeName === 'CUSTOM_CHALLENGE') {
       this.Session = dataAuthenticate.Session;
       return callback.customChallenge(challengeParameters);
+    }
+
+    if (challengeName === 'NEW_PASSWORD_REQUIRED') {
+      this.Session = dataAuthenticate.Session;
+
+      let userAttributes = null;
+      let rawRequiredAttributes = null;
+      const requiredAttributes = [];
+      const userAttributesPrefix = authenticationHelper
+        .getNewPasswordRequiredChallengeUserAttributePrefix();
+
+      if (challengeParameters) {
+        userAttributes = JSON.parse(
+          dataAuthenticate.ChallengeParameters.userAttributes);
+        rawRequiredAttributes = JSON.parse(
+          dataAuthenticate.ChallengeParameters.requiredAttributes);
+      }
+
+      if (rawRequiredAttributes) {
+        for (let i = 0; i < rawRequiredAttributes.length; i++) {
+          requiredAttributes[i] = rawRequiredAttributes[i].substr(
+            userAttributesPrefix.length
+          );
+        }
+      }
+      return callback.newPasswordRequired(userAttributes, requiredAttributes);
     }
 
     if (challengeName === 'DEVICE_SRP_AUTH') {
