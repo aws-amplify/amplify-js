@@ -1094,3 +1094,11 @@ const authScreenLabels = {
 I18n.setLanguage('en');
 I18n.putVocabularies(authScreenLabels);
 ```
+
+### Customize initial authState
+
+You can change the initial auth state for your Authenticator. By default the initial state is `signIn` which will shows the `signIn` component.
+If you want the `signUp` component shows first, you can do:
+```jsx
+<Authenticator authState='signUp'>
+```
