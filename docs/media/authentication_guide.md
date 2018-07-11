@@ -229,7 +229,9 @@ let session = Auth.currentSession();
 
 **When using Authentication with AWS Amplify, you don't need to refresh Amazon Cognito tokens manually. The tokens are automatically refreshed by the library when necessary.**
 
-Security Tokens like IdToken or AccessToken are stored in localStorage(Web)/AsyncStorage(React Native) by default. If you want to store those tokens in a more secure place or you are using Amplify in server side, then you can provide your own `storage` object to store those tokens. For example:
+Security Tokens like *IdToken* or *AccessToken* are stored in *localStorage* for the browser and in *AsyncStorage* for React Native. If you want to store those tokens in a more secure place or you are using Amplify in server side, then you can provide your own `storage` object to store those tokens. 
+
+For example:
 ```ts
 class MyStorage {
     // set item with the key
@@ -251,7 +253,7 @@ Auth.configure({
 });
 ```
 
-If you are using `amazon-cognito-identity-js` package directly in your app, you need to monitor token expiration and refresh your tokens in your code. Following code sample shows how to refresh tokens:
+If you are using `amazon-cognito-identity-js` package directly in your app (instead of using it with AWS Amplify Authentication module), you need to monitor token expiration and refresh your tokens in your code. Following code sample shows how to refresh tokens:
 
 ```js
 var data = { UserPoolId : 'us-east-1_resgd', ClientId : 'xyz' };
@@ -281,7 +283,6 @@ if (cognitoUser != null) {
         }
     });
 }
-
 ```
 
 To learn more about tokens, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
