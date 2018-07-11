@@ -10,7 +10,7 @@ import { AmplifyIonicModule } from '../../../aws-amplify-ionic-module';
 
 
 
-describe('AuthenticatorComponentCore: ', () => {
+describe('AuthenticatorComponent: ', () => {
 
   let component: AuthenticatorComponent;
   let service: AmplifyService;
@@ -79,15 +79,9 @@ describe('AuthenticatorComponentCore: ', () => {
 
   @Component({
     selector: `host-component`,
-    template: `<amplify-authenticator framework></amplify-authenticator>`
+    template: `<amplify-authenticator></amplify-authenticator>`
   })
   class TestHostComponent {
-    private input: string;
-
-    setInput(newInput: string) {
-      this.input = newInput;
-    }
-
   }
 
 });

@@ -6,7 +6,7 @@ import { SignInComponentIonic } from '../../../components/authenticator/sign-in-
 import Amplify from 'aws-amplify';
 
 
-describe('ConfirmSignUpComponentCore: ', () => {
+describe('SignInComponentIonic: ', () => {
 
   let component: SignInComponentIonic;
   let service: AmplifyService;

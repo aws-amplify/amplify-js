@@ -24,6 +24,8 @@ describe('ConfirmSignUpComponentCore: ', () => {
   afterEach(() => {
     service = null;
     component = null;
+    setAuthStateSpy.mockRestore();
+    signInSpy.mockRestore();
   });
 
 
@@ -39,7 +41,6 @@ describe('ConfirmSignUpComponentCore: ', () => {
     component.username = 'test-username2'
     const callingAuthState = component.onForgotPassword();
     expect(component.amplifyService.setAuthState).toBeCalled();
-    setAuthStateSpy.mockRestore();
   });
 
   it('...should have an onSignIn method', () => {
@@ -51,7 +52,6 @@ describe('ConfirmSignUpComponentCore: ', () => {
     component.password = 'test-password3';
     const callingAuthState = component.onSignIn();
     expect(component.amplifyService.auth().signIn).toBeCalled();
-    signInSpy.mockRestore();
   });
 
   it('...should have an onSignUp method', () => {
@@ -62,7 +62,6 @@ describe('ConfirmSignUpComponentCore: ', () => {
     component.username = 'test-username2'
     const callingAuthState = component.onSignUp();
     expect(component.amplifyService.setAuthState).toBeCalled();
-    setAuthStateSpy.mockRestore();
   });
 
   it('...should have a setPassword method', () => {
