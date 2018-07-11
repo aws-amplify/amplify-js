@@ -52,11 +52,13 @@ $ awsmobile init xxxx-yyyy-4491-bd6e-256d74e2b451 # Use your AWS Mobile Hub proj
 ```
 
 **Retrieving your AWS Mobile Hub project id**
-To retrieve your Mobile Hub project id, click *Integrate* button on your project in Mobile Hub console.
+You can find your Mobile Hub project id in the page URL of the project details page on the AWS Mobile Hub console. The URL looks like `https://console.aws.amazon.com/mobilehub/home?region=us-east-1#/xxx-yyy-zzz-aaa-xxx/build` and your project id is included in the URL, e.g: `xxx-yyy-zzz-aaa-xxx`.   <br/><br/>
+Alternatively, you can find your Mobile Hub project id in your project configuration file. To download the configuration file, click *Integrate* button on your project in Mobile Hub console.
 ![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}
 /media/images/mobile_hub_app_detail.jpg){: class="screencap" style="max-height:350px;"}  
-Then, click download link to get your `aws-exports.js` file which includes your Mobile Hub project id.
-![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/interactions_mobile_hub_configure.jpg){: class="screencap" style="max-height:400px;"}
+You can find your project id in `aws-exports.js` file which you can download with the download link in *No CLI?* section in integration details page. 
+![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/interactions_mobile_hub_configure.jpg){: class="screencap" style="max-height:430px;"}  
+Download the configuration file and find your project in `aws_project_id` attribute.
 {: .callout .callout--info}
 
 In your app's entry point, i.e. App.js, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.
