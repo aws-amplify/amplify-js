@@ -79,11 +79,10 @@ export default class Interactions {
                 throw new Error('Bot ' + pluggable.getProviderName() + ' already plugged');
             }
         }
-        throw new Error('Bot ' + pluggable.getProviderName() + ' has wrong category');
     }
 
     public async send(botname: string, message: string | Object) {
-        if (!this._options.bots[botname]) {
+        if (!this._options.bots || !this._options.bots[botname]) {
             throw new Error('Bot ' + botname + ' does not exist');
         }
 
@@ -97,8 +96,8 @@ export default class Interactions {
 
     }
 
-    public async onComplete(botname: string, callback: (err, confirmation) => void) {
-        if (!this._options.bots[botname]) {
+    public onComplete(botname: string, callback: (err, confirmation) => void) {
+        if (!this._options.bots || !this._options.bots[botname]) {
             throw new Error('Bot ' + botname + ' does not exist');
         }
         const botProvider = this._options.bots[botname].providerName || 'AWSLexProvider';
@@ -107,7 +106,7 @@ export default class Interactions {
             throw new Error('Bot ' + botProvider +
                 ' does not have valid pluggin did you try addPluggable first?');
         }
-        return this._pluggables[botProvider].onComplete(botname, callback);
+        this._pluggables[botProvider].onComplete(botname, callback);
 
     }
 }

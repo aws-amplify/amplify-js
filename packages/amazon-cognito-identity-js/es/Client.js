@@ -71,21 +71,26 @@ var Client = function () {
       return callback(error);
     }).catch(function (err) {
       // default to return 'UnknownError'
-      var error = { code: 'UnknownError', message: 'Unkown error' };
+      var error = { code: 'UnknownError', message: 'Unknown error' };
 
       // first check if we have a service error
       if (response && response.headers && response.headers.get('x-amzn-errortype')) {
         try {
-          var code = response.headers.get('x-amz-errortype').split(':')[0];
+          var code = response.headers.get('x-amzn-errortype').split(':')[0];
           error = {
             code: code,
             name: code,
             statusCode: response.status,
             message: response.status ? response.status.toString() : null
           };
-        } catch (ex) {}
-        // pass through so it doesn't get swallowed if we can't parse it
-
+        } catch (ex) {
+          // pass through so it doesn't get swallowed if we can't parse it
+          error = {
+            code: 'UnknownError',
+            message: response.headers.get('x-amzn-errortype')
+          };
+          return callback(error);
+        }
         // otherwise check if error is Network error
       } else if (err instanceof Error && err.message === 'Network error') {
         error = {

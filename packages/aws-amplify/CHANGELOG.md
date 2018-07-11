@@ -3,6 +3,176 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.4.9-unstable.1"></a>
+## [0.4.9-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.9-unstable.0...aws-amplify@0.4.9-unstable.1) (2018-07-03)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.9-unstable.0"></a>
+## [0.4.9-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.8...aws-amplify@0.4.9-unstable.0) (2018-07-02)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.8"></a>
+## [0.4.8](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.8-unstable.5...aws-amplify@0.4.8) (2018-06-29)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.8-unstable.5"></a>
+## [0.4.8-unstable.5](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.8-unstable.4...aws-amplify@0.4.8-unstable.5) (2018-06-29)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.8-unstable.4"></a>
+## [0.4.8-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.8-unstable.3...aws-amplify@0.4.8-unstable.4) (2018-06-29)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.8-unstable.3"></a>
+## [0.4.8-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.8-unstable.2...aws-amplify@0.4.8-unstable.3) (2018-06-28)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.8-unstable.2"></a>
+## [0.4.8-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.8-unstable.1...aws-amplify@0.4.8-unstable.2) (2018-06-27)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.8-unstable.1"></a>
+## [0.4.8-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.8-unstable.0...aws-amplify@0.4.8-unstable.1) (2018-06-27)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.8-unstable.0"></a>
+## [0.4.8-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.7-unstable.2...aws-amplify@0.4.8-unstable.0) (2018-06-27)
+
+
+### Bug Fixes
+
+* **interactions:** check fulfilled state to trigger onComplete callback ([#1122](https://github.com/aws/aws-amplify/issues/1122)) ([c24b1f1](https://github.com/aws/aws-amplify/commit/c24b1f1))
+
+
+
+
+<a name="0.4.7"></a>
+## [0.4.7](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.7-unstable.2...aws-amplify@0.4.7) (2018-06-27)
+
+
+### Bug Fixes
+
+* **interactions:** check fulfilled state to trigger onComplete callback ([#1122](https://github.com/aws/aws-amplify/issues/1122)) ([c24b1f1](https://github.com/aws/aws-amplify/commit/c24b1f1))
+
+
+
+
+<a name="0.4.7-unstable.2"></a>
+## [0.4.7-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.7-unstable.1...aws-amplify@0.4.7-unstable.2) (2018-06-26)
+
+
+### Bug Fixes
+
+* **integration tests:** CircleCI workflows and Cypress integration testing ([#1071](https://github.com/aws/aws-amplify/issues/1071)) ([bfa4776](https://github.com/aws/aws-amplify/commit/bfa4776))
+
+
+
+
+<a name="0.4.7-unstable.1"></a>
+## [0.4.7-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.7-unstable.0...aws-amplify@0.4.7-unstable.1) (2018-06-22)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.7-unstable.0"></a>
+## [0.4.7-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.6...aws-amplify@0.4.7-unstable.0) (2018-06-22)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.6"></a>
+## [0.4.6](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.5-unstable.3...aws-amplify@0.4.6) (2018-06-21)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.5"></a>
+## [0.4.5](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.47...aws-amplify@0.4.5) (2018-06-20)
+<a name="0.4.5-unstable.3"></a>
+## [0.4.5-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.5-unstable.2...aws-amplify@0.4.5-unstable.3) (2018-06-21)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.5-unstable.2"></a>
+## [0.4.5-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.5-unstable.1...aws-amplify@0.4.5-unstable.2) (2018-06-21)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.5-unstable.1"></a>
+## [0.4.5-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.5-unstable.0...aws-amplify@0.4.5-unstable.1) (2018-06-20)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="0.4.5-unstable.0"></a>
+## [0.4.5-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.47...aws-amplify@0.4.5-unstable.0) (2018-06-20)
+
+
+### Bug Fixes
+
+* **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
+* **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
+* **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
+
+
+
+
+<a name="0.4.4"></a>
+## [0.4.4](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.33...aws-amplify@0.4.4) (2018-06-04)
+<a name="0.4.2-unstable.47"></a>
+## [0.4.2-unstable.47](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.46...aws-amplify@0.4.2-unstable.47) (2018-06-19)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
 <a name="0.4.2-unstable.46"></a>
 ## [0.4.2-unstable.46](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.45...aws-amplify@0.4.2-unstable.46) (2018-06-18)
 
@@ -114,16 +284,34 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ## [0.4.2-unstable.33](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.32...aws-amplify@0.4.2-unstable.33) (2018-06-04)
 
 
+### Bug Fixes
+
+* **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
+* **pushnotification:** revert change in pr 952 ([b8d167c](https://github.com/aws/aws-amplify/commit/b8d167c))
+* **pushnotification:** revert change in pr 952 ([257fc40](https://github.com/aws/aws-amplify/commit/257fc40))
 
 
-**Note:** Version bump only for package aws-amplify
 
-<a name="0.4.2-unstable.32"></a>
-## [0.4.2-unstable.32](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.31...aws-amplify@0.4.2-unstable.32) (2018-06-04)
+
+<a name="0.4.3"></a>
+## [0.4.3](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2...aws-amplify@0.4.3) (2018-06-02)
 
 
 ### Bug Fixes
 
+* **aws-amplify:** Fix missing ServiceWorker export ([46069e2](https://github.com/aws/aws-amplify/commit/46069e2))
+* **aws-amplify:** Fix missing ServiceWorker export ([acbf754](https://github.com/aws/aws-amplify/commit/acbf754))
+
+
+
+
+<a name="0.4.2"></a>
+## [0.4.2](https://github.com/aws/aws-amplify/compare/aws-amplify@0.4.2-unstable.30...aws-amplify@0.4.2) (2018-06-01)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
 * **API:** query string for non signed requests ([#801](https://github.com/aws/aws-amplify/issues/801)) ([6746368](https://github.com/aws/aws-amplify/commit/6746368))
 
 
