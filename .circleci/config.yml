@@ -43,6 +43,7 @@ jobs:
           at: ./
       - run: yarn run test --scope aws-amplify
       - run: yarn run test --scope aws-amplify-react
+      - run: yarn run test --scope aws-amplify-angular
   integration_test_auth:
     <<: *defaults
     steps:
