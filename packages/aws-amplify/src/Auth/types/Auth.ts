@@ -40,7 +40,8 @@ export interface AuthOptions {
     cookieStorage?: ICookieStorageData,
     oauth?: OAuth,
     refreshHandlers?: object,
-    storage?: ICognitoStorage
+    storage?: ICognitoStorage,
+    authenticationFlowType?: string
 }
 
 /**

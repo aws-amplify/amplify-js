@@ -1149,8 +1149,13 @@ export default class AuthClass {
             Pool: this.userPool,
         };
         userData.Storage = this._storage;
-        
 
-        return new CognitoUser(userData);
+        const { authenticationFlowType } = this._config;
+        
+        const user = new CognitoUser(userData);
+        if (authenticationFlowType) {
+            user.setAuthenticationFlowType(authenticationFlowType);
+        }
+        return user;
     }
 }
