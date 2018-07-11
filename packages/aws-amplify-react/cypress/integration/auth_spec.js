@@ -34,7 +34,7 @@ describe('withAuthenticator Sign In', function() {
     // Check for empty password error
     cy.get('input[name=username]').type('invalidUsername')
     cy.get('.amplify-button').contains('Sign In').click()
-    cy.get('.amplify-error-section').contains('User does not exist')
+    cy.get('.amplify-error-section').contains('Password cannot be empty')
 
     // Check invalid username error
     cy.get('input[name=password]').type('invalidPassword')
