@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service'
-import { AuthenticatorComponentCore } from '../../../components/authenticator/authenticator/authenticator.component.core'
+import { AuthenticatorIonicComponent } from '../../../components/authenticator/authenticator/authenticator.component.ionic'
 
 
-describe('AuthenticatorComponentCore: ', () => {
+describe('AuthenticatorIonicComponent: ', () => {
 
-  let component: AuthenticatorComponentCore;
+  let component: AuthenticatorIonicComponent;
   let service: AmplifyService;
 
   beforeEach(() => { 
     service = new AmplifyService();
-    component = new AuthenticatorComponentCore(service);
+    component = new AuthenticatorIonicComponent(service);
   });
 
   afterEach(() => {
@@ -42,6 +42,5 @@ describe('AuthenticatorComponentCore: ', () => {
     component.hide = ['value one', 'value two'];
     expect(component.shouldHide('value two')).toEqual(true);
   })
-
 
 });
