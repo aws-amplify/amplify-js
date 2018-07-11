@@ -70,8 +70,8 @@ amplify:
               item_url: '/media/quick_start'
             - item_name: Docs
               item_url: '/media/developer_guide'
-#            - item_name: Tutorials
-#              item_url: '/media/tutorials'
+            - item_name: Tutorials
+              item_url: '/media/tutorials'
             - item_name: API
               item_url: '/api/'
             - item_name: 
