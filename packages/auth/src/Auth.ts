@@ -133,7 +133,7 @@ export default class AuthClass {
                     RedirectUriSignIn: oauth.redirectSignIn,
                     RedirectUriSignOut: oauth.redirectSignOut,
                     ResponseType: oauth.responseType,
-                    Storage: this.userPool.Storage
+                    Storage: this.userPool.storage
                 },
                 oauth.options
             );
@@ -1183,11 +1183,14 @@ export default class AuthClass {
             Pool: this.userPool,
         };
 
-        const { cookieStorage } = this._config;
+        const { cookieStorage, authenticationFlowType } = this._config;
         if (cookieStorage) {
             userData.Storage = new CookieStorage(cookieStorage);
         }
-
-        return new CognitoUser(userData);
+        const user = new CognitoUser(userData);
+        if (authenticationFlowType) {
+            user.setAuthenticationFlowType(authenticationFlowType);
+        }
+        return user;
     }
 }
