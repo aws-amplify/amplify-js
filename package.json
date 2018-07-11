@@ -39,7 +39,6 @@
     "@types/jest": "^20.0.7",
     "@types/node": "^8.9.5",
     "codecov": "^1.0.1",
-    "cypress": "^3.0.1",
     "jest": "^22.4.3",
     "json-loader": "^0.5.7",
     "lerna": "^2.4.0",
