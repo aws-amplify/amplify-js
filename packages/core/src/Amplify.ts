@@ -1,6 +1,6 @@
-import { ConsoleLogger as Logger } from './Logger';
+import { ConsoleLogger as LoggerClass } from './Logger';
 
-const logger = new Logger('Amplify');
+const logger = new LoggerClass('Amplify');
 
 export default class Amplify {
     private static _components = [];
@@ -18,7 +18,7 @@ export default class Amplify {
     static Interactions = null;
     static Pushnotification = null;
 
-    static Logger = null;
+    static Logger = LoggerClass;
     static ServiceWorker = null;
 
     static register(comp) {
