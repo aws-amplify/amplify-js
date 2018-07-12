@@ -1,4 +1,4 @@
-import { Amplify } from '@aws-amplify/core';
+import Amplify from '@aws-amplify/core';
 
 const Auth = Amplify.Auth;
 const API = Amplify.API;

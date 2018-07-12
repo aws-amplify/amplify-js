@@ -12,7 +12,7 @@
  */
 import PubSubClass from './PubSub';
 
-import { ConsoleLogger as Logger, Amplify } from '@aws-amplify/core';
+import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('PubSub');
 
