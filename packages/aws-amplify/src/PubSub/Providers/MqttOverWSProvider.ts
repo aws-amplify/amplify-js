@@ -70,7 +70,6 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         client.onMessageArrived = ({ destinationName: topic, payloadString: msg }) => {
             this._onMessage(topic, msg);
         };
-        client.onConnectionLost = logger.info.bind(logger);
 
         await new Promise((resolve, reject) => {
             client.connect({
@@ -143,13 +142,24 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
             let client: Client;
             const { clientId = this.clientId} = options;
 
+            const onError = err => {
+                logger.info(err);
+                this.clientsQueue.remove(clientId);
+                observer.error(err);
+            };
+
             (async () => {
                 const {
                     url = await this.endpoint,
                 } = options;
 
-                client = await this.connect(clientId, { url });
-                targetTopics.forEach(topic => { client.subscribe(topic); });
+                try {
+                    client = await this.connect(clientId, { url });
+                    client.onConnectionLost = onError;
+                    targetTopics.forEach(topic => { client.subscribe(topic); });
+                } catch (err) {
+                    onError(err);
+                }
             })();
 
             return () => {
