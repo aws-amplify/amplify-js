@@ -123,9 +123,6 @@ export default class APIClass {
             }
         }
 
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
-
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
             return Promise.reject('Api ' + apiName + ' does not exist');
@@ -148,9 +145,6 @@ export default class APIClass {
                 return Promise.reject(error);
             }
         }
-
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
@@ -175,9 +169,6 @@ export default class APIClass {
             }
         }
 
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
-
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
             return Promise.reject('Api ' + apiName + ' does not exist');
@@ -200,9 +191,6 @@ export default class APIClass {
                 return Promise.reject(error);
             }
         }
-
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
@@ -227,9 +215,6 @@ export default class APIClass {
             }
         }
 
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
-
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
             return Promise.reject('Api ' + apiName + ' does not exist');
@@ -252,9 +237,6 @@ export default class APIClass {
                 return Promise.reject(error);
             }
         }
-
-        const credentialsOK = await this._ensureCredentials();
-        if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const endpoint = this._api.endpoint(apiName);
         if (endpoint.length === 0) {
