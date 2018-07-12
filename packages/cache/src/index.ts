@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { Amplify } from '@aws-amplify/core';
+import Amplify from '@aws-amplify/core';
 import BrowserStorageCache from './BrowserStorageCache';
 import InMemoryCache from './InMemoryCache';
 import { CacheConfig } from './types';
