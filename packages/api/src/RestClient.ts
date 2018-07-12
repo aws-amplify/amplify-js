@@ -127,7 +127,7 @@ export class RestClient {
             .then(credentials => this._signed({ ...params, ...extraParams }, credentials, isAllResponse))
             .catch(err => {
                 logger.debug('No credentials available, the request will be unsigned');
-                return this._request(params, isAllResponse)
+                return this._request(params, isAllResponse);
             });
     }
 
