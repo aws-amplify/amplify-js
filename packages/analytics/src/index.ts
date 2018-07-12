@@ -14,12 +14,11 @@
 import AnalyticsClass from './Analytics';
 import { AnalyticsProvider } from './types';
 
-import {
+import Amplify, {
     ConsoleLogger as Logger,
     Hub,
     Linking,
     AppState,
-    Amplify,
     Platform
 } from '@aws-amplify/core';
 

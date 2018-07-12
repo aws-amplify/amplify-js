@@ -22,14 +22,13 @@ import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
 import PubSub, { PubSubClass } from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
 import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
-import {
+import Amplify, {
     ConsoleLogger as Logger,
     Hub,
     JS,
     ClientDevice,
     Signer,
     I18n,
-    Amplify,
     ServiceWorker
 } from '@aws-amplify/core';
 

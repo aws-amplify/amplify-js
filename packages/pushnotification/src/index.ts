@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import NotificationClass from './PushNotification';
-import { ConsoleLogger as Logger, Amplify } from '@aws-amplify/core';
+import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const _instance = new NotificationClass(null);
 const PushNotification = _instance;
