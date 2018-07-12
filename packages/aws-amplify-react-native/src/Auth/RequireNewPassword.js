@@ -58,6 +58,18 @@ export default class RequireNewPassword extends AuthPiece {
         this.change = this.change.bind(this);
     }
 
+    checkContact(user) {
+        Auth.verifiedContact(user)
+            .then(data => {
+                if (!JS.isEmpty(data.verified)) {
+                    this.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    this.changeState('verifyContact', user);
+                }
+            });
+    }
+
     change() {
         const user = this.props.authData;
         const { password } = this.state;
