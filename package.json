@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "pre-commit": "lerna exec yarn test --scope aws-amplify",
+    "pre-commit": "lerna exec yarn test --scope @aws-amplify/core",
     "test": "lerna exec yarn test",
     "cypress": "lerna exec yarn cypress",
     "cypress:open": "lerna exec yarn cypress:open",
