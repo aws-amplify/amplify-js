@@ -790,8 +790,8 @@ Note: if you're using Graphql, please also install `@aws-amplify/pubsub`
 
 Then in your code, you can import the Api module by:
 ```js
-import Api from '@aws-amplify/api';
+import API from '@aws-amplify/api';
 
-Api.configure();
+API.configure();
 
 ```
