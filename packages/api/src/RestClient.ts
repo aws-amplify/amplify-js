@@ -122,8 +122,13 @@ export class RestClient {
 
         }
 
+        // Signing the request in case there credentials are available
         return Credentials.get()
-            .then(credentials => this._signed({ ...params, ...extraParams }, credentials, isAllResponse));
+            .then(credentials => this._signed({ ...params, ...extraParams }, credentials, isAllResponse))
+            .catch(err => {
+                logger.debug('No credentials available, the request will be unsigned');
+                return this._request(params, isAllResponse);
+            });
     }
 
     /**

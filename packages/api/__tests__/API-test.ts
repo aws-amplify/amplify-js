@@ -608,19 +608,18 @@ describe('API test', () => {
                     rej('err no current credentials');
                 });
             });
-            const spyon2 = jest.spyOn(RestClient.prototype, 'get').mockImplementationOnce(() => {
-                return Promise.resolve();
-            });
+            
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
                 return 'endpoint';
             });
 
+            const spyon4 = jest.spyOn(RestClient.prototype, '_request').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+
             expect.assertions(1);
-            try {
-                await api.get('apiName', 'path', 'init');
-            } catch (e) {
-                expect(e).toBe('No credentials');
-            }
+            await api.get('apiName', 'path', 'init');
+            expect(spyon4).toBeCalled();
         });
 
         test('no restclient instance', async () => {
@@ -700,20 +699,19 @@ describe('API test', () => {
                     rej('err');
                 });
             });
-            const spyon2 = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce(() => {
-                return Promise.resolve();
-            });
+            
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
                 return 'endpoint';
             });
 
             const api = new API(config);
+            const spyon4 = jest.spyOn(RestClient.prototype, '_request').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+
             expect.assertions(1);
-            try {
-                await api.post('apiName', 'path', 'init');
-            } catch (e) {
-                expect(e).toBe('No credentials');
-            }
+            await api.post('apiName', 'path', 'init');
+            expect(spyon4).toBeCalled();
 
         });
 
@@ -784,19 +782,18 @@ describe('API test', () => {
                     rej('err');
                 });
             });
-            const spyon2 = jest.spyOn(RestClient.prototype, 'put').mockImplementationOnce(() => {
-                return Promise.resolve();
-            });
+            
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
                 return 'endpoint';
             });
 
+            const spyon4 = jest.spyOn(RestClient.prototype, '_request').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+
             expect.assertions(1);
-            try {
-                await api.put('apiName', 'path', 'init');
-            } catch (e) {
-                expect(e).toBe('No credentials');
-            }
+            await api.put('apiName', 'path', 'init');
+            expect(spyon4).toBeCalled();
 
         });
 
@@ -868,19 +865,18 @@ describe('API test', () => {
                     rej('err');
                 });
             });
-            const spyon2 = jest.spyOn(RestClient.prototype, 'patch').mockImplementationOnce(() => {
-                return Promise.resolve();
-            });
+            
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
                 return 'endpoint';
             });
 
+            const spyon4 = jest.spyOn(RestClient.prototype, '_request').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+
             expect.assertions(1);
-            try {
-                await api.patch('apiName', 'path', 'init');
-            } catch (e) {
-                expect(e).toBe('No credentials');
-            }
+            await api.patch('apiName', 'path', 'init');
+            expect(spyon4).toBeCalled();
 
         });
 
@@ -952,19 +948,18 @@ describe('API test', () => {
                     rej('err');
                 });
             });
-            const spyon2 = jest.spyOn(RestClient.prototype, 'del').mockImplementationOnce(() => {
-                return Promise.resolve();
-            });
+            
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
                 return 'endpoint';
             });
 
+            const spyon4 = jest.spyOn(RestClient.prototype, '_request').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+
             expect.assertions(1);
-            try {
-                await api.del('apiName', 'path', 'init');
-            } catch (e) {
-                expect(e).toBe('No credentials');
-            }
+            await api.del('apiName', 'path', 'init');
+            expect(spyon4).toBeCalled();
 
         });
 
@@ -1035,19 +1030,18 @@ describe('API test', () => {
                     rej('err');
                 });
             });
-            const spyon2 = jest.spyOn(RestClient.prototype, 'head').mockImplementationOnce(() => {
-                return Promise.resolve();
-            });
+            
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
                 return 'endpoint';
             });
 
+            const spyon4 = jest.spyOn(RestClient.prototype, '_request').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+
             expect.assertions(1);
-            try {
-                await api.head('apiName', 'path', 'init');
-            } catch (e) {
-                expect(e).toBe('No credentials');
-            }
+            await api.head('apiName', 'path', 'init');
+            expect(spyon4).toBeCalled();
 
         });
 
