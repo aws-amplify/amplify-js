@@ -85,7 +85,7 @@ export default class SelectMFAType extends Component {
  
         }).catch(err => {
             const { message } = err;
-            if (message === 'User has not set up software token mfa') {
+            if (message === 'User has not set up software token mfa' || message === 'User has not verified software token mfa') {
                 this.setState({TOTPSetup: true});
                 this.setState({selectMessage: 'You need to setup TOTP'})
             }
