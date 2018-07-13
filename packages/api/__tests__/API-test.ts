@@ -615,12 +615,13 @@ describe('API test', () => {
                 return 'endpoint';
             });
 
+            const spyon4 = jest.spyOn(RestClient.prototype, '_request').mockImplementationOnce(() => {
+                return 'endpoint';
+            });
+
             expect.assertions(1);
-            try {
-                await api.get('apiName', 'path', 'init');
-            } catch (e) {
-                expect(e).toBe('No credentials');
-            }
+            await api.get('apiName', 'path', 'init');
+            expect(spyon4).toBeCalled();
         });
 
         test('no restclient instance', async () => {
