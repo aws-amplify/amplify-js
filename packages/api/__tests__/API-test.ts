@@ -608,9 +608,7 @@ describe('API test', () => {
                     rej('err no current credentials');
                 });
             });
-            const spyon2 = jest.spyOn(RestClient.prototype, 'get').mockImplementationOnce(() => {
-                return Promise.resolve();
-            });
+            
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {
                 return 'endpoint';
             });
