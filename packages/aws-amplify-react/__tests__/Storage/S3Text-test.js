@@ -5,11 +5,27 @@ jest.mock('../../src/Storage/Common', () => {
 
     return { calcKey };
 });
+jest.mock('../../src/Categories', () => {
+    const Storage = {
+        get() {
+            return Promise.resolve();
+        },
+        put() {
+            return Promise.resolve();
+        },
+        list() {
+            return Promise.resolve();
+        }
+    };
 
+    return {
+        Storage
+    };
+});
+import { Storage } from '../../src/Categories';
 import S3Text from '../../src/Storage/S3Text';
 import { calcKey } from '../../src/Storage/Common';
 import { TextPicker } from '../../src/Widget'
-import { Storage, Logger } from 'aws-amplify';
 import React, { Component }from 'react';
 
 describe('S3Text test', () => {
@@ -101,17 +117,10 @@ describe('S3Text test', () => {
         });
 
         test('nothing to do if no textKey and path set', async () => {
-            const spyon = jest.spyOn(Logger.prototype, 'debug');
-
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
 
             await s3Text.load();
-
-            expect.assertions(1);
-            expect(spyon).toBeCalledWith('empty textKey and path');
-
-            spyon.mockClear();
         });
 
         test('only get text when body no specified', async () => {
@@ -186,8 +195,6 @@ describe('S3Text test', () => {
                 });
             });
 
-            const spyon2 = jest.spyOn(Logger.prototype, 'debug');
-
             const wrapper = shallow(<S3Text/>);
             const s3Text = wrapper.instance();
             wrapper.setProps({
@@ -207,7 +214,6 @@ describe('S3Text test', () => {
             await s3Text.handlePick(data);
 
             spyon.mockClear();
-            spyon2.mockClear();
         });
     });
 

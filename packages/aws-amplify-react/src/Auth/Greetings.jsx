@@ -12,7 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger, Hub } from 'aws-amplify';
+import { I18n, Hub, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '../Categories';
 
 import AuthPiece from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../AmplifyUI';
@@ -50,6 +51,9 @@ export default class Greetings extends AuthPiece {
     signOut() {
         this.googleSignOut();
         this.facebookSignOut();
+        if (!Auth || typeof Auth.signOut !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.signOut()
             .then(() => this.changeState('signedOut'))
             .catch(err => { logger.error(err); this.error(err); });
@@ -96,6 +100,9 @@ export default class Greetings extends AuthPiece {
     checkUser() {
         const that = this;
         const { authState } = this.state;
+        if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         return Auth.currentAuthenticatedUser()
             .then(user => {
                 if (!that._isMounted) { return; }

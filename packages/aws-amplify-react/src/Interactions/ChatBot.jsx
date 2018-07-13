@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { Interactions } from 'aws-amplify';
 import { Container, FormSection, SectionHeader, SectionBody, SectionFooter } from "../AmplifyUI";
 import { Input, Button } from "../AmplifyTheme";
-import { I18n } from "aws-amplify";
+
+import { I18n } from '@aws-amplify/core';
+import { Interactions } from '../Categories';
 import regeneratorRuntime from 'regenerator-runtime/runtime';
 
 const styles = {
@@ -70,6 +71,10 @@ export class ChatBot extends Component {
             ]
         }, resolve));
 
+        if (!Interactions || typeof Interactions.send !== 'function') {
+            throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
+        }
+
         const response = await Interactions.send(this.props.botName, this.state.inputText);
 
         await this.setState({
@@ -104,6 +109,9 @@ export class ChatBot extends Component {
         const {onComplete, botName} = this.props;
 
         if(onComplete && botName) {
+            if (!Interactions || typeof Interactions.onComplete !== 'function') {
+                throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
+            }
             Interactions.onComplete(botName, this.getOnComplete(onComplete, this));
         }
     }
@@ -112,6 +120,9 @@ export class ChatBot extends Component {
         const {onComplete, botName} = this.props;
 
         if (botName && this.props.onComplete !== prevProps.onComplete) {
+            if (!Interactions || typeof Interactions.onComplete !== 'function') {
+                throw new Error('No Interactions module found, please ensure @aws-amplify/interactions is imported');
+            }
             Interactions.onComplete(botName, this.getOnComplete(onComplete, this));
         }
     }

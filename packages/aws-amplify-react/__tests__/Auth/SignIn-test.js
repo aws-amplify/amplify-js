@@ -1,11 +1,26 @@
+jest.mock('../../src/Categories', () => {
+    const Auth = {
+        verifiedContact() {
+            return;
+        },
+        signIn() {
+            return;
+        },
+        userAttributes() {
+            return;
+        }
+    };
 
-
+    return {
+        Auth
+    };
+});
+import { Auth } from '../../src/Categories';
 import SignIn from '../../src/Auth/SignIn';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
 import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 const acceptedStates = [
     'signIn',  

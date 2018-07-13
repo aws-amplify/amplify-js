@@ -12,7 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '../Categories';
 
 import AmplifyTheme from '../AmplifyTheme';
 import {
@@ -63,6 +64,10 @@ export default class TOTPSetupComp extends Component {
     setup() {
         this.setState({setupMessage: null});
         const user = this.props.authData;
+        if (!Auth || typeof Auth.setupTOTP !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
         Auth.setupTOTP(user).then((data) => {
             logger.debug('secret key', data);
             const code = "otpauth://totp/AWSCognito:"+ user.username + "?secret=" + data + "&issuer=AWSCognito";
@@ -77,6 +82,9 @@ export default class TOTPSetupComp extends Component {
         }
         const user = this.props.authData;
         const { totpCode } = this.inputs;
+        if (!Auth || typeof Auth.verifyTotpToken !== 'function' || typeof Auth.setPreferredMFA !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.verifyTotpToken(user, totpCode)
             .then(() => {
                 // set it to preferred mfa

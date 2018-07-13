@@ -13,13 +13,8 @@
 
 import React, { Component } from 'react';
 
-import {
-    Storage,
-    Logger,
-    Hub,
-    ClientDevice,
-    JS
-} from 'aws-amplify';
+import { ClientDevice, JS, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { Storage } from '../Categories';
 
 import { Picker } from '../Widget';
 import AmplifyTheme from '../AmplifyTheme';
@@ -80,6 +75,10 @@ export default class S3Album extends Component {
         const path = this.props.path || '';
         const { file, name, size, type } = data;
         const key = path + this.getKey(data);
+        if (!Storage || typeof Storage.put !== 'function') {
+            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+        }
+
         Storage.put(key, file, {
             level: level? level: 'public',
             contentType: type,
@@ -148,6 +147,9 @@ export default class S3Album extends Component {
     list() {
         const { path, level, track } = this.props;
         logger.debug('Album path: ' + path);
+        if (!Storage || typeof Storage.list !== 'function') {
+            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+        }
         return Storage.list(path, { level: level? level : 'public', track })
             .then(data => {
                 logger.debug('album list', data);
