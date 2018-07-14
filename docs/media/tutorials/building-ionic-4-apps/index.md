@@ -245,7 +245,7 @@ export class ListPage implements OnInit {
 }
 ```
 
-** List component view **
+**List component view**
 
 The list component will list the todo items, so we need the related UI for that. Create the file */src/app/pages/list/list.page.html* with the following HTML markup:
 
@@ -277,7 +277,7 @@ The list component will list the todo items, so we need the related UI for that.
 </ion-content>
 ```
 
-**  List Component styling **
+**List Component styling**
 
 A little bit of styling in src/app/pages/list/list.page.scss:
 
