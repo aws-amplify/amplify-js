@@ -474,6 +474,13 @@ To run your app in iOS simulator:
 $ ionic cordova run ios -l
 ```
 
+Note:  If you attempt to run your app in the iOS emulator but only see a blank screen, try running:
+
+```bash
+ionic cordova plugin rm cordova-plugin-ionic-webview
+ionic cordova plugin add cordova-plugin-ionic-webview@2.0.0-beta.1
+```
+
 ## Implementing CRUD functionality
 
 Our app at this stage is stale, so let's add some functionality! To add and edit to do items, you will utilize a modal control.  
