@@ -1,6 +1,17 @@
+jest.mock('../../src/Categories', () => {
+    const Auth = {
+        setPreferredMFA() {
+            return Promise.resolve();
+        }
+    };
+
+    return {
+        Auth
+    };
+});
+import { Auth } from '../../src/Categories';
 import React, { Component } from 'react';
 import SelectMFAType from '../../src/Widget/SelectMFAType';
-import { Auth } from 'aws-amplify';
 import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
 import AmplifyTheme from '../../src/AmplifyTheme';
 

@@ -1,8 +1,19 @@
+jest.mock('../../src/Categories', () => {
+    const Auth = {
+        signIn() {
+            return;
+        }
+    };
+
+    return {
+        Auth
+    };
+});
+import { Auth } from '../../src/Categories';
 import React from 'react';
 import Authenticator from '../../src/Auth/Authenticator';
 import SignIn from '../../src/Auth/SignIn';
 import AmplifyTheme  from '../../src/AmplifyTheme';
-import { Auth, Analytics } from 'aws-amplify';
 import { ButtonRow, InputRow } from '../../src/AmplifyUI';
 
 const waitForResolve = Promise.resolve();
