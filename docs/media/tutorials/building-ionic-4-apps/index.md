@@ -6,7 +6,7 @@ Overview
 
 In this tutorial, you will create an Ionic 4 ‘ToDo List’ app that connects to a serverless backend via the AWS Amplify Library.
 
-The AWS Amplify and the CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with React and AWS Amplify.
+The AWS Amplify and the CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with Ionic and AWS Amplify.
 
 
 **By completing this tutorial, you will be able to;**
@@ -21,7 +21,7 @@ You need to have a basic understanding of JavaScript/[TypeScript](http://www.typ
 
 ## Source Code
 
-If you would like to get right to the source code, it can be found in [Github](https://github.com/aws-samples/aws-amplify-ionic-sample).  
+If you would like to get right to the source code, it can be found in [Github](https://github.com/aws-samples/aws-amplify-ionic-sample).  The different parts of this tutorial are represented by branches in this Github repo.
 
 ## Content
 
@@ -33,7 +33,7 @@ Here is the sequence of the tutorial:
  
 # Part 1: Create an Ionic 4 App
 
-This section will introduce you to Ionic and you'll learn how to boostrap a new Ionic app with Ionic CLI. Through the tutorial, you will add cloud functionality to the application that you will create in this section. 
+This section will introduce you to Ionic and teach you how to boostrap a new Ionic app with Ionic CLI. In subsequent parts of the tutorial, you will add cloud functionality to the application that you will create in this section. 
 
 The source code for this section of the tutorial can be found in *tutorial-part-1* branch of the [project Github repo](https://github.com/aws-samples/aws-amplify-ionic-sample/tree/tutorial-part-1).
 {: .callout}
@@ -68,14 +68,6 @@ If you want your application to run as an IOS or Android application as well as 
 To confirm that you're using the correct version of Ionic, navigate into the project directory and execute 'ionic info'. The Ionic Framework value should be greater than 4.
 {: .callout}
  
-## Install AWS Amplify
-
-AWS Amplify will enable adding cloud features to our Ionic 4 app like authentication and user storage. 
-
-```bash
-$ npm install aws-amplify 
-$ npm install aws-amplify-angular
-```
 
 ## Angular Modules in Ionic
 
@@ -90,6 +82,8 @@ If your application grows much larger, you can refactor it into multiple compone
 ##  Create the ToDo model and UI
 
 In this section, you will replace the ‘About’ component that comes with the Ionic starter project with a ‘List’ component that holds the ToDo items created by the user.   The component you will create allows users to create or edit individual ToDo items with a modal. The user will also be able to delete items and mark items as complete by interacting with an item in the list.
+
+To being this process, create a directory called *src/app/pages/list*.
 
 ### Define the data model
 
@@ -134,44 +128,39 @@ Create a new file as your list component under *src/app/pages/list/list.page.ts*
 ```js
 import { Component, OnInit, Input } from '@angular/core';
 import { ModalController, Events } from '@ionic/angular';
-import { AmplifyService } from 'aws-amplify-angular'
+// import { ListItemModal } from './list.item.modal';
 import { ToDoItem, ToDoList } from '../../classes/item.class';
 
 @Component({
   selector: 'app-list-page',
-  templateUrl: 'list.page.html'
+  templateUrl: 'list.page.html',
+  styleUrls: ['home.page.scss']
 })
 export class ListPage implements OnInit {
 
-  amplifyService: AmplifyService;
   modal: any;
   data: any;
   user: any;
-  itemList: ToDoList|any;
+  itemList: ToDoList;
   signedIn: boolean;
 
   constructor(
     public modalController: ModalController,
-    amplify: AmplifyService,
     events: Events
 
   ) {
-    this.amplifyService = amplify;
+    
     // Listen for changes to the AuthState in order to change item list appropriately
     events.subscribe('data:AuthState', async (data) => {
-      if (data.user){
-        this.user = await this.amplifyService.auth().currentUserInfo();
+      if (data.loggedIn){
         this.getItems();
       } else {
-        this.itemList = [];
-        this.user = null;
+        // this.itemList.items = [];
       }
     })
   }
 
   async ngOnInit(){
-    // Use AWS Amplify to get user data when creating items
-    this.user = await this.amplifyService.auth().currentUserInfo();
     this.getItems();
   }
 
@@ -179,67 +168,63 @@ export class ListPage implements OnInit {
     let props = {
       itemList: this.itemList,
       /*
-        We pass in an item parameter only when the user clicks on an existing item and therefore populate an editItem value so that our modal knows this is an edit operation.
+        We pass in an item paramenter only when the user clicks on an existing item
+        and therefore populate an editItem value so that our modal knows this is an edit operation.
       */
       editItem: item || undefined
     };
 
-      // Define the modal
-      this.modal = await this.modalController.create({
-        component: ListItemModal,
-        componentProps: props
-      });
-
+    // Create the modal
+    // this.modal = await this.modalController.create({
+    //   component: ListItemModal,
+    //   componentProps: props
+    // });
     // Listen for the modal to be closed...
-    this.modal.onDidDismiss((result) => {
-      if (result.data.newItem){
-        // ...and add a new item if modal passes back newItem
-        result.data.itemList.items.push(result.data.newItem)
-      } else if (result.data.editItem){
-        // ...or splice the items array if the modal passes back editItem
-        result.data.itemList.items[i] = result.data.editItem
-      }
-      this.save(result.data.itemList);
-    })
-    return this.modal.present()
+    // this.modal.onDidDismiss((result) => {
+    //   if (result.data.newItem){
+    //     // ...and add a new item if modal passes back newItem
+    //     result.data.itemList.items.push(result.data.newItem)
+    //   } else if (result.data.editItem){
+    //     // ...or splice the items array if the modal passes back editItem
+    //     result.data.itemList.items[i] = result.data.editItem
+    //   }
+    //   this.save(result.data.itemList);
+    // })
+    // return this.modal.present()
   }
 
   delete(i){
     this.itemList.items.splice(i, 1);
-    this.save(this.itemList);
+    // this.save(this.itemList);
   }
 
   complete(i){
     this.itemList.items[i].status = "complete";
-    this.save(this.itemList);
+    // this.save(this.itemList);
   }
 
   save(list){
     // Use AWS Amplify to save the list...
-    this.amplifyService.api().post('ToDoItemsCRUD', '/ToDoItems', {body: list}).then((i) => {
-      // ... and to get the list after we save it.
-      this.getItems()
-    })
-    .catch((err) => {
-      console.log(`Error saving list: ${err}`)
-    })
+    // this.itemList = list;
   }
 
   getItems(){
-    if (this.user){
-      // Use AWS Amplify to get the list
-      this.amplifyService.api().get('ToDoItemsCRUD', `/ToDoItems/${this.user.id}`, {}).then((res) => {
-        if (res && res.length > 0){
-          this.itemList = res[0];
-        } else {
-          this.itemList = new ToDoList({userId: this.user.id, items: []});
-        }
-      })
-      .catch((err) => {
-        console.log(`Error getting list: ${err}`)
-      })
-    } else {
-      console.log('Cannot get items: no active user')
+    this.itemList = {
+      userId: 1,
+      items: [
+        new ToDoItem({
+          id: '1',
+          title: 'test item 1',
+          description: 'my test item',
+          status: 'complete'
+        }),
+        new ToDoItem({
+          id: '2',
+          title: 'test item 3',
+          description: 'my other test item',
+          status: 'pending'
+        })
+      ]
     }
   }
 }
@@ -247,7 +232,7 @@ export class ListPage implements OnInit {
 
 **List component view**
 
-The list component will list the todo items, so we need the related UI for that. Create the file */src/app/pages/list/list.page.html* with the following HTML markup:
+The list component will list the todo items, so you need the related UI for that. Create the file */src/app/pages/list/list.page.html* with the following HTML markup:
 
 ```html
 <ion-header>
@@ -264,22 +249,20 @@ The list component will list the todo items, so we need the related UI for that.
     <ion-card *ngFor="let item of itemList.items; index as i">
       <ion-card-title class="hover card-title" (click)="modify(item, i)">{{item.title}}</ion-card-title>
       <ion-card-content>{{item.description}}</ion-card-content>
-      <ion-card-subtitle>
-          <ion-buttons slot="end">
-              <ion-button (click)="delete(i)">
-                  <ion-icon name="trash" size="small"></ion-icon>Delete</ion-button>
-              <ion-button (click)="complete(i)">
-                  <ion-icon name="checkmark-circle"  size="small" [ngClass]="{'complete': item.status=='complete'}"></ion-icon>Mark Complete
-              </ion-button>
-            </ion-buttons>
-      </ion-card-subtitle>
+        <ion-buttons slot="end">
+          <ion-button (click)="delete(i)">
+              <ion-icon name="trash" size="small"></ion-icon>Delete</ion-button>
+          <ion-button (click)="complete(i)">
+              <ion-icon name="checkmark-circle"  size="small" [ngClass]="{'complete': item.status=='complete'}"></ion-icon>Mark Complete
+          </ion-button>
+        </ion-buttons>
     </ion-card>
 </ion-content>
 ```
 
 **List Component styling**
 
-A little bit of styling in src/app/pages/list/list.page.scss:
+A little bit of styling in *src/app/pages/list/list.page.scss*:
 
 ```css
 .hover {
@@ -294,16 +277,16 @@ A little bit of styling in src/app/pages/list/list.page.scss:
 ```
 ### Create module definition
 
-Make sure that the module you have created previously is aware of your new component by creating a module definition file in *src/app/pages/list/list.module.ts* location:
+Make sure that the files you have created previously are exposed to the larger application by creating a module definition file in *src/app/pages/list/list.module.ts* location:
 
 ```js
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-// Importing our components
+// Importing your components
 import { ListPage } from './list.page';
-import { ListItemModal } from './list.item.modal';
+// import { ListItemModal } from './list.item.modal';
 
 @NgModule({
   imports: [
@@ -312,11 +295,13 @@ import { ListItemModal } from './list.item.modal';
     FormsModule
   ],
   declarations: [
-   // Importing our components
-    ListPage
+   // Importing your components
+    ListPage,
+    //ListItemModal
   ],
   entryComponents: [
-    ListPage
+    ListPage,
+    //ListItemModal
   ],
   providers: []
 })
@@ -329,12 +314,12 @@ Add a path for your list module in by adding the ‘list’ route definition und
 **In *src/app/pages/tabs/tabs.router.module* file**
 
 Import the components:
-``js
+```js
 import { ListPage } from '../list/list.page';
 import { AuthGuardService } from '../../services/auth-route-guard'
-``
+```
 
-Add the path configuration:
+Add the path configuration by replacing the 'AboutPage' entry in the children array with:
 ```js
 //...
        {
@@ -342,7 +327,7 @@ Add the path configuration:
          outlet: 'list',
          component: ListPage,
          canActivate: [AuthGuardService]
-       }
+       },
 //...
 ```
 
@@ -358,7 +343,7 @@ Modify the HTML page *src/app/pages/tabs/tabs.page.html* by adding a new 'List' 
 
 ### Add an authorization service
 
-The *List* tab will only be shown to signed in users, so we need a logic to control its behavior. This is where *services* comes in. Create a file under *src/app/services/auth-route-guard.ts* that will have the service code:
+The *List* tab will only be shown to signed in users, so you need logic to control its behavior. This is where *services* comes in. Create a file under *src/app/services/auth-route-guard.ts* that will have the service code:
 
 ```js
 import { Injectable } from '@angular/core';
@@ -386,15 +371,15 @@ export class AuthGuardService implements CanActivate {
 }
 ```
 
-You’ll note that your app doesn’t currently provide a way for users to login or signup. We will address later by integration authentication with AWS Amplify, but for now, let's simulate an authentication logic using Ionic’s ‘Events’ service:
+You’ll note that your app doesn’t currently provide a way for users to login or signup. You will address this later by integration authentication with AWS Amplify, but for now, you can simulate an authentication logic using Ionic’s ‘Events’ service:
 
-Replace *src/app/pages/home/home.page.ts* with the following code to declare our temporary auth logic:
+Replace *src/app/pages/home/home.page.ts* with the following code to declare your temporary auth logic:
 
 ```js
 import { Component, AfterContentInit } from '@angular/core';
 import { Events } from '@ionic/angular';
 import { AuthGuardService } from '../../services/auth-route-guard'
-import { AmplifyService }  from 'aws-amplify-angular';
+
 
 @Component({
   selector: 'app-page-home',
@@ -406,32 +391,32 @@ export class HomePage implements AfterContentInit{
   authState: any;
   // including AuthGuardService here so that it's available to listen to auth events
   authService: AuthGuardService
-  amplifyService: AmplifyService
 
-  constructor(
-    public events: Events,
-    public guard: AuthGuardService,
-    public amplify: AmplifyService
-  ) {
+  constructor(public events: Events, public guard: AuthGuardService) {
     this.authState = {loggedIn: false};
     this.authService = guard;
-    this.amplifyService = amplify;
-    this.amplifyService.authStateChange$
-    .subscribe(authState => {
-      this.authState.loggedIn = authState.state === 'signedIn';
-      this.events.publish('data:AuthState', this.authState)
-    });
   }
 
   ngAfterContentInit(){
     this.events.publish('data:AuthState', this.authState)
   }
+
+  login() {
+    this.authState.loggedIn = true;
+    this.events.publish('data:AuthState', this.authState)
+  }
+
+  logout() {
+    this.authState.loggedIn = false;
+    this.events.publish('data:AuthState', this.authState)
+  }
+
 }
 ```
 
 ### Add buttons to the homepage
 
-To trigger user authorization, we will need action buttons. Add the following code to *src/app/pages/home/home.page.html* to render buttons in the homepage:
+To trigger user authorization, you will need action buttons. Add the following code to *src/app/pages/home/home.page.html* to render buttons in the homepage:
 
 ```html
 <ion-header>
@@ -448,14 +433,14 @@ To trigger user authorization, we will need action buttons. Add the following co
 
 ### Add auth service to tabs module
 
-The tabs module will use our custom authorization module `AuthGuardService` to control the user interface. 
+The tabs module will use your custom authorization module `AuthGuardService` to control the user interface. 
 
 **In *src/app/pages/tabs/tabs.module.ts* file:**
 
 import `AuthGuardService` :
 ```js
  import { AuthGuardService } from '../../services/auth-route-guard'
-...
+```
 
 And add *AuthGuardService* as a provider in module definition:
 ```js
@@ -477,7 +462,7 @@ providers: [AuthGuardService]
 
 ## Run and test your app
 
-Now we are ready to test our app. Execute one of the following commands from your project root and you should see our app, with the ‘List’ tab visible in the footer.
+Now you are ready to test your app. Execute one of the following commands from your project root and you should see your app, with the ‘List’ tab visible in the footer.
 
 To run your app in web browser :
 ```bash
@@ -489,13 +474,20 @@ To run your app in iOS simulator:
 $ ionic cordova run ios -l
 ```
 
+Note:  If you attempt to run your app in the iOS emulator but only see a blank screen, try running:
+
+```bash
+ionic cordova plugin rm cordova-plugin-ionic-webview
+ionic cordova plugin add cordova-plugin-ionic-webview@2.0.0-beta.1
+```
+
 ## Implementing CRUD functionality
 
-Our app at this stage is stale, so let's add some functionality! To add and edit to do items, we will utilize a modal control.  
+Our app at this stage is stale, so let's add some functionality! To add and edit to do items, you will utilize a modal control.  
  
 ### Create a modal
 
-To create a modal, we need to implement a component  and a view for the component. 
+To create a modal, you need to implement a component  and a view for the component. 
 
 First, create the file *src/app/pages/list/list.item.modal.ts* with the following code:
 
@@ -519,7 +511,7 @@ export class ListItemModal implements OnInit {
 
   ngOnInit(){
     /* 
-      If we pass in an 'editItem' property, then we create a copy to store changes to the existing item
+      If you pass in an 'editItem' property, then you create a copy to store changes to the existing item
       so that the original is not modified unless the user saves.
     */
     this.item = this.editItem ? Object.assign({}, this.editItem) : new ToDoItem({})
@@ -529,7 +521,7 @@ export class ListItemModal implements OnInit {
     this.modalController.dismiss({
       itemList: this.itemList,
       /* 
-        We pass back either a newItem or editItem value depending on whether an edit operation is taking place
+        You pass back either a newItem or editItem value depending on whether an edit operation is taking place
         so that the list module can decide whether to insert into the items array or splice into it.
       */
       newItem: !this.editItem ? this.item : null,
@@ -569,9 +561,9 @@ And then create the view file for the modal *src/app/pages/list/list.item.modal.
   </ion-footer>
 ```
 
-### Define modal in our list module
+### Define modal in your list module
 
-To define our modal controller, add following code to */src/app/pages/list/list.module.ts*:
+To define your modal controller, add following code to */src/app/pages/list/list.module.ts*:
 
 Import ListItemModal:
 ```js
@@ -679,10 +671,32 @@ Then, to create these resources in your AWS account, execute:
 awsmobile push
 ```
 
-Be patient while the CLI creates your backend resources. Once the creation of your resources is complete, you can view them via the [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home#/).
+Be patient while the CLI creates your backend resources. Once the creation of your resources is complete, you can view them via the [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home#/). 
+
+(Note: this is the workflow for creating resources with the AWSMobile CLI, and is described here so that you'll be able to create other resources.  Most builds for the CLI enable Analytics by default, so when you attempt to push changes after only enabling Analytics you may receive a message stating that no local changes were detected.)
 
 Your application has now an analytics backend ready! The next step is adding the AWS Amplify library into your Ionic app.
  
+ ### Install AWS Amplify
+
+AWS Amplify will enable adding cloud features to your Ionic 4 app like authentication and user storage. 
+
+```bash
+$ npm install aws-amplify 
+$ npm install aws-amplify-angular
+```
+
+### Add Global Shim
+Angular 6 has removed a shim for the global object used by many NPM modules, including some in AWS Amplify.  To accomodate for this change, add the following to your application's <HEAD> tag in *src/index.html*:
+
+```html
+<script>
+    if (global === undefined) {
+        var global = window;
+    }
+</script>
+```
+
 ### Adding Amplify to your Ionic app
 
 The AWS Amplify library provides a mechanism for your front-end application to interact with AWS cloud resources without you having to do the laborious work of configuring resources and coding for integration. 
@@ -760,7 +774,7 @@ export class HomePageModule {}
 
 Now you can use authentication UI components that AWS Amplify provides for Angular. UI components render a pre-built signin and signout UI for your app, saving you time when building an auth experience.
 
-In Part 1, we have placed dummy authentication buttons in the home component. To replace these with the real thing, open *src/app/pages/home/home.page.html* and replace our login/logout buttons with the following code:
+In Part 1, you have placed dummy authentication buttons in the home component. To replace these with the real thing, open *src/app/pages/home/home.page.html* and replace your login/logout buttons with the following code:
 
 ```html
 <ion-content padding>
@@ -775,7 +789,7 @@ This component will render UI elements and provide functionality for user signup
 To change the look and feel of your UI components, you can update *src/global.scss* file which includes global style rules for your app. For now, import default styles from *aws-amplify-angular* module to make sure that  your authenticator component (and other AWS Amplify UI components) are styled properly:
 
 ```js
-@import “./node_modules/aws-amplify-angular/theme.scss”
+@import './node_modules/aws-amplify-angular/theme.scss'
 ```
 ### Enable components in home module
 
@@ -843,11 +857,11 @@ Your app now authenticates users with Amazon Cognito, allowing you to control ac
 By default, Multi-factor Authentication is enabled for you auth flow, which requires users to validate their phone number with an SMS message. You can change this by configuring your [Amazon Cognito User Pool](https://console.aws.amazon.com/cognito/home) settings.
 
 Please note that the phone numbers should be entered in the format of 
-+<country-code><area-code><phone-number>.
+"+<country-code><area-code><phone-number>".
 
 **Disabling Ionic UI**
 
-*<amplify-authenticator>* component enables rendering Ionic UI components when used with *framework="ionic"* attribute. You can disable this by removing *framework="ionic"* attribute in *src/app/pages/home/home.page.html*:
+"<amplify-authenticator>" component enables rendering Ionic UI components when used with *framework="ionic"* attribute. You can disable this by removing *framework="ionic"* attribute in *src/app/pages/home/home.page.html*:
 
 ```html
 <amplify-authenticator></amplify-authenticator>
@@ -864,7 +878,7 @@ In the next part of the tutorial, you’ll learn how to persist data with Amazon
 
 # Part 4: Enabling the Cloud Backend
 
-So far, your todo app enables user sign-in and has a UI that is working with dummy data. In this section, we will integrate our cloud database and cloud API to our app.
+So far, your todo app enables user sign-in and has a UI that is working with dummy data. In this section, you will integrate your cloud database and cloud API to your app.
 
 The source code for this section of the tutorial can be found in *tutorial-part-4* branch of the [project Github repo](https://github.com/aws-samples/aws-amplify-ionic-sample/tree/tutorial-part-4).
 {: .callout}
@@ -911,13 +925,7 @@ Select *Create a new table*, specify that it is ‘Open’ and name it ‘ToDoIt
 ? Table name ToDoItems
 ```
 
-Then, add three columns when prompted:
- Column Name | Datatype 
---- | --- 
-userId | string
-items | list
-
-Select ‘userId’ as the primary key, and do not create a sort key or an index.
+Then, add two columns when prompted:a
 
 ```bash
 You can now add columns to the table.
@@ -947,10 +955,13 @@ http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreC
 You have created a very straightforward DynamoDB data model for your app. For more information on how to configure a production-grade DynamoDB implementation, see [Amazon DynamoDB documentation](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html).
 {:  .callout .callout--info}
 
+Since we have defined this database as 'Open', you may want to delete the table after working through this tutorial.
+
 ## Enable Cloud API
 
-Now, we need to create APIs to access the database table that we have created:
+Now, you need to create APIs to access the database table that you have created:
 ```bash
+awsmobile cloud-api enable
 awsmobile cloud-api configure 
 ```
 
@@ -958,10 +969,11 @@ When prompted, select *Create CRUD API for an existing Amazon DynamoDB table*, a
 
 ```bash
 ? Select from one of the choices below. (Use arrow keys)
-❯ Create a new API 
+  Create a new API 
   Remove an API from the project 
   Edit an API from the project 
-  Create CRUD API for an existing Amazon DynamoDB table 
+> Create CRUD API for an existing Amazon DynamoDB table 
+  Restrict API access to signed-in users: Yes
 ```
 
 After running this command, the CLI creates the  `awsmobilejs/backend/cloud-api/ToDoItems/` directory which includes the boilerplate code for your API backend. 
@@ -980,7 +992,7 @@ awsmobile push
 
 At that stage,  your database and API resources have been deployed to the cloud. Now, you can add CRUD (create-read-update-delete) functionality to your application which will enable managing todo's in your app. 
 
-Remember that the todo list would be displayed in `list` page. So, we need to bind the data from our backend data to this page and enable basic CRUD funtionality to work with data.  To accomplish this, you’ll need to update src/app/pages/lists/list.page.ts to match this:
+Remember that the todo list would be displayed in `list` page. So, you need to bind the data from your backend data to this page and enable basic CRUD funtionality to work with data.  To accomplish this, you’ll need to update src/app/pages/lists/list.page.ts to match this:
 
 ```js
 import { Component, OnInit, Input } from '@angular/core';
@@ -991,7 +1003,8 @@ import { ToDoItem, ToDoList } from '../../classes/item.class';
 
 @Component({
   selector: 'app-list-page',
-  templateUrl: 'list.page.html'
+  templateUrl: 'list.page.html',
+  styleUrls: ['home.page.scss']
 })
 export class ListPage implements OnInit {
 
@@ -1031,7 +1044,7 @@ export class ListPage implements OnInit {
     let props = {
       itemList: this.itemList,
       /*
-        We pass in an item parameter only when the user clicks on an existing item and therefore populate an editItem value so that our modal knows this is an edit operation.
+        You pass in an item parameter only when the user clicks on an existing item and therefore populate an editItem value so that your modal knows this is an edit operation.
       */
       editItem: item || undefined
     };
@@ -1069,7 +1082,7 @@ export class ListPage implements OnInit {
   save(list){
     // Use AWS Amplify to save the list...
     this.amplifyService.api().post('ToDoItemsCRUD', '/ToDoItems', {body: list}).then((i) => {
-      // ... and to get the list after we save it.
+      // ... and to get the list after you save it.
       this.getItems()
     })
     .catch((err) => {
@@ -1108,8 +1121,8 @@ You’ve added persisted your app's using Amazon DynamoDB, AWS Lambda, and AWS A
 
 ## What's next
 
-- Learn more about our [AWS Amplify categories](../media/developer_guide) to work with many cloud services to create your backend. 
--  Learn more about our [API category](../media/api_guide) to work with REST and GraphQL endpoints. 
+- Learn more about [AWS Amplify categories](../media/developer_guide) to work with many cloud services to create your backend. 
+-  Learn more about [API category](../media/api_guide) to work with REST and GraphQL endpoints. 
 
 
 
