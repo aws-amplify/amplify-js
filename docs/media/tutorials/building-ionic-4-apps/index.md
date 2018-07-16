@@ -648,6 +648,8 @@ $ awsmobile init
  
 You should now see the *awsmobilejs* directory in your project root, as well as an aws-exports.js file in your */src* directory. The aws-exports file stores all of your project’s AWS related resource configuration. Again, do NOT check in the awsmobilejs directory or aws-exports file into source control.
 
+Since we are using typescript, change the name of the aws-exports file to *aws-exports.ts*.
+
 AWS resources for your application can be generated using:
 ```bash
 awsmobile <feature> enable
@@ -955,7 +957,7 @@ http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreC
 You have created a very straightforward DynamoDB data model for your app. For more information on how to configure a production-grade DynamoDB implementation, see [Amazon DynamoDB documentation](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html).
 {:  .callout .callout--info}
 
-Since we have defined this database as 'Open', you may want to delete the table after working through this tutorial.
+Since we have defined this database as 'Open', you should delete the table after working through this tutorial.
 
 ## Enable Cloud API
 
@@ -1004,7 +1006,7 @@ import { ToDoItem, ToDoList } from '../../classes/item.class';
 @Component({
   selector: 'app-list-page',
   templateUrl: 'list.page.html',
-  styleUrls: ['home.page.scss']
+  styleUrls: ['list.page.scss']
 })
 export class ListPage implements OnInit {
 
@@ -1042,7 +1044,7 @@ export class ListPage implements OnInit {
 
   async modify(item, i) {
     let props = {
-      itemList: this.itemList,
+      itemList: this.itemList || new ToDoList({userId: this.user.id}),
       /*
         You pass in an item parameter only when the user clicks on an existing item and therefore populate an editItem value so that your modal knows this is an edit operation.
       */
