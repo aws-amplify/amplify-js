@@ -1,41 +1,23 @@
-/*
-jest.mock('aws-sdk-mobile-analytics', () => {
-    const Manager = () => {}
+jest.mock('../../src/Categories', () => {
+    const Auth = {
+        signOut() {
+            return;
+        },
+        currentAuthenticatedUser() {
+            return Promise.resolve();
+        }
+    };
 
-    Manager.prototype.recordEvent = () => {
-
-    }
-
-    Manager.prototype.recordMonetizationEvent = () => {
-
-    }
-
-    var ret =  {
-        Manager: Manager
-    }
-    return ret;
+    return {
+        Auth
+    };
 });
-
-jest.mock('aws-sdk/clients/pinpoint', () => {
-    const Pinpoint = () => {
-        var pinpoint = null;
-        return pinpoint;
-    }
-
-    Pinpoint.prototype.updateEndpoint = (params, callback) => {
-        callback(null, 'data');
-    }
-
-    return Pinpoint;
-});
-*/
-
+import { Auth } from '../../src/Categories';
 import Greetings from '../../src/Auth/Greetings';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
 import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 const acceptedStates = [
     'signedIn'

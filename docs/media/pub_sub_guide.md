@@ -139,3 +139,16 @@ sub1.unsubscribe();
 
 For the complete API documentation for PubSub module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/pubsub.html)
 {: .callout .callout--info}
+
+## Using modularized module
+
+If you only need to use Pubsub, you can do: `npm install @aws-amplify/pubsub` which will only install the Pubsub module for you.
+Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.
+
+Then in your code, you can import the Pubsub module by:
+```js
+import Pubsub from '@aws-amplify/pubsub';
+
+Pubsub.configure();
+
+```

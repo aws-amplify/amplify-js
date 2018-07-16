@@ -1,6 +1,17 @@
+jest.mock('../../src/Categories', () => {
+    const Auth = {
+        configure() {
+            return;
+        }
+    };
+
+    return {
+        Auth
+    };
+});
+import { Auth } from '../../src/Categories';
 import React from 'react';
 import FederatedSignIn, { FederatedButtons } from '../../src/Auth/FederatedSignIn';
-import { Auth } from 'aws-amplify';
 
 const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
     return {

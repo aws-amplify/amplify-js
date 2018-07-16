@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import { Analytics } from 'aws-amplify';
+import { Analytics } from '../Categories';
 
 const Default_Track_Events = [
     'componentDidMount',
@@ -35,7 +35,15 @@ export function trackLifecycle(Comp, trackerName, events=Default_Track_Events) {
         track(event) {
             const filtered = this.trackEvents.filter(item => item === event);
             if (filtered.length > 0) {
-                Analytics.record(this.trackerName, { event: event });
+                if (Analytics && typeof Analytics.record === 'function') {
+                    Analytics.record({
+                        name: this.trackerName, 
+                        attributes: { event: event }
+                    });
+                } else {
+                    throw new Error('No Analytics module found, please ensure @aws-amplify/analytics is imported');
+                }
+                
             }
         }
 

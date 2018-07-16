@@ -12,11 +12,11 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    Text, 
-    TextInput, 
-    Button 
+import {
+    View,
+    Text,
+    TextInput,
+    Button
 } from 'react-native';
 import {
     Auth,
@@ -24,11 +24,11 @@ import {
     Logger
 } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
-import { 
-    Password, 
-    LinkCell, 
-    Header, 
-    ErrorRow 
+import {
+    Password,
+    LinkCell,
+    Header,
+    ErrorRow
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -58,16 +58,28 @@ export default class RequireNewPassword extends AuthPiece {
         this.change = this.change.bind(this);
     }
 
+    checkContact(user) {
+        Auth.verifiedContact(user)
+            .then(data => {
+                if (!JS.isEmpty(data.verified)) {
+                    this.changeState('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    this.changeState('verifyContact', user);
+                }
+            });
+    }
+
     change() {
         const user = this.props.authData;
         const { password } = this.state;
         logger.debug('Require new password for ' + user.username);
         Auth.completeNewPassword(user, password, user.challengeParam.requiredAttributes)
-            .then(data => {
+            .then(user => {
                 if (user.challengeName === 'SMS_MFA') {
                     this.changeState('confirmSignIn', user);
                 } else {
-                    this.changeState('signedIn');
+                    this.checkContact(user);
                 }
             })
             .catch(err => this.error(err));
@@ -88,7 +100,7 @@ export default class RequireNewPassword extends AuthPiece {
                         disabled={!this.state.password}
                     />
                 </View>
-                <Footer theme={theme} onStateChange={this.changeState}/>
+                <Footer theme={theme} onStateChange={this.changeState} />
                 <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
             </View>
         );

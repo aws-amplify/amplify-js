@@ -12,8 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger, JS } from 'aws-amplify';
-
+import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '../Categories';
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
 import {
@@ -41,6 +41,9 @@ export default class TOTPSetup extends AuthPiece {
     }
 
     checkContact(user) {
+        if (!Auth || typeof Auth.verifiedContact !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.verifiedContact(user)
             .then(data => {
                 if (!JS.isEmpty(data.verified)) {
