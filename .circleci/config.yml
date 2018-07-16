@@ -41,7 +41,14 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
-      - run: yarn run test --scope aws-amplify
+      - run: yarn run test --scope @aws-amplify/auth
+      - run: yarn run test --scope @aws-amplify/api
+      - run: yarn run test --scope @aws-amplify/analytics
+      - run: yarn run test --scope @aws-amplify/cache
+      - run: yarn run test --scope @aws-amplify/core
+      - run: yarn run test --scope @aws-amplify/interactions
+      - run: yarn run test --scope @aws-amplify/pubsub
+      - run: yarn run test --scope @aws-amplify/storage
       - run: yarn run test --scope aws-amplify-react
   integration_test_auth:
     <<: *defaults

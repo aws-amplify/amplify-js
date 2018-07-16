@@ -38,18 +38,34 @@
 				<div class="container">
 						<div class="row">
 							<div class="col-md-12">
-								<div class="nav-grid nav-grid--out">
+								<div class="nav-grid nav-grid--out nav-grid-tutorials">
 									{% for category in page.tutorial_list %}
 									<h3> {{ category.title}} </h3>
 										<div class="row">
 											{% for item in category.subs %}
 												<div class="col-sm-6 col-lg-4">
-													<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="nav-grid__item">
+													<a href="{% if item.url_external  %}
+																{{ item.url_external }} 
+															 {% endif %}
+															 {% if item.url %}
+																{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }} 
+															 {% endif %}"
+														{% if item.url_external  %}
+															 onclick="trackOutboundLink('{{ item.url_external }}'); return false;"; 
+														{% endif %}
+														class="nav-grid__item">
 														<div class="nav-grid__content" data-mh>
 															<h2 class="nav-grid__title {% if item.class %}  with-icon {{ item.class }} {% endif %} " >
+																{% if item.img %} 
+																	<div class='tutorial-image'>
+																		<img src="{{ item.img }}"/> 
+																	</div>
+																{% endif %} 
 																{{ item.title }}
 															</h2>
-															<p>{{ item.excerpt }}</p>
+															{% if item.excerpt %}
+																<p>{{ item.excerpt }}</p>
+															{% endif %} 
 															<div class='nav-services'>
 																{% for service in item.services %} 
 																	<i onClick="window.open('{{ service.url }}', '_blank'); return false;" >

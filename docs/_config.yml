@@ -22,7 +22,7 @@ description: >- # this means to ignore newlines until "baseurl:"
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com 
 github:
-  repository_url: https://github.com/aws/aws-amplify/edit/master/docs/
+  repository_url: https://github.com/aws-amplify/amplify-js/edit/master/docs/
 
 show_downloads: "true"
 include: 
@@ -58,7 +58,7 @@ future: true
 
 # Amplify theme settings
 amplify:
-    baseurl: /aws-amplify # Since the site is deployed under https://aws.github.io/aws-amplify
+    baseurl: /amplify-js # Since the site is deployed under https://aws-amplify.github.io/amplify-js
     color_theme:  # Available themes: blue (default), green, purple, red and yellow
     header:
         logo:
@@ -70,13 +70,13 @@ amplify:
               item_url: '/media/quick_start'
             - item_name: Docs
               item_url: '/media/developer_guide'
-#            - item_name: Tutorials
-#              item_url: '/media/tutorials'
+            - item_name: Tutorials
+              item_url: '/media/tutorials'
             - item_name: API
               item_url: '/api/'
             - item_name: 
               item_icon: github
-              item_external_url: 'https://github.com/aws/aws-amplify'
+              item_external_url: 'https://github.com/aws-amplify/amplify-js'
     footer:
         content:
             logo:
@@ -89,7 +89,7 @@ amplify:
             - network_name: twitter
               profile_url: 'https://twitter.com/search?q=%23awsamplify&src=typd'
             - network_name: github
-              profile_url: 'https://github.com/aws/aws-amplify'
+              profile_url: 'https://github.com/aws-amplify/amplify-js'
             - network_name: youtube
               profile_url: 'https://www.youtube.com/watch?v=vAjf3lyjf8c'
               
@@ -124,7 +124,7 @@ category_list:
             - title: Amazon Kinesis,
               url: https://aws.amazon.com/kinesis/
             - title: Custom Plugin
-              url: https://aws.github.io/aws-amplify/media/analytics_guide#using-a-custom-plugin
+              url: https://aws-amplify.github.io/amplify-js/media/analytics_guide#using-a-custom-plugin
         - title: API 
           excerpt: A simple and secure solution for making HTTP requests using REST and GraphQL, with support for real-time data.
           cta: Read more

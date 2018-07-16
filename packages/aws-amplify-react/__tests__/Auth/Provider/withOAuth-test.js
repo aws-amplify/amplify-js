@@ -1,7 +1,18 @@
+jest.mock('../../../src/Categories', () => {
+    const Auth = {
+        configure() {
+            return;
+        }
+    };
+
+    return {
+        Auth
+    };
+});
+import { Auth } from '../../../src/Categories';
 import React, { Component } from 'react';
 import withOAuth, { OAuthButton } from '../../../src/Auth/Provider/withOAuth';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 describe('withOAuth test', () => {
     describe('render test', () => {

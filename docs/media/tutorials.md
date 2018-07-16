@@ -7,139 +7,76 @@ keywords:
 
 # Grid navigation
 marketing_grid:
-    - title: AWS Amplify Tutorials
-      excerpt: <span>AWS Amplify comes with building blocks for frontend and mobile developers to interact with the Cloud. You can mix and match the categories below as needed.</span>
+    - title: Tutorials
+      excerpt: <span>AWS Amplify tutorials and training videos for web and mobile development. </span>
 
       
 # Grid navigation
 
 tutorial_list:
-    - category: Integrage
-      title: Upgrade your App
-      subs:
-        - title: Upgrate your Web App 
-          excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
-          cta: Read more
-          class: aws-icon-ps-60-pie-bar-charts 
-          url: '/media/analytics_guide'
-          services:
-            - title: Amazon Pinpoint,
-              url: https://aws.amazon.com/pinpoint/
-            - title: Amazon Kinesis,
-              url: https://aws.amazon.com/kinesis/
-            - title: Custom Plugin
-              url: https://aws.github.io/aws-amplify/media/analytics_guide#using-a-custom-plugin
-        - title: Upgrate your React Native App  
-          excerpt: A simple and secure solution for making HTTP requests using REST and GraphQL, with support for real-time data.
-          cta: Read more
-          class: aws-icon-ps-60-database-server
-          url: '/media/api_guide'    
-          services: 
-            - title: Amazon API Gateway,
-              url: https://aws.amazon.com/api-gateway
-            - title: AWS AppSync
-              url: https://aws.amazon.com/appsync
-        - title: Authentication
-          excerpt:  Authentication APIs with pre-built UI components for your app.  
-          cta: Read more
-          class: aws-icon-ps-60-shield-circle
-          url: '/media/authentication_guide'
-          services:
-            - title: Amazon Cognito,
-              url: https://aws.amazon.com/cognito/
-            - title: OAuth 2.0 ,
-              url: https://aws.amazon.com/cognito/
-            - title: Custom Plugin
-              url:  
-        - title: Hosting 
-          excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
-          cta: Read more
-          class: aws-icon-ps-60-network-nodes
-          url: '/media/hosting_guide'   
-          services:
-              - title: Amazon CloudFront
-                url: https://aws.amazon.com/cloudfront/
-        - title: PubSub 
-          excerpt: Connect your app to message-oriented middleware on the cloud.
-          cta: Read more
-          class: aws-icon-ps-60-circular-circuit
-          url: '/media/pub_sub_guide'   
-          services:
-              - title: AWS IoT,
-                url: https://aws.amazon.com/iot/
-              - title: Generic MQTT,
-                url: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html#mqtt
-              - title: Custom Plugin
-                url:  
-        - title: Push Notifications 
-          excerpt: Push notifications with campaign analytics and targeting.
-          cta: Read more
-          class: aws-icon-ps-60-bubble-gear
-          url: '/media/push_notifications_setup'   
-          services:
-              - title: Amazon Pinpoint
-                url: https://aws.amazon.com/pinpoint/
-        - title: Storage 
-          excerpt: A simple mechanism for managing user content in public, protected or private storage.
-          cta: Read more
-          class: aws-icon-ps-60-file-box
-          url: '/media/storage_guide'   
-          services:
-              - title: Amazon S3
-                url: https://aws.amazon.com/s3/
-    -  category: UtilityModules
-       title: Utility Modules
-       subs:
-        - title: Cache 
-          excerpt: A generic LRU cache for storing data with priority and expiration settings. 
-          cta: Read more
-          url: '/media/cache_guide'  
-        - title: Hub  
-          excerpt: A lightweight local event bus for your app.
-          cta: Read more
-          url: '/media/hub_guide' 
-        - title: I18n  
-          excerpt: A lightweight internationalization solution.
-          cta: Read more
-          url: '/media/i18n_guide'  
-        - title: Logger  
-          excerpt: Console logging utility.
-          cta: Read more
-          url: '/media/logger_guide'  
-        - title: Service Worker 
-          excerpt: A utility class to work with PWA and Service Worker APIs. 
-          cta: Read more
-          url: '/media/service_workers_guide'  
-    -  category: CLI
-       title: CLI
-       subs:
-        - title: AWS Mobile CLI
-          excerpt: A CLI to create and manage your app's backend. 
-          cta: Read more
-          url: '/media/cli_guide'       
-    -  category: Front-end Support
-       title: Front-end Support
-       subs:
-        - title: Angular 
-          excerpt: Angular support package.
-          cta: Read more
-          url: '/media/angular_guide' 
-        - title: React 
-          excerpt: React support package.
-          cta: Read more
-          url: '/media/react_guide' 
-        - title: React Native
-          excerpt: React Native support package.
-          cta: Read more
-          url: '/media/react_native_guide' 
-        - title: Vue.js
-          excerpt: Vue.j starter app.
-          cta: Read more
-          url: '/media/vuejs_guide' 
-        - title: Ionic
-          excerpt: Ionic starter app and component support.
-          cta: Read more
-          url: '/media/ionic_guide' 
 
+    - category: Web Development
+      title: Web Development
+      subs:
+        - title: Building a Web App with AWS Amplify
+          excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled React Web app with AWS Amplify.<br/><b>30 min to complete</b>'
+          cta: Read more
+          url: '/media/tutorials/building-web-apps'
+        - title: How to use AWS Amplify and Angular to Build Cloud Enabled JavaScript Applications
+          excerpt: 'Learn how to start working with AWS Amplify in an Angular app.<br/><b>5 min read</b>'
+          cta: Read more
+          url_external: 'https://medium.freecodecamp.org/building-cloud-enabled-javascript-applications-with-aws-amplify-angular-682547fc6477'
+        - title: Adding AWS Amplify to an Ember.js Application
+          excerpt: 'Learn how to start working with AWS Amplify in an Ember app.<br/><b>5 min read</b>'
+          cta: Read more
+          url_external: 'https://itnext.io/adding-aws-amplify-to-an-ember-js-application-72683167c476'
+
+    -  category: Mobile Development Development
+       title: Mobile Development
+       subs:
+        - title: Building a React Native App with AWS Amplify
+          excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled mobile app with React Native and AWS Amplify.<br/><b>30 min to complete</b>'
+          cta: Read more
+          url: '/media/tutorials/building-react-native-apps' 
+        - title: Building Serverless Mobile Applications with React Native & AWS
+          excerpt: 'Learn to build fully serverless & backendless mobile applications with AWS Amplify and React Native.<br/><b>12 min read</b>'
+          cta: Read more
+          url_external: 'https://medium.com/react-native-training/building-serverless-mobile-applications-with-react-native-aws-740ecf719fce' 
+        - title: Adding Analytics to Your Next Mobile JavaScript Application
+          excerpt: 'Add in-depth, production ready analytics to your application in minutes using AWS Amplify & AWS Mobile Hub.<br/><b>6 min read</b>'
+          cta: Read more
+          url_external: 'https://hackernoon.com/adding-amazon-pinpoint-analytics-to-your-next-mobile-javascript-application-24ad49557a6f'
+        - title: Adding User Authentication to a New React Native App Using AWS Mobile Hub & AWS Amplify
+          cta: '<b>Watch</b>'
+          excerpt: 'This video shows how to use the AWS Mobile CLI to configure a new React Native project with AWS Amplify and Cognito.<br/><b>16 min</b>' 
+          url_external: 'https://www.youtube.com/watch?v=dhOk7aNIzKw'
+        - title: React Native iOS Push Notifications with AWS & Amazon Pinpoint
+          excerpt: 'In this video, we will walk through how to add Push Notifications to a React Native iOS Project using AWS Amplify, AWS Mobile Hub, and Amazon Pinpoint.<br/><b>26 min</b>'
+          cta: '<b>Watch</b>'
+          url_external: 'https://www.youtube.com/watch?v=um-DIIRsFlM'
+        - title: React Native Push Notifications
+          excerpt: 'Adding Push Notifications to a React Native iOS project using Amazon Pinpoint, AWS Amplify & AWS Mobile Hub.<br/><b>7 min read</b>'
+          cta: Read more
+
+    - category: AWS Amplify
+      title: AWS Amplify Cloud Features
+      subs:
+        - title: AWS Mobile CLI - Getting Started
+          excerpt: 'In this video, we walk through how to get up and running with the AWSMobile CLI.<br/><b>7 min</b>'
+          cta: '<b>Watch</b>'
+          url_external: 'https://www.youtube.com/watch?v=Zi-66QybJ9A'
+        - title: Introducing the AWS Amplify GraphQL Client
+          excerpt: 'A first look at how to build client side GraphQL applications using AWS Amplify.<br/><b>5 min read</b>'
+          cta: Read more
+          url_external: 'https://hackernoon.com/introducing-the-aws-amplify-graphql-client-8a1a1e514fde'
+        - title: Building ChatBots with React & AWS
+          excerpt: 'Learn how to leverage AWS Amplify, AWS Lambda, & Amazon Lex to build a functioning chatbot.<br/><b>12 min read</b>'
+          cta: Read more
+          url_external: 'https://tylermcginnis.com/building-chatbots-with-react-aws/'
+          url_external: 'https://medium.com/react-native-training/react-native-push-notifications-with-amazon-pinpoint-ios-b2efa89ced32'
+        - title: Building a Custom UI for Authentication with AWS Amplify
+          excerpt: "Learn how to customize AWS Amplify's Authenticator component.<br/><b>6 min read</b>"
+          cta: Read more
+          url_external: 'https://itnext.io/building-a-custom-ui-for-authentication-with-aws-amplify-fa13bdbd4d1d'
 
 ---

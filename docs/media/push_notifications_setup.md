@@ -32,9 +32,9 @@ Setup instructions are provided for Android and iOS, and configuration for both 
 ```bash
 $ react-native init myapp
 $ cd myapp
-$ npm install aws-amplify --save && npm install aws-amplify-react-native --save
-$ react-native link aws-amplify-react-native
-$ react-native link amazon-cognito-identity-js #if you did not link it
+$ npm install aws-amplify --save && npm install @aws-amplify/pushnotification --save
+$ react-native link @aws-amplify/pushnotification
+$ react-native link amazon-cognito-identity-js # link it if you need to Sign in into Cognito user pool
 ```
 That would install required npm modules and link React Native binaries.
 *Please note that linking `aws-amplify-react-native` but not completing the rest of the configuration steps could break your build process. Please be sure that you have completed all the steps before you build your app.*
@@ -77,7 +77,7 @@ Also update maven `url` as the following under  `allprojects` > `repositories`. 
     - Add firebase libs to the ```dependencies``` section
 ```gradle
 dependencies {
- compile project(':aws-amplify-react-native')
+ compile project(':@aws-amplify/pushnotification')
  ..
  ..
  ..
@@ -218,22 +218,16 @@ First, import `PushNotification` module and configure it with `PushNotification.
 
 ```js
 import { PushNotificationIOS } from 'react-native';
-import Amplify from 'aws-amplify';
-import { PushNotification } from 'aws-amplify-react-native';
+import Analytics from '@aws-amplify/analytics';
+import PushNotification from '@aws-amplify/pushnotification';
 
 // PushNotification need to work with Analytics
-Amplify.configure({
-    Analytics: {
-        // You configuration will come here...
-    }
+Analytics.configure({
+    // You configuration will come here...
 });
 
 PushNotification.configure({
-    // ...
-    PushNotification: {
-        appId: 'XXXXXXXXXXabcdefghij1234567890ab',
-    }
-    // ...
+    appId: 'XXXXXXXXXXabcdefghij1234567890ab',
 });
 ```
 
@@ -241,12 +235,12 @@ You can also use `aws-exports.js` file in case you have set up your backend with
 
 ```js
 import { PushNotificationIOS } from 'react-native';
-import Amplify from 'aws-amplify';
-import { PushNotification } from 'aws-amplify-react-native';
+import Analytics from '@aws-amplify/analytics';
+import PushNotification from '@aws-amplify/pushnotification';
 import aws_exports from './aws_exports';
 
 // PushNotification need to work with Analytics
-Amplify.configure(aws_exports);
+Analytics.configure(aws_exports);
 
 PushNotification.configure(aws_exports);
 ```
