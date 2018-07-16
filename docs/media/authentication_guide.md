@@ -96,7 +96,9 @@ Amplify.configure({
             expires: 365,
         // OPTIONAL - Cookie secure flag
             secure: true
-        }
+        },
+    // OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
+        authenticationFlowType: 'USER_PASSWORD_AUTH'
     }
 });
 ```
@@ -295,6 +297,9 @@ const federated = {
 ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('root'));
 ```
 
+ NOTE: Federated Identity HOCs are not yet available on React Native.
+ {: .callout .callout--info}
+
 You can also initiate a federated signin process by calling `Auth.federatedSignIn()` method with a specific identity provider in your code:  
 
 ```js
@@ -327,6 +332,10 @@ ga.signIn().then(googleUser => {
 });
 ```
 
+Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenID. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `accounts.your-openid-provider.com`.
+
+**Retrieving JWT Token**
+
 After the federated login, you can retrieve related JWT token from the local cache using the *Cache* module: 
 ```js
 import { Cache } from 'aws-amplify';
@@ -336,10 +345,33 @@ Cache.getItem('federatedInfo').then(federatedInfo => {
      const { token } = federatedInfo;
 });
 ```
-Availible identity providers are `google`, `facebook`, `amazon`, `developer` and OpenID. To use an `OpenID` provider, use the URI of your provider as the key, e.g. `accounts.your-openid-provider.com`.
 
- NOTE: Federated Identity HOCs are not yet available on React Native.
- {: .callout .callout--info}
+**Refreshing JWT Tokens**
+
+By default, AWS Amplify will automatically refresh the tokens for Google and Facebook, so that your AWS credentials will be valid at all times. But if you are using another federated provider, you will need to provide your own token refresh method:
+```js
+import { Auth } from 'aws-amplify';
+
+function refreshToken() {
+    // refresh the token here and get the new token info
+    // ......
+
+    return new Promise(res, rej => {
+        const data = {
+            token, // the token from the provider
+            expires_at, // the timestamp for the expiration
+            identity_id, // optional, the identityId for the credentials
+        }
+        res(data);
+    });
+}
+
+Auth.configure({
+    refreshHandlers: {
+        'developer': refreshToken
+    }
+})
+```
 
 #### Rendering a Sign Out Button
 
@@ -707,9 +739,27 @@ export default withAuthenticator(App, true);
 
 ### Customizing Authentication Flow
 
-Amazon Cognito User Pools support customizing the authentication flow to enable new challenge types, in addition to a password, to verify the identity of users. These challenge types may include CAPTCHAs or dynamic challenge questions. 
+Amazon Cognito User Pools support customizing the authentication flow to enable new challenge types, in addition to a password, to verify the identity of users. These challenge types may include CAPTCHAs or dynamic challenge questions.
 
 To define your challenges for custom authentication flow, you need to implement Lambda triggers for Amazon Cognito.
+
+### Switching Authentication Flow Type
+
+There are two different types of authentication flow supported: `USER_SRP_AUTH` and `USER_PASSWORD_AUTH`. `USER_SRP_AUTH` is used by default and utilizes the SRP protocol (Secure Remote Password) to encrypt the password on the client before it's sent to the back-end. It is a more secure way of sending user credentials over the network and is, therefore, the recommended approach.
+
+The `USER_PASSWORD_AUTH` flow will send user credentials unencrypted to the back-end. If you want to migrate users to Cognito using the "Migration" trigger and avoid forcing users to reset their passwords, you need to use this authentication flow type as the Lambda function invoked by the trigger has to be able to verify the supplied user credentials.
+
+To configure `Auth` to use the `USER_PASSWORD_AUTH` flow, add it as a string value to the property `authenticationFlowType`:
+
+```js
+Auth.configure({
+    // other configurations...
+    // ...
+    authenticationFlowType: 'USER_PASSWORD_AUTH',
+})
+```
+
+For your Cognito User Pool to accept authentication requests using `USER_PASSWORD_AUTH`, your Cognito app client has to be configured to allow that flow. In the AWS Console, this is done by ticking the checkbox at General settings > App clients > Show Details (for the affected client) > Enable username-password (non-SRP) flow. If you're using the AWS CLI or Cloudformation, update your app client by adding `USER_PASSWORD_AUTH` to the list of "Explicit Auth Flows".
 
 #### Creating a CAPTCHA
 
@@ -730,7 +780,7 @@ export const handler = async (event) => {
 };
 ```
 
-#### Defining a Custom Challange
+#### Defining a Custom Challenge
 
 This example defines a custom challenge:
 
@@ -757,7 +807,7 @@ export const handler = async (event) => {
 
 **Verify Challenge Response** 
 
-This Lambda is used to verify a challange answer:
+This Lambda is used to verify a challenge answer:
 
 ```js
 export const handler = async (event, context) => {
@@ -774,18 +824,18 @@ export const handler = async (event, context) => {
 For more information about working with Lambda Triggers for custom authentication challenge, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-challenge.html).
 {: .callout .callout--info}
 
-#### Using a Custom Challange 
+#### Using a Custom Challenge
 
 To initiate a custom authorization flow in your app, call `signIn` without a password. A custom challenge needs to be answered using the `sendCustomChallengeAnswer` method:
 
 ```js
 import { Auth } from 'aws-amplify';
-let challangeResponse = "the answer for the challenge";
+let challengeResponse = "the answer for the challenge";
 
 Auth.signIn(username)
     .then(user => {
         if (user.challengeName === 'CUSTOM_CHALLENGE') {
-            Auth.sendCustomChallengeAnswer(user, challangeResponse)
+            Auth.sendCustomChallengeAnswer(user, challengeResponse)
                 .then(user => console.log(user))
                 .catch(err => console.log(err));
         } else {
@@ -794,6 +844,14 @@ Auth.signIn(username)
     })
     .catch(err => console.log(err));
 ```
+
+### Migrating Users to Amazon Cognito
+
+Cognito provides a trigger to migrate users from your existing user directory to Cognito seamlessly. You configure your Cognito User Pool's "Migration" trigger to invoke a Lambda function whenever a user that does not already exist in the user pool signs in or resets their password. 
+
+In short, the Lambda function should validate the user credentials against your existing user directory and return a response object containing user attributes and status on success, or an error message on error. There's a good documentation [here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-import-using-lambda.html) on how to set up this migration flow and a more detailed instruction [here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html#cognito-user-pools-lambda-trigger-syntax-user-migration) on how the lambda should handle request and response objects.
+
+The default authentication flow encrypts the user password before it's sent to Cognito, meaning your triggered Lambda won't receive a user password that can be validated. If you want to be able to migrate users on signin, you need to configure your user pool and application to use the `USER_PASSWORD_AUTH` authentication flow. See section [Switching Authentication Flow Type](#switching-authentication-flow-type) for instructions.
 
 ### Working with User Attributes
 
@@ -1035,4 +1093,16 @@ const authScreenLabels = {
 
 I18n.setLanguage('en');
 I18n.putVocabularies(authScreenLabels);
+```
+
+## Using modularized module
+
+If you only need to use Auth, you can do: `npm install @aws-amplify/auth` which will only install the Auth module for you.
+
+Then in your code, you can import the Auth module by:
+```js
+import Auth from '@aws-amplify/auth';
+
+Auth.configure();
+
 ```

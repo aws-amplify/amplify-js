@@ -13,7 +13,7 @@
 
 import React from 'react';
 
-import { JS } from 'aws-amplify';
+import { JS } from '@aws-amplify/core';
 
 import AmplifyTheme from './AmplifyTheme';
 

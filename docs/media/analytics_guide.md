@@ -86,7 +86,7 @@ Analytics.configure({
         // OPTIONAL - The buffer size for events in number of items.
         bufferSize: 1000,
 
-        // OPTIONAL - The interval in milisecons to perform a buffer check and flush if necessary.
+        // OPTIONAL - The interval in milliseconds to perform a buffer check and flush if necessary.
         flushInterval: 5000, // 5s 
 
         // OPTIONAL - The number of events to be deleted from the buffer when flushed.
@@ -94,7 +94,6 @@ Analytics.configure({
 
         // OPTIONAL - The limit for failed recording retries.
         resendLimit: 5
-        }
     } 
 });
 ```
@@ -266,14 +265,14 @@ Analytics.configure({
         // OPTIONAL -  Amazon Kinesis service region
         region: 'XX-XXXX-X',
         
-        // OPTIONAL - The interval in milisecons to perform a buffer check and flush if necessary.
-        bufferSize: 1000
+        // OPTIONAL - The buffer size for events in number of items.
+        bufferSize: 1000,
         
         // OPTIONAL - The number of events to be deleted from the buffer when flushed.
-        flushSize: 100
+        flushSize: 100,
         
         // OPTIONAL - The interval in milliseconds to perform a buffer check and flush if necessary.
-        flushInterval: 5000 // 5s
+        flushInterval: 5000, // 5s
         
         // OPTIONAL - The limit for failed recording retries.
         resendLimit: 5
@@ -304,7 +303,7 @@ You can create your custom class and plug it into Analytics module. This may be 
 
 To create a plugin,just implement `AnalyticsProvider` interface:
 
-```js
+```typescript
 import { Analytics, AnalyticsProvider } from 'aws-amplify';
 
 export default class MyAnalyticsProvider implements AnalyticsProvider {
@@ -350,3 +349,16 @@ Analytics.configure({
 
 Please note that the default provider (Amazon Pinpoint) is in use when you call `Analytics.record()`. To use your plugin, provide the plugin name in your method call, such as `Analytics.record({..},'myPlugin')`. 
 {: .callout .callout--info}
+
+## Using modularized module
+
+If you only need to use Analytics, you can do: `npm install @aws-amplify/analytics` which will only install the Analytics module for you.
+Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.
+
+Then in your code, you can import the Analytics module by:
+```js
+import Analytics from '@aws-amplify/analytics';
+
+Analytics.configure();
+
+```

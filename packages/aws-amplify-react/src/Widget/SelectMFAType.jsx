@@ -12,7 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '../Categories';
 
 import AmplifyTheme from '../AmplifyTheme';
 import {
@@ -74,13 +75,17 @@ export default class SelectMFAType extends Component {
 
         const user = this.props.authData;
 
+        if (!Auth || typeof Auth.setPreferredMFA !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
         Auth.setPreferredMFA(user, mfaMethod).then((data) => {
             logger.debug('set preferred mfa success', data);
             this.setState({selectMessage: 'Successful! Now you have changed to MFA Type: ' + mfaMethod});
  
         }).catch(err => {
             const { message } = err;
-            if (message === 'User has not set up software token mfa') {
+            if (message === 'User has not set up software token mfa' || message === 'User has not verified software token mfa') {
                 this.setState({TOTPSetup: true});
                 this.setState({selectMessage: 'You need to setup TOTP'})
             }

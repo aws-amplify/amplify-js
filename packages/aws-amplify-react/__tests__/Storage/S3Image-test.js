@@ -6,10 +6,27 @@ jest.mock('../../src/Storage/Common', () => {
     return { calcKey };
 });
 
+jest.mock('../../src/Categories', () => {
+    const Storage = {
+        get() {
+            return Promise.resolve();
+        },
+        put() {
+            return Promise.resolve();
+        },
+        list() {
+            return Promise.resolve();
+        }
+    };
+
+    return {
+        Storage
+    };
+});
+import { Storage } from '../../src/Categories';
 import S3Image from '../../src/Storage/S3Image';
 import { calcKey } from '../../src/Storage/Common';
 import { PhotoPicker } from '../../src/Widget'
-import { Storage, Logger } from 'aws-amplify';
 import React from 'react';
 
 describe('S3Image', () => {
@@ -104,17 +121,10 @@ describe('S3Image', () => {
         });
 
         test('nothing to do if no imgKey and path set', async () => {
-            const spyon = jest.spyOn(Logger.prototype, 'debug');
-
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
 
             await s3Image.load();
-
-            expect.assertions(1);
-            expect(spyon).toBeCalledWith('empty imgKey and path');
-
-            spyon.mockClear();
         });
 
         test('only get image source when body no specified', async () => {
@@ -191,8 +201,6 @@ describe('S3Image', () => {
                 });
             });
 
-            const spyon2 = jest.spyOn(Logger.prototype, 'debug');
-
             const wrapper = shallow(<S3Image/>);
             const s3Image = wrapper.instance();
             wrapper.setProps({
@@ -211,7 +219,6 @@ describe('S3Image', () => {
             await s3Image.handlePick(data);
 
             spyon.mockClear();
-            spyon2.mockClear();
         });
     });
 
