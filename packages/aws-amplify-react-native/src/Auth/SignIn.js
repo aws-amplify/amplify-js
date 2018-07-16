@@ -12,25 +12,26 @@
  */
 
 import React from 'react';
-import { 
-    View, 
-    Text, 
-    TextInput, 
-    Button, 
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
     TouchableHighlight
 } from 'react-native';
 import {
     Auth,
     I18n,
-    Logger
+    Logger,
+    JS
 } from 'aws-amplify';
 import AuthPiece from './AuthPiece';
-import { 
-    Username, 
-    Password, 
-    LinkCell, 
-    Header, 
-    ErrorRow 
+import {
+    Username,
+    Password,
+    LinkCell,
+    Header,
+    ErrorRow
 } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 
@@ -69,7 +70,7 @@ export default class SignIn extends AuthPiece {
         Auth.verifiedContact(user)
             .then(data => {
                 logger.debug('verified user attributes', data);
-                if (data.verified) {
+                if (!JS.isEmpty(data.verified)) {
                     this.changeState('signedIn', user);
                 } else {
                     user = Object.assign(user, data);

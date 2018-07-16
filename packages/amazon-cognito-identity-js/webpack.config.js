@@ -1,3 +1,5 @@
+// version 3.11.0
+
 /* eslint-disable */
 var webpack = require('webpack');
 
@@ -26,17 +28,19 @@ var config = {
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.BannerPlugin(banner, { raw: true })
+    new webpack.BannerPlugin({ banner, raw: true })
   ],
   module: {
-    loaders: [
+    rules: [
+      // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+      //{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel',
+        loader: 'babel-loader',
         query: {
-          cacheDirectory: './node_modules/.cache/babel'
-        }
+           cacheDirectory: './node_modules/.cache/babel'
+         }
       }
     ]
   }
@@ -46,6 +50,7 @@ if (process.env.NODE_ENV === 'production') {
   config.devtool = 'source-map';
   config.plugins.push(
     new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
       compress: {
         warnings: false
       }

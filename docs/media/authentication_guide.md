@@ -739,7 +739,7 @@ export default withAuthenticator(App, true);
 
 ### Customizing Authentication Flow
 
-Amazon Cognito User Pools support customizing the authentication flow to enable new challenge types, in addition to a password, to verify the identity of users. These challenge types may include CAPTCHAs or dynamic challenge questions. 
+Amazon Cognito User Pools support customizing the authentication flow to enable new challenge types, in addition to a password, to verify the identity of users. These challenge types may include CAPTCHAs or dynamic challenge questions.
 
 To define your challenges for custom authentication flow, you need to implement Lambda triggers for Amazon Cognito.
 
@@ -780,7 +780,7 @@ export const handler = async (event) => {
 };
 ```
 
-#### Defining a Custom Challange
+#### Defining a Custom Challenge
 
 This example defines a custom challenge:
 
@@ -807,7 +807,7 @@ export const handler = async (event) => {
 
 **Verify Challenge Response** 
 
-This Lambda is used to verify a challange answer:
+This Lambda is used to verify a challenge answer:
 
 ```js
 export const handler = async (event, context) => {
@@ -824,18 +824,18 @@ export const handler = async (event, context) => {
 For more information about working with Lambda Triggers for custom authentication challenge, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-challenge.html).
 {: .callout .callout--info}
 
-#### Using a Custom Challange 
+#### Using a Custom Challenge
 
 To initiate a custom authorization flow in your app, call `signIn` without a password. A custom challenge needs to be answered using the `sendCustomChallengeAnswer` method:
 
 ```js
 import { Auth } from 'aws-amplify';
-let challangeResponse = "the answer for the challenge";
+let challengeResponse = "the answer for the challenge";
 
 Auth.signIn(username)
     .then(user => {
         if (user.challengeName === 'CUSTOM_CHALLENGE') {
-            Auth.sendCustomChallengeAnswer(user, challangeResponse)
+            Auth.sendCustomChallengeAnswer(user, challengeResponse)
                 .then(user => console.log(user))
                 .catch(err => console.log(err));
         } else {
@@ -1093,4 +1093,16 @@ const authScreenLabels = {
 
 I18n.setLanguage('en');
 I18n.putVocabularies(authScreenLabels);
+```
+
+## Using modularized module
+
+If you only need to use Auth, you can do: `npm install @aws-amplify/auth` which will only install the Auth module for you.
+
+Then in your code, you can import the Auth module by:
+```js
+import Auth from '@aws-amplify/auth';
+
+Auth.configure();
+
 ```
