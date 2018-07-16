@@ -38,7 +38,7 @@ tutorial_list:
           excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled mobile app with React Native and AWS Amplify.<br/><b>30 min to complete</b>'
           cta: Read more
           url: '/media/tutorials/building-react-native-apps' 
-        - title: Serverless Ionic 4 apps with AWS Amplify
+        - title: Building Ionic 4 apps with AWS Amplify
           excerpt: "Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
           cta: Read more
           url: '/media/tutorials/building-ionic-4-apps' 

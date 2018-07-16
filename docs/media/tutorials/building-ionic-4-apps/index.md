@@ -33,7 +33,7 @@ Here is the sequence of the tutorial:
  
 # Part 1: Create an Ionic 4 App
 
-This section will introduce you to Ionic and teach you how to boostrap a new Ionic app with Ionic CLI. In subsequent parts of the tutorial, you will add cloud functionality to the application that you will create in this section. 
+This section will introduce Ionic basics and you will learn how to boostrap a new Ionic app with Ionic CLI. In subsequent parts of the tutorial, you will add cloud functionality to the application that you will create in this section.
 
 The source code for this section of the tutorial can be found in *tutorial-part-1* branch of the [project Github repo](https://github.com/aws-samples/aws-amplify-ionic-sample/tree/tutorial-part-1).
 {: .callout}
@@ -977,6 +977,7 @@ When prompted, select *Create CRUD API for an existing Amazon DynamoDB table*, a
 ```
 
 After running this command, the CLI creates the  `awsmobilejs/backend/cloud-api/ToDoItems/` directory which includes the boilerplate code for your API backend. 
+
 ![](images/cloud-api-folder-structure.png)
  
 This folder will be deployed to AWS and it will run on AWS Lambda when you update your backend with `awsmobile push` command:
@@ -1121,8 +1122,8 @@ You’ve added persisted your app's using Amazon DynamoDB, AWS Lambda, and AWS A
 
 ## What's next
 
-- Learn more about [AWS Amplify categories](../media/developer_guide) to work with many cloud services to create your backend. 
--  Learn more about [API category](../media/api_guide) to work with REST and GraphQL endpoints. 
+- Learn more about [AWS Amplify categories]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/developer_guide) to work with many cloud services to create your backend. 
+-  Learn more about [API category]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/api_guide) to work with REST and GraphQL endpoints. 
 
 
 
