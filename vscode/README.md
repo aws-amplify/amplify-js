@@ -7,8 +7,7 @@ Code snippets and completion for the [AWS Amplify](https://aws.github.io/aws-amp
 
 ## Installation
 
-Go to the Extension Marketplace in VS Code and search for AWS Amplify API. 
-Click install on the extension with title "AWS Amplify API", description "AWS Amplify API code snippets", and publisher "Tommy Praeger".
+Go to the Extension Marketplace in VS Code and search for AWS Amplify API. Click install on the extension with title "AWS Amplify API".
 
 ## Usage
 
