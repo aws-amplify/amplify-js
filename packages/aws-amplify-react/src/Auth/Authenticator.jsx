@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import Amplify, { Auth, Logger } from 'aws-amplify';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import Greetings from './Greetings';
 import SignIn from './SignIn';

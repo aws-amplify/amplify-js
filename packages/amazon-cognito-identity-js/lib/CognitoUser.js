@@ -722,7 +722,7 @@ var CognitoUser = function () {
 
   /**
    * This is used by the user once he has the responses to a custom challenge
-   * @param {string} answerChallenge The custom challange answer.
+   * @param {string} answerChallenge The custom challenge answer.
    * @param {object} callback Result callback map.
    * @param {onFailure} callback.onFailure Called on any error.
    * @param {customChallenge} callback.customChallenge

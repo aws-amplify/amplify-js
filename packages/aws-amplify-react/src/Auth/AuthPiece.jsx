@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import { Logger } from 'aws-amplify';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
