@@ -247,8 +247,7 @@ PushNotification.configure(aws_exports);
 
 ## Working with the API
 
-You can use `onNotification` and `onRegister` event handlers to work with push notifications in your app and `getInitialNotification` for getting clicked notification. The following 
-code shows how you can retrieve the notification data and registration token:
+You can use `onNotification` and `onRegister` event handlers to work with push notifications in your app and `getInitialNotification` for getting clicked notification. The following code shows how you can retrieve the notification data and registration token:
 
 ```js
 // get data when clicked on notification
