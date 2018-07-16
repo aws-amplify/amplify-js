@@ -1172,7 +1172,8 @@ describe('auth unit test', () => {
             });
 
             expect.assertions(1);
-            expect(await auth.verifyUserAttribute(user, {})).toBe("success");
+            await auth.verifyUserAttribute(user, {email: 'xxx@xxx.com'});
+            expect(spyon).toBeCalled();
 
             spyon.mockClear();
 
