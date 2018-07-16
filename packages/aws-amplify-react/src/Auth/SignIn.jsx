@@ -51,7 +51,7 @@ export default class SignIn extends AuthPiece {
     }
 
     onKeyDown(e) {
-        if (this.props.authState === 'signIn') {
+        if (this.props.authState === 'signIn' && !this.props.hide) {
             if (e.keyCode === 13) { // when press enter
                 this.signIn();
             }
