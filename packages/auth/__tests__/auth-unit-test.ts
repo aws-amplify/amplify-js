@@ -1172,7 +1172,7 @@ describe('auth unit test', () => {
             });
 
             expect.assertions(1);
-            expect(await auth.verifyUserAttribute(user, {})).toBeUndefined();
+            expect(await auth.verifyUserAttribute(user, {})).toBe("success");
 
             spyon.mockClear();
 
