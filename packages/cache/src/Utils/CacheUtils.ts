@@ -12,7 +12,7 @@
  */
 
 import { CacheConfig, CacheItem, CacheItemOptions } from '../types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, MemoryStorage } from '@aws-amplify/core';
 
 const logger = new Logger('CacheUtils');
 
@@ -24,7 +24,9 @@ if (typeof window !== 'undefined') {
         window.localStorage.removeItem('amplify-test');
         win_store = window.localStorage;
     } catch(e) {
+        win_store = MemoryStorage;
         logger.debug('test window.localStorage error', e);
+        logger.debug('using memory storage');
     }
 }
 
