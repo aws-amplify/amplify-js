@@ -15,15 +15,15 @@ In a JavaScript or JSX file*, start typing an AWS Amplify API command that has a
 
 The snippets options that pop up are based on the prefix that you type. For the complete set of prefix/snippet pairings for AWS Amplify, see the documentation:
 
-Full code blocks from the documentation guides: https://github.com/aws-amplify/amplify-js/wiki/VS-Code-Snipped-Extension#full-code-block-snippet-documentation
+Full code blocks from the documentation guides: https://github.com/aws-amplify/amplify-js/wiki/VS-Code-Snippet-Extension#full-code-block-snippet-documentation
 
 Prefix naming convention for full code block snippets: "Amplify" + most recent heading in documentation.
 For code blocks that are not the first after a heading, prefixes are numbered in order (e.g. 3rd snippet in section with heading "Analytics Installation And Configuration" will have the prefix "Amplify Analytics Installation And Configuration 3".
 
 Selected code segments from the documentation guides, broken down by documentation page: 
-https://github.com/aws-amplify/amplify-js/wiki/VS-Code-Snipped-Extension#selected-code-block-snippet-documentation
+https://github.com/aws-amplify/amplify-js/wiki/VS-Code-Snippet-Extension#selected-code-block-snippet-documentation
 
-Single word snippets (snippets that complete single words when clicked): https://github.com/aws-amplify/amplify-js/wiki/VS-Code-Snipped-Extension#single-word-snippet-documentation
+Single word snippets (snippets that complete single words when clicked): https://github.com/aws-amplify/amplify-js/wiki/VS-Code-Snippet-Extension#single-word-snippet-documentation
 
 *The snippets also have limited TypeScript functionality.
 
