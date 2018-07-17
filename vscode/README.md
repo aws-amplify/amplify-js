@@ -16,6 +16,8 @@ In a JavaScript or JSX file*, start typing an AWS Amplify API command that has a
 The snippets options that pop up are based on the prefix that you type. For the complete set of prefix/snippet pairings for AWS Amplify, see the documentation:
 
 Full code blocks from the documentation guides: https://github.com/tommypraeger/aws-amplify-tools-vscode/wiki/Full-Code-Block-Snippets
+Prefix naming convention for full code block snippets: "Amplify" + most recent heading in documentation.
+For code blocks that are not the first after a heading, prefixes are numbered in order (e.g. 3rd snippet in section with heading "Analytics Installation And Configuration" will have the prefix "Amplify Analytics Installation And Configuration 3".
 
 Selected code segments from the documentation guides, broken down by documentation page: https://github.com/tommypraeger/aws-amplify-tools-vscode/wiki/Selected-Code-Segment-Snippets
 
