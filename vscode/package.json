@@ -3,7 +3,7 @@
     "displayName": "AWS Amplify API",
     "description": "AWS Amplify API code snippets",
     "version": "0.0.1",
-    "publisher": "praegt",
+    "publisher": "aws-amplify",
     "private": true,
     "engines": {
         "vscode": "^1.22.0"
