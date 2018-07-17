@@ -364,6 +364,13 @@ export default withAuthenticator(App);
 
 This will wrap the entire application inside an Authentication UI. Only signed in users will have access to use your application's features.
 
+Note:
+If you are using aws-amplify@1.x.x and aws-amplify-react@1.x.x then please make sure you import those in the order like:
+```js
+import Amplify from 'aws-amplify';
+import { withAuthenticator } from 'aws-amplify-react';
+```
+
 <img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
 
 </div>
