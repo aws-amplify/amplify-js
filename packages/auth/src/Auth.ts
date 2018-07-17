@@ -403,6 +403,7 @@ export default class AuthClass {
 
     /**
      * get user current preferred mfa option
+     * this method doesn't work with totp, we need to deprecate it.
      * @param {CognitoUser} user - the current user
      * @return - A promise resolves the current preferred mfa option if success
      */

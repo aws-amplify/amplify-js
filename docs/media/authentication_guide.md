@@ -732,6 +732,17 @@ Auth.setPreferredMFA(user, 'SMS');
 Auth.setPreferredMFA(user, 'NOMFA');
 ```
 
+#### get current preferred MFA type
+
+You can get current preferred MFA type by:
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.getPreferredMFA(user).then((data) => {
+    console.log('current prefered mfa type is: ' + data);
+})
+```
+
 #### Letting User Select MFA Type
 
 When working with multiple MFA Types, you can let the app user select the desired authentication method. `SelectMFAType` UI Component, which is provided with `aws-amplify-react` package, renders a list of available MFA types.
