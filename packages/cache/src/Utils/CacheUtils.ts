@@ -12,23 +12,6 @@
  */
 
 import { CacheConfig, CacheItem, CacheItemOptions } from '../types';
-import { ConsoleLogger as Logger, MemoryStorage } from '@aws-amplify/core';
-
-const logger = new Logger('CacheUtils');
-
-let win_store = null;
-if (typeof window !== 'undefined') {
-    try {
-        window.localStorage.setItem('amplify-test', 'y');
-        window.localStorage.getItem('amplify-test');
-        window.localStorage.removeItem('amplify-test');
-        win_store = window.localStorage;
-    } catch(e) {
-        win_store = MemoryStorage;
-        logger.debug('test window.localStorage error', e);
-        logger.debug('using memory storage');
-    }
-}
 
 /**
 * Default cache config
@@ -40,7 +23,7 @@ export const defaultConfig: CacheConfig = {
     defaultTTL: 259200000, // about 3 days
     defaultPriority: 5,
     warningThreshold: 0.8,
-    storage: win_store
+    storage: window.localStorage
 };
 
 /**
