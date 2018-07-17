@@ -418,6 +418,23 @@ export default class AuthClass {
             });
         });
     }
+
+    /**
+     * get preferred mfa method
+     * @param {CognitoUser} user - the current cognito user
+     */
+    public getPreferredMFA(user: any): Promise<string> {
+        return new Promise((res, rej) => {
+            user.getUserData((err, data) => {
+                if (err) {
+                    logger.debug('getting preferred mfa failed', err);
+                    rej('getting preferred mfa failed: ' + err);
+                }
+                const preferredMFA = data.PreferredMfaSetting;
+                res(preferredMFA);
+            });
+        });
+    }
     
     /**
      * set preferred MFA method
@@ -425,8 +442,9 @@ export default class AuthClass {
      * @param {string} mfaMethod - preferred mfa method
      * @return - A promise resolve if success
      */
-    public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
-        let smsMfaSettings = null;
+    public async setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
+        let smsMfaSettings = await this.getPreferredMFA(user) === 'SMS_MFA'?
+            { PreferredMfa : false, Enabled : false } : null;
         let totpMfaSettings = {
             PreferredMfa : false,
             Enabled : false
