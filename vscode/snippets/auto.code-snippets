@@ -268,9 +268,19 @@
             "",
         ]
     },
+    "Amplify Analytics Using Modularized Module": {
+        "prefix": "Amplify Using Modularized Module",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "import Analytics from '@aws-amplify/analytics';",
+            "",
+            "Analytics.configure();",
+            "",
+        ]
+    },
     "Amplify Angular Setup": {
         "prefix": "Amplify Setup",
-        "scope": "json",
+        "scope": "javascript,javascriptreact",
         "body": [
             "\"scripts\": {",
             "\t\"start\": \"[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve\",",
@@ -503,8 +513,8 @@
             "let apiName = 'MyApiName';",
             "let path = '/path'; ",
             "let myInit = { // OPTIONAL",
-            "\theaders: {}, // OPTIONAL",
-            "\tresponse: true, // OPTIONAL (return entire response object instead of response.data)",
+            "\theaders: {} // OPTIONAL",
+            "\tresponse: true // OPTIONAL (return entire response object instead of response.data)",
             "\tqueryStringParameters: {} // OPTIONAL",
             "}",
             "API.get(apiName, path, myInit).then(response => {",
@@ -1080,6 +1090,16 @@
             "</Connect>",
         ]
     },
+    "Amplify Api Using Modularized Module": {
+        "prefix": "Amplify Using Modularized Module",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "import API from '@aws-amplify/api';",
+            "",
+            "API.configure();",
+            "",
+        ]
+    },
     "Amplify Authentication Automated Setup": {
         "prefix": "Amplify Automated Setup",
         "scope": "javascript,javascriptreact",
@@ -1123,7 +1143,13 @@
             "\t\t\texpires: 365,",
             "\t\t// OPTIONAL - Cookie secure flag",
             "\t\t\tsecure: true",
-            "\t\t}",
+            "\t\t},",
+            "",
+            "\t\t// OPTIONAL - customized storage object",
+            "\t\tstorage: new MyStorage(),",
+            "\t\t",
+            "\t\t// OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'",
+            "\t\tauthenticationFlowType: 'USER_PASSWORD_AUTH'",
             "\t}",
             "});",
         ]
@@ -1261,7 +1287,6 @@
             "\t\t}",
             "\t});",
             "}",
-            "",
         ]
     },
     "Amplify Authentication Using Withauthenticator Hoc": {
@@ -1331,6 +1356,33 @@
             "Cache.getItem('federatedInfo').then(federatedInfo => {",
             "\tconst { token } = federatedInfo;",
             "});",
+        ]
+    },
+    "Amplify Authentication Enabling Federated Identities 4": {
+        "prefix": "Amplify Enabling Federated Identities 4",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "import { Auth } from 'aws-amplify';",
+            "",
+            "function refreshToken() {",
+            "\t// refresh the token here and get the new token info",
+            "\t// ......",
+            "",
+            "\treturn new Promise(res, rej => {",
+            "\t\tconst data = {",
+            "\t\t\ttoken, // the token from the provider",
+            "\t\t\texpires_at, // the timestamp for the expiration",
+            "\t\t\tidentity_id, // optional, the identityId for the credentials",
+            "\t\t}",
+            "\t\tres(data);",
+            "\t});",
+            "}",
+            "",
+            "Auth.configure({",
+            "\trefreshHandlers: {",
+            "\t\t'developer': refreshToken",
+            "\t}",
+            "})",
         ]
     },
     "Amplify Authentication Rendering A Sign Out Button": {
@@ -1566,6 +1618,17 @@
             "export default withAuthenticator(App, true);",
         ]
     },
+    "Amplify Authentication Switching Authentication Flow Type": {
+        "prefix": "Amplify Switching Authentication Flow Type",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "Auth.configure({",
+            "\t// other configurations...",
+            "\t// ...",
+            "\tauthenticationFlowType: 'USER_PASSWORD_AUTH',",
+            "})",
+        ]
+    },
     "Amplify Authentication Creating A Captcha": {
         "prefix": "Amplify Creating A Captcha",
         "scope": "javascript,javascriptreact",
@@ -1584,8 +1647,8 @@
             "};",
         ]
     },
-    "Amplify Authentication Defining A Custom Challange": {
-        "prefix": "Amplify Defining A Custom Challange",
+    "Amplify Authentication Defining A Custom Challenge": {
+        "prefix": "Amplify Defining A Custom Challenge",
         "scope": "javascript,javascriptreact",
         "body": [
             "export const handler = async (event) => {",
@@ -1608,8 +1671,8 @@
             "};",
         ]
     },
-    "Amplify Authentication Defining A Custom Challange 2": {
-        "prefix": "Amplify Defining A Custom Challange 2",
+    "Amplify Authentication Defining A Custom Challenge 2": {
+        "prefix": "Amplify Defining A Custom Challenge 2",
         "scope": "javascript,javascriptreact",
         "body": [
             "export const handler = async (event, context) => {",
@@ -1623,17 +1686,17 @@
             "};",
         ]
     },
-    "Amplify Authentication Using A Custom Challange ": {
-        "prefix": "Amplify Using A Custom Challange ",
+    "Amplify Authentication Using A Custom Challenge": {
+        "prefix": "Amplify Using A Custom Challenge",
         "scope": "javascript,javascriptreact",
         "body": [
             "import { Auth } from 'aws-amplify';",
-            "let challangeResponse = \"the answer for the challenge\";",
+            "let challengeResponse = \"the answer for the challenge\";",
             "",
             "Auth.signIn(username)",
             "\t.then(user => {",
             "\t\tif (user.challengeName === 'CUSTOM_CHALLENGE') {",
-            "\t\t\tAuth.sendCustomChallengeAnswer(user, challangeResponse)",
+            "\t\t\tAuth.sendCustomChallengeAnswer(user, challengeResponse)",
             "\t\t\t\t.then(user => console.log(user))",
             "\t\t\t\t.catch(err => console.log(err));",
             "\t\t} else {",
@@ -1731,6 +1794,16 @@
             "<ConfirmSignUp/>,",
             "<ForgotPassword/>",
             "]);",
+        ]
+    },
+    "Amplify Authentication Using Modularized Module": {
+        "prefix": "Amplify Using Modularized Module",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "import Auth from '@aws-amplify/auth';",
+            "",
+            "Auth.configure();",
+            "",
         ]
     },
     "Amplify Cache Working With The Api": {
@@ -1844,6 +1917,16 @@
             "};",
             "const newCache = Cache.createInstance(config);",
             "// Please provide a new keyPrefix which is the identifier of Cache.",
+        ]
+    },
+    "Amplify Cache Using Modularized Module": {
+        "prefix": "Amplify Using Modularized Module",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "import Cache from '@aws-amplify/cache';",
+            "",
+            "Cache.configure();",
+            "",
         ]
     },
     "Amplify Hub Installation": {
@@ -2329,6 +2412,16 @@
             "// You will no longer get messages for 'myTopicA'",
         ]
     },
+    "Amplify Pub_Sub Using Modularized Module": {
+        "prefix": "Amplify Using Modularized Module",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "import Pubsub from '@aws-amplify/pubsub';",
+            "",
+            "Pubsub.configure();",
+            "",
+        ]
+    },
     "Amplify Push_Notifications_Setup.M Setup For Ios": {
         "prefix": "Amplify Setup For Ios",
         "scope": "javascript,javascriptreact",
@@ -2346,22 +2439,16 @@
         "scope": "javascript,javascriptreact",
         "body": [
             "import { PushNotificationIOS } from 'react-native';",
-            "import Amplify from 'aws-amplify';",
-            "import { PushNotification } from 'aws-amplify-react-native';",
+            "import Analytics from '@aws-amplify/analytics';",
+            "import PushNotification from '@aws-amplify/pushnotification';",
             "",
             "// PushNotification need to work with Analytics",
-            "Amplify.configure({",
-            "\tAnalytics: {",
-            "\t\t// You configuration will come here...",
-            "\t}",
+            "Analytics.configure({",
+            "\t// You configuration will come here...",
             "});",
             "",
             "PushNotification.configure({",
-            "\t// ...",
-            "\tPushNotification: {",
-            "\t\tappId: 'XXXXXXXXXXabcdefghij1234567890ab',",
-            "\t}",
-            "\t// ...",
+            "\tappId: 'XXXXXXXXXXabcdefghij1234567890ab',",
             "});",
         ]
     },
@@ -2370,12 +2457,12 @@
         "scope": "javascript,javascriptreact",
         "body": [
             "import { PushNotificationIOS } from 'react-native';",
-            "import Amplify from 'aws-amplify';",
-            "import { PushNotification } from 'aws-amplify-react-native';",
+            "import Analytics from '@aws-amplify/analytics';",
+            "import PushNotification from '@aws-amplify/pushnotification';",
             "import aws_exports from './aws_exports';",
             "",
             "// PushNotification need to work with Analytics",
-            "Amplify.configure(aws_exports);",
+            "Analytics.configure(aws_exports);",
             "",
             "PushNotification.configure(aws_exports);",
         ]
@@ -2482,6 +2569,14 @@
             "\t\tconsole.log('[Service Worker] Message Event: ', event.data)",
             "\t})",
             "\t",
+        ]
+    },
+    "Amplify Service_Workers Using Modularized Module": {
+        "prefix": "Amplify Using Modularized Module",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "import { ServiceWorker } from '@aws-amplify/core';",
+            "",
         ]
     },
     "Amplify Storage Automated Setup": {
@@ -2783,6 +2878,16 @@
             "})",
             ".then (result => console.log(result))",
             ".catch(err => console.log(err));",
+        ]
+    },
+    "Amplify Storage Using Modularized Module": {
+        "prefix": "Amplify Using Modularized Module",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "import Storage from '@aws-amplify/storage';",
+            "",
+            "Storage.configure();",
+            "",
         ]
     },
 }

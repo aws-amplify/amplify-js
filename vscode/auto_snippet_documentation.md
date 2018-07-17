@@ -226,8 +226,15 @@ Analytics.configure({
 });
 
 ```
+##### prefix: ```Amplify Using Modularized Module```
+```js
+import Analytics from '@aws-amplify/analytics';
+
+Analytics.configure();
+
+```
 ##### prefix: ```Amplify Setup```
-```json
+```js
 "scripts": {
     "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",
     "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"
@@ -420,8 +427,8 @@ API: {
 let apiName = 'MyApiName';
 let path = '/path'; 
 let myInit = { // OPTIONAL
-    headers: {}, // OPTIONAL
-    response: true, // OPTIONAL (return entire response object instead of response.data)
+    headers: {} // OPTIONAL
+    response: true // OPTIONAL (return entire response object instead of response.data)
     queryStringParameters: {} // OPTIONAL
 }
 API.get(apiName, path, myInit).then(response => {
@@ -897,6 +904,13 @@ class CreateEvent extends React.Component {
   )}
 </Connect>
 ```
+##### prefix: ```Amplify Using Modularized Module```
+```js
+import API from '@aws-amplify/api';
+
+API.configure();
+
+```
 ##### prefix: ```Amplify Automated Setup```
 ```js
 import Amplify, { Auth } from 'aws-amplify';
@@ -935,7 +949,13 @@ Amplify.configure({
             expires: 365,
         // OPTIONAL - Cookie secure flag
             secure: true
-        }
+        },
+
+        // OPTIONAL - customized storage object
+        storage: new MyStorage(),
+        
+        // OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
+        authenticationFlowType: 'USER_PASSWORD_AUTH'
     }
 });
 ```
@@ -1049,7 +1069,6 @@ if (cognitoUser != null) {
         }
     });
 }
-
 ```
 ##### prefix: ```Amplify Using Withauthenticator Hoc```
 ```js
@@ -1107,6 +1126,30 @@ import { Cache } from 'aws-amplify';
 Cache.getItem('federatedInfo').then(federatedInfo => {
      const { token } = federatedInfo;
 });
+```
+##### prefix: ```Amplify Enabling Federated Identities 4```
+```js
+import { Auth } from 'aws-amplify';
+
+function refreshToken() {
+    // refresh the token here and get the new token info
+    // ......
+
+    return new Promise(res, rej => {
+        const data = {
+            token, // the token from the provider
+            expires_at, // the timestamp for the expiration
+            identity_id, // optional, the identityId for the credentials
+        }
+        res(data);
+    });
+}
+
+Auth.configure({
+    refreshHandlers: {
+        'developer': refreshToken
+    }
+})
 ```
 ##### prefix: ```Amplify Rendering A Sign Out Button```
 ```js
@@ -1311,6 +1354,14 @@ class App extends Component {
 
 export default withAuthenticator(App, true);
 ```
+##### prefix: ```Amplify Switching Authentication Flow Type```
+```js
+Auth.configure({
+    // other configurations...
+    // ...
+    authenticationFlowType: 'USER_PASSWORD_AUTH',
+})
+```
 ##### prefix: ```Amplify Creating A Captcha```
 ```js
 export const handler = async (event) => {
@@ -1326,7 +1377,7 @@ export const handler = async (event) => {
     return event;
 };
 ```
-##### prefix: ```Amplify Defining A Custom Challange```
+##### prefix: ```Amplify Defining A Custom Challenge```
 ```js
 export const handler = async (event) => {
     if (!event.request.session || event.request.session.length === 0) {
@@ -1347,7 +1398,7 @@ export const handler = async (event) => {
     return event;
 };
 ```
-##### prefix: ```Amplify Defining A Custom Challange 2```
+##### prefix: ```Amplify Defining A Custom Challenge 2```
 ```js
 export const handler = async (event, context) => {
     if (event.request.privateChallengeParameters.answer === event.request.challengeAnswer) {
@@ -1359,15 +1410,15 @@ export const handler = async (event, context) => {
     return event;
 };
 ```
-##### prefix: ```Amplify Using A Custom Challange ```
+##### prefix: ```Amplify Using A Custom Challenge```
 ```js
 import { Auth } from 'aws-amplify';
-let challangeResponse = "the answer for the challenge";
+let challengeResponse = "the answer for the challenge";
 
 Auth.signIn(username)
     .then(user => {
         if (user.challengeName === 'CUSTOM_CHALLENGE') {
-            Auth.sendCustomChallengeAnswer(user, challangeResponse)
+            Auth.sendCustomChallengeAnswer(user, challengeResponse)
                 .then(user => console.log(user))
                 .catch(err => console.log(err));
         } else {
@@ -1448,6 +1499,13 @@ export default withAuthenticator(App, false, [
   <ForgotPassword/>
 ]);
 ```
+##### prefix: ```Amplify Using Modularized Module```
+```js
+import Auth from '@aws-amplify/auth';
+
+Auth.configure();
+
+```
 ##### prefix: ```Amplify Working With The Api```
 ```js
 import { Cache } from 'aws-amplify';
@@ -1524,6 +1582,13 @@ const config = {
 };
 const newCache = Cache.createInstance(config);
 // Please provide a new keyPrefix which is the identifier of Cache.
+```
+##### prefix: ```Amplify Using Modularized Module```
+```js
+import Cache from '@aws-amplify/cache';
+
+Cache.configure();
+
 ```
 ##### prefix: ```Amplify Installation```
 ```js
@@ -1915,6 +1980,13 @@ const sub1 = PubSub.subscribe('myTopicA').subscribe({
 sub1.unsubscribe();
 // You will no longer get messages for 'myTopicA'
 ```
+##### prefix: ```Amplify Using Modularized Module```
+```js
+import Pubsub from '@aws-amplify/pubsub';
+
+Pubsub.configure();
+
+```
 ##### prefix: ```Amplify Setup For Ios```
 ```js
 $ react-native init myapp
@@ -1927,33 +1999,27 @@ $ react-native link aws-amplify-react-native
 ##### prefix: ```Amplify Configure Your App```
 ```js
 import { PushNotificationIOS } from 'react-native';
-import Amplify from 'aws-amplify';
-import { PushNotification } from 'aws-amplify-react-native';
+import Analytics from '@aws-amplify/analytics';
+import PushNotification from '@aws-amplify/pushnotification';
 
 // PushNotification need to work with Analytics
-Amplify.configure({
-    Analytics: {
-        // You configuration will come here...
-    }
+Analytics.configure({
+    // You configuration will come here...
 });
 
 PushNotification.configure({
-    // ...
-    PushNotification: {
-        appId: 'XXXXXXXXXXabcdefghij1234567890ab',
-    }
-    // ...
+    appId: 'XXXXXXXXXXabcdefghij1234567890ab',
 });
 ```
 ##### prefix: ```Amplify Configure Your App 2```
 ```js
 import { PushNotificationIOS } from 'react-native';
-import Amplify from 'aws-amplify';
-import { PushNotification } from 'aws-amplify-react-native';
+import Analytics from '@aws-amplify/analytics';
+import PushNotification from '@aws-amplify/pushnotification';
 import aws_exports from './aws_exports';
 
 // PushNotification need to work with Analytics
-Amplify.configure(aws_exports);
+Analytics.configure(aws_exports);
 
 PushNotification.configure(aws_exports);
 ```
@@ -2039,6 +2105,11 @@ addEventListener('push', (event) => {
         console.log('[Service Worker] Message Event: ', event.data)
     })
     
+```
+##### prefix: ```Amplify Using Modularized Module```
+```js
+import { ServiceWorker } from '@aws-amplify/core';
+
 ```
 ##### prefix: ```Amplify Automated Setup```
 ```js
@@ -2256,4 +2327,11 @@ Storage.put('test.txt', 'Hello', {
 })
 .then (result => console.log(result))
 .catch(err => console.log(err));
+```
+##### prefix: ```Amplify Using Modularized Module```
+```js
+import Storage from '@aws-amplify/storage';
+
+Storage.configure();
+
 ```
