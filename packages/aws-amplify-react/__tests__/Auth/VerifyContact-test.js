@@ -1,18 +1,4 @@
-jest.mock('../../src/Categories', () => {
-    const Auth = {
-        verifyCurrentUserAttribute() {
-            return;
-        },
-        verifyCurrentUserAttributeSubmit() {
-            return;
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import VerifyContact from '../../src/Auth/VerifyContact';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';

@@ -1,21 +1,4 @@
-jest.mock('../../src/Categories', () => {
-    const Storage = {
-        get() {
-            return;
-        },
-        put() {
-            return;
-        },
-        list() {
-            return Promise.resolve();
-        }
-    };
-
-    return {
-        Storage
-    };
-});
-import { Storage } from '../../src/Categories';
+import Storage from '@aws-amplify/storage';
 import S3Album from '../../src/Storage/S3Album';
 import S3Text from '../../src/Storage/S3Text';
 import S3Image from '../../src/Storage/S3Image';

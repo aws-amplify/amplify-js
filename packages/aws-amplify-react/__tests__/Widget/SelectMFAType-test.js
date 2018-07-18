@@ -1,15 +1,4 @@
-jest.mock('../../src/Categories', () => {
-    const Auth = {
-        setPreferredMFA() {
-            return Promise.resolve();
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import React, { Component } from 'react';
 import SelectMFAType from '../../src/Widget/SelectMFAType';
 import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';

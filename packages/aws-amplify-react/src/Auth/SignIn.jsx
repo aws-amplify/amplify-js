@@ -13,7 +13,7 @@
 
 import React, { Component } from 'react';
 import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
-import { Auth } from '../Categories';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import { FederatedButtons } from './FederatedSignIn';
@@ -42,7 +42,7 @@ export default class SignIn extends AuthPiece {
         this.state = {};
     }
 
-    componentWillMount() {
+    componentDidMount() {
         window.addEventListener('keydown', this.onKeyDown);
     }
 

@@ -1,15 +1,4 @@
-jest.mock('../../src/Categories', () => {
-    const Auth = {
-        signUp() {
-            return;
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import SignUp from '../../src/Auth/SignUp';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';

@@ -6,24 +6,7 @@ jest.mock('../../src/Storage/Common', () => {
     return { calcKey };
 });
 
-jest.mock('../../src/Categories', () => {
-    const Storage = {
-        get() {
-            return Promise.resolve();
-        },
-        put() {
-            return Promise.resolve();
-        },
-        list() {
-            return Promise.resolve();
-        }
-    };
-
-    return {
-        Storage
-    };
-});
-import { Storage } from '../../src/Categories';
+import Storage from '@aws-amplify/storage';
 import S3Image from '../../src/Storage/S3Image';
 import { calcKey } from '../../src/Storage/Common';
 import { PhotoPicker } from '../../src/Widget'
