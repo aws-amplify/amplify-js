@@ -42,7 +42,7 @@ export default class SignIn extends AuthPiece {
         this.state = {};
     }
 
-    componentWillMount() {
+    componentDidMount() {
         window.addEventListener('keydown', this.onKeyDown);
     }
 
