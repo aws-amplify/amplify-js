@@ -63,7 +63,7 @@ __Web__
 $ npm install aws-amplify --save
 ```
 
-or you could install the module you want to use individually:
+or you can install the module you want to use individually:
 ```bash
 $ npm install @aws-amplify/auth --save
 ```
