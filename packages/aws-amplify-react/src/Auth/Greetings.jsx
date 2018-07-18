@@ -13,7 +13,7 @@
 
 import React, { Component } from 'react';
 import { I18n, Hub, ConsoleLogger as Logger } from '@aws-amplify/core';
-import { Auth } from '../Categories';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../AmplifyUI';

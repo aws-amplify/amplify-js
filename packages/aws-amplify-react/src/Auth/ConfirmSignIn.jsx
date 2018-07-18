@@ -14,7 +14,7 @@
 import React, { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
-import { Auth } from '../Categories';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';

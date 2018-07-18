@@ -3,7 +3,7 @@ import { Container, FormSection, SectionHeader, SectionBody, SectionFooter } fro
 import { Input, Button } from "../AmplifyTheme";
 
 import { I18n } from '@aws-amplify/core';
-import { Interactions } from '../Categories';
+import Interactions from '@aws-amplify/interactions';
 import regeneratorRuntime from 'regenerator-runtime/runtime';
 
 const styles = {
