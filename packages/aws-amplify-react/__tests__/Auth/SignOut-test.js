@@ -1,18 +1,4 @@
-jest.mock('../../src/Categories', () => {
-    const Auth = {
-        signOut() {
-            return;
-        },
-        currentAuthenticatedUser() {
-            return Promise.resolve();
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import SignOut from '../../src/Auth/SignOut';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';

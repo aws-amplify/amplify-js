@@ -1,18 +1,4 @@
-jest.mock('../../src/Categories', () => {
-    const Auth = {
-        verifiedContact() {
-            return;
-        },
-        completeNewPassword() {
-            return;
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import React, { Component } from 'react';
 import { ButtonRow, Link } from '../../src/AmplifyUI';
 import RequireNewPassword from '../../src/Auth/RequireNewPassword';

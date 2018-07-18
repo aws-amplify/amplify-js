@@ -1,15 +1,4 @@
-jest.mock('../../src/Categories', () => {
-    const Auth = {
-        configure() {
-            return;
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import React from 'react';
 import FederatedSignIn, { FederatedButtons } from '../../src/Auth/FederatedSignIn';
 
