@@ -1,18 +1,4 @@
-jest.mock('../../src/Categories', () => {
-    const Auth = {
-        resendSignUp() {
-            return;
-        },
-        confirmSignUp() {
-            return;
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import ConfirmSignUp from '../../src/Auth/ConfirmSignUp';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';

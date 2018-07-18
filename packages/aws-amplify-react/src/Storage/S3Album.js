@@ -14,7 +14,7 @@
 import React, { Component } from 'react';
 
 import { ClientDevice, JS, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-import { Storage } from '../Categories';
+import Storage from '@aws-amplify/storage';
 
 import { Picker } from '../Widget';
 import AmplifyTheme from '../AmplifyTheme';
