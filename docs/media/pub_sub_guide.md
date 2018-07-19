@@ -4,7 +4,7 @@
 
 The AWS Amplify PubSub category provides connectivity with cloud-based message-oriented middleware. You can use PubSub to pass messages between your app instances and your app's backend creating real-time interactive experiences.
 
-PubSub is available with **AWS IoT** and **Generic MQTT Over WebSocket Providers**. 
+PubSub is available with **AWS IoT** and **Generic MQTT Over WebSocket Providers**.
 
 With AWS IoT, AWS Amplify's PubSub automatically signs your HTTP requests when sending your messages.
 {: .callout .callout--info}
@@ -13,13 +13,13 @@ With AWS IoT, AWS Amplify's PubSub automatically signs your HTTP requests when s
 
 ### AWS IoT
 
-When used with `AwsIOTProvider`, PubSub is capable of signing request according to [Signature Version 4](https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
+When used with `AwsIOTProvider`, PubSub is capable of signing request according to [Signature Version 4](https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).
 
 To use in your app, import `AWSIoTProvider`:
 
 ```js
 import Amplify, { PubSub } from 'aws-amplify';
-import { AWSIoTProvider } from 'aws-amplify/lib/PubSub/Providers';
+import { AWSIoTProvider } from '@aws-amplify/pubsub/lib/Providers';
 ```
 
 Define your endpoint and region in your configuration:
@@ -34,7 +34,7 @@ Amplify.addPluggable(new AWSIoTProvider({
 
 **Create IAM policies for AWS IoT**
 
-To use PubSub with AWS IoT, you will need to create the necessary IAM policies in the AWS IoT Console, and attach them to your Amazon Cognito Identity. 
+To use PubSub with AWS IoT, you will need to create the necessary IAM policies in the AWS IoT Console, and attach them to your Amazon Cognito Identity.
 
 Go to IoT Core and choose *Secure* from the left navigation pane. Then navigate to *Create Policy*. The following `myIOTPolicy` policy will allow full access to all the topics.
 
@@ -43,9 +43,9 @@ Go to IoT Core and choose *Secure* from the left navigation pane. Then navigate 
 
 **Attach your policy to your Amazon Cognito Identity**
 
-The next step is attaching the policy to your *Cognito Identity*. 
+The next step is attaching the policy to your *Cognito Identity*.
 
-You can retrieve *Cognito Identity Id* from your `aws-exports.js` file in `aws_cognito_identity_pool_id` property. 
+You can retrieve *Cognito Identity Id* from your `aws-exports.js` file in `aws_cognito_identity_pool_id` property.
 
 Alternatively, you can retrieve the `Cognito Identity Id` of a logged in user with Auth Module:
 ```js
@@ -95,9 +95,9 @@ PubSub.subscribe('myTopic').subscribe({
 
 Following events will be triggered with `subscribe()`
 
-Event | Description 
+Event | Description
 `next` | Triggered every time a message is successfully received for the topic
-`error` | Triggered when subscription attempt fails 
+`error` | Triggered when subscription attempt fails
 `close` | Triggered when you unsubscribe from the topic
 
 ### Subscribe to multiple topics
