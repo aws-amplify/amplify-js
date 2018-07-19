@@ -178,22 +178,22 @@ export class ListPage implements OnInit {
     };
 
     // Create the modal
-    // this.modal = await this.modalController.create({
-    //   component: ListItemModal,
-    //   componentProps: props
-    // });
+    this.modal = await this.modalController.create({
+      component: ListItemModal,
+      componentProps: props
+    });
     // Listen for the modal to be closed...
-    // this.modal.onDidDismiss((result) => {
-    //   if (result.data.newItem){
-    //     // ...and add a new item if modal passes back newItem
-    //     result.data.itemList.items.push(result.data.newItem)
-    //   } else if (result.data.editItem){
-    //     // ...or splice the items array if the modal passes back editItem
-    //     result.data.itemList.items[i] = result.data.editItem
-    //   }
-    //   this.save(result.data.itemList);
-    // })
-    // return this.modal.present()
+    this.modal.onDidDismiss((result) => {
+      if (result.data.newItem){
+        // ...and add a new item if modal passes back newItem
+        result.data.itemList.items.push(result.data.newItem)
+      } else if (result.data.editItem){
+        // ...or splice the items array if the modal passes back editItem
+        result.data.itemList.items[i] = result.data.editItem
+      }
+      this.save(result.data.itemList);
+    })
+    return this.modal.present()
   }
 
   delete(i){
@@ -652,7 +652,7 @@ $ awsmobile init
  
 You should now see the *awsmobilejs* directory in your project root, as well as an aws-exports.js file in your */src* directory. The aws-exports file stores all of your project’s AWS related resource configuration. Again, do NOT check in the awsmobilejs directory or aws-exports file into source control.
 
-Since we are using typescript, change the name of the aws-exports file to *aws-exports.ts*.
+Since we are using TypeScript, change the name of the aws-exports file to *aws-exports.ts*.
 
 AWS resources for your application can be generated using:
 ```bash
@@ -710,7 +710,7 @@ The AWS Amplify library provides a mechanism for your front-end application to i
 
 AWS Amplify analytics category work with Amazon Pinpoint, a service that allows you to collect data about user actions in your app and create targeted campaigns.  
 
-To add Pinpoint analytics to your application, first, you need to import AWS Amplify library and the configuration file into your app. 
+To add Pinpoint analytics to your application, first, you need to import the AWS Amplify library and the configuration file into your app. 
 
 Open *src/main.ts* and make the following changes, which will use the *aws-exports.js* config file that the AWS Mobile CLI created in your application directory.
 
@@ -751,7 +751,7 @@ awsmobile push
 ### Enable auth UI 
 
 Next, you need to make the AWS Amplify's authentication components available to your application. To do that, you need to import 
-*AmplifyService*, *AmplifyAngularModule*  and  *AmplifyIonicModule*(more on that in a moment) modules in your *home* module which is declared in *src/app/pages/home/home.module.ts*:
+*AmplifyService*, *AmplifyAngularModule*  and *AmplifyIonicModule* (more on that in a moment) modules in your *home* module which is declared in *src/app/pages/home/home.module.ts*:
 
 ```js
 import { IonicModule } from '@ionic/angular';
@@ -796,7 +796,7 @@ This component will render UI elements and provide functionality for user signup
 To change the look and feel of your UI components, you can update *src/global.scss* file which includes global style rules for your app. For now, import default styles from *aws-amplify-angular* module to make sure that  your authenticator component (and other AWS Amplify UI components) are styled properly:
 
 ```js
-@import './node_modules/aws-amplify-angular/theme.scss'
+@import './node_modules/aws-amplify-angular/theme.scss';
 ```
 ### Enable components in home module
 
@@ -946,7 +946,7 @@ You can now add columns to the table.
 ? Would you like to add another column No
 
 Before you create the database, you must specify how items in your table are uniquely organized. This is done by specifying a Primary key. The primary key uniquely identifies each item in the table, so that no two items can have the same key.
-This could be and individual column or a combination that has "primary key" and a "sort key".
+This could be an individual column or a combination that has "primary key" and a "sort key".
 To learn more about primary key:
 http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey
 
