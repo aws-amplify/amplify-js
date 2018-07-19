@@ -256,7 +256,7 @@ let myAppConfig = {
   'aws_appsync_authenticationType': 'API_KEY',
   'aws_appsync_apiKey': 'da2-xxxxxxxxxxxxxxxxxxxxxxxxxx',
   // ...
-}
+};
 
 Amplify.configure(myAppConfig);
 ```
