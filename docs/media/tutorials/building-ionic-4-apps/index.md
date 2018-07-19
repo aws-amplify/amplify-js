@@ -6,14 +6,14 @@ Overview
 
 In this tutorial, you will create an Ionic 4 ‘ToDo List’ app that connects to a serverless backend via the AWS Amplify Library.
 
-The AWS Amplify and the CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with Ionic and AWS Amplify.
+The AWS Amplify library and the CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with Ionic and AWS Amplify.
 
 
 **By completing this tutorial, you will be able to;**
 - bootstrap an Ionic 4 app with Ionic CLI and start working with the code
-- implement AWS Amplify library into your app
-- manage your backend resources with AWS Mobile CLI
-- utilize AWS services such as Amazon Cognito, Amazon DynamoDB and AWS Lambda
+- implement the AWS Amplify library into your app
+- manage your backend resources with the AWS Mobile CLI
+- utilize AWS services such as Amazon Cognito, Amazon DynamoDB, and AWS Lambda
 
 ## Prerequisites
 
@@ -33,14 +33,14 @@ Here is the sequence of the tutorial:
  
 # Part 1: Create an Ionic 4 App
 
-This section will introduce Ionic basics and you will learn how to boostrap a new Ionic app with Ionic CLI. In subsequent parts of the tutorial, you will add cloud functionality to the application that you will create in this section.
+This section will introduce Ionic basics and you will learn how to bootstrap a new Ionic app with the Ionic CLI. In subsequent parts of the tutorial, you will add cloud functionality to the application that you will create in this section.
 
 The source code for this section of the tutorial can be found in *tutorial-part-1* branch of the [project Github repo](https://github.com/aws-samples/aws-amplify-ionic-sample/tree/tutorial-part-1).
 {: .callout}
 
 ## What is Ionic?
 
-Ionic is a web development framework that allows JavaScript developers to create browser-based applications that run on mobile platforms such as iOS and Android. Ionic applications have the ‘look-and-feel’ of native apps, and also offer the ability (via Apache Cordova plugins) to access mobile OS features such as cameras, contact lists, etc.
+Ionic is a web development framework that allows developers to create cross-platform applications that run on mobile platforms such as iOS and Android, on the desktop using Electron.js, or in the browser as a progressive web app. Ionic applications have the ‘look-and-feel’ of native apps and also offer the ability (via Apache Cordova plugins) to access mobile OS features such as cameras, contact lists, etc.
 
 Apache Cordova is an open source mobile development platform that runs web code (HTML, CSS, and JavaScript) in a WebView wrapped in a mobile app shell.  Since it is native code, it can be distributed on the app stores just like any other mobile app and presented as an app on mobile platforms.
  
@@ -63,7 +63,7 @@ Ionic CLI will prompt some questions for you:
 ? Integrate your new app with Cordova to target native iOS and Android?
 ? Install the free Ionic Pro SDK and connect your app?  
 ```
-If you want your application to run as an IOS or Android application as well as a browser-based one, select ‘y’ when asked if you want to integrate with Cordova. You will then be asked if you want to install the Ionic Pro SDK; you can select ‘y’ is you wish, but it is not necessary for this tutorial.
+If you want your application to run as an iOS or Android application as well as a browser-based one, select ‘y’ when asked if you want to integrate with Cordova. You will then be asked if you want to install the Ionic Pro SDK; you can select ‘y’ if you wish, but it is not necessary for this tutorial.
 
 To confirm that you're using the correct version of Ionic, navigate into the project directory and execute 'ionic info'. The Ionic Framework value should be greater than 4.
 {: .callout}
@@ -73,9 +73,9 @@ To confirm that you're using the correct version of Ionic, navigate into the pro
 
 Previous versions of Ionic made use of the Angular framework, and Ionic 4 is no exception. Modern versions of Angular provide a component-based architecture in which the application is broken up into units called components, which are in turn executed in the context of a module. 
 
-Each component typically consists of an HTML template, a module file, a component file, an SCSS (SASS stylesheet) file and a SPEC file used for testing. This form of architecture encourages developers to write code that is relatively easy to understand, extend and debug.
+Each component typically consists of an HTML template, a module file, a component file, an SCSS (SASS stylesheet) file and a SPEC file used for testing. This form of architecture encourages developers to write code that is relatively easy to understand, extend, and debug.
 
-In the ‘tabs’ ionic starter that you've created, each of the three tabs is defined by its own module, which in turn consists of one component each.
+In the ‘tabs’ Ionic starter that you've created, each of the three tabs is defined by its own module, which in turn consists of one component each.
  
 If your application grows much larger, you can refactor it into multiple components per page. For example, in this tutorial, you will be adding a component to one of the modules which define the behavior and appearance of a modal dialog for adding and editing items.
  
@@ -119,7 +119,7 @@ export class ToDoItem {
   }
 }
 ```
-This file defines the data model for *ToDoList* and *ToDoItem*.  The list is a list of items, and each item has an ID, title, and completed flag. 
+This file defines the data model for *ToDoList* and *ToDoItem*.  The list is a list of items and each item has an ID, title, and status flag.
 
 ### Create a list component
 
@@ -134,7 +134,7 @@ import { ToDoItem, ToDoList } from '../../classes/item.class';
 @Component({
   selector: 'app-list-page',
   templateUrl: 'list.page.html',
-  styleUrls: ['home.page.scss']
+  styleUrls: ['list.page.scss']
 })
 export class ListPage implements OnInit {
 
@@ -316,7 +316,7 @@ Add a path for your list module in by adding the ‘list’ route definition und
 Import the components:
 ```js
 import { ListPage } from '../list/list.page';
-import { AuthGuardService } from '../../services/auth-route-guard'
+import { AuthGuardService } from '../../services/auth-route-guard';
 ```
 
 Add the path configuration by replacing the 'AboutPage' entry in the children array with:
@@ -343,7 +343,7 @@ Modify the HTML page *src/app/pages/tabs/tabs.page.html* by adding a new 'List' 
 
 ### Add an authorization service
 
-The *List* tab will only be shown to signed in users, so you need logic to control its behavior. This is where *services* comes in. Create a file under *src/app/services/auth-route-guard.ts* that will have the service code:
+The *List* tab will only be shown to signed in users, so you need logic to control its behavior. This is where *services* come in. Create a file under *src/app/services/auth-route-guard.ts* that will have the service code:
 
 ```js
 import { Injectable } from '@angular/core';
@@ -371,7 +371,7 @@ export class AuthGuardService implements CanActivate {
 }
 ```
 
-You’ll note that your app doesn’t currently provide a way for users to login or signup. You will address this later by integration authentication with AWS Amplify, but for now, you can simulate an authentication logic using Ionic’s ‘Events’ service:
+You’ll note that your app doesn’t currently provide a way for users to login or signup. You will address this later by integration authentication with AWS Amplify, but for now, you can simulate authentication logic using Ionic’s ‘Events’ service:
 
 Replace *src/app/pages/home/home.page.ts* with the following code to declare your temporary auth logic:
 
@@ -416,7 +416,7 @@ export class HomePage implements AfterContentInit{
 
 ### Add buttons to the homepage
 
-To trigger user authorization, you will need action buttons. Add the following code to *src/app/pages/home/home.page.html* to render buttons in the homepage:
+To trigger user authorization, you will need action buttons. Replace  *src/app/pages/home/home.page.html* with the following code to render buttons in the homepage:
 
 ```html
 <ion-header>
@@ -431,15 +431,16 @@ To trigger user authorization, you will need action buttons. Add the following c
 </ion-content>
 ```
 
-### Add auth service to tabs module
+### Add auth service and list module to tabs module
 
 The tabs module will use your custom authorization module `AuthGuardService` to control the user interface. 
 
 **In *src/app/pages/tabs/tabs.module.ts* file:**
 
-import `AuthGuardService` :
+import `AuthGuardService` and `ListModule` :
 ```js
- import { AuthGuardService } from '../../services/auth-route-guard'
+ import { AuthGuardService } from '../../services/auth-route-guard';
+ import { ListModule } from '../list/list.module';
 ```
 
 And add *AuthGuardService* as a provider in module definition:
