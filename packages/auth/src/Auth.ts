@@ -1096,8 +1096,7 @@ export default class AuthClass {
     /**
      * For federated login
      * @param {String} provider - federation login provider
-     * @param {FederatedResponse} response - response should have the access token, the identity id (optional)
-     * and the expiration time (the universal time)
+     * @param {FederatedResponse} response - response should have the access token, the identity id (optional) and the expiration time (the universal time)
      * @param {String} user - user info
      */
     public federatedSignIn(provider: string, response: FederatedResponse, user: object) {
