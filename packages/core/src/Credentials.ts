@@ -258,17 +258,20 @@ export class Credentials {
                             info.user
                         );
                         const { provider, token, expires_at, identity_id } = info;
-                   
-                        this._storage.setItem(
-                            'aws-amplify-federatedInfo',
-                            JSON.stringify({
-                                provider, 
-                                token, 
-                                user, 
-                                expires_at, 
-                                identity_id 
-                            })
-                        );
+                        try {
+                            this._storage.setItem(
+                                'aws-amplify-federatedInfo',
+                                JSON.stringify({
+                                    provider, 
+                                    token, 
+                                    user, 
+                                    expires_at, 
+                                    identity_id 
+                                })
+                            );
+                        } catch(e) {
+                            logger.debug('Failed to put federated info into auth storage', e);
+                        }
                         if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
                             Amplify.Cache.setItem(
                                 'federatedInfo', 
