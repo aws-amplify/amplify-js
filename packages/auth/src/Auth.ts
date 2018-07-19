@@ -88,7 +88,8 @@ export default class AuthClass {
             identityPoolId, 
             mandatorySignIn,
             refreshHandlers,
-            storage
+            storage,
+            identityPoolRegion
         } = this._config;
 
         if (!this._config.storage) {
@@ -118,7 +119,7 @@ export default class AuthClass {
 
         Credentials.configure({
             mandatorySignIn,
-            region,
+            region: identityPoolRegion || region,
             userPoolId,
             identityPoolId,
             refreshHandlers,

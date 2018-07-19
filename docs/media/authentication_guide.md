@@ -77,6 +77,9 @@ Amplify.configure({
         // REQUIRED - Amazon Cognito Region
         region: 'XX-XXXX-X',
 
+        // OPTIONAL - Amazon Cognito Federated Identity Pool Region (if it's not the same as the Cognito User Pool region)
+        identityPoolRegion: 'XX-XXXX-X',
+
         // OPTIONAL - Amazon Cognito User Pool ID
         userPoolId: 'XX-XXXX-X_abcd1234',
 
