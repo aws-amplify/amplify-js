@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.3-unstable.0"></a>
+## [1.0.3-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.2...@aws-amplify/auth@1.0.3-unstable.0) (2018-07-20)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** fix issue [#1165](https://github.com/aws/aws-amplify/issues/1165) and adds an api to get current preferred mfa type ([6f8a100](https://github.com/aws/aws-amplify/commit/6f8a100))
+
+
+
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.2-unstable.1...@aws-amplify/auth@1.0.2) (2018-07-19)
 
