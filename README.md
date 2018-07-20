@@ -63,7 +63,7 @@ __Web__
 $ npm install aws-amplify --save
 ```
 
-or you can install the module you want to use individually:
+or you could install the module you want to use individually:
 ```bash
 $ npm install @aws-amplify/auth --save
 ```
@@ -256,7 +256,7 @@ let myAppConfig = {
   'aws_appsync_authenticationType': 'API_KEY',
   'aws_appsync_apiKey': 'da2-xxxxxxxxxxxxxxxxxxxxxxxxxx',
   // ...
-}
+};
 
 Amplify.configure(myAppConfig);
 ```

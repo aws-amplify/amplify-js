@@ -1154,7 +1154,7 @@ export default class CognitoUser {
         return callback(null, this.signInUserSession);
       }
 
-      if (refreshToken.getToken() == null) {
+      if (!refreshToken.getToken()) {
         return callback(new Error('Cannot retrieve a new session. Please authenticate.'), null);
       }
 
