@@ -403,6 +403,8 @@ export default class AuthClass {
 
     /**
      * get user current preferred mfa option
+     * this method doesn't work with totp, we need to deprecate it.
+     * @deprecated
      * @param {CognitoUser} user - the current user
      * @return - A promise resolves the current preferred mfa option if success
      */
@@ -418,6 +420,23 @@ export default class AuthClass {
             });
         });
     }
+
+    /**
+     * get preferred mfa method
+     * @param {CognitoUser} user - the current cognito user
+     */
+    public getPreferredMFA(user: any): Promise<string> {
+        return new Promise((res, rej) => {
+            user.getUserData((err, data) => {
+                if (err) {
+                    logger.debug('getting preferred mfa failed', err);
+                    rej('getting preferred mfa failed: ' + err);
+                }
+                const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+                res(preferredMFA);
+            });
+        });
+    }
     
     /**
      * set preferred MFA method
@@ -425,8 +444,9 @@ export default class AuthClass {
      * @param {string} mfaMethod - preferred mfa method
      * @return - A promise resolve if success
      */
-    public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
-        let smsMfaSettings = null;
+    public async setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
+        let smsMfaSettings = await this.getPreferredMFA(user) === 'SMS_MFA'?
+            { PreferredMfa : false, Enabled : false } : null;
         let totpMfaSettings = {
             PreferredMfa : false,
             Enabled : false
@@ -857,7 +877,13 @@ export default class AuthClass {
         logger.debug('Getting current user credentials');
         
         // first to check whether there is federation info in the auth storage
-        const federatedInfo = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo'));
+        let federatedInfo = null;
+        try {
+            federatedInfo = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo'));
+        } catch (e) {
+            logger.debug('failed to get or parse item aws-amplify-federatedInfo', e);
+        }
+
         if (federatedInfo) {
             // refresh the jwt token here if necessary
             return Credentials.refreshFederatedToken(federatedInfo);

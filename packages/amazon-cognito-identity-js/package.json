@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "2.0.14",
+  "version": "2.0.17-unstable.0",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -45,9 +45,8 @@
     "clean": "rimraf lib es",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
-    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack -p dist/amazon-cognito-identity.js",
-    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack -p dist/amazon-cognito-identity.min.js",
-    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build:umd": "webpack",
+    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd",
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
     "test": "eslint src",

@@ -13,7 +13,6 @@
 
 import { CacheConfig, CacheItem, CacheItemOptions } from '../types';
 
-
 /**
 * Default cache config
 */
@@ -24,7 +23,7 @@ export const defaultConfig: CacheConfig = {
     defaultTTL: 259200000, // about 3 days
     defaultPriority: 5,
     warningThreshold: 0.8,
-    storage: (typeof window === 'undefined') ? null : window.localStorage
+    storage: window.localStorage
 };
 
 /**
