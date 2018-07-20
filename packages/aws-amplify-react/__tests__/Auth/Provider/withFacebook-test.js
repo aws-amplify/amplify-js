@@ -1,18 +1,4 @@
-jest.mock('../../../src/Categories', () => {
-    const Auth = {
-        federatedSignIn() {
-            return;
-        },
-        currentAuthenticatedUser() {
-            return;
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import React, { Component } from 'react';
 import withFacebook, { FacebookButton } from '../../../src/Auth/Provider/withFacebook';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
