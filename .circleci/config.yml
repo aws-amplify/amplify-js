@@ -131,6 +131,11 @@ workflows:
           requires:
             - build
       - integration_test_auth:
+          filters:
+            branches:
+              only:
+                - release
+                - master
           requires:
             - build
       - deploy:

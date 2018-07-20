@@ -877,7 +877,13 @@ export default class AuthClass {
         logger.debug('Getting current user credentials');
         
         // first to check whether there is federation info in the auth storage
-        const federatedInfo = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo'));
+        let federatedInfo = null;
+        try {
+            federatedInfo = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo'));
+        } catch (e) {
+            logger.debug('failed to get or parse item aws-amplify-federatedInfo', e);
+        }
+
         if (federatedInfo) {
             // refresh the jwt token here if necessary
             return Credentials.refreshFederatedToken(federatedInfo);

@@ -14,7 +14,7 @@
 let dataMemory = {};
 
 /** @class */
-class MemoryStorage {
+export class MemoryStorage {
 
   /**
    * This is used to set a specific item in storage
