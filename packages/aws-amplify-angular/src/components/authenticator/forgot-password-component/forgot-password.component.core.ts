@@ -68,10 +68,9 @@ export class ForgotPasswordComponentCore {
   username: string;
   code: string;
   password: string;
-
   errorMessage: string;
-
   amplifyService: AmplifyService;
+  @Input() hide: string[] = [];
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
@@ -81,7 +80,7 @@ export class ForgotPasswordComponentCore {
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'forgotPassword';
-    this._hide = data.hide ? data.hide : [];
+    this._hide = data.hide ? data.hide : this.hide;
     this.username = data.authState.user? data.authState.user.username || '' : '';
   }
 

@@ -43,6 +43,7 @@ export class ConfirmSignInComponentCore {
   code: string;
   errorMessage: string;
   amplifyService: AmplifyService;
+  @Input() hide: string[] = [];
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
@@ -50,7 +51,7 @@ export class ConfirmSignInComponentCore {
 
   @Input()
   set data(data: any) {
-    this._hide = data.hide;
+    this._hide = data.hide ? data.hide : this.hide;
     this._authState = data.authState;
     this._show = data.authState.state === 'confirmSignIn';
   }

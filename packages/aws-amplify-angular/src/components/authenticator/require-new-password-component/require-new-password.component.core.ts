@@ -47,6 +47,7 @@ export class RequireNewPasswordComponentCore {
   password: string;
   errorMessage: string;
   amplifyService: AmplifyService;
+  @Input() hide: string[] = [];
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
@@ -62,7 +63,7 @@ export class RequireNewPasswordComponentCore {
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'requireNewPassword';
-    this._hide = data.hide;
+    this._hide = data.hide ? data.hide : this.hide;
   }
 
   shouldHide(comp) {

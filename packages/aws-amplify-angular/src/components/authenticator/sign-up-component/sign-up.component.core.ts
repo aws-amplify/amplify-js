@@ -85,6 +85,7 @@ export class SignUpComponentCore {
   phone_number: string;
   errorMessage: string;
   amplifyService: AmplifyService;
+  @Input() hide: string[] = [];
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
@@ -105,6 +106,7 @@ export class SignUpComponentCore {
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'signUp';
+    this._hide = data.hide ? data.hide : this.hide;
   }
 
   setUsername(username: string) {
