@@ -732,14 +732,14 @@ Auth.setPreferredMFA(user, 'SMS');
 Auth.setPreferredMFA(user, 'NOMFA');
 ```
 
-#### get current preferred MFA type
+#### Retrieving Current Preferred MFA Type
 
-You can get current preferred MFA type by:
+You can get current preferred MFA type in your code:
 ```js
 import { Auth } from 'aws-amplify';
 
 Auth.getPreferredMFA(user).then((data) => {
-    console.log('current prefered mfa type is: ' + data);
+    console.log('Current prefered MFA type is: ' + data);
 })
 ```
 
