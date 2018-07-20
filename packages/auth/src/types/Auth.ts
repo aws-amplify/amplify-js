@@ -45,8 +45,8 @@ export interface AuthOptions {
 }
 
 /**
-* Details for multi-factor authentication
-*/
+ * Details for multi-factor authentication
+ */
 export interface MfaRequiredDetails {
     challengeName: any,
     challengeParameters: any
