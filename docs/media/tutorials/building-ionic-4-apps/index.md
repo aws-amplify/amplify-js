@@ -322,7 +322,7 @@ import { ListPage } from '../list/list.page';
 import { AuthGuardService } from '../../services/auth-route-guard';
 ```
 
-Add the path configuration by replacing the 'AboutPage' entry in the children array with:
+Add the path configuration by adding a new item to the children array:
 ```js
 //...
        {
@@ -650,9 +650,21 @@ Run the following command from your project folder:
 $ awsmobile init
 ```
  
-You should now see the *awsmobilejs* directory in your project root, as well as an aws-exports.js file in your */src* directory. The aws-exports file stores all of your project’s AWS related resource configuration. Again, do NOT check in the awsmobilejs directory or aws-exports file into source control.
+The CLI will ask you the name of your project directories to replace the configuration file *aws-exports.js*, and integrate with your run and build commands:
+```bash
+Please tell us about your project:
+? Where is your project's source directory:  src
+? Where is your project's distribution directory that stores build artifacts:  dist
+? What is your project's build command:  npm run-script build
+? What is your project's start command for local test run:  npm run-script start
+```
+
+After answering the prompt, you should now see the *awsmobilejs* directory in your project root, as well as an *aws-exports.js* file in your */src* directory. The *aws-exports*file stores all of your project’s AWS related resource configuration. Again, do NOT check in the *awsmobilejs* directory or *aws-exports* file into source control.
 
 Since we are using TypeScript, change the name of the aws-exports file to *aws-exports.ts*.
+
+Please note that *aws-exports.js* (or *aws-exports.ts*. if you are using TypeScript) file should be located in the root of your source directory. If your source directory is different from */src* and you did not enter the folder name in the previous prompt, copy your *aws-exports.js* file to your source directory. You can find the updated copy of *aws-exports.js* file under *awsmobilejs/#current-backend-info/* directory.
+{: .callout .callout--info}
 
 AWS resources for your application can be generated using:
 ```bash
