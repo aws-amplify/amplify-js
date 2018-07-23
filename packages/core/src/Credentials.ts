@@ -14,6 +14,8 @@ export class Credentials {
     private _credentials_source;
     private _gettingCredPromise = null;
     private _refreshHandlers = {};
+    private _storage;
+    private _storageSync;
 
     constructor(config) {
         this.configure(config);
@@ -34,6 +36,16 @@ export class Credentials {
         // then we can merge the provided handlers with the current handlers.
         if (refreshHandlers) {
             this._refreshHandlers = { ...this._refreshHandlers,  ...refreshHandlers };
+        }
+
+        this._storage = this._config.storage;
+        if (!this._storage) {
+            this._storage = new StorageHelper().getStorage();
+        }
+        
+        this._storageSync = Promise.resolve();
+        if (typeof this._storage['sync'] === 'function') {
+            this._storageSync = this._storage['sync']();
         }
 
         return this._config;
@@ -139,7 +151,10 @@ export class Credentials {
             logger.debug('No Cognito Federated Identity pool provided');
             return Promise.reject('No Cognito Federated Identity pool provided');
         }
-        const identityId = await StorageHelper.getItem('CognitoIdentityId-' + identityPoolId);
+        
+        await this._storageSync;
+        const identityId = this._storage.getItem('CognitoIdentityId-' + identityPoolId);
+        
         const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
@@ -243,6 +258,20 @@ export class Credentials {
                             info.user
                         );
                         const { provider, token, expires_at, identity_id } = info;
+                        try {
+                            this._storage.setItem(
+                                'aws-amplify-federatedInfo',
+                                JSON.stringify({
+                                    provider, 
+                                    token, 
+                                    user, 
+                                    expires_at, 
+                                    identity_id 
+                                })
+                            );
+                        } catch(e) {
+                            logger.debug('Failed to put federated info into auth storage', e);
+                        }
                         if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
                             Amplify.Cache.setItem(
                                 'federatedInfo', 
@@ -261,7 +290,8 @@ export class Credentials {
                     }
                     if (source === 'guest') {
                         try {
-                            await StorageHelper.setItem(
+                            await this._storageSync;
+                            this._storage.setItem(
                                 'CognitoIdentityId-' + identityPoolId, 
                                 credentials.identityId
                             );
@@ -306,6 +336,7 @@ export class Credentials {
         }
         this._credentials = null;
         this._credentials_source = null;
+        this._storage.removeItem('aws-amplify-federatedInfo');
 
         if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
             await Amplify.Cache.removeItem('federatedInfo');

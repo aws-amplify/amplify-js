@@ -4,10 +4,6 @@ import { authDecorator }  from '../../providers/auth.decorator';
 
 describe('AuthDecorator', () => {
 
-  beforeAll(() => {
-    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-  })
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [authDecorator]

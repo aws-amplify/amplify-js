@@ -21,8 +21,7 @@ import {
     JS,
     Parser,
     Credentials,
-    StorageHelper,
-    Platform,
+    StorageHelper
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import {
@@ -52,6 +51,8 @@ export default class AuthClass {
     private user:any = null;
 
     private _gettingCredPromise = null;
+    private _storage;
+    private _storageSync;
 
     /**
      * Initialize Auth with AWS configurations
@@ -86,38 +87,43 @@ export default class AuthClass {
             region, 
             identityPoolId, 
             mandatorySignIn,
-            refreshHandlers
+            refreshHandlers,
+            storage,
+            identityPoolRegion
         } = this._config;
+
+        if (!this._config.storage) {
+            // backward compatbility
+            if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
+            else {
+                this._storage = new StorageHelper().getStorage();
+            }
+        } else {
+            this._storage = this._config.storage;
+        }
+
+        this._storageSync = Promise.resolve();
+        if (typeof this._storage['sync'] === 'function') {
+            this._storageSync = this._storage['sync']();
+        }
 
         if (userPoolId) {
             const userPoolData: ICognitoUserPoolData = {
                 UserPoolId: userPoolId,
                 ClientId: userPoolWebClientId,
             };
-            if (cookieStorage) {
-                userPoolData.Storage = new CookieStorage(cookieStorage);
-            }
+            userPoolData.Storage = this._storage;
+            
             this.userPool = new CognitoUserPool(userPoolData);
-            if (Platform.isReactNative) {
-                const that = this;
-                this._userPoolStorageSync = new Promise((resolve, reject) => {
-                    this.userPool.storage.sync((err, data) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(data);
-                        }
-                    });
-                });
-            }
         }
 
         Credentials.configure({
             mandatorySignIn,
-            region,
+            region: identityPoolRegion || region,
             userPoolId,
             identityPoolId,
-            refreshHandlers
+            refreshHandlers,
+            storage: this._storage
         });
 
         // initiailize cognitoauth client if hosted ui options provided
@@ -133,7 +139,7 @@ export default class AuthClass {
                     RedirectUriSignIn: oauth.redirectSignIn,
                     RedirectUriSignOut: oauth.redirectSignOut,
                     ResponseType: oauth.responseType,
-                    Storage: this.userPool.storage
+                    Storage: this._storage
                 },
                 oauth.options
             );
@@ -398,6 +404,8 @@ export default class AuthClass {
 
     /**
      * get user current preferred mfa option
+     * this method doesn't work with totp, we need to deprecate it.
+     * @deprecated
      * @param {CognitoUser} user - the current user
      * @return - A promise resolves the current preferred mfa option if success
      */
@@ -413,6 +421,23 @@ export default class AuthClass {
             });
         });
     }
+
+    /**
+     * get preferred mfa method
+     * @param {CognitoUser} user - the current cognito user
+     */
+    public getPreferredMFA(user: any): Promise<string> {
+        return new Promise((res, rej) => {
+            user.getUserData((err, data) => {
+                if (err) {
+                    logger.debug('getting preferred mfa failed', err);
+                    rej('getting preferred mfa failed: ' + err);
+                }
+                const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+                res(preferredMFA);
+            });
+        });
+    }
     
     /**
      * set preferred MFA method
@@ -420,8 +445,9 @@ export default class AuthClass {
      * @param {string} mfaMethod - preferred mfa method
      * @return - A promise resolve if success
      */
-    public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
-        let smsMfaSettings = null;
+    public async setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
+        let smsMfaSettings = await this.getPreferredMFA(user) === 'SMS_MFA'?
+            { PreferredMfa : false, Enabled : false } : null;
         let totpMfaSettings = {
             PreferredMfa : false,
             Enabled : false
@@ -738,39 +764,20 @@ export default class AuthClass {
      */
     public currentUserPoolUser(): Promise<any> {
         if (!this.userPool) { return Promise.reject('No userPool'); }
-        let user = null;
-        if (Platform.isReactNative) {
-            const that = this;
-            return this.getSyncedUser().then(user => {
-                if (!user) { return Promise.reject('No current user in userPool'); }
-                return new Promise((resolve, reject) => {
-                    user.getSession(function(err, session) {
-                        if (err) { reject(err); } else { resolve(user); }
-                    });
-                });
-            });
-        } else {
-            user = this.userPool.getCurrentUser();
-            if (!user) { return Promise.reject('No current user in userPool'); }
-            return new Promise((resolve, reject) => {
-                user.getSession(function(err, session) {
-                    if (err) { reject(err); } else { resolve(user); }
-                });
-            });
-        }
-    }
-
-    /**
-     * Return the current user after synchornizing AsyncStorage
-     * @return - A promise with the current authenticated user
-     **/
-    private getSyncedUser(): Promise<any> {
         const that = this;
-        return (this._userPoolStorageSync || Promise.resolve()).then(result => {
-            if (!that.userPool) {
-                return Promise.reject('No userPool');
-            }
-            return that.userPool.getCurrentUser();
+        return new Promise((res, rej) => {
+            this._storageSync.then(() => {
+                const user = that.userPool.getCurrentUser();
+                if (!user) { 
+                    logger.debug('Failed to get user from user pool');
+                    rej('No current user');
+                    return;
+                }
+
+                user.getSession(function(err, session) {
+                    if (err) { rej(err); } else { res(user); }
+                });
+            });
         });
     }
 
@@ -782,9 +789,9 @@ export default class AuthClass {
         logger.debug('getting current authenticted user');
         let federatedUser = null;
         try {
-            federatedUser = await Cache.getItem('federatedInfo').user;
+            federatedUser = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo')).user;
         } catch (e) {
-            logger.debug('cannot load federated user from cache');
+            logger.debug('cannot load federated user from auth storage');
         }
         
         if (federatedUser) {
@@ -816,26 +823,26 @@ export default class AuthClass {
      * @return - A promise resolves to session object if success
      */
     public currentSession() : Promise<any> {
-        let user:any;
         const that = this;
         logger.debug('Getting current session');
         if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (Platform.isReactNative) {
-            return this.getSyncedUser().then(user => {
-                if (!user) { 
-                    logger.debug('Failed to get user from user pool');
-                    return Promise.reject('No current user'); 
-                }
-                return that.userSession(user);
+
+        return new Promise((res, rej) => {
+            that.currentUserPoolUser().then(user => {
+                that.userSession(user).then(session => {
+                    res(session);
+                    return;
+                }).catch(e => {
+                    logger.debug('Failed to get the current session', e);
+                    rej(e);
+                    return;
+                });
+            }).catch(e => {
+                logger.debug('Failed to get the current user', e);
+                rej(e);
+                return;
             });
-        } else {
-            user = this.userPool.getCurrentUser();
-            if (!user) {
-                logger.debug('Failed to get user from user pool');
-                return Promise.reject('No current user'); 
-            }
-            return this.userSession(user);
-        }
+        });
     }
 
     /**
@@ -844,6 +851,10 @@ export default class AuthClass {
      * @return - A promise resolves to the session
      */
     public userSession(user) : Promise<any> {
+        if (!user) {
+            logger.debug('the user is null');
+            return Promise.reject('Failed to get the session because the user is empty');
+        }
         return new Promise((resolve, reject) => {
             logger.debug('Getting the session from this user:', user);
             user.getSession(function(err, session) {
@@ -852,22 +863,7 @@ export default class AuthClass {
                     reject(err); 
                 } else {
                     logger.debug('Succeed to get the user session', session);
-                    // check if session is expired
-                    if (!session.isValid()) {
-                        const refreshToken = session.getRefreshToken();
-                        logger.debug('Session is not valid, refreshing session with refreshToken', refreshToken);
-                        user.refreshSession(refreshToken, (err, newSession) => {
-                            if (err) {
-                                logger.debug('Refresh Cognito Session failed', err);
-                                reject(err);
-                            }
-                            logger.debug('Refresh Cognito Session success', newSession);
-                            resolve(newSession);
-                        });
-                    } else {
-                        logger.debug('Session is valid, directly return this session');
-                        resolve(session); 
-                    }
+                    resolve(session); 
                 }
             });
         });
@@ -880,40 +876,27 @@ export default class AuthClass {
     public currentUserCredentials() {
         const that = this;
         logger.debug('Getting current user credentials');
-        if (Platform.isReactNative) {
-            // asyncstorage
-            return Cache.getItem('federatedInfo')
-                .then((federatedInfo) => {
-                    if (federatedInfo) {
-                        // refresh the jwt token here if necessary
-                        return Credentials.refreshFederatedToken(federatedInfo);
-                    } else {
-                        return that.currentSession()
-                            .then(session => {
-                                return Credentials.set(session, 'session');
-                            }).catch((error) => {
-                                return Credentials.set(null, 'guest');
-                            });
-                    }
-                }).catch((error) => {
-                    return Promise.reject(error);
-                });
+        
+        // first to check whether there is federation info in the auth storage
+        let federatedInfo = null;
+        try {
+            federatedInfo = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo'));
+        } catch (e) {
+            logger.debug('failed to get or parse item aws-amplify-federatedInfo', e);
+        }
+
+        if (federatedInfo) {
+            // refresh the jwt token here if necessary
+            return Credentials.refreshFederatedToken(federatedInfo);
         } else {
-            // first to check whether there is federation info in the local storage
-            const federatedInfo = Cache.getItem('federatedInfo');
-            if (federatedInfo) {
-                // refresh the jwt token here if necessary
-                return Credentials.refreshFederatedToken(federatedInfo);
-            } else {
-                return this.currentSession()
-                    .then(session => {
-                        logger.debug('getting session success', session);
-                        return Credentials.set(session, 'session');
-                    }).catch((error) => {
-                        logger.debug('getting session failed', error);
-                        return Credentials.set(null, 'guest');
-                    });
-            }
+            return this.currentSession()
+                .then(session => {
+                    logger.debug('getting session success', session);
+                    return Credentials.set(session, 'session');
+                }).catch((error) => {
+                    logger.debug('getting session failed', error);
+                    return Credentials.set(null, 'guest');
+                });
         }
     }
 
@@ -1191,11 +1174,10 @@ export default class AuthClass {
             Username: username,
             Pool: this.userPool,
         };
+        userData.Storage = this._storage;
 
-        const { cookieStorage, authenticationFlowType } = this._config;
-        if (cookieStorage) {
-            userData.Storage = new CookieStorage(cookieStorage);
-        }
+        const { authenticationFlowType } = this._config;
+        
         const user = new CognitoUser(userData);
         if (authenticationFlowType) {
             user.setAuthenticationFlowType(authenticationFlowType);

@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
- import { ICookieStorageData } from "amazon-cognito-identity-js";
+ import { ICookieStorageData, ICognitoStorage } from "amazon-cognito-identity-js";
 
 /**
 * Parameters for user sign up
@@ -22,9 +22,15 @@ export interface SignUpParams {
     SignupAttributes?: Object;
 }
 
+export interface AuthCache {
+    setItem(),
+    getItem(),
+    removeItem()
+}
+
 /**
-* Auth instance options
-*/
+ * Auth instance options
+ */
 export interface AuthOptions {
     userPoolId: string,
     userPoolWebClientId: string,
@@ -34,12 +40,14 @@ export interface AuthOptions {
     cookieStorage?: ICookieStorageData,
     oauth?: OAuth,
     refreshHandlers?: object,
-    authenticationFlowType?: string
+    storage?: ICognitoStorage,
+    authenticationFlowType?: string,
+    identityPoolRegion?: string
 }
 
 /**
-* Details for multi-factor authentication
-*/
+ * Details for multi-factor authentication
+ */
 export interface MfaRequiredDetails {
     challengeName: any,
     challengeParameters: any
