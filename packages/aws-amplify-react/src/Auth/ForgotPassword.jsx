@@ -12,7 +12,9 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -41,6 +43,9 @@ export default class ForgotPassword extends AuthPiece {
 
     send() {
         const { username } = this.inputs;
+        if (!Auth || typeof Auth.forgotPassword !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.forgotPassword(username)
             .then(data => {
                 logger.debug(data)
@@ -51,6 +56,9 @@ export default class ForgotPassword extends AuthPiece {
 
     submit() {
         const { username, code, password } = this.inputs;
+        if (!Auth || typeof Auth.forgotPasswordSubmit !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.forgotPasswordSubmit(username, code, password)
             .then(data => {
                 logger.debug(data);

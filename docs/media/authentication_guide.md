@@ -77,6 +77,10 @@ Amplify.configure({
         // REQUIRED - Amazon Cognito Region
         region: 'XX-XXXX-X',
 
+        // OPTIONAL - Amazon Cognito Federated Identity Pool Region 
+        // Required only if it's different from Amazon Cognito Region
+        identityPoolRegion: 'XX-XXXX-X',
+
         // OPTIONAL - Amazon Cognito User Pool ID
         userPoolId: 'XX-XXXX-X_abcd1234',
 
@@ -97,7 +101,11 @@ Amplify.configure({
         // OPTIONAL - Cookie secure flag
             secure: true
         },
-    // OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
+
+        // OPTIONAL - customized storage object
+        storage: new MyStorage(),
+        
+        // OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
         authenticationFlowType: 'USER_PASSWORD_AUTH'
     }
 });
@@ -228,7 +236,31 @@ let session = Auth.currentSession();
 
 **When using Authentication with AWS Amplify, you don't need to refresh Amazon Cognito tokens manually. The tokens are automatically refreshed by the library when necessary.**
 
-If you are using `amazon-cognito-identity-js` package directly in your app, you need to monitor token expiration and refresh your tokens in your code. Following code sample shows how to refresh tokens:
+Security Tokens like *IdToken* or *AccessToken* are stored in *localStorage* for the browser and in *AsyncStorage* for React Native. If you want to store those tokens in a more secure place or you are using Amplify in server side, then you can provide your own `storage` object to store those tokens. 
+
+For example:
+```ts
+class MyStorage {
+    // set item with the key
+    static setItem(key: string, value: string): string;
+    // get item with the key
+    static getItem(key: string): string;
+    // remove item with the key
+    static removeItem(key: string): void;
+    // clear out the storage
+    static clear(): void;
+    // If the storage operations are async(i.e AsyncStorage)
+    // Then you need to sync those items into the memory in this method
+    static sync(): Promise<void>;
+}
+
+// tell Auth to use your storage object
+Auth.configure({
+    storage: MyStorage
+});
+```
+
+If you are using `amazon-cognito-identity-js` package directly in your app (instead of using it with AWS Amplify Authentication module), you need to monitor token expiration and refresh your tokens in your code. Following code sample shows how to refresh tokens:
 
 ```js
 var data = { UserPoolId : 'us-east-1_resgd', ClientId : 'xyz' };
@@ -258,7 +290,6 @@ if (cognitoUser != null) {
         }
     });
 }
-
 ```
 
 To learn more about tokens, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
@@ -705,6 +736,17 @@ Auth.setPreferredMFA(user, 'SMS');
 Auth.setPreferredMFA(user, 'NOMFA');
 ```
 
+#### Retrieving Current Preferred MFA Type
+
+You can get current preferred MFA type in your code:
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.getPreferredMFA(user).then((data) => {
+    console.log('Current prefered MFA type is: ' + data);
+})
+```
+
 #### Letting User Select MFA Type
 
 When working with multiple MFA Types, you can let the app user select the desired authentication method. `SelectMFAType` UI Component, which is provided with `aws-amplify-react` package, renders a list of available MFA types.
@@ -739,7 +781,7 @@ export default withAuthenticator(App, true);
 
 ### Customizing Authentication Flow
 
-Amazon Cognito User Pools support customizing the authentication flow to enable new challenge types, in addition to a password, to verify the identity of users. These challenge types may include CAPTCHAs or dynamic challenge questions. 
+Amazon Cognito User Pools support customizing the authentication flow to enable new challenge types, in addition to a password, to verify the identity of users. These challenge types may include CAPTCHAs or dynamic challenge questions.
 
 To define your challenges for custom authentication flow, you need to implement Lambda triggers for Amazon Cognito.
 
@@ -780,7 +822,7 @@ export const handler = async (event) => {
 };
 ```
 
-#### Defining a Custom Challange
+#### Defining a Custom Challenge
 
 This example defines a custom challenge:
 
@@ -807,7 +849,7 @@ export const handler = async (event) => {
 
 **Verify Challenge Response** 
 
-This Lambda is used to verify a challange answer:
+This Lambda is used to verify a challenge answer:
 
 ```js
 export const handler = async (event, context) => {
@@ -824,18 +866,18 @@ export const handler = async (event, context) => {
 For more information about working with Lambda Triggers for custom authentication challenge, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-challenge.html).
 {: .callout .callout--info}
 
-#### Using a Custom Challange 
+#### Using a Custom Challenge
 
 To initiate a custom authorization flow in your app, call `signIn` without a password. A custom challenge needs to be answered using the `sendCustomChallengeAnswer` method:
 
 ```js
 import { Auth } from 'aws-amplify';
-let challangeResponse = "the answer for the challenge";
+let challengeResponse = "the answer for the challenge";
 
 Auth.signIn(username)
     .then(user => {
         if (user.challengeName === 'CUSTOM_CHALLENGE') {
-            Auth.sendCustomChallengeAnswer(user, challangeResponse)
+            Auth.sendCustomChallengeAnswer(user, challengeResponse)
                 .then(user => console.log(user))
                 .catch(err => console.log(err));
         } else {
@@ -1093,4 +1135,16 @@ const authScreenLabels = {
 
 I18n.setLanguage('en');
 I18n.putVocabularies(authScreenLabels);
+```
+
+## Using modularized module
+
+If you only need to use Auth, you can do: `npm install @aws-amplify/auth` which will only install the Auth module for you.
+
+Then in your code, you can import the Auth module by:
+```js
+import Auth from '@aws-amplify/auth';
+
+Auth.configure();
+
 ```

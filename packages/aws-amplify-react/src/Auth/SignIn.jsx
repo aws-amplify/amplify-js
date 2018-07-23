@@ -12,7 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger, JS } from 'aws-amplify';
+import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import { FederatedButtons } from './FederatedSignIn';
@@ -41,7 +42,7 @@ export default class SignIn extends AuthPiece {
         this.state = {};
     }
 
-    componentWillMount() {
+    componentDidMount() {
         window.addEventListener('keydown', this.onKeyDown);
     }
 
@@ -50,7 +51,7 @@ export default class SignIn extends AuthPiece {
     }
 
     onKeyDown(e) {
-        if (this.props.authState === 'signIn') {
+        if (this.props.authState === 'signIn' && !this.props.hide) {
             if (e.keyCode === 13) { // when press enter
                 this.signIn();
             }
@@ -58,6 +59,9 @@ export default class SignIn extends AuthPiece {
     }
 
     checkContact(user) {
+        if (!Auth || typeof Auth.verifiedContact !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.verifiedContact(user)
             .then(data => {
                 if (!JS.isEmpty(data.verified)) {
@@ -71,6 +75,9 @@ export default class SignIn extends AuthPiece {
 
     signIn() {
         const { username, password } = this.inputs;
+        if (!Auth || typeof Auth.signIn !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.signIn(username, password)
             .then(user => {
                 logger.debug(user);

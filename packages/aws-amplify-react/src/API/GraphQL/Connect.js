@@ -1,15 +1,8 @@
 import regeneratorRuntime from 'regenerator-runtime/runtime';
 import React, { Component } from 'react';
-import { parse } from 'graphql/language/parser';
+import API from '@aws-amplify/api';
 
-import { API } from "aws-amplify";
 
-const getOperationType = operation => {
-    const doc = parse(operation);
-    const { definitions: [{ operation: operationType },] } = doc
-
-    return operationType;
-}
 
 export default class Connect extends Component {
 
@@ -42,9 +35,13 @@ export default class Connect extends Component {
 
         let { data, mutation: mutationProp, errors } = this.getDefaultState();
 
-        const hasValidQuery = query && getOperationType(query) === 'query';
-        const hasValidMutation = mutation && getOperationType(mutation) === 'mutation';
-        const hasValidSubscription = subscription && getOperationType(subscription.query) === 'subscription';
+        if (!API || typeof API.graphql !== 'function' || typeof API.getGraphqlOperationType !== 'function') {
+            throw new Error('No API module found, please ensure @aws-amplify/api is imported');
+        }
+
+        const hasValidQuery = query && API.getGraphqlOperationType(query) === 'query';
+        const hasValidMutation = mutation && API.getGraphqlOperationType(mutation) === 'mutation';
+        const hasValidSubscription = subscription && API.getGraphqlOperationType(subscription.query) === 'subscription';
 
         if (!hasValidQuery && !hasValidMutation && !hasValidSubscription) {
             console.warn('No query, mutation or subscription was specified');

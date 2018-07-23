@@ -12,7 +12,9 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger, JS } from 'aws-amplify';
+
+import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -38,6 +40,9 @@ export default class RequireNewPassword extends AuthPiece {
     }
 
     checkContact(user) {
+        if (!Auth || typeof Auth.verifiedContact !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.verifiedContact(user)
             .then(data => {
                 if (!JS.isEmpty(data.verified)) {
@@ -53,6 +58,9 @@ export default class RequireNewPassword extends AuthPiece {
         const user = this.props.authData;
         const { password } = this.inputs;
         const { requiredAttributes } = user.challengeParam;
+        if (!Auth || typeof Auth.completeNewPassword !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.completeNewPassword(user, password, requiredAttributes)
             .then(user => {
                 logger.debug('complete new password', user);

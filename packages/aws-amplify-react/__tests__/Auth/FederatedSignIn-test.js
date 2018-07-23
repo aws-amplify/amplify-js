@@ -1,6 +1,6 @@
+import Auth from '@aws-amplify/auth';
 import React from 'react';
 import FederatedSignIn, { FederatedButtons } from '../../src/Auth/FederatedSignIn';
-import { Auth } from 'aws-amplify';
 
 const spyon = jest.spyOn(Auth, 'configure').mockImplementation(() => {
     return {

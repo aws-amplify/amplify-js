@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-react",
-  "version": "0.1.55-unstable.1",
+  "version": "1.0.3-unstable.2",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "dist/index.js",
   "scripts": {
@@ -43,18 +43,15 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 80,
+        "branches": 79,
         "functions": 80,
         "lines": 80,
         "statements": 80
       }
     }
   },
-  "peerDependencies": {
-    "graphql": "0.13.0"
-  },
   "dependencies": {
-    "aws-amplify": "^0.4.9-unstable.1",
+    "aws-amplify": "^1.0.3-unstable.2",
     "qrcode.react": "^0.8.0",
     "regenerator-runtime": "^0.11.1"
   }

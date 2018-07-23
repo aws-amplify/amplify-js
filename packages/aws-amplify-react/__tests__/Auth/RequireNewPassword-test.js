@@ -1,7 +1,7 @@
+import Auth from '@aws-amplify/auth';
 import React, { Component } from 'react';
 import { ButtonRow, Link } from '../../src/AmplifyUI';
 import RequireNewPassword from '../../src/Auth/RequireNewPassword';
-import { Auth } from 'aws-amplify';
 
 describe('RequireNewPassword test', () => {
     describe('render test', () => {

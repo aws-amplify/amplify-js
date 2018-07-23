@@ -1,9 +1,9 @@
+import Auth from '@aws-amplify/auth';
 import ConfirmSignIn from '../../src/Auth/ConfirmSignIn';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
 import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 const acceptedStates = [
     'confirmSignIn'

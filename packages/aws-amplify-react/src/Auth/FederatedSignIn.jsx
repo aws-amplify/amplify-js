@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 
-import { Logger, JS, Auth } from 'aws-amplify';
+import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
+
 import AmplifyTheme from '../AmplifyTheme';
 import {
     FormSection,
@@ -65,6 +67,10 @@ export class FederatedButtons extends Component {
         if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
 
         const federated = this.props.federated || {};
+        if (!Auth || typeof Auth.configure !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
         const config = Auth.configure();
         if (config.oauth) {
             federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
@@ -90,6 +96,10 @@ export default class FederatedSignIn extends Component {
     render() {
         const { authState, onStateChange } = this.props;
         let federated = this.props.federated || {};
+        if (!Auth || typeof Auth.configure !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+        
         const config = Auth.configure();
         if (config.oauth) {
             federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);

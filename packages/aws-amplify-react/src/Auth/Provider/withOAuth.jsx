@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
-import { Auth, Logger } from 'aws-amplify';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../../AmplifyTheme';
 import { SignInButton } from '../../AmplifyUI';
 
@@ -14,6 +15,10 @@ export default function withOAuth(Comp, options) {
         }
 
         signIn() {
+            if (!Auth || typeof Auth.configure !== 'function') {
+                throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            }
+
             const config = this.props.oauth_config || options || Auth.configure().oauth;
             logger.debug('withOAuth configuration', config);
             const { 

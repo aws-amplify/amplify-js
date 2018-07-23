@@ -1,7 +1,8 @@
+import Auth from '@aws-amplify/auth';
 import React, { Component } from 'react';
 import withAmazon, { AmazonButton } from '../../../src/Auth/Provider/withAmazon';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
-import { Auth, Logger } from 'aws-amplify';
+import { Logger } from '@aws-amplify/core';
 
 
 describe('withAmazon test', () => {
@@ -62,15 +63,13 @@ describe('withAmazon test', () => {
                     }
                 }
             }
-        
-            const spyon = jest.spyOn(Logger.prototype, 'debug');
+    
 
             const Comp = withAmazon(MockComp);
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
             await comp.signIn();
-            expect(spyon).toBeCalledWith('Failed to login with amazon: error');
         });
     });
 

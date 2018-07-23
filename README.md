@@ -17,7 +17,7 @@
     <img src="https://codecov.io/gh/aws/aws-amplify/branch/master/graph/badge.svg" />
   </a>
   <a href="https://circleci.com/gh/aws/aws-amplify">
-    <img src="https://circleci.com/gh/aws/aws-amplify.svg?style=svg" alt="build:started">
+    <img src="https://circleci.com/gh/aws-amplify/amplify-js.svg?style=svg" alt="build:started">
   </a>
 </p>
 
@@ -26,6 +26,11 @@
 AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations. AWS Amplify goes well with any JavaScript based frontend workflow, and React Native for mobile developers. 
 
 Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
+
+Notice:
+
+Amplify@1.x.x has structural changes. For details please check [Amplify Modularization](https://github.com/aws/aws-amplify/wiki/Amplify-modularization).
+
 
 ### Features / APIs
 
@@ -56,6 +61,11 @@ __Web__
 
 ```bash
 $ npm install aws-amplify --save
+```
+
+or you could install the module you want to use individually:
+```bash
+$ npm install @aws-amplify/auth --save
 ```
 
 __React__
@@ -106,6 +116,15 @@ import aws_exports from './aws-exports';
 
 Amplify.configure(aws_exports);
 
+// or you don't want to install all the categories
+import Amplify from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
+import aws_exports from './aws-exports';
+
+// in this way you are only importing Auth and configuring it.
+Amplify.configure(aws_exports);
+
+
 ```
 
 __Without AWS__
@@ -127,7 +146,7 @@ AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and S
 By default, AWS Amplify can collect user session tracking data with a few lines of code:
 
 ```js
-import { Analytics } from 'aws-amplify';
+import Analytics from '@aws-amplify/analytics';
 
 Analytics.record('myCustomEvent');
 ```
@@ -139,7 +158,7 @@ See our [Analytics Developer Guide](https://aws.github.io/aws-amplify/media/anal
 Add user sign up and sign in using two of the many methods available to the [Auth class](https://aws.github.io/aws-amplify/api/classes/authclass.html):
 
 ```js
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 
 Auth.signUp({
   username: 'AmandaB',
@@ -202,6 +221,8 @@ See our [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) f
 AWS Amplify automatically signs your REST requests with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html) when using the API module :
 
 ```js
+import API from '@aws-amplify/api';
+
 let apiName = 'MyApiName';
 let path = '/path'; 
 let options = {
@@ -235,7 +256,7 @@ let myAppConfig = {
   'aws_appsync_authenticationType': 'API_KEY',
   'aws_appsync_apiKey': 'da2-xxxxxxxxxxxxxxxxxxxxxxxxxx',
   // ...
-}
+};
 
 Amplify.configure(myAppConfig);
 ```
@@ -243,7 +264,7 @@ Amplify.configure(myAppConfig);
 __queries__
 
 ```js
-import { API, graphqlOperation } from "aws-amplify";
+import API, { graphqlOperation } from "@aws-amplify/api";
 
 const ListEvents = `query ListEvents {
   listEvents {
@@ -261,7 +282,7 @@ const allEvents = await API.graphql(graphqlOperation(ListEvents));
 __mutations__
 
 ```js
-import { API, graphqlOperation } from "aws-amplify";
+import API, { graphqlOperation } from "@aws-amplify/api";
 
 const CreateEvent = `mutation CreateEvent($name: String!, $when: String!, $where: String!, $description: String!) {
   createEvent(name: $name, when: $when, where: $where, description: $description) {
@@ -286,7 +307,7 @@ const newEvent = await API.graphql(graphqlOperation(CreateEvent, eventDetails));
 __subscriptions__
 
 ```js
-import { API, graphqlOperation } from "aws-amplify";
+import API, { graphqlOperation } from "@aws-amplify/api";
 
 const SubscribeToEventComments = `subscription subscribeToComments {
   subscribeToComments {

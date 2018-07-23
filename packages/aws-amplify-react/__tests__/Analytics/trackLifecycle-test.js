@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Analytics } from 'aws-amplify';
+import Analytics from '@aws-amplify/analytics';
 import { trackLifecycle } from '../../src/Analytics/trackLifecycle';
 
 describe('trackLifecycle test', () => {

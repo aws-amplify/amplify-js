@@ -13,7 +13,8 @@
 
 import React, { Component } from 'react';
 
-import { Storage, Logger } from 'aws-amplify';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import Storage from '@aws-amplify/storage';
 
 import AmplifyTheme from '../AmplifyTheme';
 import { transparent1X1 } from '../AmplifyUI';
@@ -37,6 +38,9 @@ export default class S3Image extends Component {
     }
 
     getImageSource(key, level, track) {
+        if (!Storage || typeof Storage.get !== 'function') {
+            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+        }
         Storage.get(key, { level: level? level : 'public', track })
             .then(url => {
                 this.setState({
@@ -58,6 +62,9 @@ export default class S3Image extends Component {
         logger.debug('loading ' + key + '...');
         if (body) {
             const type = contentType || 'binary/octet-stream';
+            if (!Storage || typeof Storage.put !== 'function') {
+                throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+            }
             const ret = Storage.put(key, body, {
                 contentType: type,
                 level: level? level : 'public',
@@ -90,6 +97,9 @@ export default class S3Image extends Component {
         const { imgKey, level, fileToKey, track } = this.props;
         const { file, name, size, type } = data;
         const key = imgKey || (path + calcKey(data, fileToKey));
+        if (!Storage || typeof Storage.put !== 'function') {
+            throw new Error('No Storage module found, please ensure @aws-amplify/storage is imported');
+        }
         Storage.put(key, file, { 
             level: level? level: 'public',
             contentType: type, 

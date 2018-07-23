@@ -1,6 +1,6 @@
+import Auth from '@aws-amplify/auth';
 import React, { Component } from 'react';
 import TOTPSetupComp from '../../src/Widget/TOTPSetupComp';
-import { Auth } from 'aws-amplify';
 import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
 import AmplifyTheme from '../../src/AmplifyTheme';
 

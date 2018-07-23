@@ -1,9 +1,9 @@
+import Auth from '@aws-amplify/auth';
 import VerifyContact from '../../src/Auth/VerifyContact';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
 import { Header, Footer, InputRow, RadioRow, MessageRow, ButtonRow, Link } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 const acceptedStates = [
     'verifyContact'

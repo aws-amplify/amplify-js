@@ -41,8 +41,16 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
-      - run: yarn run test --scope aws-amplify
+      - run: yarn run test --scope @aws-amplify/auth
+      - run: yarn run test --scope @aws-amplify/api
+      - run: yarn run test --scope @aws-amplify/analytics
+      - run: yarn run test --scope @aws-amplify/cache
+      - run: yarn run test --scope @aws-amplify/core
+      - run: yarn run test --scope @aws-amplify/interactions
+      - run: yarn run test --scope @aws-amplify/pubsub
+      - run: yarn run test --scope @aws-amplify/storage
       - run: yarn run test --scope aws-amplify-react
+      - run: yarn run test --scope aws-amplify-angular
   integration_test_auth:
     <<: *defaults
     steps:
@@ -124,6 +132,11 @@ workflows:
           requires:
             - build
       - integration_test_auth:
+          filters:
+            branches:
+              only:
+                - release
+                - master
           requires:
             - build
       - deploy:

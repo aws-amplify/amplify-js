@@ -12,7 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -43,6 +44,10 @@ export default class ConfirmSignUp extends AuthPiece {
     confirm() {
         const username = this.usernameFromAuthData() || this.inputs.username;
         const { code } = this.inputs;
+        if (!Auth || typeof Auth.confirmSignUp !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
         Auth.confirmSignUp(username, code)
             .then(() => this.changeState('signedUp'))
             .catch(err => this.error(err));
@@ -50,6 +55,9 @@ export default class ConfirmSignUp extends AuthPiece {
 
     resend() {
         const username = this.usernameFromAuthData() || this.inputs.username;
+        if (!Auth || typeof Auth.resendSignUp !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.resendSignUp(username)
             .then(() => logger.debug('code resent'))
             .catch(err => this.error(err));

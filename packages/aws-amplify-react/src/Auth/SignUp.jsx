@@ -13,7 +13,8 @@
 
 import React, { Component } from 'react';
 
-import { Auth, I18n } from 'aws-amplify';
+import { I18n } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -37,9 +38,18 @@ export default class SignUp extends AuthPiece {
 
     signUp() {
         const { username, password, email, phone_number } = this.inputs;
-        Auth.signUp(username, password, email, phone_number)
-            .then(() => this.changeState('confirmSignUp', username))
-            .catch(err => this.error(err));
+        if (!Auth || typeof Auth.signUp !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+        Auth.signUp({
+            username,
+            password, 
+            attributes: {
+                email, 
+                phone_number
+            }
+        }).then(() => this.changeState('confirmSignUp', username))
+        .catch(err => this.error(err));
     }
 
     showComponent(theme) {

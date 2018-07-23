@@ -12,7 +12,9 @@
  */
 
 import React, { Component } from 'react';
-import { Auth, I18n, Logger, JS } from 'aws-amplify';
+
+import { I18n, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -41,6 +43,10 @@ export default class ConfirmSignIn extends AuthPiece {
     }
 
     checkContact(user) {
+        if (!Auth || typeof Auth.verifiedContact !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
         Auth.verifiedContact(user)
             .then(data => {
                 if (!JS.isEmpty(data.verified)) {
@@ -56,6 +62,10 @@ export default class ConfirmSignIn extends AuthPiece {
         const user = this.props.authData;
         const { code } = this.inputs;
         const mfaType = user.challengeName === 'SOFTWARE_TOKEN_MFA' ? 'SOFTWARE_TOKEN_MFA' : null;
+        if (!Auth || typeof Auth.confirmSignIn !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
         Auth.confirmSignIn(user, code, mfaType)
             .then(() => {
                 this.checkContact(user);
