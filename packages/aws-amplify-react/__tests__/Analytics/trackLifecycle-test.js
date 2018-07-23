@@ -1,16 +1,5 @@
-jest.mock('../../src/Categories', () => {
-    const Analytics = {
-        record() {
-            return;
-        }
-    };
-
-    return {
-        Analytics
-    };
-})
 import React, { Component } from 'react';
-import { Analytics } from '../../src/Categories';
+import Analytics from '@aws-amplify/analytics';
 import { trackLifecycle } from '../../src/Analytics/trackLifecycle';
 
 describe('trackLifecycle test', () => {

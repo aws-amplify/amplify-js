@@ -1143,6 +1143,30 @@ describe('auth unit test', () => {
             spyon2.mockClear();
             spyon3.mockClear();
         });
+
+        test('json parse error', async () => {
+            const auth = new Auth(authOptions);
+
+            const spyon = jest.spyOn(localStorage, 'getItem')
+                .mockImplementationOnce(() => {
+                    return undefined;
+                });
+
+            const spyon2 = jest.spyOn(auth, 'currentSession').mockImplementationOnce(() => {
+                return Promise.resolve('session');
+            });
+
+            const spyon3 = jest.spyOn(Credentials, 'set').mockImplementationOnce(() => {
+                return Promise.resolve('cred');
+            });
+
+            expect.assertions(1);
+            expect(await auth.currentUserCredentials()).toBe('cred');
+
+            spyon.mockClear();
+            spyon2.mockClear();
+            spyon3.mockClear();
+        });
     });
 
     describe('currentCrendentials', () => {

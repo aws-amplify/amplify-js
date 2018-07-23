@@ -77,6 +77,10 @@ Amplify.configure({
         // REQUIRED - Amazon Cognito Region
         region: 'XX-XXXX-X',
 
+        // OPTIONAL - Amazon Cognito Federated Identity Pool Region 
+        // Required only if it's different from Amazon Cognito Region
+        identityPoolRegion: 'XX-XXXX-X',
+
         // OPTIONAL - Amazon Cognito User Pool ID
         userPoolId: 'XX-XXXX-X_abcd1234',
 
@@ -730,6 +734,17 @@ Auth.setPreferredMFA(user, 'SMS');
 
 // Select no-mfa
 Auth.setPreferredMFA(user, 'NOMFA');
+```
+
+#### Retrieving Current Preferred MFA Type
+
+You can get current preferred MFA type in your code:
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.getPreferredMFA(user).then((data) => {
+    console.log('Current prefered MFA type is: ' + data);
+})
 ```
 
 #### Letting User Select MFA Type

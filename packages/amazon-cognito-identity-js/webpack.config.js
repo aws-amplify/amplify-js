@@ -1,4 +1,6 @@
 // version 3.11.0
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin")
 
 /* eslint-disable */
 var webpack = require('webpack');
@@ -21,14 +23,27 @@ var banner = '/*!\n' +
 ' */\n\n';
 
 var config = {
-  entry: './src/index.js',
+  entry: {
+    'amazon-cognito-identity': './src/index.js',
+    'amazon-cognito-identity.min': './src/index.js'
+  },
   output: {
+    filename: '[name].js',
+    path: __dirname + '/dist',
     libraryTarget: 'umd',
     library: 'AmazonCognitoIdentity'
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.BannerPlugin({ banner, raw: true })
+    new webpack.BannerPlugin({ banner, raw: true }),
+    new UglifyJsPlugin({
+        minimize: true,
+        sourceMap: true,
+        include: /\.min\.js$/,
+    }),
+    new CompressionPlugin({
+        include: /\.min\.js$/,
+    })
   ],
   module: {
     rules: [
@@ -45,17 +60,5 @@ var config = {
     ]
   }
 };
-
-if (process.env.NODE_ENV === 'production') {
-  config.devtool = 'source-map';
-  config.plugins.push(
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    })
-  );
-}
 
 module.exports = config;

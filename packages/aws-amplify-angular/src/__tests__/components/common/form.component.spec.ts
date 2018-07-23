@@ -7,9 +7,9 @@ import { FormComponent } from '../../../components/common/form.component';
 
     describe('FormComponent:', () => {
 
-      beforeAll(() => {
-        TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-      })
+      // beforeAll(() => {
+      //   TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+      // })
 
       let component: FormComponent;
       let fixture: ComponentFixture<FormComponent>;
