@@ -2,17 +2,17 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service'
-import { SignUpComponent } from '../../../components/authenticator/sign-up.component'
+import { RequireNewPasswordComponentIonic } from '../../../components/authenticator/require-new-password-component/require-new-password.component.ionic';
 
 
-describe('SignUpComponent: ', () => {
+describe('RequireNewPasswordComponentCore: ', () => {
 
-  let component: SignUpComponent;
+  let component: RequireNewPasswordComponentIonic;
   let service: AmplifyService;
 
   beforeEach(() => { 
     service = new AmplifyService();
-    component = new SignUpComponent(service);
+    component = new RequireNewPasswordComponentIonic(service);
   });
 
   afterEach(() => {
@@ -25,16 +25,20 @@ describe('SignUpComponent: ', () => {
     expect(component).toBeTruthy();
   });
 
-  it('...should have an onConfirmSignUp method', () => {
-    expect(component.onConfirmSignUp).toBeTruthy();
-  });
-
   it('...should have an onSignIn method', () => {
     expect(component.onSignIn).toBeTruthy();
   });
 
-  it('...should have an onSignUp method', () => {
-    expect(component.onSignUp).toBeTruthy();
+  it('...should have an onSubmit method', () => {
+    expect(component.onSubmit).toBeTruthy();
+  });
+
+  it('...should have a setPassword method', () => {
+    expect(component.setPassword).toBeTruthy();
+  });
+
+  it('...should have a _setError method', () => {
+    expect(component._setError).toBeTruthy();
   });
 
 });

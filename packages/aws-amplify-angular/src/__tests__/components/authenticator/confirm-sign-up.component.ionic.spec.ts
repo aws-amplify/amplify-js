@@ -2,17 +2,17 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service'
-import { ConfirmSignUpComponent } from '../../../components/authenticator/confirm-sign-up.component'
+import { ConfirmSignUpComponentIonic } from '../../../components/authenticator/confirm-sign-up-component/confirm-sign-up.component.ionic'
 
 
-describe('ConfirmSignUpComponent: ', () => {
+describe('ConfirmSignUpComponentIonic: ', () => {
 
-  let component: ConfirmSignUpComponent;
+  let component: ConfirmSignUpComponentIonic;
   let service: AmplifyService;
 
   beforeEach(() => { 
     service = new AmplifyService();
-    component = new ConfirmSignUpComponent(service);
+    component = new ConfirmSignUpComponentIonic(service);
   });
 
   afterEach(() => {
