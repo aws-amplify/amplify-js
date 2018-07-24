@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {
@@ -245,7 +245,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
     }
   }
 >
-  <SectionHeader
+  <Component
     theme={
       Object {
         "a": Object {
@@ -490,8 +490,8 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
     }
   >
     TOTP Setup
-  </SectionHeader>
-  <SectionBody
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -735,7 +735,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
       }
     }
   >
-    <ButtonRow
+    <Component
       onClick={[Function]}
       theme={
         Object {
@@ -981,7 +981,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
       }
     >
       Get secret key
-    </ButtonRow>
+    </Component>
     <div>
       <QRCode
         bgColor="#FFFFFF"
@@ -991,7 +991,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
         size={128}
         value="code"
       />
-      <InputRow
+      <Component
         autoFocus={true}
         key="totpCode"
         name="totpCode"
@@ -1240,7 +1240,7 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
           }
         }
       />
-      <ButtonRow
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -1486,9 +1486,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
         }
       >
         Verify
-      </ButtonRow>
+      </Component>
     </div>
-    <MessageRow
+    <Component
       theme={
         Object {
           "a": Object {
@@ -1733,13 +1733,13 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
       }
     >
       message
-    </MessageRow>
-  </SectionBody>
-</FormSection>
+    </Component>
+  </Component>
+</Component>
 `;
 
 exports[`TOTPSetupComp test render test render without code or setupMessage 1`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {
@@ -1983,7 +1983,7 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
     }
   }
 >
-  <SectionHeader
+  <Component
     theme={
       Object {
         "a": Object {
@@ -2228,8 +2228,8 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
     }
   >
     TOTP Setup
-  </SectionHeader>
-  <SectionBody
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -2473,7 +2473,7 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
       }
     }
   >
-    <ButtonRow
+    <Component
       onClick={[Function]}
       theme={
         Object {
@@ -2719,7 +2719,7 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
       }
     >
       Get secret key
-    </ButtonRow>
-  </SectionBody>
-</FormSection>
+    </Component>
+  </Component>
+</Component>
 `;
