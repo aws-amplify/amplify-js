@@ -171,7 +171,7 @@ $ awsmobile user-signin enable
 To use Authenticator, just add the `amplify-authenticator` directive in your .html view:
 ```html
   ...
-  <amplify-authenticator></amplify-authenticator>
+  <amplify-authenticator framework="Ionic"></amplify-authenticator>
   ...
 ```
 
@@ -188,7 +188,7 @@ $ awsmobile user-files enable
 To render photo picker in an Angular view, use *amplify-photo-picker* component:
 
 ```html
-<amplify-photo-picker 
+<amplify-photo-picker framework="Ionic"
     (picked)="onImagePicked($event)"
     (loaded)="onImageLoaded($event)">
 </amplify-photo-picker>
@@ -230,7 +230,8 @@ $ awsmobile user-files enable
 To render the album, use *amplify-s3-album* component in your Angular view:
 
 ```html
-<amplify-s3-album path="pics" (selected)="onAlbumImageSelected($event)">
+<amplify-s3-album framework="Ionic" 
+    path="pics" (selected)="onAlbumImageSelected($event)">
 </amplify-s3-album>
 ```
 
@@ -250,9 +251,9 @@ You can use custom styling for AWS Amplify components. Just import your custom *
 
 Currently, the newest version of Angular (6.x) does not provide the shim for the  `global` object, which was provided in previous versions. Specific AWS Amplify dependencies rely on this shim.  While we evaluate the best path forward to address this issue, you have a couple of options for re-creating the shim in your Angular 6 app to make it compatible with Amplify.
 
-1.  Add the following to your polyfills.ts: ```(window as any).global = window;```.
+1.  Add the following to your polyfills.ts: `(window as any).global = window;`.
 
-2.  Add the following script to your index.html ```<head>``` tag:
+2.  Add the following script to your index.html `<head>` tag:
 ``` 
     <script>
         if (global === undefined) {
@@ -265,12 +266,9 @@ Currently, the newest version of Angular (6.x) does not provide the shim for the
 
 Learn more with tutorials:
 
+- [Building Ionic 4 apps with AWS Amplify]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/tutorials/building-ionic-4-apps/) 
+
 - [How to use AWS Amplify and Angular to Build Cloud Enabled JavaScript Applications](https://medium.freecodecamp.org/building-cloud-enabled-javascript-applications-with-aws-amplify-angular-682547fc6477){: target='_new'}
-
-
----
 
 To help you start working with AWS Amplify, Ionic team provides a Starter App. See our [Ionic Starter App in Github](https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws).
 {: .callout .callout--info}
-
-**You can also use our [Angular components]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/angular_guide) with Ionic.**
