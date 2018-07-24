@@ -34,6 +34,27 @@ function listen(authState: Subject<AuthState>) {
   }
 };
 
+
+function decorateConfirmSignIn(authState: Subject<AuthState>) {
+    const _confirmSignIn = Amplify.Auth.confirmSignIn;
+    Amplify.Auth.confirmSignIn = (
+        user: any,
+        code: string,
+        mfaType: string
+    ): Promise<any> => {
+        return _confirmSignIn.call(Amplify.Auth, user, code, mfaType)
+            .then(() => {
+                logger.debug('confirmSignIn success');
+                authState.next({ state: 'signedIn', user: user });
+            })
+            .catch(err => {
+                    logger.debug('confirmSignIn error', err);
+                    throw err;
+                }
+            );
+    };
+}
+
 function decorateSignIn(authState: Subject<AuthState>) {
   const _signIn = Amplify.Auth.signIn;
   Amplify.Auth.signIn = (
@@ -134,4 +155,5 @@ export function authDecorator(authState: Subject<AuthState>) {
   decorateSignOut(authState);
   decorateSignUp(authState);
   decorateConfirmSignUp(authState);
+  decorateConfirmSignIn(authState);
 };
