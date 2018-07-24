@@ -833,7 +833,8 @@ export default class AuthClass {
             try {
                 user = await this.currentUserPoolUser();
             } catch (e) {
-                throw ('not authenticated with error: ' + e);
+                logger.debug('The user is not authenticated by the error', e);
+                throw e;
             }
             this.user = user;
             return this.user;
