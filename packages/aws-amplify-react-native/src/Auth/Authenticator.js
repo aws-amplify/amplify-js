@@ -110,8 +110,14 @@ export default class Authenticator extends React.Component {
                 }
             })
             .catch(err => {
-                if (statesJumpToSignIn.includes(authState)) this.handleStateChange('signIn', null);
                 logger.debug(err);
+                if (statesJumpToSignIn.includes(authState)) {
+                    Auth.signOut()
+                        .then(() => {
+                            this.handleStateChange('signIn', null);
+                        })
+                        .catch(err => this.error(err));       
+                }
             });
     }
 
