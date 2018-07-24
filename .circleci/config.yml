@@ -50,6 +50,7 @@ jobs:
       - run: yarn run test --scope @aws-amplify/pubsub
       - run: yarn run test --scope @aws-amplify/storage
       - run: yarn run test --scope aws-amplify-react
+      - run: yarn run test --scope aws-amplify-angular
   integration_test_auth:
     <<: *defaults
     steps:
