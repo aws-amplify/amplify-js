@@ -39,7 +39,6 @@ const template = `
 export class ConfirmSignInComponentCore {
   _authState: AuthState;
   _show: boolean;
-  _hide: string[] = [];
   code: string;
   errorMessage: string;
   amplifyService: AmplifyService;
@@ -51,7 +50,7 @@ export class ConfirmSignInComponentCore {
 
   @Input()
   set data(data: any) {
-    this._hide = data.hide ? data.hide : this.hide;
+    this.hide = data.hide ? data.hide : this.hide;
     this._authState = data.authState;
     this._show = data.authState.state === 'confirmSignIn';
   }
@@ -63,7 +62,7 @@ export class ConfirmSignInComponentCore {
   }
 
   shouldHide(comp) {
-    return this._hide.filter(item => item === comp)
+    return this.hide.filter(item => item === comp)
             .length > 0;
   }
 

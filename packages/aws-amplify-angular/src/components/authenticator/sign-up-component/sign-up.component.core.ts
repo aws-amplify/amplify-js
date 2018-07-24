@@ -78,7 +78,6 @@ const template = `
 export class SignUpComponentCore {
   _authState: AuthState;
   _show: boolean;
-  _hide: string[] = [];
   username: string;
   password: string;
   email: string;
@@ -92,7 +91,7 @@ export class SignUpComponentCore {
   }
 
   shouldHide(comp) {
-    return this._hide.filter(item => item === comp)
+    return this.hide.filter(item => item === comp)
             .length > 0;
   }
 
@@ -106,7 +105,7 @@ export class SignUpComponentCore {
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'signUp';
-    this._hide = data.hide ? data.hide : this.hide;
+    this.hide = data.hide ? data.hide : this.hide;
   }
 
   setUsername(username: string) {

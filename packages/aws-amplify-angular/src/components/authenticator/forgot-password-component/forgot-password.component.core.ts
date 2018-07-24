@@ -64,7 +64,6 @@ const template = `
 export class ForgotPasswordComponentCore {
   _authState: AuthState;
   _show: boolean;
-  _hide: string[] = [];
   username: string;
   code: string;
   password: string;
@@ -80,12 +79,12 @@ export class ForgotPasswordComponentCore {
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'forgotPassword';
-    this._hide = data.hide ? data.hide : this.hide;
+    this.hide = data.hide ? data.hide : this.hide;
     this.username = data.authState.user? data.authState.user.username || '' : '';
   }
 
   shouldHide(comp) {
-    return this._hide.filter(item => item === comp)
+    return this.hide.filter(item => item === comp)
             .length > 0;
   }
 

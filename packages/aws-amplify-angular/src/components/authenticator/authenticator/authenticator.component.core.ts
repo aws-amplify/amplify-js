@@ -69,6 +69,11 @@ export class AuthenticatorComponentCore {
   @Input()
   hide: string[] = [];
 
+  @Input()
+  set data(data: any) {
+    this.hide = data.hide ? data.hide : this.hide;
+  }
+
   subscribe() {
     this.amplifyService.authStateChange$
       .subscribe(state => {

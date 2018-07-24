@@ -56,7 +56,6 @@ const template = `
 export class ConfirmSignUpComponentCore {
   _authState: AuthState;
   _show: boolean;
-  _hide: string[] = [];
   username: string;
   code: string;
   errorMessage: string;
@@ -69,7 +68,7 @@ export class ConfirmSignUpComponentCore {
 
   @Input()
   set data(data: any) {
-    this._hide = data.hide ? data.hide : this.hide;
+    this.hide = data.hide ? data.hide : this.hide;
     this._authState = data.authState;
     this._show = data.authState.state === 'confirmSignUp';
     this.username = data.authState.user? data.authState.user.username || '' : '';
@@ -84,7 +83,7 @@ export class ConfirmSignUpComponentCore {
   }
 
   shouldHide(comp) {
-    return this._hide.filter(item => item === comp)
+    return this.hide.filter(item => item === comp)
       .length > 0;
   }
 
