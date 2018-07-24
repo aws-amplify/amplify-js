@@ -20,7 +20,7 @@ import {
 } from '@aws-amplify/core';
 import AWSPinpointProvider from './Providers/AWSPinpointProvider';
 
-import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
+import { AnalyticsProvider, EventAttributes, EventMetrics, pageViewTrackOpts } from './types';
 
 const logger = new Logger('AnalyticsClass');
 
@@ -231,5 +231,48 @@ export default class AnalyticsClass {
         });
 
         return Promise.resolve();
+    }
+
+
+
+
+
+
+    public pageViewTrack(opts: pageViewTrackOpts) {
+        if (opts.type === 'SPA') {
+            this._pageViewTrackSPA(opts);
+        } else {
+            this._pageViewTrackDefault(opts);
+        }
+    }
+
+    private _pageViewTrackDefault(opts: pageViewTrackOpts) {
+        if (!window || !window.addEventListener) {
+            logger.debug('not in the supported web enviroment');
+            return;
+        }
+
+        if (opts.enable) {
+            this.record({
+                name: opts.eventName || 'pageView',
+                attributes: {
+                    url: opts.pageUrl || window.location.origin + window.location.pathname
+                }
+            }).catch(e => {
+                logger.debug('Failed to record the page view event', e);
+            });
+        }
+    }
+
+    private _pageViewTrackSPA(opts: pageViewTrackOpts) {
+        if (!window || !window.addEventListener || !history.pushState) {
+            logger.debug('not in the supported web enviroment');
+            return;
+        }
+
+        if (opts.enable) {
+            
+
+        }
     }
 }

@@ -29,3 +29,10 @@ export interface EventAttributes {
 export interface EventMetrics {
     [key: string]: number;
 }
+
+export interface pageViewTrackOpts {
+    enable: boolean,
+    pageUrl?: string,
+    type?: string
+    eventName?: string
+}

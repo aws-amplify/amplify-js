@@ -40,6 +40,7 @@ Amplify.register(Analytics);
 export default Analytics;
 export { AnalyticsProvider };
 export { AnalyticsClass };
+export { default as MethodEmbed } from './MethodEmbed';
 export * from './Providers';
 
 // listen on app state change
