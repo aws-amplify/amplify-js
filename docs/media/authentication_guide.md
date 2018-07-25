@@ -73,11 +73,11 @@ Amplify.configure({
 
         // REQUIRED only for Federated Authentication - Amazon Cognito Identity Pool ID
         identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
-        
+
         // REQUIRED - Amazon Cognito Region
         region: 'XX-XXXX-X',
 
-        // OPTIONAL - Amazon Cognito Federated Identity Pool Region 
+        // OPTIONAL - Amazon Cognito Federated Identity Pool Region
         // Required only if it's different from Amazon Cognito Region
         identityPoolRegion: 'XX-XXXX-X',
 
@@ -104,7 +104,7 @@ Amplify.configure({
 
         // OPTIONAL - customized storage object
         storage: new MyStorage(),
-        
+
         // OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
         authenticationFlowType: 'USER_PASSWORD_AUTH'
     }
@@ -146,7 +146,7 @@ Auth.signIn(username, password)
 
 // If MFA is enabled, sign-in should be confirmed with the congirmation code
 // `user` : Return object from Auth.signIn()
-// `code` : Confirmation code  
+// `code` : Confirmation code
 // `mfaType` : MFA Type e.g. SMS, TOTP.
 Auth.confirmSignIn(user, code, mfaType)
     .then(data => console.log(data))
@@ -166,7 +166,7 @@ Auth.signUp({
     attributes: {
         email,          // optional
         phone_number,   // optional - E.164 number convention
-        // other custom attributes 
+        // other custom attributes
     },
     validationData: []  //optional
     })
@@ -176,14 +176,14 @@ Auth.signUp({
 // After retrieveing the confirmation code from the user
 Auth.confirmSignUp(username, code, {
     // Optional. Force user confirmation irrespective of existing alias. By default set to True.
-    forceAliasCreation: true    
+    forceAliasCreation: true
 }).then(data => console.log(data))
   .catch(err => console.log(err));
 ```
 
 **Forcing Email Uniqueness in Cognito User Pools**
 
-When your User Pool sign-in options are set to "*Username*", and "*Also allow sign in with verified email address*", *signUp()* creates a new user account without validating email uniqueness. In this case you will have multiple user pool identities and previous account's attribute is changed to *email_verified : false*. 
+When your User Pool sign-in options are set to "*Username*", and "*Also allow sign in with verified email address*", *signUp()* creates a new user account without validating email uniqueness. In this case you will have multiple user pool identities and previous account's attribute is changed to *email_verified : false*.
 
 To restrict signups with unique email, you can change your User Pool settings in your user pool's *Attributes* settings as following:
 ![User Pool Settings](images/cognito_user_pool_settings.png){: style="max-height:300px;"}
@@ -236,7 +236,7 @@ let session = Auth.currentSession();
 
 **When using Authentication with AWS Amplify, you don't need to refresh Amazon Cognito tokens manually. The tokens are automatically refreshed by the library when necessary.**
 
-Security Tokens like *IdToken* or *AccessToken* are stored in *localStorage* for the browser and in *AsyncStorage* for React Native. If you want to store those tokens in a more secure place or you are using Amplify in server side, then you can provide your own `storage` object to store those tokens. 
+Security Tokens like *IdToken* or *AccessToken* are stored in *localStorage* for the browser and in *AsyncStorage* for React Native. If you want to store those tokens in a more secure place or you are using Amplify in server side, then you can provide your own `storage` object to store those tokens.
 
 For example:
 ```ts
@@ -276,7 +276,7 @@ if (cognitoUser != null) {
 
         if (AWS.config.credentials.needsRefresh()) {
             cognitoUser.refreshSession(refresh_token, (err, session) => {
-                if(err) { console.log(err); } 
+                if(err) { console.log(err); }
                 else {
                     AWS.config.credentials.params.Logins['cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>']  = session.getIdToken().getJwtToken();
                     AWS.config.credentials.refresh((err)=> {
@@ -331,7 +331,7 @@ ReactDOM.render(<AppWithAuth federated={federated}/>, document.getElementById('r
  NOTE: Federated Identity HOCs are not yet available on React Native.
  {: .callout .callout--info}
 
-You can also initiate a federated signin process by calling `Auth.federatedSignIn()` method with a specific identity provider in your code:  
+You can also initiate a federated signin process by calling `Auth.federatedSignIn()` method with a specific identity provider in your code:
 
 ```js
 import { Auth } from 'aws-amplify';
@@ -347,14 +347,14 @@ ga.signIn().then(googleUser => {
     };
 
     return Auth.federatedSignIn(
-        // Initiate federated sign-in with Google identity provider 
+        // Initiate federated sign-in with Google identity provider
         // Initiate federated sign-in with Google identity provider
         'google',
         {
             // the token retrieved from the identity provider (this may or may not be a JWT token depending on the provider)
             token: id_token,
             // the expiration time
-            expires_at 
+            expires_at
             expires_at
         },
         // a user object
@@ -369,7 +369,7 @@ Availible identity providers are `google`, `facebook`, `amazon`, `developer` and
 
 **Retrieving Third-Party Token**
 
-After the federated login, you can retrieve related (third-oarty) token from the local cache using the *Cache* module:
+After the federated login, you can retrieve related (third-party) token from the local cache using the *Cache* module:
 ```js
 import { Cache } from 'aws-amplify';
 
@@ -587,12 +587,12 @@ To enable the domain for your hosted UI;
 - On the left menu, go to  *App integration* > *Domain name*.
 - In the *Domain prefix* section, enter the prefix for the pages that will be hosted by Amazon Cognito.
 
-You can also enable Federated Identities for your hosted UI;  
+You can also enable Federated Identities for your hosted UI;
 
 - Go to *Federation* > *Identity providers*
 - Select an *Identity provider* and enter required credentials for the identity provider. (e.g., App Id, App secret, Authorized scope)
 - In the settings page for your selected identity provider (Facebook, Google, etc.),  set *Oauth Redirected URI* to `https://your-domain-prefix.auth.us-east-1.amazoncognito.com/oauth2/idpresponse` (*your-domain-prefix* is the domain prefix you have entered in previously).
-- To retrieve user attributes from your identity provider, go to *Federation* > *Attribute mapping*. Here, you can map Federation Provider attributes to corresponding User pool attributes. 
+- To retrieve user attributes from your identity provider, go to *Federation* > *Attribute mapping*. Here, you can map Federation Provider attributes to corresponding User pool attributes.
 
 If  *email* attribute is a required field in your Cognito User Pool settings, please make sure that you have selected *email* in your Authorized Scopes, and you have mapped it correctly to your User Pool attributes.
 {: .callout .callout-info}
@@ -606,18 +606,18 @@ import Amplify from 'aws-amplify';
 
 const oauth = {
     // Domain name
-    domain : 'your-domain-prefix.auth.us-east-1.amazoncognito.com', 
-    
+    domain : 'your-domain-prefix.auth.us-east-1.amazoncognito.com',
+
     // Authorized scopes
-    scope : ['phone', 'email', 'profile', 'openid','aws.cognito.signin.user.admin'], 
+    scope : ['phone', 'email', 'profile', 'openid','aws.cognito.signin.user.admin'],
 
     // Callback URL
-    redirectSignIn : 'http://www.example.com/signin', 
-    
+    redirectSignIn : 'http://www.example.com/signin',
+
     // Sign out URL
     redirectSignOut : 'http://www.example.com/signout',
 
-    // 'code' for Authorization code grant, 
+    // 'code' for Authorization code grant,
     // 'token' for Implicit grant
     responseType: 'code'
 
@@ -644,9 +644,9 @@ To invoke the browser to display the hosted UI, you need to construct the URL in
 
 ```js
 const config = Auth.configure();
-const { 
-    domain,  
-    redirectSignIn, 
+const {
+    domain,
+    redirectSignIn,
     redirectSignOut,
     responseType } = config.oauth;
 
@@ -657,7 +657,7 @@ const url = 'https://' + domain + '/login?redirect_uri=' + redirectSignIn + '&re
 window.location.assign(url);
 ```
 
-#### Launching the Hosted UI in React 
+#### Launching the Hosted UI in React
 
 With React, you can use `withOAuth` HOC to launch the hosted UI experience. Just wrap your app's main component with our HOC:
 
@@ -676,8 +676,8 @@ class MyApp extends React.Component {
 }
 
 export default withOAuth(MyApp);
-``` 
-    
+```
+
 ### Enabling MFA
 
 MFA (Multi-factor authentication increases security for your app by adding an authentication method and not relying solely on the username (or alias) and password. AWS Amplify uses Amazon Cognito to provide MFA. Please see [Amazon Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa.html) for more information about setting up MFA in Amazon Cognito.
@@ -697,7 +697,7 @@ import { Auth } from 'aws-amplify';
 // `user` is the current Authenticated user
 Auth.setupTOTP(user).then((code) => {
     // You can directly display the `code` to the user or convert it to a QR code to be scanned.
-    // E.g., use following code sample to render a QR code with `qrcode.react` component:  
+    // E.g., use following code sample to render a QR code with `qrcode.react` component:
     //      import QRCode from 'qrcode.react';
     //      const str = "otpauth://totp/AWSCognito:"+ username + "?secret=" + code + "&issuer=" + issuer;
     //      <QRCode value={str}/>
@@ -849,7 +849,7 @@ export const handler = async (event) => {
 };
 ```
 
-**Verify Challenge Response** 
+**Verify Challenge Response**
 
 This Lambda is used to verify a challenge answer:
 
@@ -891,7 +891,7 @@ Auth.signIn(username)
 
 ### Migrating Users to Amazon Cognito
 
-Cognito provides a trigger to migrate users from your existing user directory to Cognito seamlessly. You configure your Cognito User Pool's "Migration" trigger to invoke a Lambda function whenever a user that does not already exist in the user pool signs in or resets their password. 
+Cognito provides a trigger to migrate users from your existing user directory to Cognito seamlessly. You configure your Cognito User Pool's "Migration" trigger to invoke a Lambda function whenever a user that does not already exist in the user pool signs in or resets their password.
 
 In short, the Lambda function should validate the user credentials against your existing user directory and return a response object containing user attributes and status on success, or an error message on error. There's a good documentation [here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-import-using-lambda.html) on how to set up this migration flow and a more detailed instruction [here](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html#cognito-user-pools-lambda-trigger-syntax-user-migration) on how the lambda should handle request and response objects.
 
@@ -1045,9 +1045,9 @@ render() {
 
 ### Composing Your Own Authenticator
 
-`Authenticator` is designed as a container for a number of Auth components. Each component does a single job, e.g., SignIn, SignUp, etc. By default, all of this elements are visible depending on the authentication state. 
+`Authenticator` is designed as a container for a number of Auth components. Each component does a single job, e.g., SignIn, SignUp, etc. By default, all of this elements are visible depending on the authentication state.
 
-If you want to replace some or all of the Authenticator elements, you need to set `hideDefault={true}`, so the component doesn't render its default view. Then you can pass in your own set of child components that listen to `authState` and decide what to do. 
+If you want to replace some or all of the Authenticator elements, you need to set `hideDefault={true}`, so the component doesn't render its default view. Then you can pass in your own set of child components that listen to `authState` and decide what to do.
 
 You can also pass the child components you want to use. For example, the following Authenticator configuration only renders *Greetings* component which has a *Sign Out* button:
 
