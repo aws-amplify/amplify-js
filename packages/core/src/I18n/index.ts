@@ -74,7 +74,7 @@ class I18n {
      * @param {String} key 
      * @param {String} defVal - Default value
      */
-    static get(key, defVal) {
+    static get(key, defVal=undefined) {
         if (!I18n.checkConfig()) { return (typeof defVal === 'undefined')? key : defVal; }
 
         return _i18n.get(key, defVal); 
