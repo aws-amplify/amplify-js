@@ -51,7 +51,7 @@ Apache Cordova is an open source mobile development platform that runs web code 
 The easiest way to create an Ionic 4 application is with the Ionic Command Line Interface (CLI). To install the Ionic CLI, run the following command in your terminal:
 
 ```bash
-$ npm install -g ionic@rc cordova
+$ npm install -g ionic cordova
 ```
 
 After installation, navigate to a location where you wish to start your new project and execute:
