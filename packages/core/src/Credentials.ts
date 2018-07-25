@@ -246,66 +246,68 @@ export class Credentials {
         const that = this;
         const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
-            credentials.getPromise().then(
-                async () => {
-                    logger.debug('Load credentials successfully', credentials);
-                    that._credentials = credentials;
-                    that._credentials.authenticated = authenticated;
-                    that._credentials_source = source;
-                    if (source === 'federated') {
-                        const user = Object.assign(
-                            { id: this._credentials.identityId },
-                            info.user
-                        );
-                        const { provider, token, expires_at, identity_id } = info;
-                        try {
-                            this._storage.setItem(
-                                'aws-amplify-federatedInfo',
-                                JSON.stringify({
-                                    provider, 
-                                    token, 
-                                    user, 
-                                    expires_at, 
-                                    identity_id 
-                                })
-                            );
-                        } catch(e) {
-                            logger.debug('Failed to put federated info into auth storage', e);
-                        }
-                        if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
-                            Amplify.Cache.setItem(
-                                'federatedInfo', 
-                                { 
-                                    provider, 
-                                    token, 
-                                    user, 
-                                    expires_at, 
-                                    identity_id 
-                                }, 
-                                { priority: 1 }
-                            );
-                        } else {
-                            rej('No Cache module registered in Amplify');
-                        }
-                    }
-                    if (source === 'guest') {
-                        try {
-                            await this._storageSync;
-                            this._storage.setItem(
-                                'CognitoIdentityId-' + identityPoolId, 
-                                credentials.identityId
-                            );
-                        } catch (e) {
-                            logger.debug('Failed to cache identityId', e);
-                        }
-                    }
-                    res(that._credentials);
-                },
-                (err) => {
+            credentials.get(async (err) => {
+                if (err) {
                     logger.debug('Failed to load credentials', credentials);
                     rej(err);
+                    return;
                 }
-            );
+
+                logger.debug('Load credentials successfully', credentials);
+                that._credentials = credentials;
+                that._credentials.authenticated = authenticated;
+                that._credentials_source = source;
+                if (source === 'federated') {
+                    const user = Object.assign(
+                        { id: this._credentials.identityId },
+                        info.user
+                    );
+                    const { provider, token, expires_at, identity_id } = info;
+                    try {
+                        this._storage.setItem(
+                            'aws-amplify-federatedInfo',
+                            JSON.stringify({
+                                provider, 
+                                token, 
+                                user, 
+                                expires_at, 
+                                identity_id 
+                            })
+                        );
+                    } catch(e) {
+                        logger.debug('Failed to put federated info into auth storage', e);
+                    }
+                    if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
+                        Amplify.Cache.setItem(
+                            'federatedInfo', 
+                            { 
+                                provider, 
+                                token, 
+                                user, 
+                                expires_at, 
+                                identity_id 
+                            }, 
+                            { priority: 1 }
+                        );
+                    } else {
+                        rej('No Cache module registered in Amplify');
+                        return;
+                    }
+                }
+                if (source === 'guest') {
+                    try {
+                        await this._storageSync;
+                        this._storage.setItem(
+                            'CognitoIdentityId-' + identityPoolId, 
+                            credentials.identityId
+                        );
+                    } catch (e) {
+                        logger.debug('Failed to cache identityId', e);
+                    }
+                }
+                res(that._credentials);
+                return;
+            });
         });
     }
 
