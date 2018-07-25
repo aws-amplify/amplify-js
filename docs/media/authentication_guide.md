@@ -348,14 +348,12 @@ ga.signIn().then(googleUser => {
 
     return Auth.federatedSignIn(
         // Initiate federated sign-in with Google identity provider 
-        // Initiate federated sign-in with Google identity provider
         'google',
         {
             // the token retrieved from the identity provider (this may or may not be a JWT token depending on the provider)
             token: id_token,
             // the expiration time
             expires_at 
-            expires_at
         },
         // a user object
         user
