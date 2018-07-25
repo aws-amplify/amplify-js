@@ -21,6 +21,7 @@ import {
 import AWSPinpointProvider from './Providers/AWSPinpointProvider';
 
 import { AnalyticsProvider, EventAttributes, EventMetrics, pageViewTrackOpts } from './types';
+import MethodEmbed from './MethodEmbed';
 
 const logger = new Logger('AnalyticsClass');
 
@@ -46,6 +47,8 @@ export default class AnalyticsClass {
         this._config = {};
         this._pluggables = [];
         this._disabled = false;
+
+        this._trackFunc = this._trackFunc.bind(this);
     }
 
     public getModuleName() {
@@ -269,10 +272,23 @@ export default class AnalyticsClass {
             logger.debug('not in the supported web enviroment');
             return;
         }
-
         if (opts.enable) {
-            
-
+            MethodEmbed.add(history, 'pushState', this._trackFunc);
+            MethodEmbed.add(history, 'replaceState', this._trackFunc);
+            window.addEventListener('popstate', this._trackFunc);
+        } else {
+            MethodEmbed.remove(history, 'pushState');
+            MethodEmbed.remove(history, 'replaceState');
+            window.removeEventListener('popstate', this._trackFunc);
         }
+    }
+
+    private _trackFunc() {
+        if (!window || !window.addEventListener || !history.pushState) {
+            logger.debug('not in the supported web enviroment');
+            return;
+        }
+
+        console.log('here');
     }
 }
