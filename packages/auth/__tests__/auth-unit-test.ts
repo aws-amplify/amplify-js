@@ -191,10 +191,8 @@ const session = new CognitoUserSession({
     AccessToken: accessToken
 });
 
-const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementation(() => {
-    return new Promise((res, rej) => {
-        res('cred');
-    });
+const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'get').mockImplementation((callback) => {
+    callback(null);
 });
 
 describe('auth unit test', () => {
@@ -1422,10 +1420,8 @@ describe('auth unit test', () => {
         test('get guest credentials failed', async() => {
             const auth = new Auth(authOptionsWithNoUserPoolId);
 
-            const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementation(() => {
-                return new Promise((res, rej) => {
-                    rej('err');
-                });
+            const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'get').mockImplementation((callback) => {
+                callback(null);
             });
 
             expect(await auth.signOut()).toBeUndefined();     
