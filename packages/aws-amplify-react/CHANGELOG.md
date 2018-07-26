@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.3-unstable.10"></a>
+## [1.0.3-unstable.10](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.3-unstable.9...aws-amplify-react@1.0.3-unstable.10) (2018-07-26)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="1.0.3-unstable.9"></a>
+## [1.0.3-unstable.9](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.3-unstable.8...aws-amplify-react@1.0.3-unstable.9) (2018-07-25)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="1.0.3-unstable.8"></a>
+## [1.0.3-unstable.8](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.3-unstable.7...aws-amplify-react@1.0.3-unstable.8) (2018-07-25)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="1.0.3-unstable.7"></a>
+## [1.0.3-unstable.7](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.3-unstable.6...aws-amplify-react@1.0.3-unstable.7) (2018-07-25)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="1.0.3-unstable.6"></a>
+## [1.0.3-unstable.6](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.3-unstable.5...aws-amplify-react@1.0.3-unstable.6) (2018-07-24)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
 <a name="1.0.3-unstable.5"></a>
 ## [1.0.3-unstable.5](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.3-unstable.4...aws-amplify-react@1.0.3-unstable.5) (2018-07-23)
 
