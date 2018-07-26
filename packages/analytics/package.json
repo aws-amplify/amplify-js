@@ -52,6 +52,7 @@
   "dependencies": {
     "@aws-amplify/cache": "^1.0.2",
     "@aws-amplify/core": "^1.0.2",
+    "dom-utils": "0.9.0",
     "aws-sdk": "2.198.0",
     "uuid": "^3.2.1"
   },

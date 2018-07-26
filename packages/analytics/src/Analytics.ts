@@ -21,13 +21,17 @@ import {
 import AWSPinpointProvider from './Providers/AWSPinpointProvider';
 
 import { AnalyticsProvider, EventAttributes, EventMetrics, pageViewTrackOpts } from './types';
-import MethodEmbed from './MethodEmbed';
+import { PageViewTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
 
 const dispatchAnalyticsEvent = (event, data) => {
     Hub.dispatch('analytics', { event, data }, 'Analytics');
 };
+
+const trackers = {
+    'pageView': PageViewTracker
+}
 
 /**
 * Provide mobile analytics client functions
@@ -38,6 +42,7 @@ export default class AnalyticsClass {
     private _pluggables: AnalyticsProvider[];
     private _disabled;
     private _autoSessionRecord;
+    private _trackers;
 
     /**
      * Initialize Analtyics
@@ -47,8 +52,9 @@ export default class AnalyticsClass {
         this._config = {};
         this._pluggables = [];
         this._disabled = false;
+        this._trackers = {};
 
-        this._trackFunc = this._trackFunc.bind(this);
+        this.record = this.record.bind(this);
     }
 
     public getModuleName() {
@@ -211,8 +217,6 @@ export default class AnalyticsClass {
         return this._sendEvent(params);
     }
 
-    
-
     public async updateEndpoint(attrs, provider?) {
         const event = Object.assign({ name: '_update_endpoint' }, attrs);
 
@@ -236,59 +240,17 @@ export default class AnalyticsClass {
         return Promise.resolve();
     }
 
-
-
-
-
-
-    public pageViewTrack(opts: pageViewTrackOpts) {
-        if (opts.type === 'SPA') {
-            this._pageViewTrackSPA(opts);
+    public autoTrack(trackerType, opts) {
+        if (!trackers[trackerType]) {
+            logger.debug('invalid tracker type');
+            return;
+        }
+        
+        const tracker = this._trackers[trackerType];
+        if (!tracker) {
+            this._trackers[trackerType] = new (trackers[trackerType])(this.record, opts);
         } else {
-            this._pageViewTrackDefault(opts);
+            tracker.configure(opts);
         }
-    }
-
-    private _pageViewTrackDefault(opts: pageViewTrackOpts) {
-        if (!window || !window.addEventListener) {
-            logger.debug('not in the supported web enviroment');
-            return;
-        }
-
-        if (opts.enable) {
-            this.record({
-                name: opts.eventName || 'pageView',
-                attributes: {
-                    url: opts.pageUrl || window.location.origin + window.location.pathname
-                }
-            }).catch(e => {
-                logger.debug('Failed to record the page view event', e);
-            });
-        }
-    }
-
-    private _pageViewTrackSPA(opts: pageViewTrackOpts) {
-        if (!window || !window.addEventListener || !history.pushState) {
-            logger.debug('not in the supported web enviroment');
-            return;
-        }
-        if (opts.enable) {
-            MethodEmbed.add(history, 'pushState', this._trackFunc);
-            MethodEmbed.add(history, 'replaceState', this._trackFunc);
-            window.addEventListener('popstate', this._trackFunc);
-        } else {
-            MethodEmbed.remove(history, 'pushState');
-            MethodEmbed.remove(history, 'replaceState');
-            window.removeEventListener('popstate', this._trackFunc);
-        }
-    }
-
-    private _trackFunc() {
-        if (!window || !window.addEventListener || !history.pushState) {
-            logger.debug('not in the supported web enviroment');
-            return;
-        }
-
-        console.log('here');
     }
 }
