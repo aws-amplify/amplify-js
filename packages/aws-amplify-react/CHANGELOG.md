@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.3-unstable.12"></a>
+## [1.0.3-unstable.12](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.3-unstable.11...aws-amplify-react@1.0.3-unstable.12) (2018-07-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** currentAuthenticatedUser throws error when the user is disabled/deleted ([1b09e2f](https://github.com/aws/aws-amplify/commit/1b09e2f))
+
+
+
+
 <a name="1.0.3-unstable.11"></a>
 ## [1.0.3-unstable.11](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.3-unstable.10...aws-amplify-react@1.0.3-unstable.11) (2018-07-26)
 
