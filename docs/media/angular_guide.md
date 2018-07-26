@@ -272,7 +272,7 @@ end of the conversation.
 3. complete: A function that is executed at the end of the conversation.
 
 ```html
-<amplify-interactions bot="BookTripMOBILEHUB" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
+<amplify-interactions bot="yourBotName" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
 ```
 
 See the [Interactions documentation](./interactions_guide.md) for information on creating an Amazon Lex Chatbot.
