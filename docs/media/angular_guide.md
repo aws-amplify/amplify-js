@@ -262,14 +262,14 @@ onAlbumImageSelected( event ) {
 
 ### Interactions
 
-The Interactions component provides you with an interface for an Amazon Lex Chatbot. You can pass it three parameters:
+The `amplify-interactions` component provides you with a Chatbot user interface. You can pass it three parameters:
 
-1. bot:  The name of the Amazon Lex Chatbot
+1. `bot`:  The name of the Amazon Lex Chatbot
 
-2. clearComplete:  A flag indicating whether or not the messages should be cleared at the
+2. `clearComplete`:  A flag indicating whether or not the messages should be cleared at the
 end of the conversation.
 
-3. complete: A function that is executed at the end of the conversation.
+3. `complete`: A function that is executed when the conversation is completed.
 
 ```html
 <amplify-interactions bot="yourBotName" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
