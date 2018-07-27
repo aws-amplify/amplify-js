@@ -1045,7 +1045,7 @@ export class ListPage implements OnInit {
     this.amplifyService = amplify;
     // Listen for changes to the AuthState in order to change item list appropriately
     events.subscribe('data:AuthState', async (data) => {
-      if (data.user){
+      if (data.loggedIn){
         this.user = await this.amplifyService.auth().currentUserInfo();
         this.getItems();
       } else {
