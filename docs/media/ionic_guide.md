@@ -258,7 +258,7 @@ end of the conversation.
 <amplify-interactions bot="yourBotName" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
 ```
 
-See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/interactions_guide.md) for information on creating an Amazon Lex Chatbot.
+See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/interactions_guide) for information on creating an Amazon Lex Chatbot.
 
 ### Custom Styles
 
