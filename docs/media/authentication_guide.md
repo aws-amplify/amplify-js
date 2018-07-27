@@ -77,6 +77,10 @@ Amplify.configure({
         // REQUIRED - Amazon Cognito Region
         region: 'XX-XXXX-X',
 
+        // OPTIONAL - Amazon Cognito Federated Identity Pool Region 
+        // Required only if it's different from Amazon Cognito Region
+        identityPoolRegion: 'XX-XXXX-X',
+
         // OPTIONAL - Amazon Cognito User Pool ID
         userPoolId: 'XX-XXXX-X_abcd1234',
 
@@ -732,6 +736,17 @@ Auth.setPreferredMFA(user, 'SMS');
 Auth.setPreferredMFA(user, 'NOMFA');
 ```
 
+#### Retrieving Current Preferred MFA Type
+
+You can get current preferred MFA type in your code:
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.getPreferredMFA(user).then((data) => {
+    console.log('Current prefered MFA type is: ' + data);
+})
+```
+
 #### Letting User Select MFA Type
 
 When working with multiple MFA Types, you can let the app user select the desired authentication method. `SelectMFAType` UI Component, which is provided with `aws-amplify-react` package, renders a list of available MFA types.
@@ -1122,7 +1137,16 @@ I18n.setLanguage('en');
 I18n.putVocabularies(authScreenLabels);
 ```
 
-## Using modularized module
+
+### Customize Initial authState
+
+You can change the initial auth state for your Authenticator. By default the initial state is `signIn` which will shows the `signIn` component.
+If you want the `signUp` component shows first, you can do:
+```jsx
+<Authenticator authState='signUp'>
+```
+
+## Using Modular Imports
 
 If you only need to use Auth, you can do: `npm install @aws-amplify/auth` which will only install the Auth module for you.
 
@@ -1131,5 +1155,4 @@ Then in your code, you can import the Auth module by:
 import Auth from '@aws-amplify/auth';
 
 Auth.configure();
-
 ```

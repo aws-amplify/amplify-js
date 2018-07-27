@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "1.0.1",
+  "version": "1.0.2-unstable.1",
   "description": "AWS Amplify Angular Components",
   "main": "lib/index.js",
   "module": "./lib/index.js",
@@ -9,7 +9,7 @@
     "build": "gulp inline-templates && npm run ngcompile && npm run cleantemp",
     "cleantemp": "rimraf coverage dist tmp docs",
     "ngcompile": "node_modules/.bin/ngc -p tsconfig-aot.json",
-    "test": "karma start"
+    "test": "jest --maxWorkers 2"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -21,6 +21,7 @@
     "@angular/forms": "^6.0.3",
     "@angular/platform-browser": "^5.2.9",
     "@angular/platform-browser-dynamic": "^5.2.9",
+    "@types/jest": "^23.1.5",
     "@types/node": "^9.4.6",
     "@types/paho-mqtt": "^1.0.3",
     "@types/webpack": "^3.0.13",
@@ -36,6 +37,8 @@
     "jasmine": "^2.99.0",
     "jasmine-core": "^2.99.1",
     "jasmine-spec-reporter": "^4.2.1",
+    "jest": "^23.4.0",
+    "jest-preset-angular": "^5.2.3",
     "json-loader": "^0.5.4",
     "mocha": "^5.1.0",
     "raw-loader": "^0.5.1",

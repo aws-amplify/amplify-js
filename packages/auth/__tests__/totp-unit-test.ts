@@ -142,6 +142,12 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
         callback(null, 'Success');
     }
 
+    CognitoUser.prototype.getUserData = (callback) => {
+        callback(null, {
+            PreferredMfaSetting: 'SMS_MFA'
+        });
+    }
+
     return CognitoUser;
 });
 
@@ -331,10 +337,14 @@ describe('auth unit test', () => {
             const auth = new Auth(authOptions);
 
             const spyon = jest.spyOn(CognitoUser.prototype, "setUserMfaPreference");
+            const spyon2 = jest.spyOn(Auth.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
+                return Promise.resolve('SMS_MFA')
+            });
             expect(await auth.setPreferredMFA(user, 'TOTP')).toBe('Success');
             expect(spyon).toBeCalled();
 
             spyon.mockClear();
+            spyon2.mockClear();
         });
 
         'User has not verified software token mfa'
@@ -354,12 +364,17 @@ describe('auth unit test', () => {
                 });
             });
 
+            const spyon3 = jest.spyOn(Auth.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
+                return Promise.resolve('SMS_MFA')
+            });
+
             await auth.setPreferredMFA(user, 'NOMFA');
             expect(spyon).toBeCalled();
             expect(spyon2).toBeCalled();
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
         
         test('totp not setup but MFA chosed, enable sms', async () => {
@@ -377,12 +392,17 @@ describe('auth unit test', () => {
                 });
             });
 
+            const spyon3 = jest.spyOn(Auth.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
+                return Promise.resolve('NOMFA')
+            });
+
             await auth.setPreferredMFA(user, 'SMS');
             expect(spyon).toBeCalled();
             expect(spyon2).toBeCalled();
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         }); 
 
         test('totp not setup but TOTP chosed', async () => {
@@ -394,6 +414,9 @@ describe('auth unit test', () => {
                 }
                 callback(err, null);
             });
+            const spyon2 = jest.spyOn(Auth.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
+                return Promise.resolve('SMS_MFA')
+            });
 
             try {
                 await auth.setPreferredMFA(user, 'TOTP');
@@ -403,6 +426,7 @@ describe('auth unit test', () => {
             expect(spyon).toBeCalled();
    
             spyon.mockClear();
+            spyon2.mockClear();
         });
 
         test('totp not setup but TOTP chosed', async () => {
@@ -414,6 +438,9 @@ describe('auth unit test', () => {
                 }
                 callback(err, null);
             });
+            const spyon2 = jest.spyOn(Auth.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
+                return Promise.resolve('SMS_MFA')
+            });
 
             try {
                 await auth.setPreferredMFA(user, 'TOTP');
@@ -424,12 +451,34 @@ describe('auth unit test', () => {
             expect(spyon).toBeCalled();
    
             spyon.mockClear();
+            spyon2.mockClear();
         });
 
         test('incorrect mfa type', async () => {
             const auth = new Auth(authOptions);
             try {
                 await auth.setPreferredMFA(user, 'incorrect mfa type');
+            } catch (e) {
+                expect(e).not.toBeNull();
+            }
+        });
+    });
+
+    describe('getPreferredMFA test', () => {
+        test('happy case', async () => {
+            const auth = new Auth(authOptions);
+
+            expect(await auth.getPreferredMFA(user)).toBe('SMS_MFA');
+        });
+
+        test('error case', async () => {
+            const auth = new Auth(authOptions);
+
+            const spyon = jest.spyOn(CognitoUser.prototype, 'getUserData').mockImplementationOnce(callback => {
+                callback('err', null);
+            })
+            try {
+                await auth.getPreferredMFA(user);
             } catch (e) {
                 expect(e).not.toBeNull();
             }
