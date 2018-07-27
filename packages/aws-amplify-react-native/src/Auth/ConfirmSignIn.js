@@ -16,7 +16,9 @@ import {
     View, 
     Text, 
     TextInput, 
-    Button 
+    Button,
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import {
     Auth,
@@ -69,22 +71,24 @@ export default class ConfirmSignIn extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <View style={theme.section}>
-                <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
-                <View style={theme.sectionBody}>
-                    <ConfirmationCode
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ code: text })}
-                    />
-                    <Button
-                        title={I18n.get('Confirm')}
-                        onPress={this.confirm}
-                        disabled={!this.state.code}
-                    />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
+                    <View style={theme.sectionBody}>
+                        <ConfirmationCode
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ code: text })}
+                        />
+                        <Button
+                            title={I18n.get('Confirm')}
+                            onPress={this.confirm}
+                            disabled={!this.state.code}
+                        />
+                    </View>
+                    <Footer theme={theme} onStateChange={this.changeState}/>
+                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
-                <Footer theme={theme} onStateChange={this.changeState}/>
-                <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-            </View>
+            </TouchableWithoutFeedback>
         );
     }
 }
