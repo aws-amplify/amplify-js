@@ -36,3 +36,9 @@ export interface pageViewTrackOpts {
     type?: string
     eventName?: string
 }
+
+export interface EventTrackOpts {
+    enable: boolean,
+    events?: Array<string>,
+    selectorPrefix?: string
+}

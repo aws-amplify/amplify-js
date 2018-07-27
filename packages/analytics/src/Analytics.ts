@@ -21,7 +21,7 @@ import {
 import AWSPinpointProvider from './Providers/AWSPinpointProvider';
 
 import { AnalyticsProvider, EventAttributes, EventMetrics, pageViewTrackOpts } from './types';
-import { PageViewTracker } from './trackers';
+import { PageViewTracker, EventTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
 
@@ -30,7 +30,8 @@ const dispatchAnalyticsEvent = (event, data) => {
 };
 
 const trackers = {
-    'pageView': PageViewTracker
+    'pageView': PageViewTracker,
+    'event': EventTracker
 }
 
 /**
