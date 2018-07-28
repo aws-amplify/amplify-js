@@ -88,7 +88,8 @@ export default class AuthClass {
             identityPoolId, 
             mandatorySignIn,
             refreshHandlers,
-            storage
+            storage,
+            identityPoolRegion
         } = this._config;
 
         if (!this._config.storage) {
@@ -118,7 +119,7 @@ export default class AuthClass {
 
         Credentials.configure({
             mandatorySignIn,
-            region,
+            region: identityPoolRegion || region,
             userPoolId,
             identityPoolId,
             refreshHandlers,
@@ -403,6 +404,8 @@ export default class AuthClass {
 
     /**
      * get user current preferred mfa option
+     * this method doesn't work with totp, we need to deprecate it.
+     * @deprecated
      * @param {CognitoUser} user - the current user
      * @return - A promise resolves the current preferred mfa option if success
      */
@@ -418,6 +421,23 @@ export default class AuthClass {
             });
         });
     }
+
+    /**
+     * get preferred mfa method
+     * @param {CognitoUser} user - the current cognito user
+     */
+    public getPreferredMFA(user: any): Promise<string> {
+        return new Promise((res, rej) => {
+            user.getUserData((err, data) => {
+                if (err) {
+                    logger.debug('getting preferred mfa failed', err);
+                    rej('getting preferred mfa failed: ' + err);
+                }
+                const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+                res(preferredMFA);
+            });
+        });
+    }
     
     /**
      * set preferred MFA method
@@ -425,8 +445,9 @@ export default class AuthClass {
      * @param {string} mfaMethod - preferred mfa method
      * @return - A promise resolve if success
      */
-    public setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
-        let smsMfaSettings = null;
+    public async setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
+        let smsMfaSettings = await this.getPreferredMFA(user) === 'SMS_MFA'?
+            { PreferredMfa : false, Enabled : false } : null;
         let totpMfaSettings = {
             PreferredMfa : false,
             Enabled : false
@@ -753,8 +774,37 @@ export default class AuthClass {
                     return;
                 }
 
+                // refresh the session if the session expired.
                 user.getSession(function(err, session) {
-                    if (err) { rej(err); } else { res(user); }
+                    if (err) {
+                        logger.debug('Failed to get the user session', err);
+                        rej(err); 
+                        return;
+                    }
+                });
+
+                // get user data from Cognito, also to make sure the user is still valid
+                user.getUserData((err, data) => {
+                    if (err) {
+                        logger.debug('getting user data failed', err);
+                        rej(err);
+                        return;
+                    }
+                    const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+                    const attributeList = [];
+
+                    for (let i = 0; i < data.UserAttributes.length; i++) {
+                        const attribute = {
+                            Name: data.UserAttributes[i].Name,
+                            Value: data.UserAttributes[i].Value,
+                        };
+                        const userAttribute = new CognitoUserAttribute(attribute);
+                        attributeList.push(userAttribute);
+                    }
+
+                    const attributes = this.attributesToObject(attributeList);
+                    Object.assign(user, {attributes, preferredMFA});
+                    res(user);
                 });
             });
         });
@@ -783,17 +833,11 @@ export default class AuthClass {
             try {
                 user = await this.currentUserPoolUser();
             } catch (e) {
-                throw 'not authenticated';
+                logger.debug('The user is not authenticated by the error', e);
+                throw e;
             }
-            let attributes = {};
-            try {
-                attributes = this.attributesToObject(await this.userAttributes(user));
-            } catch (e) {
-                logger.debug('cannot get user attributes');
-            } finally {
-                this.user = Object.assign(user, { attributes });
-                return this.user;
-            }
+            this.user = user;
+            return this.user;
         }
     }
 

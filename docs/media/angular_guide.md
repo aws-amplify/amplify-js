@@ -260,6 +260,23 @@ onAlbumImageSelected( event ) {
 }
 ```
 
+### Interactions
+
+The `amplify-interactions` component provides you with a Chatbot user interface. You can pass it three parameters:
+
+1. `bot`:  The name of the Amazon Lex Chatbot
+
+2. `clearComplete`:  A flag indicating whether or not the messages should be cleared at the
+end of the conversation.
+
+3. `complete`: A function that is executed when the conversation is completed.
+
+```html
+<amplify-interactions bot="yourBotName" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
+```
+
+See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/interactions_guide) for information on creating an Amazon Lex Chatbot.
+
 ### Custom Styles
 
 You can use custom styling for AWS Amplify components. Just import your custom *styles.css* that overrides the default styles which can be found in `/node_modules/aws-amplify-angular/theme.css`.
