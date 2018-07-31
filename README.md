@@ -16,8 +16,8 @@
   <a href="https://codecov.io/gh/aws/aws-amplify">
     <img src="https://codecov.io/gh/aws/aws-amplify/branch/master/graph/badge.svg" />
   </a>
-  <a href="https://circleci.com/gh/aws/aws-amplify">
-    <img src="https://circleci.com/gh/aws-amplify/amplify-js.svg?style=svg" alt="build:started">
+  <a href="https://circleci.com/gh/aws-amplify/amplify-js">
+    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-js/master.svg" alt="build:started">
   </a>
 </p>
 

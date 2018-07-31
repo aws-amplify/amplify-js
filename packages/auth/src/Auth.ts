@@ -431,7 +431,7 @@ export default class AuthClass {
             user.getUserData((err, data) => {
                 if (err) {
                     logger.debug('getting preferred mfa failed', err);
-                    rej('getting preferred mfa failed: ' + err);
+                    rej(err);
                 }
                 const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
                 res(preferredMFA);
@@ -834,7 +834,7 @@ export default class AuthClass {
                 user = await this.currentUserPoolUser();
             } catch (e) {
                 logger.debug('The user is not authenticated by the error', e);
-                throw e;
+                throw ('not authenticated');
             }
             this.user = user;
             return this.user;
