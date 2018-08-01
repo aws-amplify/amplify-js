@@ -553,6 +553,9 @@ In React Native, loading the persisted current user information requires an extr
         cognitoUser.getSession(function(err, result) {
             if (result) {
                 console.log('You are now logged in.');
+                
+                //POTENTIAL: Region needs to be set if not already set previously elsewhere.
+                AWS.config.region = '<region>';
 
                 // Add the User's Id Token to the Cognito credentials login map.
                 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
