@@ -16,6 +16,7 @@ import android.app.AlarmManager;
 import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -178,16 +179,14 @@ public class RNPushNotificationHelper {
                 }
             }
 
-            String NOTIFICATION_CHANNEL_ID = 'channel_id_01';
-            String NOTIFICATION_CHANNEL_NAME = 'channel_id_01';
+            String NOTIFICATION_CHANNEL_ID = packageName;
+            String NOTIFICATION_CHANNEL_NAME = packageName;
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                int importance = NotificationManager.IMPORTANCE_LOW;
+                int importance = NotificationManager.IMPORTANCE_HIGH;
                 NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, importance);
                 notificationChannel.enableLights(true);
-                notificationChannel.setLightColor(Color.RED);
-                //notificationChannel.enableVibration(true);
-                //notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                notificationChannel.enableVibration(true);
                 notificationManager.createNotificationChannel(notificationChannel);
             }
 
@@ -199,7 +198,7 @@ public class RNPushNotificationHelper {
                     .setAutoCancel(bundle.getBoolean("autoCancel", true));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                notification..setChannelId(NOTIFICATION_CHANNEL_ID);
+                notification.setChannelId(NOTIFICATION_CHANNEL_ID);
             }
 
             String group = bundle.getString("group");
