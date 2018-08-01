@@ -399,7 +399,7 @@ describe('auth unit test', () => {
             try {
                 await auth.getPreferredMFA(user);
             } catch (e) {
-                expect(e).not.toBeNull();
+                expect(e).toBe('err');
             }
         });
     });
