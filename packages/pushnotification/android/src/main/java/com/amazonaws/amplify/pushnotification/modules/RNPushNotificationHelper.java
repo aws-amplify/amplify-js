@@ -182,6 +182,8 @@ public class RNPushNotificationHelper {
             String NOTIFICATION_CHANNEL_ID = packageName;
             String NOTIFICATION_CHANNEL_NAME = packageName;
 
+            NotificationManager notificationManager = notificationManager();
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 int importance = NotificationManager.IMPORTANCE_HIGH;
                 NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, importance);
@@ -312,8 +314,6 @@ public class RNPushNotificationHelper {
             // broadcast event
             // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
             //         PendingIntent.FLAG_ONE_SHOT);
-
-            NotificationManager notificationManager = notificationManager();
 
             notification.setContentIntent(pendingIntent);
 
