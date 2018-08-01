@@ -1,7 +1,7 @@
 import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
 
-import { AmplifyService, AuthState } from '../../../providers';
-import { PhotoPickerComponentCore } from './photo-picker.component.core';
+import { AmplifyService, AuthState } from '../providers';
+import { PhotoPickerComponentCore } from '../components/storage/photo-picker-component/photo-picker.component.core';
 
 const template = `
 <div class="amplify-photo-picker-container">

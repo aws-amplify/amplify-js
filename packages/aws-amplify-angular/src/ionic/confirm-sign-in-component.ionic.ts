@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
-import { ConfirmSignInComponentCore } from './confirm-sign-in-component.core'
+import { AmplifyService, AuthState } from '../providers';
+import { ConfirmSignInComponentCore } from '../components/authenticator/confirm-sign-in-component/confirm-sign-in-component.core'
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">

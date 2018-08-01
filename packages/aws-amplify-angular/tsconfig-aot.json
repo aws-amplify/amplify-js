@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "sourceMap": true,
     "declaration": true,
@@ -15,12 +15,9 @@
     "stripInternal": true,
     "skipLibCheck": true,
     "outDir": "lib",
-    "rootDir": "./tmp/src-inlined",
     "typeRoots" : ["./node_modules/@typings"]
   },
-  "files": [
-    "./tmp/src-inlined/index.ts"
-  ],
+  "exclude": ["./src/__tests__/", "./src/ionic/", "./src/aws-amplify-ionic-module.ts", "./webpack.config.ts"],
   "angularCompilerOptions": {
     "genDir": "lib",
     "debug": false,

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
-import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
+import { AmplifyService, AuthState } from '../providers';
+import { RequireNewPasswordComponentCore } from '../components/authenticator/require-new-password-component/require-new-password.component.core';
 
 const templatetemp = `
 <div class="amplify-form-container" *ngIf="_show">

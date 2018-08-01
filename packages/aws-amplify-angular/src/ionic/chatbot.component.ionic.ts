@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { ChatbotComponentCore } from './chatbot.component.core'
-import { AmplifyService } from '../../../providers';
+import { ChatbotComponentCore } from '../components/interactions/chatbot/chatbot.component.core'
+import { AmplifyService } from '../providers';
 
 const template = `
 <div class="amplify-interactions-container">

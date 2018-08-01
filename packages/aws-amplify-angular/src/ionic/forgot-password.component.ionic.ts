@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
-import { ForgotPasswordComponentCore } from './forgot-password.component.core';
-import { includes } from '../common';
+import { AmplifyService, AuthState } from '../providers';
+import { ForgotPasswordComponentCore } from '../components/authenticator/forgot-password-component/forgot-password.component.core';
+// import { includes } from '../common';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">

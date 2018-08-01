@@ -1,11 +1,12 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMount }      from '../../component.mount';
+import { ComponentMountMap } from '../../component.mount';
 import { PhotoPickerClass } from './photo-picker.class';
-import { PhotoPickerIonicComponent } from './photo-picker.component.ionic'
-import { PhotoPickerComponentCore } from './photo-picker.component.core';
+// import { PhotoPickerIonicComponent } from './photo-picker.component.ionic'
+// import { PhotoPickerComponentCore } from './photo-picker.component.core';
 import { String } from 'aws-sdk/clients/cognitoidentity';
+
 
 @Component({
   selector: 'amplify-photo-picker',
@@ -37,7 +38,7 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let photoPickerComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(PhotoPickerIonicComponent,{url: this.url}) : new ComponentMount(PhotoPickerComponentCore, {url: this.url});
+    let photoPickerComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? ComponentMountMap('photoPickerIonic',{url: this.url}) : ComponentMountMap('photoPickerCore', {url: this.url});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(photoPickerComponent.component);
 

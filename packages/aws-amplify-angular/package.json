@@ -1,15 +1,20 @@
 {
   "name": "aws-amplify-angular",
-  "version": "1.0.2-unstable.1",
+  "version": "1.2.23",
   "description": "AWS Amplify Angular Components",
-  "main": "lib/index.js",
-  "module": "./lib/index.js",
-  "typings": "./lib/index.d.ts",
+  "main": "bundles/amazing.umd.js",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "build": "gulp inline-templates && npm run ngcompile && npm run cleantemp",
+    "webpack": "webpack --display-error-details",
     "cleantemp": "rimraf coverage dist tmp docs",
     "ngcompile": "node_modules/.bin/ngc -p tsconfig-aot.json",
-    "test": "jest --maxWorkers 2"
+    "test": "jest --maxWorkers 2",
+    "transpile": "ngc",
+    "package": "rollup -c",
+    "minify": "uglifyjs dist/bundles/amazing.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/amazing.umd.min.js",
+    "build-test": "npm run transpile && npm run package && npm run minify"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -30,6 +35,10 @@
     "angular2-template-loader": "^0.6.2",
     "awesome-typescript-loader": "^4.0.1",
     "aws-amplify": "^0.4.9-unstable.2",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-plugin-lodash": "^3.3.4",
+    "babel-preset-env": "^1.7.0",
     "compression-webpack-plugin": "^1.1.11",
     "css-loader": "^0.28.1",
     "gulp": "^3.9.1",
@@ -40,21 +49,36 @@
     "jest": "^23.4.0",
     "jest-preset-angular": "^5.2.3",
     "json-loader": "^0.5.4",
+    "lodash-webpack-plugin": "^0.11.5",
     "mocha": "^5.1.0",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.1",
+    "rollup-plugin-node-resolve": "^3.3.0",
     "rxjs": "^6.2.1",
     "rxjs-compat": "^6.2.1",
     "source-map-explorer": "^1.3.3",
     "to-string-loader": "^1.1.5",
-    "webpack": "^3.5.5",
+    "webpack": "^4.16.3",
     "webpack-angular-externals": "^1.0.2",
     "webpack-rxjs-externals": "^1.0.0",
     "zone": "^0.3.4",
     "zone.js": "^0.8.26"
   },
+  "peerDependencies": {
+    "@ionic/angular": "^4.0.0"
+  },
   "dependencies": {
-    "@ionic/angular": "4.0.0-alpha.7",
-    "@types/lodash": "^4.14.106"
+    "@ngtools/webpack": "^6.1.1",
+    "@types/lodash": "^4.14.106",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "gulp-uglify": "^3.0.1",
+    "html-webpack-plugin": "^3.2.0",
+    "rollup": "^0.63.5",
+    "rollup-plugin-babel": "^3.0.7",
+    "rollup-plugin-commonjs": "^9.1.4",
+    "rollup-plugin-json": "^3.0.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.2.1",
+    "webpack-cli": "^3.1.0"
   }
 }

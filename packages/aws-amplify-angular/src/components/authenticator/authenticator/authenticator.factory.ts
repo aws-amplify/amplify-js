@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMount }      from '../../component.mount';
+import { ComponentMountMap } from '../../component.mount';
 import { AuthClass } from './authenticator.class';
-import {AuthenticatorIonicComponent} from './authenticator.component.ionic'
-import { AuthenticatorComponentCore } from './authenticator.component.core';
+// import {AuthenticatorIonicComponent} from './authenticator.component.ionic';
+// import { AuthenticatorComponentCore } from './authenticator.component.core';
 
 @Component({
   selector: 'amplify-authenticator',
@@ -29,7 +29,7 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(AuthenticatorIonicComponent,{hide: this.hide}) : new ComponentMount(AuthenticatorComponentCore, {hide: this.hide});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? ComponentMountMap('authenticatorIonic' ,{hide: this.hide}) : ComponentMountMap('authenticatorCore', {hide: this.hide});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

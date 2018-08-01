@@ -4,8 +4,8 @@
     "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
     "module": "es2015",
     "moduleResolution": "node",
     "paths": {
@@ -24,10 +24,7 @@
     ]
   },
   "files": [
-    "index.ts",
-  ],
-  "exclude":[
-    "src/ionic/**/*"
+    "index.ts"
   ],
   "angularCompilerOptions": {
     "strictMetadataEmit": true
