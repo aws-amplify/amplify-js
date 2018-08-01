@@ -434,7 +434,7 @@ export default class AuthClass {
             user.getUserData((err, data) => {
                 if (err) {
                     logger.debug('getting preferred mfa failed', err);
-                    rej('getting preferred mfa failed: ' + err);
+                    rej(err);
                     return;
                 }
                 
