@@ -178,12 +178,29 @@ public class RNPushNotificationHelper {
                 }
             }
 
+            String NOTIFICATION_CHANNEL_ID = 'channel_id_01';
+            String NOTIFICATION_CHANNEL_NAME = 'channel_id_01';
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                int importance = NotificationManager.IMPORTANCE_LOW;
+                NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, importance);
+                notificationChannel.enableLights(true);
+                notificationChannel.setLightColor(Color.RED);
+                //notificationChannel.enableVibration(true);
+                //notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
                     .setContentTitle(title)
                     .setTicker(bundle.getString("ticker"))
                     .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(bundle.getBoolean("autoCancel", true));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notification..setChannelId(NOTIFICATION_CHANNEL_ID);
+            }
 
             String group = bundle.getString("group");
             if (group != null) {
