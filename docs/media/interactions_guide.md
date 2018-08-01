@@ -325,6 +325,10 @@ export default class App extends React.Component {
 
 }
  ```
+ 
+### Using with Angular and Ionic
+
+Please see [Angular]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/angular_guide#interactions) and [Ionic]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/ionic_guide#interactions) documentation for Interactions UI components.
 
 ### API Reference
 
