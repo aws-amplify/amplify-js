@@ -1,3 +1,18 @@
+{% if site.amplify.header.logo.text or site.amplify.header.logo.image or site.amplify.header.nav %}
+<div class="notification-bar row" id="notification-bar">
+	<div class="notification-content">
+		<div class="col-xs-5">
+			<img class="notification-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/icons/Medium/Volume.svg">
+		</div>
+		<p class="notification-text col-xs-7">News: The New VR Component is live and ready to deploy!</p>
+	</div>
+	<div class="close-button">
+		<a href=''><i class="icon icon--x"></i></a>
+	</div>
+</div>
+{% endif %}
+
+
 {% if site.amplify.header.nav %}
 	<div class="offcanvas visible-xs">
 		<ul class="offcanvas__nav">
@@ -5,7 +20,7 @@
 				<li>
 					{% if item.item_external_url %}
 						<a href="{{ item.item_external_url }}">
-							 {{ item.item_name }}   
+							{{ item.item_name }}   
 						</a>
 					{% else %}
 						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
@@ -20,9 +35,9 @@
 
 {% if site.amplify.header.logo.text or site.amplify.header.logo.image or site.amplify.header.nav %}
 	<header class="site-header">
-		<div class="container">
+		<div class="container site-header-container">
 			<div class="row">
-				<div class="col-xs-12">
+				<div>
 					{% if site.amplify.header.logo.text %}
 						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
 							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
@@ -51,7 +66,7 @@
 								</li>
 							{% endfor %}
 							<li class="site-search">
-								<a> <input placeholder="Search..." type="text" id='search-input'/> </a>
+								<input placeholder="   Search" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/search.svg"></input>
 							</li>
 						</ul><!-- /.site-header__nav -->
 						<button class="offcanvas-toggle visible-xs">
@@ -63,17 +78,5 @@
 				</div><!-- /.col -->
 			</div><!-- /.row -->
 		</div><!-- /.container -->
-		<div class="row notification-bar">
-			<div class="col-xs-11">
-				🚀 AWS Amplify supports AI-powered chatbots with new Interactions category.
-				<a  href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/interactions_guide"
-					class="link-button">
-					➡️Learn More 
-				</a>
-			</div class="col-xs-1">
-			<div class="close-button">
-				<a href=''><i class="icon icon--x"></i></a>
-			</div>
-		</div>
 	</header><!-- /.site-header -->
 {% endif %}

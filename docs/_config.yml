@@ -62,21 +62,21 @@ amplify:
     color_theme:  # Available themes: blue (default), green, purple, red and yellow
     header:
         logo:
-            text: AWS Amplify
+            text: Amplify
             image: true
             platform: for JavaScript
         nav:
-            - item_name: Quick Start
+            - item_name: Quickstart
               item_url: '/media/quick_start'
-            - item_name: Docs
+            - item_name: Developer Guides
               item_url: '/media/developer_guide'
-            - item_name: Tutorials
+            - item_name: User Interface
               item_url: '/media/tutorials'
             - item_name: API
               item_url: '/api/'
-            - item_name: 
-              item_icon: github
-              item_external_url: 'https://github.com/aws-amplify/amplify-js'
+            #- item_name: 
+            #  item_icon: github
+            #  item_external_url: 'https://github.com/aws-amplify/amplify-js'
     footer:
         content:
             logo:
@@ -86,10 +86,10 @@ amplify:
         social_list:
             - network_name: gitter
               profile_url: 'https://gitter.im/AWS-Amplify/Lobby/'
-            - network_name: twitter
-              profile_url: 'https://twitter.com/search?q=%23awsamplify&src=typd'
             - network_name: github
               profile_url: 'https://github.com/aws-amplify/amplify-js'
+            - network_name: twitter
+              profile_url: 'https://twitter.com/search?q=%23awsamplify&src=typd'
             - network_name: youtube
               profile_url: 'https://www.youtube.com/watch?v=vAjf3lyjf8c'
               

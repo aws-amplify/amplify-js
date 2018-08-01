@@ -295,7 +295,7 @@
 		}
 	}
 
-	// Handle click for notification bar
+	//Handle click for notification bar
 	$( 	'div.row.notification-bar a' )
 		.click( function( event ) {
 			Cookies.set('notificationMessage_LastReceived', new String( new Date() ) );
@@ -332,6 +332,17 @@
 
 	// When the last message is received. Typicaly the announcement time
 	showNotificationBar( new Date('June 26, 2018 11:42:00') );
+
+	// Hide magnifying glass in search bar
+	let search_box = document.getElementById("search-input")
+	search_box.onclick = function() {
+		document.getElementById("search-image").style.display = "none";
+		search_box.style.outline = "none";
+		search_box.placeholder = "Search";
+	}
+
+	// temporary for editing notif bar
+	//document.getElementById("notification-bar").style.display = "block";
 
 }( jQuery ) );
 
