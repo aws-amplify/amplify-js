@@ -63,7 +63,8 @@
   "dependencies": {
     "buffer": "4.9.1",
     "crypto-browserify": "1.0.9",
-    "js-cookie": "^2.1.4"
+    "js-cookie": "^2.1.4",
+    "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",

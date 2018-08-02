@@ -1,3 +1,4 @@
+import 'whatwg-fetch';
 import UserAgent from './UserAgent';
 /** @class */
 export default class Client {
