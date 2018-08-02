@@ -60,28 +60,11 @@ const template = `
 		        [value]="inputText"
 		        (keyup.enter)="onSubmit(inputValue.value)"
 		        (change)="onInputChange($event.target.value)"></ion-input>
-		    <ion-button (click)="onSubmit()">Send</ion-button>
+		    <ion-button (click)="onSubmit(inputValue.value)">Send</ion-button>
 		</div>
 	</div>
 </div>
 `;
-
-const temp=`			
-<div class="amplify-interactions-conversation">
-<ion-chip color="primary">
-	<ion-label>{{chatTitle}}</ion-label>
-</ion-chip>		
-<br>	
-<div *ngFor="let message of messages">
-	<ion-chip>
-		<ion-label>{{message.me}}</ion-label>
-	</ion-chip>
-	<ion-chip color="primary">
-		<ion-label>{{message.bot}}</ion-label>
-	</ion-chip>
-</div>
-</div>
-</div>`
 
 @Component({
   selector: 'amplify-interactions-ionic',

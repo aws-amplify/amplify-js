@@ -165,10 +165,8 @@ const session = new CognitoUserSession({
     AccessToken: accessToken
 });
 
-const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementation(() => {
-    return new Promise((res, rej) => {
-        res('cred');
-    });
+const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'get').mockImplementation((callback) => {
+   callback(null);
 })
 
 describe('for react native', () => {

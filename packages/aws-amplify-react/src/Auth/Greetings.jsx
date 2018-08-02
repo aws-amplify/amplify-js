@@ -116,10 +116,7 @@ export default class Greetings extends AuthPiece {
             })
             .catch(err => {
                 if (!that._isMounted) { return; }
-                if (!authState || authState === 'signedIn') {
-                    this.setState({ authState: 'signIn' });
-                    this.changeState('signIn');
-                }
+                this.signOut();
             });
     }
 
