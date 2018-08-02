@@ -331,7 +331,7 @@
 	}
 
 	// When the last message is received. Typicaly the announcement time
-	showNotificationBar( new Date('June 26, 2018 11:42:00') );
+	showNotificationBar( new Date('August 1, 2018 11:42:00') );
 
 	// Hide magnifying glass in search bar
 	let search_box = document.getElementById("search-input")
