@@ -60,7 +60,8 @@ export class Credentials {
         logger.debug('picking up credentials');
         if (!this._gettingCredPromise || !this._gettingCredPromise.isPending()) {
             logger.debug('getting new cred promise');
-            if (AWS.config && AWS.config.credentials && AWS.config.credentials instanceof Credentials) {
+            console.log('AWS.config.credentials instanceof AWS.Credentials', AWS.config.credentials instanceof AWS.Credentials);
+            if (AWS.config && AWS.config.credentials && AWS.config.credentials instanceof AWS.Credentials) {
                 this._gettingCredPromise = JS.makeQuerablePromise(this._setCredentialsFromAWS());
             } else {
                 this._gettingCredPromise = JS.makeQuerablePromise(this._keepAlive());
