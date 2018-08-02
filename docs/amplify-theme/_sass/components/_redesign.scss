@@ -343,6 +343,20 @@
     margin-top: 70px;
 }
 
+.btn {
+    color: #FFFFFF;
+    font-family: "Amazon Ember";
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1.8px;
+    line-height: 18px;
+    text-align: center;
+    background-color: #FF9900;
+    padding: 0 40px 0 40px;
+    height: 60px;
+    text-transform: uppercase;
+}
+
 .section-top {
     padding: 0;
 
@@ -406,19 +420,6 @@
     //     //margin-top: 50px;
     // }
 
-    .btn {
-        color: #FFFFFF;
-        font-family: "Amazon Ember";
-        font-size: 14px;
-        font-weight: bold;
-        letter-spacing: 1.8px;
-        line-height: 18px;
-        text-align: center;
-        background-color: #FF9900;
-        padding: 0 40px 0 40px;
-        height: 60px;
-        text-transform: uppercase;
-    }
 
     #library-btn {
         margin-bottom: 60px;
@@ -772,3 +773,179 @@ li {
         color: #007EB9;
     }
 }
+
+
+
+//=============================================================================
+/***                   new stuff for developer guide                       ***/
+//=============================================================================
+
+.dev-guide-container {
+    max-width: 1180px;
+    width: 90%;
+    margin: auto;
+
+    .section-top {
+        max-width: 1180px;
+        width: 100%;
+    }
+
+    .container {
+        padding: 0;
+        width: 100%;
+    }
+
+    .row {
+        padding: 0;
+    }
+
+    .section-category {
+        // width: 1180px;
+        // max-width: 90%;
+        margin: auto;
+        padding-bottom: 45px;
+
+        .container {
+            
+
+            .dev-guide-heading {
+
+                .dev-guide__title {
+                    color: #232F3E;
+                    font-family: "Amazon Ember";
+                    font-size: 42px;
+                    font-weight: 300;
+                    line-height: 53px;
+                    margin-top: 60px;
+                }
+
+                .dev-guide__excerpt {
+                    color: #828282;
+                    font-family: "Amazon Ember";
+                    font-size: 16px;
+                    line-height: 24px;
+                    margin-bottom: 45px;
+                }
+            }
+        }
+    }
+
+    .section-top-category {
+        margin: 0;
+
+        .header {
+            padding: 0 20px 0 20px;
+            margin-top: 68px;
+        }
+
+        .subheader {
+            padding: 0 20px 0 20px;
+        }
+
+        .container {
+            width: 85%;
+            margin: auto;
+            margin-bottom: 30px;
+
+            .row {
+                margin-bottom: 68px;
+            }
+        }
+
+        .col-xs-12 {
+            margin-top:2%;
+            padding: 0 20px 0 20px;
+        }
+
+        .dev-guide-item {
+            padding: 23px 16px 20px 16px;
+            border: 1px solid #E1E1E1;
+            border-radius: 5px;
+            display: inline-block;
+            width: 100%;
+
+            .dev-guide-icon {
+                width: 31px;
+                position: absolute;
+                top: 10px;
+                right: 32px;
+            }
+
+            .dev-guide-logo {
+                width: 48px;
+                position: absolute;
+                top: 12px;
+                right: 12px;
+            }
+
+            .dev-guide-content {
+                float: left;
+                margin-bottom: 20px;
+                width: 94%;
+
+                .dev-guide-title {
+                    color: #FF9900;
+                    font-family: "Amazon Ember";
+                    font-size: 20px;
+                    font-weight: bold;
+                    line-height: 25px;
+                    margin-bottom: 13px;
+                }
+
+                .dev-guide-excerpt {
+                    color: #828282;
+                    font-family: "Amazon Ember";
+                    font-size: 14px;
+                    line-height: 18px;
+                }
+            }
+
+            .services-container {
+                position: absolute; 
+                bottom: 0;
+                width: 270px;
+                max-width: 75%;
+
+                .dev-guide-services {
+                    color: #828282;
+                    font-family: "Helvetica Neue";
+                    font-size: 11px;
+                    font-style: italic;
+                    line-height: 16px;
+                    position: absolute;
+                    bottom: 23px;
+                }
+            }
+            #angular-logo {
+                width: 58px;
+                top: 0;
+                right: 19px;
+            }
+
+            #react-logo {
+                width: 54px;
+                top: 6px;
+                right: 24px;
+            }
+
+            #react-native-logo {
+                width: 54px;
+                top: 6px;
+                right: 24px;
+            }
+
+            #vuejs-logo {
+                width: 43px;
+                top: 8px;
+                right: 26px;
+            }
+
+            #ionic-logo {
+                width: 43px;
+                top: 8px;
+                right: 26px;
+            }
+        }
+    }
+}
+
