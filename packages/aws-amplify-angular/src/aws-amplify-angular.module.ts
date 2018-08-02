@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import { AmplifyService } from './providers/amplify.service';
-// import * as components from './components';
+
 import { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
 import { AuthenticatorComponentCore } from './components/authenticator/authenticator/authenticator.component.core';
 import { ConfirmSignInComponent } from './components/authenticator/confirm-sign-in-component/confirm-sign-in.factory';
@@ -66,11 +66,21 @@ const exportables = [
   ],
   declarations: [
     DynamicComponentDirective,
-    // components.FormComponent,
     ...exportables,
   ],
   entryComponents: [
-    ...exportables
+    AuthenticatorComponentCore,
+    ConfirmSignInComponentCore,
+    ConfirmSignUpComponentCore,
+    RequireNewPasswordComponentCore,
+    GreetingComponentCore,
+    ForgotPasswordComponentCore,
+    SignInComponentCore,
+    SignUpComponentCore,
+    S3AlbumComponentCore,
+    S3ImageComponentCore,
+    PhotoPickerComponentCore,
+    ChatbotComponentCore
   ],
   providers: [ AmplifyService ],
   exports: [

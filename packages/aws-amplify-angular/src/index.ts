@@ -1,9 +1,5 @@
 export { AmplifyAngularModule } from './aws-amplify-angular.module';
-// export { AmplifyIonicModule } from './aws-amplify-ionic-module';
-
-
-// export * from './providers';
-// export * from './directives';
+export { AmplifyIonicModule } from './aws-amplify-ionic-module';
 
 export { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
 export { AuthenticatorComponentCore } from './components/authenticator/authenticator/authenticator.component.core';
@@ -31,3 +27,16 @@ export { ChatBotComponent } from './components/interactions/chatbot/chatbot.fact
 export { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.component.core'; 
 export { DynamicComponentDirective } from './directives/dynamic.component.directive';
 export { FormComponent } from './components/common/form.component';
+
+export { AuthenticatorIonicComponent } from './ionic/authenticator.component.ionic';
+export { ConfirmSignInComponentIonic } from './ionic/confirm-sign-in-component.ionic';
+export { ConfirmSignUpComponentIonic } from './ionic/confirm-sign-up.component.ionic';
+export { ForgotPasswordComponentIonic } from './ionic/forgot-password.component.ionic';
+export { GreetingComponentIonic } from './ionic/greeting.component.ionic';
+export { SignInComponentIonic } from './ionic/sign-in.component.ionic';
+export { SignUpComponentIonic } from './ionic/sign-up.component.ionic';
+export { RequireNewPasswordComponentIonic } from './ionic/require-new-password.component.ionic';
+export { PhotoPickerIonicComponent } from './ionic/photo-picker.component.ionic';
+export { S3AlbumComponentIonic } from './ionic/s3-album.component.ionic';
+export { S3ImageComponentIonic } from './ionic/s3-image.component.ionic';
+export { ChatbotComponentIonic } from './ionic/chatbot.component.ionic';

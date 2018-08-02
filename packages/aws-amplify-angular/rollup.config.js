@@ -2,13 +2,15 @@ import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import globals from 'rollup-plugin-node-globals';
 import builtins from 'rollup-plugin-node-builtins';
+import { plugin as analyze } from 'rollup-plugin-analyzer';
+import { uglify } from 'rollup-plugin-uglify';
 import json from 'rollup-plugin-json';
 
 export default {
   entry: 'dist/index.js',
-  dest: 'dist/bundles/amazing.umd.js',
+  dest: 'dist/bundles/aws-amplify-angular.umd.js',
   format: 'umd',
-  moduleName: 'ng.amazing',
+  moduleName: 'ng.aws-amplify-angular',
   globals: {
     '@angular/core': 'ng.core',
     'rxjs/Observable': 'Rx',
@@ -21,11 +23,13 @@ export default {
   },
   external: ['aws-sdk' ,'@angular/core', 'aws-amplify'],
   plugins: [
-    nodeResolve({ preferBuiltins: false, modulesOnly: true }), // or `true`
+    nodeResolve({ preferBuiltins: false, modulesOnly: true }), 
     commonjs({include: 'node_modules/**'}),
     globals(),
     builtins(),
-    json()
+    json(),
+    uglify(),
+    analyze({limit: 5})
   ]
 
 }
