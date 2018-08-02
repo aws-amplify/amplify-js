@@ -30,7 +30,7 @@ export default class EventTracker {
 
     constructor(tracker, opts) {
         if (!window || !window.addEventListener) {
-            logger.debug('not in the supported web enviroment');
+            logger.debug('not in the supported web environment');
             return;
         }
 

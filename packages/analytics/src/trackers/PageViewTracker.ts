@@ -21,6 +21,7 @@ const prevUrlKey = 'aws-amplify-analytics-prevUrl';
 export default class PageViewTracker {
     private _config: pageViewTrackOpts;
     private _tracker;
+    private _hasEnabled;
 
     constructor(tracker, opts) {
         logger.debug('initialize pageview tracker with opts', opts);
@@ -28,6 +29,7 @@ export default class PageViewTracker {
             enable: false
         };
         this._tracker = tracker;
+        this._hasEnabled = false;
         this._trackFunc = this._trackFunc.bind(this);
 
         Object.assign(this._config, opts);
@@ -106,14 +108,16 @@ export default class PageViewTracker {
             return;
         }
 
-        if (this._config.enable) {
+        if (this._config.enable && !this._hasEnabled) {
             MethodEmbed.add(history, 'pushState', this._trackFunc);
             MethodEmbed.add(history, 'replaceState', this._trackFunc);
             window.addEventListener('popstate', this._trackFunc);
+            this._hasEnabled = true;
         } else {
             MethodEmbed.remove(history, 'pushState');
             MethodEmbed.remove(history, 'replaceState');
             window.removeEventListener('popstate', this._trackFunc);
+            this._hasEnabled = false;
         }
     }
 }

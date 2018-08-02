@@ -42,3 +42,8 @@ export interface EventTrackOpts {
     events?: Array<string>,
     selectorPrefix?: string
 }
+
+export interface SessionTrackOpts {
+    enable: boolean,
+    attributes?: any
+}

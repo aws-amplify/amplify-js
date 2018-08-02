@@ -63,9 +63,11 @@ const autoSessionRecord = () => {
     startsessionRecorded = true;
     if (config.autoSessionRecord) {
         Analytics.updateEndpoint({}).then(() => {
-            Analytics.startSession().catch(e => {
-                logger.debug('start Session error', e);
+            Analytics.autoTrack('session', {
+                enable: true
             });
+        }).catch(e => {
+            logger.debug('Failed to update the endpoint', e)
         });
     } else {
         logger.debug('auto Session record is diasabled');
