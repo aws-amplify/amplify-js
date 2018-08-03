@@ -661,6 +661,16 @@ Please tell us about your project:
 
 After answering the prompt, you should now see the *awsmobilejs* directory in your project root, as well as an *aws-exports.js* file in your */src* directory. The *aws-exports*file stores all of your project’s AWS related resource configuration. Again, do NOT check in the *awsmobilejs* directory or *aws-exports* file into source control.
 
+Since we are using TypeScript, change the name of the aws-exports file to *aws-exports.ts*.
+
+You should make sure that your `package.json` scripts also rename the file upon build, so that any configuration changes which result in the download of an `aws_exports.js` from AWS Mobile Hub get changed over to the ts extension.
+```js	
+"scripts": {	
+    "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",	
+    "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"	
+}	
+```
+
 Please note that *aws-exports.js* file should be located in the root of your source directory. If your source directory is different from */src* and you did not enter the folder name in the previous prompt, copy your *aws-exports.js* file to your source directory. You can find the updated copy of *aws-exports.js* file under *awsmobilejs/#current-backend-info/* directory.
 {: .callout .callout--info}
 
