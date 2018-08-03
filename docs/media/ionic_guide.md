@@ -42,13 +42,6 @@ $ awsmobile push # Update your backend
 
 After creating your backend, the configuration file is copied to `/awsmobilejs/#current-backend-info/aws-exports.js`, and the source folder you have identified in the `awmobile init` command.
 
-To import the configuration file to your Ionic app, you will need to rename `aws_exports.js` to `aws_exports.ts`. Alternatively, you can create a `yarn start` command in your `package.json`.
-```js
-"scripts": {
-    "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",
-    "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"
-}
-```
 
 Import the configuration file and load it in your `main.ts`, which is the entry point of your Angular application. 
 
