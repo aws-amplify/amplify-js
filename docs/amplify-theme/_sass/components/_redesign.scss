@@ -13,6 +13,8 @@
     margin: auto;
     left: 0;
     right: 0;
+    //border-bottom: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0px -2px 10px rgba(0,0,0,.3);
 
     .site-header-container {
         margin-top: 17px;
@@ -359,6 +361,10 @@
 
 .section-top {
     padding: 0;
+
+    .btn {
+        height: 50px;
+    }
 
     .container {
         padding: 0;
@@ -735,6 +741,10 @@ body {
     //display: block;
     z-index: 1000;
 
+    .icon--x {
+        vertical-align: text-top;
+    }
+
     .notification-content {
         width: 90%;
         margin-top: 8px;
@@ -780,7 +790,7 @@ li {
 /***                   new stuff for developer guide                       ***/
 //=============================================================================
 
-.dev-guide-container {
+.page-container {
     max-width: 1180px;
     width: 90%;
     margin: auto;
@@ -949,3 +959,113 @@ li {
     }
 }
 
+//=============================================================================
+/***                   new stuff for quick start home                      ***/
+//=============================================================================
+
+#learn-more-about-cli-box {
+    display: inline-block;
+
+    #learn-more-about-cli {
+        color: #FF9900;
+        font-family: "Amazon Ember";
+        font-size: 16px;
+        line-height: 24px;
+        display: inline-block;
+        margin-left: 80px;
+    }
+}
+
+
+#down-arrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin-left: 13px;
+    box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
+    border-radius: 100%;
+}
+
+.section-top-quickstart {
+    margin-top: 0;
+    margin-bottom: 34px;
+
+    a {
+        border: none;
+    }
+
+    .btn {
+        padding: 0 34px 0 34px;
+        width: 180px;
+    }
+
+    #install-cli-btn {
+        padding: 0 21px 0 21px;
+        margin-right: 25px;
+    }
+
+    .container {
+        .row {
+            margin-bottom: 78px;
+
+            .header {
+                padding: 0;
+            }
+
+            .subheader {
+                padding: 0;
+                margin: 0;
+            }
+
+            #get-started-header {
+                margin-bottom: 0;
+            }
+
+            .row-title {
+                max-width: 90%;
+                
+                .title {             
+                    color: #232F3E;
+                    font-family: "Amazon Ember";
+                    font-size: 21px;
+                    font-weight: bold;
+                    line-height: 26px;
+                    margin-bottom: 10px;
+                }
+                .subtitle {
+                    color: #828282;
+                    font-family: "Amazon Ember";
+                    font-size: 16px;
+                    line-height: 24px;
+                    margin-bottom: 34px;
+                }
+            }
+
+            .platform-container {
+
+                .platform-box {
+                    display: inline-block;
+                    margin-right: 35px;
+                    width: 180px;
+
+                    .circle-badge {
+                        margin-left: 32px;
+                        margin-bottom: 18px;
+                    }
+
+                    .platform-title {
+                        color: #232F3E;
+                        font-family: "Amazon Ember";
+                        font-size: 16px;
+                        font-weight: bold;
+                        letter-spacing: 1.06px;
+                        line-height: 20px;
+                        text-align: center;
+                        width: 60%;
+                        margin: auto;
+                        margin-bottom: 14px;
+                    }
+                }
+            }
+        }
+    }
+}
