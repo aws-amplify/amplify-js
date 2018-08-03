@@ -22,6 +22,7 @@ The naming convention for code snippets is "Amplify " + action prefix. So, in th
 Amplify Update User Attributes
 ```
 to output the related code block:
+
 ![Alt Text](gifs/update_endpoint_example.gif)
 
 The code blocks with the same name are displayed in their order, e.g. 3rd snippet for "Analytics Installation And Configuration" will have the prefix "Amplify Analytics Installation And Configuration 3".
