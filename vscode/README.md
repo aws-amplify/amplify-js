@@ -26,9 +26,3 @@ https://github.com/aws-amplify/amplify-js/wiki/VS-Code-Snippet-Extension#selecte
 Single word snippets (snippets that complete single words when clicked): https://github.com/aws-amplify/amplify-js/wiki/VS-Code-Snippet-Extension#single-word-snippet-documentation
 
 *The snippets also have limited TypeScript functionality.
-
-## Examples
-
-![Alt Text](gifs/update_endpoint_example.gif)
-
-![Alt Text](gifs/auth_setup_example.gif)
