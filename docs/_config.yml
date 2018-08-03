@@ -228,6 +228,10 @@ category_list:
           excerpt: Angular support package.
           cta: Read more
           url: '/media/angular_guide' 
+        - title: Ionic
+          excerpt: Ionic starter app and component support.
+          cta: Read more
+          url: '/media/ionic_guide' 
         - title: React 
           excerpt: React support package.
           cta: Read more
@@ -240,10 +244,6 @@ category_list:
           excerpt: Vue.j starter app.
           cta: Read more
           url: '/media/vuejs_guide' 
-        - title: Ionic
-          excerpt: Ionic starter app and component support.
-          cta: Read more
-          url: '/media/ionic_guide' 
 
 defaults:
   -
