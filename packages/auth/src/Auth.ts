@@ -415,9 +415,11 @@ export default class AuthClass {
                 if (err) {
                     logger.debug('get MFA Options failed', err);
                     rej(err);
+                    return;
                 }
                 logger.debug('get MFA options success', mfaOptions);
                 res(mfaOptions);
+                return;
             });
         });
     }
@@ -427,18 +429,72 @@ export default class AuthClass {
      * @param {CognitoUser} user - the current cognito user
      */
     public getPreferredMFA(user: any): Promise<string> {
+        const that = this;
         return new Promise((res, rej) => {
             user.getUserData((err, data) => {
                 if (err) {
                     logger.debug('getting preferred mfa failed', err);
                     rej(err);
+                    return;
                 }
-                const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-                res(preferredMFA);
+                
+                const mfaType = that._getMfaTypeFromUserData(data);
+                if (!mfaType) {
+                    rej('invalid MFA Type');
+                    return;
+                } else {
+                    res(mfaType);
+                    return;
+                }
             });
         });
     }
+
+    private _getMfaTypeFromUserData(data) {
+        let ret = null;
+        const preferredMFA = data.PreferredMfaSetting;
+        // if the user has used Auth.setPreferredMFA() to setup the mfa type
+        // then the "PreferredMfaSetting" would exist in the response
+        if (preferredMFA) {
+            ret = preferredMFA;
+        } else {
+            // if mfaList exists but empty, then its noMFA
+            const mfaList = data.UserMFASettingList;
+            if (!mfaList) {
+                // if SMS was enabled by using Auth.enableSMS(), 
+                // the response would contain MFAOptions
+                // as for now Cognito only supports for SMS, so we will say it is 'SMS_MFA'
+                // if it does not exist, then it should be NOMFA
+                const MFAOptions = data.MFAOptions;
+                if (MFAOptions) {
+                    ret = 'SMS_MFA';
+                } else {
+                    ret = 'NOMFA';
+                }
+            } else if (mfaList.length === 0) {
+                ret = 'NOMFA';
+            } else {
+                logger.debug('invalid case for getPreferredMFA', data);
+            }
+        }
+        return ret;
+    }
     
+    private _getUserData(user) {
+        return new Promise((res, rej) => {
+            user.getUserData((err, data) => {
+                if (err) {
+                    logger.debug('getting user data failed', err);
+                    rej(err);
+                    return;
+                } else {
+                    res(data);
+                    return;
+                }
+            });
+        });
+        
+    }
     /**
      * set preferred MFA method
      * @param {CognitoUser} user - the current Cognito user
@@ -446,27 +502,59 @@ export default class AuthClass {
      * @return - A promise resolve if success
      */
     public async setPreferredMFA(user : any, mfaMethod : string): Promise<any> {
-        let smsMfaSettings = await this.getPreferredMFA(user) === 'SMS_MFA'?
-            { PreferredMfa : false, Enabled : false } : null;
-        let totpMfaSettings = {
-            PreferredMfa : false,
-            Enabled : false
-        };
+        const userData = await this._getUserData(user);
+        let smsMfaSettings = null;
+        let totpMfaSettings = null;
 
         switch(mfaMethod) {
-            case 'TOTP':
+            case 'TOTP' || 'SOFTWARE_TOKEN_MFA':
                 totpMfaSettings = {
                     PreferredMfa : true,
                     Enabled : true
                 };
                 break;
-            case 'SMS':
+            case 'SMS' || 'SMS_MFA':
                 smsMfaSettings = {
                     PreferredMfa : true,
                     Enabled : true
                 };
                 break;
             case 'NOMFA':
+                const mfaList = userData['UserMFASettingList'];
+                const currentMFAType = await this._getMfaTypeFromUserData(userData);
+                if (currentMFAType === 'NOMFA') {
+                    return Promise.resolve('No change for mfa type');
+                } else if (currentMFAType === 'SMS_MFA') {
+                    smsMfaSettings = {
+                        PreferredMfa : false,
+                        Enabled : false
+                    };
+                } else if (currentMFAType === 'SOFTWARE_TOKEN_MFA') {
+                    totpMfaSettings = {
+                        PreferredMfa : false,
+                        Enabled : false
+                    };
+                } else {
+                    return Promise.reject('invalid MFA type');
+                }
+                // if there is a UserMFASettingList in the response
+                // we need to disable every mfa type in that list
+                if (mfaList && mfaList.length !== 0) {
+                    // to disable SMS or TOTP if exists in that list
+                    mfaList.forEach(mfaType => {
+                        if (mfaType === 'SMS_MFA') {
+                            smsMfaSettings = {
+                                PreferredMfa : false,
+                                Enabled : false
+                            };
+                        } else if (mfaType === 'SOFTWARE_TOKEN_MFA') {
+                            totpMfaSettings = {
+                                PreferredMfa : false,
+                                Enabled : false
+                            };
+                        }
+                    });
+                }
                 break;
             default:
                 logger.debug('no validmfa method provided');
@@ -474,48 +562,23 @@ export default class AuthClass {
         }
 
         const that = this;
-        const TOTP_NOT_VERIFED = 'User has not verified software token mfa';
-        const TOTP_NOT_SETUP = 'User has not set up software token mfa';
         return new Promise((res, rej) => {
             user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, (err, result) => {
                 if (err) {
-                    // if totp not setup or verified and user want to set it, return error
-                    // otherwise igonre it
-                    if (err.message === TOTP_NOT_SETUP || err.message === TOTP_NOT_VERIFED) {
-                        if (mfaMethod === 'SMS') {
-                            that.enableSMS(user).then((data) => {
-                                logger.debug('Set user mfa success', data);
-                                res(data);
-                            }).catch(err => {
-                                logger.debug('Set user mfa preference error', err);
-                                rej(err);
-                            });
-                        } else if (mfaMethod === 'NOMFA') {
-                            // diable sms
-                            that.disableSMS(user).then((data) => {
-                                logger.debug('Set user mfa success', data);
-                                res(data);
-                            }).catch(err => {
-                                logger.debug('Set user mfa preference error', err);
-                                rej(err);
-                            });
-                        } else {
-                            logger.debug('Set user mfa preference error', err);
-                            rej(err);
-                        }
-                    } else {
-                        logger.debug('Set user mfa preference error', err);
-                        rej(err);
-                    }
+                    logger.debug('Set user mfa preference error', err);
+                    rej(err);
+                    return;
                 }
                 logger.debug('Set user mfa success', result);
                 res(result);
+                return;
             });
         });
     }
 
     /**
      * diable SMS
+     * @deprecated
      * @param {CognitoUser} user - the current user
      * @return - A promise resolves is success
      */
@@ -525,15 +588,18 @@ export default class AuthClass {
                 if (err) {
                     logger.debug('disable mfa failed', err);
                     rej(err);
+                    return;
                 }
                 logger.debug('disable mfa succeed', data);
                 res(data);
+                return;
             });
         });
     }
 
     /**
      * enable SMS
+     * @deprecated
      * @param {CognitoUser} user - the current user
      * @return - A promise resolves is success
      */
@@ -543,9 +609,11 @@ export default class AuthClass {
                 if (err) {
                     logger.debug('enable mfa failed', err);
                     rej(err);
+                    return;
                 }
                 logger.debug('enable mfa succeed', data);
                 res(data);
+                return;
             });
         });
     }
@@ -561,10 +629,12 @@ export default class AuthClass {
                 onFailure: (err) => {
                     logger.debug('associateSoftwareToken failed', err);
                     rej(err);
+                    return;
                 },
                 associateSecretCode: (secretCode) => {
                     logger.debug('associateSoftwareToken sucess', secretCode);
                     res(secretCode);
+                    return;
                 }
             });
         });
@@ -583,10 +653,12 @@ export default class AuthClass {
                 onFailure: (err) => {
                     logger.debug('verifyTotpToken failed', err);
                     rej(err);
+                    return;
                 },
                 onSuccess: (data) => {
                     logger.debug('verifyTotpToken success', data);
                     res(data);
+                    return;
                 }
             });
         });
@@ -709,7 +781,13 @@ export default class AuthClass {
                         }
                     }
                     user.updateAttributes(attributeList, (err,result) => {
-                        if (err) { reject(err); } else { resolve(result); }
+                        if (err) { 
+                            reject(err); 
+                            return;
+                        } else { 
+                            resolve(result); 
+                            return;
+                        }
                     });
                 });
             });
@@ -883,10 +961,12 @@ export default class AuthClass {
             user.getSession(function(err, session) {
                 if (err) { 
                     logger.debug('Failed to get the session from user', user);
-                    reject(err); 
+                    reject(err);
+                    return;
                 } else {
                     logger.debug('Succeed to get the user session', session);
                     resolve(session); 
+                    return;
                 }
             });
         });
@@ -938,8 +1018,14 @@ export default class AuthClass {
     public verifyUserAttribute(user, attr): Promise<any> {
         return new Promise((resolve, reject) => {
             user.getAttributeVerificationCode(attr, {
-                onSuccess(data) { resolve(data); },
-                onFailure(err) { reject(err); }
+                onSuccess(data) { 
+                    resolve(data); 
+                    return;
+                },
+                onFailure(err) {
+                    reject(err); 
+                    return;
+                }
             });
         });
     }
@@ -956,8 +1042,14 @@ export default class AuthClass {
 
         return new Promise((resolve, reject) => {
             user.verifyAttribute(attr, code, {
-                onSuccess(data) { resolve(data); },
-                onFailure(err) { reject(err); }
+                onSuccess(data) { 
+                    resolve(data); 
+                    return;
+                },
+                onFailure(err) { 
+                    reject(err); 
+                    return;
+                }
             });
         });
     }
@@ -1037,8 +1129,10 @@ export default class AuthClass {
                         if (err) {
                             logger.debug('change password failure', err);
                             reject(err);
+                            return;
                         } else {
                             resolve(data);
+                            return;
                         }
                     });
                 });
@@ -1057,13 +1151,18 @@ export default class AuthClass {
         const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
             user.forgotPassword({
-                onSuccess: () => { resolve(); },
+                onSuccess: () => { 
+                    resolve();
+                    return; 
+                },
                 onFailure: err => {
                     logger.debug('forgot password failure', err);
                     reject(err);
+                    return;
                 },
                 inputVerificationCode: data => {
                     resolve(data);
+                    return;
                 }
             });
         });
@@ -1089,8 +1188,14 @@ export default class AuthClass {
         const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
             user.confirmPassword(code, password, {
-                onSuccess: () => { resolve(); },
-                onFailure: err => { reject(err); }
+                onSuccess: () => { 
+                    resolve(); 
+                    return;
+                },
+                onFailure: err => { 
+                    reject(err); 
+                    return;
+                }
             });
         });
     }
@@ -1153,8 +1258,10 @@ export default class AuthClass {
                 dispatchAuthEvent('signIn', that.user);
                 logger.debug('federated sign in credentials', cred);
                 res(cred);
+                return;
             }).catch(e => {
                 rej(e);
+                return;
             });
         });    
     }
