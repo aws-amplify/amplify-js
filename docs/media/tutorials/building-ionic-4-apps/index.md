@@ -860,7 +860,7 @@ ionic serve
 ```
 Or, run your app in iOS emulator:
 ```bash
-ionic cordova run ios -l
+ionic cordova run ios -l 
 ```
 
 Once your application loads, click on the ‘Home’ tab, and you should see login/signup controls that use ionic-specific buttons and input fields.
