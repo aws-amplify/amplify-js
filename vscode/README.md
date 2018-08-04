@@ -7,7 +7,9 @@ Visual Studio Code code snippets and completion support for the [AWS Amplify](ht
 
 ## Installation
 
-Go to the *Extension Marketplace* in VS Code and search for AWS Amplify. Click install on the extension with title "AWS Amplify API".
+Visit [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=aws-amplify.aws-amplify-vscode) and click "Install".
+
+Or, go to the *Extension Marketplace* in VS Code and search for AWS Amplify. Click install on the extension with title "AWS Amplify API".
 
 ## Usage
 
