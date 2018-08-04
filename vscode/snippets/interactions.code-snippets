@@ -1,7 +1,7 @@
 {
     "Interactions Manual Configuration": {
         "prefix": "Interactions",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Amplify from 'aws-amplify';\n",
             "Amplify.configure({",
@@ -23,7 +23,7 @@
     },
     "handleComplete React": {
         "prefix": "handleComplete",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "handleComplete = function (err, confirmation) {",
                 "\tif (err) {",
@@ -38,7 +38,7 @@
     },
     "ChatBot React": {
         "prefix": "<Chatbot",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "<ChatBot",
             "\ttitle=${1:\"My Bot\"}",
@@ -52,7 +52,7 @@
     },
     "ChatBot React Native": {
         "prefix": "<Chatbot",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "<ChatBot",
             "\tbotName={${1:botName}}",
@@ -69,7 +69,7 @@
     },
     "handleComplete React Native": {
         "prefix": "handleComplete",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "handleComplete(err, confirmation) {",
                 "\tif (err) {",

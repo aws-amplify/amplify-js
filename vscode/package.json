@@ -2,7 +2,7 @@
     "name": "aws-amplify-vscode",
     "displayName": "AWS Amplify API",
     "description": "AWS Amplify API code snippets",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "publisher": "aws-amplify",
     "icon": "images/logo.png",
     "private": true,

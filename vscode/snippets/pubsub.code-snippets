@@ -1,7 +1,7 @@
 {
     "Amplify PubSub AWS IoT Configuration": {
         "prefix": "PubSub",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Amplify, { PubSub } from 'aws-amplify';",
             "import { AWSIoTProvider } from 'aws-amplify/lib/PubSub/Providers';\n",
@@ -14,7 +14,7 @@
     },
     "Amplify PubSub MQTT Configuration": {
         "prefix": "PubSub",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Amplify, { PubSub } from 'aws-amplify';",
             "import { MqttOverWSProvider } from 'aws-amplify/lib/PubSub/Providers';\n",
@@ -26,7 +26,7 @@
     },
     "PubSub.subscribe": {
         "prefix": "PubSub.subscribe",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body":[
             "PubSub.subscribe(${1:'myTopic'}).subscribe({",
             "\tnext: data => console.log('Message received', data),",
@@ -37,14 +37,14 @@
     },
     "Publish One Topic PubSub": {
         "prefix": "PubSub.publish One Topic",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "PubSub.publish(${2:'myTopic1'}, { msg: ${2:'Hello to all subscribers!'} });"
         ]
     },
     "Publish Multiple Topics PubSub": {
         "prefix": "PubSub.publish Multiple Topics",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "PubSub.publish(${1:['myTopic1','myTopic2']}, { ${2:msg: 'Hello to all subscribers!'} });"
         ]
