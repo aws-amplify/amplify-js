@@ -879,7 +879,7 @@ export default class AuthClass {
                             attributeList.push(userAttribute);
                         }
 
-                        const attributes = this.attributesToObject(attributeList);
+                        const attributes = that.attributesToObject(attributeList);
                         Object.assign(user, {attributes, preferredMFA});
                         res(user);
                     });
