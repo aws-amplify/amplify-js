@@ -856,33 +856,33 @@ export default class AuthClass {
                 user.getSession(function(err, session) {
                     if (err) {
                         logger.debug('Failed to get the user session', err);
-                        rej(err); 
-                        return;
-                    }
-                });
-
-                // get user data from Cognito, also to make sure the user is still valid
-                user.getUserData((err, data) => {
-                    if (err) {
-                        logger.debug('getting user data failed', err);
                         rej(err);
                         return;
                     }
-                    const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-                    const attributeList = [];
 
-                    for (let i = 0; i < data.UserAttributes.length; i++) {
-                        const attribute = {
-                            Name: data.UserAttributes[i].Name,
-                            Value: data.UserAttributes[i].Value,
-                        };
-                        const userAttribute = new CognitoUserAttribute(attribute);
-                        attributeList.push(userAttribute);
-                    }
+                    // get user data from Cognito, also to make sure the user is still valid
+                    user.getUserData((err, data) => {
+                        if (err) {
+                            logger.debug('getting user data failed', err);
+                            rej(err);
+                            return;
+                        }
+                        const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+                        const attributeList = [];
 
-                    const attributes = this.attributesToObject(attributeList);
-                    Object.assign(user, {attributes, preferredMFA});
-                    res(user);
+                        for (let i = 0; i < data.UserAttributes.length; i++) {
+                            const attribute = {
+                                Name: data.UserAttributes[i].Name,
+                                Value: data.UserAttributes[i].Value,
+                            };
+                            const userAttribute = new CognitoUserAttribute(attribute);
+                            attributeList.push(userAttribute);
+                        }
+
+                        const attributes = that.attributesToObject(attributeList);
+                        Object.assign(user, {attributes, preferredMFA});
+                        res(user);
+                    });
                 });
             });
         });
