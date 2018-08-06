@@ -20,7 +20,7 @@ const logger = new Logger('SessionTracker');
 
 const defaultOpts: SessionTrackOpts = {
     enable: false
-}
+};
 
 export default class SessionTracker {
     private _tracker;

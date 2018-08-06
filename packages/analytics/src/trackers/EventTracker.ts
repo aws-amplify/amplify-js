@@ -21,7 +21,7 @@ const defaultOpts: EventTrackOpts = {
     enable: false,
     events: ['click'],
     selectorPrefix: 'amplify-analytics-'
-}
+};
 
 export default class EventTracker {
     private _tracker;
@@ -44,7 +44,7 @@ export default class EventTracker {
         this.configure(this._config);
     }
     
-    configure(opts: EventTrackOpts) {
+    configure(opts?: EventTrackOpts) {
         Object.assign(this._config, opts);
 
         if (!this._config.enable) {
@@ -65,6 +65,8 @@ export default class EventTracker {
                 );
             });
         }
+
+        return this._config;
     }
 
     private _trackFunc(event, element) {
@@ -84,10 +86,13 @@ export default class EventTracker {
                 });
         }
 
-        const attributes = Object.assign({
-            type: event.type,
-            target: `${event.target.localName} with id ${event.target.id}`
-        }, customAttrs)
+        const attributes = Object.assign(
+            {
+                type: event.type,
+                target: `${event.target.localName} with id ${event.target.id}`
+            }, 
+            customAttrs
+        );
 
         logger.debug('events needed to be recorded', events);
         logger.debug('attributes needed to be attached', customAttrs);

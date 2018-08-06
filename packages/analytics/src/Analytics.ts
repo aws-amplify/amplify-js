@@ -33,7 +33,7 @@ const trackers = {
     'pageView': PageViewTracker,
     'event': EventTracker,
     'session': SessionTracker
-}
+};
 
 /**
 * Provide mobile analytics client functions

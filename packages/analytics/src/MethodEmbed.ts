@@ -37,7 +37,7 @@ export default class MethodEmbed {
     public set(methodOverride) {
         this.context[this.methodName] = (...args) => {
             return methodOverride(this._originalMethod(...args));
-        }
+        };
     }
 
     public remove() {
@@ -47,7 +47,7 @@ export default class MethodEmbed {
 
 function getInstance(context, methodName): MethodEmbed {
     let instance = lists
-      .filter((h) => h.context == context && h.methodName == methodName)[0];
+      .filter((h) => h.context === context && h.methodName === methodName)[0];
 
     if (!instance) {
         instance = new MethodEmbed(context, methodName);

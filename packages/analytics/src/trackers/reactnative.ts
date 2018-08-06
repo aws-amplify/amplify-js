@@ -8,4 +8,4 @@ class PageViewTracker {
     constructor(tracker, opts) {}
 }
 
-export { EventTracker, PageViewTracker, SessionTracker }
+export { EventTracker, PageViewTracker, SessionTracker };

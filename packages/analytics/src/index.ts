@@ -67,7 +67,7 @@ const autoSessionRecord = () => {
                 enable: true
             });
         }).catch(e => {
-            logger.debug('Failed to update the endpoint', e)
+            logger.debug('Failed to update the endpoint', e);
         });
     } else {
         logger.debug('auto Session record is diasabled');
