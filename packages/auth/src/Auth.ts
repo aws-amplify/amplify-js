@@ -861,11 +861,18 @@ export default class AuthClass {
                     }
                 });
 
-                // get user data from Cognito, also to make sure the user is still valid
+                // get user data from Cognito
                 user.getUserData((err, data) => {
                     if (err) {
                         logger.debug('getting user data failed', err);
-                        rej(err);
+                        // Make sure the user is still valid
+                        if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
+                            rej(err);
+                        } else {
+                            // the error may also be thrown when lack of permissions to get user info etc
+                            // in that case we just bypass the error
+                            res(user);
+                        }
                         return;
                     }
                     const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
