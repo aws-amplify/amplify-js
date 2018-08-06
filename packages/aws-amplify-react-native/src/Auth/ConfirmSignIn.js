@@ -35,7 +35,7 @@ import AuthPiece from './AuthPiece';
 const logger = new Logger('SignIn');
 
 const Footer = (props) => {
-    const { theme, onStateChange } = props;
+    const { onStateChange } = props;
     const theme = props.theme || AmplifyTheme;
     return (
         <View style={theme.sectionFooter}>
