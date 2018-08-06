@@ -1,7 +1,7 @@
 {
     "Angular/Ionic amplify-photo-picker": {
         "prefix": "<amplify-photo-picker",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "<amplify-photo-picker",
             "\t(picked)=\"onImagePicked(\\$event)\"",
@@ -11,7 +11,7 @@
     },
     "Angluar onImagePicked": {
         "prefix": "onImagePicked",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "onImagePicked( file ) {\n",
                 "\tlet key = ${1:`pics/}${file.name}`;\n",
@@ -26,84 +26,84 @@
     },
     "AmplifyAngularModule": {
         "prefix": "AmplifyAngularModule",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "AmplifyAngularModule"
         ]
     },
     "NgModule": {
         "prefix": "NgModule",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "NgModule"
         ]
     },
     "AmplifyService": {
         "prefix": "AmplifyService",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "AmplifyService"
         ]
     },
     "navCtrl": {
         "prefix": "navCtrl",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "navCtrl"
         ]
     },
     "NavController": {
         "prefix": "NavController",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "NavController"
         ]
     },
     "amplifyService": {
         "prefix": "amplifyService",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "amplifyService"
         ]
     },
     "modalCtrl": {
         "prefix": "modalCtrl",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "modalCtrl"
         ]
     },
     "ModalController": {
         "prefix": "ModalController",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "ModalController"
         ]
     },
     "selector": {
         "prefix": "selector",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "selector"
         ]
     },
     "templateUrl": {
         "prefix": "templateUrl",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "templateUrl"
         ]
     },
     "styleUrls": {
         "prefix": "styleUrls",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "styleUrls"
         ]
     },
     "onAlbumImageSelected": {
         "prefix": "onAlbumImageSelected",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "onAlbumImageSelected"
         ]
