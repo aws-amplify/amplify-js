@@ -110,7 +110,7 @@ export default class CognitoUserPool {
         user: new CognitoUser(cognitoUser),
         userConfirmed: data.UserConfirmed,
         userSub: data.UserSub,
-        codeDeliveryDetails: data.CodeDeliveryDetails,
+        CodeDeliveryDetails: data.CodeDeliveryDetails,
       };
 
       return callback(null, returnData);
