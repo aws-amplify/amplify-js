@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.5-unstable.6"></a>
+## [1.0.5-unstable.6](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.5-unstable.5...aws-amplify-react@1.0.5-unstable.6) (2018-08-06)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
 <a name="1.0.5-unstable.5"></a>
 ## [1.0.5-unstable.5](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.5-unstable.3...aws-amplify-react@1.0.5-unstable.5) (2018-08-06)
 
