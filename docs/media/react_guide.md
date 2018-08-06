@@ -24,7 +24,7 @@ $ npm install aws-amplify
 $ npm install aws-amplify-react
 ```
 
-Then, you can import modoules from the package in your code:
+Then, you can import modules from the package in your code:
 ```js
 import { withAuthenticator } from 'aws-amplify-react';
 ```
