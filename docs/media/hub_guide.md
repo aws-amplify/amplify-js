@@ -9,6 +9,9 @@ AWS Amplify has a local event bus system called Hub. It is a lightweight impleme
 Import:
 ```js
 import { Hub } from 'aws-amplify';
+
+// or
+import { Hub } from '@aws-amplify/core';
 ```
 
 ## Working with the API
