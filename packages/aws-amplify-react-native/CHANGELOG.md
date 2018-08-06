@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.5-unstable.7"></a>
+## [1.0.5-unstable.7](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.5-unstable.6...aws-amplify-react-native@1.0.5-unstable.7) (2018-08-06)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** fix the footer of confirmSignIn component ([a3443ee](https://github.com/aws/aws-amplify/commit/a3443ee))
+
+
+
+
 <a name="1.0.5-unstable.6"></a>
 ## [1.0.5-unstable.6](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.5-unstable.5...aws-amplify-react-native@1.0.5-unstable.6) (2018-08-06)
 
