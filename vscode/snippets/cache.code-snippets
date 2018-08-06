@@ -1,0 +1,128 @@
+{
+    "setItem": {
+        "prefix": "setItem",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "setItem"
+        ]
+    },
+    "getItem": {
+        "prefix": "getItem",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "getItem"
+        ]
+    },
+    "removeItem": {
+        "prefix": "removeItem",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "removeItem"
+        ]
+    },
+    "clear": {
+        "prefix": "clear",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "clear"
+        ]
+    },
+    "getAllKeys": {
+        "prefix": "getAllKeys",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "getAllKeys"
+        ]
+    },
+    "getCacheCurSize": {
+        "prefix": "getCacheCurSize",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "getCacheCurSize"
+        ]
+    },
+    "configure": {
+        "prefix": "configure",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "configure"
+        ]
+    },
+    "createInstance": {
+        "prefix": "createInstance",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "createInstance"
+        ]
+    },
+    "keyPrefix": {
+        "prefix": "keyPrefix",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "keyPrefix"
+        ]
+    },
+    "capacityInBytes": {
+        "prefix": "capacityInBytes",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "capacityInBytes"
+        ]
+    },
+    "itemMaxSize": {
+        "prefix": "itemMaxSize",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "itemMaxSize"
+        ]
+    },
+    "defaultTTL": {
+        "prefix": "defaultTTL",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "defaultTTL"
+        ]
+    },
+    "defaultPriority": {
+        "prefix": "defaultPriority",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "defaultPriority"
+        ]
+    },
+    "warningThreshold": {
+        "prefix": "warningThreshold",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "warningThreshold"
+        ]
+    },
+    "storage": {
+        "prefix": "storage",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "storage"
+        ]
+    },
+    "priority": {
+        "prefix": "priority",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "priority"
+        ]
+    },
+    "expires": {
+        "prefix": "expires",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "expires"
+        ]
+    },
+    "callback": {
+        "prefix": "callback",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "callback"
+        ]
+    }
+}

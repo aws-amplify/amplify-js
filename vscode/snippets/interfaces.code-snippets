@@ -1,0 +1,198 @@
+{
+    "AmplifyConfig": {
+        "prefix": "AmplifyConfig",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "AmplifyConfig"
+        ]
+    },
+    "AnalyticsOptions": {
+        "prefix": "AnalyticsOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "AnalyticsOptions"
+        ]
+    },
+    "AnalyticsProvider": {
+        "prefix": "AnalyticsProvider",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "AnalyticsProvider"
+        ]
+    },
+    "AuthOptions": {
+        "prefix": "AuthOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "AuthOptions"
+        ]
+    },
+    "CacheConfig": {
+        "prefix": "CacheConfig",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "CacheConfig"
+        ]
+    },
+    "CacheItem": {
+        "prefix": "CacheItem",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "CacheItem"
+        ]
+    },
+    "CacheItemOptions": {
+        "prefix": "CacheItemOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "CacheItemOptions"
+        ]
+    },
+    "ConfirmSignUpOptions": {
+        "prefix": "ConfirmSignUpOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "ConfirmSignUpOptions"
+        ]
+    },
+    "EventAttributes": {
+        "prefix": "EventAttributes",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "EventAttributes"
+        ]
+    },
+    "EventMetrics": {
+        "prefix": "EventMetrics",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "EventMetrics"
+        ]
+    },
+    "FederatedResponse": {
+        "prefix": "FederatedResponse",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "FederatedResponse"
+        ]
+    },
+    "GraphQLOptions": {
+        "prefix": "GraphQLOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "GraphQLOptions"
+        ]
+    },
+    "GraphQLResult": {
+        "prefix": "GraphQLResult",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "GraphQLResult"
+        ]
+    },
+    "ICache": {
+        "prefix": "ICache",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "ICache"
+        ]
+    },
+    "InteractionsOptions": {
+        "prefix": "InteractionsOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "InteractionsOptions"
+        ]
+    },
+    "InteractionsProvider": {
+        "prefix": "InteractionsProvider",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "InteractionsProvider"
+        ]
+    },
+    "InteractionsProviders": {
+        "prefix": "InteractionsProviders",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "InteractionsProviders"
+        ]
+    },
+    "InteractionsResponse": {
+        "prefix": "InteractionsResponse",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "InteractionsResponse"
+        ]
+    },
+    "Logger": {
+        "prefix": "Logger",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "Logger"
+        ]
+    },
+    "MfaRequiredDetails": {
+        "prefix": "MfaRequiredDetails",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "MfaRequiredDetails"
+        ]
+    },
+    "MqttProvidertOptions": {
+        "prefix": "MqttProvidertOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "MqttProvidertOptions"
+        ]
+    },
+    "OAuth": {
+        "prefix": "OAuth",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "OAuth"
+        ]
+    },
+    "ProvidertOptions": {
+        "prefix": "ProvidertOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "ProvidertOptions"
+        ]
+    },
+    "PubSubOptions": {
+        "prefix": "PubSubOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "PubSubOptions"
+        ]
+    },
+    "PubSubProvider": {
+        "prefix": "PubSubProvider",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "PubSubProvider"
+        ]
+    },
+    "SignUpParams": {
+        "prefix": "SignUpParams",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "SignUpParams"
+        ]
+    },
+    "StorageOptions": {
+        "prefix": "StorageOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "StorageOptions"
+        ]
+    },
+    "apiOptions": {
+        "prefix": "apiOptions",
+        "scope": "javascript,javascriptreact",
+        "body": [
+            "apiOptions"
+        ]
+    }
+}

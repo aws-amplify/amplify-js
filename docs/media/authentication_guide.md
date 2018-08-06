@@ -1138,7 +1138,7 @@ I18n.putVocabularies(authScreenLabels);
 ```
 
 
-### Customize initial authState
+### Customize Initial authState
 
 You can change the initial auth state for your Authenticator. By default the initial state is `signIn` which will shows the `signIn` component.
 If you want the `signUp` component shows first, you can do:
@@ -1146,7 +1146,7 @@ If you want the `signUp` component shows first, you can do:
 <Authenticator authState='signUp'>
 ```
 
-## Using modularized module
+## Using Modular Imports
 
 If you only need to use Auth, you can do: `npm install @aws-amplify/auth` which will only install the Auth module for you.
 
