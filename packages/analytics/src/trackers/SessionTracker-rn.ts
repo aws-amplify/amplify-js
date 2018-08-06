@@ -11,10 +11,11 @@
  * and limitations under the License.
  */
 
- // the session tracker for web
+ // the session tracker for react native
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { SessionTrackOpts } from '../types';
+import { AppState } from 'react-native'; 
 
 const logger = new Logger('SessionTracker');
 
@@ -27,9 +28,6 @@ export default class SessionTracker {
     private _hasEnabled;
     private _config: SessionTrackOpts;
 
-    private _hidden;
-    private _visibilityChange;
-
     constructor(tracker, opts) {
         this._config = Object.assign({}, defaultOpts, opts);
         this._tracker = tracker;
@@ -37,44 +35,33 @@ export default class SessionTracker {
         this._hasEnabled = false;
         this._trackFunc = this._trackFunc.bind(this);
         this.configure(this._config);
-
     }
 
     private _envCheck() {
-        if (!document || !document.addEventListener) {
-            logger.debug('not in the supported web environment');
-            return false;
-        }
-
-        if (typeof document.hidden !== 'undefined') {
-            this._hidden = 'hidden';
-            this._visibilityChange = 'visibilitychange';
-        } else if (typeof document['msHidden'] !== 'undefined') {
-            this._hidden = 'msHidden';
-            this._visibilityChange = 'msvisibilitychange';
-        } else if (typeof document['webkitHidden'] !== 'undefined') {
-            this._hidden = 'webkitHidden';
-            this._visibilityChange = 'webkitvisibilitychange';
-        } else {
-            logger.debug('not in the supported web environment');
+        if (!AppState) {
+            logger.debug('not in the supported react native environment');
             return false;
         }
         return true;
     }
 
-    private _trackFunc() {
-        // if not hidden;
-        if (document[this._hidden]) {
-            this._tracker({
-                name: '_session_stop'
-            }).catch(e => {
-                logger.debug('record session stop event failed.', e);
-            });
-        } else {
+    private _trackFunc(nextAppState) {
+        const currentState = AppState.currentState;
+
+        if (currentState.match(/inactive|background/) && nextAppState === 'active') {
+            logger.debug('App has come to the foreground, recording start session');
             this._tracker({
                 name: '_session_start'
             }).catch(e => {
                 logger.debug('record session start event failed.', e);
+            });
+        }
+        if (currentState.match(/active/) && nextAppState.match(/inactive|background/)) {
+            logger.debug('App has come to inactive/background, recording stop session');
+             this._tracker({
+                name: '_session_stop'
+            }).catch(e => {
+                logger.debug('record session stop event failed.', e);
             });
         }
     }
@@ -94,10 +81,10 @@ export default class SessionTracker {
                 logger.debug('record session start event failed.', e);
             });
             // listen on events
-            document.addEventListener(this._visibilityChange, this._trackFunc, false);
+            AppState.addEventListener('change', this._trackFunc, false);
             this._hasEnabled = true;
         } else {
-            document.removeEventListener(this._visibilityChange, this._trackFunc, false);
+            document.removeEventListener('change', this._trackFunc, false);
             this._hasEnabled = false;
         }
     }
