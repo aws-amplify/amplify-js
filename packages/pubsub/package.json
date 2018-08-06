@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "1.0.4-unstable.1",
+  "version": "1.0.4",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
