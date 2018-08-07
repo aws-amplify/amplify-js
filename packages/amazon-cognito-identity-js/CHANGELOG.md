@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.21-unstable.0"></a>
+## [2.0.21-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.20...amazon-cognito-identity-js@2.0.21-unstable.0) (2018-08-07)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
 <a name="2.0.20"></a>
 ## [2.0.20](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.20-unstable.7...amazon-cognito-identity-js@2.0.20) (2018-08-06)
 
