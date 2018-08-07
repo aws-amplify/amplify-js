@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.4"></a>
+## [1.0.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.3-unstable.1...@aws-amplify/pushnotification@1.0.4) (2018-08-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+<a name="1.0.3-unstable.1"></a>
+## [1.0.3-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.3...@aws-amplify/pushnotification@1.0.3-unstable.1) (2018-08-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
 <a name="1.0.3"></a>
 ## [1.0.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/pushnotification@1.0.3-unstable.0...@aws-amplify/pushnotification@1.0.3) (2018-07-28)
 
