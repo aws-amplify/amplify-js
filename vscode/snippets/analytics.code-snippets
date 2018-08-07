@@ -1,7 +1,7 @@
 {
     "Amplify Analytics Configuration": {
         "prefix": "Analytics.configure",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Analytics.configure({",
                 "\t// OPTIONAL - disable Analytics if true",
@@ -43,7 +43,7 @@
     },
     "Analytics Custom Tracking Event": {
         "prefix": "Analytics.record",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Analytics.record({",
                 "\tname: ${1:'albumVisit'},",
@@ -54,21 +54,21 @@
     },
     "Analytics.disable": {
         "prefix": "Analytics.disable",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Analytics.disable"
         ]
     },
     "Analytics.enable": {
         "prefix": "Analytics.enable",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Analytics.enable"
         ]
     },
     "Analytics Authentication Event": {
         "prefix": "Analytics.record",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Analytics.record({",
                 "\tname: ${1:'_userauth.event'}",
@@ -77,7 +77,7 @@
     },
     "Analytics Update User Attributes": {
         "prefix": "Analytics.updateEndpoint",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Analytics.updateEndpoint({",
                 "\t// Customized userId",
@@ -97,7 +97,7 @@
     },
     "AWSKinesis": {
         "prefix": "AWSKinesis",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "AWSKinesis: {",
                 "\t// OPTIONAL - Amazon Kinesis service region",
@@ -115,7 +115,7 @@
     },
     "Kinesis Record": {
         "prefix": "Analytics.record",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Analytics.record({",
                 "\tdata: {",
@@ -129,7 +129,7 @@
     },
     "AnalyticsProvider": {
         "prefix": "AnalyticsProvider",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "AnalyticsProvider {",
                 "\t// category and provider name",
@@ -149,21 +149,21 @@
     },
     "addPluggable": {
         "prefix": "addPluggable",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "addPluggable"
         ]
     },
     "getPluggable": {
         "prefix": "getPluggable",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "getPluggable"
         ]
     },
     "removePluggable": {
         "prefix": "removePluggable",
-        "scope": "javascript,javascriptreact",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "removePluggable"
         ]

@@ -169,7 +169,7 @@ Auth.signUp({
 });
 
 Auth.signIn(username, password)
-  .then(success => console.log('successful sign in!'))
+  .then(success => console.log('successful sign in'))
   .catch(err => console.log(err));
 ```
 
