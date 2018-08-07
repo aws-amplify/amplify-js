@@ -29,7 +29,7 @@ export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export * from './RNComponents';
 export { default as Credentials } from './Credentials';
 export { default as ServiceWorker } from './ServiceWorker';
-export { default as StorageHelper } from './StorageHelper';
+export { default as StorageHelper, MemoryStorage } from './StorageHelper';
 export { default as Platform } from './Platform';
 
 import Platform from './Platform';

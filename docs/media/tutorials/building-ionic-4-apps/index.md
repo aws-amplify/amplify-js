@@ -6,14 +6,14 @@ Overview
 
 In this tutorial, you will create an Ionic 4 ‘ToDo List’ app that connects to a serverless backend via the AWS Amplify Library.
 
-The AWS Amplify and the CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with Ionic and AWS Amplify.
+The AWS Amplify and the AWS Mobile CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with Ionic and AWS Amplify.
 
 
-**By completing this tutorial, you will be able to;**
+**By completing this tutorial, you will be able to:**
 - bootstrap an Ionic 4 app with Ionic CLI and start working with the code
-- implement AWS Amplify library into your app
-- manage your backend resources with AWS Mobile CLI
-- utilize AWS services such as Amazon Cognito, Amazon DynamoDB and AWS Lambda
+- implement the AWS Amplify library into your app
+- manage your backend resources with the AWS Mobile CLI
+- utilize AWS services such as Amazon Cognito, Amazon DynamoDB, and AWS Lambda
 
 ## Prerequisites
 
@@ -22,6 +22,8 @@ You need to have a basic understanding of JavaScript/[TypeScript](http://www.typ
 ## Source Code
 
 If you would like to get right to the source code, it can be found in [Github](https://github.com/aws-samples/aws-amplify-ionic-sample).  The different parts of this tutorial are represented by branches in this Github repo.
+
+You can also copy and paste code sample while following the tutorials. In this case, please note that some sections of the code samples are **commented on purpose**. Please use the code with comments, as you'll remove the comments to enable new features throughout the tutorial.
 
 ## Content
 
@@ -33,14 +35,14 @@ Here is the sequence of the tutorial:
  
 # Part 1: Create an Ionic 4 App
 
-This section will introduce Ionic basics and you will learn how to boostrap a new Ionic app with Ionic CLI. In subsequent parts of the tutorial, you will add cloud functionality to the application that you will create in this section.
+This section will introduce Ionic basics and you will learn how to bootstrap a new Ionic app with the Ionic CLI. In subsequent parts of the tutorial, you will add cloud functionality to the application that you will create in this section.
 
 The source code for this section of the tutorial can be found in *tutorial-part-1* branch of the [project Github repo](https://github.com/aws-samples/aws-amplify-ionic-sample/tree/tutorial-part-1).
 {: .callout}
 
 ## What is Ionic?
 
-Ionic is a web development framework that allows JavaScript developers to create browser-based applications that run on mobile platforms such as iOS and Android. Ionic applications have the ‘look-and-feel’ of native apps, and also offer the ability (via Apache Cordova plugins) to access mobile OS features such as cameras, contact lists, etc.
+Ionic is a web development framework that allows developers to create cross-platform applications that run on mobile platforms such as iOS and Android, on the desktop using Electron.js, or in the browser as a progressive web app. Ionic applications have the ‘look-and-feel’ of native apps and also offer the ability (via Apache Cordova plugins) to access mobile OS features such as cameras, contact lists, etc.
 
 Apache Cordova is an open source mobile development platform that runs web code (HTML, CSS, and JavaScript) in a WebView wrapped in a mobile app shell.  Since it is native code, it can be distributed on the app stores just like any other mobile app and presented as an app on mobile platforms.
  
@@ -49,7 +51,7 @@ Apache Cordova is an open source mobile development platform that runs web code 
 The easiest way to create an Ionic 4 application is with the Ionic Command Line Interface (CLI). To install the Ionic CLI, run the following command in your terminal:
 
 ```bash
-$ npm install -g ionic@rc cordova
+$ npm install -g ionic cordova
 ```
 
 After installation, navigate to a location where you wish to start your new project and execute:
@@ -63,7 +65,7 @@ Ionic CLI will prompt some questions for you:
 ? Integrate your new app with Cordova to target native iOS and Android?
 ? Install the free Ionic Pro SDK and connect your app?  
 ```
-If you want your application to run as an IOS or Android application as well as a browser-based one, select ‘y’ when asked if you want to integrate with Cordova. You will then be asked if you want to install the Ionic Pro SDK; you can select ‘y’ is you wish, but it is not necessary for this tutorial.
+If you want your application to run as an iOS or Android application as well as a browser-based one, select ‘y’ when asked if you want to integrate with Cordova. You will then be asked if you want to install the Ionic Pro SDK; you can select ‘y’ if you wish, but it is not necessary for this tutorial.
 
 To confirm that you're using the correct version of Ionic, navigate into the project directory and execute 'ionic info'. The Ionic Framework value should be greater than 4.
 {: .callout}
@@ -71,11 +73,11 @@ To confirm that you're using the correct version of Ionic, navigate into the pro
 
 ## Angular Modules in Ionic
 
-Previous versions of Ionic made use of the Angular framework, and Ionic 4 is no exception. Modern versions of Angular provide a component-based architecture in which the application is broken up into units called components, which are in turn executed in the context of a module. 
+Previous versions of Ionic made use of the Angular framework, and Ionic 4 is no exception. Modern versions of Angular provide a component-based architecture in which the application consists of components, which are in turn executed in the context of a module.
 
-Each component typically consists of an HTML template, a module file, a component file, an SCSS (SASS stylesheet) file and a SPEC file used for testing. This form of architecture encourages developers to write code that is relatively easy to understand, extend and debug.
+Each component typically consists of an HTML template, a module file, a component file, an SCSS (SASS stylesheet) file and a SPEC file used for testing. This form of architecture encourages developers to write code that is relatively easy to understand, extend, and debug.
 
-In the ‘tabs’ ionic starter that you've created, each of the three tabs is defined by its own module, which in turn consists of one component each.
+In the ‘tabs’ Ionic starter that you've created, each of the three tabs is defined by its own module, which in turn consists of one component each.
  
 If your application grows much larger, you can refactor it into multiple components per page. For example, in this tutorial, you will be adding a component to one of the modules which define the behavior and appearance of a modal dialog for adding and editing items.
  
@@ -119,7 +121,8 @@ export class ToDoItem {
   }
 }
 ```
-This file defines the data model for *ToDoList* and *ToDoItem*.  The list is a list of items, and each item has an ID, title, and completed flag. 
+
+This file defines the data model for *ToDoList* and *ToDoItem*.  The list is a list of items, and each item has an ID, title, description, and status. 
 
 ### Create a list component
 
@@ -134,7 +137,7 @@ import { ToDoItem, ToDoList } from '../../classes/item.class';
 @Component({
   selector: 'app-list-page',
   templateUrl: 'list.page.html',
-  styleUrls: ['home.page.scss']
+  styleUrls: ['list.page.scss']
 })
 export class ListPage implements OnInit {
 
@@ -168,29 +171,29 @@ export class ListPage implements OnInit {
     let props = {
       itemList: this.itemList,
       /*
-        We pass in an item paramenter only when the user clicks on an existing item
+        We pass in an item parameter only when the user clicks on an existing item
         and therefore populate an editItem value so that our modal knows this is an edit operation.
       */
       editItem: item || undefined
     };
 
     // Create the modal
-    // this.modal = await this.modalController.create({
-    //   component: ListItemModal,
-    //   componentProps: props
-    // });
+    this.modal = await this.modalController.create({
+      component: ListItemModal,
+      componentProps: props
+    });
     // Listen for the modal to be closed...
-    // this.modal.onDidDismiss((result) => {
-    //   if (result.data.newItem){
-    //     // ...and add a new item if modal passes back newItem
-    //     result.data.itemList.items.push(result.data.newItem)
-    //   } else if (result.data.editItem){
-    //     // ...or splice the items array if the modal passes back editItem
-    //     result.data.itemList.items[i] = result.data.editItem
-    //   }
-    //   this.save(result.data.itemList);
-    // })
-    // return this.modal.present()
+    this.modal.onDidDismiss((result) => {
+      if (result.data.newItem){
+        // ...and add a new item if modal passes back newItem
+        result.data.itemList.items.push(result.data.newItem)
+      } else if (result.data.editItem){
+        // ...or splice the items array if the modal passes back editItem
+        result.data.itemList.items[i] = result.data.editItem
+      }
+      this.save(result.data.itemList);
+    })
+    return this.modal.present()
   }
 
   delete(i){
@@ -316,10 +319,10 @@ Add a path for your list module in by adding the ‘list’ route definition und
 Import the components:
 ```js
 import { ListPage } from '../list/list.page';
-import { AuthGuardService } from '../../services/auth-route-guard'
+import { AuthGuardService } from '../../services/auth-route-guard';
 ```
 
-Add the path configuration by replacing the 'AboutPage' entry in the children array with:
+Add the path configuration by adding a new item to the children array:
 ```js
 //...
        {
@@ -343,7 +346,7 @@ Modify the HTML page *src/app/pages/tabs/tabs.page.html* by adding a new 'List' 
 
 ### Add an authorization service
 
-The *List* tab will only be shown to signed in users, so you need logic to control its behavior. This is where *services* comes in. Create a file under *src/app/services/auth-route-guard.ts* that will have the service code:
+The *List* tab will only be shown to signed in users, so you need logic to control its behavior. This is where *services* come in. Create a file under *src/app/services/auth-route-guard.ts* that will have the service code:
 
 ```js
 import { Injectable } from '@angular/core';
@@ -371,7 +374,7 @@ export class AuthGuardService implements CanActivate {
 }
 ```
 
-You’ll note that your app doesn’t currently provide a way for users to login or signup. You will address this later by integration authentication with AWS Amplify, but for now, you can simulate an authentication logic using Ionic’s ‘Events’ service:
+You’ll note that your app doesn’t currently provide a way for users to login or signup. You will address this later by integration authentication with AWS Amplify, but for now, you can simulate authentication logic using Ionic’s ‘Events’ service:
 
 Replace *src/app/pages/home/home.page.ts* with the following code to declare your temporary auth logic:
 
@@ -416,7 +419,7 @@ export class HomePage implements AfterContentInit{
 
 ### Add buttons to the homepage
 
-To trigger user authorization, you will need action buttons. Add the following code to *src/app/pages/home/home.page.html* to render buttons in the homepage:
+To trigger user authorization, you will need action buttons. Replace  *src/app/pages/home/home.page.html* with the following code to render buttons in the homepage:
 
 ```html
 <ion-header>
@@ -431,15 +434,16 @@ To trigger user authorization, you will need action buttons. Add the following c
 </ion-content>
 ```
 
-### Add auth service to tabs module
+### Add auth service and list module to tabs module
 
 The tabs module will use your custom authorization module `AuthGuardService` to control the user interface. 
 
 **In *src/app/pages/tabs/tabs.module.ts* file:**
 
-import `AuthGuardService` :
+import `AuthGuardService` and `ListModule` :
 ```js
- import { AuthGuardService } from '../../services/auth-route-guard'
+ import { AuthGuardService } from '../../services/auth-route-guard';
+ import { ListModule } from '../list/list.module';
 ```
 
 And add *AuthGuardService* as a provider in module definition:
@@ -563,7 +567,7 @@ And then create the view file for the modal *src/app/pages/list/list.item.modal.
 
 ### Define modal in your list module
 
-To define your modal controller, add following code to */src/app/pages/list/list.module.ts*:
+To define your modal controller, add following code to *src/app/pages/list/list.module.ts*:
 
 Import ListItemModal:
 ```js
@@ -589,7 +593,7 @@ Also, add `ListItemModal` in *declarations* and *entryComponents*;
 
 To use your new modal in your list component, make the following changes in * src/app/pages/list/list.page.ts* file.
 
-import the modal into your component: 
+Import the modal into your component: 
 
 ```js
 import { ListItemModal } from './list.item.modal';
@@ -646,9 +650,21 @@ Run the following command from your project folder:
 $ awsmobile init
 ```
  
-You should now see the *awsmobilejs* directory in your project root, as well as an aws-exports.js file in your */src* directory. The aws-exports file stores all of your project’s AWS related resource configuration. Again, do NOT check in the awsmobilejs directory or aws-exports file into source control.
+The CLI will ask you the name of your project directories to replace the configuration file *aws-exports.js*, and integrate with your run and build commands:
+```bash
+Please tell us about your project:
+? Where is your project's source directory:  src
+? Where is your project's distribution directory that stores build artifacts:  dist
+? What is your project's build command:  npm run-script build
+? What is your project's start command for local test run:  npm run-script start
+```
 
-Since we are using typescript, change the name of the aws-exports file to *aws-exports.ts*.
+After answering the prompt, you should now see the *awsmobilejs* directory in your project root, as well as an *aws-exports.js* file in your */src* directory. The *aws-exports*file stores all of your project’s AWS related resource configuration. Again, do NOT check in the *awsmobilejs* directory or *aws-exports* file into source control.
+
+Since we are using TypeScript, change the name of the aws-exports file to *aws-exports.ts*.
+
+Please note that *aws-exports.js* (or *aws-exports.ts*. if you are using TypeScript) file should be located in the root of your source directory. If your source directory is different from */src* and you did not enter the folder name in the previous prompt, copy your *aws-exports.js* file to your source directory. You can find the updated copy of *aws-exports.js* file under *awsmobilejs/#current-backend-info/* directory.
+{: .callout .callout--info}
 
 AWS resources for your application can be generated using:
 ```bash
@@ -663,23 +679,24 @@ awsmobile features
 
 In this part of the tutorial, you will be adding analytics to your application with AWS Mobile CLI.
 
-To enable analytics, run the following command:
+Analytics is enabled by default when you initiate AWS Mobile CLI with:
 ```bash
-awsmobile analytics enable
+awsmobile init
 ```
 
-Then, to create these resources in your AWS account, execute:
- ```bash
-awsmobile push
+So, you don't need to enable analytics explicitly. You can configure analytics setup anytime by using the following command:
+```bash
+$ awsmobile analytics configure
 ```
 
-Be patient while the CLI creates your backend resources. Once the creation of your resources is complete, you can view them via the [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home#/). 
+The next step is adding the AWS Amplify library into your Ionic app.
 
-(Note: this is the workflow for creating resources with the AWSMobile CLI, and is described here so that you'll be able to create other resources.  Most builds for the CLI enable Analytics by default, so when you attempt to push changes after only enabling Analytics you may receive a message stating that no local changes were detected.)
-
-Your application has now an analytics backend ready! The next step is adding the AWS Amplify library into your Ionic app.
+**Updating your Backend**
+When you update your backend configuration with the CLI, you can update your backend with `awsmobile push`.
+Be patient while the CLI updates your backend resources. Once the creation of your resources is complete, you can view them via the [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home#/). 
+{: .callout .callout--info}
  
- ### Install AWS Amplify
+### Install AWS Amplify
 
 AWS Amplify will enable adding cloud features to your Ionic 4 app like authentication and user storage. 
 
@@ -705,7 +722,7 @@ The AWS Amplify library provides a mechanism for your front-end application to i
 
 AWS Amplify analytics category work with Amazon Pinpoint, a service that allows you to collect data about user actions in your app and create targeted campaigns.  
 
-To add Pinpoint analytics to your application, first, you need to import AWS Amplify library and the configuration file into your app. 
+To add Pinpoint analytics to your application, first, you need to import the AWS Amplify library and the configuration file into your app. 
 
 Open *src/main.ts* and make the following changes, which will use the *aws-exports.js* config file that the AWS Mobile CLI created in your application directory.
 
@@ -746,7 +763,7 @@ awsmobile push
 ### Enable auth UI 
 
 Next, you need to make the AWS Amplify's authentication components available to your application. To do that, you need to import 
-*AmpifyService*, *AmplifyAngularModule*  and  *AmplifyIonicModule*(more on that in a moment) modules in your *home* module which is declared in *src/app/pages/home/home.module.ts*:
+*AmplifyService*, *AmplifyAngularModule*  and *AmplifyIonicModule* (more on that in a moment) modules in your *home* module which is declared in *src/app/pages/home/home.module.ts*:
 
 ```js
 import { IonicModule } from '@ionic/angular';
@@ -791,7 +808,7 @@ This component will render UI elements and provide functionality for user signup
 To change the look and feel of your UI components, you can update *src/global.scss* file which includes global style rules for your app. For now, import default styles from *aws-amplify-angular* module to make sure that  your authenticator component (and other AWS Amplify UI components) are styled properly:
 
 ```js
-@import './node_modules/aws-amplify-angular/theme.scss'
+@import './node_modules/aws-amplify-angular/theme.scss';
 ```
 ### Enable components in home module
 
@@ -863,11 +880,11 @@ Please note that the phone numbers should be entered in the format of
 
 **Disabling Ionic UI**
 
-"<amplify-authenticator>" component enables rendering Ionic UI components when used with *framework="ionic"* attribute. You can disable this by removing *framework="ionic"* attribute in *src/app/pages/home/home.page.html*:
+`<amplify-authenticator>` component enables rendering Ionic UI components when used with *framework="ionic"* attribute. You can disable this by removing *framework="ionic"* attribute in *src/app/pages/home/home.page.html*:
 
 ```html
 <amplify-authenticator></amplify-authenticator>
-``` 
+```
 
 After the application reloads, the login controls will have the simpler Angular look-and-feel, instead of Ionic UI:
 
@@ -892,6 +909,7 @@ AWS Mobile CLI makes it easy to create your app's backend, including Cloud datab
 ```bash
 $ awsmobile features
 ```
+
 and select *database* and *cloud-api* from the features list:
 
 ```bash
@@ -927,7 +945,7 @@ Select *Create a new table*, specify that it is ‘Open’ and name it ‘ToDoIt
 ? Table name ToDoItems
 ```
 
-Then, add two columns when prompted:a
+Then, add two columns when prompted:
 
 ```bash
 You can now add columns to the table.
@@ -940,7 +958,7 @@ You can now add columns to the table.
 ? Would you like to add another column No
 
 Before you create the database, you must specify how items in your table are uniquely organized. This is done by specifying a Primary key. The primary key uniquely identifies each item in the table, so that no two items can have the same key.
-This could be and individual column or a combination that has "primary key" and a "sort key".
+This could be an individual column or a combination that has "primary key" and a "sort key".
 To learn more about primary key:
 http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey
 
@@ -1027,7 +1045,7 @@ export class ListPage implements OnInit {
     this.amplifyService = amplify;
     // Listen for changes to the AuthState in order to change item list appropriately
     events.subscribe('data:AuthState', async (data) => {
-      if (data.user){
+      if (data.loggedIn){
         this.user = await this.amplifyService.auth().currentUserInfo();
         this.getItems();
       } else {
