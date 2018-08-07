@@ -58,10 +58,21 @@ export default class RequireNewPassword extends AuthPiece {
         const user = this.props.authData;
         const { password } = this.inputs;
         const { requiredAttributes } = user.challengeParam;
+
+        let finalRequiredAttributes = {};
+        let that = this;
+        Object.keys(requiredAttributes).map(function (key) {
+
+            let attributeName = requiredAttributes[key];
+            finalRequiredAttributes[attributeName] = that.inputs[attributeName];
+
+            return finalRequiredAttributes;
+        })
+
         if (!Auth || typeof Auth.completeNewPassword !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
-        Auth.completeNewPassword(user, password, requiredAttributes)
+        Auth.completeNewPassword(user, password, finalRequiredAttributes)
             .then(user => {
                 logger.debug('complete new password', user);
                 if (user.challengeName === 'SMS_MFA') {
@@ -72,7 +83,7 @@ export default class RequireNewPassword extends AuthPiece {
                 } else {
                     this.checkContact(user);
                 }
-                
+
             })
             .catch(err => this.error(err));
     }
@@ -80,6 +91,10 @@ export default class RequireNewPassword extends AuthPiece {
     showComponent(theme) {
         const { hide } = this.props;
         if (hide && hide.includes(RequireNewPassword)) { return null; }
+
+        const user = this.props.authData;
+        const { requiredAttributes } = user.challengeParam;
+        let that = this;
 
         return (
             <FormSection theme={theme}>
@@ -94,6 +109,24 @@ export default class RequireNewPassword extends AuthPiece {
                         type="password"
                         onChange={this.handleInputChange}
                     />
+                    {
+                        Object.keys(requiredAttributes).map(function (key) {
+
+                            let value = requiredAttributes[key];
+                            let displayValue = that.capitalize(value);
+                            return (
+                                <InputRow
+                                    placeholder={I18n.get(displayValue)}
+                                    theme={theme}
+                                    key={value}
+                                    name={value}
+                                    type="text"
+                                    onChange={that.handleInputChange}
+                                />
+                            );
+
+                        })
+                    }
                     <ButtonRow theme={theme} onClick={this.change}>
                         {I18n.get('Change')}
                     </ButtonRow>
@@ -105,5 +138,14 @@ export default class RequireNewPassword extends AuthPiece {
                 </SectionFooter>
             </FormSection>
         )
+    }
+
+    capitalize(str) {
+        if (str === undefined) {
+            return str;
+        }
+        return str.replace(/\w\S*/g, function(txt){
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
     }
 }
