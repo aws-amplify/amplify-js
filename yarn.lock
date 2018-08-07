@@ -322,14 +322,6 @@ amazon-cognito-auth-js@^1.1.9:
   dependencies:
     js-cookie "^2.1.4"
 
-amazon-cognito-identity-js@^2.0.14-unstable.2:
-  version "2.0.14-unstable.2"
-  resolved "https://registry.npmjs.org/amazon-cognito-identity-js/-/amazon-cognito-identity-js-2.0.14-unstable.2.tgz#2a65077802109cc6422b95441f81b5bee7fb3933"
-  dependencies:
-    buffer "4.9.1"
-    crypto-browserify "1.0.9"
-    js-cookie "^2.1.4"
-
 amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"

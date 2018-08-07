@@ -18,7 +18,7 @@
 
     .site-header-container {
         margin-top: 17px;
-        margin-bottom: 17px;    
+        margin-bottom: 9px;    
         width: 1180px;
         max-width: 90%;
     }
@@ -54,7 +54,16 @@
         height: 38px;
         width: 50px;
 		//margin-left: 109px;
-	}
+    }
+    
+    .header-amplify {
+        display: inline-block;
+        margin-top: 2px;
+    }
+
+    .docs-header-amplify {
+        color: white;
+    }
 }
 
 .col-xs-12 {
@@ -68,9 +77,10 @@
 	float: right;
 	margin-bottom: 0;
     margin-top: 8px;
+    background: transparent !important;
 
     @media (max-width: 992px){
-        margin-top: 20px !important;;
+        margin-top: 20px !important;
     }
 
 	li {
@@ -1064,6 +1074,438 @@ li {
                         margin: auto;
                         margin-bottom: 14px;
                     }
+                }
+            }
+        }
+    }
+}
+
+
+//=============================================================================
+/***                        new stuff for docs header                      ***/
+//=============================================================================
+
+.docs-header {
+    background-color: #FF9900;
+
+    .site-search {
+        background-color: #F4F4F4;
+
+        #search-input {
+            background-color: #F4F4F4;
+        }
+    }
+
+    .site-header__nav {
+        width: auto;
+
+        @media (max-width: 992px) {
+            margin-top: 8px !important;
+        }
+    }
+    
+    .language-selector {
+        border-radius: 4px;
+        background-color: #E57E00;
+        display: inline-block;
+        margin-left: 50px;
+        width: 193px;
+
+        select {
+            background: url("../images/icons/Minis/Arrows.svg") no-repeat;
+            background-position: 164px 6px;
+            filter: brightness(0) invert(1);
+            border: 0 !important;                 /*Removes border*/
+            -webkit-appearance: none;             /*Removes default chrome and safari style*/
+            -moz-appearance: none;                /* Removes Default Firefox style*/
+            text-indent: 0.01px;                  /* Removes default arrow from firefox*/
+            text-overflow: "";                    /*Removes default arrow from firefox*/
+            padding: 10px;
+            width: 100%;
+            color: #FFFFFF;
+            font-family: "Amazon Ember";
+            font-size: 16px;
+            line-height: 24px;
+        }
+    }
+}
+
+//=============================================================================
+/***                        new stuff for docs pages                       ***/
+//=============================================================================
+
+.docs-page-container {
+    width: 1180px;
+    max-width: 90%;
+    margin: auto;
+
+    .section-top {
+        margin-top: 60px;
+    }
+
+    ::-webkit-scrollbar {
+        height: 0px; 
+        width: 2px;
+        background: transparent; 
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #FF9900;
+    }
+    
+
+
+    .dev-guide-container {
+        float: left;
+        width: 260px;
+        padding: 0;
+        position: sticky;
+        top: 0;
+        margin-top: 60px;
+
+        .in-this-page {
+            margin-top: 10px;
+
+            ul {
+                margin-bottom: 4px;
+            }
+        }
+
+        .sections-list {
+            overflow-y: scroll;
+            max-height: 90vh;
+            background: none;
+            
+            ul li {
+                border: none;
+            }
+        }
+
+        .sections-list.affix {
+            position: relative;
+        }
+
+        .version-section {
+
+            p {
+                color: #152939;
+                font-family: "Amazon Ember";
+                font-size: 14px;
+                letter-spacing: 0.4px;
+                line-height: 17px;
+                margin-bottom: 8px;
+            }
+
+            .version-selector {
+                border-radius: 5px;
+                border: 1px solid #C4C4C4;
+                background-color: #FFFFFF;
+                display: inline-block;
+                width: 193px;
+        
+                select {
+                    background: url("../images/icons/Minis/Arrows.svg") no-repeat;
+                    background-position: 164px 6px;
+                    //filter: brightness(0) invert(1);
+                    border: 0 !important;                 /*Removes border*/
+                    -webkit-appearance: none;             /*Removes default chrome and safari style*/
+                    -moz-appearance: none;                /* Removes Default Firefox style*/
+                    text-indent: 0.01px;                  /* Removes default arrow from firefox*/
+                    text-overflow: "";                    /*Removes default arrow from firefox*/
+                    padding: 10px;
+                    width: 100%;
+                    color: #152939;
+                    font-family: "Amazon Ember";
+                    font-size: 14px;
+                    letter-spacing: 0.4px;
+                    line-height: 17px;
+                }
+            }
+        }
+
+        .left-nav-section {
+            margin-bottom: 20px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .gray-section-head {
+            color: #B4B4B4;
+            font-family: "Amazon Ember";
+            font-size: 13px;
+            line-height: 35px;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .orange-section-head {
+
+            color: #FF9900 !important;             
+            &::after {
+                color: #232F3E !important;
+                transform: rotate(0deg) !important;
+            }
+        }
+
+        .section-head {
+            color: #232F3E;
+            font-family: "Amazon Ember";
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 25px;
+            padding: 0;
+            border-bottom: none;
+            display: block;
+            max-width: 260px;
+
+            &::after {
+                @extend .icon;
+                content: '\e91d';
+                color: #bdbdbd;
+                //display: inline-block;
+                font-size: 1.25rem;
+                position: relative;
+                float: right;
+                top: 0;
+                //transition: color .5s;
+                //transition: transform 0.5s;
+                transform: rotate(90deg);
+            }
+        }
+
+        ul:hover {
+            overflow-x: scroll;
+        }
+
+        ul {
+            overflow-x: hidden;
+
+            a {
+                color: #4A4A4A;
+                font-family: "Amazon Ember";
+                font-size: 14px;
+                font-weight: bold;
+                line-height: 16px;
+                max-width: 240px;
+                display: block;
+                overflow-x: scroll !important;
+            }
+
+            ul {
+                margin-top: .625rem;
+                margin-bottom: 0;
+                color:black;
+            }
+    
+            li {
+                padding-bottom: 2px;
+                border-left: 1px solid #eee;
+                transition: border .2s;
+                border-left-color:white;
+                line-height: 20px;
+                padding-left: 0px;
+                margin-bottom: 4px;
+    
+                &.active {
+                    border-left-color: gray;
+                }
+    
+                &.section-link {
+                    a {
+                        padding-left:11px;
+                    }
+                }
+
+                &.first-submenu {
+                    &::after {
+                        top: 8px !important;
+                    }
+                }
+                
+                &.has-submenu {
+                    //padding-right: 10px;
+                    //font-weight: bold;
+
+                    .level-3 {
+                        margin-left: 10px;
+                        padding-left: 10px;
+
+                        li {
+                            border: none;
+                        }
+
+                        a {           
+                            padding-left: 10px;
+                            font-size: 13px;
+                            line-height: 15px;
+                            border-left: 2px solid #DBD6D6;
+                            font-weight: normal;
+                        }
+                    }
+    
+                    .level-4 {
+                        padding-left: 10px;
+                        margin-left: 20px;
+                        border-left: 2px solid #DBD6D6;
+                        a {
+                            padding: 0;
+                            font-size: 12px;
+                            line-height: 14px;
+                            border: none;
+                            color: #7F7F7F;
+                        }
+                    }
+    
+                    > ul {
+                        // display: none;
+                        // height: 0;
+                        // transition: height 2s ease-out;
+                        display: block;
+                    }
+    
+                    &.active {
+    
+                        > ul {
+                            height: auto;
+                            display: block;
+                            //transition: height 2s ease-in;
+                        }
+                    }
+    
+    
+                }
+    
+                &::before {
+                    display: none;
+                }
+    
+                a {
+                    @include link-reset;
+                    font-size:0.9rem;
+                    padding-left: 10px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+    
+            }
+    
+            /*.level-2 {
+                li {
+                    &.active {
+                        border-left-color: gray;
+                        margin-left: -2px;
+                        padding-left:0px;
+                        border-width: 3px;
+                        //font-weight: bold;
+                    }
+                }
+            }
+    
+            .level-3 {
+                li {
+                    &.active {
+                        border-left-color: #585858;
+                        margin-left: -3px;
+                        padding-left:0px;
+                        border-width: 3px;
+                    }
+                }
+            }
+    
+            .level-4 {
+                li {
+                    &.active {
+                        border-left-color: black;
+                        margin-left: -3px;
+                        padding-left:0px;
+                        border-width: 3px;
+                    }
+                }
+            }*/
+    
+        }
+    }
+
+    .docs-container {
+        float: right;
+        width: calc(100% - 280px);
+        padding: 53px 65px 53px 65px;
+
+        .content {
+
+            .tab-content {
+                padding: 0;
+            }
+
+            h1 {
+                color: #232F3E;
+                font-family: "Amazon Ember";
+                font-size: 42px;
+                font-weight: 300;
+                line-height: 53px;
+                margin: 0;
+                margin-bottom: 40px;
+            }
+
+            p {
+                color: #828282;
+                font-family: "Amazon Ember";
+                font-size: 16px;
+                line-height: 24px;
+            }
+
+            h2 {
+                color: #232F3E;
+                font-family: "Amazon Ember";
+                font-size: 21px;
+                font-weight: bold;
+                line-height: 26px;
+                border-bottom: none;
+                border-top: 1px solid #E1E4EA;
+                padding: 25px 0 0 0;
+                margin-top: 48px;
+            }
+
+            .orange-subheader {
+                color: #FF9900;
+                font-family: "Amazon Ember";
+                font-size: 21px;
+                font-weight: bold;
+                line-height: 26px;
+            }
+
+            pre {
+                .line-number {
+                    display: block;
+                    float: left;
+                    margin: 0 1em 0 -1em;
+                    border-right: 1px solid white;
+                    text-align: right;
+                    //border: 1px solid #DBDBDB;
+                    //border-radius: 5px;
+                    //background-color: #F9F9F9;
+                    span {
+                        display: block;
+                        padding: 1px 18px 0 10px;
+                        color: white;
+                    }
+                }
+                .cl {
+                    display: block;
+                    clear: both;
+                }
+
+                .code {
+                    padding: 20px 0 20px 5px;
+                }
+
+                .highlight {
+                    padding: 0;
                 }
             }
         }

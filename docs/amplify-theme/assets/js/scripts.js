@@ -190,7 +190,7 @@
 			$li = $( '<li></li>' );
 
 			if (true === isFirstLevel && i == 0 ) {
-				aClass='section-head';
+				aClass='section-head orange-section-head';
 			}
 
 			$li.append(
@@ -202,11 +202,13 @@
 			if ( list[ i ].childrens && list[ i ].childrens.length ) {
 				$li.append( generateList( list[ i ].childrens ) );
 				$li.addClass( 'has-submenu' );
+				if ( isFirstLevel ) {
+					$li.addClass( 'first-submenu' );
+				}
 			}
 
 			$ul.append( $li );
 		}
-
 		return $ul;
 	};
 
@@ -343,6 +345,22 @@
 
 	// temporary for editing notif bar
 	//document.getElementById("notification-bar").style.display = "block";
+
+	var addLineNumbers = function() {
+		var pre = document.getElementsByTagName('pre'), pl = pre.length;
+		for (var i = 0; i < pl; i++) {
+			pre[i].innerHTML = '<span class="line-number"></span>' + pre[i].innerHTML + '<span class="cl"></span>';
+			var num = pre[i].innerHTML.split(/\n/).length;
+			//if (num > 2) {
+				for (var j = 0; j < (num - 1); j++) {
+					var line_num = pre[i].getElementsByTagName('span')[0];
+					line_num.innerHTML += '<span>' + (j + 1) + '</span>';
+				}
+			//}
+		}
+	};
+
+	addLineNumbers();
 
 }( jQuery ) );
 

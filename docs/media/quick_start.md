@@ -3,7 +3,7 @@
 
 # Quick Start
 
-**Welcome to rock with AWS Amplify!** 
+<p class="orange-subheader">Welcome intrepid builder!</p>
 
 AWS Amplify is designed to provide you a more productive environment for connecting Cloud services and working with JavaScript. 
 

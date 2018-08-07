@@ -37,54 +37,57 @@
 			</div><!-- /.section -->
 			{% endif %}
 
-			{% if site.category_list %}
+			{% if site.category_list %}			
 				<div>
 					<div class="container">
 							<div class="row">
 								<div class="col-md-12 amp-custom">
 									<div class="nav-grid nav-grid--out">
 										{% for category in site.category_list %}
-										<div class="section-top section-top-category">
-											<div class="container">
-													<div class="header col-sm-11">
-														{{ category.title}}
+											{% if category.title contains "Setup & Installation" %}
+											{% else %}
+												<div class="section-top section-top-category">
+													<div class="container">
+															<div class="header col-sm-11">
+																{{ category.title}}
+															</div>
+															<div class="subheader col-sm-11">
+																{{ category.excerpt}}
+															</div>
+															<div class="row">
+																{% for item in category.subs %}
+																	<div class="col-xs-12 col-sm-6 col-lg-4">
+																		<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="dev-guide-item">
+																			<img src={{ item.icon }} class="dev-guide-icon" {% if category.title == 'Front End Support' %}id='{{ item.id }}-logo'{% endif %} /> 
+																			<div class="dev-guide-content" data-mh>
+																				<div class="dev-guide-title" >
+																					{{ item.title }}
+																				</div>
+																				<div class="dev-guide-excerpt">{{ item.excerpt }}</div>
+																			</div><!-- /.nav-grid__content -->
+																			<div class="services-container">
+																				<div class='dev-guide-services'>
+																					{% for service in item.services %} 
+																						<i onClick="window.open('{{ service.url }}', '_blank'); return false;" >
+																							{{ service.title }}
+																						</i>
+																					{% endfor %}
+																				</div >
+																			</div>
+																		</a><!-- /.nav-grid__item -->
+																	</div><!-- /.col -->
+																{% endfor %}
+															</div><!-- /.row -->
 													</div>
-													<div class="subheader col-sm-11">
-														{{ category.excerpt}}
-													</div>
-													<div class="row">
-														{% for item in category.subs %}
-															<div class="col-xs-12 col-sm-6 col-lg-4">
-																<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="dev-guide-item">
-																	<img src={{ item.icon }} class="dev-guide-icon" {% if category.title == 'Front End Support' %}id='{{ item.id }}-logo'{% endif %} /> 
-																	<div class="dev-guide-content" data-mh>
-																		<div class="dev-guide-title" >
-																			{{ item.title }}
-																		</div>
-																		<div class="dev-guide-excerpt">{{ item.excerpt }}</div>
-																	</div><!-- /.nav-grid__content -->
-																	<div class="services-container">
-																		<div class='dev-guide-services'>
-																			{% for service in item.services %} 
-																				<i onClick="window.open('{{ service.url }}', '_blank'); return false;" >
-																					{{ service.title }}
-																				</i>
-																			{% endfor %}
-																		</div >
-																	</div>
-																</a><!-- /.nav-grid__item -->
-															</div><!-- /.col -->
-														{% endfor %}
-													</div><!-- /.row -->
-											</div>
-										</div>
+												</div>
+											{% endif %}
 										{% endfor %}
 									</div><!-- /.nav-grid -->
 								</div><!-- /.col -->
 							</div><!-- /.row -->
 						
 					</div><!-- /.container -->
-				</div><!-- /.section -->
+				</div><!-- /.section -->		
 			{% endif %}
 		</div>
 

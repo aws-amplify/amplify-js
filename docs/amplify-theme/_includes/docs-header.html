@@ -34,39 +34,30 @@
 {% endif %}
 
 {% if site.amplify.header.logo.text or site.amplify.header.logo.image or site.amplify.header.nav %}
-	<header class="site-header">
+	<header class="site-header docs-header">
 		<div class="container site-header-container">
 			<div class="row">
 				<div>
 					{% if site.amplify.header.logo.text %}
 						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
-							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
-							<p class="header-amplify">{{ site.amplify.header.logo.text }} </p>
+							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/Logos/Amplify-Logo-White.svg">
+							<p class="header-amplify docs-header-amplify">{{ site.amplify.header.logo.text }}</p>
 						</a>
 					{% elsif site.amplify.header.logo.image %}
 						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
 							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
 						</a><!-- /.site-header__logo -->
-					{% endif %}
+                    {% endif %}
+                        <div class="language-selector">
+                            <select>
+                                <option value="javascript">JavaScript</option>
+                                <option value="cli">Amplify CLI</option>
+                            </select>
+                        </div>
 					{% if site.amplify.header.nav %}
 						<ul class="site-header__nav hidden-xs">
-							{% for item in site.amplify.header.nav %}
-								<li>
-									{% if item.item_external_url %}
-										<a href="{{ item.item_external_url }}">
-											{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
-											{{ item.item_name }}
-										</a>
-									{% else %}
-										<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
-											{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
-											{{ item.item_name }}
-										</a>
-									{% endif %}
-								</li>
-							{% endfor %}
 							<li class="site-search">
-								<input placeholder="   Search" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/search.svg"></input>
+								<input placeholder="   Search Docs" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/search.svg"></input>
 							</li>
 						</ul><!-- /.site-header__nav -->
 						<button class="offcanvas-toggle visible-xs">

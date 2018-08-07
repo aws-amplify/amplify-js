@@ -4,16 +4,16 @@
 		{% include site-head.html %}
 	</head>
 	<body class="{{ site.amplify.color_theme }}" data-spy="scroll" data-target=".js-scrollspy">
-		{% include site-header.html %}
+		{% include docs-header.html %}
 
 		<div class="section">
-			<div class="container">
-				<div class="github-edit-link">
+			<div class="container docs-page-container">
+				<!-- <div class="github-edit-link">
 					<a title="Edit this page on github" class="" target="_blank" rel="noopener noreferrer" 
 					href="{{ site.github.repository_url }}{{ page.path }}">
 						<span class="">Edit this page</span> 
 					</a>				
-				</div>
+				</div> -->
 
 				{% if site.category_list %}
 					{% for category in site.category_list %}
@@ -26,38 +26,44 @@
 				{% endif %}
 
 				<div class="row">
-					<div class="col-md-8">
+					<div class="col-md-8 section-top docs-container">
 						<div class="content">
 							{{ content }}
 						</div><!-- /.content -->
 					</div><!-- /.col -->
-					<div class="col-md-4 col-md-offset-1">
+					<div class="col-md-4 col-md-offset-1 dev-guide-container">
+						<div class="version-section">
+							<p>Version</p>
+							<div class="version-selector">
+								<select>
+									<option value="3.3.1">3.3.1 (Stable release)</option>
+									<option value="3.2.4">3.2.4 (Stable release)</option>
+									<option value="3.0.6">3.0.6 (Stable release)</option>
+									<option value="3.4.0">3.3.2 (Beta)</option>
+								</select>
+							</div>
+						</div>
 						<div class="sections-list-wrapper">
-							<div class="sections-list js-affix js-scrollspy hidden-xs hidden-sm">
+							<div class="sections-list js-affix js-scrollspy hidden-xs">
 								<div class="dev-guide"> 
-									{% if site.category_list and isPageInCategories %}
-										<ul class="level-1 nav">
-											{% for category in site.category_list %}
-												<div class='category-header'>{{ category.title }}</div>
+									{% if site.category_list %}
+										{% for category in site.category_list %}
+										<div class="left-nav-section">
+											<p class="gray-section-head">{{ category.title }}</p>
+											<div class="feature-list">
 												{% for item in category.subs %}
 													{% if page.url contains item.url %}
 														<div class='in-this-page js-sections'></div>
 													{% else %}
-														<li class="section-link">
-															<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}">{{ item.title }}</a>
-														</li>
+														<a href="{{ item.url }}" class="section-head">{{ item.title }}</a>
 													{% endif %}	
 												{% endfor %}
-											{% endfor %}
-										</ul>
+											</div>
+										</div>
+										{% endfor %}
 									{% endif %}
-									{% if isPageInCategories != true  %}
-										<small>In this page</small>
-										<div class='in-this-page js-sections'></div>
-									{% endif %}	
 								</div>						
 							</div><!-- /.sections-list -->
-							<div class='list-all'></div>
 						</div>
 					</div><!-- /.col -->
 				</div><!-- /.row -->

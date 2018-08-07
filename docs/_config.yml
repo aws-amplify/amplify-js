@@ -110,6 +110,18 @@ exclude: [ 'README.md', 'CHANGELOG.md' ]
 permalink: /:title
 
 category_list:
+    - category: SetupAndInstallation
+      title: Setup & Installation
+      excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+      subs:
+        - title: Quick Start
+          excerpt: quick start excerpt
+          url: '/media/quick_start'
+          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+        - title: Amplify CLI
+          excerpt: CLI excerpt
+          url: 'media/cli'
+          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
     - category: CloudFeatures
       title: Cloud Features
       excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
