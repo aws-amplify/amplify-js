@@ -1,5 +1,7 @@
 const mockDelegate = jest.fn();
-const tracker = jest.fn();
+const tracker = jest.fn().mockImplementation(() => {
+    return Promise.resolve();
+});
 
 jest.mock('dom-utils', () => {
     return {
@@ -37,8 +39,6 @@ describe('EventTracer test', () => {
                 enable: true
             });
 
-         
-
             expect(spyon).toBeCalled();
 
             spyon.mockClear();
@@ -66,5 +66,32 @@ describe('EventTracer test', () => {
 
             mockDelegate.mockClear();
         });
+    });
+
+    describe('track function test', () => {
+        test('happy case', () => {
+            const ele = {
+                getAttribute(params) {
+                    if (params.indexOf('on') >= 0) return 'click';
+                    if (params.indexOf('name') >= 0) return 'name';
+                    if (params.indexOf('attrs') >= 0) return 'attrs:val';
+                }
+            }
+            
+            const eventTracker = new EventTracker(tracker, {
+                enable: true
+            });
+
+            const event = {
+                type: 'click',
+                target: {
+                    localName: 'localName',
+                    id: 'xxxxx'
+                }
+            }
+            eventTracker._trackFunc(event, ele);
+
+            expect(tracker).toBeCalledWith({"attributes": {"attrs": "val", "target": "localName with id xxxxx", "type": "click"}, "name": "name"});
+        })
     });
 });

@@ -40,13 +40,15 @@ export default class PageViewTracker {
         }
     }
 
-    public configure(opts: pageViewTrackOpts) {
+    public configure(opts?: pageViewTrackOpts) {
         Object.assign(this._config, opts);
 
         // if spa, need to remove those listeners if disabled
         if (this._config.type === 'SPA') {
             this._pageViewTrackSPA();
         }
+
+        return this._config;
     }
 
     private _isSameUrl() {

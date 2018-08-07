@@ -79,9 +79,9 @@ export default class SessionTracker {
         }
     }
 
-    configure(opts: SessionTrackOpts) {
+    configure(opts?: SessionTrackOpts) {
         if (!this._envCheck()) {
-            return;
+            return this._config;
         }
 
         Object.assign(this._config, opts);
@@ -100,5 +100,7 @@ export default class SessionTracker {
             document.removeEventListener(this._visibilityChange, this._trackFunc, false);
             this._hasEnabled = false;
         }
+
+        return this._config;
     }
 }
