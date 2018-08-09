@@ -1,7 +1,7 @@
 import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
 
-import { AmplifyService, AuthState } from '../providers';
-import { AuthenticatorComponentCore } from '../components/authenticator/authenticator/authenticator.component.core';
+import { AmplifyService, AuthState } from '../../../providers';
+import { AuthenticatorComponentCore } from './authenticator.component.core';
 
 const template = `
 

@@ -1,6 +1,6 @@
 import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
-import { AmplifyService, AuthState } from '../providers';
-import { S3ImageComponentCore } from '../components/storage/s3-image-component/s3-image.component.core';
+import { AmplifyService, AuthState } from '../../../providers';
+import { S3ImageComponentCore } from './s3-image.component.core';
 
 const template = `
 <img

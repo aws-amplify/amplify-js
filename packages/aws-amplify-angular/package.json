@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "1.2.27",
+  "version": "5.0.0",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -11,9 +11,10 @@
     "ngcompile": "node_modules/.bin/ngc -p tsconfig-aot.json",
     "test": "jest --maxWorkers 2",
     "transpile": "ngc",
-    "package": "rollup -c",
-    "minify": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
-    "build-test": "npm run transpile && npm run package && npm run minify"
+    "package": "rollup -c rollup.config.js && rollup -c rollup.config.angular.js",
+    "minify-dual": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
+    "minify-angular": "uglifyjs dist/bundles/aws-amplify-angular-only.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular-only.umd.min.js",
+    "build-test": "npm run transpile && npm run package && npm run minify-dual && npm run minify-angular"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -70,6 +71,7 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.106",
+    "rollup-plugin-multi-entry": "^2.0.2",
     "rollup-plugin-uglify": "^4.0.0"
   }
 }

@@ -1,6 +1,6 @@
 import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
-import { AmplifyService, AuthState } from '../providers';
-import { S3AlbumComponentCore } from '../components/storage/s3-album-component/s3-album.component.core';
+import { AmplifyService, AuthState } from '../../../providers';
+import { S3AlbumComponentCore } from './s3-album.component.core';
 
 const template = `
 
