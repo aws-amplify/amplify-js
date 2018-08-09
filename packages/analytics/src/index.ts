@@ -18,7 +18,6 @@ import Amplify, {
     ConsoleLogger as Logger,
     Hub,
     Linking,
-    AppState,
     Platform
 } from '@aws-amplify/core';
 
@@ -41,20 +40,6 @@ export default Analytics;
 export { AnalyticsProvider };
 export { AnalyticsClass };
 export * from './Providers';
-
-// listen on app state change
-const dispatchAppStateEvent = (event, data) => {
-    Hub.dispatch('appState', { event, data }, 'AppState');
-};
-
-if (Platform.isReactNative) {
-    AppState.addEventListener('change', (nextAppState) => {
-        switch(nextAppState) {
-            case 'active':
-                dispatchAppStateEvent('active', {});
-        }
-    });
-}
 
 // send a session start event if autoSessionRecord is enabled
 const autoSessionRecord = () => {
