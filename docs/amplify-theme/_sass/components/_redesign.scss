@@ -320,7 +320,7 @@
     height: 40px;
     background-color: #FF9900;
     border-radius: 100%;
-    background-image: url('/assets/images/icons/Medium/Search.svg');
+    background-image: url('/images/icons/Medium/Search.svg');
     background-repeat: no-repeat;
     background-position: 33% 42%;
     transition: all 0.2s !important;
@@ -1214,6 +1214,7 @@ li {
             border-radius: 5px;
             display: inline-block;
             width: 100%;
+            height: 180px;
 
             .dev-guide-icon {
                 width: 31px;

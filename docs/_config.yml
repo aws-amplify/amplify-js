@@ -117,11 +117,11 @@ category_list:
         - title: Quick Start
           excerpt: quick start excerpt
           url: 'quick_start'
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
         - title: Amplify CLI
           excerpt: CLI excerpt
           url: 'media/cli'
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
     - category: CloudFeatures
       title: Cloud Features
       excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
@@ -131,7 +131,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-pie-bar-charts 
           url: 'analytics_guide'
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
           services:
             - title: Amazon Pinpoint,
               url: https://aws.amazon.com/pinpoint/
@@ -144,7 +144,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-database-server
           url: 'api_guide' 
-          icon: '/assets/images/icons/Misc/Present.svg'   
+          icon: '/images/icons/Misc/Present.svg'   
           services: 
             - title: Amazon API Gateway,
               url: https://aws.amazon.com/api-gateway
@@ -155,7 +155,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-shield-circle
           url: 'authentication_guide'
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
           services:
             - title: Amazon Cognito,
               url: https://aws.amazon.com/cognito/
@@ -168,7 +168,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-network-nodes
           url: 'hosting_guide'   
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
           services:
               - title: Amazon CloudFront
                 url: https://aws.amazon.com/cloudfront/
@@ -177,7 +177,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-bubble-gear
           url: 'interactions_guide'   
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
           services:
               - title: Amazon Lex
                 url: https://aws.amazon.com/lex/
@@ -186,7 +186,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-circular-circuit
           url: 'pub_sub_guide'   
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
           services:
               - title: AWS IoT,
                 url: https://aws.amazon.com/iot/
@@ -199,7 +199,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-device-message
           url: 'push_notifications_setup'   
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
           services:
               - title: Amazon Pinpoint
                 url: https://aws.amazon.com/pinpoint/
@@ -208,7 +208,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-file-box
           url: 'storage_guide'   
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
           services:
               - title: Amazon S3
                 url: https://aws.amazon.com/s3/
@@ -220,27 +220,27 @@ category_list:
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
           cta: Read more
           url: 'cache_guide'  
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
         - title: Hub  
           excerpt: A lightweight local event bus for your app.
           cta: Read more
           url: 'hub_guide' 
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
         - title: I18n  
           excerpt: A lightweight internationalization solution.
           cta: Read more
           url: 'i18n_guide'  
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
         - title: Logger  
           excerpt: Console logging utility.
           cta: Read more
           url: 'logger_guide'  
-          icon: '/assets/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Present.svg'
         - title: Service Worker 
           excerpt: A utility class to work with PWA and Service Worker APIs. 
           cta: Read more
           url: 'service_workers_guide'   
-          icon: '/assets/images/icons/Misc/Present.svg'     
+          icon: '/images/icons/Misc/Present.svg'     
     - category: Front End Support
       title: Front End Support
       excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
@@ -249,31 +249,31 @@ category_list:
           excerpt: AWS Amplify provides Angular Components with aws-amplify-angular npm package.
           cta: Read more
           url: 'angular_guide' 
-          icon: '/assets/images/Logos/Angular-Color@1x.png'
+          icon: '/images/Logos/Angular-Color@1x.png'
           id: angular
         - title: React 
           excerpt: AWS Amplify provides React Components with aws-amplify-react npm package and a starter App.
           cta: Read more
           url: 'react_guide' 
-          icon: '/assets/images/Logos/React-Color@1x.png'
+          icon: '/images/Logos/React-Color@1x.png'
           id: react
         - title: React Native
           excerpt: AWS Amplify provides React Native Components with aws-amplify-react npm package and a starter App.
           cta: Read more
           url: 'react_native_guide' 
-          icon: '/assets/images/Logos/React-Color@1x.png'
+          icon: '/images/Logos/React-Color@1x.png'
           id: react-native
         - title: Vue.js
           excerpt: To help you start working with AWS Amplify, we provide a Starter App.
           cta: Read more
           url: 'vuejs_guide' 
-          icon: '/assets/images/Logos/Vue-Color@1x.png'
+          icon: '/images/Logos/Vue-Color@1x.png'
           id: vuejs
         - title: Ionic
           excerpt: AWS Amplify provides Angular Components that you can use with Ionic in aws-amplify-angular npm package.
           cta: Read more
           url: 'ionic_guide' 
-          icon: '/assets/images/Logos/Ionic-Color@1x.png'
+          icon: '/images/Logos/Ionic-Color@1x.png'
           id: ionic
 
 defaults:
