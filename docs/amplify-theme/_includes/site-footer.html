@@ -36,12 +36,12 @@
 	</footer><!-- /.site-footer -->
 {% endif %}
 
-<script src="/amplify-theme/assets/js/vendor/jquery.min.js"></script>
+<script src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-<script type="text/javascript" src="/amplify-theme/assets/js/vendor/bootstrap/affix.min.js"></script>
-<script type="text/javascript" src="/amplify-theme/assets/js/vendor/bootstrap/scrollspy.min.js"></script>
-<script type="text/javascript" src="/amplify-theme/assets/js/vendor/matchHeight.min.js"></script>
-<script type="text/javascript" src="/amplify-theme/assets/js/scripts.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/bootstrap/affix.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/bootstrap/scrollspy.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/matchHeight.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/scripts.js"></script>
 
 {% include google-analytics.html %}
 
