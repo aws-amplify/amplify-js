@@ -7,7 +7,7 @@ Overview
 The AWS Amplify and the CLI provides a developer experience that allows frontend JavaScript developers to quickly create React Native apps and integrate backend resources into their apps. In this tutorial, you will learn how to build a cloud-enabled mobile app with React Native and AWS Amplify.
 
 **By completing this tutorial, you will be able to;**
-- Use AWS Mobile CLI to create your backend
+- Use Amplify CLI to create your backend
 - Configure and integrate your backend into your React Native app 
 - Deploy your mobile app for delivery
 
@@ -18,7 +18,7 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
 1.  [Sign up for the AWS Free Tier](https://aws.amazon.com/free/) to
     learn and prototype at little or no cost.
 2.  Install [Node.js](https://nodejs.org/en/download/) with NPM.
-3.  Install the AWS Mobile CLI
+3.  Install the Amplify CLI
 
     ```bash
     npm install --global awsmobile-cli
@@ -34,7 +34,7 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
 
     If prompted for credentials, follow the steps provided by the CLI.
     For more information, see
-    Provide IAM credentials to AWS Mobile CLI &lt;aws-mobile-cli-credentials&gt;.
+    Provide IAM credentials to Amplify CLI &lt;aws-mobile-cli-credentials&gt;.
 
 ### Set Up Your Backend
 
@@ -122,13 +122,13 @@ Anytime you launch your app,
 app usage analytics are gathered and can be visualized
 in an AWS console.
 
-To learn more about the commands and usage of the AWS Mobile CLI, see
-the [AWS Mobile CLI reference](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html).
+To learn more about the commands and usage of the Amplify CLI, see
+the [Amplify CLI reference](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html).
 {: .callout .callout--info}
 
 ## Add Auth / User Sign-in
 
-The AWS Mobile CLI components for user authentication include a rich,
+The Amplify CLI components for user authentication include a rich,
 configurable UI for sign-up and sign-in.
 
 **To enable the Auth features**
@@ -142,7 +142,7 @@ $ awsmobile push
 
 #### Connect to Your Backend
 
-The AWS Mobile CLI enables you to integrate ready-made
+The Amplify CLI enables you to integrate ready-made
 sign-up/sign-in/sign-out UI from the command line.
 
 **To add user auth UI to your app**
@@ -359,7 +359,7 @@ to access your database.
 
 ### Create a CRUD API
 
-AWS Mobile CLI will create a custom API for your app to perform create,
+Amplify CLI will create a custom API for your app to perform create,
 read, update, and delete (CRUD) actions on your database.
 
 **To create a CRUD API for your table**
@@ -569,7 +569,7 @@ Learn more about the AWS Mobile NoSQL Database feature, which uses [Amazon Dynam
 
 ## Add Cloud Storage
 
-The AWS Mobile CLI User Data Storage feature
+The Amplify CLI User Data Storage feature
 enables apps to store user files in the cloud.
 
 ### Set Up Your Backend
@@ -669,7 +669,7 @@ async deleteFile(key) {
 
 ## Add Analytics
 
-When you complete the AWS Mobile CLI setup and launch your app,
+When you complete the Amplify CLI setup and launch your app,
 anonymized session and device demographics data flows to the AWS
 analytics backend.
 

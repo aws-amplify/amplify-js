@@ -7,7 +7,7 @@ Overview
 The AWS Amplify and the CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with React and AWS Amplify.
 
 **By completing this tutorial, you will be able to;**
-- Use AWS Mobile CLI to create your backend
+- Use Amplify CLI to create your backend
 - Configure and integrate your backend into your JavaScript app 
 - Deploy your web app for delivery
 
@@ -17,7 +17,7 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
 
 1.  [Sign up for the AWS Free Tier](https://aws.amazon.com/free/).
 2.  Install [Node.js](https://nodejs.org/en/download/) with NPM.
-3.  Install AWS Mobile CLI
+3.  Install Amplify CLI
 
     ```bash
     npm install -g awsmobile-cli
@@ -176,7 +176,7 @@ configuration of tests and reporting.
 
 ## Add Auth / User Sign-in
 
-The AWS Mobile CLI components for user authentication include a rich,
+The Amplify CLI components for user authentication include a rich,
 configurable UI for sign-up and sign-in.
 
 **To enable the Auth features**
@@ -190,7 +190,7 @@ awsmobile push
 
 ### Connect to Your Backend
 
-The AWS Mobile CLI enables you to integrate ready-made
+The Amplify CLI enables you to integrate ready-made
 sign-up/sign-in/sign-out UI from the command line.
 
 **To add user auth UI to your app**
@@ -222,7 +222,7 @@ Cognito](http://docs.aws.amazon.com/cognito/latest/developerguide/welcome.html).
 
 ## Add Cloud Storage
 
-The AWS Mobile CLI and AWS Amplify library make it easy to store and
+The Amplify CLI and AWS Amplify library make it easy to store and
 manage files in the cloud from your JavaScript app.
 
 ### Set Up the Backend
@@ -332,7 +332,7 @@ render() {
 
 ## Add Cloud APIs
 
-The AWS Mobile CLI and Amplify library make it easy to create and call cloud APIs and their handler logic from your JavaScript code.
+The Amplify CLI and Amplify library make it easy to create and call cloud APIs and their handler logic from your JavaScript code.
 
 ### Set Up Your Backend
 
@@ -392,7 +392,7 @@ The Cloud Logic API endpoint for the `Guesses` API is now created.
 
 ### Customize Your API Handler Logic
 
-The AWS Mobile CLI has generated a Lambda function to handle calls to the `Guesses` API. It is saved locally in
+The Amplify CLI has generated a Lambda function to handle calls to the `Guesses` API. It is saved locally in
 YOUR-APP-ROOT-FOLDER/awsmobilejs/backend/cloud-api/guesses. The app.js file in that directory contains the definitions and functional code for all of the paths that are handled for your API.
 
 **To customize your API handler**
@@ -479,7 +479,7 @@ Your entire component should look like the following:
 
 ## Add Cloud Database
 
-The AWS Mobile CLI and Amplify library make it easy to perform create, read, update, and delete ("CRUD") actions against data stored in the cloud through simple API calls in your JavaScript app.
+The Amplify CLI and Amplify library make it easy to perform create, read, update, and delete ("CRUD") actions against data stored in the cloud through simple API calls in your JavaScript app.
 
 ### Set Up Your Backend
 
@@ -582,7 +582,7 @@ The required DynamoDB tables, API Gateway endpoints, and Lambda functions will n
 
 ### Create your first Todo
 
-The AWS Mobile CLI enables you to test your API from the command line.
+The Amplify CLI enables you to test your API from the command line.
 
 Run the following command to create your first todo.
 
@@ -660,7 +660,7 @@ submitted.
 
 ## Add Analytics
 
-When you complete the AWS Mobile CLI setup and launch your app, anonymized session and device demographics data flow to the AWS analytics backend.
+When you complete the Amplify CLI setup and launch your app, anonymized session and device demographics data flow to the AWS analytics backend.
 
 **To send basic app usage analytics to AWS**
 
@@ -737,9 +737,9 @@ Messaging and Analytics feature. This feature uses [Amazon Pinpoint](http://docs
 
 ## Deploy your App
 
-AWS Amplify provides hosting for your Web app or static website with AWS Mobile CLI.  
+AWS Amplify provides hosting for your Web app or static website with Amplify CLI.  
 
-AWS Mobile CLI provides a one-line deploy command that pushes your app’s static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app’s loading performance by serving your content to your users from the nearest edge location.
+Amplify CLI provides a one-line deploy command that pushes your app’s static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app’s loading performance by serving your content to your users from the nearest edge location.
 
 ```bash
 awsmobile publish

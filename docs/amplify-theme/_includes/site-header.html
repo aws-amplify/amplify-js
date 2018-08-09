@@ -2,7 +2,7 @@
 <div class="notification-bar row" id="notification-bar">
 	<div class="notification-content">
 		<div class="col-xs-5">
-			<img class="notification-image" src="/images/icons/Medium/Volume.svg">
+			<img class="notification-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Medium/Volume.svg">
 		</div>
 		<p class="notification-text col-xs-7">News: The New VR Component is live and ready to deploy!</p>
 	</div>
@@ -47,13 +47,13 @@
 				{% if site.amplify.header.logo.text %}
 				<div class="logo-container" id="logo-container">
 					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
-						<img src="/images/layout/logo.png">
+						<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/logo.png">
 						<p class="header-amplify">{{ site.amplify.header.logo.text }} </p>
 					</a>
 				</div>
 				{% elsif site.amplify.header.logo.image %}
 					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
-						<img src="/images/layout/logo.png">
+						<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/logo.png">
 					</a><!-- /.site-header__logo -->
 				{% endif %}
 				{% if site.amplify.header.nav %}
@@ -74,7 +74,7 @@
 							</li>
 						{% endfor %}
 						<li class="site-search">
-							<input placeholder="   Search" type="text" id="search-input"><img class="search-image" id="search-image" src="/images/layout/Search.svg"></input>
+							<input placeholder="   Search" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/Search.svg"></input>
 						</li>
 					</ul><!-- /.site-header__nav -->
 					<input type="text" id="search-input-xs" class="visible-xs"></input>

@@ -32,12 +32,12 @@
 										{% endif %}
 									{% endfor %}
 									<div class="logos">
-										<img class="logo-sm" src="/images/Logos/JS-Small-White@1x.png">
-										<img class="logo-sm" src="/images/Logos/React-Small-White@1x.png">
-										<img class="logo-sm" src="/images/Logos/Apple-Small-White@1x.png">
-										<img class="logo-sm" src="/images/Logos/Droid-Small-White@1x.png">
+										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/JS-Small-White@1x.png">
+										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/React-Small-White@1x.png">
+										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Apple-Small-White@1x.png">
+										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Droid-Small-White@1x.png">
 									</div>
-									<img id="half-phone" src="/images/Images/Phone-Banner@2x.png">
+									<img id="half-phone" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Phone-Banner@2x.png">
 								</div>
 							</div><!-- /.align-inner -->
 						</div><!-- /.align-container -->
@@ -142,7 +142,7 @@
 							<div class="row">
 								{% for item in page.cloud_grid_left %}
 									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-left">
-										<img class="present" src="/images/icons/Misc/Present.svg">
+										<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Present.svg">
 										<div class="cloud-grid-text">
 											<h2 class="cloud-grid__title">{{ item.title }}</h2>
 											<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
@@ -155,7 +155,7 @@
 							<div class="row">
 								{% for item in page.cloud_grid_right %}
 									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-right">
-										<img class="present" src="/images/icons/Misc/Present.svg">
+										<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Present.svg">
 										<div class="cloud-grid-text">
 											<h2 class="cloud-grid__title">{{ item.title }}</h2>
 											<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
@@ -171,7 +171,7 @@
 							{% for item in page.utility_modules %}
 									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item">
 										<div class="cloud-grid-content" data-mh>
-											<img class="present" src="/images/icons/Misc/Present.svg">
+											<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Present.svg">
 											<div class="cloud-grid-text">
 												<h2 class="cloud-grid__title">{{ item.title }}</h2>
 												<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
@@ -199,8 +199,8 @@
 					<button class="btn" id="library-btn">View Library</button>
 				</div>
 				<div class="row image-container">
-					<img class="library-image" id="library-auth" src="/images/Images/Auth@1x.png">
-					<img class="library-image" id="library-chat" src="/images/Images/Chat@1x.png">
+					<img class="library-image" id="library-auth" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Auth@1x.png">
+					<img class="library-image" id="library-chat" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Chat@1x.png">
 				</div>
 			</div><!-- /.container -->
 		</div><!-- /.section -->
@@ -218,28 +218,28 @@
 				<div class="install-container row">
 					<div class="col-sm-6 col-md-3 col-lg-3 install-col">
 						<div class="install-box" id="js-box">
-							<img class="logo-lg" src="/images/Logos/JS-Small-White@2x.png">
+							<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/JS-Small-White@2x.png">
 							<div class="install-text">Build with JavaScript</div>
 							<button class="install-button" id="js-btn">Get Started</button>
 						</div>
 					</div>
 					<div class="col-sm-6 col-md-3 col-lg-3 install-col">
 						<div class="install-box" id="react-box">
-							<img class="logo-lg" src="/images/Logos/React-Small-White@2x.png">
+							<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/React-Small-White@2x.png">
 							<div class="install-text">Build with React</div>
 							<button class="install-button" id="react-btn">Get Started</button>
 						</div>
 					</div>
 					<div class="col-sm-6 col-md-3 col-lg-3 install-col">
 						<div class="install-box" id="react-native-box">
-							<img class="logo-lg" src="/images/Logos/React-Small-White@2x.png">
+							<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/React-Small-White@2x.png">
 							<div class="install-text">Build with React Native</div>
 							<button class="install-button" id="react-native-btn">Get Started</button>
 						</div>
 					</div>
 					<div class="col-sm-6 col-md-3 col-lg-3 install-col">
 						<div class="install-box" id="angular-box">
-							<img class="logo-lg" src="/images/Logos/Angular-Med-White@1x.png">
+							<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Angular-Med-White@1x.png">
 							<div class="install-text">Build with Angular</div>
 							<button class="install-button" id="angular-btn">Get Started</button>
 						</div>

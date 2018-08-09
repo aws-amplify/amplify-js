@@ -134,7 +134,7 @@ See the [angular guide](https://aws.github.io/aws-amplify/media/angular_guide) f
 </div>
 </div>
 
-## Install AWS Mobile CLI
+## Install Amplify CLI
 
 You will use [awsmobile-cli](https://github.com/aws/awsmobile-cli) to configure your application work with AWS Mobile Hub, a platform for configuring and managing your cloud backend. Also, awsmobile-cli provides utilities for managing your backend, without visiting AWS Mobile Hub console.
 
@@ -148,9 +148,9 @@ If it is the first time you are using `awsmobile-cli`, you need to configure the
 $ awsmobile configure
 ```
 
-If prompted for credentials, follow the steps provided by the CLI. For more information, see [Provide IAM credentials to AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html){:target="_blank"}.
+If prompted for credentials, follow the steps provided by the CLI. For more information, see [Provide IAM credentials to Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html){:target="_blank"}.
 
-AWS Mobile CLI uses `yarn` package manager to install dependencies. You can install `yarn` with npm:
+Amplify CLI uses `yarn` package manager to install dependencies. You can install `yarn` with npm:
 
 ```bash
 $ npm install -g yarn

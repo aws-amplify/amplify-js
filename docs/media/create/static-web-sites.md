@@ -28,7 +28,7 @@ Our CLI will handle deployments and backend service orchestration, so you can fo
 
 #### Deploy your Site with CLI
 
-AWS Mobile CLI provides a one-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app's loading performance by serving your content to your users from the nearest edge location.
+Amplify CLI provides a one-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app's loading performance by serving your content to your users from the nearest edge location.
 
 ```bash
 awsmobile publish
@@ -47,13 +47,13 @@ Every time you deploy your website, a performance test is executed using real de
 
 #### Easily Add Cloud Features to your Website
 
-AWS Mobile CLI helps you to configure your website's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
+Amplify CLI helps you to configure your website's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
 awsmobile cloud-api enable
 ```
 
-AWS Mobile CLI also creates the necessary folder structure and generates JavaScript files necessary for your app's backend logic:
+Amplify CLI also creates the necessary folder structure and generates JavaScript files necessary for your app's backend logic:
 
 ![Cloud API](../images/backend_cloud_api.png?raw=true "Cloud API"){: style="max-height:450px;"}
 

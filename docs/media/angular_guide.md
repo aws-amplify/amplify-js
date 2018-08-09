@@ -26,7 +26,7 @@ $ npm install --save aws-amplify-angular # or yarn add aws-amplify-angular
 
 ### Setup
 
-To configure your app for AWS Amplify, you need to create a backend configuration with AWS Mobile CLI and import the auto-generated configuration file into your project. 
+To configure your app for AWS Amplify, you need to create a backend configuration with Amplify CLI and import the auto-generated configuration file into your project. 
 
 Following commands will enable Auth category and will create `aws-exports.js` configuration file under your projects `/src` folder. 
 
@@ -207,7 +207,7 @@ To use Authenticator, just add the `amplify-authenticator` directive in your .ht
 
 Photo Picker component will render a file upload control that will allow choosing a local image and uploading it to Amazon S3. Once an image is selected, a base64 encoded image preview will be displayed automatically.
 
-Before using this component, please be sure that you have activated [*user-files* with AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
+Before using this component, please be sure that you have activated [*user-files* with Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
 
 ```bash
 $ awsmobile user-files enable
@@ -249,7 +249,7 @@ onImagePicked( file ) {
 
 S3 Album component display a list of images from the connected S3 bucket.
 
-Before using this component, please be sure that you have activated [*user-files* with AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
+Before using this component, please be sure that you have activated [*user-files* with Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
 
 ```bash
 $ awsmobile user-files enable

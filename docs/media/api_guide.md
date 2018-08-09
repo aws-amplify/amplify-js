@@ -166,7 +166,7 @@ let items = await API.get('myCloudApi', '/items', {
 
 **Accessing Query Parameters in Cloud API**
 
-If you are using a Cloud API which is generated with AWS Mobile CLI (or AWS Mobile Hub), your backend is created with Lambda Proxy Integration, and you can access your query parameters within your Lambda function via the *event* object:
+If you are using a Cloud API which is generated with Amplify CLI (or AWS Mobile Hub), your backend is created with Lambda Proxy Integration, and you can access your query parameters within your Lambda function via the *event* object:
 
 ```js
 exports.handler = function(event, context, callback) {
@@ -412,7 +412,7 @@ Example region value: "us-east-1".
 
 ### Configuration for AWS AppSync
 
-AWS AppSync is a cloud-based fully-managed GraphQL service that is integrated with AWS Amplify API category and command line tools with AWS Mobile CLI.
+AWS AppSync is a cloud-based fully-managed GraphQL service that is integrated with AWS Amplify API category and command line tools with Amplify CLI.
 
 To create an AWS AppSync API, please visit [AWS AppSync Console](https://aws.amazon.com/appsync/) or visit [AWS AppSync Developer Guide](https://docs.aws.amazon.com/appsync/latest/devguide/welcome.html).
 {: .callout .callout--info}

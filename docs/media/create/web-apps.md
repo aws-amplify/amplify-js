@@ -44,13 +44,13 @@ In the example, AWS Amplify Storage category already knows about the authenticat
 
 #### Command line support
 
-AWS Mobile CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
+Amplify CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
 awsmobile cloud-api enable
 ```
 
-AWS Mobile CLI creates the necessary folder structure and generates JavaScript files for your app's backend:
+Amplify CLI creates the necessary folder structure and generates JavaScript files for your app's backend:
 
 ![Performance Results](../images/backend_cloud_api.png?raw=true "Performance Results")
 
@@ -78,11 +78,11 @@ awsmobile pull
 
 #### Deploy your Web App
 
-AWS Mobile CLI provides a one-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). This is your apps' hosting environment with media streaming features.
+Amplify CLI provides a one-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). This is your apps' hosting environment with media streaming features.
 
 Using a CDN dramatically increases your app's loading performance by serving static assets to your users from the nearest edge location.
 
-With AWS Mobile CLI, you can deploy your app with single line command:
+With Amplify CLI, you can deploy your app with single line command:
 
 ```bash
 awsmobile publish

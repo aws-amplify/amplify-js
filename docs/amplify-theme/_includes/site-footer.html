@@ -5,7 +5,7 @@
 				<div class="col-sm-6">
 					{% if site.amplify.footer.content.logo.text %}
 						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-footer__logo">
-							<img src="/images/layout/logo-footer.png">
+							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/logo-footer.png">
 						</a>
 					{% endif %}
 					

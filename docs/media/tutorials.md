@@ -52,7 +52,7 @@ tutorial_list:
           url_external: 'https://hackernoon.com/adding-amazon-pinpoint-analytics-to-your-next-mobile-javascript-application-24ad49557a6f'
         - title: Adding User Authentication to a New React Native App Using AWS Mobile Hub & AWS Amplify
           cta: '<b>Watch</b>'
-          excerpt: 'This video shows how to use the AWS Mobile CLI to configure a new React Native project with AWS Amplify and Cognito.<br/><b>16 min</b>' 
+          excerpt: 'This video shows how to use the Amplify CLI to configure a new React Native project with AWS Amplify and Cognito.<br/><b>16 min</b>' 
           url_external: 'https://www.youtube.com/watch?v=dhOk7aNIzKw'
         - title: React Native iOS Push Notifications with AWS & Amazon Pinpoint
           excerpt: 'In this video, we will walk through how to add Push Notifications to a React Native iOS Project using AWS Amplify, AWS Mobile Hub, and Amazon Pinpoint.<br/><b>26 min</b>'
@@ -65,7 +65,7 @@ tutorial_list:
     - category: AWS Amplify
       title: AWS Amplify Cloud Features
       subs:
-        - title: AWS Mobile CLI - Getting Started
+        - title: Amplify CLI - Getting Started
           excerpt: 'In this video, we walk through how to get up and running with the AWSMobile CLI.<br/><b>7 min</b>'
           cta: '<b>Watch</b>'
           url_external: 'https://www.youtube.com/watch?v=Zi-66QybJ9A'

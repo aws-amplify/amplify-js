@@ -6,13 +6,13 @@ Overview
 
 In this tutorial, you will create an Ionic 4 ‘ToDo List’ app that connects to a serverless backend via the AWS Amplify Library.
 
-The AWS Amplify and the AWS Mobile CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with Ionic and AWS Amplify.
+The AWS Amplify and the Amplify CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with Ionic and AWS Amplify.
 
 
 **By completing this tutorial, you will be able to:**
 - bootstrap an Ionic 4 app with Ionic CLI and start working with the code
 - implement the AWS Amplify library into your app
-- manage your backend resources with the AWS Mobile CLI
+- manage your backend resources with the Amplify CLI
 - utilize AWS services such as Amazon Cognito, Amazon DynamoDB, and AWS Lambda
 
 ## Prerequisites
@@ -29,7 +29,7 @@ You can also copy and paste code sample while following the tutorials. In this c
 
 Here is the sequence of the tutorial:
 - Part 1: [Create an Ionic 4 App](#part-1-create-an-ionic-4-app)
-- Part 2: [Working with AWS Mobile CLI](#part-2-working-with-aws-mobile-cli)
+- Part 2: [Working with Amplify CLI](#part-2-working-with-aws-mobile-cli)
 - Part 3: [Adding Authorization](#part-3-adding-analytics)
 - Part 4: [Enabling the Cloud Backend](#part-4-adding-authorization)
  
@@ -611,11 +611,11 @@ You’ve just created an Ionic 4 and Angular 6 project using the Ionic CLI!
 
 In the next step, you will be cloud-enabling your application using AWS.
 
-# Part 2: Working with AWS Mobile CLI
+# Part 2: Working with Amplify CLI
 
-This section will introduce you to  AWS Mobile CLI and you'll learn how to create backend resources for your Ionic app. The AWS Mobile CLI is a command line tool that allows you to generate AWS resources and connect them to your application quickly. 
+This section will introduce you to  Amplify CLI and you'll learn how to create backend resources for your Ionic app. The Amplify CLI is a command line tool that allows you to generate AWS resources and connect them to your application quickly. 
 
-## Install AWS Mobile CLI
+## Install Amplify CLI
 
 To install the CLI, execute:
 ```bash
@@ -641,7 +641,7 @@ awsmobile configure
 
 Follow the prompts to enter your Access Key ID, Secret Access Key, and Region.
 
-Your AWS Mobile CLI is now ready for use!
+Your Amplify CLI is now ready for use!
 
 ## Creating AWS Resources with the CLI
 
@@ -677,9 +677,9 @@ awsmobile features
 
 ## Enabling Analytics
 
-In this part of the tutorial, you will be adding analytics to your application with AWS Mobile CLI.
+In this part of the tutorial, you will be adding analytics to your application with Amplify CLI.
 
-Analytics is enabled by default when you initiate AWS Mobile CLI with:
+Analytics is enabled by default when you initiate Amplify CLI with:
 ```bash
 awsmobile init
 ```
@@ -724,7 +724,7 @@ AWS Amplify analytics category work with Amazon Pinpoint, a service that allows 
 
 To add Pinpoint analytics to your application, first, you need to import the AWS Amplify library and the configuration file into your app. 
 
-Open *src/main.ts* and make the following changes, which will use the *aws-exports.js* config file that the AWS Mobile CLI created in your application directory.
+Open *src/main.ts* and make the following changes, which will use the *aws-exports.js* config file that the Amplify CLI created in your application directory.
 
 ```js
 import Amplify, { Analytics } from 'aws-amplify';
@@ -748,7 +748,7 @@ The source code for this section of the tutorial can be found in *tutorial-part-
  
 **What is Amazon Cognito?**
 
-Amazon Cognito is a cloud-based authentication service that helps you manage user access to your applications. The AWS Mobile CLI and AWS-Amplify further help you in authentication by creating and connecting to these resources.
+Amazon Cognito is a cloud-based authentication service that helps you manage user access to your applications. The Amplify CLI and AWS-Amplify further help you in authentication by creating and connecting to these resources.
 
 To enable authentication for your application, first execute the following command:
 ```bash
@@ -904,7 +904,7 @@ The source code for this section of the tutorial can be found in *tutorial-part-
 
 ## Enable Cloud Database
 
-AWS Mobile CLI makes it easy to create your app's backend, including Cloud database and Cloud API. To enable those features, run:
+Amplify CLI makes it easy to create your app's backend, including Cloud database and Cloud API. To enable those features, run:
 
 ```bash
 $ awsmobile features

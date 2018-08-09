@@ -47,13 +47,13 @@ In this example, AWS Amplify Storage category already knows about the authentica
 
 #### CLI support
 
-AWS Mobile CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
+Amplify CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
 awsmobile cloud-api enable
 ```
 
-AWS Mobile CLI creates the necessary folder structure and generates JavaScript files for your app's backend logic:
+Amplify CLI creates the necessary folder structure and generates JavaScript files for your app's backend logic:
 
 ![Performance Results](../images/backend_cloud_api.png?raw=true "Performance Results")
 
