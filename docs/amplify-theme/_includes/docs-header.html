@@ -2,7 +2,7 @@
 <div class="notification-bar row" id="notification-bar">
 	<div class="notification-content">
 		<div class="col-xs-5">
-			<img class="notification-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/icons/Medium/Volume.svg">
+			<img class="notification-image" src="../amplify-theme/assets/images/icons/Medium/Volume.svg">
 		</div>
 		<p class="notification-text col-xs-7">News: The New VR Component is live and ready to deploy!</p>
 	</div>
@@ -40,12 +40,12 @@
 				<div>
 					{% if site.amplify.header.logo.text %}
 						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
-							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/Logos/Amplify-Logo-White.svg">
+							<img src="../amplify-theme/assets/images/Logos/Amplify-Logo-White.svg">
 							<p class="header-amplify docs-header-amplify">{{ site.amplify.header.logo.text }}</p>
 						</a>
 					{% elsif site.amplify.header.logo.image %}
 						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
-							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
+							<img src="../amplify-theme/assets/images/layout/logo.png">
 						</a><!-- /.site-header__logo -->
                     {% endif %}
                         <div class="language-selector">
@@ -57,7 +57,7 @@
 					{% if site.amplify.header.nav %}
 						<ul class="site-header__nav hidden-xs">
 							<li class="site-search">
-								<input placeholder="   Search Docs" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/search.svg"></input>
+								<input placeholder="   Search Docs" type="text" id="search-input"><img class="search-image" id="search-image" src="../amplify-theme/assets/images/layout/search.svg"></input>
 							</li>
 						</ul><!-- /.site-header__nav -->
 						<button class="offcanvas-toggle visible-xs">

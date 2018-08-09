@@ -91,10 +91,10 @@
 		<div class="section section-top" id="marketing-section">
 			<div class="container">
 				<div class="row">
-					<div class="header">
+					<div class="header col-sm-11">
 						A library and command line interface (CLI) made for building cloud-powered applications
 					</div>
-					<div class="subheader">
+					<div class="subheader col-sm-11">
 						Default implementation included for AWS; Open and pluggable for any custom backend or service.
 					</div>
 				</div>
@@ -142,7 +142,7 @@
 							<div class="row">
 								{% for item in page.cloud_grid_left %}
 									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-left">
-										<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/icons/Misc/present.svg">
+										<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/icons/Misc/Present.svg">
 										<div class="cloud-grid-text">
 											<h2 class="cloud-grid__title">{{ item.title }}</h2>
 											<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
@@ -155,7 +155,7 @@
 							<div class="row">
 								{% for item in page.cloud_grid_right %}
 									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-right">
-										<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/icons/Misc/present.svg">
+										<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/icons/Misc/Present.svg">
 										<div class="cloud-grid-text">
 											<h2 class="cloud-grid__title">{{ item.title }}</h2>
 											<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
@@ -171,7 +171,7 @@
 							{% for item in page.utility_modules %}
 									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item">
 										<div class="cloud-grid-content" data-mh>
-											<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/icons/Misc/present.svg">
+											<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/icons/Misc/Present.svg">
 											<div class="cloud-grid-text">
 												<h2 class="cloud-grid__title">{{ item.title }}</h2>
 												<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
@@ -216,30 +216,34 @@
 					Install and configure AWS Amplify to start working with cloud services.
 				</div>
 				<div class="install-container row">
+					<div class="install-col"></div>
 						<div class="install-box" id="js-box">
 							<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/Logos/JS-Small-White@2x.png">
 							<div class="install-text">Build with JavaScript</div>
 							<button class="install-button" id="js-btn">Get Started</button>
 						</div>
-					
+					</div>
+					<div class="install-col">
 						<div class="install-box" id="react-box">
 							<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/Logos/React-Small-White@2x.png">
 							<div class="install-text">Build with React</div>
 							<button class="install-button" id="react-btn">Get Started</button>
 						</div>
-					
+					</div>
+					<div class="install-col">
 						<div class="install-box" id="react-native-box">
 							<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/Logos/React-Small-White@2x.png">
 							<div class="install-text">Build with React Native</div>
 							<button class="install-button" id="react-native-btn">Get Started</button>
 						</div>
-					
+					</div>
+					<div class="install-col">
 						<div class="install-box" id="angular-box">
 							<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/Logos/Angular-Med-White@1x.png">
 							<div class="install-text">Build with Angular</div>
 							<button class="install-button" id="angular-btn">Get Started</button>
 						</div>
-					
+					</div>
 				</div>
 				<div>
 					<button class="btn" id="view-all-platforms-btn">View all platforms</button>

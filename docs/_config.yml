@@ -116,12 +116,12 @@ category_list:
       subs:
         - title: Quick Start
           excerpt: quick start excerpt
-          url: '/media/quick_start'
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'quick_start'
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
         - title: Amplify CLI
           excerpt: CLI excerpt
           url: 'media/cli'
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
     - category: CloudFeatures
       title: Cloud Features
       excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
@@ -130,8 +130,8 @@ category_list:
           excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
           cta: Read more
           class: aws-icon-ps-60-pie-bar-charts 
-          url: '/media/analytics_guide'
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'analytics_guide'
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
           services:
             - title: Amazon Pinpoint,
               url: https://aws.amazon.com/pinpoint/
@@ -143,8 +143,8 @@ category_list:
           excerpt: A simple and secure solution for making HTTP requests using REST and GraphQL, with support for real-time data.
           cta: Read more
           class: aws-icon-ps-60-database-server
-          url: '/media/api_guide' 
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'   
+          url: 'api_guide' 
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'   
           services: 
             - title: Amazon API Gateway,
               url: https://aws.amazon.com/api-gateway
@@ -154,8 +154,8 @@ category_list:
           excerpt:  Authentication APIs with pre-built UI components for your app.  
           cta: Read more
           class: aws-icon-ps-60-shield-circle
-          url: '/media/authentication_guide'
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'authentication_guide'
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
           services:
             - title: Amazon Cognito,
               url: https://aws.amazon.com/cognito/
@@ -167,8 +167,8 @@ category_list:
           excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
           cta: Read more
           class: aws-icon-ps-60-network-nodes
-          url: '/media/hosting_guide'   
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'hosting_guide'   
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
           services:
               - title: Amazon CloudFront
                 url: https://aws.amazon.com/cloudfront/
@@ -176,8 +176,8 @@ category_list:
           excerpt: Create conversational bots powered by deep learning technologies.
           cta: Read more
           class: aws-icon-ps-60-bubble-gear
-          url: '/media/interactions_guide'   
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'interactions_guide'   
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
           services:
               - title: Amazon Lex
                 url: https://aws.amazon.com/lex/
@@ -185,8 +185,8 @@ category_list:
           excerpt: Connect your app to message-oriented middleware on the cloud.
           cta: Read more
           class: aws-icon-ps-60-circular-circuit
-          url: '/media/pub_sub_guide'   
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'pub_sub_guide'   
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
           services:
               - title: AWS IoT,
                 url: https://aws.amazon.com/iot/
@@ -198,8 +198,8 @@ category_list:
           excerpt: Push notifications with campaign analytics and targeting.
           cta: Read more
           class: aws-icon-ps-60-device-message
-          url: '/media/push_notifications_setup'   
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'push_notifications_setup'   
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
           services:
               - title: Amazon Pinpoint
                 url: https://aws.amazon.com/pinpoint/
@@ -207,8 +207,8 @@ category_list:
           excerpt: A simple mechanism for managing user content in public, protected or private storage.
           cta: Read more
           class: aws-icon-ps-60-file-box
-          url: '/media/storage_guide'   
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'storage_guide'   
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
           services:
               - title: Amazon S3
                 url: https://aws.amazon.com/s3/
@@ -219,28 +219,28 @@ category_list:
         - title: Cache 
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
           cta: Read more
-          url: '/media/cache_guide'  
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'cache_guide'  
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
         - title: Hub  
           excerpt: A lightweight local event bus for your app.
           cta: Read more
-          url: '/media/hub_guide' 
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'hub_guide' 
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
         - title: I18n  
           excerpt: A lightweight internationalization solution.
           cta: Read more
-          url: '/media/i18n_guide'  
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'i18n_guide'  
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
         - title: Logger  
           excerpt: Console logging utility.
           cta: Read more
-          url: '/media/logger_guide'  
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'
+          url: 'logger_guide'  
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'
         - title: Service Worker 
           excerpt: A utility class to work with PWA and Service Worker APIs. 
           cta: Read more
-          url: '/media/service_workers_guide'   
-          icon: '/amplify-theme/assets/images/icons/Misc/present.svg'     
+          url: 'service_workers_guide'   
+          icon: '/amplify-theme/assets/images/icons/Misc/Present.svg'     
     - category: Front End Support
       title: Front End Support
       excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
@@ -248,31 +248,31 @@ category_list:
         - title: Angular 
           excerpt: AWS Amplify provides Angular Components with aws-amplify-angular npm package.
           cta: Read more
-          url: '/media/angular_guide' 
+          url: 'angular_guide' 
           icon: '/amplify-theme/assets/images/Logos/Angular-Color@1x.png'
           id: angular
         - title: React 
           excerpt: AWS Amplify provides React Components with aws-amplify-react npm package and a starter App.
           cta: Read more
-          url: '/media/react_guide' 
+          url: 'react_guide' 
           icon: '/amplify-theme/assets/images/Logos/React-Color@1x.png'
           id: react
         - title: React Native
           excerpt: AWS Amplify provides React Native Components with aws-amplify-react npm package and a starter App.
           cta: Read more
-          url: '/media/react_native_guide' 
+          url: 'react_native_guide' 
           icon: '/amplify-theme/assets/images/Logos/React-Color@1x.png'
           id: react-native
         - title: Vue.js
           excerpt: To help you start working with AWS Amplify, we provide a Starter App.
           cta: Read more
-          url: '/media/vuejs_guide' 
+          url: 'vuejs_guide' 
           icon: '/amplify-theme/assets/images/Logos/Vue-Color@1x.png'
           id: vuejs
         - title: Ionic
           excerpt: AWS Amplify provides Angular Components that you can use with Ionic in aws-amplify-angular npm package.
           cta: Read more
-          url: '/media/ionic_guide' 
+          url: 'ionic_guide' 
           icon: '/amplify-theme/assets/images/Logos/Ionic-Color@1x.png'
           id: ionic
 
