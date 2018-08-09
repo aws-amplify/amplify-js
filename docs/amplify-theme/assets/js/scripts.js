@@ -336,12 +336,19 @@
 	showNotificationBar( new Date('August 1, 2018 11:42:00') );
 
 	// Hide magnifying glass in search bar
-	let search_box = document.getElementById("search-input")
-	search_box.onclick = function() {
-		document.getElementById("search-image").style.display = "none";
-		search_box.style.outline = "none";
-		search_box.placeholder = "Search";
+
+	var hideSearchIcon = function() {
+		let search_box = document.getElementById("search-input-box")
+		let search = document.getElementById("search-input");
+		search_box.onclick = function() {
+			document.getElementById("search-image").style.display = "none";
+			search.style.outline = "none";
+			search.placeholder = "Search";
+			search.style.paddingLeft = "2px";
+		}
 	}
+
+	hideSearchIcon();
 
 	// temporary for editing notif bar
 	//document.getElementById("notification-bar").style.display = "block";
@@ -388,7 +395,7 @@
 		container.classList.toggle('toggle-button-container-expanded');
 	}
 
-	search_box = document.getElementById("search-input-xs");
+	let search_box = document.getElementById("search-input-xs");
 	let collapse_search = document.getElementById("collapse-search");
 	let offcanvas_toggle = document.getElementsByClassName("offcanvas-toggle")[0];
 
