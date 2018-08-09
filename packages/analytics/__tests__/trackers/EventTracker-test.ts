@@ -55,11 +55,13 @@ describe('EventTracer test', () => {
             expect(eventTracker.configure({
                 enable: true,
                 selectorPrefix: 'prefix',
-                events: ['click', 'mouseover']
+                events: ['click', 'mouseover'],
+                provider: 'myProvider'
             })).toEqual({
                 enable: true,
                 selectorPrefix: 'prefix',
-                events: ['click', 'mouseover']
+                events: ['click', 'mouseover'],
+                provider: 'myProvider'
             });
 
             expect(mockDelegate).toBeCalled();
@@ -91,7 +93,17 @@ describe('EventTracer test', () => {
             }
             eventTracker._trackFunc(event, ele);
 
-            expect(tracker).toBeCalledWith({"attributes": {"attrs": "val", "target": "localName with id xxxxx", "type": "click"}, "name": "name"});
+            expect(tracker).toBeCalledWith(
+                {
+                    "attributes": {
+                        "attrs": "val", 
+                        "target": "localName with id xxxxx", 
+                        "type": "click"
+                    }, 
+                    "name": "name"
+                },
+                'AWSPinpoint'
+            );
         })
     });
 });

@@ -20,7 +20,8 @@ import { AppState } from 'react-native';
 const logger = new Logger('SessionTracker');
 
 const defaultOpts: SessionTrackOpts = {
-    enable: false
+    enable: false,
+    provider: 'AWSPinpoint'
 };
 
 export default class SessionTracker {
@@ -50,42 +51,47 @@ export default class SessionTracker {
 
         if (currentState.match(/inactive|background/) && nextAppState === 'active') {
             logger.debug('App has come to the foreground, recording start session');
-            this._tracker({
-                name: '_session_start'
-            }).catch(e => {
+            this._tracker(
+                { name: '_session_start' },
+                this._config.provider
+            ).catch(e => {
                 logger.debug('record session start event failed.', e);
             });
         }
         if (currentState.match(/active/) && nextAppState.match(/inactive|background/)) {
             logger.debug('App has come to inactive/background, recording stop session');
-             this._tracker({
-                name: '_session_stop'
-            }).catch(e => {
+            this._tracker(
+                { name: '_session_stop' },
+                this._config.provider
+            ).catch(e => {
                 logger.debug('record session stop event failed.', e);
             });
         }
     }
 
-    configure(opts: SessionTrackOpts) {
+    configure(opts?: SessionTrackOpts) {
         if (!this._envCheck()) {
-            return;
+            return this._config;
         }
 
         Object.assign(this._config, opts);
 
         if (this._config.enable && !this._hasEnabled) {
             // send a start session as soon as it's enabled
-            this._tracker({
-                name: '_session_start'
-            }).catch(e => {
+            this._tracker(
+                { name: '_session_start' },
+                this._config.provider
+            ).catch(e => {
                 logger.debug('record session start event failed.', e);
             });
             // listen on events
             AppState.addEventListener('change', this._trackFunc, false);
             this._hasEnabled = true;
         } else {
-            document.removeEventListener('change', this._trackFunc, false);
+            AppState.removeEventListener('change', this._trackFunc, false);
             this._hasEnabled = false;
         }
+
+        return this._config;
     }
 }

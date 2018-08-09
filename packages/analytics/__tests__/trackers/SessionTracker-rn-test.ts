@@ -1,19 +1,27 @@
-import SessionTracker from '../../src/trackers/SessionTracker';
+const mockAddEventListener = jest.fn();
+const mockRemoveEventListener = jest.fn();
+
+jest.mock('react-native', () => {
+    return {
+        AppState: {
+            currentState: 'inactive',
+            addEventListener: mockAddEventListener,
+            removeEventListener: mockRemoveEventListener
+        }
+    }
+});
+
+import SessionTracker from '../../src/trackers/SessionTracker-rn';
+import { AppState } from 'react-native';
 
 const tracker = jest.fn().mockImplementation(() => {
     return Promise.resolve();
 });
 
-
-
 describe('SessionTracker test', () => {
     describe('constructor test', () => {
         test('happy case', () => {
             tracker.mockClear();
-
-            const spyon = jest.spyOn(document, 'addEventListener').mockImplementationOnce(() => {
-                return;
-            });
 
             const sessionTracker = new SessionTracker(tracker, {
                 enable: true
@@ -22,28 +30,9 @@ describe('SessionTracker test', () => {
             expect(tracker).toBeCalledWith({
                 name: '_session_start'
             }, 'AWSPinpoint');
-            expect(spyon).toBeCalled();
+            expect(mockAddEventListener).toBeCalled();
 
-            spyon.mockClear();
-        });
-
-        test('not in the supported env', () => {
-            tracker.mockClear();
-            let tmp = document;
-            Object.defineProperty(window.document, 'hidden', {
-                writable: true,
-                value: undefined
-            });
-
-            const sessionTracker = new SessionTracker(tracker, {
-                enable: true
-            });
-
-            expect(tracker).not.toBeCalled();
-             Object.defineProperty(window.document, 'hidden', {
-                writable: true,
-                value: false
-            });
+            mockAddEventListener.mockClear();
         });
     });
 
@@ -73,52 +62,51 @@ describe('SessionTracker test', () => {
                 enable: true
             });
 
-            const spyon = jest.spyOn(document, 'removeEventListener').mockImplementationOnce(() => {
-                return;
-            });
+            mockRemoveEventListener.mockClear();
+
             sessionTracker.configure({
                 enable: false
             });
 
-            expect(spyon).toBeCalled();
-            spyon.mockClear();
+            expect(mockRemoveEventListener).toBeCalled();
+            mockRemoveEventListener.mockClear();
         });
     });
 
     describe('track function test', () => {
-        test('if the page is hidden', () => {
+        test('if the app turns to be active', () => {
             const sessionTracker = new SessionTracker(tracker, {
                 enable: true
             });
             tracker.mockClear();
 
-            Object.defineProperty(window.document, 'hidden', {
+            Object.defineProperty(AppState, 'currentState', {
                 writable: true,
-                value: true
+                value: 'inactive'
             });
 
-            sessionTracker._trackFunc();
-
-            expect(tracker).toBeCalledWith({
-                name: '_session_stop'
-            }, 'AWSPinpoint');
-        });
-
-        test('if the page is not hidden', () => {
-            const sessionTracker = new SessionTracker(tracker, {
-                enable: true
-            });
-            tracker.mockClear();
-
-            Object.defineProperty(window.document, 'hidden', {
-                writable: true,
-                value: false
-            });
-
-            sessionTracker._trackFunc();
+            sessionTracker._trackFunc('active');
 
             expect(tracker).toBeCalledWith({
                 name: '_session_start'
+            }, 'AWSPinpoint');
+        });
+
+        test('if app turns into background', () => {
+            const sessionTracker = new SessionTracker(tracker, {
+                enable: true
+            });
+            tracker.mockClear();
+
+           Object.defineProperty(AppState, 'currentState', {
+                writable: true,
+                value: 'active'
+            });
+
+            sessionTracker._trackFunc('inactive');
+
+            expect(tracker).toBeCalledWith({
+                name: '_session_stop'
             }, 'AWSPinpoint');
         });
     });

@@ -20,7 +20,8 @@ const logger = new Logger('EventTracker');
 const defaultOpts: EventTrackOpts = {
     enable: false,
     events: ['click'],
-    selectorPrefix: 'amplify-analytics-'
+    selectorPrefix: 'amplify-analytics-',
+    provider: 'AWSPinpoint'
 };
 
 export default class EventTracker {
@@ -101,10 +102,13 @@ export default class EventTracker {
             return;
         }
 
-        this._tracker({
-            name: eventName || 'event',
-            attributes
-        }).catch(e => {
+        this._tracker(
+            {
+                name: eventName || 'event',
+                attributes
+            },
+            this._config.provider
+        ).catch(e => {
             logger.debug(`Failed to record the ${event.type} event', ${e}`);
         });
     }

@@ -34,16 +34,19 @@ export interface pageViewTrackOpts {
     enable: boolean,
     pageUrl?: string,
     type?: string
-    eventName?: string
+    eventName?: string,
+    provider?: string
 }
 
 export interface EventTrackOpts {
     enable: boolean,
     events?: Array<string>,
-    selectorPrefix?: string
+    selectorPrefix?: string,
+    provider?: string
 }
 
 export interface SessionTrackOpts {
     enable: boolean,
-    attributes?: any
+    attributes?: any,
+    provider?: string
 }

@@ -12,11 +12,16 @@
  */
 
 import { pageViewTrackOpts } from '../types';
-import MethodEmbed from '../MethodEmbed';
+import MethodEmbed from '../utils/MethodEmbed';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('PageViewTracker');
 const prevUrlKey = 'aws-amplify-analytics-prevUrl';
+
+const defaultOpts: pageViewTrackOpts = {
+    enable: false,
+    provider: 'AWSPinpoint'
+};
 
 export default class PageViewTracker {
     private _config: pageViewTrackOpts;
@@ -25,14 +30,11 @@ export default class PageViewTracker {
 
     constructor(tracker, opts) {
         logger.debug('initialize pageview tracker with opts', opts);
-        this._config = {
-            enable: false
-        };
+        this._config = Object.assign({}, defaultOpts, opts);
         this._tracker = tracker;
         this._hasEnabled = false;
         this._trackFunc = this._trackFunc.bind(this);
 
-        Object.assign(this._config, opts);
         if (this._config.type === 'SPA') {
             this._pageViewTrackSPA();
         } else {
@@ -70,12 +72,15 @@ export default class PageViewTracker {
 
         if (this._config.enable && !this._isSameUrl()) {
             const url = this._config.pageUrl || window.location.origin + window.location.pathname;
-            this._tracker({
-                name: this._config.eventName || 'pageView',
-                attributes: {
-                    url
-                }
-            }).catch(e => {
+            this._tracker(
+                {
+                    name: this._config.eventName || 'pageView',
+                    attributes: {
+                        url
+                    }
+                }, 
+                this._config.provider
+            ).catch(e => {
                 logger.debug('Failed to record the page view event', e);
             });
             sessionStorage.setItem(prevUrlKey, url);
@@ -91,12 +96,15 @@ export default class PageViewTracker {
         logger.debug('url' + window.location.pathname);
         if (!this._isSameUrl()){
             const url = this._config.pageUrl || window.location.origin + window.location.pathname;
-            this._tracker({
-                name: this._config.eventName || 'pageView',
-                attributes: {
-                    url
-                }
-            }).catch(e => {
+            this._tracker(
+                {
+                    name: this._config.eventName || 'pageView',
+                    attributes: {
+                        url
+                    }
+                },
+                this._config.provider  
+            ).catch(e => {
                 logger.debug('Failed to record the page view event', e);
             });
             sessionStorage.setItem(prevUrlKey, url);
@@ -114,6 +122,7 @@ export default class PageViewTracker {
             MethodEmbed.add(history, 'pushState', this._trackFunc);
             MethodEmbed.add(history, 'replaceState', this._trackFunc);
             window.addEventListener('popstate', this._trackFunc);
+            this._trackFunc();
             this._hasEnabled = true;
         } else {
             MethodEmbed.remove(history, 'pushState');

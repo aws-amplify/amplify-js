@@ -1,5 +1,5 @@
 import PageViewTracker from '../../src/trackers/PageViewTracker';
-import MethodEmbed from '../../src/MethodEmbed';
+import MethodEmbed from '../../src/utils/MethodEmbed';
 
 const tracker = jest.fn().mockImplementation(() => {
     return Promise.resolve();
@@ -186,10 +186,12 @@ describe('PageViewTracker test', () => {
 
             expect(pageViewTracer.configure({
                 enable: true,
-                pageUrl: 'url'
+                pageUrl: 'url',
+                provider: 'myProvider'
             })).toEqual({
                 enable: true,
-                pageUrl: 'url'
+                pageUrl: 'url',
+                provider: 'myProvider'
             });
         });
 

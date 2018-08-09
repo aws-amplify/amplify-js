@@ -19,7 +19,8 @@ import { SessionTrackOpts } from '../types';
 const logger = new Logger('SessionTracker');
 
 const defaultOpts: SessionTrackOpts = {
-    enable: false
+    enable: false,
+    provider: 'AWSPinpoint'
 };
 
 export default class SessionTracker {
@@ -36,6 +37,7 @@ export default class SessionTracker {
         
         this._hasEnabled = false;
         this._trackFunc = this._trackFunc.bind(this);
+        this._trackBeforeUnload = this._trackBeforeUnload.bind(this);
         this.configure(this._config);
 
     }
@@ -63,20 +65,33 @@ export default class SessionTracker {
     }
 
     private _trackFunc() {
-        // if not hidden;
         if (document[this._hidden]) {
-            this._tracker({
-                name: '_session_stop'
-            }).catch(e => {
+            this._tracker(
+                { name: '_session_stop' },
+                this._config.provider
+            ).catch(e => {
                 logger.debug('record session stop event failed.', e);
             });
         } else {
-            this._tracker({
-                name: '_session_start'
-            }).catch(e => {
+            this._tracker(
+                { name: '_session_start' },
+                this._config.provider
+            ).catch(e => {
                 logger.debug('record session start event failed.', e);
             });
         }
+    }
+
+    private _trackBeforeUnload() {
+        this._tracker(
+            { 
+                name: '_session_stop',
+                immediate: true
+            },
+            this._config.provider
+        ).catch(e => {
+            logger.debug('record session stop event failed.', e);
+        });
     }
 
     configure(opts?: SessionTrackOpts) {
@@ -88,16 +103,19 @@ export default class SessionTracker {
 
         if (this._config.enable && !this._hasEnabled) {
             // send a start session as soon as it's enabled
-            this._tracker({
-                name: '_session_start'
-            }).catch(e => {
+            this._tracker(
+                { name: '_session_start' },
+                this._config.provider
+            ).catch(e => {
                 logger.debug('record session start event failed.', e);
             });
             // listen on events
             document.addEventListener(this._visibilityChange, this._trackFunc, false);
+            window.addEventListener("beforeunload", this._trackBeforeUnload, false);
             this._hasEnabled = true;
         } else {
             document.removeEventListener(this._visibilityChange, this._trackFunc, false);
+            window.removeEventListener("beforeunload", this._trackBeforeUnload, false);
             this._hasEnabled = false;
         }
 

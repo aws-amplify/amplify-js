@@ -1,3 +1,9 @@
+jest.mock('dom-utils', () => {
+    return {
+       delegate: jest.fn()
+    }
+});
+
 import { AWS, ClientDevice, Parser, ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { AnalyticsOptions, EventAttributes, EventMetrics } from '../src/types';
 import { default as Analytics } from "../src/Analytics";
