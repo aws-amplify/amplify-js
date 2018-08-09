@@ -320,7 +320,7 @@
     height: 40px;
     background-color: #FF9900;
     border-radius: 100%;
-    background-image: url('/images/icons/Medium/Search.svg');
+    background-image: url('images/icons/Medium/Search.svg');
     background-repeat: no-repeat;
     background-position: 33% 42%;
     transition: all 0.2s !important;
@@ -407,7 +407,7 @@
     }
 
 	color: $color-dark-blue;
-	//background-image: url("../images/layout/background.jpg");
+	//background-image: url("/images/layout/background.jpg");
 	background: linear-gradient(to right, #FF9900 70%,#fccf30);
 	//padding: 3.75rem 0 (4.6875rem - 1.25rem) 0;
 	background-position: center;
@@ -1492,7 +1492,7 @@ li {
         width: 193px;
 
         select {
-            background: url("../images/icons/Minis/Arrows.svg") no-repeat;
+            background: url("/images/icons/Minis/Arrows.svg") no-repeat;
             background-position: 164px 6px;
             filter: brightness(0) invert(1);
             border: 0 !important;                 /*Removes border*/
@@ -1585,7 +1585,7 @@ li {
                 width: 193px;
         
                 select {
-                    background: url("../images/icons/Minis/Arrows.svg") no-repeat;
+                    background: url("/images/icons/Minis/Arrows.svg") no-repeat;
                     background-position: 164px 6px;
                     //filter: brightness(0) invert(1);
                     border: 0 !important;                 /*Removes border*/
