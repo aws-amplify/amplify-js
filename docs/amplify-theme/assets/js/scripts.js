@@ -362,6 +362,41 @@
 
 	addLineNumbers();
 
+	var expandSearchBar = function() {
+		const search_box = document.getElementById("search-input-xs");
+		search_box.classList.add('search-box-expanded');
+		const collapse_search = document.getElementById("collapse-search");
+		collapse_search.style.display = "inline-block";
+		const logo_container = document.getElementById("logo-container");
+		logo_container.style.visibility = "hidden";
+		document.getElementsByClassName("offcanvas-toggle")[0].style.visibility = "hidden";
+	}
+
+	var collapseSearchBar = function() {
+		const search_box = document.getElementById("search-input-xs");
+		search_box.classList.remove('search-box-expanded');
+		const collapse_search = document.getElementById("collapse-search");
+		collapse_search.style.display = "none";
+		const logo_container = document.getElementById("logo-container");
+		logo_container.style.visibility = "visible";
+		search_box.value = "";
+		document.getElementsByClassName("offcanvas-toggle")[0].style.visibility = "visible";
+	}
+
+	var moveOffCanvasToggle = function() {
+		const container = document.getElementById("toggle-button-container");
+		container.classList.toggle('toggle-button-container-expanded');
+	}
+
+	search_box = document.getElementById("search-input-xs");
+	let collapse_search = document.getElementById("collapse-search");
+	let offcanvas_toggle = document.getElementsByClassName("offcanvas-toggle")[0];
+
+	search_box.addEventListener("click", expandSearchBar);
+	collapse_search.addEventListener("click", collapseSearchBar);
+	offcanvas_toggle.addEventListener("click", moveOffCanvasToggle);
+	$('meta[name=viewport]').attr('content', 'width=device-width,initial-scale=1,maximum-scale=1');
+
 }( jQuery ) );
 
 	/**

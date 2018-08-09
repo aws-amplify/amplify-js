@@ -37,45 +37,49 @@
 	<header class="site-header">
 		<div class="container site-header-container">
 			<div class="row">
-				<div>
-					{% if site.amplify.header.logo.text %}
-						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
-							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
-							<p class="header-amplify">{{ site.amplify.header.logo.text }} </p>
-						</a>
-					{% elsif site.amplify.header.logo.image %}
-						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
-							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
-						</a><!-- /.site-header__logo -->
-					{% endif %}
-					{% if site.amplify.header.nav %}
-						<ul class="site-header__nav hidden-xs">
-							{% for item in site.amplify.header.nav %}
-								<li>
-									{% if item.item_external_url %}
-										<a href="{{ item.item_external_url }}">
-											{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
-											{{ item.item_name }}
-										</a>
-									{% else %}
-										<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
-											{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
-											{{ item.item_name }}
-										</a>
-									{% endif %}
-								</li>
-							{% endfor %}
-							<li class="site-search">
-								<input placeholder="   Search" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/search.svg"></input>
+				<div class="visible-xs toggle-button-container" id="toggle-button-container">
+					<button class="offcanvas-toggle">
+						<span></span>
+						<span></span>
+						<span></span>
+					</button><!-- /.offcanvas-toggle -->
+				</div>
+				{% if site.amplify.header.logo.text %}
+				<div class="logo-container" id="logo-container">
+					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
+						<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
+						<p class="header-amplify">{{ site.amplify.header.logo.text }} </p>
+					</a>
+				</div>
+				{% elsif site.amplify.header.logo.image %}
+					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
+						<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo.png">
+					</a><!-- /.site-header__logo -->
+				{% endif %}
+				{% if site.amplify.header.nav %}
+					<ul class="site-header__nav hidden-xs">
+						{% for item in site.amplify.header.nav %}
+							<li>
+								{% if item.item_external_url %}
+									<a href="{{ item.item_external_url }}">
+										{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
+										{{ item.item_name }}
+									</a>
+								{% else %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
+										{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
+										{{ item.item_name }}
+									</a>
+								{% endif %}
 							</li>
-						</ul><!-- /.site-header__nav -->
-						<button class="offcanvas-toggle visible-xs">
-							<span></span>
-							<span></span>
-							<span></span>
-						</button><!-- /.offcanvas-toggle -->
-					{% endif %}
-				</div><!-- /.col -->
+						{% endfor %}
+						<li class="site-search">
+							<input placeholder="   Search" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/search.svg"></input>
+						</li>
+					</ul><!-- /.site-header__nav -->
+					<input type="text" id="search-input-xs" class="visible-xs"></input>
+					<button id="collapse-search">Cancel</button>
+				{% endif %}
 			</div><!-- /.row -->
 		</div><!-- /.container -->
 	</header><!-- /.site-header -->

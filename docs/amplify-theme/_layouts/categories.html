@@ -28,7 +28,7 @@
 									{% endfor %}
 								</div><!-- /.row -->
 								<div>
-									<a href="/media/cli_guide"> <button class="btn" >Install AWS Mobile CLI</button> </a>
+									<a href="/media/cli_guide"> <button class="btn install-amplify-cli" >Install AWS Mobile CLI</button> </a>
 								</div>
 							</div><!-- /.nav-grid -->
 						</div><!-- /.col -->
@@ -41,17 +41,17 @@
 				<div>
 					<div class="container">
 							<div class="row">
-								<div class="col-md-12 amp-custom">
+								<div>
 									<div class="nav-grid nav-grid--out">
 										{% for category in site.category_list %}
 											{% if category.title contains "Setup & Installation" %}
 											{% else %}
 												<div class="section-top section-top-category">
 													<div class="container">
-															<div class="header col-sm-11">
+															<div class="header">
 																{{ category.title}}
 															</div>
-															<div class="subheader col-sm-11">
+															<div class="subheader">
 																{{ category.excerpt}}
 															</div>
 															<div class="row">

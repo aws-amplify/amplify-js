@@ -16,11 +16,34 @@
     //border-bottom: 1px solid rgba(0,0,0,0.08);
     box-shadow: 0px -2px 10px rgba(0,0,0,.3);
 
+    @media (max-width: 767px) {
+        height: 60px; //75px
+    }
+
     .site-header-container {
         margin-top: 17px;
         margin-bottom: 9px;    
         width: 1180px;
         max-width: 90%;
+
+        @media (max-width: 767px) {
+            max-width: 95%;
+            margin-top: 11px;
+        }
+    }
+}
+
+.logo-container {
+    display: inline-block;
+
+    @media (min-width: 767px) {
+        visibility: visible !important;
+    }
+
+    @media (max-width: 767px) {
+        display: block;
+        width: 150px;
+        margin: auto;
     }
 }
 
@@ -38,7 +61,7 @@
     height: 31px;
     width: 93px;
     color: #828282;
-    font-family: "Amazon Ember";
+    font-family: "Amazon Ember", "Helvetica", sans-serif;
     font-size: 26px;
     line-height: 31px;
     top: 0;
@@ -51,14 +74,23 @@
 	}
 
 	img {
-        height: 38px;
+        //height: 38px;
         width: 50px;
-		//margin-left: 109px;
+        //margin-left: 109px;
+        
+        @media (max-width: 767px) {
+            width: 46px;
+            margin-top: 1px;
+        }
     }
     
     .header-amplify {
         display: inline-block;
         margin-top: 2px;
+
+        @media (max-width: 767px) {
+            margin-top: 1px;
+        }
     }
 
     .docs-header-amplify {
@@ -104,7 +136,7 @@
         height: 24px;
         //width: 76px;
         color: #828282;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 16px;
         line-height: 24px;
 
@@ -139,10 +171,13 @@
         background-color: #E1E4EA;
         border: none;
         color: #828282;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 16px;
         line-height: 24px;
         max-width: 150px;
+    }
+    #search-input:focus {
+        outline: none;
     }
 }
 
@@ -184,7 +219,7 @@
 .offcanvas__nav {
 	height: 100%;
 	overflow: scroll;
-	padding-top: 5rem;
+	padding-top: 100px;
 	padding-bottom: 5rem;
 	-webkit-overflow-scrolling: touch;
 
@@ -209,66 +244,168 @@
 }
 
 /* ----- Offcanvas toggle ----- */
-.offcanvas-toggle {
-	height: calc(3.5rem - 1px);
-	width: 5.625rem;
-	cursor: pointer;
-	position: fixed;
-	right: 0;
-	top: 0;
-	@include translate3d(0, 0, 0);
-	z-index: $z-index-offcanvas-toggle;
-	margin-top: -12px;
-
-	span {
-		display: block;
-		height: 2px;
-		width: 1.875rem;
-		background-color: $color-dark-blue;
-		position: absolute;
-		left: 1.875rem;
-		transition: top .2s, transform .2s, opacity .2s;
-
-		&:first-child {
-			top: 2.125rem;
-		}
-
-		&:nth-child(2) {
-			top: 2.6875rem;
-		}
-
-		&:last-child {
-			top: 3.25rem;
-		}
-	}
-
-	.offcanvas-expanded & {
-		span {
-			&:first-child,
-			&:last-child {
-				top: 2.6875rem;
-			}
-
-			&:first-child {
-				@include rotate(45);
-			}
-
-			&:last-child {
-				@include rotate(-45);
-			}
-
-			&:nth-child(2) {
-				opacity: 0;
-			}
-		}
-	}
+.toggle-button-container-expanded {
+    top: 11px !important;
+    left: 6px !important;
 }
+
+.toggle-button-container {
+    position: absolute;
+    top: 17px;
+    left: 10px;
+
+    .offcanvas-toggle {
+        height: auto;
+        width: auto;
+        cursor: pointer;
+        @include translate3d(0, 0, 0);
+        z-index: $z-index-offcanvas-toggle;
+        //margin-top: -12px;
+
+        span {
+            display: block;
+            height: 4px;
+            background-color: #FF9900;
+            //position: absolute;
+            left: 1.875rem;
+            transition: top .2s, transform .2s, opacity .2s;
+            margin-bottom: 6px;
+
+            &:first-child {
+                width: 29px;
+            }
+
+            &:nth-child(2) {
+                width: 24px;
+            }
+
+            &:last-child {
+                width: 19px;
+            }
+        }
+
+        .offcanvas-expanded & {
+
+            span {
+                margin-bottom: -4px;
+
+                &:first-child,
+                &:last-child {
+                    top: 2.6875rem;
+                }
+
+                &:first-child {
+                    @include rotate(45);
+                    width: 42px;
+                }
+
+                &:last-child {
+                    @include rotate(-45);
+                    width: 42px;
+                }
+
+                &:nth-child(2) {
+                    opacity: 0;
+                }
+            }
+        }
+    }
+}
+
+#search-input-xs {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 40px;
+    height: 40px;
+    background-color: #FF9900;
+    border-radius: 100%;
+    background-image: url('/amplify-theme/assets/images/icons/Medium/Search.svg');
+    background-repeat: no-repeat;
+    background-position: 33% 42%;
+    transition: all 0.2s !important;
+    border: none;
+}
+
+#search-input-xs:focus {
+    outline: none;
+}
+
+.search-box-expanded {
+    right: 60px !important;
+    width: 80% !important;
+    border-radius: 5px !important;
+    transition: all 0.2s !important;
+    background-image: none !important;
+    padding: 3px 3px 3px 10px !important;
+    color: white !important;
+    font-family: "Amazon Ember", "Helvetica", sans-serif !important;
+    font-size: 16px !important;
+}
+
+#collapse-search {
+    color: #232F3E;
+    font-family: "Amazon Ember", "Helvetica", sans-serif;
+    font-size: 16px;
+    text-decoration: underline;
+    display: none;
+    border: none;
+    background: none;
+    float: right;
+    position: absolute;
+    top: 21px;
+    right: 7px;
+
+    @media (min-width: 767px) {
+        display: none !important;
+    }
+}
+
 /**
  * Hero subheader (components/_hero-subheader.scss)
  */
 
 /* ----- General ----- */
 .hero-subheader {
+    @media (max-width: 767px) {
+        height: auto !important;
+        background: linear-gradient(30deg, #f90 55%, #fccf30) !important;
+        padding-bottom: 8px !important;
+
+        #half-phone {
+            display: none !important;
+        }
+
+        .hero-subheader__title {
+            width: 100% !important;
+            font-size: 24px !important; //30
+            text-align: center !important;
+            line-height: 30px !important; //36
+            margin: auto;
+            height: auto !important;
+        }
+    
+        .btn {
+            display: block !important;
+            margin: auto !important;
+            margin-top: 35px !important; //50px
+        }
+
+        .logos {
+            margin: 30px auto !important;
+            display: block !important;
+            width: 260px;
+
+            img {
+                margin-left: 0 !important;
+                position: relative;
+                min-height: 1px;
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+        }
+    }
+
 	color: $color-dark-blue;
 	//background-image: url("../images/layout/background.jpg");
 	background: linear-gradient(to right, #FF9900 70%,#fccf30);
@@ -282,8 +419,11 @@
 	margin: auto;
 
 	@media (min-width: $screen-sm-min) {
-        //padding: 9.375rem 0 (10.3125rem - 1.25rem) 0;
         padding-top: 130px;
+    }
+
+    @media (max-width: 767px) {
+        padding-top: 110px !important;
     }
 
 	.btn {
@@ -291,7 +431,7 @@
         height: 61px;
         width: 275px;
         color: #FF9900;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 14px;
         font-weight: bold;
         letter-spacing: 1.8px;
@@ -305,6 +445,12 @@
         border-radius: 4px;
         background-color: #FFFFFF;
         box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.3);
+
+        @media (max-width: 767px) {
+            height: 50px;
+            width: 230px;
+            padding-top: 17px;
+        }
 	}
 
 	.btn--github,
@@ -334,6 +480,7 @@
     
     .logo-sm {
         margin-left: 20px;
+        vertical-align: middle;
     }
 
     .logos {
@@ -357,19 +504,58 @@
 
 .btn {
     color: #FFFFFF;
-    font-family: "Amazon Ember";
+    font-family: "Amazon Ember", "Helvetica", sans-serif;
     font-size: 14px;
     font-weight: bold;
     letter-spacing: 1.8px;
     line-height: 18px;
     text-align: center;
     background-color: #FF9900;
-    padding: 0 40px 0 40px;
+    padding: 0 40px;
     height: 60px;
     text-transform: uppercase;
 }
 
+@media (max-width: 767px) {
+    #marketing-section {
+        margin-top: 20px !important;
+    }
+}
+
 .section-top {
+    
+    @media (max-width: 767px) {    
+        max-width: 95% !important;
+        margin-top: 10px !important;
+
+        .container {
+            margin: auto !important;
+            padding-top: 36px !important;
+        }
+
+        .header {
+            font-size: 30px !important;
+            line-height: 34px !important;
+            margin-bottom: 20px !important;
+        }
+
+        .subheader {
+            font-size: 14px !important;
+            line-height: 20px !important;
+            margin-bottom: 25px !important;
+            width: 90% !important;
+        }
+
+        .bottom-subehader {
+            width: 100% !important;
+        }
+
+        .btn {
+            padding: 0 60px !important;
+            margin-bottom: 0 !important;
+        }
+    }
+
     padding: 0;
 
     .btn {
@@ -378,9 +564,9 @@
 
     .container {
         padding: 0;
-        margin-left: 100px;
         padding-top: 63px;
-        max-width: 86%;
+        margin: auto;
+        max-width: 83%;
     }
     //height: 680px;
     width: 1180px;
@@ -394,7 +580,7 @@
 
     .header {
         color: #232F3E;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 42px;
         font-weight: 300;
         line-height: 53px;
@@ -419,7 +605,7 @@
 
     .subheader {
         color: #828282;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 16px;
         line-height: 24px;
         //width: 940px;
@@ -443,16 +629,45 @@
 
     
 
-    .cloud-grid {
-        display: inline-block;
-        padding: 0;
+    .grids-container {
 
-        @media (min-width: 1174px) {
-            //width: 580px;
-            //margin-left: 100px;
-            //margin-top: 50px;
-            width: 605px;
+        .cloud-grid {
+            display: inline-block;
         }
+        @media (max-width: 767px) {
+            .cloud-grid {
+                margin: auto;
+                margin-bottom: 30px;
+                width: 100%;
+            }
+            .present {
+                height: 19px;
+                width: 18px;
+                position: relative;
+                margin: 8px 8px;
+                float: right;
+            }
+
+            .cloud-col {
+                width: 100%;
+                margin: auto;
+            }
+
+            .cloud-grid-item {
+                //max-width: 330px;
+                width: 100%;
+                margin: auto;
+                margin-bottom: 8px;
+                height: auto;
+
+                .cloud-grid-text {
+                    width: 80%;
+                    margin-bottom: 12px;
+                }
+            }
+        }
+
+        padding: 0;
     }
 
     .row {
@@ -462,7 +677,7 @@
 
     .launch-grid-title {
         color: #232F3E;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 18px;
         line-height: 22px;
     }
@@ -484,7 +699,7 @@
         }
     }
 
-    .cloud-grid-content {
+    .cloud-grid-item {
         height: 100px;
         width: 280px;
         border: 1px solid #E1E1E1;
@@ -503,7 +718,7 @@
 
     .cloud-grid__title {
         color: #FF9900;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 16px;
         font-weight: bold;
         line-height: 20px;
@@ -514,7 +729,7 @@
 
     .cloud-grid__excerpt {
         color: #828282;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 12px;
         line-height: 15px;
         margin-left: 18px;
@@ -553,17 +768,22 @@
     }
 
     .image-container {
-        // #library-auth {
-        //     margin-left: 100px;
-        //     margin-top: 30px;
-        // }
+        #library-auth {
+            @media (max-width: 767px) {
+                margin-top: 40px;
+            }
+        }
 
         #library-chat {
+            @media (max-width: 767px) {
+                display: none;
+            }
+
             float: right;
             //margin-right: 100px;
             margin-top: -127px;
 
-            @media (max-width: 1062px) {
+            @media (max-width: 1102px) {
                 margin-top: 20px;
             }
         }
@@ -576,28 +796,33 @@
         .install-box {
             vertical-align: top;
             height: 250px;
-            width: 217px;
+            width: 218px;
             border-radius: 5px;
             display: inline-block;
-            margin-right: 33px;
+            //margin-right: 33px;
             color: #FFFFFF;
-            font-family: "Amazon Ember";
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
             font-size: 16px;
             font-weight: bold;
             letter-spacing: 1.06px;
             line-height: 20px;
             text-align: center;
             margin-bottom: 44px;
-        }
+            margin-right: 31px;
 
-        .install-col {
-            padding: 0;
-
-            @media (min-width: 1156px){
-                width: 25%;
+            @media (max-width: 767px) {
+                height: 176px;
+                width: 140px;
+                margin-right: 10px;
+                margin-bottom: 18px;
+                line-height: 18px;
             }
-            @media (max-width: 1155px){
-                width: 50%;
+
+            @media (max-width: 372px) {
+                width: 80%;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                display: block;
             }
         }
 
@@ -605,11 +830,15 @@
             max-width: 135px;
             margin: auto;
             margin-top: 24px;
+
+            @media (max-width: 767px) {
+                margin-top: 8px;
+            }
         }
 
         .install-button {
             background-color: white;
-            font-family: "Amazon Ember";
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
             font-size: 14px;
             font-weight: bold;
             letter-spacing: 1.8px;
@@ -620,6 +849,16 @@
             border-radius: 4px;
             box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.3);
             margin-top: 32px;
+            text-transform: uppercase;
+
+            @media (max-width: 767px) {
+                width: 126px;
+                font-size: 13px;
+                line-height: 17px;
+                margin-top: 16px !important;
+                height: 34px;
+                letter-spacing: 0.93px;
+            }
         }
 
         #js-box {
@@ -630,6 +869,10 @@
         }
         #react-box {
             background-color: #45C5E6;
+
+            @media (max-width: 566px) {
+                margin-right: 0;
+            }
         }
         #react-btn {
             color: #45C5E6;
@@ -644,6 +887,7 @@
         }
         #angular-box {
             background-color: #C3002F;
+            margin-right: 0;
         }
         #angular-btn {
             color: #C3002F;
@@ -652,20 +896,31 @@
 
         .logo-lg {
             margin-top: 21px;
-            //margin-left: 5px;
+            
+            @media (max-width: 767px) {
+                margin-top: 15px;
+                height: 48px;
+            }
         }
     }
     
     #view-all-platforms-btn {
         height: 50px;
         width: 280px;
-        //margin-left: 100px;
-        //margin-top: 51px;
+        
+        @media (max-width: 767px) {
+            width: auto !important;
+            padding: 0 30px !important;
+        }
     }
 }
 
 .not-top-section {
     padding-bottom: 50px;
+
+    @media (max-width: 767px) {
+        padding-bottom: 40px;
+    }
 }
 
 #bottom-section {
@@ -674,6 +929,13 @@
 
 body {
     background-color: #F3F3F3;
+}
+
+.install-amplify-cli {
+    @media (max-width: 767px) {
+        height: 50px;
+        width: 100%;
+    }
 }
 
 .hero-subheader--before-out {
@@ -688,7 +950,7 @@ body {
     height: 168px;
     width: 740px;
     color: #FFFFFF;
-    font-family: "Amazon Ember";
+    font-family: "Amazon Ember", "Helvetica", sans-serif;
     font-size: 50px;
     font-weight: bold;
     line-height: 56px;
@@ -721,6 +983,23 @@ body {
 	color: inherit;
 }
 .marketing-grid {
+    @media (max-width: 767px) {
+        margin-bottom: 0 !important;
+
+        .marketing-grid-item {
+            .marketing-grid__title {
+                font-size: 18px !important;
+                line-height: 23px !important;
+                margin-bottom: 8px !important;
+            }
+            .marketing-grid__excerpt {
+                font-size: 14px !important;
+                line-height: 20px !important;
+                margin-bottom: 4px !important;
+            }
+        }
+    }
+
     margin-bottom: 50px;
 
     // .col-sm-6 {
@@ -730,19 +1009,38 @@ body {
     .marketing-grid-item {
         .marketing-grid__title {
             color: #232F3E;
-            font-family: "Amazon Ember";
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
             font-size: 21px;
             font-weight: bold;
             line-height: 26px;
+            padding-bottom: 0;
         }
         // .marketing-grid-content {
         //     max-width: 300px;
         // }
+        .marketing-grid__excerpt {
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            margin-bottom: 4px;
+        }
+        li {
+            margin: 0;
+
+            a {
+                border: none;
+            }
+        }
     }
 }
 
 .notification-bar {
+    @media (max-width: 767px) {
+        display: none !important;
+    }
+
     position: sticky;
+    position: -webkit-sticky;
     top: 0;
     height: 50px;
     width: 100%;
@@ -763,7 +1061,7 @@ body {
 
     .notification-text {
         color: #FFFFFF;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 16px;
         line-height: 24px;
         text-align: left;
@@ -825,6 +1123,10 @@ li {
         margin: auto;
         padding-bottom: 45px;
 
+        @media (max-width: 767px) {
+            padding-bottom: 10px;
+        }
+
         .container {
             
 
@@ -832,19 +1134,36 @@ li {
 
                 .dev-guide__title {
                     color: #232F3E;
-                    font-family: "Amazon Ember";
+                    font-family: "Amazon Ember", "Helvetica", sans-serif;
                     font-size: 42px;
                     font-weight: 300;
                     line-height: 53px;
                     margin-top: 60px;
+
+                    @media (max-width: 767px) {
+                        margin-top: 80px;
+                        font-size: 30px;
+                        line-height: 34px;
+                        width: 65%;
+                        margin-left: auto;
+                        margin-right: auto;
+                        text-align: center;
+                    }
                 }
 
                 .dev-guide__excerpt {
                     color: #828282;
-                    font-family: "Amazon Ember";
+                    font-family: "Amazon Ember", "Helvetica", sans-serif;
                     font-size: 16px;
                     line-height: 24px;
                     margin-bottom: 45px;
+
+                    @media (max-width: 767px) {
+                        font-size: 14px;
+                        line-height: 20px;
+                        text-align: center;
+                        margin-bottom: 25px;
+                    }
                 }
             }
         }
@@ -853,13 +1172,21 @@ li {
     .section-top-category {
         margin: 0;
 
+        @media (max-width: 767px) {
+            margin: auto;
+        }
+
         .header {
-            padding: 0 20px 0 20px;
+            padding: 0 20px;
             margin-top: 68px;
+
+            @media (max-width: 767px) {
+                margin-top: 0;
+            }
         }
 
         .subheader {
-            padding: 0 20px 0 20px;
+            padding: 0 20px;
         }
 
         .container {
@@ -869,12 +1196,16 @@ li {
 
             .row {
                 margin-bottom: 68px;
+
+                @media (max-width: 767px) {
+                    margin-bottom: 0 !important;
+                }
             }
         }
 
         .col-xs-12 {
-            margin-top:2%;
-            padding: 0 20px 0 20px;
+            margin-top: 2%;
+            padding: 0 20px;
         }
 
         .dev-guide-item {
@@ -905,7 +1236,7 @@ li {
 
                 .dev-guide-title {
                     color: #FF9900;
-                    font-family: "Amazon Ember";
+                    font-family: "Amazon Ember", "Helvetica", sans-serif;
                     font-size: 20px;
                     font-weight: bold;
                     line-height: 25px;
@@ -914,7 +1245,7 @@ li {
 
                 .dev-guide-excerpt {
                     color: #828282;
-                    font-family: "Amazon Ember";
+                    font-family: "Amazon Ember", "Helvetica", sans-serif;
                     font-size: 14px;
                     line-height: 18px;
                 }
@@ -976,20 +1307,31 @@ li {
 #learn-more-about-cli-box {
     display: inline-block;
 
+    @media (max-width: 767px) {
+        display: block;
+        width: 226px;
+        margin: auto;
+        margin-top: 10px;
+    }
+
     #learn-more-about-cli {
         color: #FF9900;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 16px;
         line-height: 24px;
         display: inline-block;
         margin-left: 80px;
+
+        @media (max-width: 767px) {
+            margin-left: 0;
+        }
     }
 }
 
 
 #down-arrow {
     display: inline-block;
-    vertical-align: text-bottom;
+    vertical-align: middle;
     margin-left: 13px;
     box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
     border-radius: 100%;
@@ -1005,7 +1347,14 @@ li {
 
     .btn {
         padding: 0 34px 0 34px;
-        width: 180px;
+        width: 100%;
+
+        @media screen {
+            font-size: 12px;
+            line-height: 15px;
+            padding: 0 !important;
+            height: 46px;
+        }
     }
 
     #install-cli-btn {
@@ -1032,18 +1381,27 @@ li {
 
             .row-title {
                 max-width: 90%;
+
+                @media (max-width: 767px) {
+                    max-width: 100%;
+                }
                 
                 .title {             
                     color: #232F3E;
-                    font-family: "Amazon Ember";
+                    font-family: "Amazon Ember", "Helvetica", sans-serif;
                     font-size: 21px;
                     font-weight: bold;
                     line-height: 26px;
                     margin-bottom: 10px;
+
+                    @media (max-width: 767px) {
+                        font-size: 18px;
+                        line-height: 21px;
+                    }
                 }
                 .subtitle {
                     color: #828282;
-                    font-family: "Amazon Ember";
+                    font-family: "Amazon Ember", "Helvetica", sans-serif;
                     font-size: 16px;
                     line-height: 24px;
                     margin-bottom: 34px;
@@ -1057,14 +1415,27 @@ li {
                     margin-right: 35px;
                     width: 180px;
 
+                    @media screen {
+                        width: 49%;
+                        margin: auto;
+                        padding: 4px;
+                        margin-bottom: 12px;
+                    }
+
                     .circle-badge {
-                        margin-left: 32px;
+                        margin: auto;
                         margin-bottom: 18px;
+                        display: block;
+
+                        @media (max-width: 767px) {
+                            margin-bottom: 12px;
+                            width: 76px;
+                        }
                     }
 
                     .platform-title {
                         color: #232F3E;
-                        font-family: "Amazon Ember";
+                        font-family: "Amazon Ember", "Helvetica", sans-serif;
                         font-size: 16px;
                         font-weight: bold;
                         letter-spacing: 1.06px;
@@ -1073,6 +1444,12 @@ li {
                         width: 60%;
                         margin: auto;
                         margin-bottom: 14px;
+
+                        @media (max-width: 767px) {
+                            line-height: 18px;
+                            width: 100%;
+                            letter-spacing: 1.06px;
+                        }
                     }
                 }
             }
@@ -1093,6 +1470,9 @@ li {
 
         #search-input {
             background-color: #F4F4F4;
+        }
+        #search-input:focus {
+            outline: none;
         }
     }
 
@@ -1123,7 +1503,7 @@ li {
             padding: 10px;
             width: 100%;
             color: #FFFFFF;
-            font-family: "Amazon Ember";
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
             font-size: 16px;
             line-height: 24px;
         }
@@ -1160,6 +1540,7 @@ li {
         width: 260px;
         padding: 0;
         position: sticky;
+        position: -webkit-sticky;
         top: 0;
         margin-top: 60px;
 
@@ -1189,7 +1570,7 @@ li {
 
             p {
                 color: #152939;
-                font-family: "Amazon Ember";
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
                 font-size: 14px;
                 letter-spacing: 0.4px;
                 line-height: 17px;
@@ -1215,7 +1596,7 @@ li {
                     padding: 10px;
                     width: 100%;
                     color: #152939;
-                    font-family: "Amazon Ember";
+                    font-family: "Amazon Ember", "Helvetica", sans-serif;
                     font-size: 14px;
                     letter-spacing: 0.4px;
                     line-height: 17px;
@@ -1233,7 +1614,7 @@ li {
 
         .gray-section-head {
             color: #B4B4B4;
-            font-family: "Amazon Ember";
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
             font-size: 13px;
             line-height: 35px;
             text-transform: uppercase;
@@ -1251,7 +1632,7 @@ li {
 
         .section-head {
             color: #232F3E;
-            font-family: "Amazon Ember";
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
             font-size: 16px;
             font-weight: bold;
             line-height: 25px;
@@ -1284,7 +1665,7 @@ li {
 
             a {
                 color: #4A4A4A;
-                font-family: "Amazon Ember";
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
                 font-size: 14px;
                 font-weight: bold;
                 line-height: 16px;
@@ -1444,7 +1825,7 @@ li {
 
             h1 {
                 color: #232F3E;
-                font-family: "Amazon Ember";
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
                 font-size: 42px;
                 font-weight: 300;
                 line-height: 53px;
@@ -1454,14 +1835,14 @@ li {
 
             p {
                 color: #828282;
-                font-family: "Amazon Ember";
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
                 font-size: 16px;
                 line-height: 24px;
             }
 
             h2 {
                 color: #232F3E;
-                font-family: "Amazon Ember";
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
                 font-size: 21px;
                 font-weight: bold;
                 line-height: 26px;
@@ -1473,7 +1854,7 @@ li {
 
             .orange-subheader {
                 color: #FF9900;
-                font-family: "Amazon Ember";
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
                 font-size: 21px;
                 font-weight: bold;
                 line-height: 26px;
