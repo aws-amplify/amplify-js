@@ -41,8 +41,7 @@ export default class Client {
       .then(resp => {
         response = resp;
         return resp;
-      })
-      .catch(err => {
+      }, err => {
         // If error happens here, the request failed
         // if it is TypeError throw network error
         if (err instanceof TypeError) {
