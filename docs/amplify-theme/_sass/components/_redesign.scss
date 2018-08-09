@@ -1347,12 +1347,11 @@ li {
 
     .btn {
         padding: 0 34px 0 34px;
-        width: 100%;
 
-        @media screen {
+        @media (max-width: 767px) {
             font-size: 12px;
             line-height: 15px;
-            padding: 0 !important;
+            padding: 0 16px !important;
             height: 46px;
         }
     }
@@ -1415,7 +1414,7 @@ li {
                     margin-right: 35px;
                     width: 180px;
 
-                    @media screen {
+                    @media (max-width: 767px) {
                         width: 49%;
                         margin: auto;
                         padding: 4px;
@@ -1447,7 +1446,7 @@ li {
 
                         @media (max-width: 767px) {
                             line-height: 18px;
-                            width: 100%;
+                            width: 90%;
                             letter-spacing: 1.06px;
                         }
                     }
