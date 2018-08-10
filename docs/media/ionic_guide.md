@@ -33,14 +33,14 @@ To configure your Ionic app for AWS Amplify, you need to create a backend config
 Following commands will enable Auth category and will create `aws-exports.js` configuration file under your projects `/src` folder. 
 
 ```bash
-$ npm install -g awsmobile-cli
-$ awsmobile init
-$ awsmobile user-signin enable
-$ awsmobile user-files enable
-$ awsmobile push # Update your backend
+$ npm install -g amplify-cli
+$ amplify init
+$ amplify user-signin enable
+$ amplify user-files enable
+$ amplify push # Update your backend
 ```
 
-After creating your backend, the configuration file is copied to `/awsmobilejs/#current-backend-info/aws-exports.js`, and the source folder you have identified in the `awmobile init` command.
+After creating your backend, the configuration file is copied to `/amplifyjs/#current-backend-info/aws-exports.js`, and the source folder you have identified in the `awmobile init` command.
 
 To import the configuration file to your Ionic app, you will need to rename `aws_exports.js` to `aws_exports.ts`. Alternatively, you can create a `yarn start` command in your `package.json`.
 ```js
@@ -54,8 +54,8 @@ Import the configuration file and load it in your `main.ts`, which is the entry 
 
 ```js
 import Amplify from 'aws-amplify';
-import awsmobile from './aws-exports';
-Amplify.configure(awsmobile);
+import amplify from './aws-exports';
+Amplify.configure(amplify);
 ```
 
 ## Importing Amplify
@@ -175,7 +175,7 @@ Authenticator component creates an out-of-the-box signing/sign-up experience for
 
 Before using this component, please be sure that you have activated [Authentication category](https://aws.github.io/aws-amplify/media/authentication_guide):
 ```bash
-$ awsmobile user-signin enable
+$ amplify user-signin enable
 ```
 
 
@@ -193,7 +193,7 @@ Photo Picker component will render a file upload control that will allow choosin
 Before using this component, please be sure that you have activated [*user-files* with Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
 
 ```bash
-$ awsmobile user-files enable
+$ amplify user-files enable
 ```
 
 To render photo picker in an Angular view, use *amplify-photo-picker* component:
@@ -235,7 +235,7 @@ S3 Album component display a list of images from the connected S3 bucket.
 Before using this component, please be sure that you have activated [*user-files* with Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
 
 ```bash
-$ awsmobile user-files enable
+$ amplify user-files enable
 ```
 
 To render the album, use *amplify-s3-album* component in your Angular view:

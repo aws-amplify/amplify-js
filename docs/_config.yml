@@ -120,7 +120,7 @@ category_list:
           icon: '/images/icons/Misc/Present.svg'
         - title: Amplify CLI
           excerpt: CLI excerpt
-          url: 'media/cli'
+          url: 'cli_guide'
           icon: '/images/icons/Misc/Present.svg'
     - category: CloudFeatures
       title: Cloud Features

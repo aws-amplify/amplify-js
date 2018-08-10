@@ -17,11 +17,11 @@ The default implementation of the Storage module leverages [Amazon S3](https://a
 To create a project fully functioning with the Storage category.
 
 ```bash
-$ npm install -g awsmobile-cli
+$ npm install -g amplify-cli
 $ cd my-app #Change to your project's root folder
-$ awsmobile init
-$ awsmobile user-files enable
-$ awsmobile push #Update your backend 
+$ amplify init
+$ amplify user-files enable
+$ amplify push #Update your backend 
 ```
 
 In your app's entry point *i.e. App.js*, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.

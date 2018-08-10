@@ -15,27 +15,27 @@ Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'pro
 
 #### Automated Setup
 
-Automated Setup works with `awsmobile-cli` to create your analytics backend. After configuring your backend, you can create a project with fully functioning Analytics category.
+Automated Setup works with `amplify-cli` to create your analytics backend. After configuring your backend, you can create a project with fully functioning Analytics category.
 
 ```bash
-$ npm install -g awsmobile-cli
+$ npm install -g amplify-cli
 ```
 
-You should run all `awsmobile` commands at *root folder* of your project.
+You should run all `amplify` commands at *root folder* of your project.
 {: .callout .callout--info}
 
 In your project's *root folder*, run following command to configure and update your backend:
 
 ```bash
 $ cd my-app #Change to your project's root folder
-$ awsmobile init
-$ awsmobile push #Update your backend 
+$ amplify init
+$ amplify push #Update your backend 
 ```
 
-*awsmobile init* enables Analytics module by default for your backend. In case you want to enable/disable it manually, you can use:
+*amplify init* enables Analytics module by default for your backend. In case you want to enable/disable it manually, you can use:
 
 ```bash
-$ awsmobile analytics enable 
+$ amplify analytics enable 
 ```
 
 In your app's entry point i.e. App.js, import and load the configuration file which has been created and replaced into `/src` folder in the previous step.
@@ -105,7 +105,7 @@ After successfully configuring your credentials, the library automatically track
 User session analytics data is automatically collected and sent to Amazon Pinpoint. To see these data, please visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/), or run following cli command to launch AWS Mobile Hub console:
 
 ```
-$ awsmobile console
+$ amplify console
 ```
 
 On the AWS Mobile Hub console, click **Messaging and Analytics** option under 'Backend' section.

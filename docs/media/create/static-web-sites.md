@@ -31,7 +31,7 @@ Our CLI will handle deployments and backend service orchestration, so you can fo
 Amplify CLI provides a one-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app's loading performance by serving your content to your users from the nearest edge location.
 
 ```bash
-awsmobile publish
+amplify publish
 ```
 CDN service, which is provided by Amazon CloudFront, will handle the high-performance delivery of your static assets.
 
@@ -50,7 +50,7 @@ Every time you deploy your website, a performance test is executed using real de
 Amplify CLI helps you to configure your website's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
-awsmobile cloud-api enable
+amplify cloud-api enable
 ```
 
 Amplify CLI also creates the necessary folder structure and generates JavaScript files necessary for your app's backend logic:
@@ -60,7 +60,7 @@ Amplify CLI also creates the necessary folder structure and generates JavaScript
 After working with your backend code, deploying your web backend is very simple:
 
 ```bash
-awsmobile push
+amplify push
 ```
 
 You can also use AWS Mobile Hub to mix and match building blocks for your website, and start implementing cloud operations like Authorization, Storage and Cloud API.  

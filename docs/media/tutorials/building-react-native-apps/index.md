@@ -21,7 +21,7 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
 3.  Install the Amplify CLI
 
     ```bash
-    npm install --global awsmobile-cli
+    npm install --global amplify-cli
     ```
 
 4.  Configure the CLI with your AWS credentials
@@ -29,7 +29,7 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
     To set up permissions for the toolchain used by the CLI, run:
 
     ```bash
-    awsmobile configure
+    amplify configure
     ```
 
     If prompted for credentials, follow the steps provided by the CLI.
@@ -43,7 +43,7 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
 1.  In the root folder of your app, run:
 
     ```bash
-    awsmobile init
+    amplify init
     ```
 
     The `init` command creates a backend project for your
@@ -136,8 +136,8 @@ configurable UI for sign-up and sign-in.
 In the root folder of your app, run:
 
 ```js
-$ awsmobile user-signin enable
-$ awsmobile push
+$ amplify user-signin enable
+$ amplify push
 ```
 
 #### Connect to Your Backend
@@ -169,7 +169,7 @@ sign-up/sign-in/sign-out UI from the command line.
     export default withAuthenticator(App);
     ```
 
-To test, run `npm start` or `awsmobile run`.
+To test, run `npm start` or `amplify run`.
 
 Learn more about the AWS Mobile User Sign-in feature, which uses [Amazon Cognito](http://docs.aws.amazon.com/cognito/latest/developerguide/welcome.html).
 {: .callout .callout--info}
@@ -182,8 +182,8 @@ The AWS Mobile Cloud Logic feature lets you call APIs in the cloud. Your serverl
 **To enable cloud APIs in your app**
 
 ```bash
-awsmobile cloud-api enable
-awsmobile push
+amplify cloud-api enable
+amplify push
 ```
 
 Enabling Cloud Logic in your app adds a sample API,
@@ -191,7 +191,7 @@ Enabling Cloud Logic in your app adds a sample API,
 testing.
 
 You can find the sample handler function for the API by running
-`awsmobile console` in your app root folder, and then
+`amplify console` in your app root folder, and then
 choosing the Cloud Logic feature in your project.
 
 ![View your sample cloud API and its lambda function handler.]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/web-view-cloud-api.png)
@@ -205,14 +205,14 @@ make end-to-end API calls.
 environment**
 
 ```bash
-awsmobile cloud-api invoke <apiname> <method> <path> [init]
+amplify cloud-api invoke <apiname> <method> <path> [init]
 ```
 
 For the `sampleCloudApi` you may use the following examples
 to test the `post` method
 
 ```bash
-awsmobile cloud-api invoke sampleCloudApi post /items '{"body": {"testKey":"testValue"}}'
+amplify cloud-api invoke sampleCloudApi post /items '{"body": {"testKey":"testValue"}}'
 ```
 
 This call will return a response similar to the following.
@@ -229,7 +229,7 @@ This call will return a response similar to the following.
 **To test the :get method**
 
 ```bash
-$ awsmobile cloud-api invoke sampleCloudApi get /items
+$ amplify cloud-api invoke sampleCloudApi get /items
 ```
 
 This will return a response as follows.
@@ -285,7 +285,7 @@ Learn more about the AWS Mobile Cloud Logic feature which uses [Amazon API Gatew
 {: .callout .callout--info}
 
 To be guided through creation of an API and it's handler, run
-`awsmobile console` to open your app in the console, and
+`amplify console` to open your app in the console, and
 choose Cloud Logic.
 
 ## Add Cloud Database
@@ -301,7 +301,7 @@ to access your database.
 1.  In your app root folder, run:
 
     ```
-    awsmobile database enable --prompt
+    amplify database enable --prompt
     ```
 
 2.  Design your table when prompted by the CLI.
@@ -367,7 +367,7 @@ read, update, and delete (CRUD) actions on your database.
 1.  In the root folder of your app, run:
 
     ```bash
-    awsmobile cloud-api enable --prompt
+    amplify cloud-api enable --prompt
     ```
 
 2.  When prompted, choose
@@ -396,8 +396,8 @@ read, update, and delete (CRUD) actions on your database.
       "NoteContent": "INSERT VALUE HERE",
       "NoteId": "INSERT VALUE HERE"
     }
-    To test the api from the command line (after awsmobile push) use this commands
-    awsmobile cloud-api invoke NotesCRUD <method> <path> [init]
+    To test the api from the command line (after amplify push) use this commands
+    amplify cloud-api invoke NotesCRUD <method> <path> [init]
     Api NotesCRUD saved
     ```
 
@@ -413,7 +413,7 @@ read, update, and delete (CRUD) actions on your database.
     To create the API you have configured, run:
 
     ```js
-    awsmobile push
+    amplify push
     ```
 
     Until deployment of API to the cloud the has completed, the CLI
@@ -487,7 +487,7 @@ copied from the CLI prompt response earlier.
 To use the command line to see your saved items in the database run:
 
 ```
-awsmobile cloud-api invoke NotesCRUD GET /Notes/object/${noteId}
+amplify cloud-api invoke NotesCRUD GET /Notes/object/${noteId}
 ```
 
 ### Get a specific item
@@ -579,8 +579,8 @@ enables apps to store user files in the cloud.
 In your app root folder, run:
 
 ```bash
-awsmobile user-files enable
-awsmobile push
+amplify user-files enable
+amplify push
 ```
 
 ### Connect to Your Backend
@@ -697,7 +697,7 @@ service gathers and visualizes analytics data.
     console](https://console.aws.amazon.com/mobilehub/).
 
     ```bash
-    awsmobile console
+    amplify console
     ```
 
 3.  Choose the Analytics icon on the left, to navigate to your project

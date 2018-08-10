@@ -23,11 +23,11 @@ Amazon Cognito Identity Pool is required to have access to the API using *Amazon
 To create a fully functioning project with the API category, run following commands in the **root directory** of your project:
 
 ```bash
-$ npm install -g awsmobile-cli
+$ npm install -g amplify-cli
 $ cd my-app #Change to your project's root folder
-$ awsmobile init
-$ awsmobile cloud-api enable
-$ awsmobile push #Update your backend 
+$ amplify init
+$ amplify cloud-api enable
+$ amplify push #Update your backend 
 ```
 
 In your project's entry point, i.e. App.js:
@@ -174,7 +174,7 @@ exports.handler = function(event, context, callback) {
 }
 ```
 
-Alternatively, you can update your backend file which is locates at `awsmobilejs/backend/cloud-api/[your-lambda-function]/app.js` with the middleware:
+Alternatively, you can update your backend file which is locates at `amplifyjs/backend/cloud-api/[your-lambda-function]/app.js` with the middleware:
 
 ```js
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
@@ -422,13 +422,13 @@ To create an AWS AppSync API, please visit [AWS AppSync Console](https://aws.ama
 After creating your AWS AppSync API, following command enables AppSync GraphQL API in your  project:
 
 ```bash
-$ awsmobile appsync enable
+$ amplify appsync enable
 ```
 
 AWS AppSync supports multiple authorization types, which are AWS Identity and Access Management (IAM), Amazon Cognito User Pool and API key. To configure auth type, use the following command:
 
 ```bash
-$ awsmobile appsync configure
+$ amplify appsync configure
 ```
 
 ```console
@@ -438,7 +438,7 @@ $ awsmobile appsync configure
   AMAZON_COGNITO_USER_POOLS 
 ```
 
-Enabling AppSync creates a local folder which you can find AppSync configuration files under `/awsmobilejs/backend/appsync` folder that is automatically synced with AppSync when you run `awsmobile push` command.
+Enabling AppSync creates a local folder which you can find AppSync configuration files under `/amplifyjs/backend/appsync` folder that is automatically synced with AppSync when you run `amplify push` command.
 
 Note: AWS AppSync API keys expire seven days after creation, and using API_KEY authentication is only suggested for development.
 {: .callout .callout--info}
@@ -772,7 +772,7 @@ For the complete API documentation for API module, visit our [API Reference]({%i
 
 To use custom headers on your HTTP request, you need to add these to Amazon API Gateway first. For more info about configuring headers, please visit [Amazon API Gateway Developer Guide](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html)
 
-If you have used *awsmobile* CLI or *AWS Mobile Hub* to create your API, you can enable custom headers by following above steps:  
+If you have used *amplify* CLI or *AWS Mobile Hub* to create your API, you can enable custom headers by following above steps:  
 
 1. Visit [Amazon API Gateway console](https://aws.amazon.com/api-gateway/).
 3. On Amazon API Gateway console, click on the path you want to configure (e.g. /{proxy+})

@@ -11,8 +11,9 @@
 	z-index:999;
     background-color:white;
     margin: auto;
-    left: 0;
-    right: 0;
+    width: 100%;
+    //left: 0;
+    //right: 0;
     //border-bottom: 1px solid rgba(0,0,0,0.08);
     box-shadow: 0px -2px 10px rgba(0,0,0,.3);
 
@@ -366,7 +367,84 @@
  */
 
 /* ----- General ----- */
+.hero-subheader.cli {
+    background: none;
+    background-color: #31465F;
+
+    .btn {
+        color: #31465F;
+    }
+}
+
+.section-top.cli {
+    .marketing-content {
+        width: 40%;
+        margin-bottom: 50px;
+
+        .marketing-grid__title {
+            color: #232F3E;
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
+            font-size: 21px;
+            font-weight: bold;
+            line-height: 26px;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .marketing-grid__excerpt {
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            margin-bottom: 4px;
+        }
+    }   
+
+    .integrate-content {
+        width: 60%;
+        margin-bottom: 50px;
+
+        .marketing-grid__excerpt {
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            margin-bottom: 4px;
+        }
+    }
+
+    .logo-container {
+        display: block;
+        margin-bottom: 30px;
+
+        .logo-box {
+            display: inline-block;
+            margin: 0;
+            text-align: center;
+            width: 19%;
+
+            .logo-title {
+                color: #232F3E;
+                font-family: "Amazon Ember";
+                font-size: 16px;
+                letter-spacing: 1.06px;
+                line-height: 20px;
+                text-align: center;
+            }
+
+            .circle-badge {
+                
+            }
+        }
+    }
+
+    .button-container {
+        display: inline-block;
+        .top-section-btn {
+            margin-bottom: 100px;
+            margin-right: 20px;
+        }
+    }
+}
 .hero-subheader {
+
     @media (max-width: 767px) {
         height: auto !important;
         background: linear-gradient(30deg, #f90 55%, #fccf30) !important;
@@ -929,6 +1007,7 @@
 
 body {
     background-color: #F3F3F3;
+    overflow-x: hidden;
 }
 
 .install-amplify-cli {
@@ -1045,7 +1124,7 @@ body {
     height: 50px;
     width: 100%;
     background-color: #31465F;
-    width: 101%;
+    //width: 101%;
     //display: block;
     z-index: 1000;
 
@@ -1661,7 +1740,6 @@ li {
         }
 
         ul {
-            overflow-x: hidden;
 
             a {
                 color: #4A4A4A;
@@ -1671,7 +1749,7 @@ li {
                 line-height: 16px;
                 max-width: 240px;
                 display: block;
-                overflow-x: scroll !important;
+                //overflow-x: scroll !important;
             }
 
             ul {
@@ -1768,6 +1846,7 @@ li {
                     padding-left: 10px;
                     white-space: nowrap;
                     overflow: hidden;
+                    text-overflow: ellipsis;
                     &:hover {
                         text-decoration: underline;
                     }

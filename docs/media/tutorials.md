@@ -66,7 +66,7 @@ tutorial_list:
       title: AWS Amplify Cloud Features
       subs:
         - title: Amplify CLI - Getting Started
-          excerpt: 'In this video, we walk through how to get up and running with the AWSMobile CLI.<br/><b>7 min</b>'
+          excerpt: 'In this video, we walk through how to get up and running with the amplify CLI.<br/><b>7 min</b>'
           cta: '<b>Watch</b>'
           url_external: 'https://www.youtube.com/watch?v=Zi-66QybJ9A'
         - title: Introducing the AWS Amplify GraphQL Client

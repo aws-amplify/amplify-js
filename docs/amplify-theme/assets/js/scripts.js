@@ -341,9 +341,9 @@
 		let search_box = document.getElementById("search-input")
 		search_box.onclick = function() {
 			document.getElementById("search-image").style.display = "none";
-			search.style.outline = "none";
-			search.placeholder = "Search";
-			search.style.paddingLeft = "2px";
+			search_box.style.outline = "none";
+			search_box.placeholder = "Search";
+			search_box.style.paddingLeft = "2px";
 		}
 	}
 
@@ -355,14 +355,15 @@
 	var addLineNumbers = function() {
 		var pre = document.getElementsByTagName('pre'), pl = pre.length;
 		for (var i = 0; i < pl; i++) {
-			pre[i].innerHTML = '<span class="line-number"></span>' + pre[i].innerHTML + '<span class="cl"></span>';
-			var num = pre[i].innerHTML.split(/\n/).length;
-			//if (num > 2) {
+			var parent  = pre[i].parentNode.parentNode;
+			if (parent.classList.contains("language-js")) {
+				pre[i].innerHTML = '<span class="line-number"></span>' + pre[i].innerHTML + '<span class="cl"></span>';
+				var num = pre[i].innerHTML.split(/\n/).length;
 				for (var j = 0; j < (num - 1); j++) {
 					var line_num = pre[i].getElementsByTagName('span')[0];
 					line_num.innerHTML += '<span>' + (j + 1) + '</span>';
 				}
-			//}
+			}
 		}
 	};
 

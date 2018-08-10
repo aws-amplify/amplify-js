@@ -24,11 +24,11 @@ Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'pro
 To create a project fully functioning with the Auth category.
 
 ```bash
-$ npm install -g awsmobile-cli
+$ npm install -g amplify-cli
 $ cd my-app #Change to your project's root folder
-$ awsmobile init
-$ awsmobile user-signin enable
-$ awsmobile push #Update your backend
+$ amplify init
+$ amplify user-signin enable
+$ amplify push #Update your backend
 ```
 
 In your app's entry point i.e. App.js, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.
@@ -44,7 +44,7 @@ Amplify.configure(aws_exports);
 You can customize sign-in options by using `-p` parameter. The CLI will ask you the options to create your custom sign-in attributes:
 
 ```sh
-$ awsmobile user-signin enable -p
+$ amplify user-signin enable -p
 
 ? Sign-in is currently disabled, what do you want to do next Go to advance settings
 ? Which sign-in method you want to configure Cognito UserPools (currently disabled)
@@ -52,12 +52,12 @@ $ awsmobile user-signin enable -p
 ? Password minimum length (number of characters) 8
 ? Password character requirements uppercase, lowercase, numbers
 
-$ awsmobile push
+$ amplify push
 ```
 
 ##### Updating User Pool Attributes
 
-Currently, once you create a Cognito User Pool, you won't be able to change the standard attributes at a later time. If you need to modify User Pool attributes, you can remove the user pool with `awsmobile user-signin disable` and create a new User Pool with the CLI.
+Currently, once you create a Cognito User Pool, you won't be able to change the standard attributes at a later time. If you need to modify User Pool attributes, you can remove the user pool with `amplify user-signin disable` and create a new User Pool with the CLI.
 
 ![Cognito Settings]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/cognito_user_pool_standart_attributes.png){: style="max-height:400px;"}
 
@@ -753,10 +753,10 @@ When working with multiple MFA Types, you can let the app user select the desire
 
 ```js
 import Amplify from 'aws-amplify';
-import awsmobile from './aws-exports';
+import amplify from './aws-exports';
 import { SelectMFAType } from 'aws-amplify-react';
 
-Amplify.configure(awsmobile);
+Amplify.configure(amplify);
 
 // Please have at least TWO types
 // Please make sure you set it properly according to your Cognito User pool

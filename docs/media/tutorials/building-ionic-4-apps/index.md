@@ -619,7 +619,7 @@ This section will introduce you to  Amplify CLI and you'll learn how to create b
 
 To install the CLI, execute:
 ```bash
-npm install -g awsmobile-cli
+npm install -g amplify-cli
 ```
 
 ##  Configuring the CLI with IAM user 
@@ -636,7 +636,7 @@ Be sure that you save the Access Key ID and Secret Access Key in a secure place 
 
 Finally, use your terminal to execute:
 ```bash
-awsmobile configure
+amplify configure
 ```
 
 Follow the prompts to enter your Access Key ID, Secret Access Key, and Region.
@@ -647,7 +647,7 @@ Your Amplify CLI is now ready for use!
 
 Run the following command from your project folder:
 ```bash
-$ awsmobile init
+$ amplify init
 ```
  
 The CLI will ask you the name of your project directories to replace the configuration file *aws-exports.js*, and integrate with your run and build commands:
@@ -659,20 +659,20 @@ Please tell us about your project:
 ? What is your project's start command for local test run:  npm run-script start
 ```
 
-After answering the prompt, you should now see the *awsmobilejs* directory in your project root, as well as an *aws-exports.js* file in your */src* directory. The *aws-exports*file stores all of your project’s AWS related resource configuration. Again, do NOT check in the *awsmobilejs* directory or *aws-exports* file into source control.
+After answering the prompt, you should now see the *amplifyjs* directory in your project root, as well as an *aws-exports.js* file in your */src* directory. The *aws-exports*file stores all of your project’s AWS related resource configuration. Again, do NOT check in the *amplifyjs* directory or *aws-exports* file into source control.
 
 Since we are using TypeScript, change the name of the aws-exports file to *aws-exports.ts*.
 
-Please note that *aws-exports.js* (or *aws-exports.ts*. if you are using TypeScript) file should be located in the root of your source directory. If your source directory is different from */src* and you did not enter the folder name in the previous prompt, copy your *aws-exports.js* file to your source directory. You can find the updated copy of *aws-exports.js* file under *awsmobilejs/#current-backend-info/* directory.
+Please note that *aws-exports.js* (or *aws-exports.ts*. if you are using TypeScript) file should be located in the root of your source directory. If your source directory is different from */src* and you did not enter the folder name in the previous prompt, copy your *aws-exports.js* file to your source directory. You can find the updated copy of *aws-exports.js* file under *amplifyjs/#current-backend-info/* directory.
 {: .callout .callout--info}
 
 AWS resources for your application can be generated using:
 ```bash
-awsmobile <feature> enable
+amplify <feature> enable
 ```
 Alternatively, you can execute the following command to select from a list of available features:
 ```bash
-awsmobile features
+amplify features
 ```
 
 ## Enabling Analytics
@@ -681,18 +681,18 @@ In this part of the tutorial, you will be adding analytics to your application w
 
 Analytics is enabled by default when you initiate Amplify CLI with:
 ```bash
-awsmobile init
+amplify init
 ```
 
 So, you don't need to enable analytics explicitly. You can configure analytics setup anytime by using the following command:
 ```bash
-$ awsmobile analytics configure
+$ amplify analytics configure
 ```
 
 The next step is adding the AWS Amplify library into your Ionic app.
 
 **Updating your Backend**
-When you update your backend configuration with the CLI, you can update your backend with `awsmobile push`.
+When you update your backend configuration with the CLI, you can update your backend with `amplify push`.
 Be patient while the CLI updates your backend resources. Once the creation of your resources is complete, you can view them via the [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home#/). 
 {: .callout .callout--info}
  
@@ -752,12 +752,12 @@ Amazon Cognito is a cloud-based authentication service that helps you manage use
 
 To enable authentication for your application, first execute the following command:
 ```bash
-awsmobile user-signin enable
+amplify user-signin enable
 ```
  
 And then, run following command to update your app backend:
 ```bash
-awsmobile push
+amplify push
 ```
  
 ### Enable auth UI 
@@ -907,7 +907,7 @@ The source code for this section of the tutorial can be found in *tutorial-part-
 Amplify CLI makes it easy to create your app's backend, including Cloud database and Cloud API. To enable those features, run:
 
 ```bash
-$ awsmobile features
+$ amplify features
 ```
 
 and select *database* and *cloud-api* from the features list:
@@ -925,7 +925,7 @@ and select *database* and *cloud-api* from the features list:
  
 Then, run:
 ```bash
-awsmobile database configure 
+amplify database configure 
 ```
 to begin setting up your database. The *configure* command will provide the list of options to create database tables and fields:
 
@@ -981,8 +981,8 @@ Since we have defined this database as 'Open', you should delete the table after
 
 Now, you need to create APIs to access the database table that you have created:
 ```bash
-awsmobile cloud-api enable
-awsmobile cloud-api configure 
+amplify cloud-api enable
+amplify cloud-api configure 
 ```
 
 When prompted, select *Create CRUD API for an existing Amazon DynamoDB table*, and then select *ToDoItems* and restrict access to signed-in users:
@@ -996,14 +996,14 @@ When prompted, select *Create CRUD API for an existing Amazon DynamoDB table*, a
   Restrict API access to signed-in users: Yes
 ```
 
-After running this command, the CLI creates the  `awsmobilejs/backend/cloud-api/ToDoItems/` directory which includes the boilerplate code for your API backend. 
+After running this command, the CLI creates the  `amplifyjs/backend/cloud-api/ToDoItems/` directory which includes the boilerplate code for your API backend. 
 
 ![](images/cloud-api-folder-structure.png)
  
-This folder will be deployed to AWS and it will run on AWS Lambda when you update your backend with `awsmobile push` command:
+This folder will be deployed to AWS and it will run on AWS Lambda when you update your backend with `amplify push` command:
 
 ```bash
-awsmobile push
+amplify push
 ```
 
 [AWS Lambda](https://aws.amazon.com/lambda/) is a ‘serverless’ service that allows you to run code without a provisioned server. Your app will utilize AWS Lambda to access your database.

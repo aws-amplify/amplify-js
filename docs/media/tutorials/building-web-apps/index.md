@@ -20,7 +20,7 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
 3.  Install Amplify CLI
 
     ```bash
-    npm install -g awsmobile-cli
+    npm install -g amplify-cli
     ```
 
 4.  Configure the CLI with your AWS credentials
@@ -28,7 +28,7 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
     To set up permissions for the toolchain used by the CLI, run:
 
     ```bash
-    awsmobile configure
+    amplify configure
     ```
 
     If prompted for credentials, follow the steps provided by the CLI.
@@ -40,7 +40,7 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
 1.  In the root folder of your app, run:
 
     ```bash
-    awsmobile init
+    amplify init
     ```
 
     The `init` command creates a backend project for your
@@ -63,17 +63,17 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
     ? Where is your project's distribution directory to store build artifacts:  build
     ? What is your project's build command:  npm run-script build
     ? What is your project's start command for local test run:  npm run-script start
-    ? What awsmobile project name would you like to use:  YOUR-APP-NAME-2017-11-10-15-17-48
+    ? What amplify project name would you like to use:  YOUR-APP-NAME-2017-11-10-15-17-48
     ```
 
 After the project is created, you will get a success message which also
 includes details on the path where the *aws-exports.js* is copied.
 
 ```bash
-> awsmobile project's details logged at: awsmobilejs/#current-backend-info/backend-details.json
-> awsmobile project's access information logged at: awsmobilejs/#current-backend-info/aws-exports.js
-> awsmobile project's access information copied to: src/aws-exports.js
-> awsmobile project's specifications logged at: awsmobilejs/#current-backend-info/mobile-hub-project.yml
+> amplify project's details logged at: amplifyjs/#current-backend-info/backend-details.json
+> amplify project's access information logged at: amplifyjs/#current-backend-info/aws-exports.js
+> amplify project's access information copied to: src/aws-exports.js
+> amplify project's specifications logged at: amplifyjs/#current-backend-info/mobile-hub-project.yml
 > contents in #current-backend-info/ is synchronized with the latest information in the aws cloud
 ```
 
@@ -95,13 +95,13 @@ following imports.
 
 ```js
 import Amplify from 'aws-amplify';
-import awsmobile from './YOUR-PATH-TO/aws-exports';
+import amplify from './YOUR-PATH-TO/aws-exports';
 ```
 
 Then add the following code.
 
 ```js
-Amplify.configure(awsmobile);
+Amplify.configure(amplify);
 ```
 
 ### Run Your App Locally
@@ -114,7 +114,7 @@ by AWS Mobile.
 In the root folder of your app, run:
 
 ```bash
-awsmobile run
+amplify run
 ```
 
 Behind the scenes, this command runs `npm install` to
@@ -137,11 +137,11 @@ on a robust content distribution network (CDN) and view it in a browser.
 In the root folder of your app, run:
 
 ```bash
-awsmobile publish
+amplify publish
 ```
 
 To push any backend configuration changes to AWS and view content
-locally, run `awsmobile run`. In both cases, any pending
+locally, run `amplify run`. In both cases, any pending
 changes you made to your backend configuration are made to your backend
 resources.
 
@@ -165,7 +165,7 @@ see results, including screenshots.
 In the root folder of your app, run:
 
 ```bash
-awsmobile publish --test
+amplify publish --test
 ```
 
 The CLI will open the reporting page for your app in the console to show
@@ -184,8 +184,8 @@ configurable UI for sign-up and sign-in.
 In the root folder of your app, run:
 
 ```bash
-awsmobile user-signin enable
-awsmobile push
+amplify user-signin enable
+amplify push
 ```
 
 ### Connect to Your Backend
@@ -214,8 +214,8 @@ sign-up/sign-in/sign-out UI from the command line.
     export default withAuthenticator(App);
     ```
 
-To test, run `npm start`, `awsmobile run`, or
-`awsmobile publish --test`.
+To test, run `npm start`, `amplify run`, or
+`amplify publish --test`.
 
 Learn more about the AWS Mobile User Sign-in feature, which uses [Amazon
 Cognito](http://docs.aws.amazon.com/cognito/latest/developerguide/welcome.html).
@@ -231,9 +231,9 @@ Enable the User File Storage feature by running the following commands
 in the root folder of your app.
 
 ```bash
-awsmobile user-files enable
+amplify user-files enable
 
-awsmobile push
+amplify push
 ```
 
 ### Connect to the Backend
@@ -345,7 +345,7 @@ In the following examples, you will create an API that is part of a cloud-enable
 1.  In the root folder of your app, run:
 
     ```bash
-    awsmobile cloud-api enable --prompt
+    amplify cloud-api enable --prompt
     ```
 
 2.  When prompted, name the API Guesses.
@@ -377,7 +377,7 @@ In the following examples, you will create an API that is part of a cloud-enable
     your configuration to the cloud.
 
     ```bash
-    awsmobile push
+    amplify push
     ```
 
 **To test your API and handler**
@@ -385,7 +385,7 @@ In the following examples, you will create an API that is part of a cloud-enable
 From the command line, run:
 
 ```bash
-awsmobile cloud-api invoke Guesses GET /number
+amplify cloud-api invoke Guesses GET /number
 ```
 
 The Cloud Logic API endpoint for the `Guesses` API is now created.
@@ -393,14 +393,14 @@ The Cloud Logic API endpoint for the `Guesses` API is now created.
 ### Customize Your API Handler Logic
 
 The Amplify CLI has generated a Lambda function to handle calls to the `Guesses` API. It is saved locally in
-YOUR-APP-ROOT-FOLDER/awsmobilejs/backend/cloud-api/guesses. The app.js file in that directory contains the definitions and functional code for all of the paths that are handled for your API.
+YOUR-APP-ROOT-FOLDER/amplifyjs/backend/cloud-api/guesses. The app.js file in that directory contains the definitions and functional code for all of the paths that are handled for your API.
 
 **To customize your API handler**
 
 1.  Find the handler for POST requests on the `/number` path. That line starts with `app.post('number',`. Replace the callback function’s body with the following:
 
     ```js
-    // awsmobilejs/backend/cloud-api/guesses/app.js
+    // amplifyjs/backend/cloud-api/guesses/app.js
 
     app.post('/number', function(req, res) {
       const correct = 12;
@@ -422,7 +422,7 @@ YOUR-APP-ROOT-FOLDER/awsmobilejs/backend/cloud-api/guesses. The app.js file in t
 2.  Push your changes to the cloud.
 
     ```bash
-    awsmobile push
+    amplify push
     ```
 
 The `Guesses` API handler logic that implements your new number guessing functionality is now deployed to the cloud.
@@ -468,7 +468,7 @@ The `API` module from AWS Amplify allows you to send requests to your Cloud Logi
     ```
 
 Open your app locally and test guessing the number by running
-`awsmobile run`.
+`amplify run`.
 
 Your entire component should look like the following:
 
@@ -490,7 +490,7 @@ The Amplify CLI and Amplify library make it easy to perform create, read, update
     In the root folder of your app, run:
 
     ```bash
-    awsmobile database enable --prompt
+    amplify database enable --prompt
     ```
 
 2.  Choose `Open` to make the data in this table viewable by all users of your application.
@@ -554,7 +554,7 @@ To access your NoSQL database, you will create an API that can be called from yo
 1.  Enable and configure the Cloud Logic feature
 
     ```bash
-    awsmobile cloud-api enable --prompt
+    amplify cloud-api enable --prompt
     ```
 
 2.  Choose `Create CRUD API for an existing Amazon DynamoDB table` API for an existing Amazon DynamoDB table" and then choose enter.
@@ -575,7 +575,7 @@ To access your NoSQL database, you will create an API that can be called from yo
 4.  Push your configuration to the cloud. Without this step, the configuration for your database and API is now in place only on your local machine.
 
     ```bash
-    awsmobile push
+    amplify push
     ```
 
 The required DynamoDB tables, API Gateway endpoints, and Lambda functions will now be created.
@@ -587,7 +587,7 @@ The Amplify CLI enables you to test your API from the command line.
 Run the following command to create your first todo.
 
 ```bash
-awsmobile cloud-api invoke todosCRUD POST /todos '{"body": {"team": "React", "todoId": 1, "text": "Learn more Amplify"}}'
+amplify cloud-api invoke todosCRUD POST /todos '{"body": {"team": "React", "todoId": 1, "text": "Learn more Amplify"}}'
 ```
 
 ### Connect to Your Backend
@@ -674,11 +674,11 @@ When you use your app the [Amazon Pinpoint](http://docs.aws.amazon.com/pinpoint/
 
 **To view the analytics using the Amazon Pinpoint console**
 
-1.  Run `npm start`, `awsmobile run`, or `awsmobile publish --test` at least once.
+1.  Run `npm start`, `amplify run`, or `amplify publish --test` at least once.
 2.  Open your project in the [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/).
 
     ```bash
-    awsmobile console
+    amplify console
     ```
 
 3.  Choose the Analytics icon on the left, to navigate to your project in the [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/).
@@ -720,8 +720,8 @@ handleClick = () => {
 **To test:**
 
 1.  Save the changes and run `npm start`,
-    `awsmobile run`, or
-    `awsmobile publish --test` to launch your app. Use your app so that tracked events are triggered.
+    `amplify run`, or
+    `amplify publish --test` to launch your app. Use your app so that tracked events are triggered.
 2.  In the [Amazon Pinpoint
     console](https://console.aws.amazon.com/pinpoint/), choose Events
     near the top.
@@ -742,7 +742,7 @@ AWS Amplify provides hosting for your Web app or static website with Amplify CLI
 Amplify CLI provides a one-line deploy command that pushes your app’s static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app’s loading performance by serving your content to your users from the nearest edge location.
 
 ```bash
-awsmobile publish
+amplify publish
 ```
 
 **About Hosting and Streaming**

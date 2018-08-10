@@ -50,7 +50,7 @@ In this example, AWS Amplify Storage category already knows about the authentica
 Amplify CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
-awsmobile cloud-api enable
+amplify cloud-api enable
 ```
 
 Amplify CLI generates JavaScript files for your app's backend logic, and places them to the appropriate folder structure in your project. 
@@ -60,7 +60,7 @@ Amplify CLI generates JavaScript files for your app's backend logic, and places 
 After working with your backend code, deploying your app backend is very simple with the CLI:
 
 ```bash
-awsmobile push
+amplify push
 ```
 
 #### Manage your Backend with AWS Mobile Hub
@@ -76,7 +76,7 @@ Mix and match building blocks for your app and start working with cloud operatio
 Syncing your latest backend configuration with your local app project is simple with the CLI:
 
 ```bash
-awsmobile pull
+amplify pull
 ```
 
 #### React Native components

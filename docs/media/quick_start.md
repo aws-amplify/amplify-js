@@ -136,16 +136,16 @@ See the [angular guide](https://aws.github.io/aws-amplify/media/angular_guide) f
 
 ## Install Amplify CLI
 
-You will use [awsmobile-cli](https://github.com/aws/awsmobile-cli) to configure your application work with AWS Mobile Hub, a platform for configuring and managing your cloud backend. Also, awsmobile-cli provides utilities for managing your backend, without visiting AWS Mobile Hub console.
+You will use [amplify-cli](https://github.com/aws/amplify-cli) to configure your application work with AWS Mobile Hub, a platform for configuring and managing your cloud backend. Also, amplify-cli provides utilities for managing your backend, without visiting AWS Mobile Hub console.
 
 ```bash
-$ npm install -g awsmobile-cli
+$ npm install -g amplify-cli
 ```
 
-If it is the first time you are using `awsmobile-cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
+If it is the first time you are using `amplify-cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
 
 ```bash
-$ awsmobile configure
+$ amplify configure
 ```
 
 If prompted for credentials, follow the steps provided by the CLI. For more information, see [Provide IAM credentials to Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html){:target="_blank"}.
@@ -166,21 +166,21 @@ You can quickly create your backend from scratch with Automatic Setup, or use Ma
 
 ### Automatic Setup
 
-Automatic setup creates and configures new AWS resources for your backend by using the awsmobile-cli. 
+Automatic setup creates and configures new AWS resources for your backend by using the amplify-cli. 
 
 To start, make sure your app has a folder named `/src`, as this is used by automatic setup for a backend configuration file fetched from your AWS Mobile Hub project:
 ```bash
 $ mkdir src
 ```
 
-`awsmobile init` creates a backend project for your app and pulls the service configuration into your project. App analytics and web hosting are enabled in new projects by default.
+`amplify init` creates a backend project for your app and pulls the service configuration into your project. App analytics and web hosting are enabled in new projects by default.
 
 
 ```bash
-$ awsmobile init <optional-mobile-hub-project-id-for-existing-projects>
+$ amplify init <optional-mobile-hub-project-id-for-existing-projects>
 ```
 
-When you run `awsmobile init` command, you are asked for the details of your project. You can accept the defaults by typing `return` for each question. Automatic setup uses your answers to create your project in AWS Mobile Hub and copy the required configuration file to `src/aws-exports.js`.
+When you run `amplify init` command, you are asked for the details of your project. You can accept the defaults by typing `return` for each question. Automatic setup uses your answers to create your project in AWS Mobile Hub and copy the required configuration file to `src/aws-exports.js`.
 
 
 ```terminal
@@ -190,24 +190,24 @@ Please tell us about your project:
 ? What is your project's build command:  npm run-script build
 ? What is your project's start command for local test run:  npm run-script start
 
-? What awsmobile project name would you like to use:  amplify-start-2018-02-28-14-44-42
+? What amplify project name would you like to use:  amplify-start-2018-02-28-14-44-42
 
 Successfully created AWS Mobile Hub project: amplify-start-2018-02-28-14-44-42
 
-retrieving the latest backend awsmobile project information
-awsmobile project's details logged at: awsmobilejs/#current-backend-info/backend-details.json
-awsmobile project's access information logged at: awsmobilejs/#current-backend-info/aws-exports.js
-awsmobile project's access information copied to: src/aws-exports.js
-awsmobile project's specifications logged at: awsmobilejs/#current-backend-info/mobile-hub-project.yml
+retrieving the latest backend amplify project information
+amplify project's details logged at: amplifyjs/#current-backend-info/backend-details.json
+amplify project's access information logged at: amplifyjs/#current-backend-info/aws-exports.js
+amplify project's access information copied to: src/aws-exports.js
+amplify project's specifications logged at: amplifyjs/#current-backend-info/mobile-hub-project.yml
 contents in #current-backend-info/ is synchronized with the latest in the aws cloud
 ```
 
-Please note that backend resources that are created with `awsmobile init` are copied to *awsmobilejs/#current-backend-info* project folder. When you change your backend configuration and run `awsmobile pull`, the contents of the folder will be updated automatically, and a new copy of the configuration file will be copied to *src/aws-exports.js* folder.
+Please note that backend resources that are created with `amplify init` are copied to *amplifyjs/#current-backend-info* project folder. When you change your backend configuration and run `amplify pull`, the contents of the folder will be updated automatically, and a new copy of the configuration file will be copied to *src/aws-exports.js* folder.
 {: .callout .callout--info}
 
 You can also manually create and modify your AWS resources in the Mobile Hub console, as described in the following section. To integrate any manual backend changes, you must run:
 ```bash
-awsmobile pull
+amplify pull
 ```
 
 This will update your app's `src/aws-exports.js` file. This contains the configuration metadata for your backend resources in Mobile Hub, and should not be modified manually. 
@@ -289,10 +289,10 @@ const aws_exports = require('../../aws-exports').default;
 
 ## Adding Services to Your Backend
 
-You can use the [awsmobile-cli](https://github.com/aws/awsmobile-cli) to manage your AWS backend.The `awsmobile features` command enables or disables services. 
+You can use the [amplify-cli](https://github.com/aws/amplify-cli) to manage your AWS backend.The `amplify features` command enables or disables services. 
 
 ```
-$ awsmobile features    
+$ amplify features    
 ```
 
 ```terminal
@@ -306,10 +306,10 @@ $ awsmobile features
  ◯ appsync
 ```
 
-Remember to use `awsmobile push` to update your backend with the new configuration. This will refresh your `/src/aws-exports.js` file.
+Remember to use `amplify push` to update your backend with the new configuration. This will refresh your `/src/aws-exports.js` file.
 
 ```
-$ awsmobile push     
+$ amplify push     
 ```
 
 ### Accessing AWS Mobile Hub Console
@@ -317,12 +317,12 @@ $ awsmobile push
 You can access your AWS Mobile Hub Console anytime to monitor or modify your AWS backend services. Simply type following command in your project root directory:
 
 ```
-$ awsmobile console
+$ amplify console
 ```
 
 ## Start Monitoring Your App Analytics
 
-To see app analytics data, run `awsmobile console`, choose Analytics in the upper right of the AWS Mobile Hub console, and then Analytics again in the upper left of the [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
+To see app analytics data, run `amplify console`, choose Analytics in the upper right of the AWS Mobile Hub console, and then Analytics again in the upper left of the [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
 
 ![Pinpoint Console]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/pinpoint_dashboard.png)
 
