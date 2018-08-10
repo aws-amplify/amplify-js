@@ -932,7 +932,11 @@ a {
 }
 
 #bottom-section {
-    margin-bottom: 99px;
+    margin-bottom: 100px;
+
+    @media (max-width: 767px) {
+        margin-bottom: 30px;
+    }
 }
 
 body {
@@ -943,7 +947,10 @@ body {
 .install-amplify-cli {
     @media (max-width: 767px) {
         height: 50px;
-        width: 100%;
+        width: 95%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
@@ -1363,12 +1370,20 @@ li {
             line-height: 15px;
             padding: 0 16px !important;
             height: 46px;
+            margin: auto;
+            display: block;
         }
     }
 
     #install-cli-btn {
-        padding: 0 21px 0 21px;
+        padding: 0 21px;
         margin-right: 25px;
+
+        @media (max-width: 767px) {
+            display: inline-block;
+            margin: 0 25px 30px 0 !important;
+            padding: 0 34px !important;
+        }
     }
 
     .container {
@@ -1414,10 +1429,18 @@ li {
                     font-size: 16px;
                     line-height: 24px;
                     margin-bottom: 34px;
+
+                    @media (max-width: 767px) {
+                        margin-bottom: 16px;
+                    }
                 }
             }
 
             .platform-container {
+
+                @media (max-width: 767px) {
+                    margin-bottom: 30px;
+                }
 
                 .platform-box {
                     display: inline-block;
@@ -1456,7 +1479,7 @@ li {
 
                         @media (max-width: 767px) {
                             line-height: 18px;
-                            width: 90%;
+                            width: 85%;
                             letter-spacing: 1.06px;
                         }
                     }
