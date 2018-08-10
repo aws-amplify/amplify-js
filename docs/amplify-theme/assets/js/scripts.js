@@ -369,18 +369,6 @@
 
 	addLineNumbers();
 
-	var setBackgroundImage = function() {
-		const search_box = document.getElementById("search-input-xs");
-		try {
-			search_box.style.backgroundImage = "url('/images/icons/Medium/Search.svg')";
-		} 
-		catch (err) {
-			search_box.style.backgroundImage = "url('amplify-js/images/icons/Medium/Search.svg')";
-		}
-	}
-
-	setBackgroundImage();
-
 	var expandSearchBar = function() {
 		const search_box = document.getElementById("search-input-xs");
 		search_box.classList.add('search-box-expanded');

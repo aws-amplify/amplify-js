@@ -84,3 +84,22 @@
 		</div><!-- /.container -->
 	</header><!-- /.site-header -->
 {% endif %}
+{% if jekyll.environment == 'production' %}
+	<script>
+		var setBackgroundImage = function() {
+			const search_box = document.getElementById("search-input-xs");
+			search_box.style.backgroundImage = "url('/amplify-js/images/icons/Medium/Search.svg')"; 
+		}
+
+		setBackgroundImage();
+	</script>
+{% else %}
+	<script>
+		var setBackgroundImage = function() {
+			const search_box = document.getElementById("search-input-xs");
+			search_box.style.backgroundImage = "url('/images/icons/Medium/Search.svg')"; 
+		}
+
+		setBackgroundImage();
+	</script>
+{% endif %}
