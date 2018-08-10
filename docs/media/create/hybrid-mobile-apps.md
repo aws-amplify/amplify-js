@@ -1,7 +1,7 @@
 ---
-layout: blog-detail
+layout: examples
 ---
-## Hybrid Mobile apps with AWS Amplify
+# Hybrid Mobile apps with AWS Amplify
 
 #### AWS Amplify helps web developers to build cloud-powered hybrid mobile apps quickly.
 

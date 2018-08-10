@@ -1,8 +1,8 @@
 ---
-layout: blog-detail
+layout: examples
 ---
 
-## React Native apps with AWS Amplify
+# React Native apps with AWS Amplify
 
 ### AWS Amplify helps mobile developers to create cloud-powered React Native apps quickly.
 

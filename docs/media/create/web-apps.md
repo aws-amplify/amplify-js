@@ -1,7 +1,7 @@
 ---
-layout: blog-detail
+layout: examples
 ---
-## Web Apps with AWS Amplify
+# Web Apps with AWS Amplify
 
 #### AWS Amplify helps developers to create high-quality web apps quickly
 

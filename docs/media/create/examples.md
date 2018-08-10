@@ -1,7 +1,8 @@
 ---
+layout: examples
 ---
 
-## Code Examples
+# Code Examples
 
 AWS Amplify enables easy integration with cloud backend for common service categories such as authentication, analytics, API and storage as outlined in the [Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/developer_guide). 
 

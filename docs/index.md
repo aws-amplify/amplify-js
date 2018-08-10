@@ -36,10 +36,10 @@ marketing_grid:
     - title: Easy to use declarative API
       excerpt: "Leverage an easy-to-use API for cloud operations. See how you can add common tasks quickly:
                     <ul>
-                        <li><a href='/amplify-js/media/examples#add-authentication-to-your-app'>Authentication</a></li>
-                        <li><a href='/amplify-js/media/examples#store-files-on-the-cloud'>File storage</a></li>
-                        <li><a href='/amplify-js/media/examples#tracking-user-activity-in-your-app'>User activity</a> </li>
-                        <li><a href='/amplify-js/media/examples#signing-http-requests'>Secure API requests</a></li>
+                        <li><a href='/amplify-js/media/create/examples#add-authentication-to-your-app'>Authentication</a></li>
+                        <li><a href='/amplify-js/media/create/examples#store-files-on-the-cloud'>File storage</a></li>
+                        <li><a href='/amplify-js/media/create/examples#tracking-user-activity-in-your-app'>User activity</a> </li>
+                        <li><a href='/amplify-js/media/create/examples#signing-http-requests'>Secure API requests</a></li>
                     </ul>
                 "
 

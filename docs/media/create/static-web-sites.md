@@ -1,7 +1,7 @@
 ---
-layout: blog-detail
+layout: examples
 ---
-## Static Websites with AWS Amplify
+# Static Websites with AWS Amplify
 
 #### Deploy your Static Website with AWS Amplify
 

@@ -282,3 +282,16 @@ defaults:
       path: "" # an empty string here means all files in the project
     values:
       layout: "default"
+
+
+examples:
+  - title: Web apps
+    url: 'web-apps' 
+  - title: React Native apps
+    url: 'react-native-apps'
+  - title: Hybrid Mobile
+    url: 'hybrid-mobile-apps'
+  - title: Static Websites
+    url: 'static-web-sites'
+  - title: Code Examples
+    url: 'examples'
