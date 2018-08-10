@@ -373,82 +373,6 @@ a {
  */
 
 /* ----- General ----- */
-.hero-subheader.cli {
-    background: none;
-    background-color: #31465F;
-
-    .btn {
-        color: #31465F;
-    }
-}
-
-.section-top.cli {
-    .marketing-content {
-        width: 40%;
-        margin-bottom: 50px;
-
-        .marketing-grid__title {
-            color: #232F3E;
-            font-family: "Amazon Ember", "Helvetica", sans-serif;
-            font-size: 21px;
-            font-weight: bold;
-            line-height: 26px;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-        .marketing-grid__excerpt {
-            font-family: "Amazon Ember", "Helvetica", sans-serif;
-            font-size: 16px;
-            line-height: 24px;
-            margin-bottom: 4px;
-        }
-    }   
-
-    .integrate-content {
-        width: 60%;
-        margin-bottom: 50px;
-
-        .marketing-grid__excerpt {
-            font-family: "Amazon Ember", "Helvetica", sans-serif;
-            font-size: 16px;
-            line-height: 24px;
-            margin-bottom: 4px;
-        }
-    }
-
-    .logo-container {
-        display: block;
-        margin-bottom: 30px;
-
-        .logo-box {
-            display: inline-block;
-            margin: 0;
-            text-align: center;
-            width: 19%;
-
-            .logo-title {
-                color: #232F3E;
-                font-family: "Amazon Ember";
-                font-size: 16px;
-                letter-spacing: 1.06px;
-                line-height: 20px;
-                text-align: center;
-            }
-
-            .circle-badge {
-                
-            }
-        }
-    }
-
-    .button-container {
-        display: inline-block;
-        .top-section-btn {
-            margin-bottom: 100px;
-            margin-right: 20px;
-        }
-    }
-}
 .hero-subheader {
 
     @media (max-width: 767px) {
@@ -1743,7 +1667,7 @@ li {
         }
 
         ul:hover {
-            overflow-x: scroll;
+            //overflow-x: scroll;
         }
 
         ul {
@@ -1976,5 +1900,178 @@ li {
                 }
             }
         }
+    }
+}
+
+//=============================================================================
+/***                       new stuff for cli homepage                      ***/
+//=============================================================================
+
+.hero-subheader.cli {
+    background: none;
+    background-color: #31465F;
+
+    .btn {
+        color: #31465F;
+    }
+}
+
+.section-top.cli {
+    .marketing-content {
+        width: 40%;
+        margin-bottom: 50px;
+
+        .marketing-grid__title {
+            color: #232F3E;
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
+            font-size: 21px;
+            font-weight: bold;
+            line-height: 26px;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .marketing-grid__excerpt {
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            margin-bottom: 4px;
+        }
+    }   
+
+    .integrate-content {
+        width: 60%;
+        margin-bottom: 50px;
+
+        .marketing-grid__excerpt {
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            margin-bottom: 4px;
+        }
+    }
+
+    .logo-container {
+        display: block;
+        margin-bottom: 30px;
+
+        .logo-box {
+            display: inline-block;
+            margin: 0;
+            text-align: center;
+            width: 19%;
+
+            .logo-title {
+                color: #232F3E;
+                font-family: "Amazon Ember";
+                font-size: 16px;
+                letter-spacing: 1.06px;
+                line-height: 20px;
+                text-align: center;
+            }
+        }
+    }
+
+    .button-container {
+        display: inline-block;
+        .top-section-btn {
+            margin-bottom: 100px;
+            margin-right: 20px;
+        }
+    }
+
+    #code-window {
+        float: right;
+        position:  relative;
+        width: 390px;
+        bottom: 205px;
+        left: 20px;
+        margin-bottom: -205px;
+    }
+
+    #pages {
+        width: 218px;
+        float: right;
+        position:  relative;
+        bottom: 205px;
+        margin-bottom: -205px;
+
+        @media (max-width: 836px) {
+            bottom: 450px;
+            margin-bottom: -450px;
+        }
+    }
+}
+
+//=============================================================================
+/***                        new stuff for style guide                      ***/
+//=============================================================================
+
+.styleguide-container {
+    background: none;
+    box-shadow: none;
+    padding: 0 !important;
+
+    h1 {
+        font-size: 50px !important;
+    }
+
+    h2 {
+        color: #232F3E !important;
+        font-family: "Amazon Ember" !important;
+        font-size: 40px !important;
+        font-weight: bold !important;
+        line-height: 60px !important;
+    }
+
+    h3 {
+        color: #232F3E !important;
+        font-family: "Amazon Ember" !important;
+        font-size: 21px !important;
+        font-weight: bold !important;
+        line-height: 26px !important;
+    }
+
+    .title {
+        color: #828282;	
+        font-family: "Amazon Ember";	
+        font-size: 12px;	
+        font-weight: bold;	
+        line-height: 15px;
+        display: block;
+    }
+
+    .font-link {
+        color: #828282;	
+        font-family: "Proxima Nova";	
+        font-size: 14px;	
+        font-style: italic;	
+        letter-spacing: 0.49px;	
+        line-height: 16px;
+        display: block;
+    }
+
+    .font-specific {
+        color: #232F3E;
+        font-family: "Amazon Ember";
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: bold;
+        display: block;
+    }
+}
+
+.styleguide-nav {
+    
+    .sections-list {
+        margin-top: 100px;
+    }
+    .style-category {
+        color: #232F3E;
+        font-family: "Amazon Ember";
+        font-size: 28px;
+        font-weight: 300;
+        line-height: 35px;
+        display: block;
+        margin-bottom: 20px;
     }
 }

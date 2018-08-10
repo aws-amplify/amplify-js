@@ -71,7 +71,7 @@ amplify:
             - item_name: Developer Guides
               item_url: '/media/developer_guide'
             - item_name: User Interface
-              item_url: '/media/tutorials'
+              item_url: '/media/ui_library'
             - item_name: API
               item_url: '/api/'
             #- item_name: 
@@ -295,3 +295,16 @@ examples:
     url: 'static-web-sites'
   - title: Code Examples
     url: 'examples'
+
+styleguide:
+  - title: Colors
+    url: '#colors'
+  - title: 'Typography'
+    url: '#typography'
+  - title: 'Controls'
+    url: '#controls'
+  - title: 'Widgets'
+    url: '#widgets'
+  - title: Components
+    url: '#components'
+
