@@ -45,15 +45,5 @@ public class RNPushNotificationModule extends ReactContextBaseJavaModule {
     public void initialize() {
         ReactApplicationContext context = getReactApplicationContext();
         Log.i(LOG_TAG, "initializing RNPushNotificationModule");
-
-        // // get the device token
-        // String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-
-        // // send the token to device emitter
-        // // on register
-        // RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
-        // Bundle bundle = new Bundle();
-        // bundle.putString("refreshToken", refreshedToken);
-        // jsDelivery.emitTokenReceived(bundle);
     }
 }
