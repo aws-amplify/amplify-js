@@ -338,8 +338,7 @@
 	// Hide magnifying glass in search bar
 
 	var hideSearchIcon = function() {
-		let search_box = document.getElementById("search-input-box")
-		let search = document.getElementById("search-input");
+		let search_box = document.getElementById("search-input")
 		search_box.onclick = function() {
 			document.getElementById("search-image").style.display = "none";
 			search.style.outline = "none";
@@ -399,9 +398,9 @@
 	let collapse_search = document.getElementById("collapse-search");
 	let offcanvas_toggle = document.getElementsByClassName("offcanvas-toggle")[0];
 
-	search_box.addEventListener("click", expandSearchBar);
-	collapse_search.addEventListener("click", collapseSearchBar);
-	offcanvas_toggle.addEventListener("click", moveOffCanvasToggle);
+	if (search_box) search_box.addEventListener("click", expandSearchBar);
+	if (collapse_search) collapse_search.addEventListener("click", collapseSearchBar);
+	if (offcanvas_toggle) offcanvas_toggle.addEventListener("click", moveOffCanvasToggle);
 	$('meta[name=viewport]').attr('content', 'width=device-width,initial-scale=1,maximum-scale=1');
 
 }( jQuery ) );

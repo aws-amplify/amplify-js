@@ -49,7 +49,7 @@
 						</a><!-- /.site-header__logo -->
                     {% endif %}
                         <div class="language-selector">
-                            <select>
+                            <select id="language-select">
                                 <option value="javascript">JavaScript</option>
                                 <option value="cli">Amplify CLI</option>
                             </select>
@@ -70,4 +70,26 @@
 			</div><!-- /.row -->
 		</div><!-- /.container -->
 	</header><!-- /.site-header -->
+{% endif %}
+
+{% if jekyll.environment == 'production' %}
+	<script>
+		var setBackgroundImage = function() {
+			const search_box = document.getElementById("language-select");
+			search_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
+			search_box.style.backgroundPosition = "164px 6px";
+		}
+
+		setBackgroundImage();
+	</script>
+{% else %}
+	<script>
+		var setBackgroundImage = function() {
+			const search_box = document.getElementById("language-select");
+			search_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+			search_box.style.backgroundPosition = "164px 6px";
+		}
+
+		setBackgroundImage();
+	</script>
 {% endif %}
