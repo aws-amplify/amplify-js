@@ -29,10 +29,12 @@
 								</div><!-- /.row -->
 								<div>
                                     <a href="/media/cli_guide"> <button class="btn install-amplify-cli" >Install Amplify CLI</button> </a>
-                                    <div id="learn-more-about-cli-box">
-                                        <p id="learn-more-about-cli">Learn more about the CLI</p>
-                                        <img id="down-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
-                                    </div>
+                                    <a href="cli_home">
+                                        <div id="learn-more-about-cli-box">
+                                            <p id="learn-more-about-cli">Learn more about the CLI</p>
+                                            <img id="down-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+                                        </div>
+                                    </a>
 								</div>
 							</div><!-- /.nav-grid -->
 						</div><!-- /.col -->
@@ -66,17 +68,17 @@
                                         <div class="platform-box">
                                             <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/React@1x.png" />
                                             <p class="platform-title">Build with React</p>
-                                            <a href="quick_start"> <button class="btn">Get Started</button> </a>
+                                            <a href="react_guide"> <button class="btn">Get Started</button> </a>
                                         </div>
                                         <div class="platform-box">
                                             <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/ReactNat@1x.png" />
                                             <p class="platform-title">Build with React Native</p>
-                                            <a href="quick_start"> <button class="btn">Get Started</button> </a>
+                                            <a href="react_native_guide"> <button class="btn">Get Started</button> </a>
                                         </div>
                                         <div class="platform-box">
                                             <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Angular@1x.png" />
                                             <p class="platform-title">Build with Angular</p>
-                                            <a href="quick_start"> <button class="btn">Get Started</button> </a>
+                                            <a href="angular_guide"> <button class="btn">Get Started</button> </a>
                                         </div>
                                     </div>
                                 </div><!-- /.row -->
@@ -124,7 +126,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <a href="media/quick_start"> <button class="btn" id="install-cli-btn">Install the CLI</button> </a>
+                                    <a href="/media/cli_guide"> <button class="btn" id="install-cli-btn">Install the CLI</button> </a>
                                     <img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Medium/CommandLine-Icon.svg" />
                                 </div>
                             </div>

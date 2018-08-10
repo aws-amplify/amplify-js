@@ -191,7 +191,13 @@
 	}
 }
 
+button {
+    cursor: pointer;
+}
 
+a {
+    border-bottom: none;
+}
 
 /* ----- Offcanvas ----- */
 .offcanvas {
@@ -1569,6 +1575,7 @@ li {
         display: inline-block;
         margin-left: 50px;
         width: 193px;
+        display: none;
 
         select {
             //background: url("/images/icons/Minis/Arrows.svg") no-repeat;
