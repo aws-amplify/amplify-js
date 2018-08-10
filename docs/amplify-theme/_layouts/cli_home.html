@@ -61,23 +61,23 @@
                 <div class="logo-container">
                 <div class="logo-box">
                     <p class="logo-title">JavaScript</p>
-                    <img class="circle-badge" src="/images/Circle-Badge/JS@1x.png"/>
+                    <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/JS@1x.png"/>
                 </div>
                 <div class="logo-box">
                     <p class="logo-title">React</p>
-                    <img class="circle-badge" src="/images/Circle-Badge/React@1x.png"/>
+                    <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/React@1x.png"/>
                 </div>
                 <div class="logo-box">
                     <p class="logo-title">Angular</p>
-                    <img class="circle-badge" src="/images/Circle-Badge/Angular@1x.png"/>
+                    <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Angular@1x.png"/>
                 </div>
                 <div class="logo-box">
                     <p class="logo-title">iOS</p>
-                    <img class="circle-badge" src="/images/Circle-Badge/Apple@1x.png"/>
+                    <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Apple@1x.png"/>
                 </div>
                 <div class="logo-box">
                     <p class="logo-title">Android</p>
-                    <img class="circle-badge" src="/images/Circle-Badge/Droid@1x.png"/>
+                    <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Droid@1x.png"/>
                 </div>
             </div>
 			</div><!-- /.container -->
