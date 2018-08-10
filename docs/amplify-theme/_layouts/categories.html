@@ -58,7 +58,7 @@
 																{% for item in category.subs %}
 																	<div class="col-xs-12 col-sm-6 col-lg-4">
 																		<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="dev-guide-item">
-																			<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.icon }}"" class="dev-guide-icon" {% if category.title == 'Front End Support' %}id='{{ item.id }}-logo'{% endif %} /> 
+																			<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.icon }}" class="dev-guide-icon" {% if category.title == 'Front End Support' %}id='{{ item.id }}-logo'{% endif %} /> 
 																			<div class="dev-guide-content" data-mh>
 																				<div class="dev-guide-title" >
 																					{{ item.title }}

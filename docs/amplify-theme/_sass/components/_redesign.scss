@@ -320,7 +320,7 @@
     height: 40px;
     background-color: #FF9900;
     border-radius: 100%;
-    background-image: url('/images/icons/Medium/Search.svg');
+    //background-image: url("/images/icons/Medium/Search.svg"),url("/amplify-js/images/icons/Medium/Search.svg");
     background-repeat: no-repeat;
     background-position: 33% 42%;
     transition: all 0.2s !important;
@@ -1492,7 +1492,7 @@ li {
         width: 193px;
 
         select {
-            background: url("{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Minis/Arrows.svg") no-repeat;
+            background: url("{% endif %}/images/icons/Minis/Arrows.svg") no-repeat;
             background-position: 164px 6px;
             filter: brightness(0) invert(1);
             border: 0 !important;                 /*Removes border*/
@@ -1585,7 +1585,7 @@ li {
                 width: 193px;
         
                 select {
-                    background: url("{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Minis/Arrows.svg") no-repeat;
+                    background: url("/images/icons/Minis/Arrows.svg") no-repeat;
                     background-position: 164px 6px;
                     //filter: brightness(0) invert(1);
                     border: 0 !important;                 /*Removes border*/
