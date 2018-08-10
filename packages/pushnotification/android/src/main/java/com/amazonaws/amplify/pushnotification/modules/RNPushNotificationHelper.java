@@ -264,11 +264,7 @@ public class RNPushNotificationHelper {
 
             notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
 
-            Intent intent = new Intent(context, intentClass);
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            bundle.putBoolean("userInteraction", true);
-            intent.putExtra("notification", bundle);
-            intent.setAction(NOTIFICATION_OPENED);
+            Intent intent = new Intent(NOTIFICATION_OPENED);
 
             if (!bundle.containsKey("playSound") || bundle.getBoolean("playSound")) {
                 Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -309,11 +305,11 @@ public class RNPushNotificationHelper {
 
             int notificationID = Integer.parseInt(notificationIdString);
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+            // PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
+            //         PendingIntent.FLAG_UPDATE_CURRENT);
             // broadcast event
-            // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
-            //         PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
             notification.setContentIntent(pendingIntent);
 

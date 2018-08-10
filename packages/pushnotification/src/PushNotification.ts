@@ -19,6 +19,7 @@ const logger = new Logger('Notification');
 const RNPushNotification = NativeModules.RNPushNotification;
 const REMOTE_NOTIFICATION_RECEIVED = 'remoteNotificationReceived';
 const REMOTE_TOKEN_RECEIVED = 'remoteTokenReceived';
+const REMOTE_NOTIFICATION_OPENED = 'remoteNotificationOpened';
 
 export default class PushNotification {
     private _config;
@@ -33,6 +34,7 @@ export default class PushNotification {
         this.handlers = [];
         this.updateEndpoint = this.updateEndpoint.bind(this);
         this.handleCampaignPush = this.handleCampaignPush.bind(this);
+        this.recordNotificationOpened = this.recordNotificationOpened.bind(this);
     }
 
     getModuleName() {
@@ -65,6 +67,15 @@ export default class PushNotification {
         }
     }
 
+    onNotificationOpened(handler) {
+        if (typeof handler === 'function') {
+            // check platform
+            if ( Platform.OS === 'android' ) {
+                this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, handler);   
+            }
+        }
+    }
+
     onRegister(handler) {
         if (typeof handler === 'function') {
             // check platform
@@ -78,6 +89,7 @@ export default class PushNotification {
 
     initializeAndroid() {
         this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
+        this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, this.recordNotificationOpened);
         this.addEventListenerForAndroid(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
         RNPushNotification.initialize();
     }
@@ -121,6 +133,10 @@ export default class PushNotification {
         } else {
             logger.debug('Analytics module is not registered into Amplify');
         }
+    }
+
+    recordNotificationOpened(data) {
+        logger.debug('data in the recordNotificationOpened', data);
     }
 
     updateEndpoint(token) {
@@ -170,6 +186,10 @@ export default class PushNotification {
                 handler(dataObj.refreshToken);
                 return;
             }
+            if (event === REMOTE_NOTIFICATION_OPENED) {
+                handler(that.parseMessagefromAndroid(data, 'opened'));
+                return;
+            }
         });
     }
 
@@ -185,10 +205,21 @@ export default class PushNotification {
         }
     }
 
-    parseMessagefromAndroid(message) {
-        const dataObj = message.dataJSON? JSON.parse(message.dataJSON) : null;
+    parseMessagefromAndroid(message, from?) {
+        let dataObj = null;
+        try {
+            dataObj = message.dataJSON? JSON.parse(message.dataJSON) : null;
+        } catch (e) {
+            logger.debug('Failed to parse the data object', e);
+            return;
+        }
+
         if (!dataObj) {
             logger.debug('no notification payload received');
+            return dataObj;
+        }
+
+        if (from === 'opened') {
             return dataObj;
         }
 
