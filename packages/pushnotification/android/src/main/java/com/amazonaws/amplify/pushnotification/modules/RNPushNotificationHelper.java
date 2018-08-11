@@ -265,6 +265,9 @@ public class RNPushNotificationHelper {
             notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
 
             Intent intent = new Intent(NOTIFICATION_OPENED);
+            intent.putExtra("notification", bundle);
+
+            Log.i(LOG_TAG, "sendNotification: " + intent);
 
             if (!bundle.containsKey("playSound") || bundle.getBoolean("playSound")) {
                 Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -307,7 +310,6 @@ public class RNPushNotificationHelper {
 
             // PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
             //         PendingIntent.FLAG_UPDATE_CURRENT);
-            // broadcast event
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
                         PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -352,6 +354,10 @@ public class RNPushNotificationHelper {
                 }
             }
 
+            // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
+            //         PendingIntent.FLAG_UPDATE_CURRENT);
+
+        
             // Remove the notification from the shared preferences once it has been shown
             // to avoid showing the notification again when the phone is rebooted. If the
             // notification is not removed, then every time the phone is rebooted, we will

@@ -51,6 +51,16 @@ public class RNPushNotificationJsDelivery {
         sendEvent("remoteTokenReceived", params);
     }
 
+    public void emitNotificationOpened(Bundle bundle) {
+        String bundleString = RNPushNotificationCommon.convertJSON(bundle);
+
+        WritableMap params = Arguments.createMap();
+        params.putString("dataJSON", bundleString);
+
+        Log.i("emit", "notification opened: " + bundle);
+        sendEvent("remoteNotificationOpened", params);
+    }
+
     private void sendEvent(String eventName, Object params) {
             if (context.hasActiveCatalystInstance()) {
                 context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
