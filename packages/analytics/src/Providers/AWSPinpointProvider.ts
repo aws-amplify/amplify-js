@@ -168,7 +168,29 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const timestamp = new Date().getTime();
 
         Object.assign(params, { timestamp, config: this._config, credentials });
-        return this._putToBuffer(params);
+        // temporary solution, will refactor in the future
+        if (params.event.immediate) {
+            return this._send(params);
+        } else {
+            return this._putToBuffer(params);
+        }
+    }
+
+    private async _send(params) {
+        const { event, config } = params;
+         const { appId, region } = config;
+        const cacheKey = this.getProviderName() + '_' + appId;
+        config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
+         switch (event.name) {
+            case '_session_start':
+                return this._startSession(params);
+            case '_session_stop':
+                return this._stopSession(params);
+            case '_update_endpoint':
+                return this._updateEndpoint(params);
+            default:
+                return this._recordCustomEvent(params);
+        }
     }
 
     /**
