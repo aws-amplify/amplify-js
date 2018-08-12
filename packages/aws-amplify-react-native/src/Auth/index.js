@@ -94,6 +94,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
                 hideDefault={authenticatorComponents.length > 0}
                 onStateChange={this.handleAuthStateChange}
                 children={authenticatorComponents}
+                authState={authState}
             />
         }
     }
