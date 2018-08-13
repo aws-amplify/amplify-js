@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { AuthenticatorComponent } from '../../../components/authenticator/index';
+import { AuthenticatorComponent } from '../../../components/authenticator/authenticator/authenticator.factory';
 import { AmplifyAngularModule } from '../../../aws-amplify-angular.module';
 import { AmplifyIonicModule } from '../../../aws-amplify-ionic-module';
 
@@ -47,7 +47,7 @@ describe('AuthenticatorComponent: ', () => {
 
   it('...should have a loadComponent function', () => {
     expect(component.loadComponent).toBeTruthy();
-  });
+  }); 
 
   it('...should have a sign-in component', () => {
     expect(testHostFixture.nativeElement.querySelector('amplify-auth-sign-in-core')).toBeTruthy();

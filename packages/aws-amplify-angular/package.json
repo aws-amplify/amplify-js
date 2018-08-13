@@ -16,6 +16,11 @@
     "minify-angular": "uglifyjs dist/bundles/aws-amplify-angular-only.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular-only.umd.min.js",
     "build-test": "npm run transpile && npm run package && npm run minify-dual && npm run minify-angular"
   },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!@ionic|(?!ionic|ionic)"
+    ]
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {
