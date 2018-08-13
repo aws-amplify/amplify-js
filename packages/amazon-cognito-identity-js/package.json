@@ -62,7 +62,7 @@
   "types": "./index.d.ts",
   "dependencies": {
     "buffer": "4.9.1",
-    "crypto-browserify": "1.0.9",
+    "amplify-crypto-browserify": "1.0.10",
     "js-cookie": "^2.1.4"
   },
   "devDependencies": {
