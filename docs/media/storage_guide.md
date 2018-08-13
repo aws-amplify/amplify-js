@@ -79,6 +79,7 @@ Following steps will enable your CORS Policy:
     <ExposeHeader>x-amz-server-side-encryption</ExposeHeader>
     <ExposeHeader>x-amz-request-id</ExposeHeader>
     <ExposeHeader>x-amz-id-2</ExposeHeader>
+    <ExposeHeader>ETag</ExposeHeader>
     <AllowedHeader>*</AllowedHeader>
 </CORSRule>
 </CORSConfiguration>
