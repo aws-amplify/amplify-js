@@ -676,8 +676,9 @@ class MyApp extends React.Component {
 export default withOAuth(MyApp);
 ``` 
 
-#### Handling return from successful hosted UI authentication
-You can use the [Hub module]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/hub_guide#listening-authentication-events) to listen on those events.
+#### Handling Authentication Events
+
+When using the hosted UI, you can handle authentication events by creating event listeners with the [Hub module]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/hub_guide#listening-authentication-events).
     
 ### Enabling MFA
 
