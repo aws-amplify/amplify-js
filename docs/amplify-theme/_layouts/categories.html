@@ -46,7 +46,7 @@
 										{% for category in site.category_list %}
 											{% if category.title contains "Setup & Installation" %}
 											{% else %}
-												<div class="section-top section-top-category">
+												<div class="section-top section-top-category" {% if category.title == 'Front End Support' %}id="bottom-section"{% endif %}>
 													<div class="container">
 															<div class="header">
 																{{ category.title}}

@@ -338,6 +338,12 @@ a {
     border: none;
 }
 
+.docs-search-xs {
+    background-color: #F4F4F4 !important;
+    background-position: 48% 48% !important;
+    color: #828282 !important;
+}
+
 #search-input-xs:focus {
     outline: none;
 }
@@ -349,8 +355,7 @@ a {
     transition: all 0.2s !important;
     background-image: none !important;
     padding: 3px 3px 3px 10px !important;
-    color: white !important;
-    font-family: "Amazon Ember", "Helvetica", sans-serif !important;
+    color: white;
     font-size: 16px !important;
 }
 
@@ -1202,11 +1207,16 @@ li {
 
             @media (max-width: 767px) {
                 margin-top: 0;
+                padding: 0;
             }
         }
 
         .subheader {
             padding: 0 20px;
+
+            @media (max-width: 767px) {
+                padding: 0;
+            }
         }
 
         .container {
@@ -1219,6 +1229,7 @@ li {
 
                 @media (max-width: 767px) {
                     margin-bottom: 0 !important;
+                    padding-bottom: 30px;
                 }
             }
         }
@@ -1226,6 +1237,10 @@ li {
         .col-xs-12 {
             margin-top: 2%;
             padding: 0 20px;
+
+            @media (max-width: 767px) {
+                padding: 0;
+            }
         }
 
         .dev-guide-item {
@@ -1236,11 +1251,23 @@ li {
             width: 100%;
             height: 180px;
 
+            @media (max-width: 767px) {
+                height: auto;
+                padding: 13px 0 12px 10px;
+            }
+
             .dev-guide-icon {
                 width: 31px;
                 position: absolute;
                 top: 10px;
                 right: 32px;
+
+                @media (max-width: 767px) {
+                    height: 19px;
+                    width: 18px;
+                    top: 6px;
+                    right: 6px;
+                }
             }
 
             .dev-guide-logo {
@@ -1255,6 +1282,10 @@ li {
                 margin-bottom: 20px;
                 width: 94%;
 
+                @media (max-width: 767px) {
+                    margin-bottom: 0;
+                }
+
                 .dev-guide-title {
                     color: #FF9900;
                     font-family: "Amazon Ember", "Helvetica", sans-serif;
@@ -1262,6 +1293,11 @@ li {
                     font-weight: bold;
                     line-height: 25px;
                     margin-bottom: 13px;
+
+                    @media (max-width: 767px) {
+                        font-size: 16px;
+                        line-height: 20px;
+                    }
                 }
 
                 .dev-guide-excerpt {
@@ -1269,6 +1305,11 @@ li {
                     font-family: "Amazon Ember", "Helvetica", sans-serif;
                     font-size: 14px;
                     line-height: 18px;
+
+                    @media (max-width: 767px) {
+                        font-size: 12px;
+                        line-height: 15px;
+                    }
                 }
             }
 
@@ -1286,36 +1327,70 @@ li {
                     line-height: 16px;
                     position: absolute;
                     bottom: 23px;
+
+                    @media (max-width: 767px) {
+                        display: none;
+                    }
                 }
             }
             #angular-logo {
                 width: 58px;
                 top: 0;
                 right: 19px;
+
+                @media (max-width: 767px) {
+                    right: 0;
+                    width: 40px;
+                    height: auto;
+                }
             }
 
             #react-logo {
                 width: 54px;
                 top: 6px;
                 right: 24px;
+
+                @media (max-width: 767px) {
+                    right: 2px;
+                    width: 36px;
+                    height: auto;
+                }
             }
 
             #react-native-logo {
                 width: 54px;
                 top: 6px;
                 right: 24px;
+
+                @media (max-width: 767px) {
+                    right: 2px;
+                    width: 36px;
+                    height: auto;
+                }
             }
 
             #vuejs-logo {
                 width: 43px;
                 top: 8px;
                 right: 26px;
+
+                @media (max-width: 767px) {
+                    right: 0;
+                    width: 40px;
+                    height: auto;
+                }
             }
 
             #ionic-logo {
                 width: 43px;
                 top: 8px;
                 right: 26px;
+
+                @media (max-width: 767px) {
+                    right: 0;
+                    width: 40px;
+                    height: auto;
+                }
             }
         }
     }
@@ -1530,7 +1605,7 @@ li {
 
         select {
             //background: url("/images/icons/Minis/Arrows.svg") no-repeat;
-            background-position: 164px 6px;
+            background-position: 164px 3px;
             filter: brightness(0) invert(1);
             border: 0 !important;                 /*Removes border*/
             -webkit-appearance: none;             /*Removes default chrome and safari style*/
@@ -1556,6 +1631,10 @@ li {
     max-width: 90%;
     margin: auto;
 
+    @media (max-width: 767px) {
+        max-width: 95%;              
+    }
+
     .section-top {
         margin-top: 60px;
     }
@@ -1580,6 +1659,10 @@ li {
         position: -webkit-sticky;
         top: 0;
         margin-top: 60px;
+
+        @media (max-width: 767px) {
+            margin-top: 20px;
+        }
 
         .in-this-page {
             margin-top: 10px;
@@ -1623,7 +1706,7 @@ li {
         
                 select {
                     background: url("/images/icons/Minis/Arrows.svg") no-repeat;
-                    background-position: 164px 6px;
+                    background-position: 164px 3px;
                     //filter: brightness(0) invert(1);
                     border: 0 !important;                 /*Removes border*/
                     -webkit-appearance: none;             /*Removes default chrome and safari style*/
@@ -1852,7 +1935,14 @@ li {
     .docs-container {
         float: right;
         width: calc(100% - 280px);
-        padding: 53px 65px 53px 65px;
+        padding: 53px 65px;
+
+        @media (max-width: 767px) {
+            float: left;
+            width: 100%;
+            padding: 36px 20px;
+            max-width: 100% !important;
+        }
 
         .content {
 
@@ -1868,6 +1958,12 @@ li {
                 line-height: 53px;
                 margin: 0;
                 margin-bottom: 40px;
+
+                @media (max-width: 767px) {
+                    font-size: 30px;
+                    line-height: 34px;
+                    margin-bottom: 28px;
+                }
             }
 
             p {
@@ -1875,6 +1971,11 @@ li {
                 font-family: "Amazon Ember", "Helvetica", sans-serif;
                 font-size: 16px;
                 line-height: 24px;
+
+                @media (max-width: 767px) {
+                    font-size: 14px;
+                    line-height: 20px;
+                }
             }
 
             h2 {
@@ -1895,6 +1996,11 @@ li {
                 font-size: 21px;
                 font-weight: bold;
                 line-height: 26px;
+
+                @media (max-width: 767px) {
+                    font-size: 18px;
+                    line-height: 23px;
+                }
             }
 
             pre {

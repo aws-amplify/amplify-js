@@ -39,12 +39,12 @@
 			<div class="row">
 				<div>
 					{% if site.amplify.header.logo.text %}
-						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo" id="logo-container">
 							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Amplify-Logo-White.svg">
 							<p class="header-amplify docs-header-amplify">{{ site.amplify.header.logo.text }}</p>
 						</a>
 					{% elsif site.amplify.header.logo.image %}
-						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo" id="logo-container">
 							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/logo.png">
 						</a><!-- /.site-header__logo -->
                     {% endif %}
@@ -60,6 +60,8 @@
 								<input placeholder="   Search Docs" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/Search.svg"></input>
 							</li>
 						</ul><!-- /.site-header__nav -->
+						<input type="text" id="search-input-xs" class="visible-xs docs-search-xs"></input>
+						<button id="collapse-search">Cancel</button>
 						<button class="offcanvas-toggle visible-xs">
 							<span></span>
 							<span></span>
@@ -77,7 +79,7 @@
 		var setBackgroundImage = function() {
 			const search_box = document.getElementById("language-select");
 			search_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
-			search_box.style.backgroundPosition = "164px 6px";
+			search_box.style.backgroundPosition = "164px 3px";
 		}
 
 		setBackgroundImage();
@@ -87,7 +89,29 @@
 		var setBackgroundImage = function() {
 			const search_box = document.getElementById("language-select");
 			search_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
-			search_box.style.backgroundPosition = "164px 6px";
+			search_box.style.backgroundPosition = "164px 3px";
+		}
+
+		setBackgroundImage();
+	</script>
+{% endif %}
+
+
+
+{% if jekyll.environment == 'production' %}
+	<script>
+		var setBackgroundImage = function() {
+			const search_box = document.getElementById("search-input-xs");
+			search_box.style.backgroundImage = "url('/amplify-js/images/layout/Search.svg')"; 
+		}
+
+		setBackgroundImage();
+	</script>
+{% else %}
+	<script>
+		var setBackgroundImage = function() {
+			const search_box = document.getElementById("search-input-xs");
+			search_box.style.backgroundImage = "url('/images/layout/Search.svg')"; 
 		}
 
 		setBackgroundImage();
