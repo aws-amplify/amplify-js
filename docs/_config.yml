@@ -113,6 +113,7 @@ category_list:
     - category: SetupAndInstallation
       title: Setup & Installation
       excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+      base_url: 'quick_start'
       subs:
         - title: Quick Start
           excerpt: quick start excerpt
@@ -125,6 +126,7 @@ category_list:
     - category: CloudFeatures
       title: Cloud Features
       excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+      base_url: 'analytics_guide'
       subs:
         - title: Analytics 
           excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
@@ -215,6 +217,7 @@ category_list:
     - category: UtilityModules
       title: Utility Modules
       excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+      base_url: 'cache_guide'
       subs:
         - title: Cache 
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
@@ -241,9 +244,10 @@ category_list:
           cta: Read more
           url: 'service_workers_guide'   
           icon: '/images/icons/Misc/Present.svg'     
-    - category: Front End Support
+    - category: FrontEndSupport
       title: Front End Support
       excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+      base_url: 'angular_guide'
       subs:
         - title: Angular 
           excerpt: AWS Amplify provides Angular Components with aws-amplify-angular npm package.

@@ -178,6 +178,9 @@
 	var generateList = function( list, isFirstLevel ) {
 		var $ul = $( '<ul></ul>' );
 		$ul.addClass( 'level-' + list[ 0 ].level );
+		if (list[ 0 ].level > 2) {
+			$ul.addClass( 'hidden-xs' );
+		}
 
 		if ( true === isFirstLevel ) {
 			$ul.addClass( 'nav first-level' );

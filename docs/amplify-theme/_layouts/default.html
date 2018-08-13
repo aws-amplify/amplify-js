@@ -35,13 +35,23 @@
 								</select>
 							</div>
 						</div>
+						<div class="version-section visible-xs">
+							<p>View Section</p>
+							<div class="version-selector">
+								<select onchange="location = this.value" id="section-select">
+									{% for category in site.category_list %}
+										<option value={{ category.base_url }}>{{ category.title }}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
 						<div class="sections-list-wrapper">
-							<div class="sections-list js-affix js-scrollspy hidden-xs">
+							<div class="sections-list js-affix js-scrollspy">
 								<div class="dev-guide"> 
 									{% if site.category_list %}
 										{% for category in site.category_list %}
-										<div class="left-nav-section">
-											<p class="gray-section-head">{{ category.title }}</p>
+										<div class="left-nav-section" id="{{ category.category }}">
+											<p class="gray-section-head hidden-xs">{{ category.title }}</p>
 											<div class="feature-list">
 												{% for item in category.subs %}
 													{% if page.url contains item.url %}
@@ -104,4 +114,24 @@
 			{% include site-footer.html %}
 		</div><!-- /.js-footer-area -->
 	</body>
+	<script>
+		if (window.innerWidth < 767) 
+		{	let flag;
+			{% for category in site.category_list %}
+				flag = false;
+				{% for item in category.subs %}
+					{% if page.url contains item.url %}
+						flag = true;
+					{% endif %}
+				{% endfor %}
+				if (flag) {
+					document.getElementById("{{ category.category }}").classList.add('visible-xs');
+					document.getElementById("section-select").value = "{{ category.base_url }}";
+				}
+				else {
+					document.getElementById("{{ category.category }}").classList.add('hidden-xs');
+				}
+			{% endfor %}
+		}
+	</script>
 </html>

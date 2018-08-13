@@ -1676,6 +1676,10 @@ li {
             overflow-y: scroll;
             max-height: 90vh;
             background: none;
+
+            @media (max-width: 767px) {
+                margin-top: 0;
+            }
             
             ul li {
                 border: none;
@@ -1687,6 +1691,10 @@ li {
         }
 
         .version-section {
+
+            @media (max-width: 767px) {
+                margin-bottom: 20px;
+            }
 
             p {
                 color: #152939;
@@ -1703,6 +1711,10 @@ li {
                 background-color: #FFFFFF;
                 display: inline-block;
                 width: 193px;
+
+                @media (max-width: 767px) {
+                    width: 274px;
+                }
         
                 select {
                     background: url("/images/icons/Minis/Arrows.svg") no-repeat;
@@ -1720,6 +1732,11 @@ li {
                     font-size: 14px;
                     letter-spacing: 0.4px;
                     line-height: 17px;
+
+                    @media (max-width: 767px) {
+                        padding: 12px;
+                        background-position: 240px 5px;
+                    }
                 }
             }
         }
@@ -1791,6 +1808,11 @@ li {
                 max-width: 240px;
                 display: block;
                 //overflow-x: scroll !important;
+
+                @media (max-width: 767px) {
+                    font-weight: normal;
+                    line-height: 20px;
+                }
             }
 
             ul {
@@ -1883,7 +1905,7 @@ li {
     
                 a {
                     @include link-reset;
-                    font-size:0.9rem;
+                    //font-size:0.9rem;
                     padding-left: 10px;
                     white-space: nowrap;
                     overflow: hidden;
@@ -1893,6 +1915,12 @@ li {
                     }
                 }
     
+            }
+
+            .level-2 {
+                @media (max-width: 767px) {
+                    border-left: 1px solid #CCCCCC;
+                }
             }
     
             /*.level-2 {
