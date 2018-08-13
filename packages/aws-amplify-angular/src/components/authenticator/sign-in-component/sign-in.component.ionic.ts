@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { SignInComponentCore } from './sign-in.component.core';
-// import { includes } from '../common';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
