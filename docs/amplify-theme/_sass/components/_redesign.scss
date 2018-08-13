@@ -319,8 +319,12 @@ a {
     }
 }
 
+.algolia-autocomplete {
+    position: static !important;
+}
+
 #search-input-xs {
-    position: absolute;
+    position: absolute !important;
     right: 10px;
     top: 10px;
     width: 40px;
