@@ -136,13 +136,13 @@ See the [angular guide](https://aws.github.io/aws-amplify/media/angular_guide) f
 
 ## Install Amplify CLI
 
-You will use [amplify-cli](https://github.com/aws/amplify-cli) to configure your application work with AWS Mobile Hub, a platform for configuring and managing your cloud backend. Also, amplify-cli provides utilities for managing your backend, without visiting AWS Mobile Hub console.
+You will use [@aws-amplify/cli](https://github.com/aws/amplify-cli) to configure your application work with AWS Mobile Hub, a platform for configuring and managing your cloud backend. Also, @aws-amplify/cli provides utilities for managing your backend, without visiting AWS Mobile Hub console.
 
 ```bash
-$ npm install -g amplify-cli
+$ npm install -g @aws-amplify/cli
 ```
 
-If it is the first time you are using `amplify-cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
+If it is the first time you are using `@aws-amplify/cli, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
 
 ```bash
 $ amplify configure
@@ -166,7 +166,7 @@ You can quickly create your backend from scratch with Automatic Setup, or use Ma
 
 ### Automatic Setup
 
-Automatic setup creates and configures new AWS resources for your backend by using the amplify-cli. 
+Automatic setup creates and configures new AWS resources for your backend by using the @aws-amplify/cli. 
 
 To start, make sure your app has a folder named `/src`, as this is used by automatic setup for a backend configuration file fetched from your AWS Mobile Hub project:
 ```bash
@@ -289,7 +289,7 @@ const aws_exports = require('../../aws-exports').default;
 
 ## Adding Services to Your Backend
 
-You can use the [amplify-cli](https://github.com/aws/amplify-cli) to manage your AWS backend.The `amplify features` command enables or disables services. 
+You can use the [@aws-amplify/cli](https://github.com/aws/amplify-cli) to manage your AWS backend.The `amplify features` command enables or disables services. 
 
 ```
 $ amplify features    

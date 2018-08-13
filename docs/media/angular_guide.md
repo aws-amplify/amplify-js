@@ -31,7 +31,7 @@ To configure your app for AWS Amplify, you need to create a backend configuratio
 Following commands will enable Auth category and will create `aws-exports.js` configuration file under your projects `/src` folder. 
 
 ```bash
-$ npm install -g amplify-cli
+$ npm install -g @aws-amplify/cli
 $ amplify init
 $ amplify user-signin enable
 $ amplify user-files enable

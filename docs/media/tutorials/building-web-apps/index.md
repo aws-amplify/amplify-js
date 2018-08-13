@@ -20,7 +20,7 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
 3.  Install Amplify CLI
 
     ```bash
-    npm install -g amplify-cli
+    npm install -g @aws-amplify/cli
     ```
 
 4.  Configure the CLI with your AWS credentials

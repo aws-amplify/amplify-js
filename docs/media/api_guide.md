@@ -23,7 +23,7 @@ Amazon Cognito Identity Pool is required to have access to the API using *Amazon
 To create a fully functioning project with the API category, run following commands in the **root directory** of your project:
 
 ```bash
-$ npm install -g amplify-cli
+$ npm install -g @aws-amplify/cli
 $ cd my-app #Change to your project's root folder
 $ amplify init
 $ amplify cloud-api enable

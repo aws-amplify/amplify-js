@@ -17,7 +17,7 @@ The default implementation of the Storage module leverages [Amazon S3](https://a
 To create a project fully functioning with the Storage category.
 
 ```bash
-$ npm install -g amplify-cli
+$ npm install -g @aws-amplify/cli
 $ cd my-app #Change to your project's root folder
 $ amplify init
 $ amplify user-files enable

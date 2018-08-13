@@ -24,7 +24,7 @@ Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'pro
 To create a project fully functioning with the Auth category.
 
 ```bash
-$ npm install -g amplify-cli
+$ npm install -g @aws-amplify/cli
 $ cd my-app #Change to your project's root folder
 $ amplify init
 $ amplify user-signin enable

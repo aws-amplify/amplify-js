@@ -21,7 +21,7 @@ In your app start point, normally index.js, or App.js, add these lines:
 
 ```js
 import Amplify from 'aws-amplify';
-// Provided by amplify-cli or downloaded from the console,
+// Provided by @aws-amplify/cli or downloaded from the console,
 // this assumes your aws-exports.js is in the same directory.
 import aws_exports from './aws-exports';
 

@@ -3,13 +3,13 @@
 
 # Hosting
 
-AWS Amplify provides hosting for your Web app or static website with Amplify CLI. You can use [amplify-cli](https://github.com/aws/amplify-cli) to create a new web project and deploy it for hosting and streaming.  
+AWS Amplify provides hosting for your Web app or static website with Amplify CLI. You can use [@aws-amplify/cli](https://github.com/aws/amplify-cli) to create a new web project and deploy it for hosting and streaming.  
 
 ```bash
-$ npm install -g amplify-cli
+$ npm install -g @aws-amplify/cli
 ```
 
-If it is the first time you are using `amplify-cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
+If it is the first time you are using `@aws-amplify/cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
 
 ```bash
 $ amplify configure

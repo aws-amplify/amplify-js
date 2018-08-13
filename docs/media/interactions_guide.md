@@ -46,7 +46,7 @@ Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'pro
 Run following CLI commands to get your chatbox configuration to your local development environment. You will need your app's Mobile Hub project ID.
 
 ```bash
-$ npm install -g amplify-cli
+$ npm install -g @aws-amplify/cli
 $ cd my-app #Change to your project's root folder
 $ amplify init xxxx-yyyy-4491-bd6e-256d74e2b451 # Use your AWS Mobile Hub project ID
 ```

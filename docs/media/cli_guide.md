@@ -3,13 +3,13 @@
 
 ## Amplify CLI  
 
-AWS Amplify connects to AWS Mobile Hub to work with Amazon Web Services. You can use [amplify-cli](https://github.com/aws/amplify-cli) to create a new AWS Mobile Hub project or enable an existing project to work with AWS Mobile Hub. 
+AWS Amplify connects to AWS Mobile Hub to work with Amazon Web Services. You can use [@aws-amplify/cli](https://github.com/aws/amplify-cli) to create a new AWS Mobile Hub project or enable an existing project to work with AWS Mobile Hub. 
 
 ```bash
-$ npm install -g amplify-cli
+$ npm install -g @aws-amplify/cli
 ```
 
-If it is the first time you are using `amplify-cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
+If it is the first time you are using `@aws-amplify/cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
 
 ```bash
 $ amplify configure

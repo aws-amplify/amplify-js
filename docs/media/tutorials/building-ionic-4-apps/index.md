@@ -619,7 +619,7 @@ This section will introduce you to  Amplify CLI and you'll learn how to create b
 
 To install the CLI, execute:
 ```bash
-npm install -g amplify-cli
+npm install -g @aws-amplify/cli
 ```
 
 ##  Configuring the CLI with IAM user 

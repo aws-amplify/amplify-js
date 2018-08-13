@@ -15,10 +15,10 @@ Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'pro
 
 #### Automated Setup
 
-Automated Setup works with `amplify-cli` to create your analytics backend. After configuring your backend, you can create a project with fully functioning Analytics category.
+Automated Setup works with `@aws-amplify/cli` to create your analytics backend. After configuring your backend, you can create a project with fully functioning Analytics category.
 
 ```bash
-$ npm install -g amplify-cli
+$ npm install -g @aws-amplify/cli
 ```
 
 You should run all `amplify` commands at *root folder* of your project.
