@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.21-unstable.3"></a>
+## [2.0.21-unstable.3](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.21-unstable.2...amazon-cognito-identity-js@2.0.21-unstable.3) (2018-08-13)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** throw network error if in the offline ([d5808f1](https://github.com/aws/aws-amplify/commit/d5808f1))
+
+
+
+
+<a name="2.0.21-unstable.2"></a>
+## [2.0.21-unstable.2](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.21-unstable.1...amazon-cognito-identity-js@2.0.21-unstable.2) (2018-08-09)
+
+
+
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
 <a name="2.0.21-unstable.1"></a>
 ## [2.0.21-unstable.1](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.21-unstable.0...amazon-cognito-identity-js@2.0.21-unstable.1) (2018-08-07)
 

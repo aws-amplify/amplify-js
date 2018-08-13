@@ -41,8 +41,7 @@ export default class Client {
       .then(resp => {
         response = resp;
         return resp;
-      })
-      .catch(err => {
+      }, err => {
         // If error happens here, the request failed
         // if it is TypeError throw network error
         if (err instanceof TypeError) {
@@ -50,20 +49,7 @@ export default class Client {
         }
         throw err;
       })
-      .then(resp => resp.json())
-      .catch(err => {
-        // If error happens here
-        // cannot parse the body stream, return undefined
-        if (response.ok) return callback(null, undefined);
-        else {
-          const error = {
-            code: response.status, 
-            statusCode: response.status,
-            message: response.statusText
-          }
-          callback(error);
-        }
-      })
+      .then(resp => resp.json().catch(() => ({})))
       .then(data => {
         // return parsed body stream
         if (response.ok) return callback(null, data);
