@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMountMap } from '../../component.mount';
+import { ComponentMount }      from '../../component.mount';
 import { ChatBotClass } from './chatbot.class';
-// import { ChatbotComponentIonic } from './chatbot.component.ionic'
-// import { ChatbotComponentCore } from './chatbot.component.core';
+import { ChatbotComponentIonic } from './chatbot.component.ionic'
+import { ChatbotComponentCore } from './chatbot.component.core';
 
 @Component({
   selector: 'amplify-interactions',
@@ -39,7 +39,7 @@ export class ChatBotComponent implements OnInit, OnDestroy {
       clearComplete: this.clearComplete
     }
 
-    let interactionComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? ComponentMountMap('chatobotIonic', interactionParams) : ComponentMountMap('chatbotCore', interactionParams);
+    let interactionComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ChatbotComponentIonic, interactionParams) : new ComponentMount(ChatbotComponentCore, interactionParams);
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(interactionComponent.component);
 

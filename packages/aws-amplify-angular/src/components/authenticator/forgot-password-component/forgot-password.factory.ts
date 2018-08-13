@@ -1,9 +1,11 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMountMap } from '../../component.mount';
+import { ComponentMount }      from '../../component.mount';
 import { ForgotPasswordClass } from './forgot-password.class';
-import { AuthState } from '../../../providers/auth.state';
+import { ForgotPasswordComponentIonic } from './forgot-password.component.ionic'
+import { ForgotPasswordComponentCore } from './forgot-password.component.core';
+import { AuthState } from '../../../providers';
 
 @Component({
   selector: 'amplify-auth-forgot-password',
@@ -28,7 +30,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? ComponentMountMap('forgotPasswordIonic',{authState: this.authState}) : ComponentMountMap('forgotPasswordCore', {authState: this.authState});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ForgotPasswordComponentIonic,{authState: this.authState}) : new ComponentMount(ForgotPasswordComponentCore, {authState: this.authState});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

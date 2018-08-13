@@ -1,6 +1,5 @@
 import { NgModule , forwardRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 
 import { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
 import { AuthenticatorComponentCore } from './components/authenticator/authenticator/authenticator.component.core';
@@ -62,7 +61,6 @@ const importables = [
 @NgModule({
   imports: [
     CommonModule,
-    IonicModule,
   ],
   declarations: [
     DynamicComponentDirective,

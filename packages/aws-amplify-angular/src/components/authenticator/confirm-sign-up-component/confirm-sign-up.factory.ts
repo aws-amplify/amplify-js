@@ -1,11 +1,11 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMountMap } from '../../component.mount';
+import { ComponentMount }      from '../../component.mount';
 import { ConfirmSignUpClass } from './confirm-sign-up.class';
-// import { ConfirmSignUpComponentIonic } from './confirm-sign-up.component.ionic'
-// import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
-import { AuthState } from '../../../providers/auth.state';
+import { ConfirmSignUpComponentIonic } from './confirm-sign-up.component.ionic'
+import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
+import { AuthState } from '../../../providers';
 
 @Component({
   selector: 'amplify-auth-confirm-sign-up',
@@ -30,7 +30,7 @@ export class ConfirmSignUpComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? ComponentMountMap('confirmSignUpIonic',{authState: this.authState}) : ComponentMountMap('confirmSignUpCore', {authState: this.authState});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ConfirmSignUpComponentIonic,{authState: this.authState}) : new ComponentMount(ConfirmSignUpComponentCore, {authState: this.authState});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

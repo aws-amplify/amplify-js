@@ -25,10 +25,6 @@
   },
   "files": [
     "index.ts",
-    "index-angular.ts"
-  ],
-  "exclude":[
-    "src/ionic/**/*"
   ],
   "angularCompilerOptions": {
     "strictMetadataEmit": true

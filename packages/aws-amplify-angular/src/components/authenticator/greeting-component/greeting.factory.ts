@@ -1,11 +1,11 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMountMap } from '../../component.mount';
+import { ComponentMount }      from '../../component.mount';
 import { GreetingClass } from './greeting.class';
-// import { GreetingComponentIonic } from './greeting.component.ionic'
-// import { GreetingComponentCore } from './greeting.component.core';
-import { AuthState } from '../../../providers/auth.state';
+import { GreetingComponentIonic } from './greeting.component.ionic'
+import { GreetingComponentCore } from './greeting.component.core';
+import { AuthState } from '../../../providers';
 
 @Component({
   selector: 'amplify-auth-greetings',
@@ -30,7 +30,7 @@ export class GreetingComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? ComponentMountMap('greetingIonic',{authState: this.authState}) : ComponentMountMap('greetingCore', {authState: this.authState});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(GreetingComponentIonic,{authState: this.authState}) : new ComponentMount(GreetingComponentCore, {authState: this.authState});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

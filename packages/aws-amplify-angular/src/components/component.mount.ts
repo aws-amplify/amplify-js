@@ -1,8 +1,5 @@
-import  { ComponentMountFactory, ComponentMount } from './component.mount-factory';
+import { Type } from '@angular/core';
 
-
-const ComponentMountMap = (componentType, data) : ComponentMount => {
-   return ComponentMountFactory(componentType, data)
+export class ComponentMount {
+  constructor(public component: Type<any>, public data: any) {}
 }
-
-export { ComponentMountMap }

@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMountMap } from '../../component.mount';
+import { ComponentMount }      from '../../component.mount';
 import { SignInClass } from './sign-in.class';
-// import { SignInComponentIonic } from './sign-in.component.ionic'
-// import { SignInComponentCore } from './sign-in.component.core';
-import { AuthState } from '../../../providers/auth.state';
+import { SignInComponentIonic } from './sign-in.component.ionic'
+import { SignInComponentCore } from './sign-in.component.core';
+import { AuthState } from '../../../providers';
 import { authDecorator } from '../../../providers/auth.decorator';
 
 @Component({
@@ -30,7 +30,7 @@ export class SignInComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework === 'ionic' ? ComponentMountMap('signInIonic',{authState: this.authState}) : ComponentMountMap('signInCore', {authState: this.authState});
+    let authComponent = this.framework && this.framework === 'ionic' ? new ComponentMount(SignInComponentIonic,{authState: this.authState}) : new ComponentMount(SignInComponentCore, {authState: this.authState});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 

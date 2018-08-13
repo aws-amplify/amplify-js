@@ -1,24 +1,22 @@
 {
   "name": "aws-amplify-angular",
-  "version": "9.0.6",
+  "version": "10.0.3",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "build": "gulp inline-templates && npm run ngcompile && npm run cleantemp",
     "cleantemp": "rimraf coverage dist tmp docs",
     "ngcompile": "node_modules/.bin/ngc -p tsconfig-aot.json",
     "test": "jest --maxWorkers 2",
     "transpile": "ngc",
-    "package": "rollup -c rollup.config.js && rollup -c rollup.config.angular.js",
-    "minify-dual": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
-    "minify-angular": "uglifyjs dist/bundles/aws-amplify-angular-only.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular-only.umd.min.js",
-    "build-test": "npm run transpile && npm run package && npm run minify-dual && npm run minify-angular"
+    "package": "rollup -c rollup.config.js",
+    "minify": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
+    "build": "npm run transpile && npm run package && npm run minify"
   },
   "jest": {
     "transformIgnorePatterns": [
-      "node_modules/(?!@ionic|(?!ionic|ionic)"
+      "node_modules/(?!@ionic)"
     ]
   },
   "author": "Amazon Web Services",
@@ -41,6 +39,7 @@
     "babel-loader": "^7.1.5",
     "babel-plugin-lodash": "^3.3.4",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
     "css-loader": "^0.28.1",
     "gulp": "^3.9.1",
     "gulp-inline-ng2-template": "^4.0.0",
@@ -56,16 +55,16 @@
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.1",
     "rollup": "^0.63.5",
-    "rollup-plugin-angular-aot": "0.0.4",
-    "rollup-plugin-multi-entry": "^2.0.2",
-    "rollup-plugin-uglify": "^4.0.0",
     "rollup-plugin-analyzer": "^2.1.0",
+    "rollup-plugin-angular-aot": "0.0.4",
     "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-commonjs": "^9.1.4",
     "rollup-plugin-json": "^3.0.0",
+    "rollup-plugin-multi-entry": "^2.0.2",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.2.1",
     "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-uglify": "^4.0.0",
     "rxjs": "^6.2.1",
     "rxjs-compat": "^6.2.1",
     "source-map-explorer": "^1.3.3",
@@ -75,7 +74,7 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.106",
-    "@ionic/angular": "^4.0.0",
+    "@ionic/angular": "^4.0.0-alpha.10",
     "aws-amplify": "^1.0.5"
   }
 }

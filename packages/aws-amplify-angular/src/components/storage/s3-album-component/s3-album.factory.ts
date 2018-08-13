@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
 
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMountMap } from '../../component.mount';
+import { ComponentMount }      from '../../component.mount';
 import { S3AlbumClass } from './s3-album.class';
-// import { S3AlbumComponentIonic } from './s3-album.component.ionic'
-// import { S3AlbumComponentCore } from './s3-album.component.core';
+import { S3AlbumComponentIonic } from './s3-album.component.ionic'
+import { S3AlbumComponentCore } from './s3-album.component.core';
 
 @Component({
   selector: 'amplify-s3-album',
@@ -31,7 +31,7 @@ export class S3AlbumComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let albumComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? ComponentMountMap('s3AlbumIonic',{path: this.path}) : ComponentMountMap('s3AlbumCore', {path: this.path});
+    let albumComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(S3AlbumComponentIonic,{path: this.path}) : new ComponentMount(S3AlbumComponentCore, {path: this.path});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(albumComponent.component);
 

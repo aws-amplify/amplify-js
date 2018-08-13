@@ -1,7 +1,6 @@
 import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import angular from 'rollup-plugin-angular-aot';
-
 import globals from 'rollup-plugin-node-globals';
 import builtins from 'rollup-plugin-node-builtins';
 import { plugin as analyze } from 'rollup-plugin-analyzer';
@@ -14,6 +13,8 @@ export default {
   format: 'umd',
   moduleName: 'ng.aws-amplify-angular',
   globals: {
+    '@ionic/angular': 'IonicModule',
+    'aws-amplify': 'Amplify',
     '@angular/core': 'ng.core',
     'rxjs/Observable': 'Rx',
     'rxjs/Subscription': 'Rx',
