@@ -30,7 +30,7 @@
 						<div class="version-section">
 							<p>Version</p>
 							<div class="version-selector">
-								<select>
+								<select id="version-selector-select">
 									<option value="1.x.x">1.x.x (Stable release)</option>
 								</select>
 							</div>
@@ -134,4 +134,43 @@
 			{% endfor %}
 		}
 	</script>
-</html>
+	{% if jekyll.environment == 'production' %}
+		<script>
+			var setBackgroundImage = function() {
+				const version_box = document.getElementById("version-selector-select");
+				const view_section_box = document.getElementById("section-select");
+				version_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
+				view_section_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
+				if (window.innerWidth < 767) {
+					version_box.style.backgroundPosition = "240px 5px";
+					view_section_box.style.backgroundPosition = "240px 5px";
+				}
+				else {
+					version_box.style.backgroundPosition = "164px 3px";
+					view_section_box.style.backgroundPosition = "164px 3px";
+				}
+			}
+
+			setBackgroundImage();
+		</script>
+	{% else %}
+		<script>
+			var setBackgroundImage = function() {
+				const version_box = document.getElementById("version-selector-select");
+				const view_section_box = document.getElementById("section-select");
+				version_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+				view_section_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+				if (window.innerWidth < 767) {
+					version_box.style.backgroundPosition = "240px 5px";
+					view_section_box.style.backgroundPosition = "240px 5px";
+				}
+				else {
+					version_box.style.backgroundPosition = "164px 3px";
+					view_section_box.style.backgroundPosition = "164px 3px";
+				}
+			}
+
+			setBackgroundImage();
+		</script>
+	{% endif %}
+	</html>
