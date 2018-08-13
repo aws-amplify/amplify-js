@@ -1,5 +1,5 @@
 // export { AmplifyAngularModule } from './aws-amplify-angular.module';
-export { AmplifyIonicModule } from './aws-amplify-ionic-module';
+// export { AmplifyIonicModule } from './aws-amplify-ionic-module';
 
 // export { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
 // export { AuthenticatorComponentCore } from './components/authenticator/authenticator/authenticator.component.core';

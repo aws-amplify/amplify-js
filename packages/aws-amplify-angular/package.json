@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "5.0.0",
+  "version": "9.0.6",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -32,7 +32,6 @@
     "@types/zen-observable": "^0.5.3",
     "angular2-template-loader": "^0.6.2",
     "awesome-typescript-loader": "^4.0.1",
-    "aws-amplify": "^0.4.9-unstable.2",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-plugin-lodash": "^3.3.4",
@@ -52,6 +51,9 @@
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.1",
     "rollup": "^0.63.5",
+    "rollup-plugin-angular-aot": "0.0.4",
+    "rollup-plugin-multi-entry": "^2.0.2",
+    "rollup-plugin-uglify": "^4.0.0",
     "rollup-plugin-analyzer": "^2.1.0",
     "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-commonjs": "^9.1.4",
@@ -66,12 +68,9 @@
     "zone": "^0.3.4",
     "zone.js": "^0.8.26"
   },
-  "peerDependencies": {
-    "@ionic/angular": "^4.0.0"
-  },
   "dependencies": {
     "@types/lodash": "^4.14.106",
-    "rollup-plugin-multi-entry": "^2.0.2",
-    "rollup-plugin-uglify": "^4.0.0"
+    "@ionic/angular": "^4.0.0",
+    "aws-amplify": "^1.0.5"
   }
 }

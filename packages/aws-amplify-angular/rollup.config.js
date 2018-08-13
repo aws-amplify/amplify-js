@@ -1,5 +1,7 @@
 import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
+import angular from 'rollup-plugin-angular-aot';
+
 import globals from 'rollup-plugin-node-globals';
 import builtins from 'rollup-plugin-node-builtins';
 import { plugin as analyze } from 'rollup-plugin-analyzer';
@@ -21,7 +23,7 @@ export default {
     'rxjs/add/observable/fromEvent': 'Rx.Observable',
     'rxjs/add/observable/of': 'Rx.Observable'
   },
-  external: ['aws-sdk' ,'@angular/core', 'aws-amplify'],
+  external: ['aws-sdk' ,'@angular/core', 'aws-amplify', '@ionic/angular'],
   plugins: [
     nodeResolve({ preferBuiltins: false, modulesOnly: true }), 
     commonjs({include: 'node_modules/**'}),

@@ -1,7 +1,6 @@
-import { NgModule } from '@angular/core';
+import { NgModule , forwardRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import { AmplifyService } from './providers/amplify.service';
+import { IonicModule } from '@ionic/angular';
 
 import { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
 import { AuthenticatorComponentCore } from './components/authenticator/authenticator/authenticator.component.core';
@@ -31,23 +30,23 @@ import { DynamicComponentDirective } from './directives/dynamic.component.direct
 import { FormComponent } from './components/common/form.component';
 
 
-const exportables = [
+const importables = [
   AuthenticatorComponent,
   AuthenticatorComponentCore,
-  ConfirmSignInComponentCore,
   ConfirmSignInComponent,
+  ConfirmSignInComponentCore,
   ConfirmSignUpComponent,
   ConfirmSignUpComponentCore,
+  SignInComponent,
+  SignInComponentCore,
+  SignUpComponent,
+  SignUpComponentCore,
   RequireNewPasswordComponent,
   RequireNewPasswordComponentCore,
   GreetingComponent,
   GreetingComponentCore,
   ForgotPasswordComponent,
   ForgotPasswordComponentCore,
-  SignInComponent,
-  SignInComponentCore,
-  SignUpComponent,
-  SignUpComponentCore,
   S3AlbumComponent,
   S3AlbumComponentCore,
   S3ImageComponent,
@@ -56,35 +55,26 @@ const exportables = [
   PhotoPickerComponentCore,
   ChatBotComponent,
   ChatbotComponentCore,
-  FormComponent
+  FormComponent,
 ]
 
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule,
+    IonicModule,
   ],
   declarations: [
     DynamicComponentDirective,
-    ...exportables,
+    // components.FormComponent,
+    ...importables,
   ],
   entryComponents: [
-    AuthenticatorComponentCore,
-    ConfirmSignInComponentCore,
-    ConfirmSignUpComponentCore,
-    RequireNewPasswordComponentCore,
-    GreetingComponentCore,
-    ForgotPasswordComponentCore,
-    SignInComponentCore,
-    SignUpComponentCore,
-    S3AlbumComponentCore,
-    S3ImageComponentCore,
-    PhotoPickerComponentCore,
-    ChatbotComponentCore
+    ...importables
   ],
-  providers: [ AmplifyService ],
+  providers: [ ],
   exports: [
-    ...exportables,
+    ...importables,
   ]
 })
 export class AmplifyAngularModule { }
