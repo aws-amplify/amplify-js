@@ -8,6 +8,9 @@ AWS Amplify I18n module is a lightweight internationalization solution.
 
 ```js
 import { I18n } from 'aws-amplify';
+
+// or 
+import { I18n } from '@aws-amplify/core';
 ```
 
 ## Working with the API
