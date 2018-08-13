@@ -166,6 +166,7 @@ export default class AuthClass {
                 },
                 onFailure: (err) => {
                     logger.debug("Error in cognito hosted auth response", err);
+                    dispatchAuthEvent('signIn_failure', err);
                 }
             };
             // if not logged in, try to parse the url.
@@ -320,7 +321,7 @@ export default class AuthClass {
                     resolve(user);
                 }
             },
-        onFailure: (err) => {
+            onFailure: (err) => {
                 logger.debug('signIn failure', err);
                 dispatchAuthEvent('signIn_failure', err);
                 reject(err);
