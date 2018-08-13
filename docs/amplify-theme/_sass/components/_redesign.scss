@@ -2037,6 +2037,9 @@ li {
     background: none;
     box-shadow: none;
     padding: 0 !important;
+    float: none !important;
+    display: inline-block;
+    width: calc(100% - 230px) !important;
 
     h1 {
         font-size: 50px !important;
@@ -2088,6 +2091,7 @@ li {
 }
 
 .styleguide-nav {
+    width: 230px !important;
     
     .sections-list {
         margin-top: 100px;
