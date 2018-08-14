@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.6-unstable.5"></a>
+## [1.0.6-unstable.5](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.6-unstable.4...aws-amplify-react-native@1.0.6-unstable.5) (2018-08-14)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** move keyboard dismiss from authenticator to child components ([5d2b77a](https://github.com/aws/aws-amplify/commit/5d2b77a))
+
+
+
+
 <a name="1.0.6-unstable.4"></a>
 ## [1.0.6-unstable.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.6-unstable.3...aws-amplify-react-native@1.0.6-unstable.4) (2018-08-13)
 
