@@ -153,6 +153,7 @@ A standarized set of fields and selectors offered below. They support error stat
     <span class="title">Toggles</span>
     <span class="inline-img">![Toggles]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/toggles.png)</span>
 </span>
+<div class="separator"></div>
 
 ### Toggles, Tabs, & Pagination
 Toggles allow users to switch views and force sort or single-selection viewing options amongst a set. Similarly tabs and pagination allow users to navigate across related content. Pagination and carousel should be used when users need to traverse a large set of content or through related chapters of content.
@@ -179,39 +180,91 @@ Toggles allow users to switch views and force sort or single-selection viewing o
 ### Modals & Dialogues
 Two main modal interactions are offered. The modal is informational with a primary action attached. The Dialog is employed when a choice is implied in the interaction. The user should be able to exit modals instead of being locked in. On smaller screens models should present in the middle of display port and take up a majority of the screen width. 
 
-<span class="title">Large Modal</span>
-<span class="title">Large Dialog</span>
+<span class="inline-div">
+    <span class="title">Large Modal</span>
+    <span class="inline-img">![Large Modal]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/large_modal.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Large Dialog</span>
+    <span class="inline-img no-right-margin">![Large Dialog]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/large_dialog.png)</span>
+</span>
+<div class="separator"></div>
 
 ### Notifications & Tooltips
 Notifications & helpers are offered in a few main styles. Notifications should be used to inform users when successful operations or problems have occurred and occasionally offer shortcuts to new content (like messages) or actions (like undo). Tooltips are used inline to offer more information. On mobile devices, notifications must appear at the top of the display port in a consistent location. 
 
-<span class="title">Toast</span>
-<span class="title">Alert</span>
-<span class="title">Graphic Toast with Link</span>
-<span class="title">Tooltips</span>
+<span class="inline-div">
+    <span class="title">Toast</span>
+    <span class="inline-img">![Toast]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/toast.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Alert</span>
+    <span class="inline-img">![Alert]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/alert.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Graphic Toast with Link</span>
+    <span class="inline-img">![Graphic Toast with Link]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/graphic_toast.png)</span>
+</span>
+<span class="inline-div" id="tooltips">
+    <span class="title">Tooltips</span>
+    <span class="inline-img no-right-margin">![Tooltips]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/tooltips.png)</span>
+</span>
+<div class="separator"></div>
 
 ### Date Pickers
 Notifications & helpers are offered in a few main styles. Notifications should be used to inform users when successful operations or problems have occurred and occasionally offer shortcuts to new content (like messages) or actions (like undo). Tooltips are used inline to offer more information. On mobile devices, notifications must appear at the top of the display port in a consistent location. 
 
-<span class="title">Multi-Select Calendar</span>
-<span class="title">Single-Select Calendar</span>
-<span class="title">Multi-Select Calendar on Mobile</span>
+<span class="inline-div">
+    <span class="title">Multi-Select Calendar</span>
+    <span class="inline-img">![Multi-Select Calendar]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/multi_select_calendar.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Single-Select Calendar</span>
+    <span class="inline-img">![Single-Select Calendar]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/single_select_calendar.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Multi-Select Calendar on Mobile</span>
+    <span class="inline-img">![Multi-Select Calendar on Mobile]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/multi_select_calendar_mobile.png)</span>
+</span>
+
 
 ## Components
 
 ### User Authentication
 The authentication component utilizes the styles outlined in the styleguide to provide a minimal, yet lightly AWS-branded experience out of the box.
 
-<span class="title">New User Account</span>
-<span class="title">Recover User Account</span>
-<span class="title">Sign Into Existing Account</span>
-<span class="title">Confirm Signup</span>
+<span class="inline-div">
+    <span class="title">New User Account</span>
+    <span class="inline-img no-right-margin">![New User Account]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/new_user_account.png)</span>
+</span>
+<span class="inline-div" id="recover-user">
+    <span class="title" id="recover-user-title">Recover User Account</span>
+    <span class="inline-img no-right-margin">![Recover User Account]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/recover_user_account.png)</span>
+    <span class="inline-img no-right-margin">![Recover User Account]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/recover_user_account2.png)</span>
+</span>
+
+<span class="inline-div">
+    <span class="title">Sign Into Existing Account</span>
+    <span class="inline-img small-right-margin">![Sign into Existing Account]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/sign_in_existing.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Confirm Signup</span>
+    <span class="inline-img no-right-margin">![Confirm Signup]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/confirm_signup.png)</span>
+</span>
+<div class="separator"></div>
 
 ### User Authentication: Social Logins
 The authentication component utilizes the styles outlined in the styleguide to provide a minimal, yet lightly AWS-branded experience out of the box.
 
-<span class="title">New User Account</span>
-<span class="title">User Account Verification</span>
+<span class="inline-div">
+    <span class="title">New User Account</span>
+    <span class="inline-img small-right-margin">![New User Account]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/new_user_account_social.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">User Account Verification</span>
+    <span class="inline-img no-right-margin">![User Account Verification]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/user_account_veri.png)</span>
+</span>
+<div class="separator"></div>
 
 ### User Authentication: TOTP
 2-factor authentication can be enabled for customers. Users are given the option to add additional account security. Some light instruction should be included to guide the customer through the necessary steps.

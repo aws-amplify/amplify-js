@@ -2123,7 +2123,7 @@ li {
 
             .logo-title {
                 color: #232F3E;
-                font-family: "Amazon Ember";
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
                 font-size: 16px;
                 letter-spacing: 1.06px;
                 line-height: 20px;
@@ -2211,7 +2211,7 @@ li {
 
     .title {
         color: #828282;	
-        font-family: "Amazon Ember";	
+        font-family: "Amazon Ember", "Helvetica", sans-serif;	
         font-size: 12px;	
         font-weight: bold;	
         line-height: 15px;
@@ -2256,7 +2256,7 @@ li {
 
     .font-specific {
         color: #232F3E;
-        font-family: "Amazon Ember";
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 16px;
         line-height: 24px;
         font-weight: bold;
@@ -2316,6 +2316,35 @@ li {
         }
     }
 
+    .no-right-margin {
+        margin-right: 0px;
+    }
+
+    #tooltips {
+        @media (min-width: 1248px) {
+            margin-left: 63px;
+        }
+    }
+
+    #recover-user {
+        width: 483px;
+        @media (min-width: 1312px) {
+            float: right;
+
+            .inline-img {
+                float: right;
+            }
+
+            #recover-user-title {
+                margin-left: 18px;
+            }
+        }
+    }
+
+    .small-right-margin {
+        margin-right: 12px;
+    }
+
     .separator {
         border-bottom: 1px solid #E1E4EA;
         width: 100%;
@@ -2328,13 +2357,22 @@ li {
     .sections-list {
         margin-top: 100px;
     }
-    .style-category {
-        color: #232F3E;
-        font-family: "Amazon Ember";
-        font-size: 28px;
-        font-weight: 300;
-        line-height: 35px;
-        display: block;
-        margin-bottom: 20px;
+
+    li {
+        .style-category {
+            color: #828282 !important;
+            font-family: "Amazon Ember" !important;
+            font-size: 28px !important;
+            font-weight: 300 !important;
+            line-height: 35px !important;
+            display: block !important;
+            margin-bottom: 20px !important;
+            text-decoration: none !important;
+        }
+        &.active {
+            .style-category {
+                color: #232F3E !important;
+            }     
+        }
     }
 }

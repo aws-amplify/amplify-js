@@ -66,13 +66,15 @@ amplify:
             image: true
             platform: for JavaScript
         nav:
+            - item_name: Get Started
+              item_url: '/media/get_started'
             - item_name: Guides
-              item_url: '/media/guides'
+              item_url: '/media/developer_guide'
             - item_name: CLI
               item_url: '/media/cli_home'
             - item_name: User Interface
               item_url: '/media/ui_library'
-            - item_name: API Reference
+            - item_name: API
               item_url: '/api/'
             #- item_name: 
             #  item_icon: github
