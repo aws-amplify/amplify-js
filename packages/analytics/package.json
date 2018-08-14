@@ -19,6 +19,9 @@
   "react-native": {
     "./lib/trackers": "./lib/trackers/reactnative.js"
   },
+  "react": {
+    "./lib/vendors": "./lib/vendors/react.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aws/aws-amplify.git"
