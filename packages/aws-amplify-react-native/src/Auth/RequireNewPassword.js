@@ -16,7 +16,9 @@ import {
     View,
     Text,
     TextInput,
-    Button
+    Button,
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import {
     Auth,
@@ -87,22 +89,24 @@ export default class RequireNewPassword extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <View style={theme.section}>
-                <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
-                <View style={theme.sectionBody}>
-                    <Password
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ password: text })}
-                    />
-                    <Button
-                        title={I18n.get('Change Password')}
-                        onPress={this.change}
-                        disabled={!this.state.password}
-                    />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
+                    <View style={theme.sectionBody}>
+                        <Password
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ password: text })}
+                        />
+                        <Button
+                            title={I18n.get('Change Password')}
+                            onPress={this.change}
+                            disabled={!this.state.password}
+                        />
+                    </View>
+                    <Footer theme={theme} onStateChange={this.changeState} />
+                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
-                <Footer theme={theme} onStateChange={this.changeState} />
-                <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-            </View>
+            </TouchableWithoutFeedback>
         );
     }
 }

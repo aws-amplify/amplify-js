@@ -17,7 +17,8 @@ import {
     Text, 
     TextInput, 
     Button, 
-    TouchableHighlight 
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import {
     Auth,
@@ -86,32 +87,34 @@ export default class ConfirmSignUp extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <View style={theme.section}>
-                <Header theme={theme}>{I18n.get('Confirm Sign Up')}</Header>
-                <View style={theme.sectionBody}>
-                    <Username
-                        theme={theme}
-                        value={this.state.username}
-                        onChangeText={(text) => this.setState({ username: text })}
-                    />
-                    <ConfirmationCode
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ code: text })}
-                    />
-                    <Button
-                        title={I18n.get('Confirm')}
-                        onPress={this.confirm}
-                        disabled={!this.state.username || !this.state.code}
-                    />
-                    <Button
-                        title={I18n.get('Resend a Code')}
-                        onPress={this.resend}
-                        disabled={!this.state.username}
-                    />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Confirm Sign Up')}</Header>
+                    <View style={theme.sectionBody}>
+                        <Username
+                            theme={theme}
+                            value={this.state.username}
+                            onChangeText={(text) => this.setState({ username: text })}
+                        />
+                        <ConfirmationCode
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ code: text })}
+                        />
+                        <Button
+                            title={I18n.get('Confirm')}
+                            onPress={this.confirm}
+                            disabled={!this.state.username || !this.state.code}
+                        />
+                        <Button
+                            title={I18n.get('Resend a Code')}
+                            onPress={this.resend}
+                            disabled={!this.state.username}
+                        />
+                    </View>
+                    <Footer theme={theme} onStateChange={this.changeState} />
+                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
-                <Footer theme={theme} onStateChange={this.changeState} />
-                <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-            </View>
+            </TouchableWithoutFeedback>
         );
     }
 }
