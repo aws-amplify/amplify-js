@@ -66,13 +66,13 @@ amplify:
             image: true
             platform: for JavaScript
         nav:
-            - item_name: Quickstart
-              item_url: '/media/quick_start_home'
-            - item_name: Developer Guides
-              item_url: '/media/developer_guide'
+            - item_name: Guides
+              item_url: '/media/guides'
+            - item_name: CLI
+              item_url: '/media/cli_home'
             - item_name: User Interface
               item_url: '/media/ui_library'
-            - item_name: API
+            - item_name: API Reference
               item_url: '/api/'
             #- item_name: 
             #  item_icon: github

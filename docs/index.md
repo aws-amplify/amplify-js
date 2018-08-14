@@ -9,7 +9,7 @@ title: Build beautiful mobile and web apps, powered by the cloud, with AWS Ampli
 buttons:
     - content: Get Started
       icon: arrow-right
-      url: '/media/quick_start_home'
+      url: '/media/guides'
       external_url: false
 
 # Grid navigation

@@ -112,7 +112,7 @@
     margin-top: 8px;
     background: transparent !important;
 
-    @media (max-width: 992px){
+    @media (max-width: 882px){
         margin-top: 20px !important;
     }
 
@@ -182,7 +182,7 @@
     }
 }
 
-@media (max-width: $screen-md-min) {
+@media (max-width: 882px) {
 	.site-header__nav {
 		width: 100%;
 		background: white;
@@ -1590,7 +1590,7 @@ li {
     .site-header__nav {
         width: auto;
 
-        @media (max-width: 992px) {
+        @media (max-width: 882px) {
             margin-top: 8px !important;
         }
     }
