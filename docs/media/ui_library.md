@@ -5,65 +5,111 @@ layout: ui_library
 
 ## Colors
 
+
 ### UI Colors
-UI Color for AWS amplify are derived from Amazon’s primary color pallette and examples commonly used through the current AWS websites. Most primary actions are wrapped in Amazon Orange. Dark backgrounds and darker treatments will typically receive the Squid Ink Amazon color treatment.
+<span class="excerpt">UI Color for AWS amplify are derived from Amazon’s primary color pallette and examples commonly used through the current AWS websites. Most primary actions are wrapped in Amazon Orange. Dark backgrounds and darker treatments will typically receive the Squid Ink Amazon color treatment.</span>
 
 <span class="title">Primary Colors</span>
+<span class="inline-img">![Amazon Orange]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/pc_amazon_orange.png)</span>
+<span class="inline-img">![Squid Ink]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/pc_squid_ink.png)</span>
+<span class="inline-img">![Dark Gray]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/pc_dark_gray.png)</span>
+<span class="inline-img">![Light Gray]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/pc_light_gray.png)</span>
+<span class="title">Secondary Colors</span>
+<span class="inline-img">![Deep Squid Ink]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/sc_deep_squid_ink.png)</span>
+<span class="inline-img">![Dark Blue]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/sc_dark_blue.png)</span>
+<span class="inline-img">![Amazon Ember Blaze]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/sc_amazon_ember_blaze.png)</span>
+<div class="separator"></div>
 
 ### Extended Library
 The extended library uses colors also derived form the primary Amazon palette along with some other colors prominently featured throughout Amazon services. Color derivatives should be used where appropriate and work well for things button highlights, mouseover and color transitions.
 
-<span class="title">Amazon Orange</span>
-<span class="title">Squid Ink</span>
-<span class="title">Prime Blue</span>
-<span class="title">Greys</span>
-<span class="title">AWS Purple & Blue</span>
+<span class="inline-div">
+    <span class="title">Amazon Orange</span>
+    <span class="inline-img">![Amazon Orange]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/el_amazon_orange.png)</span>
+</span>
+
+<span class="inline-div">
+    <span class="title">Squid Ink</span>
+    <span class="inline-img">![Squid Ink]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/el_squid_ink.png)</span>
+</span>
+
+<span class="inline-div">
+    <span class="title">Prime Blue</span>
+    <span class="inline-img">![Prime Blue]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/el_prime_blue.png)</span>
+</span>
+
+<span class="inline-div">
+    <span class="title">Greys</span>
+    <span class="inline-img">![Greys]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/el_greys.png)</span>
+</span>
+
+<span class="inline-div">
+    <span class="title">AWS Purple & Blue</span>
+    <span class="inline-img">![AWS Purple & Blue]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/el_purple_blue.png)</span>
+</span>
 
 ## Typography
 
 ### Primary Typefaces
 AWS websites primarily deploy the Amazon Ember typeface with some support from standard Helvetica Neue. In general, all typographical treatments should be limited within these options to maintain consistency across services.  On some smaller treatments, Helvetica may be more appropriate then Ember for visual acuity and readbility and when operating system and browser compatibility are a deep concern.
 
+<span class="title">Font Family</span>
+<span class="inline-img">![Amazon Ember Bold]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/ember_bold.png)</span>
+<span class="inline-img">![Amazon Ember Regular]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/ember_reg.png)</span>
+<span class="inline-img">![Amazon Ember Light]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/ember_light.png)</span>
+<span class="inline-img">![Helvetica Neue]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/helvetica_neue.png)</span>
+<div class="separator"></div>
+
 ### Type Sizing
 The selection below demonstrates primary typographic treatments derived from  AWS websites. In general typographic treatment and heirarchy should follow the lead below for how to display headers and body type. The proposed font catalogue below is limited to just 5 options to reduce page load and enforce patterns. Please note a heading 3 was not identified in any of the web services. 
 
+<div class="font-example-div">
 <span class="title">HEADING 1</span>
 <span class="font-specific">Amazon Ember</span>
 <span class="font-specific">50px • 500w • 60px height</span>
 <span class="font-link">https://aws.amazon.com/ec2/</span>
 
-<span class="font-example" id="h1">Where every something, being blent together turns to a wild of nothing.</span>
+<p class="font-example" id="h1">Where every something, being blent together turns to a wild of nothing.</p>
+</div>
 
+<div class="font-example-div">
 <span class="title">HEADING 2</span>
 <span class="font-specific">Amazon Ember</span>
 <span class="font-specific">42px • 300w • 53px height</span>
 <span class="font-link">https://developer.amazon.com/apps-and-games</span>
 <span class="font-link">https://developer.amazon.com/alexa</span>
 
-<span class="font-example" id="h2">Where every something, being blent together turns to a wild of nothing.</span>
+<p class="font-example" id="h2">Where every something, being blent together turns to a wild of nothing.</p>
+</div>
 
+<div class="font-example-div">
 <span class="title">HEADING 4</span>
 <span class="font-specific">Amazon Ember</span>
 <span class="font-specific">28px • 300w • 35px height</span>
 <span class="font-link">https://developer.amazon.com/alexa</span>
 
-<span class="font-example" id="h4">Where every something, being blent together turns to a wild of nothing.</span>
+<p class="font-example" id="h4">Where every something, being blent together turns to a wild of nothing.</p>
+</div>
 
+<div class="font-example-div">
 <span class="title">HEADING 5</span>
 <span class="font-specific">Amazon Ember</span>
 <span class="font-specific">21px • 400w • 32px height</span>
 <span class="font-link">https://developer.amazon.com/apps-and-games</span>
 <span class="font-link">https://developer.amazon.com/alexa</span>
 
-<span class="font-example" id="h5">Where every something, being blent together turns to a wild of nothing.</span>
+<p class="font-example" id="h5">Where every something, being blent together turns to a wild of nothing.</p>
+</div>
 
+<div class="font-example-div">
 <span class="title">BODY & PARAGRAPH</span>
 <span class="font-specific">Amazon Ember</span>
 <span class="font-specific">16px • 300w • 24px height
 <span class="font-link">https://developer.amazon.com/apps-and-games</span>
 <span class="font-link">https://developer.amazon.com/alexa</span>
 
-<span class="font-example" id="p">And when the vespers within us begin to toll, not to mark frivolous increments of time but to signify permanent footprints in the bold ascent that is self-exploration, not to command followers to a temple for blind worship of others but to summon ourselves to uncover, understand and unleash those divinest of powers within us . . . when those bells begin to rumble and chime, ladies and gentlemen, we will hear a symphony whose beauty conjures Beethoven. -Bob Dylan</span>
+<p class="font-example" id="p">And when the vespers within us begin to toll, not to mark frivolous increments of time but to signify permanent footprints in the bold ascent that is self-exploration, not to command followers to a temple for blind worship of others but to summon ourselves to uncover, understand and unleash those divinest of powers within us . . . when those bells begin to rumble and chime, ladies and gentlemen, we will hear a symphony whose beauty conjures Beethoven. -Bob Dylan</p>
+</div>
 
 ## Controls
 
@@ -71,30 +117,62 @@ The selection below demonstrates primary typographic treatments derived from  AW
 The button catalogue is composed of two main button styles, primary and secondary, with 3 sizes and icon-only derivatives. A third style is available for critical operations like removing records and irreversible actions. On smaller displays buttons should fill most of the available width of the container. 
 
 <span class="title">Primary Large Button</span>
+<span class="inline-img btn-img">![Primary Large Button]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/primary_lg_btn.png)</span>
+<span class="inline-img btn-img">![Primary Large Button Colors]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/primary_btn_colors.png)</span>
 <span class="title">Secondary Large Button</span>
+<span class="inline-img btn-img">![Secondary Large Button]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/secondary_lg_btn.png)</span>
+<span class="inline-img btn-img">![Secondary Large Button Colors]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/secondary_btn_colors.png){: .btn-colors}</span>
 <span class="title">Critical Action Button</span>
+<span class="inline-img btn-img">![Critical Action Button]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/critical_action_btn.png)</span>
+<span class="inline-img btn-img">![Critical Action Button Colors]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/critical_action_btn_colors.png){: .btn-colors #critical-action-btn-colors}</span>
 <span class="title">Mediums Buttons</span>
+<span class="inline-img btn-img">![Medium Buttons]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/medium_btns.png)</span>
 <span class="title">Primary and Secondary</span>
+<span class="inline-img btn-img">![Critical Action Button]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/primary_secondary_btns.png)</span>
+<div class="separator"></div>
 
 ### Inputs & Fields
 A standarized set of fields and selectors offered below. They support error states with in-line error checking, single and multi-select, icon placement and ghosted instructional text. Inputs should be sensitive to the type of data entry required. Phone number should be automatically formatted and offer only numpads on mobile devices.
 
 <span class="title">Text Fields</span>
+<span class="inline-img">![Text Fields]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/text_fields.png)</span>
+<p id="dropdowns">
 <span class="title">Drop Downs/Menus</span>
+<span class="inline-img">![Drop Downs / Menus]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/dropdowns_menus.png)</span>
+</p>
 
-<span class="title">Primary Large Button</span>
-<span class="title">Primary Large Button</span>
-<span class="title">Checkboxes</span>
-<span class="title">Radios</span>
-<span class="title">Toggles</span>
+<span class="inline-div">
+    <span class="title">Checkboxes</span>
+    <span class="inline-img">![Checkboxes]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/checkboxes.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Radios</span>
+    <span class="inline-img">![Radios]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/radios.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Toggles</span>
+    <span class="inline-img">![Toggles]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/toggles.png)</span>
+</span>
 
 ### Toggles, Tabs, & Pagination
 Toggles allow users to switch views and force sort or single-selection viewing options amongst a set. Similarly tabs and pagination allow users to navigate across related content. Pagination and carousel should be used when users need to traverse a large set of content or through related chapters of content.
 
-<span class="title">Big Toggle</span>
-<span class="title">Small Toggle</span>
-<span class="title">Tabs</span>
-<span class="title">Pagination & Carousel</span>
+<span class="inline-div">
+    <span class="title">Big Toggle</span>
+    <span class="inline-img">![Big Toggle]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/big_toggle.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Small Toggle</span>
+    <span class="inline-img">![Small Toggle]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/small_toggle.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Tabs</span>
+    <span class="inline-img">![Tabs]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/tabs.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Pagination & Carousel</span>
+    <span class="inline-img">![Pagination & Carousel]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/pagination_carousel.png)</span>
+</span>
 
 ## Widgets
 

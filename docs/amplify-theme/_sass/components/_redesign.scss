@@ -2167,6 +2167,10 @@ li {
 /***                        new stuff for style guide                      ***/
 //=============================================================================
 
+#styleguide-section {
+    background-color: #F6F6F5
+}
+
 .styleguide-container {
     background: none;
     box-shadow: none;
@@ -2185,6 +2189,9 @@ li {
         font-size: 40px !important;
         font-weight: bold !important;
         line-height: 60px !important;
+        border-top: 1px solid #232F3E !important;
+        border-bottom: 1px solid #E1E4EA !important;
+        padding: 20px 0 20px 0 !important;
     }
 
     h3 {
@@ -2193,6 +2200,13 @@ li {
         font-size: 21px !important;
         font-weight: bold !important;
         line-height: 26px !important;
+        margin-top: 50px;
+    }
+
+    p {
+        margin-bottom: 20px;
+        color: #232F3E !important;
+        display: inline-block;
     }
 
     .title {
@@ -2202,6 +2216,32 @@ li {
         font-weight: bold;	
         line-height: 15px;
         display: block;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+    }
+
+    .excerpt {
+        margin-bottom: 16px;
+    }
+
+    .inline-img {
+        display: inline-block;
+        margin-right: 62px;
+        margin-bottom: 40px;
+    }
+
+    .btn-img {
+        margin-right: 50px;
+
+        .btn-colors {
+            @media (min-width: 1306px) {
+                margin-top: 45px;   
+            }
+        }
+
+        #critical-action-btn-colors {
+            width: 163px;
+        }
     }
 
     .font-link {
@@ -2221,6 +2261,64 @@ li {
         line-height: 24px;
         font-weight: bold;
         display: block;
+    }
+
+    .font-example {
+        float: right;
+        width: 66%;
+    }
+
+    .font-example-div {
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+
+    #h1 {
+        font-size: 50px;	
+        font-weight: bold;	
+        line-height: 60px;
+        margin-top: -12px;
+    }
+
+    #h2 {
+        font-size: 42px;	
+        font-weight: 300;	
+        line-height: 53px;
+        margin-top: -10px;
+    }
+
+    #h4 {
+        font-size: 28px;	
+        font-weight: 300;	
+        line-height: 35px;
+        margin-top: -8px;
+    }
+
+    #h5 {
+        font-size: 20px;	
+        font-weight: bold;	
+        line-height: 25px;
+        margin-top: -4px;
+    }
+
+    #p {
+        font-size: 16px;	
+        line-height: 24px;
+    }
+
+    .inline-div {
+        display: inline-block;
+    }
+
+    #dropdowns {
+        @media (min-width: 1246px) {
+            float: right;
+        }
+    }
+
+    .separator {
+        border-bottom: 1px solid #E1E4EA;
+        width: 100%;
     }
 }
 
