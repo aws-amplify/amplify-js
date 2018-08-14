@@ -3,9 +3,20 @@
 
 # Ionic
 
-AWS Amplify provides Angular Components that you can use with Ionic in [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
+AWS Amplify helps developers to create high-quality Ionic apps quickly by handling the heavy lifting of configuring and integrating cloud services behind the scenes. It also provides a powerful high-level API and ready-to-use security best practices.
+
+For Ionic developers, AWS Amplify provides following main benefits:
+
+- Easy integration with cloud operations with declarative API
+- CLI support for bootstrapping your app backend quickly
+- Local configuration and deployment of your app’s backend logic
+- Deployment of static assets for hosting and streaming
+- Ionic UI components for common operations such as Authorization and Storage
+- Monitoring app usage and engaging users with campaign analytics
 
 ## Installation and Configuration
+
+AWS Amplify provides Angular Components that you can use with Ionic in [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
 
 Install `aws-amplify` and `aws-amplify-angular` npm packages into your Angular app.
 

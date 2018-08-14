@@ -1962,7 +1962,7 @@ describe('auth unit test', () => {
             spyon2.mockClear();
         });
 
-        test('get user data error', async () => {
+        test('get user data error because of user is deleted or disabled', async () => {
             const auth = new Auth(authOptions);
             const user = new CognitoUser({
                 Username: 'username',
@@ -1978,20 +1978,56 @@ describe('auth unit test', () => {
                     return callback(null, 'session');
                 });
             const spyon3 = jest.spyOn(CognitoUser.prototype, 'getUserData').mockImplementationOnce((callback) => {
-                callback('err', null);
+                callback({
+                    message: 'User is disabled'
+                }, null);
             });
             
             expect.assertions(1);
             try {
                 await auth.currentUserPoolUser();
             } catch (e) {
-                expect(e).toBe('err');
+                expect(e).toEqual({
+                    message: 'User is disabled'
+                });
             }
 
             spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
         });
+
+        test('bypass the error if the user is not deleted or disabled', async () => {
+            const auth = new Auth(authOptions);
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool
+            });
+
+            const spyon = jest.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+                .mockImplementation(() => {
+                    return user;
+                });
+            const spyon2 = jest.spyOn(CognitoUser.prototype, 'getSession')
+                .mockImplementation((callback) => {
+                    return callback(null, 'session');
+                });
+            const spyon3 = jest.spyOn(CognitoUser.prototype, 'getUserData').mockImplementationOnce((callback) => {
+                callback({
+                    message: 'other error'
+                }, null);
+            });
+            
+            expect.assertions(1);
+     
+            expect(await auth.currentUserPoolUser()).toEqual(user);
+        
+
+            spyon.mockClear();
+            spyon2.mockClear();
+            spyon3.mockClear();
+        });
+    });
     });
 
     describe('sendCustomChallengeAnswer', () => {
