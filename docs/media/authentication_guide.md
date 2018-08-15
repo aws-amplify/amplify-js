@@ -223,6 +223,19 @@ Auth.forgotPasswordSubmit(username, code, new_password)
     .catch(err => console.log(err));
 ```
 
+#### Retrieve Current Authenticated User
+
+You can call `Auth.currentAuthenticatedUser()` to get the current authenticated user object.
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.currentAuthenticatedUser()
+    .then(user => console.log(user));
+    .catch(err => console.log(err));
+```
+This method can be used to check if a user is logged in when the page is loaded. It will throw an error if there is no user logged in.
+This method should be called after the Auth module is configured. To ensure that you can listen on the auth events `configured`. [Learn how to listen on auth events.]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/hub_guide#listening-authentication-events)
+
 #### Retrieve Current Session
 
 `Auth.currentSession()` returns a `CognitoUserSession` object which contains JWT `accessToken`, `idToken`, and `refreshToken`.

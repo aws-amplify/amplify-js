@@ -72,6 +72,8 @@ alex.onHubCapsule = (capsule) => {
         case 'signIn_failure':
             alex.error('user sign in failed');
             break;
+        case 'configured':
+            alex.error('the Auth module is configured');
             
     }
 }
