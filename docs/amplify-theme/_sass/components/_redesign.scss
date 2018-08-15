@@ -1194,7 +1194,7 @@ li {
         // width: 1180px;
         // max-width: 90%;
         margin: auto;
-        padding-bottom: 45px;
+        padding-bottom: 0;
 
         @media (max-width: 767px) {
             padding-bottom: 10px;
@@ -1260,7 +1260,7 @@ li {
         }
 
         .subheader {
-            padding: 0 20px;
+            //padding: 0 20px;
 
             @media (max-width: 767px) {
                 padding: 0;

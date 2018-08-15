@@ -17,7 +17,7 @@ marketing_grid:
     - title: <span class="orange-text">Easy-to-Use</span> Library
       icon: '/images/icons/Medium/Library-window.png'
       excerpt: Choose your cloud services and easily connect them to your app with just a few lines of code.
-      url: '/media/get_started'
+      url: '/media/developer_guide'
     - title: <span class="orange-text">Powerful</span> Toolchain
       icon: '/images/icons/Medium/CLI-Toolchain.png'
       excerpt: Effortlessly create and maintain sophisticated serverless backends for your apps.
