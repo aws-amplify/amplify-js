@@ -11,6 +11,18 @@
     color: white !important;
 }
 
+.inline {
+    display: inline;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.block {
+    display: block;
+}
+
 .site-header {
 	position: fixed;
 	//width: 1442px;
@@ -1464,8 +1476,8 @@ li {
 .side-arrow {
     display: inline-block;
     vertical-align: middle;
-    margin-left: 13px;
-    box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
+    //margin-left: 13px;
+    //box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
     border-radius: 100%;
     transform: rotate(-90deg);
 }
