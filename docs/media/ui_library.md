@@ -270,29 +270,71 @@ The authentication component utilizes the styles outlined in the styleguide to p
 2-factor authentication can be enabled for customers. Users are given the option to add additional account security. Some light instruction should be included to guide the customer through the necessary steps.
 
 <span class="title">Setup TOTP</span>
+<span class="inline-img no-right-margin">![Setup TOTP]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/setup_totp.png)</span>
+<div class="separator"></div>
 
 ### User Authentication Mobile Framing
 On mobile and small screens the components should expand to fill the majority of available screen space within one and two column layouts for major inputs.
 
-<span class="title">New User Account</span>
-<span class="title">Reset Password</span>
-<span class="title">New User Account</span>
-<span class="title">Statusbar Treatment</span>
-On color and dark backgrounds the status should display as white assets
+<span class="inline-div mobile-right-margin">
+    <span class="title">New User Account</span>
+    <span class="inline-img small-right-margin">![New User Account]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/new_user_account_mobile.png)</span>
+</span>
 
-On very light and white backgrounds the statusbar should display as dark gray assets
+<span class="inline-div">
+    <span class="title">Reset Password</span>
+    <span class="inline-img no-right-margin">![Reset Password]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/reset_password_mobile.png)</span>
+</span>
+
+<span class="inline-div mobile-right-margin" id="new-user-mobile-keyboard">
+    <span class="title">New User Account</span>
+    <span class="inline-img small-right-margin">![New User Account]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/new_user_account_mobile_keyboard.png)</span>
+</span>
+
+<span class="inline-div">
+    <span class="title">Statusbar Treatment</span>
+    <span class="inline-img no-right-margin statusbar-img">![Statusbar Treatment]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/status_bar_orange.png)</span>
+    <span class="statusbar-text">On color and dark backgrounds the status should display as white assets</span>
+    <span class="inline-img no-right-margin statusbar-img">![Statusbar Treatment]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/status_bar_white.png)</span>
+    <span class="statusbar-text">On very light and white backgrounds the statusbar should display as dark gray assets</span>
+</span>
+
+<div class="separator"></div>
 
 ### Storage: Photo Picker
 The storage component allows the user to select among available photos. The selection action can be initated from any type of “picker” screen (an empty example below) which then launches a scrollable GUI displaying the available assets. The picker support both single and multi-select.
 
-<span class="title">Photo Picker</span>
-<span class="title">Photo Picker</span>
-<span class="title">Photo Picker Mobile</span>
-<span class="title">Photo Picker Mobile</span>
+<span class="inline-div">
+    <span class="title">Photo Picker</span>
+    <span class="inline-img small-right-margin">![Photo Picker]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/photo_picker_empty.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Photo Picker</span>
+    <span class="inline-img no-right-margin">![Photo Picker]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/photo_picker.png)</span>
+</span>
+<span class="inline-div mobile-right-margin">
+    <span class="title">Photo Picker Mobile</span>
+    <span class="inline-img small-right-margin">![Photo Picker Mobile]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/photo_picker_mobile_empty.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Photo Picker Mobile</span>
+    <span class="inline-img no-right-margin">![Photo Picker Mobile]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/photo_picker_mobile.png)</span>
+</span>
+
+<div class="separator"></div>
 
 ### Interactions
 Interactions and chat bots allow you to build AI-powered communication into your products. Out of the box design features simple visuals based on the minimal brand which can be customized to your liking. Mobile interactions should exapnd into fullscreen displays.
 
-<span class="title">Messages List</span>
-<span class="title">Message Chat</span>
-<span class="title">Message Chat Site</span>
+<span class="inline-div">
+    <span class="title">Messages List</span>
+    <span class="inline-img">![Message List]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/message_list.png)</span>
+</span>
+<span class="inline-div" id="message-chat">
+    <span class="title">Message Chat</span>
+    <span class="inline-img">![Message Chat]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/message_chat.png)</span>
+</span>
+<span class="inline-div">
+    <span class="title">Message Chat Site</span>
+    <span class="inline-img">![Message Chat Site]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/message_chat_site.png)</span>
+</span>

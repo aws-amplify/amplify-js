@@ -2209,6 +2209,10 @@ li {
         display: inline-block;
     }
 
+    img {
+        max-width: none;;
+    }
+
     .title {
         color: #828282;	
         font-family: "Amazon Ember", "Helvetica", sans-serif;	
@@ -2316,10 +2320,6 @@ li {
         }
     }
 
-    .no-right-margin {
-        margin-right: 0px;
-    }
-
     #tooltips {
         @media (min-width: 1248px) {
             margin-left: 63px;
@@ -2341,8 +2341,44 @@ li {
         }
     }
 
+    #message-chat {
+        @media (min-width: 1178px) {
+            float: right;
+            margin-right: 50px;
+        }
+    }
+
+    #new-user-mobile-keyboard {
+        @media (min-width: 1184px) {
+            position: relative;
+            bottom: 490px;
+            margin-bottom: -490px;
+        }
+    }
+
+    .statusbar-img {
+        margin-bottom: 10px;
+    }
+
     .small-right-margin {
-        margin-right: 12px;
+        margin-right: 11px;
+    }
+
+    .no-right-margin {
+        margin-right: 0px;
+    }
+
+    .statusbar-text {
+        display: block;
+        color: #4A4A4A; 
+        font-size: 13px;	
+        line-height: 18px;
+        width: 373px;
+        margin-bottom: 40px;
+    }
+
+    .mobile-right-margin {
+        margin-right: 72px;
     }
 
     .separator {
