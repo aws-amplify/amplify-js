@@ -4,7 +4,7 @@ layout: homepage
 keywords:
 
 # Hero section
-title: The foundation for cloud-powered mobile & web apps
+title: The foundation for your cloud-powered mobile & web apps
 #description: A JavaScript library for application development using cloud services.
 buttons:
     - content: Get Started
@@ -14,34 +14,18 @@ buttons:
 
 # Grid navigation
 marketing_grid:
-    - title: Build for Web and Mobile
-      excerpt: "Learn how to build cloud-powered web and mobile experiences with AWS Amplify.
-                    <ul>
-                        <li><a href='/amplify-js/media/create/web-apps'>Web apps</a></li>
-                        <li><a href='/amplify-js/media/create/react-native-apps'>React Native apps</a></li>
-                        <li><a href='/amplify-js/media/create/hybrid-mobile-apps'>Hybrid Mobile</a> </li>
-                        <li><a href='/amplify-js/media/create/static-web-sites'>Static Websites</a></li>
-                    </ul>
-                  "
-    - title: Bring your own frontend 
-      excerpt: "AWS Amplify goes well with any JavaScript based frontend library. Learn more about our frontend support:
-                  <ul>
-                    <li><a href='/amplify-js/media/angular_guide'>Angular</a> & <a href='/amplify-js/media/ionic_guide'>Ionic</a></li>
-                    <li><a href='/amplify-js/media/react_guide'>React</a> </li>
-                    <li><a href='/amplify-js/media/react_native_guide'>React Native</a></li>
-                    <li><a href='/amplify-js/media/vuejs_guide'>Vue.js</a></li>
-                  </ul>
-                "
-
-    - title: Easy to use declarative API
-      excerpt: "Leverage an easy-to-use API for cloud operations. See how you can add common tasks quickly:
-                    <ul>
-                        <li><a href='/amplify-js/media/create/examples#add-authentication-to-your-app'>Authentication</a></li>
-                        <li><a href='/amplify-js/media/create/examples#store-files-on-the-cloud'>File storage</a></li>
-                        <li><a href='/amplify-js/media/create/examples#tracking-user-activity-in-your-app'>User activity</a> </li>
-                        <li><a href='/amplify-js/media/create/examples#signing-http-requests'>Secure API requests</a></li>
-                    </ul>
-                "
+    - title: <span class="orange-text">Easy-to-Use</span> Library
+      icon: '/images/icons/Medium/Library-window.png'
+      excerpt: Choose your cloud services and easily connect them to your app with just a few lines of code.
+      url: '/media/get_started'
+    - title: <span class="orange-text">Powerful</span> Toolchain
+      icon: '/images/icons/Medium/CLI-Toolchain.png'
+      excerpt: Effortlessly create and maintain sophisticated serverless backends for your apps.
+      url: '/media/cli_home'
+    - title: <span class="orange-text">Beautiful</span> UI Components
+      icon: '/images/icons/Medium/UI-Components.png'
+      excerpt: Accelerate app development by leveraging our beautiful out-of-the box UI components.
+      url: '/media/ui_library'
 
 cloud_grid_left:
   - title: Analytics
@@ -53,9 +37,9 @@ cloud_grid_left:
   - title: Authentication
     excerpt: Authentication APIs with pre-built UI components for your app.
     url: '/media/authentication_guide'
-  - title: Hosting
-    excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
-    url: '/media/hosting_guide'  
+  - title: Storage
+    excerpt: A simple mechanism for managing user content in public, protected or private storage.
+    url: '/media/storage_guide' 
 
 cloud_grid_right:
   - title: Interactions
@@ -64,12 +48,9 @@ cloud_grid_right:
   - title: PubSub
     excerpt: Connect your app to message-oriented middleware on the cloud.
     url: '/media/pub_sub_guide'   
-  - title: Push Notifications
+  - title: Notifications
     excerpt: Push notifications with campaign analytics and targeting.
     url: '/media/push_notifications_setup'  
-  - title: Storage
-    excerpt: A simple mechanism for managing user content in public, protected or private storage.
-    url: '/media/storage_guide' 
 
 utility_modules:
   - title: Cache

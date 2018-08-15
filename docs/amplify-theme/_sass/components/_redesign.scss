@@ -3,6 +3,14 @@
  */
 
 /* ----- General ----- */
+.orange-text {
+    color: #FF9900 !important;
+}
+
+.white-text {
+    color: white !important;
+}
+
 .site-header {
 	position: fixed;
 	//width: 1442px;
@@ -26,6 +34,11 @@
         margin-bottom: 9px;    
         width: 1180px;
         max-width: 90%;
+
+        @media (max-width:1080px) {
+            max-width: 100%;
+            margin-left: 5%;
+        }
 
         @media (max-width: 767px) {
             max-width: 95%;
@@ -113,7 +126,7 @@
     background: transparent !important;
 
     @media (max-width: 882px){
-        margin-top: 20px !important;
+        //margin-top: 20px !important;
     }
 
 	li {
@@ -182,12 +195,12 @@
     }
 }
 
-@media (max-width: 882px) {
+@media (max-width: 1080px) {
 	.site-header__nav {
 		width: 100%;
 		background: white;
 		text-align: center;
-		margin-top: -2px;
+		//margin-top: -2px;
 	}
 }
 
@@ -615,10 +628,10 @@ a {
         max-width: 680px;
     }
 
-    .marketing-div {
-        padding-right: 40px;
-        padding-left: 0px;
-    }
+    // .marketing-div {
+    //     padding-right: 40px;
+    //     padding-left: 0px;
+    // }
 
     .subheader {
         color: #828282;
@@ -707,6 +720,12 @@ a {
     //     float: right;
     // }
 
+    #right-cloud-col {
+        @media (min-width: 819px) {
+            float: right;
+        }
+    }
+
     .cloud-col {
         display: inline-block;
         margin-right: 20px;
@@ -758,7 +777,7 @@ a {
         //margin-top: 50px;  
         padding: 0;
 
-        @media (min-width: 1174px) {
+        @media (min-width: 1194px) {
             float: right;
         }
     }
@@ -1027,28 +1046,36 @@ body {
     }
 
     margin-bottom: 50px;
-
+    margin-top: 30px;
     // .col-sm-6 {
     //     max-width: 340px;
     // }
 
     .marketing-grid-item {
-        .marketing-grid__title {
-            color: #232F3E;
-            font-family: "Amazon Ember", "Helvetica", sans-serif;
-            font-size: 21px;
-            font-weight: bold;
-            line-height: 26px;
-            padding-bottom: 0;
+        .marketing-grid__icon {
+            max-width: 43%;
+            display: block;
+            margin: auto;
         }
-        // .marketing-grid-content {
-        //     max-width: 300px;
-        // }
-        .marketing-grid__excerpt {
-            font-family: "Amazon Ember", "Helvetica", sans-serif;
-            font-size: 16px;
-            line-height: 24px;
-            margin-bottom: 4px;
+        .marketing-grid-content {
+            display: block;
+            margin: auto;
+            width: 90%;
+
+            .marketing-grid__title {
+                color: #232F3E;
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
+                font-size: 21px;
+                font-weight: bold;
+                line-height: 26px;
+                padding-bottom: 0;
+            }
+            .marketing-grid__excerpt {
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
+                font-size: 16px;
+                line-height: 24px;
+                margin-bottom: 4px;
+            }
         }
         li {
             margin: 0;

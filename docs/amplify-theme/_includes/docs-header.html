@@ -53,9 +53,24 @@
                                 <option value="javascript">JavaScript</option>
                                 <option value="cli">Amplify CLI</option>
                             </select>
-                        </div>
+						</div>
 					{% if site.amplify.header.nav %}
 						<ul class="site-header__nav hidden-xs">
+						{% for item in site.amplify.header.nav %}
+							<li>
+								{% if item.item_external_url %}
+									<a class="white-text" href="{{ item.item_external_url }}">
+										{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
+										{{ item.item_name }}
+									</a>
+								{% else %}
+									<a class="white-text" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
+										{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
+										{{ item.item_name }}
+									</a>
+								{% endif %}
+							</li>
+						{% endfor %}
 							<li class="site-search">
 								<input placeholder="   Search Docs" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/Search.svg"></input>
 							</li>

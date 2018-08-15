@@ -62,7 +62,7 @@ amplify:
     color_theme:  # Available themes: blue (default), green, purple, red and yellow
     header:
         logo:
-            text: Amplify
+            text: AWS Amplify
             image: true
             platform: for JavaScript
         nav:
@@ -70,6 +70,8 @@ amplify:
               item_url: '/media/get_started'
             - item_name: Guides
               item_url: '/media/developer_guide'
+            - item_name: Tutorials
+              item_url: 'media/tutorials'
             - item_name: Toolchain
               item_url: '/media/cli_home'
             - item_name: User Interface
