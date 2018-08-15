@@ -316,3 +316,12 @@ styleguide:
   - title: Components
     url: '#aws-components'
 
+js_libraries:
+  - title: React
+    url: '?platform=react'
+  - title: React Native
+    url: '?platform=react-native'
+  - title: Angular
+    url: '?platform=angular'
+  - title: JavaScript (no library)
+    url: '?platform=purejs'

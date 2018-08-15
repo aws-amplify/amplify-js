@@ -68,11 +68,20 @@
 							</div><!-- /.sections-list -->
 						</div>
 					</div><!-- /.col -->
-					<div class="col-md-8 section-top docs-container">
-						<div class="content">
-							{{ content }}
-						</div><!-- /.content -->
-					</div><!-- /.col -->
+						<div class="col-md-8 section-top docs-container">
+							{% if page.url contains 'quick_start' %}
+							<div class="js-library-selector">
+								<select onchange="location = this.value" id="js-library-select">
+									{% for item in site.js_libraries %}
+										<option value={{ item.url }}>{{ item.title }}</option>
+									{% endfor %}
+								</select>
+							</div>
+							{% endif %}
+							<div class="content">
+								{{ content }}
+							</div><!-- /.content -->
+						</div><!-- /.col -->
 				</div><!-- /.row -->
 			</div><!-- /.container -->
 		</div><!-- /.section -->
@@ -133,21 +142,33 @@
 				}
 			{% endfor %}
 		}
+		{% if page.url contains 'quick_start' %}
+				if ( $.urlParam( 'platform' )) {
+					var platform = $.urlParam('platform');
+					if (platform) {
+						document.getElementById("js-library-select").value = "?platform="+platform;
+					}
+				}
+		{% endif %}
 	</script>
 	{% if jekyll.environment == 'production' %}
 		<script>
 			var setBackgroundImage = function() {
 				const version_box = document.getElementById("version-selector-select");
 				const view_section_box = document.getElementById("section-select");
+				const js_library_box = document.getElementById("js-library-select");
 				version_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
 				view_section_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
+				if (js_library_box) js_library_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat";
 				if (window.innerWidth < 767) {
 					version_box.style.backgroundPosition = "240px 5px";
 					view_section_box.style.backgroundPosition = "240px 5px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "240px 5px";
 				}
 				else {
 					version_box.style.backgroundPosition = "164px 3px";
 					view_section_box.style.backgroundPosition = "164px 3px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "170px 6px";
 				}
 			}
 
@@ -158,15 +179,19 @@
 			var setBackgroundImage = function() {
 				const version_box = document.getElementById("version-selector-select");
 				const view_section_box = document.getElementById("section-select");
+				const js_library_box = document.getElementById("js-library-select");
 				version_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
 				view_section_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+				if (js_library_box) js_library_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
 				if (window.innerWidth < 767) {
 					version_box.style.backgroundPosition = "240px 5px";
 					view_section_box.style.backgroundPosition = "240px 5px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "240px 5px";
 				}
 				else {
 					version_box.style.backgroundPosition = "164px 3px";
 					view_section_box.style.backgroundPosition = "164px 3px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "170px 6px";
 				}
 			}
 

@@ -1650,6 +1650,14 @@ li {
         @media (max-width: 882px) {
             margin-top: 8px !important;
         }
+
+        .docs-nav:hover {
+
+            a {
+                border-bottom: 2px solid white;
+                transition: border-color 0.2s;
+            }
+        }
     }
     
     .language-selector {
@@ -2029,7 +2037,29 @@ li {
             max-width: 100% !important;
         }
 
+        .js-library-selector {
+            background-color: #FF9900;
+            border-radius: 4px;
+            position: absolute;
+            top: 27px;
+            right: 27px;
+                
+                select {
+                    color: white;
+                    font-family: "Amazon Ember", "Helvetica", sans-serif;
+                    font-size: 16px;	
+                    line-height: 24px;
+                    padding: 10px;
+                    border: none;
+                    filter: brightness(0) invert(1);
+                }
+        }
+
         .content {
+
+            .tabs {
+                display: none;
+            }
 
             .tab-content {
                 padding: 0;
