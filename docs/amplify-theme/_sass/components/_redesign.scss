@@ -606,7 +606,7 @@ a {
 
     .container {
         padding: 0;
-        padding-top: 63px;
+        //padding-top: 63px;
         margin: auto;
         max-width: 83%;
     }
@@ -1178,7 +1178,7 @@ li {
     }
 
     .container {
-        padding: 0;
+        //padding: 0;
         width: 100%;
     }
 
@@ -1293,7 +1293,7 @@ li {
             border-radius: 5px;
             display: inline-block;
             width: 100%;
-            height: 180px;
+            //height: 180px;
 
             @media (max-width: 767px) {
                 height: auto;
@@ -1319,6 +1319,10 @@ li {
                 position: absolute;
                 top: 12px;
                 right: 12px;
+            }
+
+            .tutorials-content {
+                margin-bottom: 0 !important;
             }
 
             .dev-guide-content {
