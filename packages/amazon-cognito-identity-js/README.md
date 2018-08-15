@@ -394,6 +394,8 @@ Note that the inputVerificationCode method needs to be defined but does not need
 
 **Use case 9.** Enabling MFA for a user on a pool that has an optional MFA setting for an authenticated user.
 
+Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
+
 ```javascript
     cognitoUser.enableMFA(function(err, result) {
         if (err) {
@@ -405,6 +407,8 @@ Note that the inputVerificationCode method needs to be defined but does not need
 ```
 
 **Use case 10.** Disabling MFA for a user on a pool that has an optional MFA setting for an authenticated user.
+
+Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
 
 ```javascript
     cognitoUser.disableMFA(function(err, result) {
