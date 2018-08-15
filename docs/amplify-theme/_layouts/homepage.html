@@ -32,7 +32,7 @@
 										{% endif %}
 									{% endfor %}
 									<div class="logos">
-										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/JS-Small-White@1x.png">
+										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/Web-Icon.svg">
 										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/React-Small-White@1x.png">
 										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Apple-Small-White@1x.png">
 										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Droid-Small-White@1x.png">
@@ -92,15 +92,15 @@
 			<div class="container">
 				<div class="row">
 					<div class="header col-sm-11">
-						A library and command line interface (CLI) made for building cloud-powered applications
+						Simplify your codebase & build beautiful mobile and web apps, powered by the cloud
 					</div>
-					<div class="subheader col-sm-11">
+					<!-- <div class="subheader col-sm-11">
 						Default implementation included for AWS; Open and pluggable for any custom backend or service.
-					</div>
+					</div> -->
 				</div>
-				<div>
+				<!-- <div>
 					<a href="media/cli_home"><button class="btn" id="top-section-btn">Get Started</button></a>
-				</div>
+				</div> -->
 				<div class="row">
 					<div class="marketing-grid">
 						<div class="row">
@@ -117,11 +117,11 @@
 						</div><!-- /.row -->
 					</div><!-- /.nav-grid -->
 				</div><!-- /.row -->
-				<div class="row">
+				<!-- <div class="row">
 					<div class="subheader bottom-subheader">
 						For mobile development, check out the AWS Mobile SDKs for <a>iOS</a>, <a>Android</a>, and <a>Xamarin</a>.
 					</div>
-				</div>
+				</div> -->
 			</div><!-- /.container -->
 		</div><!-- /.section -->
 		{% endif %}
@@ -130,10 +130,16 @@
 		<div class="section section-top not-top-section">
 			<div class="container">
 				<div class="header" id="launch-header">
-					Launch quickly with Amplify building blocks
+					Launch quickly with Amplify building blocks.
 				</div>
 				<div class="subheader" id="launch-subheader">
 					AWS Amplify comes with building blocks for frontend and mobile developers to interact with the Cloud. You can mix and match categories below as needed.
+				</div>
+				<div class="learn-more-link-box">
+					<a href="/media/get_started">
+						<p class="learn-more-link">Get Started with Amplify</p>
+						<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+					</a>
 				</div>
 				<div class="grids-container row">
 					<div class="cloud-grid">
@@ -190,13 +196,16 @@
 		<div class="section section-top not-top-section">
 			<div class="container">
 				<div class="header" id="library-header">
-					A beautiful UI library out of the box
+					A beautiful component library connected to the cloud.
 				</div>
 				<div class="subheader">
 					Launch with our minimally-styled components and UI or whitelabel to your own specification.
 				</div>
 				<div>
-					<a href="/media/ui_library"><button class="btn" id="library-btn">View Library</button></a>
+					<a href="/media/ui_library">
+						<p class="learn-more-link">View the Library</p>
+						<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+					</a>
 				</div>
 				<div class="row image-container">
 					<img class="library-image" id="library-auth" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Auth@1x.png">

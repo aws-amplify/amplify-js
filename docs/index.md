@@ -4,7 +4,7 @@ layout: homepage
 keywords:
 
 # Hero section
-title: Build beautiful mobile and web apps, powered by the cloud, with AWS Amplify.
+title: The foundation for cloud-powered mobile & web apps
 #description: A JavaScript library for application development using cloud services.
 buttons:
     - content: Get Started

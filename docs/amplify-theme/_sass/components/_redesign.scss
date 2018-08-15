@@ -386,7 +386,7 @@ a {
 
     @media (max-width: 767px) {
         height: auto !important;
-        background: linear-gradient(30deg, #f90 55%, #fccf30) !important;
+        background: linear-gradient(30deg, #FF9900 55%, #FFC300) !important;
         padding-bottom: 8px !important;
 
         #half-phone {
@@ -786,6 +786,7 @@ a {
 
     .image-container {
         #library-auth {
+            margin-top: 43px;
             @media (max-width: 767px) {
                 margin-top: 40px;
             }
@@ -798,7 +799,7 @@ a {
 
             float: right;
             //margin-right: 100px;
-            margin-top: -127px;
+            margin-top: -90px;
 
             @media (max-width: 1102px) {
                 margin-top: 20px;
@@ -973,7 +974,7 @@ body {
 /* ----- Title ----- */
 .hero-subheader__title {
     height: 168px;
-    width: 740px;
+    width: 660px;
     color: #FFFFFF;
     font-family: "Amazon Ember", "Helvetica", sans-serif;
     font-size: 50px;
@@ -1402,35 +1403,44 @@ li {
 
 #learn-more-about-cli-box {
     display: inline-block;
+    margin-left: 80px;
 
     @media (max-width: 767px) {
         display: block;
         width: 226px;
         margin: auto;
         margin-top: 10px;
-    }
-
-    #learn-more-about-cli {
-        color: #FF9900;
-        font-family: "Amazon Ember", "Helvetica", sans-serif;
-        font-size: 16px;
-        line-height: 24px;
-        display: inline-block;
-        margin-left: 80px;
-
-        @media (max-width: 767px) {
-            margin-left: 0;
-        }
+        margin-left: 0;
     }
 }
 
+.learn-more-link-box {
+    margin-bottom: 20px;
+}
 
-#down-arrow {
+.learn-more-link {
+    color: #FF9900;
+    font-family: "Amazon Ember", "Helvetica", sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    display: inline-block;
+}
+
+.down-arrow {
     display: inline-block;
     vertical-align: middle;
     margin-left: 13px;
     box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
     border-radius: 100%;
+}
+
+.side-arrow {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 13px;
+    box-shadow: 1px 1px 10px rgba(0,0,0,0.2);
+    border-radius: 100%;
+    transform: rotate(-90deg);
 }
 
 .section-top-quickstart {
