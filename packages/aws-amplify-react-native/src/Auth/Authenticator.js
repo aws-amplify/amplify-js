@@ -153,11 +153,10 @@ export default class Authenticator extends React.Component {
                 });
             });
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            
                 <View style={theme.container}>
                     {children}
                 </View>
-            </TouchableWithoutFeedback>
         );
     }
 }
