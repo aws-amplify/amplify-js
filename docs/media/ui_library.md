@@ -111,7 +111,7 @@ The selection below demonstrates primary typographic treatments derived from  AW
 <p class="font-example" id="p">And when the vespers within us begin to toll, not to mark frivolous increments of time but to signify permanent footprints in the bold ascent that is self-exploration, not to command followers to a temple for blind worship of others but to summon ourselves to uncover, understand and unleash those divinest of powers within us . . . when those bells begin to rumble and chime, ladies and gentlemen, we will hear a symphony whose beauty conjures Beethoven. -Bob Dylan</p>
 </div>
 
-## Controls
+## Controls & Inputs
 
 ### Primary and Secondary Buttons
 The button catalogue is composed of two main button styles, primary and secondary, with 3 sizes and icon-only derivatives. A third style is available for critical operations like removing records and irreversible actions. On smaller displays buttons should fill most of the available width of the container. 
@@ -228,7 +228,7 @@ Notifications & helpers are offered in a few main styles. Notifications should b
 </span>
 
 
-## Components
+## AWS Components
 
 ### User Authentication
 The authentication component utilizes the styles outlined in the styleguide to provide a minimal, yet lightly AWS-branded experience out of the box.

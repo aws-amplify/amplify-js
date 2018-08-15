@@ -308,9 +308,9 @@ styleguide:
   - title: 'Typography'
     url: '#typography'
   - title: 'Controls'
-    url: '#controls'
+    url: '#controls--inputs'
   - title: 'Widgets'
     url: '#widgets'
   - title: Components
-    url: '#components'
+    url: '#aws-components'
 
