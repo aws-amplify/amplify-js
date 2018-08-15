@@ -106,7 +106,7 @@
 						<div class="row">
 							{% for item in page.marketing_grid %}
 								<div class="col-sm-4 marketing-div">
-									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{item.url}}"class="marketing-grid-item">
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{item.url}}" class="marketing-grid-item">
 										<img class="marketing-grid__icon" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{item.icon}}" />
 										<div class="marketing-grid-content" data-mh>
 											<h2 class="marketing-grid__title">{{ item.title }}</h2>
@@ -193,17 +193,17 @@
 		</div><!-- /.section -->
 		{% endif %}
 
-		<div class="section section-top cli" id="marketing-section">
+		<div class="section section-top cli">
 				<div class="container">
 					<div class="row">
-						<div class="header col-sm-10">
+						<div class="header col-sm-8">
 							Powerful toolchain built for developers.
 						</div>
 					</div>
 					<div class="row">
 						<div class="marketing-content">
 							<p class="subheader inline">The Amplify Command Line Interface (CLI) is a unified tool to manage your AWS services. With just one tool to download and configure, you can control multiple AWS services from the command line and automate them through scripts.</p>
-							<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/cli_home">
+							<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/cli_home">
 								<p class="learn-more-link">Learn more</p>
 								<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
 							</a>
@@ -215,20 +215,24 @@
 			</div><!-- /.section -->
 
 		{% if page.marketing_grid%}
-		<div class="section section-top not-top-section">
+		<div class="section section-top not-top-section" id="bottom-section">
 			<div class="container">
 				<div class="header" id="library-header">
 					A beautiful component library connected to the cloud.
 				</div>
-				<div class="subheader">
+				<div class="subheader inline col-sm-7">
 					Launch with our minimally-styled components and UI or whitelabel to your own specification.
+					<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/cli_home">
+						<p class="learn-more-link">Learn more</p>
+						<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+					</a>
 				</div>
-				<div>
+				<!-- <div>
 					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/ui_library">
 						<p class="learn-more-link">View the Library</p>
 						<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
 					</a>
-				</div>
+				</div> -->
 				<div class="row image-container">
 					<img class="library-image" id="library-auth" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Auth@1x.png">
 					<img class="library-image" id="library-chat" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Chat@1x.png">
@@ -237,7 +241,7 @@
 		</div><!-- /.section -->
 		{% endif %}
 
-		{% if page.marketing_grid%}
+		<!-- {% if page.marketing_grid%}
 		<div class="section section-top not-top-section" id="bottom-section">
 			<div class="container">
 				<div class="header" id="install-header">
@@ -271,9 +275,9 @@
 				<div>
 					<a href="media/get_started"><button class="btn" id="view-all-platforms-btn">View all platforms</button></a>
 				</div>
-			</div><!-- /.container -->
-		</div><!-- /.section -->
-		{% endif %}
+			<!-- </div>/.container -->
+		<!-- </div>/.section -->
+		<!-- {% endif %} -->
 
 		<!-- {% if page.grid_navigation %}
 			<div class="section section--darker-theme-color-bg">

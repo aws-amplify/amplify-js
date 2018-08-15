@@ -12,15 +12,15 @@
 }
 
 .inline {
-    display: inline;
+    display: inline !important;
 }
 
 .inline-block {
-    display: inline-block;
+    display: inline-block !important;
 }
 
 .block {
-    display: block;
+    display: block !important;
 }
 
 .site-header {
@@ -68,7 +68,7 @@
 
     @media (max-width: 767px) {
         display: block;
-        width: 150px;
+        width: 208px;
         margin: auto;
     }
 }
@@ -2129,7 +2129,7 @@ li {
 .section-top.cli {
     .marketing-content {
         width: 40%;
-        margin-bottom: 50px;
+        margin-top: 50px;
 
         .marketing-grid__title {
             color: #232F3E;
@@ -2195,7 +2195,7 @@ li {
         width: 390px;
         bottom: 205px;
         left: 20px;
-        margin-bottom: -205px;
+        margin-bottom: -140px;
     }
 
     #pages {
