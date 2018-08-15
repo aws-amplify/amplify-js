@@ -1,17 +1,3 @@
-{% if site.amplify.header.logo.text or site.amplify.header.logo.image or site.amplify.header.nav %}
-<div class="notification-bar row" id="notification-bar">
-	<div class="notification-content">
-		<div class="col-xs-5">
-			<img class="notification-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Medium/Volume.svg">
-		</div>
-		<p class="notification-text col-xs-7">News: The New VR Component is live and ready to deploy!</p>
-	</div>
-	<div class="close-button">
-		<a href=''><i class="icon icon--x"></i></a>
-	</div>
-</div>
-{% endif %}
-
 
 {% if site.amplify.header.nav %}
 	<div class="offcanvas visible-xs">
