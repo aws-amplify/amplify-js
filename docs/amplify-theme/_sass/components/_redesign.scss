@@ -640,10 +640,14 @@ a {
         max-width: 680px;
     }
 
-    // .marketing-div {
-    //     padding-right: 40px;
-    //     padding-left: 0px;
-    // }
+    .marketing-div {
+        // padding-right: 40px;
+        // padding-left: 0px;
+
+        @media screen {
+            margin-bottom: 20px;
+        }
+    }
 
     .subheader {
         color: #828282;
@@ -1041,7 +1045,7 @@ body {
 }
 .marketing-grid {
     @media (max-width: 767px) {
-        margin-bottom: 0 !important;
+        //margin-bottom: 0 !important;
 
         .marketing-grid-item {
             .marketing-grid__title {
@@ -2130,6 +2134,11 @@ li {
     .marketing-content {
         width: 40%;
         margin-top: 50px;
+
+        @media (max-width: 767px) {
+            width: 100%;
+            margin-top: 0;
+        }
 
         .marketing-grid__title {
             color: #232F3E;

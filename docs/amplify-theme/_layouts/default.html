@@ -40,7 +40,7 @@
 							<div class="version-selector">
 								<select onchange="location = this.value" id="section-select">
 									{% for category in site.category_list %}
-										<option value={{ category.base_url }}>{{ category.title }}</option>
+										<option value={% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ category.base_url }}>{{ category.title }}</option>
 									{% endfor %}
 								</select>
 							</div>
