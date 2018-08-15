@@ -1013,7 +1013,7 @@ body {
 /* ----- Title ----- */
 .hero-subheader__title {
     height: 168px;
-    width: 660px;
+    //width: 660px;
     color: #FFFFFF;
     font-family: "Amazon Ember", "Helvetica", sans-serif;
     font-size: 50px;
@@ -1454,7 +1454,8 @@ li {
 
 #learn-more-about-cli-box {
     display: inline-block;
-    margin-left: 80px;
+    //margin-left: 80px;
+    margin-bottom: 40px;
 
     @media (max-width: 767px) {
         display: block;
