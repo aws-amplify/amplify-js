@@ -71,7 +71,7 @@ amplify:
             - item_name: Guides
               item_url: '/media/developer_guide'
             - item_name: Tutorials
-              item_url: 'media/tutorials'
+              item_url: '/media/tutorials'
             - item_name: Toolchain
               item_url: '/media/cli_home'
             - item_name: User Interface
