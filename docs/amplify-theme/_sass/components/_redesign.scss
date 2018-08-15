@@ -407,6 +407,9 @@ a {
  */
 
 /* ----- General ----- */
+.section-padding {
+    padding-top: 68px;
+}
 .hero-subheader {
 
     @media (max-width: 767px) {
@@ -630,6 +633,7 @@ a {
         //margin: 63px 100px 10px 100px;
         margin-bottom: 30px;
         padding: 0;
+        padding-top: 63px;
     }
 
     #launch-header {
@@ -1246,8 +1250,8 @@ li {
         }
 
         .header {
-            padding: 0 20px;
-            margin-top: 68px;
+            //padding: 0 20px;
+            //margin-top: 68px;
 
             @media (max-width: 767px) {
                 margin-top: 0;
@@ -1525,10 +1529,6 @@ li {
     .container {
         .row {
             margin-bottom: 78px;
-
-            .header {
-                padding: 0;
-            }
 
             .subheader {
                 padding: 0;
