@@ -56,6 +56,17 @@
             max-width: 95%;
             margin-top: 11px;
         }
+        
+        #github-logo {
+            position: absolute;
+            display: none;
+
+            @media (min-width: 1314px) {
+                right: calc(50vw - 640px);
+                bottom: 24px;
+                display: block;
+            }
+        }
     }
 }
 
