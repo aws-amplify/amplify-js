@@ -1,4 +1,4 @@
-jest.mock('dom-utils', () => {
+jest.mock('dom-utils-amplify', () => {
     return {
        delegate: jest.fn()
     }
