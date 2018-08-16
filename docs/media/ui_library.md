@@ -1,8 +1,9 @@
 ---
 layout: ui_library
 ---
-## Colors
 
+<div class="ui-section">
+## Colors
 
 ### UI Colors
 <span class="excerpt">UI Color for AWS amplify are derived from Amazon’s primary color pallette and examples commonly used through the current AWS websites. Most primary actions are wrapped in Amazon Orange. Dark backgrounds and darker treatments will typically receive the Squid Ink Amazon color treatment.</span>
@@ -45,7 +46,9 @@ The extended library uses colors also derived form the primary Amazon palette al
     <span class="title">AWS Purple & Blue</span>
     <span class="inline-img">![AWS Purple & Blue]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/el_purple_blue.png)</span>
 </span>
+</div>
 
+<div class="ui-section">
 ## Typography
 
 ### Primary Typefaces
@@ -108,7 +111,9 @@ The selection below demonstrates primary typographic treatments derived from  AW
 
 <p class="font-example" id="p">And when the vespers within us begin to toll, not to mark frivolous increments of time but to signify permanent footprints in the bold ascent that is self-exploration, not to command followers to a temple for blind worship of others but to summon ourselves to uncover, understand and unleash those divinest of powers within us . . . when those bells begin to rumble and chime, ladies and gentlemen, we will hear a symphony whose beauty conjures Beethoven. -Bob Dylan</p>
 </div>
+</div>
 
+<div class="ui-section">
 ## Controls & Inputs
 
 ### Primary and Secondary Buttons
@@ -172,7 +177,9 @@ Toggles allow users to switch views and force sort or single-selection viewing o
     <span class="title">Pagination & Carousel</span>
     <span class="inline-img">![Pagination & Carousel]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/pagination_carousel.png)</span>
 </span>
+</div>
 
+<div class="ui-section">
 ## Widgets
 
 ### Modals & Dialogues
@@ -224,7 +231,7 @@ Notifications & helpers are offered in a few main styles. Notifications should b
     <span class="title">Multi-Select Calendar on Mobile</span>
     <span class="inline-img">![Multi-Select Calendar on Mobile]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/multi_select_calendar_mobile.png)</span>
 </span>
-
+</div>
 
 ## AWS Components
 

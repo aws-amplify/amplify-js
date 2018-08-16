@@ -2368,6 +2368,10 @@ li {
     display: inline-block;
     width: calc(100% - 230px) !important;
 
+    .ui-section {
+        border-bottom: 1px solid #232F3E;
+    }
+
     h1 {
         font-size: 50px !important;
     }
@@ -2378,9 +2382,10 @@ li {
         font-size: 40px !important;
         font-weight: bold !important;
         line-height: 60px !important;
-        border-top: 1px solid #232F3E !important;
+        border-top: none !important;
         border-bottom: 1px solid #E1E4EA !important;
         padding: 20px 0 20px 0 !important;
+        margin-top: 0 !important;
     }
 
     h3 {
@@ -2578,9 +2583,10 @@ li {
 
 .styleguide-nav {
     width: 230px !important;
+    top: 80px !important;
     
     .sections-list {
-        margin-top: 100px;
+        margin-top: 30px;
     }
 
     li {
