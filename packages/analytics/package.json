@@ -19,9 +19,6 @@
   "react-native": {
     "./lib/trackers": "./lib/trackers/reactnative.js"
   },
-  "react": {
-    "./lib/vendors": "./lib/vendors/react.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aws/aws-amplify.git"
@@ -56,7 +53,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "dom-utils": "0.9.0",
+    "dom-utils-amplify": "0.10.0",
     "@aws-amplify/cache": "^1.0.3",
     "@aws-amplify/core": "^1.0.3",
     "aws-sdk": "2.198.0",
