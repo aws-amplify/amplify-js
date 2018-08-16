@@ -218,27 +218,27 @@ category_list:
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
           cta: Read more
           url: '/media/cache_guide'  
-          icon: '/images/icons/Misc/Gear-Icon.svg'
+          icon: '/images/icons/Misc/Gear.svg'
         - title: Hub  
           excerpt: A lightweight local event bus for your app.
           cta: Read more
           url: '/media/hub_guide' 
-          icon: '/images/icons/Misc/Gear-Icon.svg'
+          icon: '/images/icons/Misc/Gear.svg'
         - title: I18n  
           excerpt: A lightweight internationalization solution.
           cta: Read more
           url: '/media/i18n_guide'  
-          icon: '/images/icons/Misc/Gear-Icon.svg'
+          icon: '/images/icons/Misc/Gear.svg'
         - title: Logger  
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide'  
-          icon: '/images/icons/Misc/Gear-Icon.svg'
+          icon: '/images/icons/Misc/Gear.svg'
         - title: Service Worker 
           excerpt: A utility class to work with PWA and Service Worker APIs. 
           cta: Read more
           url: '/media/service_workers_guide'   
-          icon: '/images/icons/Misc/Gear-Icon.svg'   
+          icon: '/images/icons/Misc/Gear.svg'   
           
     - category: Toolchain
       title: Toolchain
@@ -249,13 +249,13 @@ category_list:
           excerpt: Manage all of your services in one unified tool with Amplify Command Line Interface
           cta: Read more
           url: '/media/cli_guide'  
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Tool.svg'
         - title: Hosting 
           excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
           cta: Read more
           class: aws-icon-ps-60-network-nodes
           url: '/media/hosting_guide'   
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Tool.svg'
           services:
               - title: Amazon CloudFront
                 url: https://aws.amazon.com/cloudfront/
