@@ -243,7 +243,7 @@ category_list:
     - category: Toolchain
       title: Toolchain
       excerpt: Better developer experience when building and deploying your apps.
-      base_url: '/media/cache_guide'
+      base_url: '/media/cli_guide'
       subs:
         - title: Amplify CLI 
           excerpt: Manage all of your services in one unified tool with Amplify Command Line Interface

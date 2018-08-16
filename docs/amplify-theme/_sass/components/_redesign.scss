@@ -1261,6 +1261,10 @@ li {
     width: 90%;
     margin: auto;
 
+    @media (max-width: 828px) {
+        width: 100% !important;
+    }
+
     .section-top {
         max-width: 1180px;
         width: 100%;
@@ -1307,6 +1311,7 @@ li {
                         margin-left: auto;
                         margin-right: auto;
                         text-align: center;
+                        margin-bottom: 0;
                     }
                 }
 
@@ -2197,16 +2202,22 @@ li {
             position: absolute;
             top: 27px;
             right: 27px;
+
+            @media (max-width: 828px) {
+                position: static;
+                margin-bottom: 20px;
+                width: 200px;
+            }
                 
-                select {
-                    color: white;
-                    font-family: "Amazon Ember", "Helvetica", sans-serif;
-                    font-size: 16px;	
-                    line-height: 24px;
-                    padding: 10px;
-                    border: none;
-                    filter: brightness(0) invert(1);
-                }
+            select {
+                color: white;
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
+                font-size: 16px;	
+                line-height: 24px;
+                margin: 10px;
+                border: none;
+                filter: brightness(0) invert(1);
+            }
         }
 
         .content {
@@ -2393,6 +2404,10 @@ li {
 
     #orange-logos {
         width: 220px;
+
+        @media (max-width: 828px) {
+            margin-bottom: 20px;
+        }
     }
 
     #pages {
