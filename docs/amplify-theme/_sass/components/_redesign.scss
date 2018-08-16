@@ -67,6 +67,18 @@
                 display: block;
             }
         }
+
+        #github-logo-docs {
+            position: absolute;
+            display: none;
+            filter: brightness(0) invert(1);
+
+            @media (min-width: 1314px) {
+                right: calc(50vw - 640px);
+                bottom: 24px;
+                display: block;
+            }
+        }
     }
 }
 
@@ -432,6 +444,14 @@ a {
             display: none !important;
         }
 
+        #half-laptop {
+            display: none !important;
+        }
+
+        #half-chatbot {
+            overflow-y: hidden;
+        }
+
         .hero-subheader__title {
             width: 100% !important;
             font-size: 24px !important; //30
@@ -460,6 +480,11 @@ a {
                 padding-right: 14px;
             }
         }
+    }
+
+    .ui-header {
+        position: relative;
+        top: 75px;
     }
 
 	color: $color-dark-blue;
@@ -546,10 +571,15 @@ a {
 
     #half-phone {
         width: 618px;
-        margin-left: 100px;
-        margin-top: 50px;
         display: inline-block;
         margin-top: -195px;
+        margin-left: 620px;
+    }
+
+    #half-laptop {
+        width: 478px;
+        display: inline-block;
+        margin-top: -260px;
         margin-left: 620px;
     }
 }
@@ -2224,7 +2254,7 @@ li {
 /***                       new stuff for cli homepage                      ***/
 //=============================================================================
 
-.hero-subheader.cli {
+.hero-subheader.dark {
     background: none;
     background-color: #31465F;
 
