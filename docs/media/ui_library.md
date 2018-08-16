@@ -1,8 +1,6 @@
 ---
 layout: ui_library
 ---
-# User Interace Library
-
 ## Colors
 
 

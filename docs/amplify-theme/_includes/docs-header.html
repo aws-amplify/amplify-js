@@ -43,7 +43,7 @@
 					{% if site.amplify.header.nav %}
 						<ul class="site-header__nav hidden-xs">
 						{% for item in site.amplify.header.nav %}
-							<li>
+							<li class="docs-nav">
 								{% if item.item_external_url %}
 									<a class="white-text" href="{{ item.item_external_url }}">
 										{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
@@ -71,6 +71,7 @@
 					{% endif %}
 				</div><!-- /.col -->
 			</div><!-- /.row -->
+			<a id="github-logo-docs" href="https://github.com/aws-amplify/amplify-js"><img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/GitHub-Mark-32px.png" /></a>
 		</div><!-- /.container -->
 	</header><!-- /.site-header -->
 {% endif %}

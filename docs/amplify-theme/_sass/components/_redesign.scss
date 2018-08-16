@@ -56,6 +56,29 @@
             max-width: 95%;
             margin-top: 11px;
         }
+        
+        #github-logo {
+            position: absolute;
+            display: none;
+
+            @media (min-width: 1314px) {
+                right: calc(50vw - 640px);
+                bottom: 24px;
+                display: block;
+            }
+        }
+
+        #github-logo-docs {
+            position: absolute;
+            display: none;
+            filter: brightness(0) invert(1);
+
+            @media (min-width: 1314px) {
+                right: calc(50vw - 640px);
+                bottom: 24px;
+                display: block;
+            }
+        }
     }
 }
 
@@ -408,6 +431,9 @@ a {
  */
 
 /* ----- General ----- */
+.section-padding {
+    padding-top: 68px;
+}
 .hero-subheader {
 
     @media (max-width: 767px) {
@@ -417,6 +443,14 @@ a {
 
         #half-phone {
             display: none !important;
+        }
+
+        #half-laptop {
+            display: none !important;
+        }
+
+        #half-chatbot {
+            overflow-y: hidden;
         }
 
         .hero-subheader__title {
@@ -449,6 +483,11 @@ a {
         }
     }
 
+    .ui-header {
+        position: relative;
+        top: 75px;
+    }
+
 	color: $color-dark-blue;
 	//background-image: url("{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/background.jpg");
 	background: linear-gradient(to right, #FF9900 70%,#fccf30);
@@ -459,7 +498,8 @@ a {
 	background-position: center center;
     //width: 1440px;
     height: 475px;
-	margin: auto;
+    margin: auto;
+    overflow: hidden;
 
 	@media (min-width: $screen-sm-min) {
         padding-top: 130px;
@@ -533,10 +573,15 @@ a {
 
     #half-phone {
         width: 618px;
-        margin-left: 100px;
-        margin-top: 50px;
         display: inline-block;
         margin-top: -195px;
+        margin-left: 620px;
+    }
+
+    #half-laptop {
+        width: 478px;
+        display: inline-block;
+        margin-top: -260px;
         margin-left: 620px;
     }
 }
@@ -566,6 +611,7 @@ a {
 }
 
 .section-top {
+    position: relative;
     
     @media (max-width: 767px) {    
         max-width: 95% !important;
@@ -607,7 +653,7 @@ a {
 
     .container {
         padding: 0;
-        padding-top: 63px;
+        //padding-top: 63px;
         margin: auto;
         max-width: 83%;
     }
@@ -631,6 +677,7 @@ a {
         //margin: 63px 100px 10px 100px;
         margin-bottom: 30px;
         padding: 0;
+        padding-top: 63px;
     }
 
     #launch-header {
@@ -1010,7 +1057,7 @@ body {
 /* ----- Title ----- */
 .hero-subheader__title {
     height: 168px;
-    width: 660px;
+    //width: 660px;
     color: #FFFFFF;
     font-family: "Amazon Ember", "Helvetica", sans-serif;
     font-size: 50px;
@@ -1179,7 +1226,7 @@ li {
     }
 
     .container {
-        padding: 0;
+        //padding: 0;
         width: 100%;
     }
 
@@ -1191,7 +1238,7 @@ li {
         // width: 1180px;
         // max-width: 90%;
         margin: auto;
-        padding-bottom: 45px;
+        padding-bottom: 0;
 
         @media (max-width: 767px) {
             padding-bottom: 10px;
@@ -1247,8 +1294,8 @@ li {
         }
 
         .header {
-            padding: 0 20px;
-            margin-top: 68px;
+            //padding: 0 20px;
+            //margin-top: 68px;
 
             @media (max-width: 767px) {
                 margin-top: 0;
@@ -1257,7 +1304,7 @@ li {
         }
 
         .subheader {
-            padding: 0 20px;
+            //padding: 0 20px;
 
             @media (max-width: 767px) {
                 padding: 0;
@@ -1294,7 +1341,7 @@ li {
             border-radius: 5px;
             display: inline-block;
             width: 100%;
-            height: 180px;
+            //height: 180px;
 
             @media (max-width: 767px) {
                 height: auto;
@@ -1320,6 +1367,10 @@ li {
                 position: absolute;
                 top: 12px;
                 right: 12px;
+            }
+
+            .tutorials-content {
+                margin-bottom: 0 !important;
             }
 
             .dev-guide-content {
@@ -1447,7 +1498,8 @@ li {
 
 #learn-more-about-cli-box {
     display: inline-block;
-    margin-left: 80px;
+    //margin-left: 80px;
+    margin-bottom: 40px;
 
     @media (max-width: 767px) {
         display: block;
@@ -1491,6 +1543,61 @@ li {
     margin-top: 0;
     margin-bottom: 34px;
 
+    .div-number {
+        width: 53px;
+        border-radius: 100%;
+        position: absolute;
+        top: 23px;
+        right: 23px;
+        background-color: #FF9900;
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+        line-height: 53px;
+        text-align: center;
+
+        @media (max-width: 767px) {
+            width: 37px;
+            line-height: 37px;
+            font-size: 22px;
+            top: 10px;
+            right: 10px;
+        }
+    }
+
+    .install-node-p {
+        @media (min-width: 1014px){
+            position: relative;
+            bottom: 69px;
+            left: 10px;
+        }
+    }
+
+    .section-code-block {
+        max-width: 100%;
+        
+        .section-code-content {
+            padding-bottom: 10px;
+        }
+    }
+
+    #aws-logo {
+        width: 260px;
+        position: relative;
+        float: right;
+        bottom: 280px;
+        margin-bottom: -130px;
+
+        @media (min-width: 1000px) {
+            right: 50px;
+        }
+
+        @media (max-width: 785px) {
+            display: none;
+        }
+    }
+
     a {
         border: none;
     }
@@ -1510,7 +1617,7 @@ li {
 
     #install-cli-btn {
         padding: 0 21px;
-        margin-right: 25px;
+        //margin-right: 25px;
 
         @media (max-width: 767px) {
             display: inline-block;
@@ -1522,10 +1629,6 @@ li {
     .container {
         .row {
             margin-bottom: 78px;
-
-            .header {
-                padding: 0;
-            }
 
             .subheader {
                 padding: 0;
@@ -1591,6 +1694,7 @@ li {
                         margin: auto;
                         margin-bottom: 18px;
                         display: block;
+                        width: 112px;
 
                         @media (max-width: 767px) {
                             margin-bottom: 12px;
@@ -1646,6 +1750,14 @@ li {
 
         @media (max-width: 882px) {
             margin-top: 8px !important;
+        }
+
+        .docs-nav:hover {
+
+            a {
+                border-bottom: 2px solid white;
+                transition: border-color 0.2s;
+            }
         }
     }
     
@@ -2026,7 +2138,29 @@ li {
             max-width: 100% !important;
         }
 
+        .js-library-selector {
+            background-color: #FF9900;
+            border-radius: 4px;
+            position: absolute;
+            top: 27px;
+            right: 27px;
+                
+                select {
+                    color: white;
+                    font-family: "Amazon Ember", "Helvetica", sans-serif;
+                    font-size: 16px;	
+                    line-height: 24px;
+                    padding: 10px;
+                    border: none;
+                    filter: brightness(0) invert(1);
+                }
+        }
+
         .content {
+
+            .tabs {
+                display: none;
+            }
 
             .tab-content {
                 padding: 0;
@@ -2122,7 +2256,7 @@ li {
 /***                       new stuff for cli homepage                      ***/
 //=============================================================================
 
-.hero-subheader.cli {
+.hero-subheader.dark {
     background: none;
     background-color: #31465F;
 

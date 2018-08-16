@@ -6,7 +6,22 @@
 	<body class="{{ site.amplify.color_theme }}" data-spy="scroll" data-target=".js-scrollspy">
 		{% include site-header.html %}
 
-		<div class="section" id="styleguide-section">
+		<div class="hero-subheader dark">
+			<div class="container homepage-header">
+				<div class="row">
+					<div class="col-md-8 ui-header">
+						<div class="align-container" data-mh>
+							<div class="align-inner">
+								<h1 class="hero-subheader__title">A beautiful component library connected to the cloud</h1>
+							</div><!-- /.align-inner -->
+						</div><!-- /.align-container -->
+					</div><!-- /.col -->
+					<img id="half-chatbot" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Chat@1x.png">
+				</div><!-- /.row -->
+			</div><!-- /.container -->
+			</div><!-- /.hero-subheader -->
+
+		<div class="section-padding" id="styleguide-section">
 			<div class="container docs-page-container">
 				<!-- <div class="github-edit-link">
 					<a title="Edit this page on github" class="" target="_blank" rel="noopener noreferrer" 
