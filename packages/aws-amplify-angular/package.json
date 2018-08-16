@@ -74,7 +74,6 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.106",
-    "@ionic/angular": "^4.0.0-alpha.10",
     "aws-amplify": "^1.0.5"
   }
 }
