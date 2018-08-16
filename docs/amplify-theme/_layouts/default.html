@@ -143,12 +143,17 @@
 			{% endfor %}
 		}
 		{% if page.url contains 'quick_start' %}
-				if ( $.urlParam( 'platform' )) {
-					var platform = $.urlParam('platform');
-					if (platform) {
-						document.getElementById("js-library-select").value = "?platform="+platform;
-					}
+			let tabs = document.getElementsByClassName('tabs');
+			for (let i = 0; i < tabs.length; i++) {
+				console.log('hi');
+				tabs[i].style.display = 'none';
+			}
+			if ( $.urlParam( 'platform' )) {
+				var platform = $.urlParam('platform');
+				if (platform) {
+					document.getElementById("js-library-select").value = "?platform="+platform;
 				}
+			}
 		{% endif %}
 	</script>
 	{% if jekyll.environment == 'production' %}
