@@ -14,7 +14,8 @@
 import {
     CacheList,
     defaultConfig,
-    getCurrTime
+    getCurrTime,
+    CacheObject
 } from './Utils';
 
 import StorageCache from './StorageCache';
@@ -22,47 +23,6 @@ import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('InMemoryCache');
-
-/**
- * provide an object as the in-memory cache
- */
-
-class CacheObject {
-    private store: Object;
-
-    constructor() {
-        this.store = {};
-        logger.debug('Using InMemoryCache');
-    }
-
-    public clear(): void {
-        this.store = {};
-    }
-
-    public getItem(key: string): string | null {
-        return this.store[key] || null;
-    }
-
-    public setItem(key: string, value: string): void {
-        if (key in this.store) {
-            this.removeItem(key);
-        }
-        this.store[key] = value;
-    }
-
-    public removeItem(key: string): void {
-        delete this.store[key];
-    }
-
-    public showItems(): void {
-        let str: string = 'show items in mock cache: \n';
-
-        for (const key in this.store) {
-            str += key + '\n';
-        }
-        logger.info(str);
-    }
-}
 
 /**
  * Customized in-memory cache with LRU implemented
@@ -73,7 +33,7 @@ class CacheObject {
  * @member cacheSizeLimit - the limit of cache size
  */
 export class InMemoryCache extends StorageCache implements ICache {
-    private cacheObj: CacheObject;
+    private cacheObj;
     private cacheList: CacheList[];
     private curSizeInBytes: number;
     private maxPriority: number;
@@ -88,7 +48,7 @@ export class InMemoryCache extends StorageCache implements ICache {
         const cacheConfig = config ? Object.assign({}, defaultConfig, config) : defaultConfig;
         super(cacheConfig);
         logger.debug('now we start!');
-        this.cacheObj = new CacheObject();
+        this.cacheObj = CacheObject;
         this.cacheList = [];
         this.curSizeInBytes = 0;
         this.maxPriority = 5;
