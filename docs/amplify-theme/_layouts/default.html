@@ -145,7 +145,6 @@
 		{% if page.url contains 'quick_start' %}
 			let tabs = document.getElementsByClassName('tabs');
 			for (let i = 0; i < tabs.length; i++) {
-				console.log('hi');
 				tabs[i].style.display = 'none';
 			}
 			if ( $.urlParam( 'platform' )) {
