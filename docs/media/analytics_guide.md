@@ -11,32 +11,34 @@ AWS Pinpoint enables you to send Analytics data includes user sessions and other
 
 ### Installation and Configuration
 
-Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. Here is how you can enable Analytics category for your app.
+Before start, please be sure that you have installed the CLI and client libraries by visiting [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config). 
+{: .callout .callout--info}
+
+**When you are done with the installation**, you can follow below steps to enable Analytics category in your app.
 
 #### Automated Setup
 
-Automated Setup works with `@aws-amplify/cli` to create your analytics backend. After configuring your backend, you can create a project with fully functioning Analytics category.
+With Amplify CLI, you can easly create your analytics backend configure your app to work with Analytics category.
+
+##### Create Your Backend with the CLI
+
+In order to add Analytics to your app, run the following command in your project's root folder:
 
 ```bash
-$ npm install -g @aws-amplify/cli
+$ amplify add analytics
 ```
 
-You should run all `amplify` commands at *root folder* of your project.
-{: .callout .callout--info}
+The `add` command automatically creates a backend configuration locally, but your backend changes won't be effective until you run `push` command.
 
-In your project's *root folder*, run following command to configure and update your backend:
+In order to update your backend run:
 
 ```bash
-$ cd my-app #Change to your project's root folder
-$ amplify init
-$ amplify push #Update your backend 
+$ amplify push
 ```
 
-*amplify init* enables Analytics module by default for your backend. In case you want to enable/disable it manually, you can use:
+When your backend is successfully updated, your new configuration file `aws-exports.js` is copied under your source directory, e.g. '/src'.
 
-```bash
-$ amplify analytics enable 
-```
+##### Configure Your App
 
 In your app's entry point i.e. App.js, import and load the configuration file which has been created and replaced into `/src` folder in the previous step.
 
@@ -350,7 +352,7 @@ Analytics.configure({
 Please note that the default provider (Amazon Pinpoint) is in use when you call `Analytics.record()`. To use your plugin, provide the plugin name in your method call, such as `Analytics.record({..},'myPlugin')`. 
 {: .callout .callout--info}
 
-## Using modularized module
+## Using Modular Imports
 
 If you only need to use Analytics, you can do: `npm install @aws-amplify/analytics` which will only install the Analytics module for you.
 Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.

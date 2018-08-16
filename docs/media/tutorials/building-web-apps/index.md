@@ -184,7 +184,7 @@ configurable UI for sign-up and sign-in.
 In the root folder of your app, run:
 
 ```bash
-amplify user-signin enable
+amplify add auth
 amplify push
 ```
 
@@ -231,7 +231,7 @@ Enable the User File Storage feature by running the following commands
 in the root folder of your app.
 
 ```bash
-amplify user-files enable
+amplify add storage
 
 amplify push
 ```

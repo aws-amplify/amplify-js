@@ -2,33 +2,49 @@
 ---
 # API
 
-AWS Amplify API module provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
-
-
-API module supports REST and GraphQL endpoints.
+AWS Amplify API module provides a simple solution when making HTTP requests to REST and GraphQL endpoints. It also provides an automatic, lightweight signing process which complies with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
 
 ## Working with REST
-The API module can be used out of the box for creating signed requests against Amazon API Gateway when the API Authorization is set to `AWS_IAM`. 
 
-Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for initial setup.
+API module provides a simple to use REST client when working with REST endpoints. The API module can also be used for creating signed requests against Amazon API Gateway when the Amazon API Gateway API Authorization is set to `AWS_IAM`. 
+
+Before start, please be sure that you have installed the CLI and client libraries by visiting [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config). 
 {: .callout .callout--info}
 
-In API configuration, you are required to pass in an *Amazon Cognito Identity Pool ID*, allowing AWS Amplify to retrieve base credentials for a user even in an unauthenticated state. The configuration also requires a list of your APIs, comprised of a friendly name for the API and the endpoint URL. 
-
-Amazon Cognito Identity Pool is required to have access to the API using *Amazon IAM*. You can configure it manually, or let AWS Mobile Hub do it for you with [Automated Setup](#automated-setup). For manual configuration, please see [Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started.html) developer guide for more details.
-
+**When you are done with the installation**, you can follow below steps to enable API category in your app.
 
 ### Automated Setup
+
+AWS Amplify CLI helps you to create fully functional REST backend which triggers a cloud function and accesses a cloud database. Based on your selected configuration, your REST backend is automatically provisioned using Amazon API Gateway, AWS Lambda, and Amazon DynamoDB.
+
+##### Create Your Backend with the CLI
 
 To create a fully functioning project with the API category, run following commands in the **root directory** of your project:
 
 ```bash
-$ npm install -g @aws-amplify/cli
-$ cd my-app #Change to your project's root folder
-$ amplify init
-$ amplify cloud-api enable
+$ amplify add api
+```
+
+and select `REST` as the service type:
+```bash
+? Please select from one of the below mentioned services
+  GraphQL
+❯ REST
+```
+
+The CLI will prompt you several options to create your resources. With provided options, you can create:
+- REST endpoints that triggers a Lambda function
+- REST endpoints to enable CRUD operations on an Amazon DynamoDB table
+
+You can use existing Lambda functions and DynamoDB tables, or create new ones simply by following the CLI prompts. When you create your resources, update your backend with `push` command:
+
+```bash
 $ amplify push #Update your backend 
 ```
+
+After the backend update, your updated configuration file `aws-exports.js` file will include an API configuration. In case you have selected to create a Serverless Express Lambda function, the boilerplate code for your function will also be created under `amplify/backend/function`.
+
+##### Configure Your App
 
 In your project's entry point, i.e. App.js:
 
@@ -40,6 +56,10 @@ Amplify.configure(aws_exports);
 ```
 
 ### Manual Setup
+
+When you manually configure API category to work with Amazon API gateway, you are required to pass in an *Amazon Cognito Identity Pool ID*, allowing AWS Amplify to retrieve base credentials for a user even in an unauthenticated state. The configuration also requires a list of your APIs, comprised of a friendly name for the API and the endpoint URL.
+
+Amazon Cognito Identity Pool is required to have access to the API using *Amazon IAM*. You can configure it manually, or let Amplify CLI do it for you with [Automated Setup](#automated-setup). For manual configuration, please see [Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started.html) developer guide for more details.
 
 In the manual configuration, you need to provide your AWS Resource credentials to `Amplify.configure()`:
 
@@ -782,7 +802,7 @@ If you have used *amplify* CLI or *AWS Mobile Hub* to create your API, you can e
 7. Finally, similar to step 3, click the Actions dropdown menu and then select **Deploy API**. Select **Development** on deployment stage and then **Deploy**. (Deployment could take a couple of minutes).
 
 
-## Using modularized module
+## Using Modular Imports
 
 If you only need to use Api, you can do: `npm install @aws-amplify/api` which will only install the Api module for you.
 Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.

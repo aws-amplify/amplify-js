@@ -129,7 +129,7 @@ For the complete API documentation for ServiceWorker module, visit our [API Refe
 {: .callout .callout--info}
 
 
-## Using modularized module
+## Using Modular Imports
 
 If you only need to use ServiceWorker, you can do: `npm install @aws-amplify/core` which will only install the Core module which contains the ServiceWorkder module.
 

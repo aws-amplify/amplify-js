@@ -7,22 +7,41 @@ AWS Amplify Storage module provides a simple mechanism for managing user content
 
 ## Installation and Configuration
 
-Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. Here is how you can enable Storage category for your app.
-
-The default implementation of the Storage module leverages [Amazon S3](https://aws.amazon.com/s3).
+Before start, please be sure that you have installed the CLI and client libraries by visiting [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config). 
 {: .callout .callout--info}
+
+**When you are done with the installation**, you can follow below steps to enable Storage category in your app.
 
 ### Automated Setup
 
-To create a project fully functioning with the Storage category.
+AWS Mobile CLI helps you to create and configure the storage buckets for your app. The default implementation of the Storage module leverages [Amazon S3](https://aws.amazon.com/s3).
+
+##### Create Your Backend with the CLI
+
+To create a project fully functioning with the Storage category, run the following command:
 
 ```bash
-$ npm install -g @aws-amplify/cli
-$ cd my-app #Change to your project's root folder
-$ amplify init
-$ amplify user-files enable
-$ amplify push #Update your backend 
+$ amplify add storage
 ```
+
+and select *S3* in prompted options:
+
+
+```bash
+? Please select from one of the below mentioned services
+❯ awscloudformation:S3
+  awscloudformation:DynamoDB
+```
+
+The CLI will walk you though the options to enable Auth, if not enabled previously, and name your S3 bucket. To update your backend run:
+
+```bash
+$ amplify push
+```
+
+When your backend is successfully updated, your new configuration file `aws-exports.js` is copied under your source directory, e.g. '/src'.
+
+##### Configure Your App
 
 In your app's entry point *i.e. App.js*, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.
 
@@ -615,7 +634,7 @@ If you want to have custom *private* path prefix like *myPrivatePrefix/*, you ne
 ```
 This ensures only the authenticated users has the access to the objects under the path.
 
-## Using modularized module
+## Using Modular Imports
 
 If you only need to use Storage, you can do: `npm install @aws-amplify/storage` which will only install the Storage module for you.
 Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.

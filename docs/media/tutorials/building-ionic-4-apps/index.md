@@ -752,7 +752,7 @@ Amazon Cognito is a cloud-based authentication service that helps you manage use
 
 To enable authentication for your application, first execute the following command:
 ```bash
-amplify user-signin enable
+amplify add auth
 ```
  
 And then, run following command to update your app backend:

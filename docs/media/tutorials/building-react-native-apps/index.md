@@ -136,7 +136,7 @@ configurable UI for sign-up and sign-in.
 In the root folder of your app, run:
 
 ```js
-$ amplify user-signin enable
+$ amplify add auth
 $ amplify push
 ```
 
@@ -424,7 +424,7 @@ read, update, and delete (CRUD) actions on your database.
     displayed.
 
     You can view the API that the CLI created by running
-    `awmobile console` and then choosing Cloud Logic in the
+    `amplify console` and then choosing Cloud Logic in the
     console.
 
 ### Connect to Your Backend
@@ -579,7 +579,7 @@ enables apps to store user files in the cloud.
 In your app root folder, run:
 
 ```bash
-amplify user-files enable
+amplify add storage
 amplify push
 ```
 

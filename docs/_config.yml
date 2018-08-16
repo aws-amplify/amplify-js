@@ -116,7 +116,7 @@ permalink: /:title
 category_list:
     - category: SetupAndInstallation
       title: Setup & Installation
-      excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+      excerpt: 
       base_url: 'quick_start'
       subs:
         - title: Quick Start
@@ -129,7 +129,7 @@ category_list:
           icon: '/images/icons/Misc/Present.svg'
     - category: CloudFeatures
       title: Cloud Features
-      excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+      excerpt: Add cloud features to your app quickly using our toolchain and declarative APIs.
       base_url: '/media/analytics_guide'
       subs:
         - title: Analytics 
@@ -169,15 +169,6 @@ category_list:
               url: https://aws.amazon.com/cognito/
             - title: Custom Plugin
               url:  
-        - title: Hosting 
-          excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
-          cta: Read more
-          class: aws-icon-ps-60-network-nodes
-          url: '/media/hosting_guide'   
-          icon: '/images/icons/Misc/Present.svg'
-          services:
-              - title: Amazon CloudFront
-                url: https://aws.amazon.com/cloudfront/
         - title: Interactions 
           excerpt: Create conversational bots powered by deep learning technologies.
           cta: Read more
@@ -220,7 +211,7 @@ category_list:
                 url: https://aws.amazon.com/s3/
     - category: UtilityModules
       title: Utility Modules
-      excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+      excerpt: Common programming utilities that you can use with your app.
       base_url: '/media/cache_guide'
       subs:
         - title: Cache 
@@ -247,10 +238,31 @@ category_list:
           excerpt: A utility class to work with PWA and Service Worker APIs. 
           cta: Read more
           url: '/media/service_workers_guide'   
-          icon: '/images/icons/Misc/Present.svg'     
+          icon: '/images/icons/Misc/Present.svg'   
+          
+    - category: Toolchain
+      title: Toolchain
+      excerpt: Better developer experience when building and deploying your apps.
+      base_url: '/media/cache_guide'
+      subs:
+        - title: CLI 
+          excerpt: Manage all of your services in one unified tool with Amplify Command Line Interface
+          cta: Read more
+          url: '/media/cli_guide'  
+          icon: '/images/icons/Misc/Present.svg'
+        - title: Hosting 
+          excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
+          cta: Read more
+          class: aws-icon-ps-60-network-nodes
+          url: '/media/hosting_guide'   
+          icon: '/images/icons/Misc/Present.svg'
+          services:
+              - title: Amazon CloudFront
+                url: https://aws.amazon.com/cloudfront/
+          
     - category: FrontEndSupport
       title: Front End Support
-      excerpt: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+      excerpt: Bring your own front-end! We support the most popular front-end frameworks and libraries.
       base_url: '/media/angular_guide'
       subs:
         - title: Angular 
