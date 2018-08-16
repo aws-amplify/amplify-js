@@ -20,19 +20,16 @@ const logger = new Logger('CognitoCredentials');
 const waitForInit = new Promise((res, rej) => {
     if (!window || !window.setTimeout) {
         logger.debug('not in the browser, directly resolved');
-        res();
-        return;
+        return res();
     }
     const fb = window['FB'];
     if (fb) {
         logger.debug('FB SDK already loaded');
-        res();
-        return;
+        return res();
     } else {
         setTimeout(
             () => {
-                res();
-                return;
+                return res();
             }, 
             2000
         );
