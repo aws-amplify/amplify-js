@@ -60,6 +60,7 @@
         #github-logo {
             position: absolute;
             display: none;
+            opacity: 0.5;
 
             @media (min-width: 1314px) {
                 right: calc(50vw - 640px);
