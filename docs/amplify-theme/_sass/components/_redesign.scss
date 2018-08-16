@@ -47,14 +47,10 @@
         width: 1180px;
         max-width: 90%;
 
-        @media (max-width:1080px) {
-            max-width: 100%;
-            margin-left: 5%;
-        }
-
         @media (max-width: 828px) {
             max-width: 95%;
             margin-top: 11px;
+            margin-left: 0;
         }
         
         #github-logo {
@@ -311,6 +307,12 @@ a {
     top: 17px;
     left: 10px;
 
+    .docs-toggle {
+        span {
+            background-color: white !important;
+        }
+    }
+
     .offcanvas-toggle {
         height: auto;
         width: auto;
@@ -487,6 +489,11 @@ a {
     .ui-header {
         position: relative;
         top: 75px;
+        
+        @media (max-width: 828px) {
+            top: 0;
+            margin-bottom: 50px;
+        }
     }
 
 	color: $color-dark-blue;
@@ -2415,8 +2422,13 @@ li {
     box-shadow: none;
     padding: 0 !important;
     float: none !important;
+    overflow-x: scroll;
     display: inline-block;
     width: calc(100% - 230px) !important;
+
+    @media (max-width: 828px) {
+        width: calc(100% - 140px) !important;
+    }
 
     .ui-section {
         border-bottom: 1px solid #232F3E;
@@ -2634,6 +2646,10 @@ li {
 .styleguide-nav {
     width: 230px !important;
     top: 80px !important;
+
+    @media (max-width: 828px) {
+        width: 140px !important;
+    }
     
     .sections-list {
         margin-top: 30px;
@@ -2649,6 +2665,11 @@ li {
             display: block !important;
             margin-bottom: 20px !important;
             text-decoration: none !important;
+
+            @media (max-width: 828px) {
+                font-size: 20px !important;
+                line-height: 24px !important;
+            }
         }
         &.active {
             .style-category {

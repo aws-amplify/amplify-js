@@ -73,7 +73,7 @@ amplify:
             - item_name: Tutorials
               item_url: '/media/tutorials'
             - item_name: Toolchain
-              item_url: '/media/cli_home'
+              item_url: '/media/toolchain'
             - item_name: UI Components
               item_url: '/media/ui_library'
             - item_name: API
@@ -137,7 +137,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-pie-bar-charts 
           url: '/media/analytics_guide'
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Cloud.svg'
           services:
             - title: Amazon Pinpoint,
               url: https://aws.amazon.com/pinpoint/
@@ -150,7 +150,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-database-server
           url: '/media/api_guide' 
-          icon: '/images/icons/Misc/Present.svg'   
+          icon: '/images/icons/Misc/Cloud.svg'   
           services: 
             - title: Amazon API Gateway,
               url: https://aws.amazon.com/api-gateway
@@ -161,7 +161,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-shield-circle
           url: '/media/authentication_guide'
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Cloud.svg'
           services:
             - title: Amazon Cognito,
               url: https://aws.amazon.com/cognito/
@@ -174,7 +174,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-bubble-gear
           url: '/media/interactions_guide'   
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Cloud.svg'
           services:
               - title: Amazon Lex
                 url: https://aws.amazon.com/lex/
@@ -183,7 +183,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-circular-circuit
           url: '/media/pub_sub_guide'   
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Cloud.svg'
           services:
               - title: AWS IoT,
                 url: https://aws.amazon.com/iot/
@@ -196,7 +196,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-device-message
           url: '/media/push_notifications_setup'   
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Cloud.svg'
           services:
               - title: Amazon Pinpoint
                 url: https://aws.amazon.com/pinpoint/
@@ -205,7 +205,7 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-file-box
           url: '/media/storage_guide'   
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Cloud.svg'
           services:
               - title: Amazon S3
                 url: https://aws.amazon.com/s3/
@@ -218,27 +218,27 @@ category_list:
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
           cta: Read more
           url: '/media/cache_guide'  
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Gear-Icon.svg'
         - title: Hub  
           excerpt: A lightweight local event bus for your app.
           cta: Read more
           url: '/media/hub_guide' 
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Gear-Icon.svg'
         - title: I18n  
           excerpt: A lightweight internationalization solution.
           cta: Read more
           url: '/media/i18n_guide'  
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Gear-Icon.svg'
         - title: Logger  
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide'  
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Gear-Icon.svg'
         - title: Service Worker 
           excerpt: A utility class to work with PWA and Service Worker APIs. 
           cta: Read more
           url: '/media/service_workers_guide'   
-          icon: '/images/icons/Misc/Present.svg'   
+          icon: '/images/icons/Misc/Gear-Icon.svg'   
           
     - category: Toolchain
       title: Toolchain
@@ -260,8 +260,8 @@ category_list:
               - title: Amazon CloudFront
                 url: https://aws.amazon.com/cloudfront/
           
-    - category: FrontEndSupport
-      title: Front End Support
+    - category: UserInterface
+      title: User Interface
       excerpt: Bring your own front-end! We support the most popular front-end frameworks and libraries.
       base_url: '/media/angular_guide'
       subs:

@@ -23,23 +23,32 @@
 	<header class="site-header docs-header">
 		<div class="container site-header-container">
 			<div class="row">
+				<div class="visible-xs toggle-button-container" id="toggle-button-container">
+					<button class="offcanvas-toggle docs-toggle">
+						<span></span>
+						<span></span>
+						<span></span>
+					</button><!-- /.offcanvas-toggle -->
+				</div>
 				<div>
 					{% if site.amplify.header.logo.text %}
-						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo" id="logo-container">
+					<div class="logo-container" id="logo-container">
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
 							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Amplify-Logo-White.svg">
-							<p class="header-amplify docs-header-amplify">{{ site.amplify.header.logo.text }}</p>
+							<p class="header-amplify docs-header-amplify">{{ site.amplify.header.logo.text }} </p>
 						</a>
+					</div>
 					{% elsif site.amplify.header.logo.image %}
-						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo" id="logo-container">
-							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/logo.png">
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
+							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Amplify-Logo-White.svg">
 						</a><!-- /.site-header__logo -->
-                    {% endif %}
-                        <div class="language-selector">
-                            <select id="language-select">
-                                <option value="javascript">JavaScript</option>
-                                <option value="cli">Amplify CLI</option>
-                            </select>
-						</div>
+					{% endif %}
+					<div class="language-selector">
+						<select id="language-select">
+							<option value="javascript">JavaScript</option>
+							<option value="cli">Amplify CLI</option>
+						</select>
+					</div>
 					{% if site.amplify.header.nav %}
 						<ul class="site-header__nav hidden-xs">
 						{% for item in site.amplify.header.nav %}
@@ -63,11 +72,6 @@
 						</ul><!-- /.site-header__nav -->
 						<input type="text" id="search-input-xs" class="visible-xs docs-search-xs"></input>
 						<button id="collapse-search">Cancel</button>
-						<button class="offcanvas-toggle visible-xs">
-							<span></span>
-							<span></span>
-							<span></span>
-						</button><!-- /.offcanvas-toggle -->
 					{% endif %}
 				</div><!-- /.col -->
 			</div><!-- /.row -->

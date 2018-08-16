@@ -21,7 +21,7 @@ marketing_grid:
     - title: <span class="orange-text">Powerful</span> Toolchain
       icon: '/images/icons/Medium/CLI-Toolchain.png'
       excerpt: Effortlessly create and maintain sophisticated serverless backends for your apps.
-      url: '/media/cli_home'
+      url: '/media/toolchain'
     - title: <span class="orange-text">Beautiful</span> UI Components
       icon: '/images/icons/Medium/UI-Components.png'
       excerpt: Accelerate app development by leveraging our beautiful out-of-the box UI components.
