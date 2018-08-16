@@ -105,12 +105,11 @@ export default class Authenticator extends React.Component {
     }
 
     checkUser() {
-        const that = this;
         const { authState } = this.state;
         const statesJumpToSignIn = ['signedIn', 'signedOut', 'loading'];
         Auth.currentAuthenticatedUser()
             .then(user => {
-                if (!that._isMounted) return;
+                if (!this._isMounted) return;
                 if (user) {
                     this.handleStateChange('signedIn', null);
                 } else {
@@ -118,7 +117,7 @@ export default class Authenticator extends React.Component {
                 }
             })
             .catch(err => {
-                if (!that._isMounted) return;
+                if (!this._isMounted) return;
                 logger.debug(err);
                 if (statesJumpToSignIn.includes(authState)) {
                     Auth.signOut()
