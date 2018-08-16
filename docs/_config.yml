@@ -117,11 +117,11 @@ category_list:
     - category: SetupAndInstallation
       title: Setup & Installation
       excerpt: 
-      base_url: 'quick_start'
+      base_url: 'get_started_docs'
       subs:
-        - title: Quick Start
-          excerpt: quick start excerpt
-          url: '/media/quick_start'
+        - title: Get Started
+          excerpt: get started excerpt
+          url: '/media/get_started_docs'
           icon: '/images/icons/Misc/Present.svg'
         - title: Amplify CLI
           excerpt: CLI excerpt
@@ -245,7 +245,7 @@ category_list:
       excerpt: Better developer experience when building and deploying your apps.
       base_url: '/media/cache_guide'
       subs:
-        - title: CLI 
+        - title: Amplify CLI 
           excerpt: Manage all of your services in one unified tool with Amplify Command Line Interface
           cta: Read more
           url: '/media/cli_guide'  

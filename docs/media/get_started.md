@@ -1,6 +1,6 @@
 ---
 # Page settings
-layout: quick_start
+layout: get_started
 keywords:
 
 

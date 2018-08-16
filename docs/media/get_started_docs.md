@@ -1,7 +1,7 @@
 ---
 ---
 
-# Quick Start
+# Get Started
 
 <p class="orange-subheader">Welcome intrepid builder!</p>
 

@@ -69,7 +69,7 @@
 						</div>
 					</div><!-- /.col -->
 						<div class="col-md-8 section-top docs-container">
-							{% if page.url contains 'quick_start' %}
+							{% if page.url contains 'get_started_docs' %}
 							<div class="js-library-selector">
 								<select onchange="location = this.value" id="js-library-select">
 									{% for item in site.js_libraries %}
@@ -142,7 +142,7 @@
 				}
 			{% endfor %}
 		}
-		{% if page.url contains 'quick_start' %}
+		{% if page.url contains 'get_started_docs' %}
 			let tabs = document.getElementsByClassName('tabs');
 			for (let i = 0; i < tabs.length; i++) {
 				tabs[i].style.display = 'none';

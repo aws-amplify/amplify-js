@@ -137,5 +137,5 @@ AWS Amplify comes with additional utility modules that will help you to build be
 
 ### Start Building now!
 
-Start building your Web app today with AWS Amplify by visiting our [Quick Start Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start?utm_source=web-apps&utm_campaign=build-pages).
+Start building your Web app today with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start?utm_source=web-apps&utm_campaign=build-pages).
 {: .next-link .callout .callout--info}

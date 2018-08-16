@@ -87,7 +87,7 @@ Initializing a project creates the backend configuration file `aws-exports.js` w
 
 ## What's next?  
 
-Check our [Quick Start Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start#set-up-your-backend) to see how you can set up your backend and use it in you app.
+Check our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start#set-up-your-backend) to see how you can set up your backend and use it in you app.
 {: .next-link}
 
 
