@@ -92,7 +92,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="header col-sm-11">
-						Amplify your apps. Build on scalable, reliable, and secure serverless infrastructure.
+						Amplify your apps. Build on flexible, scalable, and reliable serverless infrastructure.
 					</div>
 					<!-- <div class="subheader col-sm-11">
 						Default implementation included for AWS; Open and pluggable for any custom backend or service.
@@ -130,8 +130,21 @@
 		{% if page.marketing_grid%}
 		<div class="section section-top not-top-section">
 			<div class="container">
-				<div class="header" id="launch-header">
-					A comprehensive library of building blocks for your cloud-powered apps
+				<div class="header inline-block" id="launch-header">
+					A comprehensive library for building sophisticated cloud-powered apps
+				</div>
+				<div class="language-bash highlighter-rouge inline-block section-code-block hidden-xs" id="homepage-code-block">
+					<div class="highlight">
+						<pre class="highlight section-code-block">
+<code>Auth.signUp({
+  username: 'AmandaB',
+  password: 'MyCoolPassword1!',
+  attributes: {
+    email: 'someemail@example.com'
+  }
+});</code>
+						</pre>
+					</div>    
 				</div>
 				<!-- <div class="subheader" id="launch-subheader">
 					AWS Amplify comes with building blocks for frontend and mobile developers to interact with the Cloud. You can mix and match categories below as needed.
@@ -149,7 +162,12 @@
 							<div class="row">
 								{% for item in page.cloud_grid_left %}
 									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-left">
-										<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Present.svg">
+										<div class="platforms-container hidden-xs">
+											{% for platform in item.platforms %}
+												<img class="platform-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ platform.url }}" />
+											{% endfor %}
+										</div>
+										<img class="grid-icon" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Cloud.svg">
 										<div class="cloud-grid-text">
 											<h2 class="cloud-grid__title">{{ item.title }}</h2>
 											<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
@@ -162,7 +180,12 @@
 							<div class="row">
 								{% for item in page.cloud_grid_right %}
 									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-right">
-										<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Present.svg">
+										<div class="platforms-container hidden-xs">
+											{% for platform in item.platforms %}
+												<img class="platform-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ platform.url }}" />
+											{% endfor %}
+										</div>
+										<img class="grid-icon" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Cloud.svg">
 										<div class="cloud-grid-text">
 											<h2 class="cloud-grid__title">{{ item.title }}</h2>
 											<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
@@ -177,8 +200,13 @@
 						<div class="row">
 							{% for item in page.utility_modules %}
 									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item">
+										<div class="platforms-container hidden-xs">
+											{% for platform in item.platforms %}
+												<img class="platform-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ platform.url }}" />
+											{% endfor %}
+										</div>
 										<div class="cloud-grid-content" data-mh>
-											<img class="present" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Present.svg">
+											<img class="grid-icon" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Gear-Icon.svg">
 											<div class="cloud-grid-text">
 												<h2 class="cloud-grid__title">{{ item.title }}</h2>
 												<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
@@ -188,6 +216,13 @@
 							{% endfor %}
 						</div><!-- /.row -->
 					</div>
+				</div>
+				<div class="subheader bottom-subheader">
+						Android & iOS are currently supported with our Native SDKs. 
+						<a class="inline-block" target="_blank" href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html">
+							<p class="learn-more-link">Learn more</p>
+							<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+						</a>
 				</div>
 			</div><!-- /.container -->
 		</div><!-- /.section -->
@@ -200,6 +235,7 @@
 							Powerful toolchain built for developers.
 						</div>
 					</div>
+					<img id="orange-logos" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Platform-Icons-Color@2x.png" />
 					<div class="row">
 						<div class="marketing-content">
 							<p class="subheader inline">The Amplify Command Line Interface (CLI) is a unified tool to manage your AWS services. With just one tool to download and configure, you can control multiple AWS services from the command line and automate them through scripts.</p>
