@@ -497,7 +497,8 @@ a {
 	background-position: center center;
     //width: 1440px;
     height: 475px;
-	margin: auto;
+    margin: auto;
+    overflow: hidden;
 
 	@media (min-width: $screen-sm-min) {
         padding-top: 130px;
