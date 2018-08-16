@@ -18,14 +18,21 @@ import '../Polyfills';
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
+    if (!window || !window.setTimeout) {
+        logger.debug('not in the browser, directly resolved');
+        res();
+        return;
+    }
     const fb = window['FB'];
     if (fb) {
         logger.debug('FB SDK already loaded');
         res();
+        return;
     } else {
         setTimeout(
             () => {
                 res();
+                return;
             }, 
             2000
         );
@@ -52,7 +59,8 @@ export default class FacebookOAuth {
     }
 
     private _refreshFacebookTokenImpl() {
-        const fb = window['FB'];
+        let fb = null;
+        if (window) fb = window['FB'];
         if (!fb) {
             logger.debug('no fb sdk available');
             return Promise.reject('no fb sdk available');
