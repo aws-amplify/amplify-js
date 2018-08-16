@@ -21,7 +21,7 @@
 											<span>
 												<div class="dev-guide-content" data-mh>
 													<p class="dev-guide__title">{{ item.title }}</p>
-													<p class="dev-guide__excerpt">{{ item.excerpt }}</p>
+													<!-- <p class="dev-guide__excerpt">{{ item.excerpt }}</p> -->
 												</div><!-- /.nav-grid__content -->
 											</span><!-- /.nav-grid__item -->
 										</div><!-- /.col -->
@@ -56,7 +56,7 @@
                             </div>
                             <div>
                                 <a href="https://buildon.aws/?sc_channel=ba&sc_campaign=build_on_aws&sc_publisher=direct&trk=ba_buildonaws_direct" target="_blank"> 
-                                    <button class="btn" id="install-cli-btn">Sign Up Now</button> 
+                                    <button class="btn" id="aws-signup-btn">Create AWS Account</button> 
                                 </a>
                             </div>
                             <img id="aws-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/aws_logo.png" />
@@ -72,7 +72,7 @@
                         <div class="container">
                             <div>
                                 <div class="header col-sm-8">
-                                    Install the Amplify Command Line Interface (CLI).
+                                    Install the CLI
                                 </div>
                                 <div class="subheader col-sm-10">
                                     Use the CLI to enable cloud services and integrate the into your apps. The CLI works with apps built using the AWS Amplify Library (Web, React, and React Native) and the AWS Mobile SDK (iOS, Android, Xamarin).
@@ -88,7 +88,10 @@ $ amplify configure</code>
                                             </pre>
                                         </div>    
                                     </div>
-                                <p class="subheader inline-block install-node-p">Please <a href="https://nodejs.org/en/download/" target="_blank">install node.js</a> before you initialize</p>
+                                <div class="inline-block install-node-block">
+                                    <p class="subheader">Please <a href="https://nodejs.org/en/download/" target="_blank">install node.js</a> before you initialize</p>
+                                    <img id="orange-logos" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Platform-Icons-Color@2x.png" />
+                                </div>
                             </div>
                             <div class="div-number">2</div>
                         </div>
@@ -102,7 +105,7 @@ $ amplify configure</code>
                         <div class="container">
                             <div class="row">
                                 <div class="header col-sm-8" id="get-started-header">
-                                    Start your project in the platform of your choice. 
+                                    Start Building with AWS Amplify
                                 </div>
                             </div>
                             <!-- <div class="row">
@@ -134,10 +137,10 @@ $ amplify configure</code>
                                 </div> -->
                             <!-- </div>/.row -->
                             <div class="row">
-                                <div class="row-title">
+                                <!-- <div class="row-title">
                                     <p class="title">Platforms with Amplify Library Support</p>
                                     <p class="subtitle">AWS Amplify provides a delcarative easy-to-use library for building cloud-powered web and mobile applications.</p>
-                                </div>
+                                </div> -->
                                 <div class="platform-container">
                                         <div class="platform-box">
                                             <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Apple@1x.png" />

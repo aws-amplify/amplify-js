@@ -724,17 +724,22 @@ a {
     }
 
     #homepage-code-block {
-        @media (max-width: 1220px) {
+        @media (max-width: 1150px) {
             display: none !important;
         }
-        width: 378px;
+        width: 310px;
         position: absolute;
-        top: 58px;
-        right: 88px;
+        top: 70px;
+        right: 100px;
 
         pre {
-            height: 167px;
+            height: 144px;
             padding: 14px;
+        }
+
+        pre.highlight {
+            font-size: 12px !important;
+            line-height: 16px !important;
         }
     }
 
@@ -1283,6 +1288,7 @@ li {
                     font-weight: 300;
                     line-height: 53px;
                     margin-top: 60px;
+                    margin-bottom: 60px;
 
                     @media (max-width: 828px) {
                         margin-top: 80px;
@@ -1570,18 +1576,24 @@ li {
     margin-top: 0;
     margin-bottom: 34px;
 
+    #orange-logos {
+        width: 220px;
+    }
+
     .div-number {
-        width: 53px;
+        width: 47px;
         border-radius: 100%;
         position: absolute;
-        top: 23px;
+        top: 19px;
         right: 23px;
-        background-color: #FF9900;
+        box-shadow: 0 2px 4px 0 rgba(0,0,0,0.23);
+        background: linear-gradient(180deg, #FFBC00 0%, #FF9900 100%);
+        border: 2px solid #FFFFFF;
         font-family: "Amazon Ember", "Helvetica", sans-serif;
         color: white;
-        font-size: 30px;
+        font-size: 22px;
         font-weight: bold;
-        line-height: 53px;
+        line-height: 43px;
         text-align: center;
 
         @media (max-width: 828px) {
@@ -1593,11 +1605,16 @@ li {
         }
     }
 
-    .install-node-p {
+    .install-node-block {
         @media (min-width: 1014px){
             position: relative;
-            bottom: 69px;
-            left: 10px;
+            vertical-align: top;
+            left: 36px;
+            top: 15px;
+        }
+
+        p {
+            margin-bottom: 20px !important;
         }
     }
 
@@ -1642,8 +1659,8 @@ li {
         }
     }
 
-    #install-cli-btn {
-        padding: 0 21px;
+    #aws-signup-btn {
+        padding: 0 50px;
         //margin-right: 25px;
 
         @media (max-width: 828px) {
@@ -2280,8 +2297,8 @@ li {
 //=============================================================================
 
 .hero-subheader.dark {
-    background: none;
-    background-color: #31465F;
+    background: none !important;
+    background-color: #31465F !important;
 
     .btn {
         color: #31465F;
