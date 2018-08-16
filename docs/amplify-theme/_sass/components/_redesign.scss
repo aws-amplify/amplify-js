@@ -568,6 +568,7 @@ a {
 }
 
 .section-top {
+    position: relative;
     
     @media (max-width: 767px) {    
         max-width: 95% !important;
@@ -1499,6 +1500,61 @@ li {
     margin-top: 0;
     margin-bottom: 34px;
 
+    .div-number {
+        width: 53px;
+        border-radius: 100%;
+        position: absolute;
+        top: 23px;
+        right: 23px;
+        background-color: #FF9900;
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+        line-height: 53px;
+        text-align: center;
+
+        @media (max-width: 767px) {
+            width: 37px;
+            line-height: 37px;
+            font-size: 22px;
+            top: 10px;
+            right: 10px;
+        }
+    }
+
+    .install-node-p {
+        @media (min-width: 1014px){
+            position: relative;
+            bottom: 69px;
+            left: 10px;
+        }
+    }
+
+    .section-code-block {
+        max-width: 100%;
+        
+        .section-code-content {
+            padding-bottom: 10px;
+        }
+    }
+
+    #aws-logo {
+        width: 260px;
+        position: relative;
+        float: right;
+        bottom: 280px;
+        margin-bottom: -130px;
+
+        @media (min-width: 1000px) {
+            right: 50px;
+        }
+
+        @media (max-width: 785px) {
+            display: none;
+        }
+    }
+
     a {
         border: none;
     }
@@ -1518,7 +1574,7 @@ li {
 
     #install-cli-btn {
         padding: 0 21px;
-        margin-right: 25px;
+        //margin-right: 25px;
 
         @media (max-width: 767px) {
             display: inline-block;
@@ -1595,6 +1651,7 @@ li {
                         margin: auto;
                         margin-bottom: 18px;
                         display: block;
+                        width: 112px;
 
                         @media (max-width: 767px) {
                             margin-bottom: 12px;
