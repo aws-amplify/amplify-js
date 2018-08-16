@@ -71,8 +71,13 @@ export default class Authenticator extends React.Component {
         Hub.listen('auth', this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
+        this._isMounted = true;
         this.checkUser();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     onHubCapsule(capsule) {
@@ -82,6 +87,7 @@ export default class Authenticator extends React.Component {
 
     handleStateChange(state, data) {
         logger.debug('authenticator state change ' + state);
+        if (!this._isMounted) return;
         if (state === this.state.authState) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
@@ -99,10 +105,12 @@ export default class Authenticator extends React.Component {
     }
 
     checkUser() {
+        const that = this;
         const { authState } = this.state;
         const statesJumpToSignIn = ['signedIn', 'signedOut', 'loading'];
         Auth.currentAuthenticatedUser()
             .then(user => {
+                if (!that._isMounted) return;
                 if (user) {
                     this.handleStateChange('signedIn', null);
                 } else {
@@ -110,6 +118,7 @@ export default class Authenticator extends React.Component {
                 }
             })
             .catch(err => {
+                if (!that._isMounted) return;
                 logger.debug(err);
                 if (statesJumpToSignIn.includes(authState)) {
                     Auth.signOut()
