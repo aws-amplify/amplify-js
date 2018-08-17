@@ -82,6 +82,11 @@
 																		<div class="dev-guide-title" >
 																			{{ item.title }}
 																		</div>
+																		{% if item.by %} 
+																			<div class="dev-guide-by">
+																				by {{ item.by}}
+																			</div>
+																		{% endif %}
 																		<div class="dev-guide-excerpt">{{ item.excerpt }}</div>
 																	</div><!-- /.nav-grid__content -->
 																	<div class="services-container">
