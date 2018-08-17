@@ -50,7 +50,6 @@
     "jest": "^23.4.0",
     "jest-preset-angular": "^5.2.3",
     "json-loader": "^0.5.4",
-    "lodash-webpack-plugin": "^0.11.5",
     "mocha": "^5.1.0",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.1",
