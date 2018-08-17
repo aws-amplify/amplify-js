@@ -29,7 +29,7 @@ import { DynamicComponentDirective } from './directives/dynamic.component.direct
 import { FormComponent } from './components/common/form.component';
 
 
-const importables = [
+const components = [
   AuthenticatorComponent,
   AuthenticatorComponentCore,
   ConfirmSignInComponent,
@@ -65,14 +65,14 @@ const importables = [
   declarations: [
     DynamicComponentDirective,
     // components.FormComponent,
-    ...importables,
+    ...components,
   ],
   entryComponents: [
-    ...importables
+    ...components
   ],
   providers: [ ],
   exports: [
-    ...importables,
+    ...components,
   ]
 })
 export class AmplifyAngularModule { }

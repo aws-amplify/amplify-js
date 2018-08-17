@@ -14,7 +14,7 @@ import { S3AlbumComponentIonic } from './components/storage/s3-album-component/s
 import { S3ImageComponentIonic } from './components/storage/s3-image-component/s3-image.component.ionic';
 import { ChatbotComponentIonic } from './components/interactions/chatbot/chatbot.component.ionic';
 
-const exportables = [
+const components = [
   AuthenticatorIonicComponent,
   ConfirmSignInComponentIonic,
   ConfirmSignUpComponentIonic,
@@ -34,15 +34,15 @@ const exportables = [
     CommonModule
   ],
   declarations: [
-    ...exportables,
+    ...components,
   ],
   entryComponents: [
-    ...exportables
+    ...components
   ],
   providers: [ AmplifyService ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
-    ...exportables
+    ...components
   ]
 })
 export class AmplifyIonicModule { }
