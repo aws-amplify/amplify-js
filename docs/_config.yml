@@ -269,7 +269,7 @@ category_list:
     - category: UserInterface
       title: User Interface
       excerpt: Bring your own front-end! We support the most popular front-end frameworks and libraries.
-      base_url: '/media/angular_guide'
+      base_url: '/media/ui_library'
       subs:
         - title: Colors
           excerpt: AWS Amplify provides Angular Components with aws-amplify-angular npm package.
