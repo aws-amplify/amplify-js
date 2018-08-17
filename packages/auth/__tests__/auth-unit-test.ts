@@ -159,12 +159,6 @@ jest.mock('amazon-cognito-auth-js/lib/CognitoAuth', () => {
     return CognitoAuth;
 });
 
-class storageMock {
-    static getItem() {
-        return;
-    }
-}
-
 import { AuthOptions, SignUpParams } from '../src/types';
 import Auth from '../src/Auth';
 import Cache from '@aws-amplify/cache';
