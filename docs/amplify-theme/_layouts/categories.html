@@ -57,11 +57,11 @@
 															<div class="row">
 																{% for item in category.subs %}
 																	<div class="col-xs-12 col-sm-6 col-lg-4">
-																		<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="dev-guide-item">
+																		<a href="{% if item.url_external %} {{ item.url_external }} {% endif %}{% if item.url %}{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}{% endif %}" class="dev-guide-item">
 																			<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.icon }}" class="dev-guide-icon" /> 
 																			<div class="dev-guide-content" data-mh>
 																				<div class="dev-guide-title" >
-																					{{ item.title }}
+																					{{ item.title }} 
 																				</div>
 																				<div class="dev-guide-excerpt">{{ item.excerpt }}</div>
 																			</div><!-- /.nav-grid__content -->

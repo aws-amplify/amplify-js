@@ -1,4 +1,4 @@
-Building a React Native App with AWS Amplify
+Building React Native Apps with AWS Amplify
 ===========
 
 Overview

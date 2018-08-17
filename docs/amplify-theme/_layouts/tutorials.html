@@ -46,15 +46,37 @@
 													<div class="subheader">
 														{{ category.excerpt}}
 													</div>
+													{% if category.enable_filter %} 
+													<div class="content-filter">
+														<div class="row">
+															<div class='filter-item'>
+																<a href=""> 
+																	<button class="btn" id="aws-signup-btn">All</button> 
+																</a>
+															</div>
+															<div class='filter-item'>
+																<a href=""> 
+																	<button class="btn btn--light" id="aws-signup-btn">Angular</button> 
+																</a>
+															</div>
+															<div class='filter-item'>
+																<a href=""> 
+																	<button class="btn btn--light" id="aws-signup-btn">React</button> 
+																</a>
+															</div>
+														</div>
+													</div>
+													{% endif %}
 													<div class="row">
 														{% for item in category.subs %}
 															<div class="col-xs-12 col-sm-6 col-lg-4">
-																<a target="_blank" href="{% if item.url_external  %}
+																<a href="{% if item.url_external  %}
 																			{{ item.url_external }} 
 																		{% endif %}
 																		{% if item.url %}
 																			{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }} 
 																		{% endif %}" 
+																	{% if item.url_external %} target="_blank" {% endif %}
 																	class="dev-guide-item">					
 																	<div class="dev-guide-content tutorials-content" data-mh>
 																		<div class="dev-guide-title" >

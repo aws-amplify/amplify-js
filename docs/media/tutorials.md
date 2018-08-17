@@ -15,26 +15,14 @@ marketing_grid:
 
 tutorial_list:
 
-    - category: Web Development
-      title: Web Development
+    - category: GetStarted
+      title: Get Started
       subs:
-        - title: Building a Web App with AWS Amplify
+        - title: Building Web Apps with AWS Amplify
           excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled React Web app with AWS Amplify.<br/><b>30 min to complete</b>'
           cta: Read more
           url: '/media/tutorials/building-web-apps'
-        - title: How to use AWS Amplify and Angular to Build Cloud Enabled JavaScript Applications
-          excerpt: 'Learn how to start working with AWS Amplify in an Angular app.<br/><b>5 min read</b>'
-          cta: Read more
-          url_external: 'https://medium.freecodecamp.org/building-cloud-enabled-javascript-applications-with-aws-amplify-angular-682547fc6477'
-        - title: Adding AWS Amplify to an Ember.js Application
-          excerpt: 'Learn how to start working with AWS Amplify in an Ember app.<br/><b>5 min read</b>'
-          cta: Read more
-          url_external: 'https://itnext.io/adding-aws-amplify-to-an-ember-js-application-72683167c476'
-
-    -  category: Mobile Development Development
-       title: Mobile Development
-       subs:
-        - title: Building a React Native App with AWS Amplify
+        - title: Building React Native Apps with AWS Amplify
           excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled mobile app with React Native and AWS Amplify.<br/><b>30 min to complete</b>'
           cta: Read more
           url: '/media/tutorials/building-react-native-apps' 
@@ -42,10 +30,25 @@ tutorial_list:
           excerpt: "Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
           cta: Read more
           url: '/media/tutorials/building-ionic-4-apps' 
+    -  category: CommunityResources
+       title: Community Resources
+       enable_filter: true
+       subs:
+        - title: How to use AWS Amplify and Angular to Build Cloud Enabled JavaScript Applications
+          excerpt: 'Learn how to start working with AWS Amplify in an Angular app.<br/><b>5 min read</b>'
+          cta: Read more
+          url_external: 'https://medium.freecodecamp.org/building-cloud-enabled-javascript-applications-with-aws-amplify-angular-682547fc6477'
+          tags: Angular
+        - title: Adding AWS Amplify to an Ember.js Application
+          excerpt: 'Learn how to start working with AWS Amplify in an Ember app.<br/><b>5 min read</b>'
+          cta: Read more
+          url_external: 'https://itnext.io/adding-aws-amplify-to-an-ember-js-application-72683167c476'
+          tags: Ember.js
         - title: Building Serverless Mobile Applications with React Native & AWS
           excerpt: 'Learn to build fully serverless & backendless mobile applications with AWS Amplify and React Native.<br/><b>12 min read</b>'
           cta: Read more
-          url_external: 'https://medium.com/react-native-training/building-serverless-mobile-applications-with-react-native-aws-740ecf719fce' 
+          url_external: 'https://medium.com/react-native-training/building-serverless-mobile-applications-with-react-native-aws-740ecf719fce'
+          tags: React Native
         - title: Adding Analytics to Your Next Mobile JavaScript Application
           excerpt: 'Add in-depth, production ready analytics to your application in minutes using AWS Amplify & AWS Mobile Hub.<br/><b>6 min read</b>'
           cta: Read more
@@ -61,14 +64,6 @@ tutorial_list:
         - title: React Native Push Notifications
           excerpt: 'Adding Push Notifications to a React Native iOS project using Amazon Pinpoint, AWS Amplify & AWS Mobile Hub.<br/><b>7 min read</b>'
           cta: Read more
-
-    - category: AWS Amplify
-      title: AWS Amplify Cloud Features
-      subs:
-        - title: Amplify CLI - Getting Started
-          excerpt: 'In this video, we walk through how to get up and running with the amplify CLI.<br/><b>7 min</b>'
-          cta: '<b>Watch</b>'
-          url_external: 'https://www.youtube.com/watch?v=Zi-66QybJ9A'
         - title: Introducing the AWS Amplify GraphQL Client
           excerpt: 'A first look at how to build client side GraphQL applications using AWS Amplify.<br/><b>5 min read</b>'
           cta: Read more
