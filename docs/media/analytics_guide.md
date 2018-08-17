@@ -403,9 +403,12 @@ To turn it on:
 Analytics.autoTrack('pageView', {
     // REQUIRED, turn on/off the auto tracking
     enable: true,
-    // Optional, the url adress of the page, by default is window.location.href
-    pageUrl: window.location.href,
-    // Optaionl, by default is 'multiPageApp', you need to change it to 'SPA' if your app is  // a single-page app like React
+    // OPTIONAL, the attributes of the event 
+    attributes: {
+        // for example, you can redefine the url adress of the page, by default is window.location.href
+        pageUrl: window.location.href
+    },
+    // OPTIONAL, by default is 'multiPageApp', you need to change it to 'SPA' if your app is  // a single-page app like React
     type: 'multiPageApp',
     // OPTIONAL, the service provider, by default is the AWS Pinpoint
     provider: 'AWSPinpoint'
@@ -427,7 +430,11 @@ Analytics.autoTrack('event', {
     // OPTIONAL, the prefix of the selectors, by default is 'amplify-analytics-'
     selectorPrefix: 'amplify-analytics-',
     // OPTIONAL, the service provider, by default is the AWS Pinpoint
-    provider: 'AWSPinpoint'
+    provider: 'AWSPinpoint',
+    // OPTIONAL, default attributes of the event 
+    attributes: {
+        browser_version: 'mozilla'
+    }
 ```
 
 For example:

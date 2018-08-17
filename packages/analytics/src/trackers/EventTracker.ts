@@ -92,6 +92,7 @@ export default class EventTracker {
                 type: event.type,
                 target: `${event.target.localName} with id ${event.target.id}`
             }, 
+            this._config.attributes,
             customAttrs
         );
 

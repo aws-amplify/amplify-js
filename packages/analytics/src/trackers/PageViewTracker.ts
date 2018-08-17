@@ -70,14 +70,20 @@ export default class PageViewTracker {
             return;
         }
 
+        const url = window.location.origin + window.location.pathname;
+        const attributes = Object.assign(
+            {
+                url
+            },
+            this._config.attributes
+        );
+
+
         if (this._config.enable && !this._isSameUrl()) {
-            const url = this._config.pageUrl || window.location.origin + window.location.pathname;
             this._tracker(
                 {
                     name: this._config.eventName || 'pageView',
-                    attributes: {
-                        url
-                    }
+                    attributes
                 }, 
                 this._config.provider
             ).catch(e => {
