@@ -286,7 +286,7 @@ category_list:
         - title: AWS Components
           excerpt: To help you start working with AWS Amplify, we provide a Starter App.
           cta: Read more
-          url: '/media/#aws-components'
+          url: '/media/ui_library#aws-components'
           icon: '/images/icons/Misc/Present.svg'
           id: vuejs
 
