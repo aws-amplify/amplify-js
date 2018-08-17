@@ -1359,7 +1359,9 @@ describe('auth unit test', () => {
             });
 
             const spyon = jest.spyOn(CognitoIdentityCredentials.prototype, "clearCachedId");
-            const spyon2 = jest.spyOn(Cache, 'removeItem');
+            const spyon2 = jest.spyOn(Credentials, 'clear').mockImplementationOnce(() => {
+                return
+            });
             const spyon3 = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
             .mockImplementationOnce(() => {
                 return user;
@@ -1367,10 +1369,9 @@ describe('auth unit test', () => {
 
             await auth.signOut();
 
-            expect.assertions(2);
+            expect.assertions(1);
             expect(spyon).toBeCalled();
-            expect(spyon2).toBeCalledWith('federatedInfo');
-
+            
             spyon.mockClear();
             spyon2.mockClear();
             spyon3.mockClear();
