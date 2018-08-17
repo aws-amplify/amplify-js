@@ -138,7 +138,7 @@
 		</div><!-- /.js-footer-area -->
 	</body>
 	<script>
-		if (window.innerWidth < 767) 
+		if (window.innerWidth < 828) 
 		{	let flag;
 			{% for category in site.category_list %}
 				flag = false;
@@ -178,15 +178,15 @@
 				version_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
 				view_section_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
 				if (js_library_box) js_library_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat";
-				if (window.innerWidth < 767) {
+				if (window.innerWidth < 828) {
 					version_box.style.backgroundPosition = "240px 5px";
 					view_section_box.style.backgroundPosition = "240px 5px";
-					if (js_library_box) js_library_box.style.backgroundPosition = "240px 5px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "160px -4px";
 				}
 				else {
 					version_box.style.backgroundPosition = "164px 3px";
 					view_section_box.style.backgroundPosition = "164px 3px";
-					if (js_library_box) js_library_box.style.backgroundPosition = "170px 6px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "160px -4px";
 				}
 			}
 
@@ -201,15 +201,15 @@
 				version_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
 				view_section_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
 				if (js_library_box) js_library_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
-				if (window.innerWidth < 767) {
+				if (window.innerWidth < 828) {
 					version_box.style.backgroundPosition = "240px 5px";
 					view_section_box.style.backgroundPosition = "240px 5px";
-					if (js_library_box) js_library_box.style.backgroundPosition = "240px 5px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "160px -4px";
 				}
 				else {
 					version_box.style.backgroundPosition = "164px 3px";
 					view_section_box.style.backgroundPosition = "164px 3px";
-					if (js_library_box) js_library_box.style.backgroundPosition = "170px 6px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "160px -4px";
 				}
 			}
 

@@ -220,6 +220,11 @@
     height: 36px;
     width: 180px;
     margin-top: -7px;
+
+    @media (max-width: 920px) {
+        margin-top: 10px !important;
+        float: right !important;
+    }
     
     .search-image {
         margin-left: 12px;
@@ -763,6 +768,28 @@ a {
         margin-bottom: 60px;
     }
 
+    #cli-code-block {
+        @media (max-width: 1130px) {
+            display: none !important;
+        }
+        width: 500px;
+        position: relative;
+        float: right;
+        bottom: 100px;
+        margin-bottom: -60px;
+
+        pre {
+            //height: 144px;
+            padding: 14px;
+        }
+
+        pre.highlight {
+            font-size: 12px !important;
+            line-height: 16px !important;
+            overflow: hidden;
+        }
+    }
+
     #homepage-code-block {
         @media (max-width: 1150px) {
             display: none !important;
@@ -1293,6 +1320,10 @@ li {
     width: 90%;
     margin: auto;
 
+    @media (max-width: 828px) {
+        width: 100% !important;
+    }
+
     .section-top {
         max-width: 1180px;
         width: 100%;
@@ -1339,6 +1370,7 @@ li {
                         margin-left: auto;
                         margin-right: auto;
                         text-align: center;
+                        margin-bottom: 0;
                     }
                 }
 
@@ -1870,6 +1902,10 @@ li {
             font-size: 16px;
             line-height: 24px;
         }
+
+        select:focus {
+            outline: none;
+        }
     }
 }
 
@@ -2229,16 +2265,22 @@ li {
             position: absolute;
             top: 27px;
             right: 27px;
+
+            @media (max-width: 828px) {
+                position: static;
+                margin-bottom: 20px;
+                width: 200px;
+            }
                 
-                select {
-                    color: white;
-                    font-family: "Amazon Ember", "Helvetica", sans-serif;
-                    font-size: 16px;	
-                    line-height: 24px;
-                    padding: 10px;
-                    border: none;
-                    filter: brightness(0) invert(1);
-                }
+            select {
+                color: white;
+                font-family: "Amazon Ember", "Helvetica", sans-serif;
+                font-size: 16px;	
+                line-height: 24px;
+                margin: 10px;
+                border: none;
+                filter: brightness(0) invert(1);
+            }
         }
 
         .content {
@@ -2349,7 +2391,12 @@ li {
 .section-top.cli {
     .marketing-content {
         width: 40%;
-        margin-top: 40px;
+        margin-bottom: 10px;
+
+        @media (max-width: 1130px) {
+            width: 80%;
+            margin-bottom: 0;
+        }
 
         @media (max-width: 828px) {
             width: 100%;
@@ -2425,6 +2472,10 @@ li {
 
     #orange-logos {
         width: 220px;
+
+        @media (max-width: 1130px) {
+            margin-bottom: 40px;
+        }
     }
 
     #pages {
@@ -2454,9 +2505,12 @@ li {
     box-shadow: none;
     padding: 0 !important;
     float: none !important;
-    overflow-x: scroll;
     display: inline-block;
     width: calc(100% - 230px) !important;
+
+    @media (max-width: 1023px) {
+        overflow: scroll;
+    }
 
     @media (max-width: 828px) {
         width: calc(100% - 140px) !important;
@@ -2472,7 +2526,7 @@ li {
 
     h2 {
         color: #232F3E !important;
-        font-family: "Amazon Ember" !important;
+        font-family: "Amazon Ember", "Helvetica", sans-serif !important;
         font-size: 42px !important;	
         font-weight: 300 !important;	
         line-height: 53px !important;
@@ -2484,7 +2538,7 @@ li {
 
     h3 {
         color: #232F3E !important;
-        font-family: "Amazon Ember" !important;
+        font-family: "Amazon Ember", "Helvetica", sans-serif !important;
         font-size: 21px !important;
         font-weight: bold !important;
         line-height: 26px !important;
@@ -2690,7 +2744,7 @@ li {
     li {
         .style-category {
             color: #828282 !important;
-            font-family: "Amazon Ember" !important;
+            font-family: "Amazon Ember", "Helvetica", sans-serif !important;
             font-size: 28px !important;
             font-weight: 300 !important;
             line-height: 35px !important;

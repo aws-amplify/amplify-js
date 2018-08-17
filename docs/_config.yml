@@ -68,16 +68,22 @@ amplify:
         nav:
             - item_name: Get Started
               item_url: '/media/get_started'
+              id: get_started
             - item_name: Guides
               item_url: '/media/developer_guide'
+              id: guides
             - item_name: Tutorials
               item_url: '/media/tutorials'
+              id: tutorials
             - item_name: Toolchain
               item_url: '/media/toolchain'
+              id: toolchain
             - item_name: UI Components
               item_url: '/media/ui_library'
+              id: ui_library
             - item_name: API
               item_url: '/api/'
+              id: api
             #- item_name: 
             #  item_icon: github
             #  item_external_url: 'https://github.com/aws-amplify/amplify-js'
@@ -218,44 +224,44 @@ category_list:
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
           cta: Read more
           url: '/media/cache_guide'  
-          icon: '/images/icons/Misc/Gear-Icon.svg'
+          icon: '/images/icons/Misc/Gear.svg'
         - title: Hub  
           excerpt: A lightweight local event bus for your app.
           cta: Read more
           url: '/media/hub_guide' 
-          icon: '/images/icons/Misc/Gear-Icon.svg'
+          icon: '/images/icons/Misc/Gear.svg'
         - title: I18n  
           excerpt: A lightweight internationalization solution.
           cta: Read more
           url: '/media/i18n_guide'  
-          icon: '/images/icons/Misc/Gear-Icon.svg'
+          icon: '/images/icons/Misc/Gear.svg'
         - title: Logger  
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide'  
-          icon: '/images/icons/Misc/Gear-Icon.svg'
+          icon: '/images/icons/Misc/Gear.svg'
         - title: Service Worker 
           excerpt: A utility class to work with PWA and Service Worker APIs. 
           cta: Read more
           url: '/media/service_workers_guide'   
-          icon: '/images/icons/Misc/Gear-Icon.svg'   
+          icon: '/images/icons/Misc/Gear.svg'   
           
     - category: Toolchain
       title: Toolchain
       excerpt: Better developer experience when building and deploying your apps.
-      base_url: '/media/cache_guide'
+      base_url: '/media/cli_guide'
       subs:
         - title: Amplify CLI 
           excerpt: Manage all of your services in one unified tool with Amplify Command Line Interface
           cta: Read more
           url: '/media/cli_guide'  
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Tool.svg'
         - title: Hosting 
           excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
           cta: Read more
           class: aws-icon-ps-60-network-nodes
           url: '/media/hosting_guide'   
-          icon: '/images/icons/Misc/Present.svg'
+          icon: '/images/icons/Misc/Tool.svg'
           services:
               - title: Amazon CloudFront
                 url: https://aws.amazon.com/cloudfront/
@@ -271,36 +277,30 @@ category_list:
       excerpt: Bring your own front-end! We support the most popular front-end frameworks and libraries.
       base_url: '/media/angular_guide'
       subs:
-        - title: Angular 
+        - title: Colors
           excerpt: AWS Amplify provides Angular Components with aws-amplify-angular npm package.
           cta: Read more
-          url: '/media/angular_guide' 
-          icon: '/images/Logos/Angular-Color@1x.png'
+          url: '/media/ui_library#colors' 
+          icon: '/images/icons/Misc/Present.svg'
           id: angular
-        - title: React 
+        - title: Typography
           excerpt: AWS Amplify provides React Components with aws-amplify-react npm package and a starter App.
           cta: Read more
-          url: '/media/react_guide' 
-          icon: '/images/Logos/React-Color@1x.png'
+          url: '/media/ui_library#typography'
+          icon: '/images/icons/Misc/Present.svg'
           id: react
-        - title: React Native
+        - title: Controls & Inputs
           excerpt: AWS Amplify provides React Native Components with aws-amplify-react npm package and a starter App.
           cta: Read more
-          url: '/media/react_native_guide' 
-          icon: '/images/Logos/React-Color@1x.png'
+          url: '/media/ui_library#controls--inputs'
+          icon: '/images/icons/Misc/Present.svg'
           id: react-native
-        - title: Vue.js
+        - title: AWS Components
           excerpt: To help you start working with AWS Amplify, we provide a Starter App.
           cta: Read more
-          url: '/media/vuejs_guide' 
-          icon: '/images/Logos/Vue-Color@1x.png'
+          url: '/media/ui_library#aws-components'
+          icon: '/images/icons/Misc/Present.svg'
           id: vuejs
-        - title: Ionic
-          excerpt: AWS Amplify provides Angular Components that you can use with Ionic in aws-amplify-angular npm package.
-          cta: Read more
-          url: '/media/ionic_guide' 
-          icon: '/images/Logos/Ionic-Color@1x.png'
-          id: ionic
 
 defaults:
   -
@@ -329,8 +329,6 @@ styleguide:
     url: '#typography'
   - title: 'Controls'
     url: '#controls--inputs'
-  - title: 'Widgets'
-    url: '#widgets'
   - title: Components
     url: '#aws-components'
 
