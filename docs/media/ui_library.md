@@ -158,7 +158,7 @@ A standarized set of fields and selectors offered below. They support error stat
 </span>
 <div class="separator"></div>
 
-### Toggles, Tabs, & Pagination
+<!-- ### Toggles, Tabs, & Pagination
 Toggles allow users to switch views and force sort or single-selection viewing options amongst a set. Similarly tabs and pagination allow users to navigate across related content. Pagination and carousel should be used when users need to traverse a large set of content or through related chapters of content.
 
 <span class="inline-div">
@@ -176,9 +176,10 @@ Toggles allow users to switch views and force sort or single-selection viewing o
 <span class="inline-div">
     <span class="title">Pagination & Carousel</span>
     <span class="inline-img">![Pagination & Carousel]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/pagination_carousel.png)</span>
-</span>
+</span> -->
 </div>
 
+<!--
 <div class="ui-section">
 ## Widgets
 
@@ -231,7 +232,7 @@ Notifications & helpers are offered in a few main styles. Notifications should b
     <span class="title">Multi-Select Calendar on Mobile</span>
     <span class="inline-img">![Multi-Select Calendar on Mobile]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/multi_select_calendar_mobile.png)</span>
 </span>
-</div>
+</div> -->
 
 ## AWS Components
 
@@ -306,7 +307,7 @@ On mobile and small screens the components should expand to fill the majority of
 
 <div class="separator"></div>
 
-### Storage: Photo Picker
+<!-- ### Storage: Photo Picker
 The storage component allows the user to select among available photos. The selection action can be initated from any type of “picker” screen (an empty example below) which then launches a scrollable GUI displaying the available assets. The picker support both single and multi-select.
 
 <span class="inline-div">
@@ -342,4 +343,4 @@ Interactions and chat bots allow you to build AI-powered communication into your
 <span class="inline-div">
     <span class="title">Message Chat Site</span>
     <span class="inline-img">![Message Chat Site]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/message_chat_site.png)</span>
-</span>
+</span> -->

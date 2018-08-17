@@ -133,7 +133,7 @@
 				<div class="header inline-block" id="launch-header">
 					A comprehensive library for building sophisticated cloud-powered apps
 				</div>
-				<div class="language-bash highlighter-rouge inline-block section-code-block hidden-xs" id="homepage-code-block">
+				<div class="highlighter-rouge inline-block section-code-block hidden-xs" id="homepage-code-block">
 					<div class="highlight">
 						<pre class="highlight section-code-block">
 <code>Auth.signUp({
@@ -238,14 +238,28 @@
 					<img id="orange-logos" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Platform-Icons-Color@2x.png" />
 					<div class="row">
 						<div class="marketing-content">
-							<p class="subheader inline">The Amplify Command Line Interface (CLI) is a unified tool to manage your AWS services. With just one tool to download and configure, you can control multiple AWS services from the command line and automate them through scripts.</p>
+							<p class="subheader inline">The Amplify Command Line Interface (CLI) is a unified toolchain to manage and create your AWS Cloud services.</p>
 							<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/toolchain">
 								<p class="learn-more-link">Learn more</p>
 								<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
 							</a>
 						</div>
 						</div>
-						<img class = "hidden-xs" id="code-window" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Code-Window@2x.png">
+						<!-- <img class = "hidden-xs" id="code-window" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Code-Window@2x.png"> -->
+						<div class="highlighter-rouge inline-block section-code-block hidden-xs" id="cli-code-block">
+								<div class="highlight">
+									<pre class="highlight section-code-block">
+<code>$ amplify status
+| Category  | Resource name  | Operation | Provider plugin   |
+| --------- | -------------- | --------- | ----------------- |
+| Auth      | cognito        | No Change | awscloudformation |
+| Analytics | pinpoint       | Update    | awscloudformation |
+| Storage   | dynamo         | No Change | awscloudformation |
+| Api       | appsync        | Delete    | awscloudformation |
+| Function  | lambda         | No Change | awscloudformation |</code>	
+									</pre>
+								</div>    
+							</div>
 					</div><!-- /.row -->
 				</div><!-- /.container -->
 			</div><!-- /.section -->

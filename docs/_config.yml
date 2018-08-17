@@ -265,36 +265,30 @@ category_list:
       excerpt: Bring your own front-end! We support the most popular front-end frameworks and libraries.
       base_url: '/media/angular_guide'
       subs:
-        - title: Angular 
+        - title: Colors
           excerpt: AWS Amplify provides Angular Components with aws-amplify-angular npm package.
           cta: Read more
-          url: '/media/angular_guide' 
-          icon: '/images/Logos/Angular-Color@1x.png'
+          url: '/media/ui_library#colors' 
+          icon: '/images/icons/Misc/Present.svg'
           id: angular
-        - title: React 
+        - title: Typography
           excerpt: AWS Amplify provides React Components with aws-amplify-react npm package and a starter App.
           cta: Read more
-          url: '/media/react_guide' 
-          icon: '/images/Logos/React-Color@1x.png'
+          url: '/media/ui_library#typography'
+          icon: '/images/icons/Misc/Present.svg'
           id: react
-        - title: React Native
+        - title: Controls & Inputs
           excerpt: AWS Amplify provides React Native Components with aws-amplify-react npm package and a starter App.
           cta: Read more
-          url: '/media/react_native_guide' 
-          icon: '/images/Logos/React-Color@1x.png'
+          url: '/media/ui_library#controls--inputs'
+          icon: '/images/icons/Misc/Present.svg'
           id: react-native
-        - title: Vue.js
+        - title: AWS Components
           excerpt: To help you start working with AWS Amplify, we provide a Starter App.
           cta: Read more
-          url: '/media/vuejs_guide' 
-          icon: '/images/Logos/Vue-Color@1x.png'
+          url: '/media/#aws-components'
+          icon: '/images/icons/Misc/Present.svg'
           id: vuejs
-        - title: Ionic
-          excerpt: AWS Amplify provides Angular Components that you can use with Ionic in aws-amplify-angular npm package.
-          cta: Read more
-          url: '/media/ionic_guide' 
-          icon: '/images/Logos/Ionic-Color@1x.png'
-          id: ionic
 
 defaults:
   -
@@ -323,8 +317,6 @@ styleguide:
     url: '#typography'
   - title: 'Controls'
     url: '#controls--inputs'
-  - title: 'Widgets'
-    url: '#widgets'
   - title: Components
     url: '#aws-components'
 

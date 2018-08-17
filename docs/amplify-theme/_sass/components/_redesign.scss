@@ -731,6 +731,27 @@ a {
         margin-bottom: 60px;
     }
 
+    #cli-code-block {
+        @media (max-width: 1150px) {
+            display: none !important;
+        }
+        width: 500px;
+        position: absolute;
+        top: 170px;
+        right: 70px;
+
+        pre {
+            //height: 144px;
+            padding: 14px;
+        }
+
+        pre.highlight {
+            font-size: 12px !important;
+            line-height: 16px !important;
+            overflow: hidden;
+        }
+    }
+
     #homepage-code-block {
         @media (max-width: 1150px) {
             display: none !important;
@@ -2333,6 +2354,7 @@ li {
     .marketing-content {
         width: 40%;
         margin-top: 40px;
+        margin-bottom: 40px;
 
         @media (max-width: 828px) {
             width: 100%;
@@ -2441,9 +2463,12 @@ li {
     box-shadow: none;
     padding: 0 !important;
     float: none !important;
-    overflow-x: scroll;
     display: inline-block;
     width: calc(100% - 230px) !important;
+
+    @media (max-width: 1023px) {
+        overflow: scroll;
+    }
 
     @media (max-width: 828px) {
         width: calc(100% - 140px) !important;
