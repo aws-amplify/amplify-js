@@ -128,7 +128,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         if (this._buffer.length < BUFFER_SIZE) {
             const { flushSize } = this._config;
             this._buffer.push(params);
-            // if no timer, directly send the events
+            // if no timer, directly send the events if over flush size
             if (!this._timer && this._buffer.length > flushSize ) {
                 this._startSending();
             } 
