@@ -68,6 +68,7 @@
     "rxjs-compat": "^6.2.1",
     "source-map-explorer": "^1.3.3",
     "to-string-loader": "^1.1.5",
+    "uglify-js": "^3.4.7",
     "zone": "^0.3.4",
     "zone.js": "^0.8.26"
   },
