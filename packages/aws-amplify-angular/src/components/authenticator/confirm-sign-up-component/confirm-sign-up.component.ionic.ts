@@ -47,6 +47,7 @@ const template = `
     <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>
 </div>
+
 `
 
 @Component({

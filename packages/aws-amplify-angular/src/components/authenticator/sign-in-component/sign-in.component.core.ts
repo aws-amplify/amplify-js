@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { AmplifyService } from '../../../providers/amplify.service';
-import { AuthState } from '../../../providers/auth.state';
+import { AmplifyService, AuthState } from '../../../providers';
 import { includes } from '../common';
 
 const template = `
