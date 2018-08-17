@@ -32,21 +32,22 @@ export interface EventMetrics {
 
 export interface pageViewTrackOpts {
     enable: boolean,
-    pageUrl?: string,
     type?: string
     eventName?: string,
-    provider?: string
+    provider?: string,
+    attributes?: EventAttributes
 }
 
 export interface EventTrackOpts {
     enable: boolean,
     events?: Array<string>,
     selectorPrefix?: string,
-    provider?: string
+    provider?: string,
+    attributes?: EventAttributes
 }
 
 export interface SessionTrackOpts {
     enable: boolean,
-    attributes?: any,
+    attributes?: EventAttributes,
     provider?: string
 }
