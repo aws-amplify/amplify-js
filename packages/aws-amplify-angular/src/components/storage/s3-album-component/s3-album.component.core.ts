@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { AmplifyService } from '../../../providers/amplify.service';
+import { AmplifyService } from '../../../providers';
 
 const template = `
 <div class="amplify-album-container">
