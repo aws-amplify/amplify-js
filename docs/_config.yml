@@ -265,6 +265,12 @@ category_list:
           services:
               - title: Amazon CloudFront
                 url: https://aws.amazon.com/cloudfront/
+        - title: VS Code Extension 
+          excerpt: Code snippets for AWS Amplify in Visual Studio Code.
+          cta: Read more
+          class: aws-icon-ps-60-network-nodes
+          url_external: 'https://marketplace.visualstudio.com/items?itemName=aws-amplify.aws-amplify-vscode'   
+          icon: '/images/icons/Misc/Present.svg'
           
     - category: UserInterface
       title: User Interface

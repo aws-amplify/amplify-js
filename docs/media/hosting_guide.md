@@ -3,7 +3,7 @@
 
 # Hosting
 
-AWS Amplify provides hosting for your Web app or static website 
+AWS Amplify provides hosting for your Web app or static website.
 
 ## Installation and Configuration
 

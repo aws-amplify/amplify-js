@@ -23,6 +23,22 @@
     display: block !important;
 }
 
+.content-filter {
+    float:none;
+    .filter-item {
+        float:left;
+        margin-right: 10px;
+    }
+    .btn {
+        height: 30px !important;
+        font-weight: normal;
+    }
+    .row {
+        margin-bottom:15px !important;
+        line-height: 38px;
+    }
+}
+
 .site-header {
 	position: fixed;
 	//width: 1442px;
@@ -631,6 +647,20 @@ a {
 
 .btn:focus {
     background-color: #E88B01;
+.btn--light {
+	color: $color-black;
+	background-color: white;
+
+	&:hover,
+	&:focus,
+	&:active {
+		color: $color-white;
+        background-color: orange;
+        border-color: orange;
+    }
+    border-style: solid;
+    border-width: 1px;
+    border-color: lightgray;
 }
 
 @media (max-width: 828px) {
@@ -1492,6 +1522,13 @@ li {
                         font-size: 16px;
                         line-height: 20px;
                     }
+                }
+
+                .dev-guide-by {
+                    color: gray;
+                    font-size: 13px;
+                    margin-top: -15px;
+                    margin-bottom: 10px;
                 }
 
                 .dev-guide-excerpt {
