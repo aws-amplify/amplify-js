@@ -5,7 +5,6 @@ import { ComponentMount }      from '../../component.mount';
 import { PhotoPickerClass } from './photo-picker.class';
 import { PhotoPickerIonicComponent } from './photo-picker.component.ionic'
 import { PhotoPickerComponentCore } from './photo-picker.component.core';
-import { String } from 'aws-sdk/clients/cognitoidentity';
 
 @Component({
   selector: 'amplify-photo-picker',
@@ -16,7 +15,7 @@ import { String } from 'aws-sdk/clients/cognitoidentity';
             `
 })
 export class PhotoPickerComponent implements OnInit, OnDestroy {
-  @Input() framework: String;
+  @Input() framework: string;
   @Input() url: string;
   @Output()
   picked: EventEmitter<string> = new EventEmitter<string>();
