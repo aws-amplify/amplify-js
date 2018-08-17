@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ActivityEventListener;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -35,11 +36,13 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationJsDelivery;
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationCommon;
 
-public class RNPushNotificationModule extends ReactContextBaseJavaModule {
+public class RNPushNotificationModule extends ReactContextBaseJavaModule implements ActivityEventListener {
     private static final String LOG_TAG = "RNPushNotificationModule";
 
     public RNPushNotificationModule(ReactApplicationContext reactContext) {
         super(reactContext);
+
+        reactContext.addActivityEventListener(this);
     }
 
     @Override
@@ -68,13 +71,22 @@ public class RNPushNotificationModule extends ReactContextBaseJavaModule {
         WritableMap params = Arguments.createMap();
         Activity activity = getCurrentActivity();
         if (activity != null) {
-            Intent intent = activity.getIntent();
-            Bundle bundle = intent.getBundleExtra("notification");
+            Bundle bundle = RNPushNotificationCommon.getNotificationBundleFromIntent(activity.getIntent());
             if (bundle != null) {
+                bundle.putBoolean("foreground", false);
                 String bundleString = RNPushNotificationCommon.convertJSON(bundle);
                 params.putString("dataJSON", bundleString);
             }
         }
         promise.resolve(params);
+    }
+
+    public void onNewIntent(Intent intent) {
+        Bundle bundle = RNPushNotificationCommon.getNotificationBundleFromIntent(intent);
+        if (bundle != null) intent.putExtra("notification", bundle);
+    }
+
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+        // Ignored, required to implement ActivityEventListener
     }
 }

@@ -57,9 +57,11 @@ export default class PushNotification {
     getInitialNotification() {
         return new Promise(resolve => {
             if (Platform.OS === 'ios') {
-                PushNotificationIOS.getInitialNotification().then(notification => resolve(notification ? notification.getData() : null));
+                PushNotificationIOS.getInitialNotification()
+                    .then(notification => resolve(notification ? notification.getData() : null));
             } else {
-                RNPushNotification.getInitialNotification().then(notification => resolve(notification.dataJSON ? JSON.parse(notification.dataJSON) : null));
+                RNPushNotification.getInitialNotification()
+                    .then(notification => resolve(notification.dataJSON ? JSON.parse(notification.dataJSON) : null));
             }
         });
     }

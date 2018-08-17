@@ -12,6 +12,7 @@
  */
 package com.amazonaws.amplify.pushnotification.modules;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Build;
 
@@ -48,5 +49,15 @@ public class RNPushNotificationCommon {
             }
         }
         return json;
+    }
+
+    public static Bundle getNotificationBundleFromIntent(Intent intent) {
+        Bundle bundle = null;
+        if (intent.hasExtra("notification")) {
+            bundle = intent.getBundleExtra("notification");
+        } else if (intent.hasExtra("google.message_id")) {
+            bundle = intent.getExtras();
+        }
+        return bundle;
     }
 }
