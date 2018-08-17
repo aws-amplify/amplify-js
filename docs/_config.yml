@@ -68,16 +68,22 @@ amplify:
         nav:
             - item_name: Get Started
               item_url: '/media/get_started'
+              id: get_started
             - item_name: Guides
               item_url: '/media/developer_guide'
+              id: guides
             - item_name: Tutorials
               item_url: '/media/tutorials'
+              id: tutorials
             - item_name: Toolchain
               item_url: '/media/toolchain'
+              id: toolchain
             - item_name: UI Components
               item_url: '/media/ui_library'
+              id: ui_library
             - item_name: API
               item_url: '/api/'
+              id: api
             #- item_name: 
             #  item_icon: github
             #  item_external_url: 'https://github.com/aws-amplify/amplify-js'

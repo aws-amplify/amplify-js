@@ -106,13 +106,17 @@
 						<div class="row">
 							{% for item in page.marketing_grid %}
 								<div class="col-sm-4 marketing-div">
-									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{item.url}}" class="marketing-grid-item">
+									<div class="marketing-grid-item">
 										<img class="marketing-grid__icon" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{item.icon}}" />
 										<div class="marketing-grid-content" data-mh>
 											<h2 class="marketing-grid__title">{{ item.title }}</h2>
 											<p class="marketing-grid__excerpt">{{ item.excerpt }}</p>
+											<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{item.url}}">
+												<p class="learn-more-link">Learn more</p>
+												<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+											</a>
 										</div><!-- /.nav-grid__content -->
-									</a><!-- /.nav-grid__item -->
+									</div><!-- /.nav-grid__item -->
 								</div><!-- /.col -->
 							{% endfor %}
 						</div><!-- /.row -->
@@ -218,9 +222,9 @@
 					</div>
 				</div>
 				<div class="subheader bottom-subheader">
-						Android & iOS are currently supported with our Native SDKs. 
-						<a class="inline-block" target="_blank" href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html">
-							<p class="learn-more-link">Learn more</p>
+						iOS & Android are supported with our Native SDKs. 
+						<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/get_started">
+							<p class="learn-more-link">Get Started</p>
 							<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
 						</a>
 				</div>
@@ -231,24 +235,24 @@
 		<div class="section section-top cli">
 				<div class="container">
 					<div class="row">
-						<div class="header col-sm-8">
+						<div class="header col-sm-10">
 							Powerful toolchain built for developers.
 						</div>
 					</div>
-					<img id="orange-logos" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Platform-Icons-Color@2x.png" />
 					<div class="row">
 						<div class="marketing-content">
-							<p class="subheader inline">The Amplify Command Line Interface (CLI) is a unified toolchain to manage and create your AWS Cloud services.</p>
+							<p class="subheader inline">The Amplify Command Line Interface (CLI) is a unified toolchain to create and manage your serverless infrastructure on AWS.</p>
 							<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/toolchain">
 								<p class="learn-more-link">Learn more</p>
 								<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
 							</a>
 						</div>
-						</div>
+					</div>
+					<img id="orange-logos" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Platform-Icons-Color@2x.png" />
 						<!-- <img class = "hidden-xs" id="code-window" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Code-Window@2x.png"> -->
-						<div class="highlighter-rouge inline-block section-code-block hidden-xs" id="cli-code-block">
-								<div class="highlight">
-									<pre class="highlight section-code-block">
+					<div class="highlighter-rouge inline-block section-code-block hidden-xs" id="cli-code-block">
+						<div class="highlight">
+							<pre class="highlight section-code-block">
 <code>$ amplify status
 | Category  | Resource name  | Operation | Provider plugin   |
 | --------- | -------------- | --------- | ----------------- |
@@ -257,10 +261,9 @@
 | Storage   | dynamo         | No Change | awscloudformation |
 | Api       | appsync        | Delete    | awscloudformation |
 | Function  | lambda         | No Change | awscloudformation |</code>	
-									</pre>
-								</div>    
-							</div>
-					</div><!-- /.row -->
+							</pre>
+						</div>    
+					</div>
 				</div><!-- /.container -->
 			</div><!-- /.section -->
 
@@ -271,7 +274,7 @@
 					A beautiful component library connected to the cloud.
 				</div>
 				<div class="subheader inline col-sm-7">
-					Launch with our minimally-styled components and UI or whitelabel to your own specification.
+						Launch your apps with our minimally-styled UI components or change them to match your app style.
 					<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/ui_library">
 						<p class="learn-more-link">Learn more</p>
 						<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />

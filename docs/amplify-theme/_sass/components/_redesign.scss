@@ -204,6 +204,11 @@
     height: 36px;
     width: 180px;
     margin-top: -7px;
+
+    @media (max-width: 920px) {
+        margin-top: 10px !important;
+        float: right !important;
+    }
     
     .search-image {
         margin-left: 12px;
@@ -732,13 +737,14 @@ a {
     }
 
     #cli-code-block {
-        @media (max-width: 1150px) {
+        @media (max-width: 1130px) {
             display: none !important;
         }
         width: 500px;
-        position: absolute;
-        top: 170px;
-        right: 70px;
+        position: relative;
+        float: right;
+        bottom: 100px;
+        margin-bottom: -60px;
 
         pre {
             //height: 144px;
@@ -2353,8 +2359,12 @@ li {
 .section-top.cli {
     .marketing-content {
         width: 40%;
-        margin-top: 40px;
-        margin-bottom: 40px;
+        margin-bottom: 10px;
+
+        @media (max-width: 1130px) {
+            width: 80%;
+            margin-bottom: 0;
+        }
 
         @media (max-width: 828px) {
             width: 100%;
@@ -2431,8 +2441,8 @@ li {
     #orange-logos {
         width: 220px;
 
-        @media (max-width: 828px) {
-            margin-bottom: 20px;
+        @media (max-width: 1130px) {
+            margin-bottom: 40px;
         }
     }
 
