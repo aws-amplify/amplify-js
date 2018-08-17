@@ -64,7 +64,6 @@ const components = [
   ],
   declarations: [
     DynamicComponentDirective,
-    // components.FormComponent,
     ...components,
   ],
   entryComponents: [
