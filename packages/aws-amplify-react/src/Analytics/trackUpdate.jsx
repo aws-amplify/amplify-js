@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import { Analytics } from '../Categories';
+import Analytics from '@aws-amplify/analytics';
 
 export function trackUpdate(Comp, trackerName) {
     return class extends Component {

@@ -16,8 +16,8 @@
   <a href="https://codecov.io/gh/aws/aws-amplify">
     <img src="https://codecov.io/gh/aws/aws-amplify/branch/master/graph/badge.svg" />
   </a>
-  <a href="https://circleci.com/gh/aws/aws-amplify">
-    <img src="https://circleci.com/gh/aws-amplify/amplify-js.svg?style=svg" alt="build:started">
+  <a href="https://circleci.com/gh/aws-amplify/amplify-js">
+    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-js/master.svg" alt="build:started">
   </a>
 </p>
 
@@ -63,7 +63,7 @@ __Web__
 $ npm install aws-amplify --save
 ```
 
-or you can install the module you want to use individually:
+or you could install the module you want to use individually:
 ```bash
 $ npm install @aws-amplify/auth --save
 ```
@@ -169,18 +169,22 @@ Auth.signUp({
 });
 
 Auth.signIn(username, password)
-  .then(success => console.log('successful sign in!'))
+  .then(success => console.log('successful sign in'))
   .catch(err => console.log(err));
 ```
 
 See our [Authentication Developer Guide](https://aws.github.io/aws-amplify/media/authentication_guide) for detailed information. 
 
-__React__
+__React / React Native__
 
 Adding authentication to your React or React Native app is as easy as wrapping your app's main component with our `withAuthenticator` higher order component. AWS Amplify will provide you customizable UI for common use cases such as user registration and login.
 
 ```jsx
 
+// For React
+import { withAuthenticator } from 'aws-amplify-react';
+
+// For React Native
 import { withAuthenticator } from 'aws-amplify-react-native';
 
 export default withAuthenticator(App);
@@ -256,7 +260,7 @@ let myAppConfig = {
   'aws_appsync_authenticationType': 'API_KEY',
   'aws_appsync_apiKey': 'da2-xxxxxxxxxxxxxxxxxxxxxxxxxx',
   // ...
-}
+};
 
 Amplify.configure(myAppConfig);
 ```
