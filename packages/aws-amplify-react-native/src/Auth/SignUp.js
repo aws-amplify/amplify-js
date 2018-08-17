@@ -17,7 +17,8 @@ import {
     Text, 
     TextInput, 
     Button, 
-    TouchableHighlight 
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import {
     Auth,
@@ -80,34 +81,36 @@ export default class SignUp extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <View style={theme.section}>
-                <Header theme={theme}>{I18n.get('Sign Up')}</Header>
-                <View style={theme.sectionBody}>
-                    <Username
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ username: text })}
-                    />
-                    <Password
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ password: text })}
-                    />
-                    <Email
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ email: text })}
-                    />
-                    <PhoneNumber
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ phone_number: text })}
-                    />
-                    <Button
-                        title={I18n.get('Sign Up')}
-                        onPress={this.signUp}
-                        disabled={!this.state.username || !this.state.password}
-                    />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Sign Up')}</Header>
+                    <View style={theme.sectionBody}>
+                        <Username
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ username: text })}
+                        />
+                        <Password
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ password: text })}
+                        />
+                        <Email
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ email: text })}
+                        />
+                        <PhoneNumber
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ phone_number: text })}
+                        />
+                        <Button
+                            title={I18n.get('Sign Up')}
+                            onPress={this.signUp}
+                            disabled={!this.state.username || !this.state.password}
+                        />
+                    </View>
+                    <Footer theme={theme} onStateChange={this.changeState} />
+                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
-                <Footer theme={theme} onStateChange={this.changeState} />
-                <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-            </View>
+            </TouchableWithoutFeedback>
         );
     }
 }
