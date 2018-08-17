@@ -55,8 +55,7 @@ const components = [
   ChatBotComponent,
   ChatbotComponentCore,
   FormComponent,
-]
-
+];
 
 @NgModule({
   imports: [

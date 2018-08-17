@@ -1,7 +1,7 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AmplifyService } from './providers/amplify.service';
-import { AuthenticatorIonicComponent } from './components/authenticator/authenticator/authenticator.component.ionic';
+import { AuthenticatorIonicComponent } from "./components/authenticator/authenticator/authenticator.component.ionic";
 import { ConfirmSignInComponentIonic } from './components/authenticator/confirm-sign-in-component/confirm-sign-in-component.ionic';
 import { ConfirmSignUpComponentIonic } from './components/authenticator/confirm-sign-up-component/confirm-sign-up.component.ionic';
 import { ForgotPasswordComponentIonic } from './components/authenticator/forgot-password-component/forgot-password.component.ionic';
@@ -27,7 +27,7 @@ const components = [
   S3AlbumComponentIonic,
   S3ImageComponentIonic,
   ChatbotComponentIonic
-]
+];
 
 @NgModule({
   imports: [

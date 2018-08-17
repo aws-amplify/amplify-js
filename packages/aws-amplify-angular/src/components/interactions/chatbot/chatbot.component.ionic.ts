@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { ChatbotComponentCore } from './chatbot.component.core'
+import { ChatbotComponentCore } from './chatbot.component.core';
 import { AmplifyService } from '../../../providers';
 
 const template = `
@@ -68,7 +68,7 @@ const template = `
 
 @Component({
   selector: 'amplify-interactions-ionic',
-  template: template
+  template
 })
 export class ChatbotComponentIonic extends ChatbotComponentCore {
 
