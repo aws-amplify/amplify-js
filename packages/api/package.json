@@ -71,6 +71,7 @@
       "jsx"
     ],
     "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
     "mapCoverage": true,
     "coverageThreshold": {
       "global": {
