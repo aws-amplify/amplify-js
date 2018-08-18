@@ -1358,23 +1358,22 @@ describe('auth unit test', () => {
                 Pool: userPool
             });
 
-            const spyon = jest.spyOn(CognitoIdentityCredentials.prototype, "clearCachedId");
-            const spyon2 = jest.spyOn(Credentials, 'clear').mockImplementationOnce(() => {
+            const spyon = jest.spyOn(Credentials, 'clear').mockImplementationOnce(() => {
                 return
             });
-            const spyon3 = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
+            const spyon2 = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
             .mockImplementationOnce(() => {
                 return user;
             });
 
             await auth.signOut();
 
-            expect.assertions(1);
+            expect.assertions(2);
             expect(spyon).toBeCalled();
+            expect(spyon2).toBeCalled();
             
             spyon.mockClear();
             spyon2.mockClear();
-            spyon3.mockClear();
         });
 
         test('happy case for source userpool', async () => {
