@@ -221,7 +221,7 @@
     width: 180px;
     margin-top: -7px;
 
-    @media (max-width: 920px) {
+    @media (max-width: 936px) {
         margin-top: 10px !important;
         float: right !important;
     }
@@ -565,6 +565,14 @@ a {
         }
     }
     
+    .btn:hover {
+        background-color: #ededed
+    }
+
+    .btn:focus {
+        background-color: #d6d6d6;
+    }
+
 	.btn--github,
 	.btn--w-arrow-down {
 		@extend .btn--dark;
@@ -631,6 +639,14 @@ a {
     padding: 0 40px;
     height: 60px;
     text-transform: uppercase;
+}
+
+.btn:hover {
+    background-color: #FFA41D;
+}
+
+.btn:focus {
+    background-color: #E88B01;
 }
 
 .btn--light {
@@ -1146,11 +1162,15 @@ body {
     }
 }
 
-.hero-subheader--before-out {
-	@media (min-width: $screen-sm-min) {
+.hero-subheader {
+	@media (min-width: 828px) {
         //padding: 9.375rem 0 (15.3125rem - 1.25rem) 0;
         padding-top: 130px;
-	}
+    }
+    
+    @media (max-width: 936px) {
+        padding-top: 165px;
+    }
 }
 
 /* ----- Title ----- */
@@ -1361,6 +1381,10 @@ li {
                     line-height: 53px;
                     margin-top: 60px;
                     margin-bottom: 60px;
+
+                    @media (max-width: 936px) {
+                        margin-top: 120px;
+                    }
 
                     @media (max-width: 828px) {
                         margin-top: 80px;
@@ -1623,16 +1647,20 @@ li {
     }
 }
 
-.learn-more-link-box {
+.amplify-link-box {
     margin-bottom: 20px;
 }
 
-.learn-more-link {
+.amplify-link {
     color: #FF9900;
     font-family: "Amazon Ember", "Helvetica", sans-serif;
     font-size: 16px;
     line-height: 24px;
     display: inline-block;
+}
+
+.amplify-link:hover {
+    text-decoration: underline;
 }
 
 .down-arrow {
@@ -1644,6 +1672,8 @@ li {
 }
 
 .side-arrow {
+    position: relative;
+    right: 5px;
     display: inline-block;
     vertical-align: middle;
     //margin-left: 13px;
@@ -1678,7 +1708,7 @@ li {
 
         @media (max-width: 828px) {
             width: 37px;
-            line-height: 37px;
+            line-height: 34px;
             font-size: 22px;
             top: 10px;
             right: 10px;
@@ -2258,6 +2288,7 @@ li {
         float: right;
         width: calc(100% - 280px);
         padding: 53px 65px;
+        margin-bottom: 20px;
 
         @media (max-width: 828px) {
             float: left;

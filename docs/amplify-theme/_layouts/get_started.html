@@ -31,7 +31,7 @@
                                     <!-- <a href="cli_guide"> <button class="btn install-amplify-cli" >Install Amplify CLI</button> </a> -->
                                     <!-- <a href="toolchain">
                                         <div id="learn-more-about-cli-box">
-                                            <p class="learn-more-link">Learn more about the CLI</p>
+                                            <p class="amplify-link">Learn more about the CLI</p>
                                             <img class="down-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
                                         </div>
                                     </a> -->
@@ -59,7 +59,7 @@
                                     <button class="btn" id="aws-signup-btn">Create an AWS Account</button> 
                                 </a>
                             </div>
-                            <img id="aws-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/aws_logo.png" />
+                            <img id="aws-logo" class="hidden-xs" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/aws_logo.png" />
                             <div class="div-number">1</div>
                         </div>
                     </div>
@@ -143,24 +143,32 @@ $ amplify configure</code>
                                 </div> -->
                                 <div class="platform-container">
                                         <div class="platform-box">
-                                            <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Apple@1x.png" />
-                                            <p class="platform-title">Build with iOS</p>
-                                            <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank"> <button class="btn">Get Started</button> </a>
+                                            <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank">
+                                                <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Apple@1x.png" />
+                                                <p class="platform-title">Build with iOS</p>
+                                                <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank"> <button class="btn">Get Started</button> </a>
+                                            </a>
                                         </div>
                                         <div class="platform-box">
-                                            <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Droid@1x.png" />
-                                            <p class="platform-title">Build with Android</p>
-                                            <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank"> <button class="btn">Get Started</button> </a>
+                                            <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank">
+                                                <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Droid@1x.png" />
+                                                <p class="platform-title">Build with Android</p>
+                                                <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank"> <button class="btn">Get Started</button> </a>
+                                            </a>
                                         </div>
                                         <div class="platform-box">
-                                            <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/web.png" />
-                                            <p class="platform-title">Build for Web</p>
-                                            <a href="get_started_docs?platform=purejs"> <button class="btn">Get Started</button> </a>
+                                            <a href="get_started_docs?platform=purejs">
+                                                <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/web.png" />
+                                                <p class="platform-title">Build for Web</p>
+                                                <a href="get_started_docs?platform=purejs"> <button class="btn">Get Started</button> </a>
+                                            </a>
                                         </div>
                                         <div class="platform-box">
-                                            <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/ReactNat@1x.png" />
-                                            <p class="platform-title">Build with React Native</p>
-                                            <a href="get_started_docs?platform=react-native"> <button class="btn">Get Started</button> </a>
+                                            <a href="get_started_docs?platform=react-native">
+                                                <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/ReactNat@1x.png" />
+                                                <p class="platform-title">Build with React Native</p>
+                                                <a href="get_started_docs?platform=react-native"> <button class="btn">Get Started</button> </a>
+                                            </a>
                                         </div>
                                     </div>
                             </div><!-- /.row -->
