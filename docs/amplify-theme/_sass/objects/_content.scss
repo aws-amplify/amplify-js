@@ -10,8 +10,10 @@
 }
 
 .language-terminal {
-	font-size:13px;
-	line-height: 15px;
+	.go {
+		font-size:13px;
+		line-height: 13px;
+	}
 }
 
 .next-link, .tab-link.current {

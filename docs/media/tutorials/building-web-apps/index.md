@@ -4,7 +4,9 @@ Building Web Apps with AWS Amplify
 Overview
 --------
 
-The AWS Amplify and the CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with React and AWS Amplify.
+The AWS Amplify library and the AWS Amplify CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly.
+
+In this tutorial, you will learn how to build a cloud-enabled web app with React and AWS Amplify.
 
 **By completing this tutorial, you will be able to;**
 - Use Amplify CLI to create your backend
@@ -23,16 +25,6 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
     npm install -g @aws-amplify/cli
     ```
 
-4.  Configure the CLI with your AWS credentials
-
-    To set up permissions for the toolchain used by the CLI, run:
-
-    ```bash
-    amplify configure
-    ```
-
-    If prompted for credentials, follow the steps provided by the CLI.
-
 ### Set Up Your Backend
 
 **To configure backend features for your app**
@@ -43,28 +35,34 @@ The AWS Amplify and the CLI provides a developer experience that allows frontend
     amplify init
     ```
 
-    The `init` command creates a backend project for your
-    app. By default, analytics and web hosting are enabled in your
-    backend, and this configuration is automatically pulled into your app
-    when you initialize.
+    The `init` command configures your local development environment for AWS Amplify and creates a backend project for your app. When using it for the first time, the CLI will help you to create and use your AWS credentials. 
 
-2.  When prompted, provide the source directory for your project. The
-    CLI will generate aws-exports.js in this location. This file
-    contains the configuration and endpoint metadata used to link your
-    frontend to your backend services.
+2.  When prompted, provide responses about your development environment. *Source Directory Path* should be the source directory for your project, since the CLI will generate *aws-exports.js* file in this location. This file contains the configuration and endpoint metadata used to link you frontend to your backend services.
 
-    ```bash
-    ? Where is your project's source directory:  src
+    ```terminal
+    ? Choose your default editor: Visual Studio Code
+    ? Choose the type of app that you're building: javascript
+    Please tell us about your project
+    ? What javascript framework are you using react
+    ? Source Directory Path:  src
+    ? Distribution Directory Path: build
+    ? Build Command:  npm run-script build
+    ? Start Command: npm run-script start
     ```
 
-3.  Respond to further prompts with the following values.
+3.  Amplify CLI uses AWS CloudFormation to manage your backend resources. When prompted for the AWS CloudFormation configuration, select the default configuration by hitting enter to the command prompt.
 
-    ```bash
-    ? Where is your project's distribution directory to store build artifacts:  build
-    ? What is your project's build command:  npm run-script build
-    ? What is your project's start command for local test run:  npm run-script start
-    ? What amplify project name would you like to use:  YOUR-APP-NAME-2017-11-10-15-17-48
+    ```terminal
+    Amplify uses AWS CloudFormation default configuration.
+    To change this, see:
+    https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html
+    You can also configure the AWS CloudFormation provider on the project level and override the default.
+    ? Do you want to setup project level configuration No
     ```
+
+Completing above step will enable your project at the backend and the resource that is required the manage your app backend is automatically created and deployed by the CLI.
+
+But, you don't have any application specific resources yet. 
 
 After the project is created, you will get a success message which also
 includes details on the path where the *aws-exports.js* is copied.

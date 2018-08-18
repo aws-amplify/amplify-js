@@ -3,9 +3,15 @@
 layout: default
 ---
 
-# Installation and Configuration
+# Installation and Configuration for JavaScript
 
 Installing AWS Amplify involves installing our client libraries and toolchain with *npm*, and configuring your backend to connect to services.
+
+## Prerequisites
+
+To work with AWS Amplify;
+- You need to have an AWS account. If you don't already have an AWS account [Sign up for the AWS Free Tier](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start).
+- Install Node.js® with NPM
 
 ## Step 1 - Install the CLI
 
@@ -16,6 +22,8 @@ $ npm install -g @aws-amplify/cli
 ```
 
 ## Step 2 - Install Client Libraries
+
+You can use AWS Amplify with plan JavaScript or install frontend library support packages to use UI components and many other utilities.
 
 <div class="nav-tab install" data-group="install">
 <ul class="tabs">
@@ -59,7 +67,7 @@ npm install aws-amplify-angular
 </div>
 </div>
 
-## Step 3 - Initialize Your Project
+## Step 3 - Initialize Your JavaScript Project
 
 To start working with AWS Amplify, you need to initialize your project's backend with the CLI. This is a required one-time setup that creates your initial backend resources in the cloud and makes your project ready to integrate additional cloud resources.
 

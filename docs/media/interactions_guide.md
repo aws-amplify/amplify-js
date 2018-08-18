@@ -39,7 +39,7 @@ You can edit your bot and add new utterances or integrate with other AWS service
 
 ## Installation and Configuration
 
-Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. In this guide, you will learn about how you can and integrate a conversational bot that you have created in the previous step.
+Please refer to [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. In this guide, you will learn about how you can and integrate a conversational bot that you have created in the previous step.
 
 ### Automated Setup
 
