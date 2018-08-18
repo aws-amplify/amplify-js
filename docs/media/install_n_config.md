@@ -9,9 +9,9 @@ Installing AWS Amplify involves installing our client libraries and toolchain wi
 
 ## Prerequisites
 
-To work with AWS Amplify;
-- You need to have an AWS account. If you don't already have an AWS account [Sign up for the AWS Free Tier](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start).
-- Install Node.js® with NPM
+To work with AWS Amplify in JavaScript:
+- You need an AWS account. If you don't have an account, [Sign up for the AWS Free Tier](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start).
+- You need [Node.js®](https://nodejs.org/en/download/) installed on you local development machine.
 
 ## Step 1 - Install the CLI
 
@@ -91,11 +91,42 @@ When you run *'amplify init'* in your project folder for the first time, the CLI
 ❯ javascript 
 ```
 
-Initializing a project creates the backend configuration file `aws-exports.js` which you will import in your app to use Amplify categories. This file needs to be under your source directory. If you are starting a new project, please be sure to have a source directory, e.g. '/src' and select this directory when prompted by the *init* command.
+Initializing a project creates the backend configuration file `aws-exports.js` which you will import in your app to use Amplify categories. This file contains the configuration and endpoint metadata used to link you frontend to your backend services, and it needs to be located in your source directory. 
+
+If you are starting a new project, please be sure to have a source directory, e.g. '/src' and select this directory when prompted by the *init* command.
+
+The `init` command configures your local development environment for AWS Amplify and creates a backend project for your app. When using it for the first time, the CLI will help you to create and use your AWS credentials. 
+
+Amplify CLI uses AWS CloudFormation to manage your backend resources. When prompted for the AWS CloudFormation configuration, select the default configuration by hitting enter to the command prompt.
+
+```terminal
+Amplify uses AWS CloudFormation default configuration.
+To change this, see:
+https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html
+You can also configure the AWS CloudFormation provider on the project level and override the default.
+? Do you want to setup project level configuration No
+```
+
+Completing above step will enable your project at the backend and the resource that is required the manage your app backend is automatically created and deployed by the CLI.
+
+But, you don't have any application specific resources yet. 
+
+After the project is created, you will get a success message which also
+includes details on the path where the *aws-exports.js* is copied.
+
+```bash
+> amplify project's details logged at: amplifyjs/#current-backend-info/backend-details.json
+> amplify project's access information logged at: amplifyjs/#current-backend-info/aws-exports.js
+> amplify project's access information copied to: src/aws-exports.js
+> amplify project's specifications logged at: amplifyjs/#current-backend-info/mobile-hub-project.yml
+> contents in #current-backend-info/ is synchronized with the latest information in the aws cloud
+```
+
+Your project is now initialized, and you are ready to use AWS Amplify in your JavaScript code.
 
 ## What's next?  
 
+Go back to your tutorial
+
 Check our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start#set-up-your-backend) to see how you can set up your backend and use it in you app.
 {: .next-link}
-
-

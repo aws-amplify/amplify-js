@@ -17,7 +17,7 @@ When working together, Cognito User Pools acts as a source of user identities (i
 
 ## Installation and Configuration
 
-Before start, please be sure that you have installed the CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config). 
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config). 
 {: .callout .callout--info}
 
 **When you are done with the installation**, you can follow below steps to enable Authentication category in your app.

@@ -15,67 +15,10 @@ In this tutorial, you will learn how to build a cloud-enabled web app with React
 
 ## Set Up and Installation 
 
-### Prerequisites
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config?referrer=/media/tutorials/building-web-apps). 
+{: .callout .callout--info}
 
-1.  [Sign up for the AWS Free Tier](https://aws.amazon.com/free/).
-2.  Install [Node.js](https://nodejs.org/en/download/) with NPM.
-3.  Install Amplify CLI
-
-    ```bash
-    npm install -g @aws-amplify/cli
-    ```
-
-### Set Up Your Backend
-
-**To configure backend features for your app**
-
-1.  In the root folder of your app, run:
-
-    ```bash
-    amplify init
-    ```
-
-    The `init` command configures your local development environment for AWS Amplify and creates a backend project for your app. When using it for the first time, the CLI will help you to create and use your AWS credentials. 
-
-2.  When prompted, provide responses about your development environment. *Source Directory Path* should be the source directory for your project, since the CLI will generate *aws-exports.js* file in this location. This file contains the configuration and endpoint metadata used to link you frontend to your backend services.
-
-    ```terminal
-    ? Choose your default editor: Visual Studio Code
-    ? Choose the type of app that you're building: javascript
-    Please tell us about your project
-    ? What javascript framework are you using react
-    ? Source Directory Path:  src
-    ? Distribution Directory Path: build
-    ? Build Command:  npm run-script build
-    ? Start Command: npm run-script start
-    ```
-
-3.  Amplify CLI uses AWS CloudFormation to manage your backend resources. When prompted for the AWS CloudFormation configuration, select the default configuration by hitting enter to the command prompt.
-
-    ```terminal
-    Amplify uses AWS CloudFormation default configuration.
-    To change this, see:
-    https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html
-    You can also configure the AWS CloudFormation provider on the project level and override the default.
-    ? Do you want to setup project level configuration No
-    ```
-
-Completing above step will enable your project at the backend and the resource that is required the manage your app backend is automatically created and deployed by the CLI.
-
-But, you don't have any application specific resources yet. 
-
-After the project is created, you will get a success message which also
-includes details on the path where the *aws-exports.js* is copied.
-
-```bash
-> amplify project's details logged at: amplifyjs/#current-backend-info/backend-details.json
-> amplify project's access information logged at: amplifyjs/#current-backend-info/aws-exports.js
-> amplify project's access information copied to: src/aws-exports.js
-> amplify project's specifications logged at: amplifyjs/#current-backend-info/mobile-hub-project.yml
-> contents in #current-backend-info/ is synchronized with the latest information in the aws cloud
-```
-
-Your project is now initialized.
+**When you are done with the installation**, you can continue with the next step in the tutorial.
 
 #### Connect to Your Backend
 
