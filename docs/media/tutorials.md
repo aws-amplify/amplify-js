@@ -31,8 +31,7 @@ tutorial_list:
           cta: Read more
           url: '/media/tutorials/building-ionic-4-apps' 
     -  category: CommunityResources
-       title: Community Resources
-       enable_filter: true
+       title: Working with AWS Amplify
        subs:
         - title: How to use AWS Amplify and Angular to Build Cloud Enabled JavaScript Applications
           excerpt: 'Learn how to start working with AWS Amplify in an Angular app.<br/><b>5 min read</b>'
