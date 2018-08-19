@@ -349,62 +349,6 @@ describe('auth unit test', () => {
 
         'User has not verified software token mfa'
 
-        test('totp not setup but NOMFA chosed, disable sms', async () => {
-            const auth = new Auth(authOptions);
-
-            const spyon = jest.spyOn(CognitoUser.prototype, "setUserMfaPreference").mockImplementationOnce((smsMfaSettings, totpMfaSettings, callback) => {
-                const err = {
-                    message: 'User has not verified software token mfa'
-                }
-                callback(err, null);
-            });
-            const spyon2 = jest.spyOn(Auth.prototype, 'disableSMS').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('Success');
-                });
-            });
-
-            const spyon3 = jest.spyOn(Auth.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
-                return Promise.resolve('SMS_MFA')
-            });
-
-            await auth.setPreferredMFA(user, 'NOMFA');
-            expect(spyon).toBeCalled();
-            expect(spyon2).toBeCalled();
-
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
-        });
-        
-        test('totp not setup but MFA chosed, enable sms', async () => {
-            const auth = new Auth(authOptions);
-
-            const spyon = jest.spyOn(CognitoUser.prototype, "setUserMfaPreference").mockImplementationOnce((smsMfaSettings, totpMfaSettings, callback) => {
-                const err = {
-                    message: 'User has not verified software token mfa'
-                }
-                callback(err, null);
-            });
-            const spyon2 = jest.spyOn(Auth.prototype, 'enableSMS').mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res('Success');
-                });
-            });
-
-            const spyon3 = jest.spyOn(Auth.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
-                return Promise.resolve('NOMFA')
-            });
-
-            await auth.setPreferredMFA(user, 'SMS');
-            expect(spyon).toBeCalled();
-            expect(spyon2).toBeCalled();
-
-            spyon.mockClear();
-            spyon2.mockClear();
-            spyon3.mockClear();
-        }); 
-
         test('totp not setup but TOTP chosed', async () => {
             const auth = new Auth(authOptions);
 
@@ -423,31 +367,6 @@ describe('auth unit test', () => {
             } catch (e) {
                 expect(e).not.toBeNull();
             }
-            expect(spyon).toBeCalled();
-   
-            spyon.mockClear();
-            spyon2.mockClear();
-        });
-
-        test('totp not setup but TOTP chosed', async () => {
-            const auth = new Auth(authOptions);
-
-            const spyon = jest.spyOn(CognitoUser.prototype, "setUserMfaPreference").mockImplementationOnce((smsMfaSettings, totpMfaSettings, callback) => {
-                const err = {
-                    message: 'other message'
-                }
-                callback(err, null);
-            });
-            const spyon2 = jest.spyOn(Auth.prototype, 'getPreferredMFA').mockImplementationOnce(() => {
-                return Promise.resolve('SMS_MFA')
-            });
-
-            try {
-                await auth.setPreferredMFA(user, 'TOTP');
-            } catch (e) {
-                expect(e).not.toBeNull();
-            }
-        
             expect(spyon).toBeCalled();
    
             spyon.mockClear();
@@ -480,7 +399,7 @@ describe('auth unit test', () => {
             try {
                 await auth.getPreferredMFA(user);
             } catch (e) {
-                expect(e).not.toBeNull();
+                expect(e).toBe('err');
             }
         });
     });

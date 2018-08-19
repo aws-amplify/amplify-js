@@ -4,7 +4,7 @@ You can now use Amazon Cognito to easily add user sign-up and sign-in to your mo
 
 We welcome developer feedback on this project. You can reach us by creating an issue on the
 GitHub repository or posting to the Amazon Cognito Identity forums and the below blog post:
-* https://github.com/aws/amazon-cognito-identity-js
+* https://github.com/aws-amplify/amplify-js
 * https://forums.aws.amazon.com/forum.jspa?forumID=173
 * https://aws.amazon.com/blogs/mobile/accessing-your-user-pools-using-the-amazon-cognito-identity-sdk-for-javascript/
 
@@ -394,6 +394,8 @@ Note that the inputVerificationCode method needs to be defined but does not need
 
 **Use case 9.** Enabling MFA for a user on a pool that has an optional MFA setting for an authenticated user.
 
+Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
+
 ```javascript
     cognitoUser.enableMFA(function(err, result) {
         if (err) {
@@ -405,6 +407,8 @@ Note that the inputVerificationCode method needs to be defined but does not need
 ```
 
 **Use case 10.** Disabling MFA for a user on a pool that has an optional MFA setting for an authenticated user.
+
+Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
 
 ```javascript
     cognitoUser.disableMFA(function(err, result) {

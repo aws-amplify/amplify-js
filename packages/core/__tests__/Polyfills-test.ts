@@ -14,7 +14,7 @@ describe('Polyfills unit test', () => {
 
             (<any>global).window.localStorage.removeItem('key');
             const result2 = (<any>global).window.localStorage.getItem('key');
-            expect(result2).toBe(undefined);
+            expect(result2).toBe(null);
         });
     });
 });

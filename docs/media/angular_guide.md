@@ -3,9 +3,19 @@
 
 # Angular
 
-AWS Amplify provides Angular Components with [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
+AWS Amplify helps developers to create high-quality Angular apps quickly by handling the heavy lifting of configuring and integrating cloud services behind the scenes. It also provides a powerful high-level API and ready-to-use security best practices.
+
+For Angular developers, AWS Amplify provides following main benefits:
+- Easy integration with cloud operations with declarative API
+- CLI support for bootstrapping your app backend quickly
+- Local configuration and deployment of your app’s backend logic
+- Deployment of static assets for hosting and streaming
+- Angular UI components for common operations such as Authorization and Storage
+- Monitoring app usage and engaging users with campaign analytics
 
 ## Installation and Configuration
+
+AWS Amplify provides Angular Components with [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
 
 Install `aws-amplify` and `aws-amplify-angular` npm packages into your Angular app.
 
@@ -259,6 +269,23 @@ onAlbumImageSelected( event ) {
       window.open( event, '_blank' );
 }
 ```
+
+### Interactions
+
+The `amplify-interactions` component provides you with a Chatbot user interface. You can pass it three parameters:
+
+1. `bot`:  The name of the Amazon Lex Chatbot
+
+2. `clearComplete`:  A flag indicating whether or not the messages should be cleared at the
+end of the conversation.
+
+3. `complete`: A function that is executed when the conversation is completed.
+
+```html
+<amplify-interactions bot="yourBotName" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
+```
+
+See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/interactions_guide) for information on creating an Amazon Lex Chatbot.
 
 ### Custom Styles
 

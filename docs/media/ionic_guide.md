@@ -3,9 +3,20 @@
 
 # Ionic
 
-AWS Amplify provides Angular Components that you can use with Ionic in [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
+AWS Amplify helps developers to create high-quality Ionic apps quickly by handling the heavy lifting of configuring and integrating cloud services behind the scenes. It also provides a powerful high-level API and ready-to-use security best practices.
+
+For Ionic developers, AWS Amplify provides following main benefits:
+
+- Easy integration with cloud operations with declarative API
+- CLI support for bootstrapping your app backend quickly
+- Local configuration and deployment of your app’s backend logic
+- Deployment of static assets for hosting and streaming
+- Ionic UI components for common operations such as Authorization and Storage
+- Monitoring app usage and engaging users with campaign analytics
 
 ## Installation and Configuration
+
+AWS Amplify provides Angular Components that you can use with Ionic in [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
 
 Install `aws-amplify` and `aws-amplify-angular` npm packages into your Angular app.
 
@@ -171,7 +182,7 @@ $ awsmobile user-signin enable
 To use Authenticator, just add the `amplify-authenticator` directive in your .html view:
 ```html
   ...
-  <amplify-authenticator></amplify-authenticator>
+  <amplify-authenticator framework="Ionic"></amplify-authenticator>
   ...
 ```
 
@@ -188,7 +199,7 @@ $ awsmobile user-files enable
 To render photo picker in an Angular view, use *amplify-photo-picker* component:
 
 ```html
-<amplify-photo-picker 
+<amplify-photo-picker framework="Ionic"
     (picked)="onImagePicked($event)"
     (loaded)="onImageLoaded($event)">
 </amplify-photo-picker>
@@ -230,7 +241,8 @@ $ awsmobile user-files enable
 To render the album, use *amplify-s3-album* component in your Angular view:
 
 ```html
-<amplify-s3-album path="pics" (selected)="onAlbumImageSelected($event)">
+<amplify-s3-album framework="Ionic" 
+    path="pics" (selected)="onAlbumImageSelected($event)">
 </amplify-s3-album>
 ```
 
@@ -242,6 +254,23 @@ onAlbumImageSelected( event ) {
 }
 ```
 
+### Interactions
+
+The `amplify-interactions` component provides you with a Chatbot user interface. You can pass it three parameters:
+
+1. `bot`:  The name of the Amazon Lex Chatbot
+
+2. `clearComplete`:  A flag indicating whether or not the messages should be cleared at the
+end of the conversation.
+
+3. `complete`: A function that is executed when the conversation is completed.
+
+```html
+<amplify-interactions bot="yourBotName" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
+```
+
+See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/interactions_guide) for information on creating an Amazon Lex Chatbot.
+
 ### Custom Styles
 
 You can use custom styling for AWS Amplify components. Just import your custom *styles.css* that overrides the default styles which can be found in `/node_modules/aws-amplify-angular/theme.css`.
@@ -250,9 +279,9 @@ You can use custom styling for AWS Amplify components. Just import your custom *
 
 Currently, the newest version of Angular (6.x) does not provide the shim for the  `global` object, which was provided in previous versions. Specific AWS Amplify dependencies rely on this shim.  While we evaluate the best path forward to address this issue, you have a couple of options for re-creating the shim in your Angular 6 app to make it compatible with Amplify.
 
-1.  Add the following to your polyfills.ts: ```(window as any).global = window;```.
+1.  Add the following to your polyfills.ts: `(window as any).global = window;`.
 
-2.  Add the following script to your index.html ```<head>``` tag:
+2.  Add the following script to your index.html `<head>` tag:
 ``` 
     <script>
         if (global === undefined) {
@@ -265,12 +294,9 @@ Currently, the newest version of Angular (6.x) does not provide the shim for the
 
 Learn more with tutorials:
 
+- [Building Ionic 4 apps with AWS Amplify]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/tutorials/building-ionic-4-apps/) 
+
 - [How to use AWS Amplify and Angular to Build Cloud Enabled JavaScript Applications](https://medium.freecodecamp.org/building-cloud-enabled-javascript-applications-with-aws-amplify-angular-682547fc6477){: target='_new'}
-
-
----
 
 To help you start working with AWS Amplify, Ionic team provides a Starter App. See our [Ionic Starter App in Github](https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws).
 {: .callout .callout--info}
-
-**You can also use our [Angular components]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/angular_guide) with Ionic.**

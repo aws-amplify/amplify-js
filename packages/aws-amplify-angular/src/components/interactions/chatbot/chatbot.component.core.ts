@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { AmplifyService } from '../../../providers';
+import { AmplifyService } from '../../../providers/amplify.service';
 
 const template = `
 <div class="amplify-interactions-container">
@@ -20,7 +20,7 @@ const template = `
 		        [value]="inputText"
 		        (keyup.enter)="onSubmit(inputValue.value)"
 		        (change)="onInputChange($event.target.value)">
-		    <button class="amplify-form-button" (click)="onSubmit()">Send</button>
+		    <button class="amplify-form-button" (click)="onSubmit(inputValue.value)">Send</button>
 		</div>
 	</div>
 </div>

@@ -1,53 +1,77 @@
-import { NgModule } from '@angular/core';
+import { NgModule , forwardRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AmplifyService } from './providers/amplify.service';
-import * as components from './components';
-import { DynamicComponentDirective }          from './directives/dynamic.component.directive';
+
+import { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
+import { AuthenticatorComponentCore } from './components/authenticator/authenticator/authenticator.component.core';
+import { ConfirmSignInComponent } from './components/authenticator/confirm-sign-in-component/confirm-sign-in.factory';
+import { ConfirmSignInComponentCore } from './components/authenticator/confirm-sign-in-component/confirm-sign-in-component.core';
+import { ConfirmSignUpComponent } from './components/authenticator/confirm-sign-up-component/confirm-sign-up.factory';
+import { ConfirmSignUpComponentCore } from './components/authenticator/confirm-sign-up-component/confirm-sign-up.component.core';
+import { SignInComponent } from './components/authenticator/sign-in-component/sign-in.component.factory';
+import { SignInComponentCore } from './components/authenticator/sign-in-component/sign-in.component.core';
+import { SignUpComponent } from './components/authenticator/sign-up-component/sign-up.factory';
+import { SignUpComponentCore } from './components/authenticator/sign-up-component/sign-up.component.core';
+import { RequireNewPasswordComponent } from './components/authenticator/require-new-password-component/require-new-password.factory';
+import { RequireNewPasswordComponentCore } from './components/authenticator/require-new-password-component/require-new-password.component.core';
+import { GreetingComponent } from './components/authenticator/greeting-component/greeting.factory';
+import { GreetingComponentCore } from './components/authenticator/greeting-component/greeting.component.core';
+import { ForgotPasswordComponent } from './components/authenticator/forgot-password-component/forgot-password.factory';
+import { ForgotPasswordComponentCore } from './components/authenticator/forgot-password-component/forgot-password.component.core';
+import { S3AlbumComponent } from './components/storage/s3-album-component/s3-album.factory';
+import { S3AlbumComponentCore } from './components/storage/s3-album-component/s3-album.component.core';
+import { S3ImageComponent } from './components/storage/s3-image-component/s3-image.factory';
+import { S3ImageComponentCore } from './components/storage/s3-image-component/s3-image.component.core';
+import { PhotoPickerComponent } from './components/storage/photo-picker-component/photo-picker.factory';
+import { PhotoPickerComponentCore } from './components/storage/photo-picker-component/photo-picker.component.core';
+import { ChatBotComponent } from './components/interactions/chatbot/chatbot.factory';
+import { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.component.core'; 
+import { DynamicComponentDirective } from './directives/dynamic.component.directive';
+import { FormComponent } from './components/common/form.component';
 
 
-const exportables = [
-  components.AuthenticatorComponent,
-  components.AuthenticatorComponentCore,
-  components.ConfirmSignInComponent,
-  components.ConfirmSignInComponentCore,
-  components.ConfirmSignUpComponent,
-  components.ConfirmSignUpComponentCore,
-  components.ForgotPasswordComponent,
-  components.ForgotPasswordComponentCore,
-  components.GreetingComponent,
-  components.GreetingComponentCore,
-  components.PhotoPickerComponent,
-  components.PhotoPickerComponentCore,
-  components.S3AlbumComponent,
-  components.S3AlbumComponentCore,
-  components.S3ImageComponent,
-  components.S3ImageComponentCore,
-  components.SignInComponent,
-  components.SignInComponentCore,
-  components.SignUpComponent,
-  components.SignUpComponentCore,
-  components.ChatBotComponent,
-  components.ChatbotComponentCore,
-  components.RequireNewPasswordComponent,
-  components.RequireNewPasswordComponentCore
+const components = [
+  AuthenticatorComponent,
+  AuthenticatorComponentCore,
+  ConfirmSignInComponent,
+  ConfirmSignInComponentCore,
+  ConfirmSignUpComponent,
+  ConfirmSignUpComponentCore,
+  SignInComponent,
+  SignInComponentCore,
+  SignUpComponent,
+  SignUpComponentCore,
+  RequireNewPasswordComponent,
+  RequireNewPasswordComponentCore,
+  GreetingComponent,
+  GreetingComponentCore,
+  ForgotPasswordComponent,
+  ForgotPasswordComponentCore,
+  S3AlbumComponent,
+  S3AlbumComponentCore,
+  S3ImageComponent,
+  S3ImageComponentCore,
+  PhotoPickerComponent,
+  PhotoPickerComponentCore,
+  ChatBotComponent,
+  ChatbotComponentCore,
+  FormComponent,
 ]
 
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule,
   ],
   declarations: [
     DynamicComponentDirective,
-    components.FormComponent,
-    ...exportables,
+    ...components,
   ],
   entryComponents: [
-    ...exportables
+    ...components
   ],
-  providers: [ AmplifyService ],
+  providers: [ ],
   exports: [
-    ...exportables,
+    ...components,
   ]
 })
 export class AmplifyAngularModule { }

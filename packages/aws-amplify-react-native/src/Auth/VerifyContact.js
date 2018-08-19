@@ -18,7 +18,8 @@ import {
     TextInput,
     Picker, 
     Button, 
-    TouchableHighlight 
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import {
     Auth,
@@ -137,13 +138,15 @@ export default class VerifyContact extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <View style={theme.section}>
-                <Header theme={theme}>{I18n.get('Verify Contact')}</Header>
-                { !this.state.verifyAttr && this.verifyBody(theme) }
-                { this.state.verifyAttr && this.submitBody(theme) }
-                <Footer theme={theme} onStateChange={this.changeState} />
-                <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-            </View>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Verify Contact')}</Header>
+                    { !this.state.verifyAttr && this.verifyBody(theme) }
+                    { this.state.verifyAttr && this.submitBody(theme) }
+                    <Footer theme={theme} onStateChange={this.changeState} />
+                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+                </View>
+            </TouchableWithoutFeedback>
         );
     }
 }
