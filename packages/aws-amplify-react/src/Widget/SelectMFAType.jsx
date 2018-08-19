@@ -15,7 +15,21 @@ import React, { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AmplifyTheme from '../AmplifyTheme';
+// import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+
+import {
+    // FormSection,
+    // SectionHeader,
+    // SectionBody,
+    // SectionFooter,
+    // InputRow,
+    // RadioRow,
+    // MessageRow,
+    // ButtonRow,
+    // Link
+} from '../AmplifyUI';
+
 import {
     FormSection,
     SectionHeader,
@@ -24,9 +38,9 @@ import {
     InputRow,
     RadioRow,
     MessageRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    Button,
+    Toast,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
 import TOTPSetupComp from './TOTPSetupComp';
 
@@ -109,11 +123,13 @@ export default class SelectMFAType extends Component {
         const { SMS, TOTP, Optional } = MFATypes;
         return (
             <FormSection theme={theme}>
+                {this.state.selectMessage && 
+                    <Toast>
+                        { I18n.get(this.state.selectMessage) }
+                    </Toast>
+                }
                 <SectionHeader theme={theme}>{I18n.get('Select MFA Type')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <MessageRow theme={theme}>
-                        {I18n.get('Select your preferred MFA Type')}
-                    </MessageRow>
                     <div>
                         { SMS? <RadioRow
                                     placeholder={I18n.get('SMS')}
@@ -142,14 +158,15 @@ export default class SelectMFAType extends Component {
                                     onChange={this.handleInputChange}
                                 /> : null
                         }
-                        <ButtonRow theme={theme} onClick={this.verify}>{I18n.get('Verify')}</ButtonRow>
+
                     </div>
-                    { this.state.selectMessage? 
-                    <MessageRow theme={theme}>
-                        {I18n.get(this.state.selectMessage)}
-                    </MessageRow> 
-                    : null}
                 </SectionBody>
+                <SectionFooter>
+                    {/* <div>
+                        { this.state.selectMessage && I18n.get(this.state.selectMessage) }
+                    </div> */}
+                    <Button theme={theme} onClick={this.verify}>{I18n.get('Verify')}</Button>
+                </SectionFooter>
             </FormSection>
         )
     }

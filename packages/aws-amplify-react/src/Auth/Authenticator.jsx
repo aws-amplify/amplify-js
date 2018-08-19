@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import Greetings from './Greetings';
 import SignIn from './SignIn';
@@ -24,9 +24,12 @@ import VerifyContact from './VerifyContact';
 import ForgotPassword from './ForgotPassword';
 import TOTPSetup from './TOTPSetup';
 
-import AmplifyTheme from '../AmplifyTheme';
+// import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import { Container, ErrorSection, SectionBody } from '../AmplifyUI';
 import AmplifyMessageMap from '../AmplifyMessageMap';
+
+import { Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('Authenticator');
 
@@ -138,8 +141,13 @@ export default class Authenticator extends Component {
         const error = this.state.error;
         return (
             <Container theme={theme}>
+                {error && 
+                    <Toast>
+                        { I18n.get(error) }
+                    </Toast>
+                }
                 {render_children}
-                {error? errorRenderer(error) : null}
+                {/* {error? errorRenderer(error) : null} */}
             </Container>
         )
     }

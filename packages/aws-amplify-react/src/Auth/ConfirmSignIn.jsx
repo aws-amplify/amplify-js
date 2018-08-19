@@ -17,16 +17,31 @@ import { I18n, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
+// import AmplifyTheme from '../AmplifyTheme';
+// import {
+//     FormSection,
+//     SectionHeader,
+//     SectionBody,
+//     SectionFooter,
+//     InputRow,
+//     ButtonRow,
+//     Link
+// } from '../AmplifyUI';
+
 import {
     FormSection,
+    FormField,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    Input,
+    InputLabel,
+    Button,
+    Link,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+} from '../Amplify-UI/Amplify-UI-Components-React';
+
 
 const logger = new Logger('ConfirmSignIn');
 
@@ -89,23 +104,30 @@ export default class ConfirmSignIn extends AuthPiece {
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Confirm ' + this.state.mfaType + ' Code')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <InputRow
-                        autoFocus
-                        placeholder={I18n.get('Code')}
-                        theme={theme}
-                        key="code"
-                        name="code"
-                        autoComplete="off"
-                        onChange={this.handleInputChange}
-                    />
-                    <ButtonRow theme={theme} onClick={this.confirm}>
-                        {I18n.get('Confirm')}
-                    </ButtonRow>
+                    <FormField theme={theme}>
+                        <InputLabel>{I18n.get('Code')} *</InputLabel>
+                        <Input
+                            autoFocus
+                            placeholder={I18n.get('Code')}
+                            theme={theme}
+                            key="code"
+                            name="code"
+                            autoComplete="off"
+                            onChange={this.handleInputChange}
+                        />
+                    </FormField>
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                        {I18n.get('Back to Sign In')}
-                    </Link>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        <Button theme={theme} onClick={this.confirm}>
+                            {I18n.get('Confirm')}
+                        </Button>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                            {I18n.get('Back to Sign In')}
+                        </Link>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
         )

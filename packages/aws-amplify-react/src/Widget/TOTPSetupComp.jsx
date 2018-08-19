@@ -15,17 +15,35 @@ import React, { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AmplifyTheme from '../AmplifyTheme';
+// import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+
+// import {
+//     FormSection,
+//     SectionHeader,
+//     SectionBody,
+//     SectionFooter,
+//     InputRow,
+//     ButtonRow,
+//     MessageRow,
+//     Link
+// } from '../AmplifyUI';
+
+
 import {
     FormSection,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ButtonRow,
+    InputLabel,
+    CodeInput,
+    Input,
+    Button,
     MessageRow,
-    Link
-} from '../AmplifyUI';
+    Link,
+    Toast
+} from '../Amplify-UI/Amplify-UI-Components-React';
+
 
 import QRCode from 'qrcode.react';
 
@@ -45,6 +63,10 @@ export default class TOTPSetupComp extends Component {
             code: null,
             setupMessage: null
         }
+    }
+
+    componentDidMount() {
+        this.setup();
     }
 
     triggerTOTPEvent(event, data, user) {
@@ -103,18 +125,17 @@ export default class TOTPSetupComp extends Component {
         if (!code) return null;
         return (
             <div>
-                <QRCode value={code}/>
-                <InputRow
+                <div className='amplify-totp-qrcode'>
+                    <QRCode value={code} />
+                </div>
+                <InputLabel>{I18n.get('Enter Security Code:')}</InputLabel>
+                <Input
                     autoFocus
-                    placeholder={I18n.get('totp verification token')}
                     theme={theme}
                     key="totpCode"
                     name="totpCode"
                     onChange={this.handleInputChange}
                 />
-                <ButtonRow theme={theme} onClick={this.verifyTotpToken}>
-                    {I18n.get('Verify')}
-                </ButtonRow>
             </div>
         )
     }
@@ -125,16 +146,30 @@ export default class TOTPSetupComp extends Component {
 
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('TOTP Setup')}</SectionHeader>
+                {this.state.setupMessage && 
+                    <Toast>
+                        { I18n.get(this.state.setupMessage) }
+                    </Toast>
+                }
+                <SectionHeader theme={theme}>{I18n.get('Scan then enter verification code')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <ButtonRow theme={theme} onClick={this.setup}>
+                    {/* <div>
+                        {I18n.get('Scan the QR code below using Google Authenticator, Authy or similar app on your phone then enter the verification code displayed.')}
+                    </div> */}
+                    {/* <ButtonRow theme={theme} onClick={this.setup}>
                         {I18n.get('Get secret key')}
-                    </ButtonRow>
+                    </ButtonRow> */}
                     {this.showSecretCode(code, theme)}
                     {this.state.setupMessage? <MessageRow theme={theme}>
                         {I18n.get(this.state.setupMessage)}
-                    </MessageRow> : null }   
+                    </MessageRow> : null }
                 </SectionBody>
+
+                <SectionFooter>
+                    <Button theme={theme} onClick={this.verifyTotpToken} style={{width: '100%'}}>
+                        {I18n.get('Verify Security Token')}
+                    </Button>
+                </SectionFooter>
             </FormSection>
         )
     }

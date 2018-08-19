@@ -17,16 +17,32 @@ import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
+// import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+
+// import {
+//     FormSection,
+//     SectionHeader,
+//     SectionBody,
+//     SectionFooter,
+//     InputRow,
+//     ButtonRow,
+//     Link
+// } from '../AmplifyUI';
+
 import {
     FormSection,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    Input,
+    InputLabel,
+    Button,
+    FormField,
+    Link,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('ForgotPassword');
 
@@ -72,17 +88,17 @@ export default class ForgotPassword extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <div>
-                <InputRow
-                    autoFocus
-                    placeholder={I18n.get('Username')}
-                    theme={theme}
-                    key="username"
-                    name="username"
-                    onChange={this.handleInputChange}
-                />
-                <ButtonRow theme={theme} onClick={this.send}>
-                    {I18n.get('Send Code')}
-                </ButtonRow>
+                <FormField theme={theme}>
+                    <InputLabel>{I18n.get('Username')} *</InputLabel>
+                    <Input
+                        autoFocus
+                        placeholder={I18n.get('Enter your username')}
+                        theme={theme}
+                        key="username"
+                        name="username"
+                        onChange={this.handleInputChange}
+                    />
+                </FormField>
             </div>
         )
     }
@@ -91,7 +107,7 @@ export default class ForgotPassword extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <div>
-                <InputRow
+                <Input
                     placeholder={I18n.get('Code')}
                     theme={theme}
                     key="code"
@@ -99,7 +115,7 @@ export default class ForgotPassword extends AuthPiece {
                     autoComplete="off"
                     onChange={this.handleInputChange}
                 />
-                <InputRow
+                <Input
                     placeholder={I18n.get('New Password')}
                     theme={theme}
                     type="password"
@@ -107,9 +123,9 @@ export default class ForgotPassword extends AuthPiece {
                     name="password"
                     onChange={this.handleInputChange}
                 />
-                <ButtonRow theme={theme} onClick={this.submit}>
+                <Button theme={theme} onClick={this.submit}>
                     {I18n.get('Submit')}
-                </ButtonRow>
+                </Button>
             </div>
         )
     }
@@ -120,14 +136,21 @@ export default class ForgotPassword extends AuthPiece {
 
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Forgot Password')}</SectionHeader>
+                <SectionHeader theme={theme}>{I18n.get('Reset your password')}</SectionHeader>
                 <SectionBody>
                     { this.state.delivery? this.submitView() : this.sendView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                        {I18n.get('Back to Sign In')}
-                    </Link>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        <Button theme={theme} onClick={this.send}>
+                            {I18n.get('Send Code')}
+                        </Button>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                            {I18n.get('Back to Sign In')}
+                        </Link>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
         )

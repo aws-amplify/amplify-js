@@ -1,0 +1,168 @@
+.formSection {
+  position: relative;
+  margin-bottom: '20px';
+  background-color: #fff;
+  padding: 35px 40px;
+  text-align: left;
+  display: inline-block;
+  min-width: 380px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15);
+}
+
+.amplify-button:hover,
+.amplify-signin-button:hover {
+  opacity: 0.8;
+}
+
+.amplify-button:active {
+  opacity: 1;
+  background-color: #E88B01 !important;
+}
+
+.amplify-a:hover {
+  text-decoration: underline;
+}
+
+.amplify-select-input {
+  display: flex;
+}
+
+.amplify-input:disabled {
+  color: #545454 !important;
+  background-color: #EDEDED !important;
+}
+
+.amplify-select-input > select {
+  padding: 16px;
+  font-size: 14px;
+  font-family: "Amazon Ember";
+  color: #152939;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #C4C4C4;
+  border-right: none;
+  border-radius: 3px 0 0 3px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  flex-basis: 22%;
+  width: 1%;
+  /* text-align: center; */
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+  background-position:
+    calc(100% - 20px) calc(1em + 8px),
+    calc(100% - 15px) calc(1em + 8px),
+    calc(100% - 2.5em) 0.5em;
+  background-size:
+    6px 5px,
+    6px 5px,
+    0px 1.5em;
+  background-repeat: no-repeat;
+}
+
+.amplify-select-input > input {
+  flex: 1;
+  border-radius: 0 3px 3px 0 !important;
+}
+
+.amplify-totp-qrcode {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.amplify-code-input-field:focus {
+  outline: none;
+  border-bottom: 2px solid #00B9F2;
+}
+
+.amplify-toast {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 99;
+  box-shadow: 0 0 5px 0 rgba(0,0,0,0.3);
+  border-radius: 5px 5px 0 0;
+  padding: 16px;
+  background-color: #31465F;
+  font-size: 14px;
+  color: #fff;
+  box-sizing: border-box;
+  font-family: "Amazon Ember";
+}
+
+.amplify-toast-close {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  overflow: hidden;
+}
+.amplify-toast-close:hover::before, .amplify-toast-close:hover::after {
+  background: #DD3F5B;
+}
+.amplify-toast-close::before, .amplify-toast-close::after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  margin-top: -1px;
+  background: #E1E4EA;
+}
+.amplify-toast-close::before {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.amplify-toast-close::after {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+/* Phone */
+@media only screen and (max-width: 599px) {
+  .amplify-form-container {
+    margin: 0 !important;
+  }
+
+  .amplify-form-section {
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: 35px 25px !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .amplify-section-footer {
+    flex-wrap: wrap;
+  }
+
+  .amplify-section-footer-primary-content {
+    width: 100%;
+    margin-bottom: 32px;
+  }
+
+  .amplify-section-footer-primary-content > button {
+    width: 100%;
+  }
+
+  .amplify-section-footer-secondary-content {
+    text-align: center;
+    flex: 0 0 100%;
+    
+  }
+}
