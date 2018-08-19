@@ -55,26 +55,33 @@ tutorial_list:
           excerpt: 'Add in-depth, production ready analytics to your application in minutes using AWS Amplify & AWS Mobile Hub.<br/><b>6 min read</b>'
           cta: Read more
           url_external: 'https://hackernoon.com/adding-amazon-pinpoint-analytics-to-your-next-mobile-javascript-application-24ad49557a6f'
+          tags: Analytics
           by: Nader Dabit
         - title: React Native iOS Push Notifications with AWS & Amazon Pinpoint
           excerpt: 'In this video, we will walk through how to add Push Notifications to a React Native iOS Project using AWS Amplify, AWS Mobile Hub, and Amazon Pinpoint.<br/><b>26 min</b>'
           cta: '<b>Watch</b>'
           url_external: 'https://www.youtube.com/watch?v=um-DIIRsFlM'
+          tags: 
+            - React Native
+            - Notifications
           by: Nader Dabit
         - title: Introducing the AWS Amplify GraphQL Client
           excerpt: 'A first look at how to build client side GraphQL applications using AWS Amplify.<br/><b>5 min read</b>'
           cta: Read more
           url_external: 'https://hackernoon.com/introducing-the-aws-amplify-graphql-client-8a1a1e514fde'
+          tags: GraphQL
           by: Nader Dabit
         - title: Building ChatBots with React & AWS
           excerpt: 'Learn how to leverage AWS Amplify, AWS Lambda, & Amazon Lex to build a functioning chatbot.<br/><b>12 min read</b>'
           cta: Read more
           url_external: 'https://tylermcginnis.com/building-chatbots-with-react-aws/'
+          tags: Chatbots
           by: Nader Dabit
         - title: Building a Custom UI for Authentication with AWS Amplify
           excerpt: "Learn how to customize AWS Amplify's Authenticator component.<br/><b>6 min read</b>"
           cta: Read more
           url_external: 'https://itnext.io/building-a-custom-ui-for-authentication-with-aws-amplify-fa13bdbd4d1d'
+          tags: Authentication
           by: Adrian Hall
 
 ---

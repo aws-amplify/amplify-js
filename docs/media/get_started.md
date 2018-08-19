@@ -6,7 +6,7 @@ keywords:
 
 # Grid navigation
 marketing_grid:
-    - title: Get Started with AWS Amplify
+    - title: Get Started
       excerpt: AWS Amplify comes with building blocks for frontend and mobile developers to interact with the Cloud. You can mix and match the categories below as needed.
 
 

@@ -29,6 +29,11 @@
 					{% endif %}
 				</li>
 			{% endfor %}
+			<li>
+				<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/api">
+					API
+				</a>
+			</li>
 		</ul><!-- /.offcanvas__nav -->
 	</div><!-- /.offcanvas -->
 {% endif %}
@@ -73,6 +78,15 @@
 								{% endif %}
 							</li>
 						{% endfor %}
+						<li>
+							<select id="api-select">
+								<option selected disabled value="default">API</option>
+								<option value="https://aws.github.io/aws-sdk-ios/docs/reference/">iOS</option>
+								<option value="https://aws.github.io/aws-sdk-android/docs/reference/">Android</option>
+								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/api/">JavaScript</option>
+								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/api/">React Native</option>
+							</select>
+						</li>
 						<li class="site-search" id="search-input-box">
 							<input placeholder="   Search" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/Search.svg"></input>
 						</li>

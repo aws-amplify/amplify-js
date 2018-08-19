@@ -422,6 +422,17 @@
 	if (offcanvas_toggle) offcanvas_toggle.addEventListener("click", moveOffCanvasToggle);
 	$('meta[name=viewport]').attr('content', 'width=device-width,initial-scale=1,maximum-scale=1');
 
+	let apiLink = function() {
+		let api_select = document.getElementById('api-select');
+		if (api_select.value != "default") {
+			window.open(api_select.value, '_blank');
+			api_select.value = "default";
+		}
+		console.log(api_select.value);
+	}
+	let api_select = document.getElementById('api-select');
+	if (api_select) api_select.addEventListener("change", apiLink);
+
 }( jQuery ) );
 
 	/**
