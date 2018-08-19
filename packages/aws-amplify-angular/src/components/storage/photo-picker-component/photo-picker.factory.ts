@@ -9,7 +9,7 @@ import { PhotoPickerComponentCore } from './photo-picker.component.core';
 @Component({
   selector: 'amplify-photo-picker',
   template: `
-              <div>
+              <div class='amplify-component'>
                 <ng-template component-host></ng-template>
               </div>
             `
@@ -17,6 +17,7 @@ import { PhotoPickerComponentCore } from './photo-picker.component.core';
 export class PhotoPickerComponent implements OnInit, OnDestroy {
   @Input() framework: string;
   @Input() url: string;
+  @Input() path: string;
   @Output()
   picked: EventEmitter<string> = new EventEmitter<string>();
   @Output()
@@ -36,7 +37,7 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let photoPickerComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(PhotoPickerIonicComponent,{url: this.url}) : new ComponentMount(PhotoPickerComponentCore, {url: this.url});
+    let photoPickerComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(PhotoPickerIonicComponent,{url: this.url, path: this.path}) : new ComponentMount(PhotoPickerComponentCore, {url: this.url, path: this.path});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(photoPickerComponent.component);
 
@@ -47,7 +48,6 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
     (<PhotoPickerClass>componentRef.instance).data = photoPickerComponent.data;
 
     componentRef.instance.picked.subscribe((e) => {
-      console.log('this.picked', this.picked)
       this.picked.emit(e);
     })
 

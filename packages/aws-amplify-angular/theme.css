@@ -375,13 +375,3 @@ border-radius: 3px;
 .amplify-image-container {
   width:80px;
 }
-
-.amplify-image {
-  width:80px;
-  transition: width 0.5s;
-  cursor: pointer;
-}
-
-.amplify-image:hover {
-  width:128px;
-}

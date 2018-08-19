@@ -32,7 +32,7 @@ export class PhotoPickerIonicComponent extends PhotoPickerComponentCore {
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
-    super();
+    super(amplifyService);
     
   }
 }
