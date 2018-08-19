@@ -2,14 +2,12 @@ import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 
 const template = `
-<div class="amplify-container">
-  <div class="amplify-greeting">
-      <span class="amplify-greeting-text">{{ greeting }}</span>
-      <a class="amplify-form-link amplify-greeting-sign-out"
-        *ngIf="signedIn"
-        (click)="onSignOut()"
-      >Sign out</a>
-  </div>
+<div class="amplify-greeting">
+    <span class="amplify-greeting-text">{{ greeting }}</span>
+    <a class="amplify-form-link amplify-greeting-sign-out"
+      *ngIf="signedIn"
+      (click)="onSignOut()"
+    >Sign out</a>
 </div>
 `
 
