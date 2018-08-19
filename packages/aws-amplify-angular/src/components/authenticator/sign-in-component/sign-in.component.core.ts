@@ -4,58 +4,50 @@ import { includes } from '../common';
 
 const template = `
 <div class="amplify-form-container" *ngIf="_show">
-  <div class="amplify-form-header"></div>
   <div class="amplify-form-body">
-    
-    <div class="amplify-form-row">
-      
-      <div class="amplify-form-cell-left">
-        <a class="amplify-form-link"
-          (click)="onSignIn()"
-        >Sign In</a>
-      </div>
-      
-      <div class="amplify-form-cell-right">
-        <a class="amplify-form-link"
-          (click)="onSignUp()"
-        >Sign Up</a>
-      </div>
-
-    </div>
-
-    <div class="amplify-form-row">
+    <div class="amplify-form-header">Sign in to your account</div>
+    <div class="amplify-amplify-form-row amplify-signin-username">
+      <label class="amplify-input-label" for="amplifyUsername"> Username *</label>
       <input
+        #amplifyUsername
         (keyup)="setUsername($event.target.value)"
         class="amplify-form-input"
         type="text"
+        required
         placeholder="Username"
         [value]="username"
       />
     </div>
 
-    <div class="amplify-form-row">
+    <div class="amplify-form-row amplify-signin-password">
+      <label class="amplify-input-label" for="password">Password *</label>
       <input #password
         (keyup)="setPassword(password.value)"
         (keyup.enter)="onSignIn()"
         class="amplify-form-input"
         type="password"
-        placeholder="Password"
+        required
+        placeholder="Enter your Password"
       />
+      <span class="amplify-form-action">Forgot Password?
+      <a class="amplify-form-link"
+          (click)="onForgotPassword()"
+        >Reset your password</a></span>    
     </div>
 
-    <div class="amplify-form-row">
+    <div class="amplify-form-row amplify-signin-actions">
 
       <div class="amplify-form-cell-right">
-        <a class="amplify-form-link"
-          (click)="onForgotPassword()"
-        >Forgot Password</a>
+        <button class="amplify-form-button"
+          (click)="onSignIn()"
+        >Sign In</button>
       </div>
 
+      <div class="amplify-form-cell-left">
+        <div class="amplify-form-signup">No account? <a class="amplify-form-link" (click)="onSignUp()">Create account</a></div>
+      </div>
+    
     </div>
-
-    <button class="amplify-form-button"
-      (click)="onSignIn()"
-    >Sign In</button>
 
   </div>
 

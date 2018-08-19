@@ -1,13 +1,142 @@
+/* @import "~aws-amplify-angular/theme.css"; */
+
+:root {
+  --font-family: AmazonEmber,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,sans-serif;
+  --body-background: #F8F4F4;
+  
+  --color-primary: #FF9900;
+  --color-primary-accent: #232F3E;
+  --color-primary-highlight: #FFC46D;
+  
+  --color-secondary: #152939;
+  --color-secondary-accent: #31465F;
+
+  --color-danger: #DD3F5B;
+  --color-error: #D0021B;
+
+  --color-accent-brown: #828282;
+  --color-accent-blue: #E1E4EA;
+
+  --gradient-blaze: linear-gradient(270deg, #FFC300 0%, #FF9000 100%);
+
+  --color-blue: #007EB9;
+  --color-purple: #527FFF;
+  --color-gray: #828282;
+
+  --input-border: 1px solid #C4C4C4;
+  --input-padding: 0.5em 0.5em 0.3em 1em;
+
+  --box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15);
+
+  --button-height: 42px;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--color-primary-accent);
+}
+
+h1 {
+  height: 50px;
+  font-weight: 500;
+}
+
+h2 {
+  height: 42px;
+  font-weight: 300;
+}
+
+h4 {
+  height: 28px;
+  font-weight: 400;
+}
+
+h5 {
+  height: 21px;
+  font-weight: 400;
+}
+
+p {
+  height: 16px;
+  font-weight: 300;
+}
+
+span {
+  color: var(--color-gray);
+}
+
+button.primary, a.primary {
+  height: 50px;
+  width: 155px;
+  padding: 0.5em;
+  color: white;
+  text-transform: uppercase;
+  border: none;
+  background-color: var(--color-primary);
+}
+
 .amplify-authenticator {
-  width: 400px;
-  padding: 1em;
+height: 400px;
+width: 460px;
+border-radius: 6px;
+background-color: #FFFFFF;
+  box-shadow: var(--box-shadow);
   margin: 0 auto;
 }
 
-.amplify-form-input {
-  width: 90%;
+.amplify-form-header {
+  color: var(--color-primary-accent);
+  height: 28px;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.49px;
+  line-height: 16px;
+  margin: 0.2em;
+}
+
+.amplify-input-label {
+height: 18px;
+width: 367.92px;
+color: var(--color-accent);
+font-family: var(--font-family);
+  font-size: 14px;
   margin: 0.5em;
-  padding: 0.5em;
+letter-spacing: 0.4px;
+line-height: 18px;
+}
+
+.amplify-form-input {
+  height: 42px;
+  width: 378px;
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  border: var(--input-border);
+  border-radius: 3px;
+  background-color: #FFFFFF;
+  padding: var(--input-padding);
+  margin: 0.5em;
+}
+
+.amplify-signin-actions {
+  margin-top:1.8em;
+}
+
+.amplify-signin-username {
+  margin-top: 0.8em;
+}
+
+.amplify-signin-password {
+  margin-top: 1em;
+}
+
+.amplify-form-action {
+  margin: 0.5em;
+  font-size: 12px;
+}
+
+.amplify-form-signup {
+  margin-top: 1em;
+  color: var(--color-gray);
 }
 
 .amplify-form-body {
@@ -30,22 +159,27 @@
 
 .amplify-form-link {
   cursor: pointer;
+  color: var(--color-primary);
 }
 
 .amplify-form-link:hover {
-  color: darkorange;
+  color: var(--color-primary-highlight);
 }
 
 .amplify-form-button {
   margin: 0.4em 0 0 0.5em;
   padding: 0.5em;
-  border: 1px solid silver;
-  background-color: #FEFEFE;
+  border: none;
+  height: var(--button-height);
+  width: 155px;
+  color: white;
+  text-transform: uppercase;
+  background-color: var(--color-primary);
   cursor: pointer;
 }
 
 .amplify-form-button:hover {
-  color: darkorange;
+  background-color: var(--color-primary-highlight);
 }
 
 .amplify-greeting-sign-out {}
@@ -57,7 +191,8 @@
 .amplify-form-message-error {
   margin: 0.5em 0 0.5em 2em;
   clear: both;
-  color: orangered;
+  font-weight: bold;
+  color: var(--color-error);
 }
 
 /** Storage Components **/
