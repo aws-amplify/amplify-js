@@ -3,7 +3,7 @@ import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestro
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { ForgotPasswordClass } from './forgot-password.class';
-import { ForgotPasswordComponentIonic } from './forgot-password.component.ionic'
+import { ForgotPasswordComponentIonic } from './forgot-password.component.ionic';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
 import { AuthState } from '../../../providers';
 

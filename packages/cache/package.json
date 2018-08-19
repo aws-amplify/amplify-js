@@ -72,6 +72,7 @@
       "./__mocks__/LocalStorage.js"
     ],
     "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
     "mapCoverage": true,
     "coverageThreshold": {
       "global": {
