@@ -1769,7 +1769,8 @@ li {
     }
 
     .btn {
-        padding: 0 34px 0 34px;
+        padding: 0 31px;
+        width: 100%;
 
         @media (max-width: 828px) {
             font-size: 12px;
@@ -1783,6 +1784,7 @@ li {
 
     #aws-signup-btn {
         padding: 0 50px;
+        width: auto !important;
         //margin-right: 25px;
 
         @media (max-width: 828px) {
