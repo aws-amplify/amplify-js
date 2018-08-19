@@ -3,57 +3,71 @@ import { AmplifyService, AuthState } from '../../../providers';
 
 
 const template = `
-<div class="amplify-form-container" *ngIf="_show">
-  <div class="amplify-form-body">
+<div class="amplify-container" *ngIf="_show">
+  <div class="amplify-form-container">
+    <div class="amplify-form-body">
+    <div class="amplify-form-header">Reset your password</div>
+    <div class="amplify-form-text" *ngIf="!code_sent">You will receive a verification code</div>
+    <div class="amplify-form-text" *ngIf="code_sent">Enter the code you received and set a new password</div>
 
-    <div class="amplify-form-row">
-      
-      <div class="amplify-form-cell-left">
-        <a class="amplify-form-link"
-          (click)="onSignIn()"
-        >Back to Sign In</a>
+      <div class="amplify-form-row" *ngIf="!code_sent">
+        <input
+          (keyup)="setUsername($event.target.value)"
+          class="amplify-form-input"
+          type="text"
+          placeholder="Username"
+          [value]="username"
+        />
+      </div>
+      <div class="amplify-form-row" *ngIf="code_sent">
+        <input #code
+          (keyup)="setCode(code.value)"
+          class="amplify-form-input"
+          type="text"
+          placeholder="Enter code"
+        />
+      </div>
+      <div class="amplify-form-row" *ngIf="code_sent">
+        <input #password
+          (keyup)="setPassword(password.value)"
+          (keyup.enter)="onSubmit()"
+          class="amplify-form-input"
+          type="password"
+          placeholder="Password"
+        />
       </div>
 
-    </div>
+      <div class="amplify-form-actions">
 
-    <div class="amplify-form-row">
-      <input
-        (keyup)="setUsername($event.target.value)"
-        class="amplify-form-input"
-        type="text"
-        placeholder="Username"
-        [value]="username"
-      />
-    </div>
-    <div class="amplify-form-row">
-      <input #code
-        (keyup)="setCode(code.value)"
-        class="amplify-form-input"
-        type="text"
-        placeholder="Code"
-      />
-    </div>
-    <div class="amplify-form-row">
-      <input #password
-        (keyup)="setPassword(password.value)"
-        (keyup.enter)="onSubmit()"
-        class="amplify-form-input"
-        type="password"
-        placeholder="Password"
-      />
-    </div>
-    <div class="amplify-form-row">
-    <button class="amplify-form-button"
-      (click)="onSend()"
-    >Send Code</button>
-    <button class="amplify-form-button"
-      (click)="onSubmit()"
-    >Submit</button>
+        <div class="amplify-form-cell-right">
+          <button class="amplify-form-button"
+            *ngIf="!code_sent"
+            (click)="onSend()">Submit</button>
+        
+          <button class="amplify-form-button"
+            *ngIf="code_sent"
+            (click)="onSubmit()">Verify</button>
+        </div>
+
+        <div class="amplify-form-cell-left">
+          <div class="amplify-form-actions-left">
+            <a *ngIf="code_sent" class="amplify-form-link" (click)="onSend()">Resend Code</a>
+            <a *ngIf="!code_sent" class="amplify-form-link" (click)="onSignIn()">Back to Sign in</a>
+          </div>
+        </div>
+      
+      </div>
     </div>
   </div>
-  <div class="amplify-form-footer">
-    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="amplify-alert" *ngIf="errorMessage">
+    <div class="amplify-alert-body">
+      <span class="amplify-alert-icon">&#9888;</span>
+      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+    </div>
   </div>
+
 </div>
 `
 
@@ -70,6 +84,8 @@ export class ForgotPasswordComponentCore {
   password: string;
 
   errorMessage: string;
+
+  code_sent = false;
 
   amplifyService: AmplifyService;
 
@@ -106,9 +122,18 @@ export class ForgotPasswordComponentCore {
   }
 
   onSend() {
+    if (!this.username) {
+      this.errorMessage = "Username cannot be empty";
+      return;
+    }
     this.amplifyService.auth().forgotPassword(this.username)
-      .then(() => console.log('code sent'))
-      .catch(err => this._setError(err));
+      .then(() => {
+        this.code_sent = true;
+      })
+      .catch((err) => {
+        this._setError(err)
+        this.code_sent = false;
+      });
   }
 
   onSubmit() {
@@ -127,6 +152,10 @@ export class ForgotPasswordComponentCore {
 
   onSignIn() {
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
+  }
+
+  onAlertClose() {
+    this._setError(null);
   }
 
   _setError(err) {

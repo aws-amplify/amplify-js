@@ -65,23 +65,100 @@ span {
   color: var(--color-gray);
 }
 
-button.primary, a.primary {
-  height: 50px;
-  width: 155px;
-  padding: 0.5em;
-  color: white;
-  text-transform: uppercase;
-  border: none;
-  background-color: var(--color-primary);
+input:disabled {
+  background-color: #EDEDED;
 }
 
 .amplify-authenticator {
-height: 400px;
 width: 460px;
 border-radius: 6px;
 background-color: #FFFFFF;
   box-shadow: var(--box-shadow);
   margin: 0 auto;
+}
+
+.amplify-container {
+  height: auto;
+  padding-bottom: 1em;
+}
+
+.amplify-signup-container {
+  height: 570px;
+}
+
+.amplify-reset-password-container {
+  height: 270px;
+}
+
+.amplify-confirm-reset-password-container {
+  height: 360px;
+}
+
+.amplify-confirm-signup-container {
+  height: 370px;
+}
+
+.amplify-confirm-signin-container {
+  height: 260px;
+}
+
+.amplify-form-actions-left {
+  margin-top: 1em;
+  color: var(--color-gray);
+}
+
+
+/************************************
+** Input Groups 
+************************************/
+
+.amplify-input-group {
+  display:flex;
+  margin-left: 0.5em;
+  margin-top: 0.5em;
+}
+
+.amplify-input-group > div:first-of-type {
+  float:left;
+}
+
+.amplify-input-group > div:last-child > input {
+  border-left: none !important;
+  width: 100%;
+}
+
+.amplify-input-group > div:last-child {
+  display: flex;
+  width: 100%;
+}
+
+.amplify-input-group > div {
+  float:right;
+}
+
+.amplify-input-group-item > input {
+  margin-top:0px !important;
+  margin-left:0px !important;
+}
+
+.amplify-input-group-label {
+  display:block;
+}
+
+.amplify-select-phone-country {
+  height: 55px;
+  width: 68px;
+  border: 1px solid #C4C4C4;
+  border-radius: 3px 0 0 3px;
+  background-color: #F8F4F4;
+}
+
+/***********************************
+** Forms
+***********************************/
+
+.amplify-form-container {
+  height:100%;
 }
 
 .amplify-form-header {
@@ -92,6 +169,15 @@ background-color: #FFFFFF;
   letter-spacing: 0.49px;
   line-height: 16px;
   margin: 0.2em;
+}
+
+.amplify-form-text {
+  height: 36px;
+  width: 90%;
+  color: var(--color-accent-brown);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  line-height: 20px;
 }
 
 .amplify-input-label {
@@ -106,18 +192,18 @@ line-height: 18px;
 }
 
 .amplify-form-input {
-  height: 42px;
+height: 42px;
   width: 378px;
   font-size: 14px;
   letter-spacing: 0.4px;
-  border: var(--input-border);
-  border-radius: 3px;
+border: var(--input-border);
+border-radius: 3px;
   background-color: #FFFFFF;
   padding: var(--input-padding);
   margin: 0.5em;
 }
 
-.amplify-signin-actions {
+.amplify-form-actions {
   margin-top:1.8em;
 }
 
@@ -125,7 +211,7 @@ line-height: 18px;
   margin-top: 0.8em;
 }
 
-.amplify-signin-password {
+.amplify-form-row {
   margin-top: 1em;
 }
 
@@ -144,7 +230,7 @@ line-height: 18px;
 }
 
 .amplify-form-row {
-  display: 'flex';
+  display: block;
 }
 
 .amplify-form-cell-left {
@@ -182,17 +268,90 @@ line-height: 18px;
   background-color: var(--color-primary-highlight);
 }
 
-.amplify-greeting-sign-out {}
+.amplify-greeting {
+    padding: 1em;
+}
+
+.amplify-greeting-sign-out {
+    float:right;
+}
 
 .amplify-footer {
   clear: both;
 }
 
-.amplify-form-message-error {
-  margin: 0.5em 0 0.5em 2em;
-  clear: both;
-  font-weight: bold;
-  color: var(--color-error);
+/************************************
+** Alert
+************************************/
+
+.amplify-alert-close {
+  float:right;
+  cursor: pointer;
+  color: var(--color-gray);
+  font-size: 24px;
+  line-height: 24px;
+}
+
+.amplify-alert-close:hover {
+    color: var(--color-primary-accent);
+}
+
+.amplify-alert-icon {
+  float:left;
+  font-size: 24px;
+  line-height: 24px;
+  color: var(--color-danger);
+}
+
+.amplify-alert {
+  position: absolute;
+  min-height: 52px;
+  width: 460px;
+  margin-top: 5em;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 5px 0 rgba(0,0,0,0.3);
+}
+
+.amplify-alert-body {
+  padding:1em;
+}
+
+.amplify-alert-message {
+  max-width: 85%;
+  display: inline-flex;
+  color: var(--color-primary-accent);
+  font-size: 15px;
+  line-height: 24px;
+  margin-left: 0.5em;
+}
+
+
+/************************************
+** Tooltip
+************************************/
+
+/* Tooltip container */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 120px;
+  background-color: var(--color-primary-accent);
+  color:white;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
 }
 
 /** Storage Components **/
