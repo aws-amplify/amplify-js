@@ -41,6 +41,7 @@
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
     ],
+    "testURL": "http://localhost/",
     "coverageThreshold": {
       "global": {
         "branches": 79,
