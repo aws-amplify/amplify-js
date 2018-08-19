@@ -9,7 +9,7 @@ import { ChatbotComponentCore } from './chatbot.component.core';
 @Component({
   selector: 'amplify-interactions',
   template: `
-              <div>
+              <div class="amplify-component">
                 <ng-template component-host></ng-template>
               </div>
             `
