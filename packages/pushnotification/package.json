@@ -68,6 +68,7 @@
       "jsx"
     ],
     "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]
