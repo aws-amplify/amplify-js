@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.7-unstable.3"></a>
+## [1.0.7-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.7-unstable.2...aws-amplify-react@1.0.7-unstable.3) (2018-08-19)
+
+
+### Bug Fixes
+
+* **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
+
+
+
+
 <a name="1.0.7-unstable.2"></a>
 ## [1.0.7-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.7-unstable.1...aws-amplify-react@1.0.7-unstable.2) (2018-08-18)
 
