@@ -3,15 +3,15 @@
 layout: default
 ---
 
-# Installation and Configuration for JavaScript
+# Installation for JavaScript
 
-Installing AWS Amplify involves installing our client libraries and toolchain with *npm*, and configuring your backend to connect to services.
+Installation for AWS Amplify JavaScript library includes the steps for installing the client libraries, installing the CLI, and initializing your backend.
 
 ## Prerequisites
 
 To work with AWS Amplify in JavaScript:
-- You need an AWS account. If you don't have an account, [Sign up for the AWS Free Tier](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start).
-- You need [Node.js®](https://nodejs.org/en/download/) installed on you local development machine.
+- You need an AWS account. If you don't have an account yet, [Sign up for the AWS Free Tier](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start).
+- You need [Node.js®](https://nodejs.org/en/download/) installed on your local development machine.
 
 ## Step 1 - Install the CLI
 
@@ -23,7 +23,13 @@ $ npm install -g @aws-amplify/cli
 
 ## Step 2 - Install Client Libraries
 
-You can use AWS Amplify with plan JavaScript or install frontend library support packages to use UI components and many other utilities.
+Change to your app project's root directory before starting installations:
+
+```bash
+$ cd my-app #Change to your project's root folder
+```
+
+You can use AWS Amplify with plain JavaScript or you can install additional frontend support packages to use UI components and many other usefull functionality:
 
 <div class="nav-tab install" data-group="install">
 <ul class="tabs">
@@ -69,20 +75,25 @@ npm install aws-amplify-angular
 
 ## Step 3 - Initialize Your JavaScript Project
 
-To start working with AWS Amplify, you need to initialize your project's backend with the CLI. This is a required one-time setup that creates your initial backend resources in the cloud and makes your project ready to integrate additional cloud resources.
+The next step is initializing your project's backend with the CLI. This is a required one-time setup that creates your initial backend resources in the cloud and makes your project ready to integrate cloud services.
 
-You should run all *amplify* commands at *root folder* of your project.
+You should run all Amplify CLI commands at *root folder* of your project. 
 {: .callout .callout--info}
 
-
-In your project's *root folder*, run following command to initialize your backend:
+In your project's *root folder*, run following command to initialize your local configuration for your backend:
 
 ```bash
-$ cd my-app #Change to your project's root folder
 $ amplify init
 ```
 
-When you run *'amplify init'* in your project folder for the first time, the CLI will ask you some options to configure your development environment. Select `JavaScript` when prompted for the app platform:
+When you run *'amplify init'* in your project folder for the first time, the CLI will ask you some options to configure your development environment. Please respond to the prompts accordingly.
+
+If you are starting a new project, please be sure to have a source directory, e.g. '/src' and type this directory name when prompted by the *init* command.
+{: .callout .callout--info}
+
+### Select App Platform
+
+Select `JavaScript` when prompted for the app platform:
 
 ```bash
 ? Please choose the type of app that you're building (Use arrow keys)
@@ -91,13 +102,11 @@ When you run *'amplify init'* in your project folder for the first time, the CLI
 ❯ javascript 
 ```
 
-Initializing a project creates the backend configuration file `aws-exports.js` which you will import in your app to use Amplify categories. This file contains the configuration and endpoint metadata used to link you frontend to your backend services, and it needs to be located in your source directory. 
+### AWS CloudFormation Configuration
 
-If you are starting a new project, please be sure to have a source directory, e.g. '/src' and select this directory when prompted by the *init* command.
+Amplify CLI utilizes AWS CloudFormation to manage your backend resources. When you are using the CLI for the first time in your project, you need to create a new AWS CloudFormation configuration. The CLI makes this process easy by providing you a default configuration option.
 
-The `init` command configures your local development environment for AWS Amplify and creates a backend project for your app. When using it for the first time, the CLI will help you to create and use your AWS credentials. 
-
-Amplify CLI uses AWS CloudFormation to manage your backend resources. When prompted for the AWS CloudFormation configuration, select the default configuration by hitting enter to the command prompt.
+When prompted for the AWS CloudFormation configuration, select the default configuration by hitting *enter* at the command prompt:
 
 ```terminal
 Amplify uses AWS CloudFormation default configuration.
@@ -107,26 +116,39 @@ You can also configure the AWS CloudFormation provider on the project level and 
 ? Do you want to setup project level configuration No
 ```
 
-Completing above step will enable your project at the backend and the resource that is required the manage your app backend is automatically created and deployed by the CLI.
+Initiating your project creates necessary AWS resources such as AIM roles and deployment buckets on your AWS backend.  Those resources are used by CLI to orchestrate your backend.
 
-But, you don't have any application specific resources yet. 
+### Retrieve your Configuration File
 
-After the project is created, you will get a success message which also
-includes details on the path where the *aws-exports.js* is copied.
+The *push* CLI command updates your backend based on your local changes, and creates a new version of the backend configuration file *aws-exports.js*:
 
 ```bash
-> amplify project's details logged at: amplifyjs/#current-backend-info/backend-details.json
-> amplify project's access information logged at: amplifyjs/#current-backend-info/aws-exports.js
-> amplify project's access information copied to: src/aws-exports.js
-> amplify project's specifications logged at: amplifyjs/#current-backend-info/mobile-hub-project.yml
-> contents in #current-backend-info/ is synchronized with the latest information in the aws cloud
+$ amplify push
 ```
 
-Your project is now initialized, and you are ready to use AWS Amplify in your JavaScript code.
+Since you have not added any cloud services yet, the above command will create a new aws-exports.js file with no service configuration in it.
+
+**aws-exports.js**
+*aws-exports.js* file contains the configuration and endpoint metadata used to link your frontend to your backend services. This file is automatically located to the source directory, e.g. '/src' that you have provided in *init* step. You will later import this file in your JavaScript code to configure AWS Amplify library and get access to backend services.
+{: .callout .callout--info}
+
+**You are Amplify ready!**
+
+Your AWS Amplify project is initialized! You can now add cloud services with the CLI and integrate those services in your JavaScript code with AWS Amplify library.
 
 ## What's next?  
 
-Go back to your tutorial
+<div class='installation_default_next_step'>
+  Check our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start#set-up-your-backend) to see how you can set up your backend and use it in you app.
+  {: .next-link}
+</div>
 
-Check our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start#set-up-your-backend) to see how you can set up your backend and use it in you app.
-{: .next-link}
+<div class='installation_custom_next_step next-link'>
+</div>
+
+
+
+
+ 
+
+

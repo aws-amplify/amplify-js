@@ -15,8 +15,8 @@ In this tutorial, you will learn how to build a cloud-enabled web app with React
 
 ## Set Up and Installation 
 
-Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config?referrer=/media/tutorials/building-web-apps). 
-{: .callout .callout--info}
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config?ref_url=/amplify-js/media/tutorials/building-web-apps&ref_content={{"Tutorial: Building Web Apps with AWS Amplify" | uri_escape }}&ref_content_section=connect-to-your-backend).
+{: .callout .callout--action}
 
 **When you are done with the installation**, you can continue with the next step in the tutorial.
 

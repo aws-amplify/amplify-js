@@ -82,6 +82,16 @@
 	);
   })(window.document, window.history, window.location);
 
+  	// get UR parameters
+	$.urlParam = function(name){
+		var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+
+		if ( results && results[ 1 ] )
+			return results[ 1 ];
+		else	
+			return 0;
+	};
+
 	// Reduce
 	$.fn.reduce = function( fnReduce, initialValue ) {
 		var values = this,
@@ -262,6 +272,20 @@
 		$( 'body' ).toggleClass( 'offcanvas-expanded' );
 	});
 
+	// Create next action for installation page
+	if ( $(location).attr('href').search ('install_n_config') > 1) {
+		var ref_url =  $.urlParam( 'ref_url' );
+		var ref_content =  unescape($.urlParam( 'ref_content' ));
+		var ref_content_section =  $.urlParam( 'ref_content_section' );
+		 
+		if (ref_url && ref_content) {
+			$('.installation_default_next_step').hide();
+			$('.installation_custom_next_step').html ("Continue following the <a href='" + ref_url + "#" + ref_content_section +"'>" + ref_content + "</a> from where you left off.");
+		} else {
+			$('.installation_custom_next_step').hide();
+		}
+	}
+
 	// Handle click on tabs
 	$('ul.tabs li').click(function(event, stopPropogation){
 		var parent_tab_class='.' + $(this).parent().parent().attr('data-group');
@@ -282,15 +306,6 @@
 		// $('li.tab-link.' + tab_id).not ('.current').trigger('click',[true]);
 
 	});
-
-	$.urlParam = function(name){
-		var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-
-		if ( results && results[ 1 ] )
-			return results[ 1 ];
-		else	
-			return 0;
-	};
 
 	// Open tabs when the page is launched with the query params 
 	if ( $.urlParam( 'platform' )) {
