@@ -3,7 +3,7 @@
 
 # Get Started
 
-<p class="orange-subheader">Welcome intrepid builder!</p>
+<p class="orange-subheader">Welcome builder!</p>
 
 AWS Amplify is designed to provide you a more productive environment for connecting Cloud services and working with JavaScript. 
 
