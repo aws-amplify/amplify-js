@@ -121,7 +121,7 @@ category_list:
       subs:
         - title: Get Started
           excerpt: get started excerpt
-          url: '/media/quick_start'
+          url: '/media/quick_start?platform=react'
           icon: '/images/icons/Misc/Present.svg'
         - title: Amplify CLI
           excerpt: CLI excerpt

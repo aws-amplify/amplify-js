@@ -40,14 +40,14 @@
 							</div><!-- /.sections-list -->
 						</div>
 						{% else %}
-						<div class="version-section">
+						<!-- <div class="version-section">
 							<p>Version</p>
 							<div class="version-selector">
 								<select id="version-selector-select">
 									<option value="1.x.x">1.x.x (Stable release)</option>
 								</select>
 							</div>
-						</div>
+						</div> -->
 						<div class="version-section visible-xs">
 							<p>View Section</p>
 							<div class="version-selector">
@@ -159,6 +159,17 @@
 					document.getElementById("{{ category.category }}").classList.add('hidden-xs');
 				}
 			{% endfor %}
+
+			const view_section_box = document.getElementById("section-select");
+			if (view_section_box) 
+			{
+				{% if jekyll.environment == 'production' %}
+					view_section_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
+				{% else %}
+					view_section_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+				{% endif %}
+				view_section_box.style.backgroundPosition = "240px 5px";
+			}
 		}
 		{% if page.url contains 'quick_start' %}
 			let tabs = document.getElementsByClassName('tabs');
