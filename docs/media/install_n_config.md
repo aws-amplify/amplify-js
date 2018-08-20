@@ -73,7 +73,7 @@ npm install aws-amplify-angular
 </div>
 </div>
 
-## Step 3 - Initialize Your JavaScript Project
+## Step 3 - Initialize Your Backend
 
 The next step is initializing your project's backend with the CLI. This is a required one-time setup that creates your initial backend resources in the cloud and makes your project ready to integrate cloud services.
 
@@ -88,19 +88,32 @@ $ amplify init
 
 When you run *'amplify init'* in your project folder for the first time, the CLI will ask you some options to configure your development environment. Please respond to the prompts accordingly.
 
-If you are starting a new project, please be sure to have a source directory, e.g. '/src' and type this directory name when prompted by the *init* command.
-{: .callout .callout--info}
-
 ### Select App Platform
 
 Select `JavaScript` when prompted for the app platform:
 
-```bash
+```terminal
 ? Please choose the type of app that you're building (Use arrow keys)
   android 
   ios 
 ❯ javascript 
 ```
+
+### Select Project Folders 
+
+When prompted, provide the source and build directories for your project.  
+
+```terminal
+Please tell us about your project
+? What javascript framework are you using: react
+? Source Directory Path:  src
+? Distribution Directory Path: build
+? Build Command:  npm run-script build
+? Start Command: npm run-script start
+```
+
+If you are starting a new project, please be sure to have a source directory, e.g. '/src' and type this directory name when prompted by the *init* command.
+{: .callout .callout--info}
 
 ### AWS CloudFormation Configuration
 
@@ -145,10 +158,3 @@ Your AWS Amplify project is initialized! You can now add cloud services with the
 
 <div class='installation_custom_next_step next-link'>
 </div>
-
-
-
-
- 
-
-

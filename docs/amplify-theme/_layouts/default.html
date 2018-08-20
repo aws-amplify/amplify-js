@@ -84,6 +84,9 @@
 					</div><!-- /.col -->
 						<div class="col-md-8 section-top docs-container">
 							{% if page.url contains 'get_started_docs' %}
+							<div class='js-library-selector-text'>
+								Select frontend library
+							</div>
 							<div class="js-library-selector">
 								<select onchange="location = this.value" id="js-library-select">
 									{% for item in site.js_libraries %}

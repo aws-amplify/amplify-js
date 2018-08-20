@@ -2312,10 +2312,11 @@ li {
         }
 
         .js-library-selector {
+            z-index: 99999;
             background-color: #FF9900;
             border-radius: 4px;
             position: absolute;
-            top: 27px;
+            top: 53px;
             right: 27px;
 
             @media (max-width: 828px) {
@@ -2332,7 +2333,16 @@ li {
                 margin: 10px;
                 border: none;
                 filter: brightness(0) invert(1);
+                cursor: pointer;
             }
+        }
+
+        .js-library-selector-text {
+            position: absolute;
+            top: 29px;
+            right: 27px;
+            font-size: 12px;
+            color:black;
         }
 
         .content {

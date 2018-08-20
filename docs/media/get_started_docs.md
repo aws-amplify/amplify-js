@@ -136,7 +136,7 @@ See the [angular guide](https://aws.github.io/aws-amplify/media/angular_guide) f
 
 ## Install Amplify CLI
 
-You will use [@aws-amplify/cli](https://github.com/aws/amplify-cli) to configure your application work with AWS Mobile Hub, a platform for configuring and managing your cloud backend. Also, @aws-amplify/cli provides utilities for managing your backend, without visiting AWS Mobile Hub console.
+You will use Amplify CLI to configure your application work with AWS backend. 
 
 ```bash
 $ npm install -g @aws-amplify/cli
@@ -160,57 +160,29 @@ Please see other [installation options for *yarn*](https://yarnpkg.com/en/docs/i
 
 ## Set up Your Backend
 
-AWS Amplify connects to AWS Mobile Hub to work with Amazon Web Services. 
-
 You can quickly create your backend from scratch with Automatic Setup, or use Manual Setup to integrate AWS resources you have already configured.
 
 ### Automatic Setup
 
-Automatic setup creates and configures new AWS resources for your backend by using the @aws-amplify/cli. 
+Automatic setup creates and configures new AWS resources for your backend by using the Amplify CLI. 
 
-To start, make sure your app has a folder named `/src`, as this is used by automatic setup for a backend configuration file fetched from your AWS Mobile Hub project:
+To start, make sure your app has a folder named `/src`, as this folder is used by store your backend configuration file:
+
 ```bash
 $ mkdir src
 ```
 
-`amplify init` creates a backend project for your app and pulls the service configuration into your project. App analytics and web hosting are enabled in new projects by default.
+`amplify init` creates a backend project for your app and pulls the service configuration into your project.  
 
 
 ```bash
-$ amplify init <optional-mobile-hub-project-id-for-existing-projects>
+$ amplify init 
 ```
 
-When you run `amplify init` command, you are asked for the details of your project. You can accept the defaults by typing `return` for each question. Automatic setup uses your answers to create your project in AWS Mobile Hub and copy the required configuration file to `src/aws-exports.js`.
+When you run `amplify init` command, you are asked for the details of your project. You can accept the defaults by typing `return` for each question. Automatic setup uses your answers to create your project backend copy the required configuration file to `src/aws-exports.js`.
 
-
-```terminal
-Please tell us about your project:
-? Where is your project's source directory:  src
-? Where is your project's distribution directory that stores build artifacts:  build
-? What is your project's build command:  npm run-script build
-? What is your project's start command for local test run:  npm run-script start
-
-? What amplify project name would you like to use:  amplify-start-2018-02-28-14-44-42
-
-Successfully created AWS Mobile Hub project: amplify-start-2018-02-28-14-44-42
-
-retrieving the latest backend amplify project information
-amplify project's details logged at: amplifyjs/#current-backend-info/backend-details.json
-amplify project's access information logged at: amplifyjs/#current-backend-info/aws-exports.js
-amplify project's access information copied to: src/aws-exports.js
-amplify project's specifications logged at: amplifyjs/#current-backend-info/mobile-hub-project.yml
-contents in #current-backend-info/ is synchronized with the latest in the aws cloud
-```
-
-Please note that backend resources that are created with `amplify init` are copied to *amplifyjs/#current-backend-info* project folder. When you change your backend configuration and run `amplify pull`, the contents of the folder will be updated automatically, and a new copy of the configuration file will be copied to *src/aws-exports.js* folder.
-{: .callout .callout--info}
-
-You can also manually create and modify your AWS resources in the Mobile Hub console, as described in the following section. To integrate any manual backend changes, you must run:
-```bash
-amplify pull
-```
-
-This will update your app's `src/aws-exports.js` file. This contains the configuration metadata for your backend resources in Mobile Hub, and should not be modified manually. 
+For detailed information on installation steps, visit [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config??platform=react&ref_url=/amplify-js/media/get_started_docs&ref_content={{"Get Started" | uri_escape }}&ref_content_section=automatic-setup).
+{: .callout .callout--action}
 
 ### Manual Setup to work with existing AWS Resources
 
@@ -233,6 +205,7 @@ Amplify.configure({
     }
 });
 ```
+
 In the configuration above, you are required to pass in an Amazon Cognito identity pool ID so that AWS Amplify can retrieve base credentials for a user even in an un-authenticated state. 
 
 **Configuration Parameters for existing AWS resources**
@@ -289,40 +262,28 @@ const aws_exports = require('../../aws-exports').default;
 
 ## Adding Services to Your Backend
 
-You can use the [@aws-amplify/cli](https://github.com/aws/amplify-cli) to manage your AWS backend.The `amplify features` command enables or disables services. 
+You can use the Amplify CLI to manage your AWS backend:
 
 ```
-$ amplify features    
-```
-
-```terminal
- select features:  (Press <space> to select, <a> to toggle all, <i> to inverse selection)
-❯◯ user-signin
- ◯ user-files
- ◯ cloud-api
- ◯ database
- ◉ analytics
- ◉ hosting
- ◯ appsync
+$ amplify add <feature-name>
 ```
 
 Remember to use `amplify push` to update your backend with the new configuration. This will refresh your `/src/aws-exports.js` file.
 
 ```
-$ amplify push     
-```
-
-### Accessing AWS Mobile Hub Console
-
-You can access your AWS Mobile Hub Console anytime to monitor or modify your AWS backend services. Simply type following command in your project root directory:
-
-```
-$ amplify console
+$ amplify push
 ```
 
 ## Start Monitoring Your App Analytics
 
-To see app analytics data, run `amplify console`, choose Analytics in the upper right of the AWS Mobile Hub console, and then Analytics again in the upper left of the [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
+To enable analytics in your app, run:
+
+```bash
+$ amplify add analytics
+$ amplify push
+```
+
+To see app analytics data, visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
 
 ![Pinpoint Console]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/pinpoint_dashboard.png)
 
@@ -343,6 +304,13 @@ You can easily add custom analytics events to suit your purposes. For more infor
 {: .callout .callout--info}
 
 ## Add User Authentication to Your App
+
+To enable authentication in your app, run:
+
+```bash
+$ amplify add auth
+$ amplify push
+```
 
 AWS Amplify provides out-of-the-box user authentication experience with `withAuthenticator` Higher Order Component for React and React Native.
 
@@ -434,7 +402,6 @@ Within your controller, you can listen for authentication state changes using th
 For more information about Authentication Category, see [AWS Amplify Authentication Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide)
 {: .callout .callout--info}
 
-
 ## Working with AWS Service Interface Objects
 
 AWS Amplify provides a declarative API to work with Amazon Cognito, Amazon API Gateway, Amazon Pinpoint and Amazon S3. For working with other AWS Services, you can use service interface objects. 
@@ -463,4 +430,7 @@ Auth.currentCredentials()
 
 Full API Documentation for service interface objects is available [here](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html).
 {: .callout .callout--info}
- 
+
+## Learn More
+
+Visit [AWS Amplify Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/developer_guide) to learn more about AWS Amplify cloud capabilities.
