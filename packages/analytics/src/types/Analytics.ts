@@ -35,7 +35,8 @@ export interface pageViewTrackOpts {
     type?: string
     eventName?: string,
     provider?: string,
-    attributes?: EventAttributes
+    attributes?: EventAttributes,
+    getUrl?: Function
 }
 
 export interface EventTrackOpts {

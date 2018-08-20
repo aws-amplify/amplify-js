@@ -48,11 +48,15 @@ export default class SessionTracker {
 
     private _trackFunc(nextAppState) {
         const currentState = AppState.currentState;
+        const { attributes } = this._config;
 
         if (currentState.match(/inactive|background/) && nextAppState === 'active') {
             logger.debug('App has come to the foreground, recording start session');
             this._tracker(
-                { name: '_session_start' },
+                {
+                    name: '_session_start',
+                    attributes
+                },
                 this._config.provider
             ).catch(e => {
                 logger.debug('record session start event failed.', e);
@@ -61,7 +65,10 @@ export default class SessionTracker {
         if (currentState.match(/active/) && nextAppState.match(/inactive|background/)) {
             logger.debug('App has come to inactive/background, recording stop session');
             this._tracker(
-                { name: '_session_stop' },
+                { 
+                    name: '_session_stop',
+                    attributes
+                },
                 this._config.provider
             ).catch(e => {
                 logger.debug('record session stop event failed.', e);
@@ -76,10 +83,14 @@ export default class SessionTracker {
 
         Object.assign(this._config, opts);
 
+        const { attributes } = this._config;
         if (this._config.enable && !this._hasEnabled) {
             // send a start session as soon as it's enabled
             this._tracker(
-                { name: '_session_start' },
+                { 
+                    name: '_session_start',
+                    attributes
+                },
                 this._config.provider
             ).catch(e => {
                 logger.debug('record session start event failed.', e);

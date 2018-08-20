@@ -16,12 +16,19 @@ import MethodEmbed from '../utils/MethodEmbed';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('PageViewTracker');
-const prevUrlKey = 'aws-amplify-analytics-prevUrl';
+const PREV_URL_KEY = 'aws-amplify-analytics-prevUrl';
+
+const getUrl = () => {
+    return window.location.origin + window.location.pathname;
+};
 
 const defaultOpts: pageViewTrackOpts = {
     enable: false,
-    provider: 'AWSPinpoint'
+    provider: 'AWSPinpoint',
+    getUrl
 };
+
+
 
 export default class PageViewTracker {
     private _config: pageViewTrackOpts;
@@ -54,8 +61,8 @@ export default class PageViewTracker {
     }
 
     private _isSameUrl() {
-        const prevUrl = sessionStorage.getItem(prevUrlKey);
-        const curUrl = this._config.pageUrl || window.location.origin + window.location.pathname;
+        const prevUrl = sessionStorage.getItem(PREV_URL_KEY);
+        const curUrl = this._config.getUrl(); 
 
         if (prevUrl === curUrl){
             logger.debug('the url is same');
@@ -69,15 +76,13 @@ export default class PageViewTracker {
             logger.debug('not in the supported web enviroment');
             return;
         }
-
-        const url = window.location.origin + window.location.pathname;
+        const url = this._config.getUrl();
         const attributes = Object.assign(
             {
                 url
             },
             this._config.attributes
         );
-
 
         if (this._config.enable && !this._isSameUrl()) {
             this._tracker(
@@ -89,7 +94,7 @@ export default class PageViewTracker {
             ).catch(e => {
                 logger.debug('Failed to record the page view event', e);
             });
-            sessionStorage.setItem(prevUrlKey, url);
+            sessionStorage.setItem(PREV_URL_KEY, url);
         }
     }
 
@@ -99,21 +104,25 @@ export default class PageViewTracker {
             return;
         }
 
-        logger.debug('url' + window.location.pathname);
+        const url = this._config.getUrl();
+        const attributes = Object.assign(
+            {
+                url
+            },
+            this._config.attributes
+        );
+
         if (!this._isSameUrl()){
-            const url = this._config.pageUrl || window.location.origin + window.location.pathname;
             this._tracker(
                 {
                     name: this._config.eventName || 'pageView',
-                    attributes: {
-                        url
-                    }
+                    attributes
                 },
                 this._config.provider  
             ).catch(e => {
                 logger.debug('Failed to record the page view event', e);
             });
-            sessionStorage.setItem(prevUrlKey, url);
+            sessionStorage.setItem(PREV_URL_KEY, url);
         }
     }
     

@@ -56,12 +56,18 @@ describe('EventTracer test', () => {
                 enable: true,
                 selectorPrefix: 'prefix',
                 events: ['click', 'mouseover'],
-                provider: 'myProvider'
+                provider: 'myProvider',
+                attributes: {
+                    attr: 'attr'
+                }
             })).toEqual({
                 enable: true,
                 selectorPrefix: 'prefix',
                 events: ['click', 'mouseover'],
-                provider: 'myProvider'
+                provider: 'myProvider',
+                attributes: {
+                    attr: 'attr'
+                }
             });
 
             expect(mockDelegate).toBeCalled();
@@ -81,7 +87,10 @@ describe('EventTracer test', () => {
             }
             
             const eventTracker = new EventTracker(tracker, {
-                enable: true
+                enable: true,
+                attributes: {
+                    browser: 'chrome'
+                }
             });
 
             const event = {
@@ -98,12 +107,13 @@ describe('EventTracer test', () => {
                     "attributes": {
                         "attrs": "val", 
                         "target": "localName with id xxxxx", 
-                        "type": "click"
+                        "type": "click",
+                        "browser" : "chrome"
                     }, 
                     "name": "name"
                 },
                 'AWSPinpoint'
             );
-        })
+        });
     });
 });

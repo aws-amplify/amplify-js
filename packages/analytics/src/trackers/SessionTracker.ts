@@ -65,16 +65,23 @@ export default class SessionTracker {
     }
 
     private _trackFunc() {
+        const { attributes } = this._config;
         if (document[this._hidden]) {
             this._tracker(
-                { name: '_session_stop' },
+                { 
+                    name: '_session_stop',
+                    attributes
+                },
                 this._config.provider
             ).catch(e => {
                 logger.debug('record session stop event failed.', e);
             });
         } else {
             this._tracker(
-                { name: '_session_start' },
+                { 
+                    name: '_session_start',
+                    attributes
+                },
                 this._config.provider
             ).catch(e => {
                 logger.debug('record session start event failed.', e);
@@ -83,9 +90,11 @@ export default class SessionTracker {
     }
 
     private _trackBeforeUnload() {
+        const { attributes } = this._config;
         this._tracker(
             { 
                 name: '_session_stop',
+                attributes,
                 immediate: true
             },
             this._config.provider
@@ -101,10 +110,15 @@ export default class SessionTracker {
 
         Object.assign(this._config, opts);
 
+        const { attributes } = this._config;
+
         if (this._config.enable && !this._hasEnabled) {
             // send a start session as soon as it's enabled
             this._tracker(
-                { name: '_session_start' },
+                {
+                    name: '_session_start', 
+                    attributes
+                },
                 this._config.provider
             ).catch(e => {
                 logger.debug('record session start event failed.', e);
