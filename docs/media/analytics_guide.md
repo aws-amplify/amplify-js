@@ -373,6 +373,7 @@ You can track the session both in a web app or a React Native app by using Analy
 A web session can be defined in different ways. To keep it simple we define that the web session is active when the page is not hidden and inactive when the page is hidden. 
 A session in the React Native app is active when the app is in the foreground and inactive when the app is in the background.
 
+For example: 
 ```js
 Analytics.autoTrack('session', {
     // REQUIRED, turn on/off the auto tracking
@@ -385,6 +386,17 @@ Analytics.autoTrack('session', {
     provider: 'AWSPinpoint'
 })
 ```
+
+When the page is loaded, the Analytics module will send an event with:
+```js
+{ 
+    eventType: '_session_start', 
+    attributes: { 
+        sessionId: 'xxxxx' 
+    }
+}
+```
+to the AWS Pinpoint Service. 
 
 To keep backward compatibility, the auto tracking of the session is enabled by default. You can turn it off by:
 ```js
@@ -403,18 +415,25 @@ To turn it on:
 Analytics.autoTrack('pageView', {
     // REQUIRED, turn on/off the auto tracking
     enable: true,
+    // OPTIONAL, the event name, by default is 'pageView'
+    eventName: 'pageView',
     // OPTIONAL, the attributes of the event 
     attributes: {
-        // for example, you can redefine the url adress of the page, by default is window.location.href
-        pageUrl: window.location.href
+        attr: 'attr'
     },
-    // OPTIONAL, by default is 'multiPageApp', you need to change it to 'SPA' if your app is  // a single-page app like React
+    // OPTIONAL, by default is 'multiPageApp'
+    // you need to change it to 'SPA' if your app is a single-page app like React
     type: 'multiPageApp',
     // OPTIONAL, the service provider, by default is the AWS Pinpoint
-    provider: 'AWSPinpoint'
-})
+    provider: 'AWSPinpoint',
+    // OPTIONAL, to get the current page url
+    getUrl: () => {
+        // the default function
+        return window.location.origin + window.location.pathname;
+    }
+});
 ```
-This is not supported in React Native.
+Note: This is not supported in React Native.
 
 ### Page Event Tracking
 
@@ -426,14 +445,14 @@ Analytics.autoTrack('event', {
     // REQUIRED, turn on/off the auto tracking
     enable: true,
     // OPTIONAL, events you want to track, by default is 'click'
-    events: ['click', 'auxclick', 'mouseover'],
+    events: ['click'],
     // OPTIONAL, the prefix of the selectors, by default is 'amplify-analytics-'
     selectorPrefix: 'amplify-analytics-',
     // OPTIONAL, the service provider, by default is the AWS Pinpoint
     provider: 'AWSPinpoint',
     // OPTIONAL, default attributes of the event 
     attributes: {
-        browser_version: 'mozilla'
+        attr: 'attr'
     }
 ```
 
@@ -453,8 +472,9 @@ When the button above is clicked, an event will be sent automatically and this i
         Analytics.record({
             name: 'click',
             attributes: {
-                attr1: attr1_value,
-                attr2: attr2_value
+                attr: 'attr', // the default ones
+                attr1: attr1_value, // defined in the button component
+                attr2: attr2_value, // defined in the button component
             }
         });
     }
