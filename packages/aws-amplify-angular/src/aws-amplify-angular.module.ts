@@ -1,6 +1,7 @@
 import { NgModule , forwardRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+// tslint:disable:max-line-length
 import { AuthenticatorComponent } from './components/authenticator/authenticator/authenticator.factory';
 import { AuthenticatorComponentCore } from './components/authenticator/authenticator/authenticator.component.core';
 import { ConfirmSignInComponent } from './components/authenticator/confirm-sign-in-component/confirm-sign-in.factory';
@@ -27,7 +28,7 @@ import { ChatBotComponent } from './components/interactions/chatbot/chatbot.fact
 import { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.component.core'; 
 import { DynamicComponentDirective } from './directives/dynamic.component.directive';
 import { FormComponent } from './components/common/form.component';
-
+// tslint:enable:max-line-length
 
 const components = [
   AuthenticatorComponent,
@@ -55,8 +56,7 @@ const components = [
   ChatBotComponent,
   ChatbotComponentCore,
   FormComponent,
-]
-
+];
 
 @NgModule({
   imports: [
