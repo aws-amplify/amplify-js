@@ -438,10 +438,10 @@
 		sub_list.classList.toggle("hide");
 	}
 
-	let current_section = document.getElementsByClassName('orange-section-head')[0];
+	/*let current_section = document.getElementsByClassName('orange-section-head')[0];
 	if (current_section) {
 		current_section.addEventListener("click", toggleSubList);
-	}
+	}*/
 
 }( jQuery ) );
 
