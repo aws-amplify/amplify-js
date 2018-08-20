@@ -489,7 +489,7 @@ a {
         }
 
         #half-chatbot {
-            overflow-y: hidden;
+            display: none !important;
         }
 
         .hero-subheader__title {
@@ -524,7 +524,7 @@ a {
 
     .ui-header {
         position: relative;
-        top: 75px;
+        //top: 75px;
         
         @media (max-width: 828px) {
             top: 0;
@@ -635,6 +635,12 @@ a {
         display: inline-block;
         margin-top: -260px;
         margin-left: 620px;
+    }
+
+    #half-chatbot {
+        position: relative;
+        left: 500px;
+        bottom: 200px;
     }
 }
 

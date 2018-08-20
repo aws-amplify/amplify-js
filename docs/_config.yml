@@ -75,7 +75,7 @@ amplify:
             - item_name: Toolchain
               item_url: '/media/toolchain'
               id: toolchain
-            - item_name: UI Components
+            - item_name: Style Guide
               item_url: '/media/ui_library'
               id: ui_library
             #- item_name: 
@@ -122,10 +122,6 @@ category_list:
         - title: Get Started
           excerpt: get started excerpt
           url: '/media/quick_start'
-          icon: '/images/icons/Misc/Present.svg'
-        - title: Amplify CLI
-          excerpt: CLI excerpt
-          url: '/media/cli_guide'
           icon: '/images/icons/Misc/Present.svg'
     - category: CloudFeatures
       title: Cloud Features
@@ -264,6 +260,16 @@ category_list:
           cta: Read more
           class: aws-icon-ps-60-network-nodes
           url_external: 'https://marketplace.visualstudio.com/items?itemName=aws-amplify.aws-amplify-vscode'   
+          icon: '/images/icons/Misc/Present.svg'
+
+    - category: UserInterface
+      title: User Interface
+      excerpt: 
+      base_url: '/media/ui_guide'
+      subs:
+        - title: UI Components
+          excerpt: UI excerpt
+          url: '/media/ui_guide'
           icon: '/images/icons/Misc/Present.svg'
 
 defaults:

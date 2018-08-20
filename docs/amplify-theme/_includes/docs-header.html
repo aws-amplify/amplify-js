@@ -15,6 +15,11 @@
 					{% endif %}
 				</li>
 			{% endfor %}
+			<li>
+				<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/api">
+					API
+				</a>
+			</li>
 		</ul><!-- /.offcanvas__nav -->
 	</div><!-- /.offcanvas -->
 {% endif %}
