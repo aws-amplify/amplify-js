@@ -121,7 +121,7 @@ category_list:
       subs:
         - title: Get Started
           excerpt: get started excerpt
-          url: '/media/quick_start?platform=react'
+          url: '/media/quick_start'
           icon: '/images/icons/Misc/Present.svg'
         - title: Amplify CLI
           excerpt: CLI excerpt
@@ -265,36 +265,6 @@ category_list:
           class: aws-icon-ps-60-network-nodes
           url_external: 'https://marketplace.visualstudio.com/items?itemName=aws-amplify.aws-amplify-vscode'   
           icon: '/images/icons/Misc/Present.svg'
-          
-    - category: UserInterface
-      title: User Interface
-      excerpt: Bring your own front-end! We support the most popular front-end frameworks and libraries.
-      base_url: '/media/ui_library'
-      subs:
-        - title: Colors
-          excerpt: AWS Amplify provides Angular Components with aws-amplify-angular npm package.
-          cta: Read more
-          url: '/media/ui_library#colors' 
-          icon: '/images/icons/Misc/Present.svg'
-          id: angular
-        - title: Typography
-          excerpt: AWS Amplify provides React Components with aws-amplify-react npm package and a starter App.
-          cta: Read more
-          url: '/media/ui_library#typography'
-          icon: '/images/icons/Misc/Present.svg'
-          id: react
-        - title: Controls & Inputs
-          excerpt: AWS Amplify provides React Native Components with aws-amplify-react npm package and a starter App.
-          cta: Read more
-          url: '/media/ui_library#controls--inputs'
-          icon: '/images/icons/Misc/Present.svg'
-          id: react-native
-        - title: AWS Components
-          excerpt: To help you start working with AWS Amplify, we provide a Starter App.
-          cta: Read more
-          url: '/media/ui_library#aws-components'
-          icon: '/images/icons/Misc/Present.svg'
-          id: vuejs
 
 defaults:
   -

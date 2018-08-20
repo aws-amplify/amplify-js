@@ -432,7 +432,7 @@
 	}
 	let api_select = document.getElementById('api-select');
 	if (api_select) api_select.addEventListener("change", apiLink);
-
+	
 }( jQuery ) );
 
 	/**

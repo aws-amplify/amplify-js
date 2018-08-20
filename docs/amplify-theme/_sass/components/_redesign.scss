@@ -1659,6 +1659,10 @@ li {
     }
 }
 
+#node-link:hover {
+    text-decoration: underline;
+}
+
 .amplify-link-box {
     margin-bottom: 20px;
 }
@@ -2451,7 +2455,7 @@ li {
 }
 
 //=============================================================================
-/***                       new stuff for cli homepage                      ***/
+/***                       new stuff for toolchain page                    ***/
 //=============================================================================
 
 .hero-subheader.dark {
@@ -2588,7 +2592,8 @@ li {
     }
 
     @media (max-width: 828px) {
-        width: calc(100% - 140px) !important;
+        //width: calc(100% - 140px) !important;
+        width: 100% !important;
     }
 
     .ui-section {
@@ -2624,10 +2629,11 @@ li {
         margin-bottom: 20px;
         color: #232F3E !important;
         display: inline-block;
+        max-width: 100%;
     }
 
     img {
-        max-width: none;;
+        //max-width: none;
     }
 
     .title {
@@ -2729,6 +2735,7 @@ li {
 
     .inline-div {
         display: inline-block;
+        max-width: 100%;
     }
 
     #dropdowns {

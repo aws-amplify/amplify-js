@@ -185,6 +185,13 @@
 					icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
 				}
 			}
+			else {
+				var platform = "react";
+				document.getElementById("js-library-select").value = "?platform="+platform;
+				let icon = document.getElementById("js-library-icon");
+				icons = {"react": "React-Small-White@1x.png", "react-native": "React-Small-White@1x.png", "angular": "Angular-Med-White@1x.png", "purejs": "JS-Small-White@1x.png", "ionic": "Ionic-Color@1x.png"};
+				icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
+				}
 		{% endif %}
 	</script>
 	<!-- 
