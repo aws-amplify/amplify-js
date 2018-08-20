@@ -40,14 +40,14 @@
 							</div><!-- /.sections-list -->
 						</div>
 						{% else %}
-						<div class="version-section">
+						<!-- <div class="version-section">
 							<p>Version</p>
 							<div class="version-selector">
 								<select id="version-selector-select">
 									<option value="1.x.x">1.x.x (Stable release)</option>
 								</select>
 							</div>
-						</div>
+						</div> -->
 						<div class="version-section visible-xs">
 							<p>View Section</p>
 							<div class="version-selector">
@@ -85,9 +85,10 @@
 						<div class="col-md-8 section-top docs-container">
 							{% if page.url contains 'quick_start' %}
 							<div class='js-library-selector-text'>
-								Select frontend library
+								Select your framework
 							</div>
 							<div class="js-library-selector">
+								<img id="js-library-icon" /> 
 								<select onchange="location = this.value" id="js-library-select">
 									{% for item in site.js_libraries %}
 										<option value={{ item.url }}>{{ item.title }}</option>
@@ -158,6 +159,17 @@
 					document.getElementById("{{ category.category }}").classList.add('hidden-xs');
 				}
 			{% endfor %}
+
+			const view_section_box = document.getElementById("section-select");
+			if (view_section_box) 
+			{
+				{% if jekyll.environment == 'production' %}
+					view_section_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
+				{% else %}
+					view_section_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+				{% endif %}
+				view_section_box.style.backgroundPosition = "240px 5px";
+			}
 		}
 		{% if page.url contains 'quick_start' %}
 			let tabs = document.getElementsByClassName('tabs');
@@ -168,10 +180,21 @@
 				var platform = $.urlParam('platform');
 				if (platform) {
 					document.getElementById("js-library-select").value = "?platform="+platform;
+					let icon = document.getElementById("js-library-icon");
+					icons = {"react": "React-Small-White@1x.png", "react-native": "React-Small-White@1x.png", "angular": "Angular-Med-White@1x.png", "purejs": "JS-Small-White@1x.png", "ionic": "Ionic-Color@1x.png"};
+					icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
 				}
 			}
+			else {
+				var platform = "react";
+				document.getElementById("js-library-select").value = "?platform="+platform;
+				let icon = document.getElementById("js-library-icon");
+				icons = {"react": "React-Small-White@1x.png", "react-native": "React-Small-White@1x.png", "angular": "Angular-Med-White@1x.png", "purejs": "JS-Small-White@1x.png", "ionic": "Ionic-Color@1x.png"};
+				icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
+				}
 		{% endif %}
 	</script>
+	<!-- 
 	{% if jekyll.environment == 'production' %}
 		<script>
 			var setBackgroundImage = function() {
@@ -220,3 +243,4 @@
 		</script>
 	{% endif %}
 	</html>
+-->

@@ -13,13 +13,19 @@
 						<div class="align-container" data-mh>
 							<div class="align-inner">
 								<h1 class="hero-subheader__title">A beautiful component library connected to the cloud</h1>
+								<div id="button-logo-container">
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/ui_guide" class="btn btn--dark btn--rounded btn--w-icon">
+										{% if button.icon %}<i class="icon icon--{{ button.icon }}"></i>{% endif %}
+										Get Started
+									</a>
+									<img id="half-chatbot" class="hidden-xs" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Chat@1x.png">
+								</div>
 							</div><!-- /.align-inner -->
 						</div><!-- /.align-container -->
 					</div><!-- /.col -->
-					<img id="half-chatbot" class="hidden-xs" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Chat@1x.png">
 				</div><!-- /.row -->
 			</div><!-- /.container -->
-			</div><!-- /.hero-subheader -->
+		</div><!-- /.hero-subheader -->
 
 		<div id="styleguide-section">
 			<div class="container docs-page-container">
@@ -51,7 +57,7 @@
 							<div class="sections-list js-affix js-scrollspy">
 								<div class="dev-guide"> 
 									{% if site.styleguide %}
-										<div class="left-nav-section">
+										<div class="left-nav-section hidden-xs">
 											<div class="feature-list">
                                                 <ul class="nav">
 												{% for item in site.styleguide %}

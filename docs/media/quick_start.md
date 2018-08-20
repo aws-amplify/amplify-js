@@ -95,7 +95,7 @@ AWS Amplify is available as an npm package. Run the following commands at the ro
 <ul class="tabs">
     <li class="tab-link angular" data-tab="angular">Angular</li>
     <li class="tab-link ionic" data-tab="ionic">Ionic</li>
-    <li class="tab-link purejs" data-tab="purejs">JavaScript (no library)</li>
+    <li class="tab-link purejs" data-tab="purejs">JavaScript</li>
     <li class="tab-link react current" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
 </ul>

@@ -233,8 +233,8 @@
     width: 180px;
     margin-top: -7px;
 
-    @media (max-width: 844px) {
-        width: 160px;
+    @media (max-width: 859px) {
+        width: 150px;
     }
     
     .search-image {
@@ -255,8 +255,8 @@
         line-height: 24px;
         max-width: 150px;
 
-        @media (max-width: 844px) {
-            max-width: 130px;
+        @media (max-width: 859px) {
+            max-width: 120px;
         }
     }
     #search-input:focus {
@@ -489,7 +489,7 @@ a {
         }
 
         #half-chatbot {
-            overflow-y: hidden;
+            display: none !important;
         }
 
         .hero-subheader__title {
@@ -524,7 +524,7 @@ a {
 
     .ui-header {
         position: relative;
-        top: 75px;
+        //top: 75px;
         
         @media (max-width: 828px) {
             top: 0;
@@ -635,6 +635,12 @@ a {
         display: inline-block;
         margin-top: -260px;
         margin-left: 620px;
+    }
+
+    #half-chatbot {
+        position: relative;
+        left: 500px;
+        bottom: 200px;
     }
 }
 
@@ -1659,6 +1665,10 @@ li {
     }
 }
 
+#node-link:hover {
+    text-decoration: underline;
+}
+
 .amplify-link-box {
     margin-bottom: 20px;
 }
@@ -2322,7 +2332,15 @@ li {
             @media (max-width: 828px) {
                 position: static;
                 margin-bottom: 20px;
-                width: 200px;
+                width: 162px;
+            }
+
+            img {
+                height: 20px;
+                left: 10px;
+                position: relative;
+                vertical-align: text-bottom;
+                filter: brightness(0) invert(1);
             }
                 
             select {
@@ -2332,17 +2350,22 @@ li {
                 line-height: 24px;
                 margin: 10px;
                 border: none;
+                background: none;
                 filter: brightness(0) invert(1);
                 cursor: pointer;
             }
         }
 
         .js-library-selector-text {
-            position: absolute;
             top: 29px;
             right: 27px;
             font-size: 12px;
             color:black;
+            position: absolute;
+
+            @media (max-width: 828px) {
+                position: static;
+            }
         }
 
         .content {
@@ -2438,7 +2461,7 @@ li {
 }
 
 //=============================================================================
-/***                       new stuff for cli homepage                      ***/
+/***                       new stuff for toolchain page                    ***/
 //=============================================================================
 
 .hero-subheader.dark {
@@ -2575,7 +2598,8 @@ li {
     }
 
     @media (max-width: 828px) {
-        width: calc(100% - 140px) !important;
+        //width: calc(100% - 140px) !important;
+        width: 100% !important;
     }
 
     .ui-section {
@@ -2611,10 +2635,11 @@ li {
         margin-bottom: 20px;
         color: #232F3E !important;
         display: inline-block;
+        max-width: 100%;
     }
 
     img {
-        max-width: none;;
+        //max-width: none;
     }
 
     .title {
@@ -2716,6 +2741,7 @@ li {
 
     .inline-div {
         display: inline-block;
+        max-width: 100%;
     }
 
     #dropdowns {

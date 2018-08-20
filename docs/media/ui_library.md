@@ -259,7 +259,7 @@ The authentication component utilizes the styles outlined in the styleguide to p
 </span>
 <div class="separator"></div>
 
-### User Authentication: Social Logins
+<!-- ### User Authentication: Social Logins
 The authentication component utilizes the styles outlined in the styleguide to provide a minimal, yet lightly AWS-branded experience out of the box.
 
 <span class="inline-div">
@@ -270,7 +270,7 @@ The authentication component utilizes the styles outlined in the styleguide to p
     <span class="title">User Account Verification</span>
     <span class="inline-img no-right-margin">![User Account Verification]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/user_account_veri.png)</span>
 </span>
-<div class="separator"></div>
+<div class="separator"></div> -->
 
 ### User Authentication: TOTP
 2-factor authentication can be enabled for customers. Users are given the option to add additional account security. Some light instruction should be included to guide the customer through the necessary steps.
