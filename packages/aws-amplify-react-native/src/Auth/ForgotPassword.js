@@ -17,7 +17,8 @@ import {
     Text, 
     TextInput, 
     Button, 
-    TouchableHighlight 
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import {
     Auth,
@@ -125,15 +126,17 @@ export default class ForgotPassword extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <View style={theme.section}>
-                <Header theme={theme}>{I18n.get('Forgot Password')}</Header>
-                <View style={theme.sectionBody}>
-                    { !this.state.delivery && this.forgotBody(theme) }
-                    { this.state.delivery && this.submitBody(theme) }
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Forgot Password')}</Header>
+                    <View style={theme.sectionBody}>
+                        { !this.state.delivery && this.forgotBody(theme) }
+                        { this.state.delivery && this.submitBody(theme) }
+                    </View>
+                    <Footer theme={theme} onStateChange={this.changeState}/>
+                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
-                <Footer theme={theme} onStateChange={this.changeState}/>
-                <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-            </View>
+            </TouchableWithoutFeedback>
         )
     }
 }

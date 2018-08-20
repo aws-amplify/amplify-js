@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/core",
-  "version": "1.0.3",
+  "version": "1.0.6-unstable.1",
   "description": "Core category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -80,6 +80,7 @@
         "statements": 0
       }
     },
+    "testURL": "http://localhost/",
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]

@@ -169,7 +169,7 @@ Auth.signUp({
 });
 
 Auth.signIn(username, password)
-  .then(success => console.log('successful sign in!'))
+  .then(success => console.log('successful sign in'))
   .catch(err => console.log(err));
 ```
 
@@ -201,7 +201,7 @@ import { AmplifyService }  from 'aws-amplify-angular';
 ...
 
 constructor( public amplify:AmplifyService ) {
-  // handle auth state changes
+  // handle auth state change
   this.amplify.authStateChange$
     .subscribe(authState => {
       this.authenticated = authState.state === 'signedIn';

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/analytics",
-  "version": "1.0.3",
+  "version": "1.0.6-unstable.1",
   "description": "Analytics category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -54,8 +54,8 @@
   },
   "dependencies": {
     "dom-utils-amplify": "0.10.1",
-    "@aws-amplify/cache": "^1.0.3",
-    "@aws-amplify/core": "^1.0.3",
+    "@aws-amplify/cache": "^1.0.6-unstable.1",
+    "@aws-amplify/core": "^1.0.6-unstable.1",
     "aws-sdk": "2.198.0",
     "uuid": "^3.2.1"
   },
@@ -72,6 +72,7 @@
       "jsx"
     ],
     "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
     "mapCoverage": true,
     "coverageThreshold": {
       "global": {
