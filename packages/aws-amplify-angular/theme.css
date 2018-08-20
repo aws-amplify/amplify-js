@@ -355,23 +355,23 @@ background-color: var(--color-white);
 }
 
 .amplify-input-label {
-height: 18px;
-width: 367.92px;
-color: var(--color-accent);
-font-family: var(--font-family);
+  height: 18px;
+  width: 367.92px;
+  color: var(--color-accent);
+  font-family: var(--font-family);
   font-size: 14px;
   margin: 0.5em;
-letter-spacing: 0.4px;
-line-height: 18px;
+  letter-spacing: 0.4px;
+  line-height: 18px;
 }
 
 .amplify-form-input {
-height: 42px;
+  height: 42px;
   width: 378px;
   font-size: 14px;
   letter-spacing: 0.4px;
-border: var(--input-border);
-border-radius: 3px;
+  border: var(--input-border);
+  border-radius: 3px;
   background-color: #FFFFFF;
   padding: var(--input-padding);
   margin: 0.5em;
