@@ -46,7 +46,7 @@ const template = `
   <div class="amplify-form-footer">
     <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>
-
+  
 </div>
 `;
 

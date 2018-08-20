@@ -28,6 +28,37 @@ import { ChatbotComponentCore } from './components/interactions/chatbot/chatbot.
 import { DynamicComponentDirective } from './directives/dynamic.component.directive';
 import { FormComponent } from './components/common/form.component';
 
+<<<<<<< HEAD
+=======
+
+const components = [
+  AuthenticatorComponent,
+  AuthenticatorComponentCore,
+  ConfirmSignInComponent,
+  ConfirmSignInComponentCore,
+  ConfirmSignUpComponent,
+  ConfirmSignUpComponentCore,
+  SignInComponent,
+  SignInComponentCore,
+  SignUpComponent,
+  SignUpComponentCore,
+  RequireNewPasswordComponent,
+  RequireNewPasswordComponentCore,
+  GreetingComponent,
+  GreetingComponentCore,
+  ForgotPasswordComponent,
+  ForgotPasswordComponentCore,
+  S3AlbumComponent,
+  S3AlbumComponentCore,
+  S3ImageComponent,
+  S3ImageComponentCore,
+  PhotoPickerComponent,
+  PhotoPickerComponentCore,
+  ChatBotComponent,
+  ChatbotComponentCore,
+  FormComponent,
+]
+>>>>>>> master
 
 const components = [
   AuthenticatorComponent,
