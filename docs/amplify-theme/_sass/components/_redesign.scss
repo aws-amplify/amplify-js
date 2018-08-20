@@ -859,6 +859,7 @@ a {
     }
 
     .grids-container {
+        width: 100%;
 
         .cloud-grid {
             display: inline-block;
@@ -908,6 +909,10 @@ a {
         font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 18px;
         line-height: 22px;
+
+        @media (max-width: 828px) {
+            text-align: center;
+        }
     }
 
     // .cloud-grid-left {
@@ -2516,6 +2521,15 @@ li {
             font-size: 16px;
             line-height: 24px;
             margin-bottom: 4px;
+        }
+    }
+
+    .toolchain-code-block {
+        float: right;
+        width: 360px;
+
+        pre {
+            overflow-x: hidden;
         }
     }
 
