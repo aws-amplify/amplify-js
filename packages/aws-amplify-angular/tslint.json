@@ -10,7 +10,7 @@
     "jsRules": {},
     "rules": {
         "prefer-const": true,
-        "max-line-length": [true, 160],
+        "max-line-length": [true, 100],
         "no-empty-interface": true,
         "no-var-keyword": true,
         "object-literal-shorthand": true,
