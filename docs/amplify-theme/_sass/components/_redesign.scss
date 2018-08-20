@@ -734,6 +734,11 @@ a {
         }
     }
 
+    .section-code-block {
+        max-width: 100%;
+        margin-bottom: 30px;
+    }
+
     padding: 0;
 
     .btn {
@@ -1752,14 +1757,6 @@ li {
 
         p {
             margin-bottom: 20px !important;
-        }
-    }
-
-    .section-code-block {
-        max-width: 100%;
-        
-        .section-code-content {
-            padding-bottom: 10px;
         }
     }
 
