@@ -4,7 +4,7 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { AuthenticatorComponentCore } from './authenticator.component.core';
 
 const template = `
-
+<div class="amplify-ionic-authenticator">
   <div>
     <amplify-auth-sign-in-ionic [authState]="authState"></amplify-auth-sign-in-ionic>
   </div>
@@ -44,6 +44,7 @@ const template = `
     [authState]="authState"
     ></amplify-auth-require-new-password-ionic>
   </div>
+</div>
 `
 
 @Component({

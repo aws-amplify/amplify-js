@@ -28,7 +28,7 @@ const template = `
           class="amplify-form-input"
           type="password"
           required
-          placeholder="Enter your Password"
+          placeholder="Enter your password"
         />
         <span class="amplify-form-action">Forgot Password?
         <a class="amplify-form-link"

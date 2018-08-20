@@ -3,66 +3,52 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { SignInComponentCore } from './sign-in.component.core';
 
 const template = `
-<div class="amplify-form-container" *ngIf="_show">
-  <div class="amplify-form-header"></div>
+<div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-body">
-    
-    <div class="amplify-form-row">
-      
-      <div class="amplify-form-cell-left">
-        <a class="amplify-form-link"
-          (click)="onSignIn()"
-        >Sign In</a>
-      </div>
-      
-      <div class="amplify-form-cell-right">
-        <a class="amplify-form-link"
-          (click)="onSignUp()"
-        >Sign Up</a>
-      </div>
-
-    </div>
-
+  <div class="amplify-form-header">Sign in to your account</div>
     <ion-list>
-
       <ion-item>
-        <ion-label stacked>Username</ion-label>
+        <ion-label position="stacked">Username</ion-label>
         <ion-input type="text" 
+          placeholder="Username"
           (keyup)="setUsername($event.target.value)"
           [value]="username"
         ></ion-input>
       </ion-item>
     
       <ion-item>
-        <ion-label stacked>Password</ion-label>
+        <ion-label position="stacked">Password</ion-label>
         <ion-input 
           #password
+          placeholder="Enter your password"
           type="password" 
           (keyup)="setPassword(password.value)"
           (keyup.enter)="onSignIn()"
-        ></ion-input>
+        ></ion-input> 
       </ion-item>
-    
+      
+      <ion-item>
+        <span class="amplify-form-action">Forgot Password?
+        <a class="amplify-form-link"
+            (click)="onForgotPassword()"
+          >Reset your password</a></span>
+      </ion-item>
+
     </ion-list>
 
-    <div class="amplify-form-row">
-
-      <div class="amplify-form-cell-right">
-        <a class="amplify-form-link"
-          (click)="onForgotPassword()"
-        >Forgot Password</a>
-      </div>
-
-    </div>
-
     <ion-button
+      class="button-block"
       (click)="onSignIn()"
     >Sign In</ion-button>
 
   </div>
 
-  <div class="amplify-form-footer">
-    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="amplify-alert" *ngIf="errorMessage">
+    <div class="amplify-alert-body">
+      <span class="amplify-alert-icon">&#9888;</span>
+      <div class="amplify-alert-message">{{ errorMessage }}</div>
+      <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
+    </div>
   </div>
 
 </div>

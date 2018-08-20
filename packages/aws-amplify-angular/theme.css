@@ -1,5 +1,3 @@
-/* @import "~aws-amplify-angular/theme.css"; */
-
 :root {
   --font-family: AmazonEmber,Helvetica Neue Light,Helvetica Neue,Helvetica,Arial,sans-serif;
   --body-background: #F8F4F4;
@@ -30,7 +28,6 @@
   --input-padding: 0.5em 0.5em 0.3em 1em;
 
   --box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15);
-
   --button-height: 42px;
 }
 
@@ -72,6 +69,10 @@ input:disabled {
   background-color: #EDEDED;
 }
 
+ion-item {
+  margin-top: 0.5em !important;
+}
+
 .amplify-component {
   display: block;
 }
@@ -89,8 +90,12 @@ input:disabled {
   width: var(--component-width);
   margin: 0 auto;
   border-radius: 6px;
-background-color: var(--color-white);
+  background-color: var(--color-white);
   box-shadow: var(--box-shadow);
+}
+
+.amplify-ionic-authenticator {
+  width: 100%;
 }
 
 .amplify-signup-container {
@@ -126,7 +131,7 @@ background-color: var(--color-white);
   width: var(--component-width);
   margin: 1em auto;
   border-radius: 6px;
-background-color: var(--color-white);
+  background-color: var(--color-white);
   box-shadow: var(--box-shadow);
 }
 
@@ -140,7 +145,7 @@ background-color: var(--color-white);
   width: var(--component-width);
   margin: 1em auto;
   border-radius: 6px;
-background-color: var(--color-white);
+  background-color: var(--color-white);
   box-shadow: var(--box-shadow);
 }
 
@@ -480,6 +485,11 @@ border-radius: 3px;
   border-radius: 6px;
   background-color: #FFFFFF;
   box-shadow: 0 0 5px 0 rgba(0,0,0,0.3);
+}
+
+.amplify-ionic-authenticator .amplify-alert {
+  margin: 1em auto !important;
+  width: 94% !important;
 }
 
 .amplify-alert-body {
