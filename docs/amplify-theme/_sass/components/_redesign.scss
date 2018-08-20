@@ -522,12 +522,17 @@ a {
         }
     }
 
+    .toolchain-header {
+        @media (max-width: 828px) {
+            margin-bottom: 50px;
+        }
+    }
+
     .ui-header {
         position: relative;
         //top: 75px;
         
         @media (max-width: 828px) {
-            top: 0;
             margin-bottom: 50px;
         }
     }
