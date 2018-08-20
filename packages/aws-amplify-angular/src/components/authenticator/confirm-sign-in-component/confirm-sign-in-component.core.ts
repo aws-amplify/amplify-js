@@ -30,11 +30,11 @@ const template = `
     <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-confirm-sign-in-core',
-  template: template
+  template
 })
 export class ConfirmSignInComponentCore {
   _authState: AuthState;
@@ -74,7 +74,7 @@ export class ConfirmSignInComponentCore {
         mfaType
       )
       .then(() => {
-        this.amplifyService.setAuthState({ state: 'signedIn', user: user });
+        this.amplifyService.setAuthState({ state: 'signedIn', user });
       })
       .catch(err => this._setError(err));
   }
