@@ -23,6 +23,10 @@
     display: block !important;
 }
 
+.hide {
+    display: none !important;
+}
+
 .content-filter {
     float:none;
     .filter-item {
@@ -2529,7 +2533,9 @@ li {
         width: 360px;
 
         pre {
-            overflow-x: hidden;
+            @media (min-width: 829px) {
+                overflow-x: hidden;
+            }
         }
     }
 
