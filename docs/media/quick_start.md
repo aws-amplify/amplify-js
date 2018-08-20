@@ -70,7 +70,25 @@ $ cd myAmplifyProject
 </div>
 </div>
 
+## Install Amplify CLI
+
+You will use Amplify CLI to configure your application work with AWS backend. 
+
+```bash
+$ npm install -g @aws-amplify/cli
+```
+
+If it is the first time you are using `@aws-amplify/cli, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
+
+```bash
+$ amplify configure
+```
+
+When prompted for credentials and your development environment, follow the steps provided by the CLI. For more information on installation steps, visit [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config?platform=react&ref_url=/amplify-js/media/quick_start&ref_content={{"Get Started" | uri_escape }}&ref_content_section=automatic-setup){: target='_new'}.
+{: .callout .callout--action}
+
 ## Install AWS Amplify 
+
 AWS Amplify is available as an npm package. Run the following commands at the root directory of your application.
 
 <div class="nav-tab install" data-group='install'>
@@ -161,29 +179,11 @@ See the [Ionic Guide](https://aws-amplify.github.io/amplify-js/media/ionic_guide
 </div>
 </div>
 
-## Install Amplify CLI
-
-You will use Amplify CLI to configure your application work with AWS backend. 
-
-```bash
-$ npm install -g @aws-amplify/cli
-```
-
-If it is the first time you are using `@aws-amplify/cli, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
-
-```bash
-$ amplify configure
-```
-
-If prompted for credentials, follow the steps provided by the CLI. 
-
 Amplify CLI uses `yarn` package manager to install dependencies. You can install `yarn` with npm:
 
 ```bash
 $ npm install -g yarn
 ```
-
-Please see other [installation options for *yarn*](https://yarnpkg.com/en/docs/install) for more information.
 
 ## Set up Your Backend
 
@@ -206,9 +206,6 @@ $ amplify init
 ```
 
 When you run `amplify init` command, you are asked for the details of your project. You can accept the defaults by typing `return` for each question. Automatic setup uses your answers to create your project backend copy the required configuration file to `src/aws-exports.js`.
-
-For detailed information on installation steps, visit [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config?platform=react&ref_url=/amplify-js/media/quick_start&ref_content={{"Get Started" | uri_escape }}&ref_content_section=automatic-setup){: target='_new'}.
-{: .callout .callout--action}
 
 ### Manual Setup to work with existing AWS Resources
 
