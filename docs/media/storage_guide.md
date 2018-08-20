@@ -575,7 +575,7 @@ Add an S3 album component to your template:
 
 ```
 
-See the [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) for usage.
+See the [Angular Guide](https://aws-amplify.github.io/amplify-js/media/angular_guide) for usage.
 
 ## Customization 
 

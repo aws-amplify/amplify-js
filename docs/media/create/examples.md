@@ -107,7 +107,7 @@ Amplify.configure(aws_exports);
 Analytics.record('myCustomEvent');
 ```
 
-See [here](https://aws.github.io/aws-amplify/media/analytics_guide) for the Analytics developer guide. 
+See [here](https://aws-amplify.github.io/amplify-js/media/analytics_guide) for the Analytics developer guide. 
 
 ### Signing HTTP requests
 
