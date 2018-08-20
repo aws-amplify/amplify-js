@@ -1,49 +1,90 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { PhotoPickerComponent } from '../../../components/storage/photo-picker.component';
+import { PhotoPickerComponentCore, PhotoPickerIonicComponent } from '../../../components/storage/photo-picker-component';
 
-    describe('PhotoPickerComponent:', () => {
+describe('PhotoPickerComponentCore:', () => {
 
-      beforeAll(() => {
-        TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-      })
+  beforeAll(() => {
+    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+  });
 
-      let component: PhotoPickerComponent;
-      let fixture: ComponentFixture<PhotoPickerComponent>;
-    
-      beforeEach(() => {
-    
-        TestBed.configureTestingModule({
-          declarations: [PhotoPickerComponent]
-        });
-    
-        // create component and test fixture
-        fixture = TestBed.createComponent(PhotoPickerComponent);
-    
-        // get test component from the fixture
-        component = fixture.componentInstance;
+  let component: PhotoPickerComponentCore;
+  let fixture: ComponentFixture<PhotoPickerComponentCore>;
 
-      });
-
-      it('...should be created', () => {
-        expect(component).toBeTruthy();
-      });
-
-      it('...should have a pick method', () => {
-        expect(component.pick).toBeTruthy();
-      });
-
-      it('...should have an onPhotoError method', () => {
-        expect(component.onPhotoError).toBeTruthy();
-      });
-
-      it('...should have a hasPhoto variable that is false by default', () => {
-        expect(component.hasPhoto).toEqual(false);
-      })
-
-      afterAll(() => {
-        TestBed.resetTestEnvironment();
-      })
-
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [PhotoPickerComponentCore]
     });
+
+    // create component and test fixture
+    fixture = TestBed.createComponent(PhotoPickerComponentCore);
+
+    // get test component from the fixture
+    component = fixture.componentInstance;
+
+  });
+
+  it('...should be created', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('...should have a pick method', () => {
+    expect(component.pick).toBeTruthy();
+  });
+
+  it('...should have an onPhotoError method', () => {
+    expect(component.onPhotoError).toBeTruthy();
+  });
+
+  it('...should have a hasPhoto variable that is false by default', () => {
+    expect(component.hasPhoto).toEqual(false);
+  });
+
+  afterAll(() => {
+    TestBed.resetTestEnvironment();
+  })
+});
+
+describe('PhotoPickerIonicComponent:', () => {
+
+  beforeAll(() => {
+    TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+  });
+
+  let component: PhotoPickerIonicComponent;
+  let fixture: ComponentFixture<PhotoPickerIonicComponent>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      declarations: [PhotoPickerIonicComponent]
+    });
+
+    // create component and test fixture
+    fixture = TestBed.createComponent(PhotoPickerIonicComponent);
+
+    // get test component from the fixture
+    component = fixture.componentInstance;
+
+  });
+
+  it('...should be created', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('...should have a pick method', () => {
+    expect(component.pick).toBeTruthy();
+  });
+
+  it('...should have an onPhotoError method', () => {
+    expect(component.onPhotoError).toBeTruthy();
+  });
+
+  it('...should have a hasPhoto variable that is false by default', () => {
+    expect(component.hasPhoto).toEqual(false);
+  });
+
+  afterAll(() => {
+    TestBed.resetTestEnvironment();
+  })
+});

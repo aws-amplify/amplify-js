@@ -29,7 +29,7 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(AuthenticatorIonicComponent,{hide: this.hide}) : new ComponentMount(AuthenticatorComponentCore, {hide: this.hide});
+    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(AuthenticatorIonicComponent, {hide: this.hide}) : new ComponentMount(AuthenticatorComponentCore, {hide: this.hide});
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 
