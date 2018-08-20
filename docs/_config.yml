@@ -333,5 +333,7 @@ js_libraries:
     url: '?platform=react-native'
   - title: Angular
     url: '?platform=angular'
+  - title: Ionic
+    url: '?platform=ionic'
   - title: JavaScript (no library)
     url: '?platform=purejs'

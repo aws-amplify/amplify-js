@@ -141,7 +141,7 @@ export class AppComponent {
 }
 ```
 
-You can access all [AWS Amplify Category APIs](https://aws.github.io/aws-amplify/media/developer_guide) with *AmplifyService*. 
+You can access all [AWS Amplify Category APIs](https://aws-amplify.github.io/amplify-js/media/developer_guide) with *AmplifyService*. 
 
 ### Usage Example: Subscribe to Authentication State Changes
 
@@ -177,7 +177,7 @@ AWS Amplifies provides components that you can use in your Angular view template
 
 Authenticator component creates an out-of-the-box signing/sign-up experience for your Angular app. 
 
-Before using this component, please be sure that you have activated [Authentication category](https://aws.github.io/aws-amplify/media/authentication_guide):
+Before using this component, please be sure that you have activated [Authentication category](https://aws-amplify.github.io/amplify-js/media/authentication_guide):
 ```bash
 $ amplify add auth
 ```

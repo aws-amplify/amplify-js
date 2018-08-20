@@ -39,5 +39,5 @@ declare module 'aws-amplify-react';
  
 ### Setup
 
-Follow setup and configuration steps in our [Get Started Guide](https://aws.github.io/aws-amplify/media/quick_start?platform=react).
+Follow setup and configuration steps in our [Get Started Guide](https://aws-amplify.github.io/amplify-js/media/quick_start?platform=react).
 

@@ -405,7 +405,7 @@ Your entire component should look like the following:
 
 #### Learn More
 
--   Learn how to retrieve specific items and more with the [API module in AWS Amplify](https://aws.github.io/aws-amplify/media/api_guide.html).
+-   Learn how to retrieve specific items and more with the [API module in AWS Amplify](https://aws-amplify.github.io/amplify-js/media/api_guide.html).
 -   Learn more about what happens behind the scenes, see [Set up Lambda and API Gateway](https://alpha-docs-aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html).
 
 ## Add Cloud Database
