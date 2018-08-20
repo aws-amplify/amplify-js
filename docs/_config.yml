@@ -117,11 +117,11 @@ category_list:
     - category: SetupAndInstallation
       title: Setup & Installation
       excerpt: 
-      base_url: 'get_started_docs'
+      base_url: 'quick_start'
       subs:
         - title: Get Started
           excerpt: get started excerpt
-          url: '/media/get_started_docs'
+          url: '/media/quick_start'
           icon: '/images/icons/Misc/Present.svg'
         - title: Amplify CLI
           excerpt: CLI excerpt

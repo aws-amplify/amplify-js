@@ -181,7 +181,7 @@ $ amplify init
 
 When you run `amplify init` command, you are asked for the details of your project. You can accept the defaults by typing `return` for each question. Automatic setup uses your answers to create your project backend copy the required configuration file to `src/aws-exports.js`.
 
-For detailed information on installation steps, visit [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config??platform=react&ref_url=/amplify-js/media/get_started_docs&ref_content={{"Get Started" | uri_escape }}&ref_content_section=automatic-setup).
+For detailed information on installation steps, visit [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config??platform=react&ref_url=/amplify-js/media/quick_start&ref_content={{"Get Started" | uri_escape }}&ref_content_section=automatic-setup).
 {: .callout .callout--action}
 
 ### Manual Setup to work with existing AWS Resources

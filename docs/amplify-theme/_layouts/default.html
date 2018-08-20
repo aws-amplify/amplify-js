@@ -83,7 +83,7 @@
 						{% endif %}
 					</div><!-- /.col -->
 						<div class="col-md-8 section-top docs-container">
-							{% if page.url contains 'get_started_docs' %}
+							{% if page.url contains 'quick_start' %}
 							<div class='js-library-selector-text'>
 								Select frontend library
 							</div>
@@ -159,7 +159,7 @@
 				}
 			{% endfor %}
 		}
-		{% if page.url contains 'get_started_docs' %}
+		{% if page.url contains 'quick_start' %}
 			let tabs = document.getElementsByClassName('tabs');
 			for (let i = 0; i < tabs.length; i++) {
 				tabs[i].style.display = 'none';
