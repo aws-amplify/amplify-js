@@ -26,7 +26,7 @@ The Authenticator is a drop-in UI component that provides:
  - MFA (Multi-Factor Authentication) e.g. SMS, Email, and TOTP (Temporary One Time Password)
  - Confirm MFA Code's and Provide QR codes for TOTP
 
-> React (aws-amplify-react) and React native (aws-amplify-react-native) provide HOCs for Authentication via [withAuthenticator](/media/authentication_guide#enabling-federated-identities). Angular and Ionic provide components and service provider.
+> React (aws-amplify-react) and React native (aws-amplify-react-native) provide HOCs for Authentication via [withAuthenticator]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide#enabling-federated-identities). Angular and Ionic provide components and service provider.
 
 ## Storage 
 
@@ -41,7 +41,7 @@ The Photo Picker is a drop-in Ui component that provides:
  - Image upload
  - Events for file chosen and upload
 
-Learn more for [React](/media/storage_guide#picker) or [Angular](/media/storage_guide#photo-picker)
+Learn more for [React]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide#picker) or [Angular]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide#photo-picker)
 
 ### Album
 
@@ -50,7 +50,7 @@ The Album is a drop-in UI component that provides:
  - Image listing
  - Events for image selection with URLs
 
-Learn more for [React](/media/storage_guide#s3album) or [Angular](/media/storage_guide#s3-album)
+Learn more for [React]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide#s3album) or [Angular]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide#s3-album)
 
 ## Interactions
 
@@ -63,4 +63,4 @@ The Chatbot is a drop-in UI component that provides:
  - Conversaion UI
  - Events for conversation complete
 
-Learn more for [React](/media/interactions_guide#using-with-react), [React Native](/media/interactions_guide#using-with-react-native), [Angular](/media/angular_guide#interactions), or [Ionic](/media/ionic_guide#interactions)
+Learn more for [React]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/interactions_guide#using-with-react), [React Native]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/interactions_guide#using-with-react-native), [Angular]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/angular_guide#interactions), or [Ionic]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/ionic_guide#interactions)
