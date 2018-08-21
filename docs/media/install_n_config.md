@@ -13,7 +13,7 @@ To work with AWS Amplify in JavaScript:
 - You need an AWS account. If you don't have an account yet, [Sign up for the AWS Free Tier](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start).
 - You need [Node.js®](https://nodejs.org/en/download/) installed on your local development machine.
 
-## Step 1 - Install the CLI
+## Step 1. Install the CLI
 
 AWS Amplify CLI enables adding cloud features to your app easily by provisioning the backend resources.
 
@@ -21,7 +21,7 @@ AWS Amplify CLI enables adding cloud features to your app easily by provisioning
 $ npm install -g @aws-amplify/cli
 ```
 
-## Step 2 - Install Client Libraries
+## Step 2. Install Client Libraries
 
 Change to your app project's root directory before starting installations:
 
@@ -73,7 +73,7 @@ npm install aws-amplify-angular
 </div>
 </div>
 
-## Step 3 - Initialize Your Backend
+## Step 3. Initialize Your Backend
 
 The next step is initializing your project's backend with the CLI. This is a required one-time setup that creates your initial backend resources in the cloud and makes your project ready to integrate cloud services.
 
@@ -115,6 +115,45 @@ Please tell us about your project
 If you are starting a new project, please be sure to have a source directory, e.g. '/src' and type this directory name when prompted by the *init* command.
 {: .callout .callout--info}
 
+### Setup Your AWS Credentials
+
+If you are using the Amplify CLI for the first time, you will be prompted for AWS access credentials. Type 'Y' to create a new user:
+
+```terminal
+AWS access credentials can not be detected.
+? Setup new user (Y/n)
+```
+
+The CLI will open a new browser window for the AWS Console, and will start a flow for creating a new console user. Complete the flow, create a new user account, and provide `Access key ID` and `Secret access key` for the new user when prompted by the CLI:
+
+```terminal
+Follow these steps to set up access to your AWS account:
+
+Sign in to your AWS administrator account:
+https://console.aws.amazon.com/
+Press Enter to continue
+
+Specify the AWS Region
+? region:  us-east-1
+Specify the username of the new IAM user:
+? user name:  amplify-console-user
+Complete the user creation using the AWS console
+https://console.aws.amazon.com/iam/home?region=undefined#/users$new?step=final&accessKey&userNames=amplify-xxx&permissionType=policies&policies=arn:aw
+s:iam::aws:policy%2FAdministratorAccess
+Press Enter to continue
+
+Enter the access key of the newly created user:
+? accessKeyId:  **********
+? secretAccessKey:  ********************
+This would update/create the AWS Profile in your local machine
+? Profile Name:  default
+
+Successfully set up the new user.
+```
+
+You can change your existing CLI user credentials anytime by running `$ amplify configure` command.
+{: .callout .callout--info}
+
 ### AWS CloudFormation Configuration
 
 Amplify CLI utilizes AWS CloudFormation to manage your backend resources. When you are using the CLI for the first time in your project, you need to create a new AWS CloudFormation configuration. The CLI makes this process easy by providing you a default configuration option.
@@ -129,7 +168,7 @@ You can also configure the AWS CloudFormation provider on the project level and 
 ? Do you want to setup project level configuration No
 ```
 
-Initiating your project creates necessary AWS resources such as AIM roles and deployment buckets on your AWS backend.  Those resources are used by CLI to orchestrate your backend.
+Initiating your project creates necessary AWS resources such as AIM roles and deployment buckets on your AWS backend. Those resources are used by CLI to orchestrate your backend.
 
 ### Retrieve your Configuration File
 

@@ -2353,6 +2353,9 @@ li {
                 background: none;
                 filter: brightness(0) invert(1);
                 cursor: pointer;
+                &:hover{
+                    text-decoration: underline;
+                }
             }
         }
 
@@ -2360,7 +2363,7 @@ li {
             top: 29px;
             right: 27px;
             font-size: 12px;
-            color:black;
+            color:darkgray;
             position: absolute;
 
             @media (max-width: 828px) {
