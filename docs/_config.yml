@@ -298,8 +298,10 @@ styleguide:
     url: '#colors'
   - title: 'Typography'
     url: '#typography'
-  - title: 'Controls'
-    url: '#controls--inputs'
+  #- title: 'Controls'
+  #  url: '#controls--inputs'
+  #- title: 'Widgets'
+  #  url: '#widgets'
   - title: Components
     url: '#aws-components'
 

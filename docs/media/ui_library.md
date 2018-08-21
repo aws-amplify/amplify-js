@@ -113,7 +113,8 @@ The selection below demonstrates primary typographic treatments derived from  AW
 </div>
 </div>
 
-<div class="ui-section">
+<!-- <div class="ui-section">
+
 ## Controls & Inputs
 
 ### Primary and Secondary Buttons
@@ -158,7 +159,7 @@ A standarized set of fields and selectors offered below. They support error stat
 </span>
 <div class="separator"></div>
 
-<!-- ### Toggles, Tabs, & Pagination
+### Toggles, Tabs, & Pagination
 Toggles allow users to switch views and force sort or single-selection viewing options amongst a set. Similarly tabs and pagination allow users to navigate across related content. Pagination and carousel should be used when users need to traverse a large set of content or through related chapters of content.
 
 <span class="inline-div">
@@ -176,8 +177,8 @@ Toggles allow users to switch views and force sort or single-selection viewing o
 <span class="inline-div">
     <span class="title">Pagination & Carousel</span>
     <span class="inline-img">![Pagination & Carousel]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/pagination_carousel.png)</span>
-</span> -->
-</div>
+</span>
+</div> -->
 
 <!--
 <div class="ui-section">
