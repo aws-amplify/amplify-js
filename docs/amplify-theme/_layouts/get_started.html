@@ -78,16 +78,14 @@
                                     The Amplify Command Line Interface (CLI) is a unified toolchain to create, integrate, and manage your AWS cloud services. Install <a id="node-link" href="https://nodejs.org/en/download/" target="_blank">Node.js® and npm</a> if they are not already on your machine.
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="language-bash highlighter-rouge inline-block section-code-block">
-                                    <div class="highlight">
-                                        <pre class="highlight section-code-block">
+                            <div class="language-bash highlighter-rouge inline-block section-code-block">
+                                <div class="highlight">
+                                    <pre class="highlight section-code-block">
 <code>$ npm install -g @aws-amplify/cli
 
 $ amplify configure</code>
-                                        </pre>
-                                    </div>    
-                                </div>
+                                    </pre>
+                                </div>    
                             </div>
                             <div class="div-number">2</div>
                         </div>
@@ -153,17 +151,17 @@ $ amplify configure</code>
                                             </a>
                                         </div>
                                         <div class="platform-box">
-                                            <a href="quick_start?platform=purejs">
+                                            <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/quick_start?platform=purejs">
                                                 <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/web.png" />
                                                 <p class="platform-title">Build for Web</p>
-                                                <a href="quick_start?platform=purejs"> <button class="btn">Get Started</button> </a>
+                                                <button class="btn">Get Started</button>
                                             </a>
                                         </div>
                                         <div class="platform-box">
-                                            <a href="quick_start?platform=react-native">
+                                            <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/quick_start?platform=react-native">
                                                 <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/ReactNat@1x.png" />
                                                 <p class="platform-title">Build with React Native</p>
-                                                <a href="quick_start?platform=react-native"> <button class="btn">Get Started</button> </a>
+                                                <button class="btn">Get Started</button>
                                             </a>
                                         </div>
                                     </div>

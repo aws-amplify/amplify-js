@@ -428,11 +428,20 @@
 			window.open(api_select.value, '_blank');
 			api_select.value = "default";
 		}
-		console.log(api_select.value);
 	}
 	let api_select = document.getElementById('api-select');
 	if (api_select) api_select.addEventListener("change", apiLink);
-	
+
+	var toggleSubList = function() {
+		var sub_list = document.getElementsByClassName("level-2")[0];
+		sub_list.classList.toggle("hide");
+	}
+
+	/*let current_section = document.getElementsByClassName('orange-section-head')[0];
+	if (current_section) {
+		current_section.addEventListener("click", toggleSubList);
+	}*/
+
 }( jQuery ) );
 
 	/**

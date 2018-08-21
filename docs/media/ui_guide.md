@@ -3,21 +3,64 @@
 
 # UI Components
 
-AWS Amplify connects to AWS Mobile Hub to work with Amazon Web Services. You can use [@aws-amplify/cli](https://github.com/aws/amplify-cli) to create a new AWS Mobile Hub project or enable an existing project to work with AWS Mobile Hub. 
+## Overview 
 
-```bash
-$ npm install -g @aws-amplify/cli
-```
+AWS Amplify provides drop-in UI components with a [style guide](https://tommypraeger.github.io/amplify-js/media/ui_library) for your apps that automatically integrate with your configured cloud services. 
+- [Higher Order Components](https://reactjs.org/docs/higher-order-components.html) (HOC) for both React and React Native applications. 
+ - Angular components
+ - Ionic components
 
-If it is the first time you are using `@aws-amplify/cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
+## Authentication
 
-```bash
-$ amplify configure
-```
+User interface elements that provide drop-in components for user authentication. By defaulthese copmonents will use Amazon Cognito
 
-If prompted for credentials, follow the steps provided by the CLI. For more information, see [Provide IAM credentials to Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html).
+### Authenticator
 
----
+The Authenticator is a drop-in UI component that provides:
 
-For complete documentation please visit [Amplify CLI Reference](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html)
-{: .next-link}
+ - User Sign in
+ - User Sign up
+ - User Sign out
+ - Forgot Password
+ - Federated authentication
+ - MFA (Multi-Factor Authentication) e.g. SMS, Email, and TOTP (Temporary One Time Password)
+ - Confirm MFA Code's and Provide QR codes for TOTP
+
+> React (aws-amplify-react) and React native (aws-amplify-react-native) provide HOCs for Authentication via [withAuthenticator](#). Angular and Ionic provide components and service provider.
+
+## Storage 
+
+User interface elements that provide drop-in components for image uploading and viewing. By default copmonents will use Amazon S3.
+
+### Photo Picker
+
+The Photo Picker is a drop-in Ui component that provides:
+
+ - File chooser
+ - Image UI preview
+ - Image upload
+ - Events for file chosen and upload
+
+[Learn more](#)
+
+### Album
+
+The Album is a drop-in UI component that provides:
+
+ - Image listing
+ - Events for image selection with URLs
+
+[Learn more](#)
+
+## Interactions
+
+User interface elements that provide drop-in components for AI enabled chat bot interactions. By default copmonents will use Amazon Lex.
+
+### Chatbot
+
+The Chatbot is a drop-in UI component that provides:
+
+ - Conversaion UI
+ - Events for conversation complete
+
+[Learn more](#)
