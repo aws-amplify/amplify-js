@@ -46,7 +46,7 @@
                 <div class="row">
                     <div class="section-top section-top-category section-top-quickstart">
                         <div class="container">
-                            <div class="row">
+                            <div class="inline-block">
                                 <div class="header col-sm-7">
                                     Sign up for an AWS Account
                                 </div>
@@ -70,14 +70,16 @@
                 <div class="row">
                     <div class="section-top section-top-category section-top-quickstart">
                         <div class="container">
-                            <div>
+                            <div class="inline-block">
                                 <div class="header col-sm-8">
                                     Install the CLI
                                 </div>
                                 <div class="subheader col-sm-10">
-                                    The Amplify Command Line Interface (CLI) is a unified toolchain to create, integrate, and manage your AWS cloud services. Install <a id="node-link" href="https://nodejs.org/en/download/" target="_blank">Node.js® and npm</a> if they are not already on your machine.
+                                    The Amplify Command Line Interface (CLI) is a unified toolchain to create, integrate, and manage the AWS cloud services for your app. Install <a id="node-link" href="https://nodejs.org/en/download/" target="_blank">Node.js® and npm</a> if they are not already on your machine.
                                 </div>
                             </div>
+                            <p class="subheader above-code-block"><i>Note: Verify that you are running at least Node.js version 8.x or greater and npm version 5.x or greater by running node -v and npm -v in a terminal/console window. Older versions produce errors, but newer versions are fine.</i></p>
+                            <p class="subheader above-code-block">Now, install and configure the Amplify CLI globally.</p>
                             <div class="language-bash highlighter-rouge inline-block section-code-block">
                                 <div class="highlight">
                                     <pre class="highlight section-code-block">
@@ -97,7 +99,7 @@ $ amplify configure</code>
                 <div class="row">
                     <div class="section-top section-top-category section-top-quickstart"  id="bottom-section">
                         <div class="container">
-                            <div class="row">
+                            <div class="inline-block">
                                 <div class="header col-sm-8" id="get-started-header">
                                     Start Building with AWS Amplify
                                 </div>
@@ -140,25 +142,25 @@ $ amplify configure</code>
                                             <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank">
                                                 <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Apple@1x.png" />
                                                 <p class="platform-title">Build with iOS</p>
-                                                <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank"> <button class="btn">Get Started</button> </a>
+                                                <button class="btn">Get Started</button>
                                             </a>
                                         </div>
                                         <div class="platform-box">
                                             <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank">
                                                 <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Droid@1x.png" />
                                                 <p class="platform-title">Build with Android</p>
-                                                <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank"> <button class="btn">Get Started</button> </a>
+                                                <button class="btn">Get Started</button>
                                             </a>
                                         </div>
                                         <div class="platform-box">
-                                            <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/quick_start?platform=purejs">
+                                            <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=purejs">
                                                 <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/web.png" />
                                                 <p class="platform-title">Build for Web</p>
                                                 <button class="btn">Get Started</button>
                                             </a>
                                         </div>
                                         <div class="platform-box">
-                                            <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/quick_start?platform=react-native">
+                                            <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=react-native">
                                                 <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/ReactNat@1x.png" />
                                                 <p class="platform-title">Build with React Native</p>
                                                 <button class="btn">Get Started</button>
