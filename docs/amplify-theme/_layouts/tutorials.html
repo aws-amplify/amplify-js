@@ -74,7 +74,7 @@
 																			{{ item.url_external }} 
 																		{% endif %}
 																		{% if item.url %}
-																			{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }} 
+																			{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }} 
 																		{% endif %}" 
 																	{% if item.url_external %} target="_blank" {% endif %}
 																	class="dev-guide-item">					

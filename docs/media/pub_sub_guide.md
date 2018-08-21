@@ -137,7 +137,7 @@ sub1.unsubscribe();
 
 ### API Reference
 
-For the complete API documentation for PubSub module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/pubsub.html)
+For the complete API documentation for PubSub module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/pubsub.html)
 {: .callout .callout--info}
 
 ## Using Modular Imports

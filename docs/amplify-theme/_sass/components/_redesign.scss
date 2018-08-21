@@ -2398,9 +2398,6 @@ li {
                 background: none;
                 filter: brightness(0) invert(1);
                 cursor: pointer;
-                &:hover{
-                    text-decoration: underline;
-                }
             }
         }
 

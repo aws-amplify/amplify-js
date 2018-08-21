@@ -24,7 +24,7 @@ $ npm start
 
 ## Install and Configure AWS Amplify 
 
-Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config??platform=react-native&ref_url=/amplify-js/media/tutorials/building-react-native-apps&ref_content={{"Tutorial: Building React Native Apps with AWS Amplify" | uri_escape }}&ref_content_section=configure-your-app).
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config??platform=react-native&ref_url=/amplify-js/media/tutorials/building-react-native-apps&ref_content={{"Tutorial: Building React Native Apps with AWS Amplify" | uri_escape }}&ref_content_section=configure-your-app).
 {: .callout .callout--action}
 
 **When you are done with the installation**, you can continue with the next step in the tutorial.

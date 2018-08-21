@@ -8,7 +8,7 @@ AWS Amplify API module provides a simple solution when making HTTP requests to R
 
 API module provides a simple to use REST client when working with REST endpoints. The API module can also be used for creating signed requests against Amazon API Gateway when the Amazon API Gateway API Authorization is set to `AWS_IAM`. 
 
-Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config). 
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config). 
 {: .callout .callout--info}
 
 **When you are done with the installation**, you can follow below steps to enable API category in your app.
@@ -782,7 +782,7 @@ class CreateEvent extends React.Component {
 
 ## API Reference   
 
-For the complete API documentation for API module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/apiclass.html)
+For the complete API documentation for API module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/apiclass.html)
 {: .callout .callout--info}
 
 

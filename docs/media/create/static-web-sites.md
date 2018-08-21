@@ -79,5 +79,5 @@ Analytics events are displayed in Amazon Pinpoint console. In the console, you c
 
 ### Start Building now!
 
-Start building your static Web app today with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start?utm_source=static-web-sites&utm_campaign=build-pages).
+Start building your static Web app today with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start?utm_source=static-web-sites&utm_campaign=build-pages).
 {: .next-link .callout .callout--info}

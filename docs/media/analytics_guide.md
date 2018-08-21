@@ -11,7 +11,7 @@ AWS Pinpoint enables you to send Analytics data includes user sessions and other
 
 ### Installation and Configuration
 
-Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config). 
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config). 
 {: .callout .callout--info}
 
 **When you are done with the installation**, you can follow below steps to enable Analytics category in your app.
@@ -216,7 +216,7 @@ Analytics.updateEndpoint({
 
 #### API Reference
 
-For the complete API documentation for Analytics module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/analyticsclass.html)
+For the complete API documentation for Analytics module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/analyticsclass.html)
 {: .callout .callout--info}
 
 

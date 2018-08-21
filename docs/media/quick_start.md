@@ -27,7 +27,7 @@ If it is the first time you are using `@aws-amplify/cli, you need to configure t
 $ amplify configure
 ```
 
-When prompted for credentials and your development environment, follow the steps provided by the CLI. For more information on individual installation steps, visit [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config?platform=react&ref_url=/amplify-js/media/quick_start&ref_content={{"Get Started" | uri_escape }}&ref_content_section=automatic-setup){: target='_new'}.
+When prompted for credentials and your development environment, follow the steps provided by the CLI. For more information on individual installation steps, visit [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config?platform=react&ref_url=/amplify-js/media/quick_start&ref_content={{"Get Started" | uri_escape }}&ref_content_section=automatic-setup){: target='_new'}.
 {: .callout .callout--action}
 
 ## Step 2. Create a New Project
@@ -236,10 +236,10 @@ In the configuration above, you are required to pass in an Amazon Cognito identi
 
 **Configuration Parameters for existing AWS resources**
 To see the configuration parameters for existing AWS resources, see the *Manual Setup* section in AWS Amplify Developer Guide for each individual service:
-[Amazon Cognito]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide#manual-setup),
-[Amazon S3]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/storage_guide#manual-setup),
-[Amazon Pinpoint]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide#manual-setup),
-[Amazon API Gateway]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/api_guide#manual-setup)
+[Amazon Cognito]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide#manual-setup),
+[Amazon S3]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide#manual-setup),
+[Amazon Pinpoint]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide#manual-setup),
+[Amazon API Gateway]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide#manual-setup)
 {: .callout .callout--info}
 
 
@@ -324,7 +324,7 @@ $ amplify push
 
 To see app analytics data, visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
 
-![Pinpoint Console]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/pinpoint_dashboard.png)
+![Pinpoint Console]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/pinpoint_dashboard.png)
 
 By default, app analytics is enabled for tracking *user session* tracking. To enable additional tracking events, open `/src/App.js`, and add two lines of code.
 
@@ -339,7 +339,7 @@ import { Analytics } from 'aws-amplify';
 
 This will record an **appRender** event every time a user launches your app.
 
-You can easily add custom analytics events to suit your purposes. For more information about Analytics Category, see [AWS Amplify Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide)
+You can easily add custom analytics events to suit your purposes. For more information about Analytics Category, see [AWS Amplify Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide)
 {: .callout .callout--info}
 
 #### Add User Authentication 
@@ -400,7 +400,7 @@ export default withAuthenticator(App);
 
 Reload your application on the physical device or emulator/simulator:
 
-<img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/react_native_with_authenticator.png" width="100%"/>
+<img src="{%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/react_native_with_authenticator.png" width="100%"/>
 
 </div>
 <div id="angular" class="tab-content">
@@ -468,7 +468,7 @@ Within your controller, you can listen for authentication state changes using th
 </div>
 </div>
 
-For more information about Authentication Category, see [AWS Amplify Authentication Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide)
+For more information about Authentication Category, see [AWS Amplify Authentication Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)
 {: .callout .callout--info}
 
 ##### Working with AWS Service Interface Objects
@@ -512,16 +512,16 @@ Full API Documentation for service interface objects is available [here](https:/
 </ul>
 <div id="purejs" class="tab-content"></div>
 <div id="react" class="tab-content current">
-Learn more about using React with AWS Amplify in [AWS Amplify React Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/react_guide).
+Learn more about using React with AWS Amplify in [AWS Amplify React Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/react_guide).
 </div>
 <div id="react-native" class="tab-content">
-Learn more about using React Native with AWS Amplify in [AWS Amplify React Native Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/react_native_guide).
+Learn more about using React Native with AWS Amplify in [AWS Amplify React Native Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/react_native_guide).
 </div>
 <div id="angular" class="tab-content">
-Learn more about using Angular with AWS Amplify in [AWS Amplify Angular Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/angular_guide).
+Learn more about using Angular with AWS Amplify in [AWS Amplify Angular Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/angular_guide).
 </div>
 <div id="ionic" class="tab-content">
-Learn more about using Ionic with AWS Amplify in [AWS Amplify Ionic Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/ionic_guide).
+Learn more about using Ionic with AWS Amplify in [AWS Amplify Ionic Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/ionic_guide).
 </div>
 </div>
 

@@ -73,7 +73,7 @@ export default withAuthenticator(App);
 </div>
 </div>
 
-For a complete guide for starting your app with AWS Amplify, please see our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start).
+For a complete guide for starting your app with AWS Amplify, please see our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start).
 {: .next-link}
 
 ### Store Files on The Cloud

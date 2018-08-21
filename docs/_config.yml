@@ -58,7 +58,7 @@ future: true
 
 # Amplify theme settings
 amplify:
-    baseurl: /amplify-js # Since the site is deployed under https://aws-amplify.github.io/amplify-js
+    baseurl: # Since the site is deployed under https://aws-amplify.github.io/amplify-js
     docs_baseurl: /amplify-js
     color_theme:  # Available themes: blue (default), green, purple, red and yellow
     header:
