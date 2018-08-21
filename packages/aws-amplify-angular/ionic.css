@@ -72,10 +72,6 @@
   --ion-color-dark-tint: #383838;
 }
 
-:host {
-  --padding-start: 0px;
-}
-
 .amplify-input-label-ionic {
   height: 18px;
   width: 280.32px;
@@ -95,11 +91,6 @@
 
 .amplify-authenticator-ionic {
   box-shadow: none !important;
-}
-
-.amplify-form-button-ionic {
-  height: 50px;
-  width: 289px;
 }
 
 .amplify-form-header-ionic {
