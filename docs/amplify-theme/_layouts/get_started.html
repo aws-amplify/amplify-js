@@ -151,17 +151,17 @@ $ amplify configure</code>
                                             </a>
                                         </div>
                                         <div class="platform-box">
-                                            <a href="quick_start?platform=purejs">
+                                            <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/quick_start?platform=purejs">
                                                 <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/web.png" />
                                                 <p class="platform-title">Build for Web</p>
-                                                <a href="quick_start?platform=purejs"> <button class="btn">Get Started</button> </a>
+                                                <button class="btn">Get Started</button>
                                             </a>
                                         </div>
                                         <div class="platform-box">
-                                            <a href="quick_start?platform=react-native">
+                                            <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/quick_start?platform=react-native">
                                                 <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/ReactNat@1x.png" />
                                                 <p class="platform-title">Build with React Native</p>
-                                                <a href="quick_start?platform=react-native"> <button class="btn">Get Started</button> </a>
+                                                <button class="btn">Get Started</button>
                                             </a>
                                         </div>
                                     </div>

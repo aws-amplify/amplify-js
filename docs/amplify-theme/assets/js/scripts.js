@@ -428,7 +428,6 @@
 			window.open(api_select.value, '_blank');
 			api_select.value = "default";
 		}
-		console.log(api_select.value);
 	}
 	let api_select = document.getElementById('api-select');
 	if (api_select) api_select.addEventListener("change", apiLink);
