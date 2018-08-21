@@ -108,7 +108,7 @@ export default class SignIn extends AuthPiece {
     showComponent(theme) {
         const { authState, hide = [], federated, onStateChange } = this.props;
         if (hide && hide.includes(SignIn)) { return null; }
-        const hideSingUp = hide.some(component => component.name === 'SignUp')
+        const hideSignUp = hide.some(component => component.name === 'SignUp')
         const hideForgotPassword = hide.some(component => component.name === 'ForgotPassword')
         return (
             <FormSection theme={theme}>
@@ -150,7 +150,7 @@ export default class SignIn extends AuthPiece {
                     </div>
                     <div style={Object.assign({textAlign: 'right'}, theme.col6)}>
                         {
-                            !hideSingUp && <Link theme={theme} onClick={() => this.changeState('signUp')}>
+                            !hideSignUp && <Link theme={theme} onClick={() => this.changeState('signUp')}>
                                 {I18n.get('Sign Up')}
                             </Link>
                         }
