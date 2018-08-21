@@ -2,20 +2,25 @@
 ---
 # API
 
-AWS Amplify API module provides a simple solution when making HTTP requests to REST and GraphQL endpoints. It also provides an automatic, lightweight signing process which complies with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
+AWS Amplify API module provides a simple solution when making HTTP requests to REST and GraphQL endpoints. Also, with Amplify CLI, you can quickly create and test your API backend, and integrate your cloud API in your code.
+
+The API module provides an automatic, lightweight signing process which complies with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).
+{:  .callout .callout--info}
 
 ## Using REST Endpoints
 
-API module provides a simple to use REST client when working with REST endpoints. The API module can also be used for creating signed requests against Amazon API Gateway when the Amazon API Gateway API Authorization is set to `AWS_IAM`. 
+API module provides a simple to use REST client when working with REST endpoints. 
+
+The API module can be used for creating signed requests against Amazon API Gateway when the Amazon API Gateway API Authorization is set to `AWS_IAM`. 
 
 Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config). 
-{: .callout .callout--info}
+{: .callout .callout--action}
 
-**When you are done with the installation**, you can follow below steps to enable API category in your app.
+**When you are done with the installation**, you can follow below steps to enable the API category in your app.
 
 ### Automated Setup
 
-AWS Amplify CLI helps you to create fully functional REST backend which triggers a cloud function and accesses a cloud database. Based on your selected configuration, your REST backend is automatically provisioned using Amazon API Gateway, AWS Lambda, and Amazon DynamoDB.
+AWS Amplify CLI enables you to create a fully functional REST backend, which can trigger a cloud function and access a cloud database. Based on your configuration, your REST backend is automatically provisioned on AWS using multiple services; Amazon API Gateway, AWS Lambda, and Amazon DynamoDB.
 
 ##### Create Your Backend with the CLI
 
@@ -26,27 +31,28 @@ $ amplify add api
 ```
 
 and select `REST` as the service type:
+
 ```bash
 ? Please select from one of the below mentioned services
   GraphQL
 ❯ REST
 ```
 
-The CLI will prompt you several options to create your resources. With provided options, you can create:
-- REST endpoints that triggers a Lambda function
-- REST endpoints to enable CRUD operations on an Amazon DynamoDB table
+The CLI will prompt several options to create your resources. With provided options, you can create a:
+- REST endpoint that triggers a Lambda function
+- REST endpoint which enables CRUD operations on an Amazon DynamoDB table
 
-You can use existing Lambda functions and DynamoDB tables, or create new ones simply by following the CLI prompts. When you create your resources, update your backend with `push` command:
+During your setup, you can use your existing Lambda functions and DynamoDB tables, or create new ones simply by following the CLI prompts. When you create your resources, update your backend with `push` command:
 
 ```bash
-$ amplify push #Update your backend 
+$ amplify push #Updates your backend 
 ```
 
-After the backend update, your updated configuration file `aws-exports.js` file will include an API configuration. In case you have selected to create a Serverless Express Lambda function, the boilerplate code for your function will also be created under `amplify/backend/function`.
+After the push, your updated `aws-exports.js`  configuration file will include an API configuration. In case you have selected to create a Serverless Express Lambda function, the boilerplate code for your function will also be replaced under `amplify/backend/function` folder.
 
 ##### Configure Your App
 
-In your project's entry point, i.e. App.js:
+To configure your app to work with your API, in your project's entry point, i.e. App.js, include the following code:
 
 ```js
 import Amplify, { API } from 'aws-amplify';
@@ -57,11 +63,11 @@ Amplify.configure(aws_exports);
 
 ### Manual Setup
 
-When you manually configure API category to work with Amazon API gateway, you are required to pass in an *Amazon Cognito Identity Pool ID*, allowing AWS Amplify to retrieve base credentials for a user even in an unauthenticated state. The configuration also requires a list of your APIs, comprised of a friendly name for the API and the endpoint URL.
+When you manually configure API category to work with Amazon API gateway, you are required to pass in an *Amazon Cognito Identity Pool ID*, allowing AWS Amplify to retrieve base credentials for a user even in an unauthenticated state. The configuration parameters should also include the API endpoint URL and a friendly name for the API.
 
 Amazon Cognito Identity Pool is required to have access to the API using *Amazon IAM*. You can configure it manually, or let Amplify CLI do it for you with [Automated Setup](#automated-setup). For manual configuration, please see [Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started.html) developer guide for more details.
 
-In the manual configuration, you need to provide your AWS Resource credentials to `Amplify.configure()`:
+In the manual configuration, you need to provide your AWS Resource credentials to `Amplify.configure()` method:
 
 ```js
 import Amplify, { API } from 'aws-amplify';
@@ -101,9 +107,9 @@ Amplify.configure({
 
 ### AWS Regional Endpoints
 
-When working with Amazon API Gateway, you can utilize regional endpoints by passing in the `service` and `region` information to the configuration. For a list of available service endpoints see [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html). 
+When working with Amazon API Gateway, you can utilize regional endpoints by passing in the *service* and *region* information to the configuration. For a list of available service endpoints see [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html). 
 
-As an example, the following API configuration defines a Lambda invocation in `us-east-1` region with Lambda endpoint `https://lambda.us-east-1.amazonaws.com`.  
+As an example, the following API configuration defines a Lambda invocation in `us-east-1` region with the Lambda endpoint `https://lambda.us-east-1.amazonaws.com`.  
 
 ```js
 API: {
@@ -123,18 +129,18 @@ For more information related to invoking AWS Lambda functions, see [AWS Lambda D
 For more information about working with AWS Lambda without Amazon API Gateway, see [this post](https://forum.serverless.com/t/directly-proxying-lambda-via-cloudfront-without-api-gateway/3808).
 {: .callout .callout--info}
 
- **NOTE** To call regional service endpoints, your Amazon Cognito role needs to be configured with appropriate access for the related service. See [AWS Cognito Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) for more details.
+ **Configuring Amazon Cognito Regional Endpoints** To call regional service endpoints, your Amazon Cognito role needs to be configured with appropriate access for the related service. See [AWS Cognito Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) for more details.
  {: .callout .callout--warning}
 
 ### Using the API Client
 
-To invoke an API, you need the name for the related endpoint. If you manually configure the API, you already have a name for the endpoint. If you use Automated Setup or configure your API on AWS Mobile Hub, you can check the API name in the Mobile Hub console by clicking **Cloud Logic** tile. 
+To invoke a REST API, you need the name for the related endpoint. If you manually configure the API, you already have a name for the endpoint. If you use Automated Setup,  you can find the API name in your local configuration file. 
 
-The following code sample assumes you have used Automated Setup.
+The following code sample assumes that you have used Automated Setup.
 
 To invoke an endpoint, you need to set `apiName`, `path` and `headers` parameters, and each method returns a Promise.
 
-Under the hood, aws-amplify use [Axios](https://github.com/axios/axios), so the API status code response > 299 are thrown as an exception.
+Under the hood, AWS Amplify use [Axios](https://github.com/axios/axios), so the API status code response > 299 are thrown as an exception.
 If you need to handle errors managed by your API, work with the `error.response` object.
 
 #### **GET**
@@ -186,7 +192,7 @@ let items = await API.get('myCloudApi', '/items', {
 
 **Accessing Query Parameters in Cloud API**
 
-If you are using a Cloud API which is generated with Amplify CLI (or AWS Mobile Hub), your backend is created with Lambda Proxy Integration, and you can access your query parameters within your Lambda function via the *event* object:
+If you are using a Cloud API which is generated with Amplify CLI, your backend is created with Lambda Proxy Integration, and you can access your query parameters within your Lambda function via the *event* object:
 
 ```js
 exports.handler = function(event, context, callback) {
@@ -256,7 +262,7 @@ postData();
 
 #### **PUT**
 
-When used together with [Cloud API](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/web-access-apis.html), PUT method can be used to create or update records. It updates the record if a matching record is found, otherwise a new record will be created.
+When used together with [Cloud API](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/web-access-apis.html), PUT method can be used to create or update records. It updates the record if a matching record is found. Otherwise, a new record is created.
 
 ```js
 let apiName = 'MyApiName'; // replace this with your api name.
@@ -384,14 +390,14 @@ Amplify.configure({
 
 ### Unauthenticated Requests
 
-You can use API category to access API Gateway endpoints that doesn't require authentication. In this case, you need to allow unauthenticated identities in your Amazon Cognito Identity Pool settings. For more information, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html#enable-or-disable-unauthenticated-identities).
+You can use the API category to access API Gateway endpoints that don't require authentication. In this case, you need to allow unauthenticated identities in your Amazon Cognito Identity Pool settings. For more information, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html#enable-or-disable-unauthenticated-identities).
  
 ## Using GraphQL Endpoints
 
 AWS Amplify API Module supports AWS AppSync or any other GraphQL backend.
 
 To learn more about GraphQL, please visit [GraphQL website](http://graphql.org/learn/).
-{: .callout .callout-action}
+{: .callout .callout--action}
 
 ### Using AWS AppSync
 
@@ -408,7 +414,7 @@ After creating your AWS AppSync API, following command enables AppSync GraphQL A
 $ amplify add api
 ```
 
-Select *GraphQL* when you are prompted for service type:
+Select *GraphQL* when prompted for service type:
 
 ```terminal
 ? Please select from one of the below mentioned services (Use arrow keys)
@@ -416,7 +422,7 @@ Select *GraphQL* when you are prompted for service type:
   REST
 ```
 
-Name your GraphQL endpoint and select authorization type for this endpoint:
+Name your GraphQL endpoint and select authorization type:
 
 ```terminal
 ? Please select from one of the below mentioned services GraphQL
@@ -437,10 +443,11 @@ $ amplify push
 
 ##### Updating Your GraphQL Schema
 
-When you add a GraphQL API with the CLI, the schema definition for your backend data structure is saved in *amplify/backend/api/YOUR-API-NAME/schema.graphql* definition file. 
-Once your API is deployed, updating the schema is very easy with the CLI. You can edit the schema file and run *push* command to update your GraphQL backend.
+When you create a GraphQL backend with the CLI, the schema definition for your backend data structure is saved in *amplify/backend/api/YOUR-API-NAME/schema.graphql* file. 
 
-A sample GraphQL Schema will look like this:
+Once your API is deployed, updating the schema is very easy with the CLI. You can edit the schema file and run *amplify push* command to update your GraphQL backend.
+
+For example, a sample GraphQL schema will look like this:
 
 ```graphql
 type Todo @model {
@@ -450,7 +457,7 @@ type Todo @model {
 }
 ```
 
-Add a new field *Model* to your schema:
+Add a new  *Model* type to your schema:
 
 ```graphql
 type Todo @model {
@@ -461,13 +468,13 @@ type Todo @model {
 }
 ```
 
-Update your GraphQL backend:
+Save your schema file and update your GraphQL backend:
 
 ```bash
 $ amplify push
 ```
 
-When you run the *push* command, you will notice that your change in the schema file is automatically detected and your backend will be updated respectively. 
+When you run the *push* command, you will notice that your schema change is automatically detected, and your backend will be updated respectively. 
 
 ```terminal
 | Category | Resource name   | Operation | Provider plugin   |
@@ -476,15 +483,15 @@ When you run the *push* command, you will notice that your change in the schema 
 | Auth     | cognito6255949a | No Change | awscloudformation |
 ```
 
-You can now see the changes on your backend by visiting [AWS AppSync Console](https://aws.amazon.com/appsync/).
+When the update is complete, you can see the changes on your backend by visiting [AWS AppSync Console](https://aws.amazon.com/appsync/).
 
-##### Using GraphQL Transformer Directives
+##### Using GraphQL Transformers
 
-As you can notice in the sample schema file above, the definition has a `@model` directive. This tells Amplify CLI that the related tyeps should be stored in Amazon DynamoDB. When you create or updated your backend with *push* command, the CLI will automatically create the necessary data sources for you, behind the scenes.
+As you can notice in the sample schema file above, the schema has a `@model` directive. This tells Amplify CLI that the related types should be stored in an Amazon DynamoDB table. When you create or update your backend with *push* command, the CLI will automatically create the necessary data sources for you, behind the scenes.
 
-The resource creation is based on AWS CloudFormation templates that your can find under *amplify/backend/api/YOUR-API-NAME/cloudformation-template.json* 
+The resource creation is based on AWS CloudFormation templates that you can find under *amplify/backend/api/YOUR-API-NAME/cloudformation-template.json* 
 
-The following directives are available to be used with the GraphQL Transformer when defining your schema:  
+The following transformers are available to be used with AWS AppSync when defining your schema:  
 
 | Directive | Description |
 | --- | --- |
@@ -493,9 +500,29 @@ The following directives are available to be used with the GraphQL Transformer w
 | @connection | Used for specifying relationships between @model object types. |
 | @searchable | Used for streaming the data of an @model object type to Amazon ElasticSearch Service. |
 
+##### Type Generation using GraphQL Schemas
+
+When working with GraphQL data, it is useful to import your types from your schema into your code for type safety. You can easily do this with Amplify CLI's automated code generation feature. The CLI automatically downloads GraphQL Introspection Schemas from your defined GraphQL endpoint and generates TypeScript or Flow classes for you.
+
+To enable code generation, run:
+
+```bash
+$ amplify add codegen
+```
+
+When prompted, provide a folder location for your GraphQL query files, and a target file for the generated output.
+
+To generate your types, run:
+
+```bash
+$ amplify codegen generate
+```
+
+A TypeScript or Flow type definition file will be generated in your target folder.  
+
 ##### Using the Configuration File in Your Code
 
-Import your auto generated `aws-exports.js` file to configure your app to work with your AWS AppSync GraphQL backend:
+Import your auto-generated `aws-exports.js` file to configure your app to work with your AWS AppSync GraphQL backend:
 
 ```js
 import aws_config from "./aws-exports";
@@ -857,12 +884,12 @@ If you have used *amplify* CLI or *AWS Mobile Hub* to create your API, you can e
 4. Then click the *Actions* dropdown menu and select **Enable CORS**
 5. Add your custom header (e.g. my-custom-header) on the text field Access-Control-Allow-Headers, separated by commas, like: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,my-custom-header'.
 6. Click on 'Enable CORS and replace existing CORS headers' and confirm.
-7. Finally, similar to step 3, click the Actions dropdown menu and then select **Deploy API**. Select **Development** on deployment stage and then **Deploy**. (Deployment could take a couple of minutes).
+7. Finally, similar to step 3, click the Actions drop-down menu and then select **Deploy API**. Select **Development** on deployment stage and then **Deploy**. (Deployment could take a couple of minutes).
 
 
 ## Using Modular Imports
 
-If you only need to use Api, you can do: `npm install @aws-amplify/api` which will only install the Api module for you.
+If you only need to use API, you can run: `npm install @aws-amplify/api` which will only install the API module.
 Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.
 Note: if you're using Graphql, please also install `@aws-amplify/pubsub`
 
