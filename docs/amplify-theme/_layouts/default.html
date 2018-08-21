@@ -179,7 +179,8 @@
 			if ( $.urlParam( 'platform' )) {
 				var platform = $.urlParam('platform');
 				if (platform) {
-					document.getElementById("js-library-select").value = "?platform="+platform;
+					let selector = document.getElementById("js-library-select");
+					selector.value = "?platform="+platform;
 					let icon = document.getElementById("js-library-icon");
 					icons = {"react": "React-Small-White@1x.png", "react-native": "React-Small-White@1x.png", "angular": "Angular-Med-White@1x.png", "purejs": "JS-Small-White@1x.png", "ionic": "Ionic-Color@1x.png"};
 					icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
@@ -187,10 +188,28 @@
 			}
 			else {
 				var platform = "react";
-				document.getElementById("js-library-select").value = "?platform="+platform;
+				let selector = document.getElementById("js-library-select");
+				selector.value = "?platform="+platform;
 				let icon = document.getElementById("js-library-icon");
 				icons = {"react": "React-Small-White@1x.png", "react-native": "React-Small-White@1x.png", "angular": "Angular-Med-White@1x.png", "purejs": "JS-Small-White@1x.png", "ionic": "Ionic-Color@1x.png"};
 				icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
+			}
+			let selectAddHover = function() {
+				let select_box = document.getElementsByClassName("js-library-selector")[0];
+				if (select_box) {
+					select_box.classList.add("js-library-selector-hover");
+				}
+			}
+			let selectRemoveHover = function() {
+				let select_box = document.getElementsByClassName("js-library-selector")[0];
+				if (select_box) {
+					select_box.classList.remove("js-library-selector-hover");
+				}
+			}
+			let selector = document.getElementById("js-library-select");
+			if (selector) {
+				selector.addEventListener("mouseover", selectAddHover);
+				selector.addEventListener("mouseout", selectRemoveHover);
 			}
 		{% endif %}
 	</script>

@@ -2401,15 +2401,11 @@ li {
             }
         }
 
-        .js-library-selector:hover {
+        .js-library-selector-hover {
             background-color: #FFA41D;
             cursor: pointer;
         }
         
-        .js-library-selector:focus {
-            background-color: #E88B01;
-            cursor: pointer;
-        }
 
         .js-library-selector-text {
             top: 29px;
