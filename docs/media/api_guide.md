@@ -4,7 +4,7 @@
 
 AWS Amplify API module provides a simple solution when making HTTP requests to REST and GraphQL endpoints. It also provides an automatic, lightweight signing process which complies with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html). 
 
-## Working with REST
+## Using REST Endpoints
 
 API module provides a simple to use REST client when working with REST endpoints. The API module can also be used for creating signed requests against Amazon API Gateway when the Amazon API Gateway API Authorization is set to `AWS_IAM`. 
 
@@ -386,84 +386,116 @@ Amplify.configure({
 
 You can use API category to access API Gateway endpoints that doesn't require authentication. In this case, you need to allow unauthenticated identities in your Amazon Cognito Identity Pool settings. For more information, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html#enable-or-disable-unauthenticated-identities).
  
-## Working with GraphQL
+## Using GraphQL Endpoints
 
-AWS Amplify API Module supports GraphQL endpoints via an easy-to-use GraphQL client.
+AWS Amplify API Module supports AWS AppSync or any other GraphQL backend.
 
 To learn more about GraphQL, please visit [GraphQL website](http://graphql.org/learn/).
-{: .callout .callout-info}
+{: .callout .callout-action}
 
-### Configuration for GraphQL Server
+### Using AWS AppSync
 
-To access a GraphQL API with your app, you need to configure endpoint URL in your app's configuration. Add the following line to your setup:
+AWS AppSync is a cloud-based fully-managed GraphQL service that is integrated with AWS Amplify. You can create your AWS AppSync GraphQL API backend with the Amplify CLI and connect to your backend using AWS Amplify API category. 
 
-```js
-
-import Amplify, { API } from "aws-amplify";
-import aws_config from "./aws-exports";
- 
-// Considering you have an existing aws-exports.js configuration file 
-Amplify.configure(aws_config);
-
-// Configure a custom GraphQL endpoint
-Amplify.configure({
-  API: {
-    graphql_endpoint: 'https:/www.example.com/my-graphql-endpoint'
-  }
-});
-
-```
-
-#### Set Custom Request Headers for Graphql 
-
-When working with a GraphQL endpoint, you need to set request headers for authorization purposes. This is done by passing a `graphql_headers` function into the configuration:
-
-```js
-Amplify.configure({
-  API: {
-    graphql_headers: async () => ({
-      'My-Custom-Header': 'my value'
-    })
-  }
-});
-```
-
-Example region value: "us-east-1".
-
-### Configuration for AWS AppSync
-
-AWS AppSync is a cloud-based fully-managed GraphQL service that is integrated with AWS Amplify API category and command line tools with Amplify CLI.
-
-To create an AWS AppSync API, please visit [AWS AppSync Console](https://aws.amazon.com/appsync/) or visit [AWS AppSync Developer Guide](https://docs.aws.amazon.com/appsync/latest/devguide/welcome.html).
-{: .callout .callout--info}
+Learn more about [AWS AppSync](https://aws.amazon.com/appsync/) by visiting [AWS AppSync Developer Guide](https://docs.aws.amazon.com/appsync/latest/devguide/welcome.html){: .target='new'}.
+{: .callout .callout--action}
 
 #### Automated Configuration with CLI
 
 After creating your AWS AppSync API, following command enables AppSync GraphQL API in your  project:
 
 ```bash
-$ amplify appsync enable
+$ amplify add api
 ```
 
-AWS AppSync supports multiple authorization types, which are AWS Identity and Access Management (IAM), Amazon Cognito User Pool and API key. To configure auth type, use the following command:
+Select *GraphQL* when you are prompted for service type:
 
-```bash
-$ amplify appsync configure
+```terminal
+? Please select from one of the below mentioned services (Use arrow keys)
+❯ GraphQL
+  REST
 ```
 
-```console
-? Please specify the auth type:  (Use arrow keys)
-❯ AWS_IAM 
-  API_KEY 
-  AMAZON_COGNITO_USER_POOLS 
+Name your GraphQL endpoint and select authorization type for this endpoint:
+
+```terminal
+? Please select from one of the below mentioned services GraphQL
+? Provide API name: myNotesApi
+? Choose an authorization type for the API (Use arrow keys)
+❯ API key
+  Amazon Cognito User Pool
 ```
 
-Enabling AppSync creates a local folder which you can find AppSync configuration files under `/amplifyjs/backend/appsync` folder that is automatically synced with AppSync when you run `amplify push` command.
-
-Note: AWS AppSync API keys expire seven days after creation, and using API_KEY authentication is only suggested for development.
+AWS AppSync API keys expire seven days after creation, and using API KEY authentication is only suggested for development. To change AWS AppSync authorization type after the initial configuration, use the `$ amplify appsync configure` command.
 {: .callout .callout--info}
 
-Import your auto updated `aws-exports.js` file to configure your app:
+When you update your backend with *push* command, you can go to [AWS AppSync Console](https://aws.amazon.com/appsync/) and see that a new API is added under *APIs* menu item:
+
+```bash
+$ amplify push
+```
+
+##### Updating Your GraphQL Schema
+
+When you add a GraphQL API with the CLI, the schema definition for your backend data structure is saved in *amplify/backend/api/YOUR-API-NAME/schema.graphql* definition file. 
+Once your API is deployed, updating the schema is very easy with the CLI. You can edit the schema file and run *push* command to update your GraphQL backend.
+
+A sample GraphQL Schema will look like this:
+
+```graphql
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+}
+```
+
+Add a new field *Model* to your schema:
+
+```graphql
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+  model: String
+}
+```
+
+Update your GraphQL backend:
+
+```bash
+$ amplify push
+```
+
+When you run the *push* command, you will notice that your change in the schema file is automatically detected and your backend will be updated respectively. 
+
+```terminal
+| Category | Resource name   | Operation | Provider plugin   |
+| -------- | --------------- | --------- | ----------------- |
+| Api      | myNotesApi      | Update    | awscloudformation |
+| Auth     | cognito6255949a | No Change | awscloudformation |
+```
+
+You can now see the changes on your backend by visiting [AWS AppSync Console](https://aws.amazon.com/appsync/).
+
+##### Using GraphQL Transformer Directives
+
+As you can notice in the sample schema file above, the definition has a `@model` directive. This tells Amplify CLI that the related tyeps should be stored in Amazon DynamoDB. When you create or updated your backend with *push* command, the CLI will automatically create the necessary data sources for you, behind the scenes.
+
+The resource creation is based on AWS CloudFormation templates that your can find under *amplify/backend/api/YOUR-API-NAME/cloudformation-template.json* 
+
+The following directives are available to be used with the GraphQL Transformer when defining your schema:  
+
+| Directive | Description |
+| --- | --- |
+| @model | Used for storing types in Amazon DynamoDB. |
+| @auth | Used to define different authorization strategies. | 
+| @connection | Used for specifying relationships between @model object types. |
+| @searchable | Used for streaming the data of an @model object type to Amazon ElasticSearch Service. |
+
+##### Using the Configuration File in Your Code
+
+Import your auto generated `aws-exports.js` file to configure your app to work with your AWS AppSync GraphQL backend:
 
 ```js
 import aws_config from "./aws-exports";
@@ -472,7 +504,7 @@ Amplify.configure(aws_config);
 
 #### Manual Configuration
 
-As an alternative to automatic configuration, you can manually enter configuration parameters in your app. Authentication type options are `API_KEY`, `AWS_IAM`, `AMAZON_COGNITO_USER_POOLS` and `OPENID_CONNECT`.
+As an alternative to automatic configuration, you can manually enter AWS AppSync configuration parameters in your app. Authentication type options are `API_KEY`, `AWS_IAM`, `AMAZON_COGNITO_USER_POOLS` and `OPENID_CONNECT`.
 
 ##### Using API_KEY
 
@@ -488,6 +520,7 @@ let myAppConfig = {
 
 Amplify.configure(myAppConfig);
 ```
+
 ##### Using AWS_IAM
 
 ```js
@@ -529,7 +562,56 @@ let myAppConfig = {
 
 Amplify.configure(myAppConfig);
 ```
-### Using GraphQL Client
+
+### Using a GraphQL Server
+
+To access a GraphQL API with your app, you need to configure the endpoint URL in your app's configuration. Add the following line to your setup:
+
+```js
+
+import Amplify, { API } from "aws-amplify";
+import aws_config from "./aws-exports";
+ 
+// Considering you have an existing aws-exports.js configuration file 
+Amplify.configure(aws_config);
+
+// Configure a custom GraphQL endpoint
+Amplify.configure({
+  API: {
+    graphql_endpoint: 'https:/www.example.com/my-graphql-endpoint'
+  }
+});
+
+```
+
+#### Set Custom Request Headers for Graphql 
+
+When working with a GraphQL endpoint, you may need to set request headers for authorization purposes. This is done by passing a `graphql_headers` function into the configuration:
+
+```js
+Amplify.configure({
+  API: {
+    graphql_headers: async () => ({
+        'My-Custom-Header': 'my value'
+    })
+  }
+});
+```
+
+#### Signing Request with IAM
+
+AWS Amplify provides the ability to sign requests automatically with AWS Identity Access Management (IAM) for GraphQL requests that are processed through AWS API Gateway. Add *graphql_endpoint_iam_region* parameter to your GraphQL configuration statement to enable signing: 
+
+```js
+Amplify.configure({
+  API: {
+    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
+    graphql_endpoint_iam_region: 'my_graphql_apigateway_region'
+  }
+});
+```
+
+### Working with the GraphQL Client
 
 AWS Amplify API category provides a GraphQL client for working with queries, mutations, and subscriptions.
 
@@ -681,21 +763,6 @@ Amplify.configure({
 });
 ```
 
-### Signing Request with IAM
-
-Amplify provides the ability to sign requests automatically with AWS Identity Access Management (IAM) for GraphQL requests that are processed through AWS API Gateway.
-
-Add *graphql_endpoint_iam_region* parameter to your GraphQL configuration statement to enable signing: 
-
-```js
-Amplify.configure({
-  API: {
-    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
-    graphql_endpoint_iam_region: 'my_graphql_apigateway_region'
-  }
-});
-```
-
 ### React Components
 
 API category provides React components for working with GraphQL data. 
@@ -777,18 +844,9 @@ class CreateEvent extends React.Component {
 </Connect>
 ```
 
---- 
-
-
-## API Reference   
-
-For the complete API documentation for API module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/apiclass.html)
-{: .callout .callout--info}
-
-
 ## Customization
 
-### Using Custom HTTP Request Headers
+### Customizing HTTP Request Headers
 
 To use custom headers on your HTTP request, you need to add these to Amazon API Gateway first. For more info about configuring headers, please visit [Amazon API Gateway Developer Guide](http://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html)
 
@@ -809,9 +867,15 @@ Note: if you're using Cognito Federated Identity Pool to get AWS credentials, pl
 Note: if you're using Graphql, please also install `@aws-amplify/pubsub`
 
 Then in your code, you can import the Api module by:
+
 ```js
 import API from '@aws-amplify/api';
 
 API.configure();
 
 ```
+
+## API Reference   
+
+For the complete API documentation for API module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/apiclass.html)
+{: .callout .callout--info}
