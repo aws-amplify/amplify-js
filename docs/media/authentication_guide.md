@@ -17,7 +17,7 @@ When working together, Cognito User Pools acts as a source of user identities (i
 
 ## Installation and Configuration
 
-Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config). 
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config). 
 {: .callout .callout--info}
 
 **When you are done with the installation**, you can follow below steps to enable Authentication category in your app.
@@ -63,7 +63,7 @@ Amplify.configure(aws_exports);
 
 Currently, once you create a Cognito User Pool, you won't be able to change the standard attributes at a later time. If you need to modify User Pool attributes, you can remove the user pool with `amplify auth remove` and create a new User Pool with the CLI.
 
-![Cognito Settings]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/cognito_user_pool_standart_attributes.png){: style="max-height:400px;"}
+![Cognito Settings]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/cognito_user_pool_standart_attributes.png){: style="max-height:400px;"}
 
 ### Manual Setup
 
@@ -133,7 +133,7 @@ global.fetch = require('node-fetch');
 
 ### Common Authentication Use Cases
 
-AWS Amplify Authentication module exposes set of APIs to be used in any JavaScript framework. Please check [AWS Amplify API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/authclass.html) for full API list.
+AWS Amplify Authentication module exposes set of APIs to be used in any JavaScript framework. Please check [AWS Amplify API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/authclass.html) for full API list.
 
 Here, we provide examples for most common authentication use cases:
 
@@ -473,7 +473,7 @@ Then, in the component's constructor,  implement `showComponent(theme) {}` in li
 ### Federated Identities (Social Sign-in)
 
 **Availability Note**
-Currently, our federated identity components only support Google, Facebook and Amazon identities. Please see our[ Setup Guide for Federated Identities]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/federated_identity_setup).
+Currently, our federated identity components only support Google, Facebook and Amazon identities. Please see our[ Setup Guide for Federated Identities]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/federated_identity_setup).
 {: .callout .callout--info}
 
 To enable social sign-in in your app with Federated Identities, add `Google client_id`, `Facebook app_id` and/or `Amazon client_id` properties to *Authenticator* component:
@@ -682,7 +682,7 @@ export default withOAuth(MyApp);
 
 #### Handling Authentication Events
 
-When using the hosted UI, you can handle authentication events by creating event listeners with the [Hub module]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/hub_guide#listening-authentication-events).
+When using the hosted UI, you can handle authentication events by creating event listeners with the [Hub module]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/hub_guide#listening-authentication-events).
     
 ### Enabling MFA
 
@@ -945,7 +945,7 @@ let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
 
 ### Subscribing Events
 
-You can take specific actions when users sign-in or sign-out by subscribing authentication events in your app. Please see our [Hub Module Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/hub_guide#listening-authentication-events) for more information.
+You can take specific actions when users sign-in or sign-out by subscribing authentication events in your app. Please see our [Hub Module Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/hub_guide#listening-authentication-events) for more information.
 
 
 ### Working with AWS Service Objects
@@ -975,7 +975,7 @@ Note: To work with Service Interface Objects, your Amazon Cognito users' [IAM ro
 
 ### API Reference
 
-For the complete API documentation for Authentication module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/authclass.html)
+For the complete API documentation for Authentication module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/authclass.html)
 {: .callout .callout--info}
 
 ## Customization
@@ -1125,7 +1125,7 @@ const map = (message) => {
 <Authenticator errorMessage={map} />
 ```
 
-You may notice in `AmplifyMessageMap.js` it also handles internationalization. This topic is covered in our [I18n Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/i18n_guide).
+You may notice in `AmplifyMessageMap.js` it also handles internationalization. This topic is covered in our [I18n Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/i18n_guide).
 
 ### Customize Text Labels
 

@@ -90,7 +90,7 @@
 		{% if page.marketing_grid%}
 		<div class="section section-top" id="marketing-section">
 			<div class="container">
-				<div class="row">
+				<div class="inline-block">
 					<div class="header col-sm-11">
 						Amplify your apps. Build on flexible, scalable, and reliable serverless infrastructure.
 					</div>
@@ -165,7 +165,7 @@
 						<div class="cloud-col">
 							<div class="row">
 								{% for item in page.cloud_grid_left %}
-									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-left">
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-left">
 										<div class="platforms-container hidden-xs">
 											{% for platform in item.platforms %}
 												<img class="platform-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ platform.url }}" />
@@ -183,7 +183,7 @@
 						<div class="cloud-col" id="right-cloud-col">
 							<div class="row">
 								{% for item in page.cloud_grid_right %}
-									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-right">
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-right">
 										<div class="platforms-container hidden-xs">
 											{% for platform in item.platforms %}
 												<img class="platform-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ platform.url }}" />
@@ -203,7 +203,7 @@
 						<p class="launch-grid-title">Utilities</p>
 						<div class="row">
 							{% for item in page.utility_modules %}
-									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item">
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item">
 										<div class="platforms-container hidden-xs">
 											{% for platform in item.platforms %}
 												<img class="platform-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ platform.url }}" />
@@ -234,12 +234,12 @@
 
 		<div class="section section-top cli">
 				<div class="container">
-					<div class="row">
+					<div class="inline-block">
 						<div class="header col-sm-10">
 							Powerful toolchain built for developers.
 						</div>
 					</div>
-					<div class="row">
+					<div class="inline-block">
 						<div class="marketing-content">
 							<p class="subheader inline">The Amplify Command Line Interface (CLI) is a unified toolchain to create and manage your serverless infrastructure on AWS.</p>
 							<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/toolchain">
@@ -286,7 +286,7 @@
 						<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
 					</a>
 				</div> -->
-				<div class="row image-container">
+				<div class="image-container">
 					<img class="library-image" id="library-auth" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Auth@1x.png">
 					<img class="library-image" id="library-chat" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Chat@1x.png">
 				</div>

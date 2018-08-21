@@ -13,8 +13,13 @@ API module provides a simple to use REST client when working with REST endpoints
 
 The API module can be used for creating signed requests against Amazon API Gateway when the Amazon API Gateway API Authorization is set to `AWS_IAM`. 
 
+<<<<<<< HEAD
 Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config). 
 {: .callout .callout--action}
+=======
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config). 
+{: .callout .callout--info}
+>>>>>>> 1b61da2336f97d98dbd9335bc0b6deb6c878c239
 
 **When you are done with the installation**, you can follow below steps to enable the API category in your app.
 

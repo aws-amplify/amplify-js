@@ -30,7 +30,7 @@
 				</li>
 			{% endfor %}
 			<li>
-				<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/api">
+				<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api">
 					API
 				</a>
 			</li>
@@ -79,12 +79,21 @@
 							</li>
 						{% endfor %}
 						<li>
+							<select id="docs-select">
+								<option selected disabled value="default">Docs</option>
+								<option value="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html">iOS</option>
+								<option value="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html">Android</option>
+								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=purejs">JavaScript</option>
+								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=react-native">React Native</option>
+							</select>
+						</li>
+						<li>
 							<select id="api-select">
 								<option selected disabled value="default">API</option>
 								<option value="https://aws.github.io/aws-sdk-ios/docs/reference/">iOS</option>
 								<option value="https://aws.github.io/aws-sdk-android/docs/reference/">Android</option>
-								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/api/">JavaScript</option>
-								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/api/">React Native</option>
+								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api/">JavaScript</option>
+								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api/">React Native</option>
 							</select>
 						</li>
 						<li class="site-search" id="search-input-box">

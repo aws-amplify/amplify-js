@@ -117,5 +117,5 @@ AWS Amplify comes with additional utility modules that will help you to build be
 
 ### Start Building now!
 
-Start building your hybrid mobile app with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start?utm_source=hybrid-mobile-apps&utm_campaign=build-pages).
+Start building your hybrid mobile app with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start?utm_source=hybrid-mobile-apps&utm_campaign=build-pages).
 {: .next-link .callout .callout--info}

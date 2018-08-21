@@ -38,7 +38,7 @@ $ amplify add storage
 $ amplify push # Updates your backend
 ```
 
-Please visit [Authentication Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide)  and [Storage Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/storage_guide) to learn more about enabling these categories.
+Please visit [Authentication Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)  and [Storage Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide) to learn more about enabling these categories.
 {: .callout .callout--info}
 
 After creating your backend, the configuration file is copied to `/amplify/#current-cloud-backend/aws-exports.js`, and the source folder you have identified in the `amplify init` command.
@@ -288,7 +288,7 @@ end of the conversation.
 <amplify-interactions bot="yourBotName" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
 ```
 
-See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/interactions_guide) for information on creating an Amazon Lex Chatbot.
+See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/interactions_guide) for information on creating an Amazon Lex Chatbot.
 
 ### Custom Styles
 

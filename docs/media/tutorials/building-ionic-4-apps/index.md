@@ -619,7 +619,7 @@ This section will introduce you to Amplify CLI and you'll learn how to create ba
 
 ## Install and Configure AWS Amplify 
 
-Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config?platform=angular&ref_url=/amplify-js/media/tutorials/building-ionic-4-apps&ref_content={{"Tutorial: Building Ionic 4 apps with AWS Amplify" | uri_escape }}&ref_content_section=creating-aws-resources-with-the-cli).
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config?platform=angular&ref_url=/amplify-js/media/tutorials/building-ionic-4-apps&ref_content={{"Tutorial: Building Ionic 4 apps with AWS Amplify" | uri_escape }}&ref_content_section=creating-aws-resources-with-the-cli).
 {: .callout .callout--action}
 
 **When you are done with the installation**, you can continue with the next step in the tutorial.
@@ -1094,7 +1094,7 @@ You’ve added persisted your app's using Amazon DynamoDB, AWS Lambda, and AWS A
 ## What's next
 
 - Learn more about [AWS Amplify categories]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/developer_guide) to work with many cloud services to create your backend. 
--  Learn more about [API category]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/api_guide) to work with REST and GraphQL endpoints. 
+-  Learn more about [API category]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide) to work with REST and GraphQL endpoints. 
 
 
 

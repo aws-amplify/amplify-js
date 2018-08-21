@@ -432,15 +432,20 @@
 	let api_select = document.getElementById('api-select');
 	if (api_select) api_select.addEventListener("change", apiLink);
 
-	var toggleSubList = function() {
-		var sub_list = document.getElementsByClassName("level-2")[0];
-		sub_list.classList.toggle("hide");
+	let docsLink = function() {
+		let docs_select = document.getElementById('docs-select');
+		if (docs_select.value != "default") {
+			if (docs_select.value.includes("aws-mobile")) {
+				window.open(docs_select.value, '_blank');
+				docs_select.value = "default";
+			}
+			else {
+				window.open(docs_select.value, '_self');
+			}
+		}
 	}
-
-	/*let current_section = document.getElementsByClassName('orange-section-head')[0];
-	if (current_section) {
-		current_section.addEventListener("click", toggleSubList);
-	}*/
+	let docs_select = document.getElementById('docs-select');
+	if (docs_select) docs_select.addEventListener("change", docsLink);
 
 }( jQuery ) );
 

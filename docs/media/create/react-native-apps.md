@@ -22,7 +22,7 @@ With AWS Amplify's cloud connectivity support, you can create your apps quickly 
 
 ###  Building React Native Apps with AWS Amplify
 
-React Native gives you the flexibility of creating multi-platform native mobile experiences with JavaScript. Unlike [hybrid mobile apps]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/create/hybrid-mobile-apps) that run on a browser view,  React Native apps run on a faster runtime environment which has better integration with native capabilities of the device. 
+React Native gives you the flexibility of creating multi-platform native mobile experiences with JavaScript. Unlike [hybrid mobile apps]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/create/hybrid-mobile-apps) that run on a browser view,  React Native apps run on a faster runtime environment which has better integration with native capabilities of the device. 
 
 When building React Native apps, your app bundle is deployed to the app stores, and your mobile app's backend logic will be handled by cloud operations that you integrate with AWS Amplify.
 
@@ -110,5 +110,5 @@ AWS Amplify comes with additional utility modules that will help you to build be
 
 ### Start Building a React Native app now!
 
-Start building your Web app today with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start?platform=react-native&utm_source=web-apps&utm_campaign=build-pages).
+Start building your Web app today with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start?platform=react-native&utm_source=web-apps&utm_campaign=build-pages).
 {: .next-link .callout .callout--info}

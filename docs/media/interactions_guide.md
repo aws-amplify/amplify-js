@@ -22,24 +22,24 @@ To create a chatbot with AWS Mobile Hub, follow these steps;
 2. Create a new Mobile Hub project or select an existing project to add a bot.
 
 3. Go to your project details. Under *Add More Backend Features* section, select *Conversational Bots* option box.
-![Mobile Hub]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/interactions_mobile_hub_add.jpg){: class="screencap" style="max-height:600px;"}  
+![Mobile Hub]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_mobile_hub_add.jpg){: class="screencap" style="max-height:600px;"}  
 
 4. Select one of the three sample bots or select *Import a bot* to use an existing bot. When you to import a bot, a list of your existing Amazon Lex bots will be displayed.
-![Mobile Hub2]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/interactions_mobile_hub_select_bot.jpg){: class="screencap" style="max-height:400px;"}
+![Mobile Hub2]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_mobile_hub_select_bot.jpg){: class="screencap" style="max-height:400px;"}
 
 5. When you select a sample bot, Mobile Hub creates your bot on Amazon Lex with sample intents and utterances. An intent performs an action in response to a natural language user input, while an utterance is a set of spoken or typed phrases that invoke your intent. You can learn more about how Amazon Lex chatbots work from the [Amazon Lex Developer guide](https://docs.aws.amazon.com/lex/latest/dg/what-is.html).
-![Mobile Hub3]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/interactions_mobile_hub_sample_bot.jpg){: class="screencap" style="max-height:600px;"}
+![Mobile Hub3]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_mobile_hub_sample_bot.jpg){: class="screencap" style="max-height:600px;"}
 
 6. Click *Create a Bot*. Your bot is now ready to be integrated into your app.
 
 **Editing Your Bot**
 You can edit your bot and add new utterances or integrate with other AWS services by visiting [Amazon Lex console](https://console.aws.amazon.com/lex) any time.  
-![Mobile Hub4]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/interactions_lex_console_edit_bot.jpg){: class="screencap" style="max-height:600px;"}
+![Mobile Hub4]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_lex_console_edit_bot.jpg){: class="screencap" style="max-height:600px;"}
 {: .callout .callout--info}
 
 ## Installation and Configuration
 
-Please refer to [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. In this guide, you will learn about how you can and integrate a conversational bot that you have created in the previous step.
+Please refer to [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config) for general setup. In this guide, you will learn about how you can and integrate a conversational bot that you have created in the previous step.
 
 ### Automated Setup
 
@@ -54,10 +54,10 @@ $ amplify init xxxx-yyyy-4491-bd6e-256d74e2b451 # Use your AWS Mobile Hub projec
 **Retrieving your AWS Mobile Hub project id**
 You can find your Mobile Hub project id in the page URL of the project details page on the AWS Mobile Hub console. The URL looks like `https://console.aws.amazon.com/mobilehub/home?region=us-east-1#/xxx-yyy-zzz-aaa-xxx/build` and your project id is included in the URL, e.g: `xxx-yyy-zzz-aaa-xxx`.   <br/><br/>
 Alternatively, you can find your Mobile Hub project id in your project configuration file. To download the configuration file, click *Integrate* button on your project in Mobile Hub console.
-![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}
+![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}
 /media/images/mobile_hub_app_detail.jpg){: class="screencap" style="max-height:350px;"}  
 You can find your project id in `aws-exports.js` file which you can download with the download link in *No CLI?* section in integration details page. 
-![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/interactions_mobile_hub_configure.jpg){: class="screencap" style="max-height:430px;"}  
+![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_mobile_hub_configure.jpg){: class="screencap" style="max-height:430px;"}  
 Download the configuration file and find your project in `aws_project_id` attribute.
 {: .callout .callout--info}
 
@@ -328,9 +328,9 @@ export default class App extends React.Component {
  
 ### Using with Angular and Ionic
 
-Please see [Angular]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/angular_guide#interactions) and [Ionic]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/ionic_guide#interactions) documentation for Interactions UI components.
+Please see [Angular]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/angular_guide#interactions) and [Ionic]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/ionic_guide#interactions) documentation for Interactions UI components.
 
 ### API Reference
 
-For the complete API documentation for Interactions module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/interactions.html)
+For the complete API documentation for Interactions module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/interactions.html)
 {: .callout .callout--info}

@@ -40,7 +40,7 @@ $ amplify add storage
 $ amplify push # Updates your backend
 ```
 
-Please visit [Authentication Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide)  and [Storage Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/storage_guide) to learn more about enabling these categories.
+Please visit [Authentication Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)  and [Storage Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide) to learn more about enabling these categories.
 {: .callout .callout--info}
 
 
@@ -273,7 +273,7 @@ end of the conversation.
 <amplify-interactions bot="yourBotName" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
 ```
 
-See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/interactions_guide) for information on creating an Amazon Lex Chatbot.
+See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/interactions_guide) for information on creating an Amazon Lex Chatbot.
 
 ### Custom Styles
 
@@ -298,7 +298,7 @@ Currently, the newest version of Angular (6.x) does not provide the shim for the
 
 Learn more with tutorials:
 
-- [Building Ionic 4 apps with AWS Amplify]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/tutorials/building-ionic-4-apps/) 
+- [Building Ionic 4 apps with AWS Amplify]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/tutorials/building-ionic-4-apps/) 
 
 - [How to use AWS Amplify and Angular to Build Cloud Enabled JavaScript Applications](https://medium.freecodecamp.org/building-cloud-enabled-javascript-applications-with-aws-amplify-angular-682547fc6477){: target='_new'}
 
