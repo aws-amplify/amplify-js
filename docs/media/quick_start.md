@@ -9,7 +9,7 @@ AWS Amplify is designed to provide you a more productive environment for connect
 
 ## Step 1. Set up your Development Environment 
 
-We strongly recommend using the Amplify CLI for building the serverless backend for your app. If you have already installed the CLI, skip ahead to [Step 2. Create a New Project](#step-2-create-a-new-project).
+Install the Amplify CLI for building the serverless backend for your app. If you have already installed the CLI, skip ahead to [Step 2. Create a New Project](#step-2-create-a-new-project).
 
 - [Sign up for an AWS Account](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start).
 - Install [Node.js®](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/get-npm) if they are not already on your machine.
@@ -36,7 +36,8 @@ Check the minimum requirements for your development environment.
     <li class="tab-link ionic" data-tab="ionic">Ionic</li>
 </ul>
 <div id="react" class="tab-content current">
-If you have an existing React application you can skip this section. Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
+
+If you have an existing application you can [skip this section](#step-3-install-aws-amplify). Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
 
 ```bash
 create-react-app my-app
@@ -44,7 +45,6 @@ cd my-app
 npm start
 ```
 
-After running the CLI commands, you should see a basic React application running in your browser.
 </div>
 <div id="react-native" class="tab-content" >
 
@@ -128,9 +128,7 @@ In addition to *aws-amplify*, we provide React Native specific components in `aw
 $ npm install --save aws-amplify-react-native
 ```
 
-### Linking native libraries for React Native
-
-If you have created your app with *create-react-native-app* in previous steps, you can **skip** this section.
+If you have created your app with *create-react-native-app* in previous steps, you can [**skip**](#step-4-set-up-your-backend) this section.
 
 AWS Amplify provides native libraries for React Native to support Amazon Cognito sign-in process. If you are using *create-react-native-app* or [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), those libraries are already included in your dependencies. Otherwise, you need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) those libraries to your project.
 {: .callout .callout--info}
@@ -182,7 +180,7 @@ See the [Ionic Guide](https://aws-amplify.github.io/amplify-js/media/ionic_guide
 
 You can quickly create your backend from scratch with Automatic Setup, or use Manual Setup to integrate AWS resources you have already configured.
 
-#### Automatic Setup with the CLI
+#### Automated Setup
 
 `amplify init` creates a backend project for your app and pulls the service configuration into your project. 
 
@@ -192,11 +190,11 @@ $ amplify init
 
 When you run *amplify init* command you are asked for the details of your project. A configuration file for your app is put in your configured source directory called `aws-exports.js`.
 
-[Learn more](https://github.com/aws-amplify/amplify-cli)
+[Learn more](https://github.com/aws-amplify/amplify-cli) about the AWS Amplify CLI.
 
-#### Manual Setup to work with existing AWS Resources
+#### Manual Setup
 
-If you want to use your existing AWS resources with your app (S3 buckets, Cognito user pools, etc.), you need to **manually configure** your app with your current credentials in your code:
+If you want to use your existing AWS resources with your app you will need to **manually configure** your app with your current credentials in your code, for example:
 
 ```js
 import Amplify from 'aws-amplify';
@@ -225,26 +223,6 @@ To see the configuration parameters for existing AWS resources, see the *Manual 
 [Amazon API Gateway]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide#manual-setup)
 {: .callout .callout--info}
 
-
-## Step 5. Connect to Your Backend
-
-Connecting to your backend at runtime requires loading the required configuration in your app with the `Amplify.configure()` method.
-
-Import the AWS Amplify library:  
-
-```js
-import Amplify from 'aws-amplify';
-```
-
-If you used Automatic Setup, add in the following code before your first [Component](https://reactjs.org/docs/components-and-props.html).
-
-```js
-import Amplify from 'aws-amplify';
-import aws_exports from './aws-exports';
-
-Amplify.configure(aws_exports);
-```
-
 ### Add Backend Features
 
 You can  use the `amplify add` command with the respective category name to add backend features:
@@ -253,7 +231,7 @@ You can  use the `amplify add` command with the respective category name to add 
 $ amplify add <category-name>
 ```
 
-Run *amplify* anytime to see available categories:
+Run `amplify` on your CLI at anytime to see available categories.
 
 ```terminal
 | Category      |
@@ -267,7 +245,7 @@ Run *amplify* anytime to see available categories:
 | notifications |
 ```
 
-Congratulations! Your app is now integrated with AWS Amplify. Some next Steps:
+🎉 Congratulations! Your app is now integrated with AWS Amplify. Some next Steps:
 
  - Add [Analytics]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide)
  - Add [Authentication]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)
@@ -280,7 +258,7 @@ For working with other AWS services you can use service interface objects direct
 To work with service interface objects, your Amazon Cognito users' [IAM role](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) must have the appropriate permissions to call the requested services.
 {: .callout .callout--warning}
 
-You can call methods on any AWS Service interface object by passing your credentials from *Auth* to the service call constructor:
+You can call methods on any AWS Service interface object supported by the <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html" target="_blank">AWS JavaScript SDK</a> by passing your credentials from *Auth* to the service call constructor:
 
 ```js
 import Route53 from 'aws-sdk/clients/route53';
@@ -299,15 +277,12 @@ Auth.currentCredentials()
   })
 ```
 
-Full API Documentation for service interface objects is available <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html" target="_blank">here</a>.
-{: .callout .callout--info}
-
 ## Framework Resources
 
-- Learn more about using React with AWS Amplify in [AWS Amplify React Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/react_guide).
+- [React]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/react_guide)
 
-- Learn more about using React Native with AWS Amplify in [AWS Amplify React Native Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/react_native_guide).
+- [React Native]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/react_native_guide)
 
-- Learn more about using Angular with AWS Amplify in [AWS Amplify Angular Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/angular_guide).
+- [Angular]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/angular_guide)
 
-- Learn more about using Ionic with AWS Amplify in [AWS Amplify Ionic Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/ionic_guide).
+- [Ionic]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/ionic_guide)
