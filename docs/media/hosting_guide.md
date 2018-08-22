@@ -3,35 +3,32 @@
 
 # Hosting
 
-AWS Amplify provides hosting for your Web app or static website with AWS Mobile CLI. You can use [awsmobile-cli](https://github.com/aws/awsmobile-cli) to create a new web project and deploy it for hosting and streaming.  
+AWS Amplify provides hosting for your Web app or static website.
 
-```bash
-$ npm install -g awsmobile-cli
-```
+## Installation and Configuration
 
-If it is the first time you are using `awsmobile-cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config). 
+{: .callout .callout--info}
 
-```bash
-$ awsmobile configure
-```
-
-If prompted for credentials, follow the steps provided by the CLI. For more information, see [Provide IAM credentials to AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html). Also, to enable cloud features with CLI, your account needs to have permission to create AWS resources.
+**When you are done with the installation**, you can follow below steps to enable Storage category in your app.
 
 ## Deployment with CLI
 
-AWS Mobile CLI provides a one-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app's loading performance by serving your content to your users from the nearest edge location.
+You can use Amplify CLI to create a new web project and deploy it for hosting and streaming.  
+
+Amplify CLI provides a single-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app's loading performance by serving your content to your users from the nearest edge location.
+
+To enable hosting with your app, run: 
 
 ```bash
-awsmobile publish
+$ amplify hosting add
 ```
 
-CDN service, which is provided by Amazon CloudFront, will handle the high-performance delivery of your static assets. You can visit *Hosting and Streaming* section in AWS Mobile Hub to see the URLs for your web app.
+The CLI will prompt for hosting bucket name. When the hosting is successfully added, publish your app with the following command:
 
-![CDN](images/mobile_hub_cdn.png?raw=true "CDN"){: style="max-height:400px;"}
+```bash
+$ amplify publish
+```
 
-If your website includes video or audio files, those assets will be automatically streamed to the browser.
+CDN service, which is provided by Amazon CloudFront, will handle the high-performance delivery of your static assets. If your website includes video or audio files, those assets will be automatically streamed to the browser.
 
----
-
-For complete documentation please visit [AWS Mobile CLI Reference](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html)
-{: .next-link}

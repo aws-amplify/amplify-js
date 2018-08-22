@@ -1,23 +1,22 @@
 ---
 ---
 
-## AWS Mobile CLI  
+# Amplify CLI  
 
-AWS Amplify connects to AWS Mobile Hub to work with Amazon Web Services. You can use [awsmobile-cli](https://github.com/aws/awsmobile-cli) to create a new AWS Mobile Hub project or enable an existing project to work with AWS Mobile Hub. 
+Amplify CLI enables adding cloud features to your app easily by provisioning the backend resources.
 
-```bash
-$ npm install -g awsmobile-cli
-```
-
-If it is the first time you are using `awsmobile-cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
+To install: 
 
 ```bash
-$ awsmobile configure
+$ npm install -g @aws-amplify/cli
 ```
 
-If prompted for credentials, follow the steps provided by the CLI. For more information, see [Provide IAM credentials to AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html).
+If it is the first time you are using the CLI, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
 
----
+```bash
+$ amplify configure
+```
 
-For complete documentation please visit [AWS Mobile CLI Reference](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html)
-{: .next-link}
+If prompted for credentials, follow the steps provided by the CLI to create a new AWS console user and retrieve account credentials.  
+
+For more information on individual installation steps, visit [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config?platform=react&ref_url=/amplify-js/media/quick_start&ref_content={{"Get Started" | uri_escape }}&ref_content_section=automatic-setup).

@@ -14,107 +14,7136 @@
  * for the specific language governing permissions and
  * limitations under the License. 
  */
-!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.AmazonCognitoIdentity=t():e.AmazonCognitoIdentity=t()}(this,function(){return function(e){function t(r){if(n[r])return n[r].exports;var i=n[r]={exports:{},id:r,loaded:!1};return e[r].call(i.exports,i,i.exports,t),i.loaded=!0,i.exports}var n={};return t.m=e,t.c=n,t.p="",t(0)}([function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}t.__esModule=!0;var i=n(19);Object.defineProperty(t,"AuthenticationDetails",{enumerable:!0,get:function(){return r(i).default}});var o=n(3);Object.defineProperty(t,"AuthenticationHelper",{enumerable:!0,get:function(){return r(o).default}});var s=n(5);Object.defineProperty(t,"CognitoAccessToken",{enumerable:!0,get:function(){return r(s).default}});var a=n(6);Object.defineProperty(t,"CognitoIdToken",{enumerable:!0,get:function(){return r(a).default}});var u=n(8);Object.defineProperty(t,"CognitoRefreshToken",{enumerable:!0,get:function(){return r(u).default}});var c=n(9);Object.defineProperty(t,"CognitoUser",{enumerable:!0,get:function(){return r(c).default}});var h=n(10);Object.defineProperty(t,"CognitoUserAttribute",{enumerable:!0,get:function(){return r(h).default}});var f=n(21);Object.defineProperty(t,"CognitoUserPool",{enumerable:!0,get:function(){return r(f).default}});var l=n(11);Object.defineProperty(t,"CognitoUserSession",{enumerable:!0,get:function(){return r(l).default}});var p=n(22);Object.defineProperty(t,"CookieStorage",{enumerable:!0,get:function(){return r(p).default}});var d=n(12);Object.defineProperty(t,"DateHelper",{enumerable:!0,get:function(){return r(d).default}})},function(e,t,n){(function(e){/*!
-	 * The buffer module from node.js, for the browser.
-	 *
-	 * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
-	 * @license  MIT
-	 */
-"use strict";function r(){try{var e=new Uint8Array(1);return e.__proto__={__proto__:Uint8Array.prototype,foo:function(){return 42}},42===e.foo()&&"function"==typeof e.subarray&&0===e.subarray(1,1).byteLength}catch(e){return!1}}function i(){return s.TYPED_ARRAY_SUPPORT?2147483647:1073741823}function o(e,t){if(i()<t)throw new RangeError("Invalid typed array length");return s.TYPED_ARRAY_SUPPORT?(e=new Uint8Array(t),e.__proto__=s.prototype):(null===e&&(e=new s(t)),e.length=t),e}function s(e,t,n){if(!(s.TYPED_ARRAY_SUPPORT||this instanceof s))return new s(e,t,n);if("number"==typeof e){if("string"==typeof t)throw new Error("If encoding is specified then the first argument must be a string");return h(this,e)}return a(this,e,t,n)}function a(e,t,n,r){if("number"==typeof t)throw new TypeError('"value" argument must not be a number');return"undefined"!=typeof ArrayBuffer&&t instanceof ArrayBuffer?p(e,t,n,r):"string"==typeof t?f(e,t,n):d(e,t)}function u(e){if("number"!=typeof e)throw new TypeError('"size" argument must be a number');if(e<0)throw new RangeError('"size" argument must not be negative')}function c(e,t,n,r){return u(t),t<=0?o(e,t):void 0!==n?"string"==typeof r?o(e,t).fill(n,r):o(e,t).fill(n):o(e,t)}function h(e,t){if(u(t),e=o(e,t<0?0:0|g(t)),!s.TYPED_ARRAY_SUPPORT)for(var n=0;n<t;++n)e[n]=0;return e}function f(e,t,n){if("string"==typeof n&&""!==n||(n="utf8"),!s.isEncoding(n))throw new TypeError('"encoding" must be a valid string encoding');var r=0|y(t,n);e=o(e,r);var i=e.write(t,n);return i!==r&&(e=e.slice(0,i)),e}function l(e,t){var n=t.length<0?0:0|g(t.length);e=o(e,n);for(var r=0;r<n;r+=1)e[r]=255&t[r];return e}function p(e,t,n,r){if(t.byteLength,n<0||t.byteLength<n)throw new RangeError("'offset' is out of bounds");if(t.byteLength<n+(r||0))throw new RangeError("'length' is out of bounds");return t=void 0===n&&void 0===r?new Uint8Array(t):void 0===r?new Uint8Array(t,n):new Uint8Array(t,n,r),s.TYPED_ARRAY_SUPPORT?(e=t,e.__proto__=s.prototype):e=l(e,t),e}function d(e,t){if(s.isBuffer(t)){var n=0|g(t.length);return e=o(e,n),0===e.length?e:(t.copy(e,0,0,n),e)}if(t){if("undefined"!=typeof ArrayBuffer&&t.buffer instanceof ArrayBuffer||"length"in t)return"number"!=typeof t.length||Z(t.length)?o(e,0):l(e,t);if("Buffer"===t.type&&$(t.data))return l(e,t.data)}throw new TypeError("First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.")}function g(e){if(e>=i())throw new RangeError("Attempt to allocate Buffer larger than maximum size: 0x"+i().toString(16)+" bytes");return 0|e}function v(e){return+e!=e&&(e=0),s.alloc(+e)}function y(e,t){if(s.isBuffer(e))return e.length;if("undefined"!=typeof ArrayBuffer&&"function"==typeof ArrayBuffer.isView&&(ArrayBuffer.isView(e)||e instanceof ArrayBuffer))return e.byteLength;"string"!=typeof e&&(e=""+e);var n=e.length;if(0===n)return 0;for(var r=!1;;)switch(t){case"ascii":case"latin1":case"binary":return n;case"utf8":case"utf-8":case void 0:return H(e).length;case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return 2*n;case"hex":return n>>>1;case"base64":return G(e).length;default:if(r)return H(e).length;t=(""+t).toLowerCase(),r=!0}}function m(e,t,n){var r=!1;if((void 0===t||t<0)&&(t=0),t>this.length)return"";if((void 0===n||n>this.length)&&(n=this.length),n<=0)return"";if(n>>>=0,t>>>=0,n<=t)return"";for(e||(e="utf8");;)switch(e){case"hex":return F(this,t,n);case"utf8":case"utf-8":return P(this,t,n);case"ascii":return b(this,t,n);case"latin1":case"binary":return k(this,t,n);case"base64":return R(this,t,n);case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return B(this,t,n);default:if(r)throw new TypeError("Unknown encoding: "+e);e=(e+"").toLowerCase(),r=!0}}function S(e,t,n){var r=e[t];e[t]=e[n],e[n]=r}function w(e,t,n,r,i){if(0===e.length)return-1;if("string"==typeof n?(r=n,n=0):n>2147483647?n=2147483647:n<-2147483648&&(n=-2147483648),n=+n,isNaN(n)&&(n=i?0:e.length-1),n<0&&(n=e.length+n),n>=e.length){if(i)return-1;n=e.length-1}else if(n<0){if(!i)return-1;n=0}if("string"==typeof t&&(t=s.from(t,r)),s.isBuffer(t))return 0===t.length?-1:A(e,t,n,r,i);if("number"==typeof t)return t&=255,s.TYPED_ARRAY_SUPPORT&&"function"==typeof Uint8Array.prototype.indexOf?i?Uint8Array.prototype.indexOf.call(e,t,n):Uint8Array.prototype.lastIndexOf.call(e,t,n):A(e,[t],n,r,i);throw new TypeError("val must be string, number or Buffer")}function A(e,t,n,r,i){function o(e,t){return 1===s?e[t]:e.readUInt16BE(t*s)}var s=1,a=e.length,u=t.length;if(void 0!==r&&(r=String(r).toLowerCase(),"ucs2"===r||"ucs-2"===r||"utf16le"===r||"utf-16le"===r)){if(e.length<2||t.length<2)return-1;s=2,a/=2,u/=2,n/=2}var c;if(i){var h=-1;for(c=n;c<a;c++)if(o(e,c)===o(t,h===-1?0:c-h)){if(h===-1&&(h=c),c-h+1===u)return h*s}else h!==-1&&(c-=c-h),h=-1}else for(n+u>a&&(n=a-u),c=n;c>=0;c--){for(var f=!0,l=0;l<u;l++)if(o(e,c+l)!==o(t,l)){f=!1;break}if(f)return c}return-1}function C(e,t,n,r){n=Number(n)||0;var i=e.length-n;r?(r=Number(r),r>i&&(r=i)):r=i;var o=t.length;if(o%2!==0)throw new TypeError("Invalid hex string");r>o/2&&(r=o/2);for(var s=0;s<r;++s){var a=parseInt(t.substr(2*s,2),16);if(isNaN(a))return s;e[n+s]=a}return s}function U(e,t,n,r){return z(H(t,e.length-n),e,n,r)}function E(e,t,n,r){return z(J(t),e,n,r)}function T(e,t,n,r){return E(e,t,n,r)}function D(e,t,n,r){return z(G(t),e,n,r)}function I(e,t,n,r){return z(W(t,e.length-n),e,n,r)}function R(e,t,n){return 0===t&&n===e.length?X.fromByteArray(e):X.fromByteArray(e.slice(t,n))}function P(e,t,n){n=Math.min(e.length,n);for(var r=[],i=t;i<n;){var o=e[i],s=null,a=o>239?4:o>223?3:o>191?2:1;if(i+a<=n){var u,c,h,f;switch(a){case 1:o<128&&(s=o);break;case 2:u=e[i+1],128===(192&u)&&(f=(31&o)<<6|63&u,f>127&&(s=f));break;case 3:u=e[i+1],c=e[i+2],128===(192&u)&&128===(192&c)&&(f=(15&o)<<12|(63&u)<<6|63&c,f>2047&&(f<55296||f>57343)&&(s=f));break;case 4:u=e[i+1],c=e[i+2],h=e[i+3],128===(192&u)&&128===(192&c)&&128===(192&h)&&(f=(15&o)<<18|(63&u)<<12|(63&c)<<6|63&h,f>65535&&f<1114112&&(s=f))}}null===s?(s=65533,a=1):s>65535&&(s-=65536,r.push(s>>>10&1023|55296),s=56320|1023&s),r.push(s),i+=a}return _(r)}function _(e){var t=e.length;if(t<=ee)return String.fromCharCode.apply(String,e);for(var n="",r=0;r<t;)n+=String.fromCharCode.apply(String,e.slice(r,r+=ee));return n}function b(e,t,n){var r="";n=Math.min(e.length,n);for(var i=t;i<n;++i)r+=String.fromCharCode(127&e[i]);return r}function k(e,t,n){var r="";n=Math.min(e.length,n);for(var i=t;i<n;++i)r+=String.fromCharCode(e[i]);return r}function F(e,t,n){var r=e.length;(!t||t<0)&&(t=0),(!n||n<0||n>r)&&(n=r);for(var i="",o=t;o<n;++o)i+=j(e[o]);return i}function B(e,t,n){for(var r=e.slice(t,n),i="",o=0;o<r.length;o+=2)i+=String.fromCharCode(r[o]+256*r[o+1]);return i}function M(e,t,n){if(e%1!==0||e<0)throw new RangeError("offset is not uint");if(e+t>n)throw new RangeError("Trying to access beyond buffer length")}function x(e,t,n,r,i,o){if(!s.isBuffer(e))throw new TypeError('"buffer" argument must be a Buffer instance');if(t>i||t<o)throw new RangeError('"value" argument is out of bounds');if(n+r>e.length)throw new RangeError("Index out of range")}function O(e,t,n,r){t<0&&(t=65535+t+1);for(var i=0,o=Math.min(e.length-n,2);i<o;++i)e[n+i]=(t&255<<8*(r?i:1-i))>>>8*(r?i:1-i)}function N(e,t,n,r){t<0&&(t=4294967295+t+1);for(var i=0,o=Math.min(e.length-n,4);i<o;++i)e[n+i]=t>>>8*(r?i:3-i)&255}function V(e,t,n,r,i,o){if(n+r>e.length)throw new RangeError("Index out of range");if(n<0)throw new RangeError("Index out of range")}function K(e,t,n,r,i){return i||V(e,t,n,4,3.4028234663852886e38,-3.4028234663852886e38),Q.write(e,t,n,r,23,4),n+4}function q(e,t,n,r,i){return i||V(e,t,n,8,1.7976931348623157e308,-1.7976931348623157e308),Q.write(e,t,n,r,52,8),n+8}function L(e){if(e=Y(e).replace(te,""),e.length<2)return"";for(;e.length%4!==0;)e+="=";return e}function Y(e){return e.trim?e.trim():e.replace(/^\s+|\s+$/g,"")}function j(e){return e<16?"0"+e.toString(16):e.toString(16)}function H(e,t){t=t||1/0;for(var n,r=e.length,i=null,o=[],s=0;s<r;++s){if(n=e.charCodeAt(s),n>55295&&n<57344){if(!i){if(n>56319){(t-=3)>-1&&o.push(239,191,189);continue}if(s+1===r){(t-=3)>-1&&o.push(239,191,189);continue}i=n;continue}if(n<56320){(t-=3)>-1&&o.push(239,191,189),i=n;continue}n=(i-55296<<10|n-56320)+65536}else i&&(t-=3)>-1&&o.push(239,191,189);if(i=null,n<128){if((t-=1)<0)break;o.push(n)}else if(n<2048){if((t-=2)<0)break;o.push(n>>6|192,63&n|128)}else if(n<65536){if((t-=3)<0)break;o.push(n>>12|224,n>>6&63|128,63&n|128)}else{if(!(n<1114112))throw new Error("Invalid code point");if((t-=4)<0)break;o.push(n>>18|240,n>>12&63|128,n>>6&63|128,63&n|128)}}return o}function J(e){for(var t=[],n=0;n<e.length;++n)t.push(255&e.charCodeAt(n));return t}function W(e,t){for(var n,r,i,o=[],s=0;s<e.length&&!((t-=2)<0);++s)n=e.charCodeAt(s),r=n>>8,i=n%256,o.push(i),o.push(r);return o}function G(e){return X.toByteArray(L(e))}function z(e,t,n,r){for(var i=0;i<r&&!(i+n>=t.length||i>=e.length);++i)t[i+n]=e[i];return i}function Z(e){return e!==e}var X=n(15),Q=n(16),$=n(17);t.Buffer=s,t.SlowBuffer=v,t.INSPECT_MAX_BYTES=50,s.TYPED_ARRAY_SUPPORT=void 0!==e.TYPED_ARRAY_SUPPORT?e.TYPED_ARRAY_SUPPORT:r(),t.kMaxLength=i(),s.poolSize=8192,s._augment=function(e){return e.__proto__=s.prototype,e},s.from=function(e,t,n){return a(null,e,t,n)},s.TYPED_ARRAY_SUPPORT&&(s.prototype.__proto__=Uint8Array.prototype,s.__proto__=Uint8Array,"undefined"!=typeof Symbol&&Symbol.species&&s[Symbol.species]===s&&Object.defineProperty(s,Symbol.species,{value:null,configurable:!0})),s.alloc=function(e,t,n){return c(null,e,t,n)},s.allocUnsafe=function(e){return h(null,e)},s.allocUnsafeSlow=function(e){return h(null,e)},s.isBuffer=function(e){return!(null==e||!e._isBuffer)},s.compare=function(e,t){if(!s.isBuffer(e)||!s.isBuffer(t))throw new TypeError("Arguments must be Buffers");if(e===t)return 0;for(var n=e.length,r=t.length,i=0,o=Math.min(n,r);i<o;++i)if(e[i]!==t[i]){n=e[i],r=t[i];break}return n<r?-1:r<n?1:0},s.isEncoding=function(e){switch(String(e).toLowerCase()){case"hex":case"utf8":case"utf-8":case"ascii":case"latin1":case"binary":case"base64":case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return!0;default:return!1}},s.concat=function(e,t){if(!$(e))throw new TypeError('"list" argument must be an Array of Buffers');if(0===e.length)return s.alloc(0);var n;if(void 0===t)for(t=0,n=0;n<e.length;++n)t+=e[n].length;var r=s.allocUnsafe(t),i=0;for(n=0;n<e.length;++n){var o=e[n];if(!s.isBuffer(o))throw new TypeError('"list" argument must be an Array of Buffers');o.copy(r,i),i+=o.length}return r},s.byteLength=y,s.prototype._isBuffer=!0,s.prototype.swap16=function(){var e=this.length;if(e%2!==0)throw new RangeError("Buffer size must be a multiple of 16-bits");for(var t=0;t<e;t+=2)S(this,t,t+1);return this},s.prototype.swap32=function(){var e=this.length;if(e%4!==0)throw new RangeError("Buffer size must be a multiple of 32-bits");for(var t=0;t<e;t+=4)S(this,t,t+3),S(this,t+1,t+2);return this},s.prototype.swap64=function(){var e=this.length;if(e%8!==0)throw new RangeError("Buffer size must be a multiple of 64-bits");for(var t=0;t<e;t+=8)S(this,t,t+7),S(this,t+1,t+6),S(this,t+2,t+5),S(this,t+3,t+4);return this},s.prototype.toString=function(){var e=0|this.length;return 0===e?"":0===arguments.length?P(this,0,e):m.apply(this,arguments)},s.prototype.equals=function(e){if(!s.isBuffer(e))throw new TypeError("Argument must be a Buffer");return this===e||0===s.compare(this,e)},s.prototype.inspect=function(){var e="",n=t.INSPECT_MAX_BYTES;return this.length>0&&(e=this.toString("hex",0,n).match(/.{2}/g).join(" "),this.length>n&&(e+=" ... ")),"<Buffer "+e+">"},s.prototype.compare=function(e,t,n,r,i){if(!s.isBuffer(e))throw new TypeError("Argument must be a Buffer");if(void 0===t&&(t=0),void 0===n&&(n=e?e.length:0),void 0===r&&(r=0),void 0===i&&(i=this.length),t<0||n>e.length||r<0||i>this.length)throw new RangeError("out of range index");if(r>=i&&t>=n)return 0;if(r>=i)return-1;if(t>=n)return 1;if(t>>>=0,n>>>=0,r>>>=0,i>>>=0,this===e)return 0;for(var o=i-r,a=n-t,u=Math.min(o,a),c=this.slice(r,i),h=e.slice(t,n),f=0;f<u;++f)if(c[f]!==h[f]){o=c[f],a=h[f];break}return o<a?-1:a<o?1:0},s.prototype.includes=function(e,t,n){return this.indexOf(e,t,n)!==-1},s.prototype.indexOf=function(e,t,n){return w(this,e,t,n,!0)},s.prototype.lastIndexOf=function(e,t,n){return w(this,e,t,n,!1)},s.prototype.write=function(e,t,n,r){if(void 0===t)r="utf8",n=this.length,t=0;else if(void 0===n&&"string"==typeof t)r=t,n=this.length,t=0;else{if(!isFinite(t))throw new Error("Buffer.write(string, encoding, offset[, length]) is no longer supported");t|=0,isFinite(n)?(n|=0,void 0===r&&(r="utf8")):(r=n,n=void 0)}var i=this.length-t;if((void 0===n||n>i)&&(n=i),e.length>0&&(n<0||t<0)||t>this.length)throw new RangeError("Attempt to write outside buffer bounds");r||(r="utf8");for(var o=!1;;)switch(r){case"hex":return C(this,e,t,n);case"utf8":case"utf-8":return U(this,e,t,n);case"ascii":return E(this,e,t,n);case"latin1":case"binary":return T(this,e,t,n);case"base64":return D(this,e,t,n);case"ucs2":case"ucs-2":case"utf16le":case"utf-16le":return I(this,e,t,n);default:if(o)throw new TypeError("Unknown encoding: "+r);r=(""+r).toLowerCase(),o=!0}},s.prototype.toJSON=function(){return{type:"Buffer",data:Array.prototype.slice.call(this._arr||this,0)}};var ee=4096;s.prototype.slice=function(e,t){var n=this.length;e=~~e,t=void 0===t?n:~~t,e<0?(e+=n,e<0&&(e=0)):e>n&&(e=n),t<0?(t+=n,t<0&&(t=0)):t>n&&(t=n),t<e&&(t=e);var r;if(s.TYPED_ARRAY_SUPPORT)r=this.subarray(e,t),r.__proto__=s.prototype;else{var i=t-e;r=new s(i,void 0);for(var o=0;o<i;++o)r[o]=this[o+e]}return r},s.prototype.readUIntLE=function(e,t,n){e|=0,t|=0,n||M(e,t,this.length);for(var r=this[e],i=1,o=0;++o<t&&(i*=256);)r+=this[e+o]*i;return r},s.prototype.readUIntBE=function(e,t,n){e|=0,t|=0,n||M(e,t,this.length);for(var r=this[e+--t],i=1;t>0&&(i*=256);)r+=this[e+--t]*i;return r},s.prototype.readUInt8=function(e,t){return t||M(e,1,this.length),this[e]},s.prototype.readUInt16LE=function(e,t){return t||M(e,2,this.length),this[e]|this[e+1]<<8},s.prototype.readUInt16BE=function(e,t){return t||M(e,2,this.length),this[e]<<8|this[e+1]},s.prototype.readUInt32LE=function(e,t){return t||M(e,4,this.length),(this[e]|this[e+1]<<8|this[e+2]<<16)+16777216*this[e+3]},s.prototype.readUInt32BE=function(e,t){return t||M(e,4,this.length),16777216*this[e]+(this[e+1]<<16|this[e+2]<<8|this[e+3])},s.prototype.readIntLE=function(e,t,n){e|=0,t|=0,n||M(e,t,this.length);for(var r=this[e],i=1,o=0;++o<t&&(i*=256);)r+=this[e+o]*i;return i*=128,r>=i&&(r-=Math.pow(2,8*t)),r},s.prototype.readIntBE=function(e,t,n){e|=0,t|=0,n||M(e,t,this.length);for(var r=t,i=1,o=this[e+--r];r>0&&(i*=256);)o+=this[e+--r]*i;return i*=128,o>=i&&(o-=Math.pow(2,8*t)),o},s.prototype.readInt8=function(e,t){return t||M(e,1,this.length),128&this[e]?(255-this[e]+1)*-1:this[e]},s.prototype.readInt16LE=function(e,t){t||M(e,2,this.length);var n=this[e]|this[e+1]<<8;return 32768&n?4294901760|n:n},s.prototype.readInt16BE=function(e,t){t||M(e,2,this.length);var n=this[e+1]|this[e]<<8;return 32768&n?4294901760|n:n},s.prototype.readInt32LE=function(e,t){return t||M(e,4,this.length),this[e]|this[e+1]<<8|this[e+2]<<16|this[e+3]<<24},s.prototype.readInt32BE=function(e,t){return t||M(e,4,this.length),this[e]<<24|this[e+1]<<16|this[e+2]<<8|this[e+3]},s.prototype.readFloatLE=function(e,t){return t||M(e,4,this.length),Q.read(this,e,!0,23,4)},s.prototype.readFloatBE=function(e,t){return t||M(e,4,this.length),Q.read(this,e,!1,23,4)},s.prototype.readDoubleLE=function(e,t){return t||M(e,8,this.length),Q.read(this,e,!0,52,8)},s.prototype.readDoubleBE=function(e,t){return t||M(e,8,this.length),Q.read(this,e,!1,52,8)},s.prototype.writeUIntLE=function(e,t,n,r){if(e=+e,t|=0,n|=0,!r){var i=Math.pow(2,8*n)-1;x(this,e,t,n,i,0)}var o=1,s=0;for(this[t]=255&e;++s<n&&(o*=256);)this[t+s]=e/o&255;return t+n},s.prototype.writeUIntBE=function(e,t,n,r){if(e=+e,t|=0,n|=0,!r){var i=Math.pow(2,8*n)-1;x(this,e,t,n,i,0)}var o=n-1,s=1;for(this[t+o]=255&e;--o>=0&&(s*=256);)this[t+o]=e/s&255;return t+n},s.prototype.writeUInt8=function(e,t,n){return e=+e,t|=0,n||x(this,e,t,1,255,0),s.TYPED_ARRAY_SUPPORT||(e=Math.floor(e)),this[t]=255&e,t+1},s.prototype.writeUInt16LE=function(e,t,n){return e=+e,t|=0,n||x(this,e,t,2,65535,0),s.TYPED_ARRAY_SUPPORT?(this[t]=255&e,this[t+1]=e>>>8):O(this,e,t,!0),t+2},s.prototype.writeUInt16BE=function(e,t,n){return e=+e,t|=0,n||x(this,e,t,2,65535,0),s.TYPED_ARRAY_SUPPORT?(this[t]=e>>>8,this[t+1]=255&e):O(this,e,t,!1),t+2},s.prototype.writeUInt32LE=function(e,t,n){return e=+e,t|=0,n||x(this,e,t,4,4294967295,0),s.TYPED_ARRAY_SUPPORT?(this[t+3]=e>>>24,this[t+2]=e>>>16,this[t+1]=e>>>8,this[t]=255&e):N(this,e,t,!0),t+4},s.prototype.writeUInt32BE=function(e,t,n){return e=+e,t|=0,n||x(this,e,t,4,4294967295,0),s.TYPED_ARRAY_SUPPORT?(this[t]=e>>>24,this[t+1]=e>>>16,this[t+2]=e>>>8,this[t+3]=255&e):N(this,e,t,!1),t+4},s.prototype.writeIntLE=function(e,t,n,r){if(e=+e,t|=0,!r){var i=Math.pow(2,8*n-1);x(this,e,t,n,i-1,-i)}var o=0,s=1,a=0;for(this[t]=255&e;++o<n&&(s*=256);)e<0&&0===a&&0!==this[t+o-1]&&(a=1),this[t+o]=(e/s>>0)-a&255;return t+n},s.prototype.writeIntBE=function(e,t,n,r){if(e=+e,t|=0,!r){var i=Math.pow(2,8*n-1);x(this,e,t,n,i-1,-i)}var o=n-1,s=1,a=0;for(this[t+o]=255&e;--o>=0&&(s*=256);)e<0&&0===a&&0!==this[t+o+1]&&(a=1),this[t+o]=(e/s>>0)-a&255;return t+n},s.prototype.writeInt8=function(e,t,n){return e=+e,t|=0,n||x(this,e,t,1,127,-128),s.TYPED_ARRAY_SUPPORT||(e=Math.floor(e)),e<0&&(e=255+e+1),this[t]=255&e,t+1},s.prototype.writeInt16LE=function(e,t,n){return e=+e,t|=0,n||x(this,e,t,2,32767,-32768),s.TYPED_ARRAY_SUPPORT?(this[t]=255&e,this[t+1]=e>>>8):O(this,e,t,!0),t+2},s.prototype.writeInt16BE=function(e,t,n){return e=+e,t|=0,n||x(this,e,t,2,32767,-32768),s.TYPED_ARRAY_SUPPORT?(this[t]=e>>>8,this[t+1]=255&e):O(this,e,t,!1),t+2},s.prototype.writeInt32LE=function(e,t,n){return e=+e,t|=0,n||x(this,e,t,4,2147483647,-2147483648),s.TYPED_ARRAY_SUPPORT?(this[t]=255&e,this[t+1]=e>>>8,this[t+2]=e>>>16,this[t+3]=e>>>24):N(this,e,t,!0),t+4},s.prototype.writeInt32BE=function(e,t,n){return e=+e,t|=0,n||x(this,e,t,4,2147483647,-2147483648),e<0&&(e=4294967295+e+1),s.TYPED_ARRAY_SUPPORT?(this[t]=e>>>24,this[t+1]=e>>>16,this[t+2]=e>>>8,this[t+3]=255&e):N(this,e,t,!1),t+4},s.prototype.writeFloatLE=function(e,t,n){return K(this,e,t,!0,n)},s.prototype.writeFloatBE=function(e,t,n){return K(this,e,t,!1,n)},s.prototype.writeDoubleLE=function(e,t,n){return q(this,e,t,!0,n)},s.prototype.writeDoubleBE=function(e,t,n){return q(this,e,t,!1,n)},s.prototype.copy=function(e,t,n,r){if(n||(n=0),r||0===r||(r=this.length),t>=e.length&&(t=e.length),t||(t=0),r>0&&r<n&&(r=n),r===n)return 0;if(0===e.length||0===this.length)return 0;if(t<0)throw new RangeError("targetStart out of bounds");if(n<0||n>=this.length)throw new RangeError("sourceStart out of bounds");if(r<0)throw new RangeError("sourceEnd out of bounds");r>this.length&&(r=this.length),e.length-t<r-n&&(r=e.length-t+n);var i,o=r-n;if(this===e&&n<t&&t<r)for(i=o-1;i>=0;--i)e[i+t]=this[i+n];else if(o<1e3||!s.TYPED_ARRAY_SUPPORT)for(i=0;i<o;++i)e[i+t]=this[i+n];else Uint8Array.prototype.set.call(e,this.subarray(n,n+o),t);return o},s.prototype.fill=function(e,t,n,r){if("string"==typeof e){if("string"==typeof t?(r=t,t=0,n=this.length):"string"==typeof n&&(r=n,n=this.length),1===e.length){var i=e.charCodeAt(0);i<256&&(e=i)}if(void 0!==r&&"string"!=typeof r)throw new TypeError("encoding must be a string");if("string"==typeof r&&!s.isEncoding(r))throw new TypeError("Unknown encoding: "+r)}else"number"==typeof e&&(e&=255);if(t<0||this.length<t||this.length<n)throw new RangeError("Out of range index");if(n<=t)return this;t>>>=0,n=void 0===n?this.length:n>>>0,e||(e=0);var o;if("number"==typeof e)for(o=t;o<n;++o)this[o]=e;else{var a=s.isBuffer(e)?e:H(new s(e,r).toString()),u=a.length;for(o=0;o<n-t;++o)this[o+t]=a[o%u]}return this};var te=/[^+\/0-9A-Za-z-_]/g}).call(t,function(){return this}())},function(e,t,n){function r(e,t){if(e.length%a!==0){var n=e.length+(a-e.length%a);e=s.concat([e,u],n)}for(var r=[],i=t?e.readInt32BE:e.readInt32LE,o=0;o<e.length;o+=a)r.push(i.call(e,o));return r}function i(e,t,n){for(var r=new s(t),i=n?r.writeInt32BE:r.writeInt32LE,o=0;o<e.length;o++)i.call(r,e[o],4*o,!0);return r}function o(e,t,n,o){s.isBuffer(e)||(e=new s(e));var a=t(r(e,o),e.length*c);return i(a,n,o)}var s=n(1).Buffer,a=4,u=new s(a);u.fill(0);var c=8;e.exports={hash:o}},function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}function i(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;var s=n(1),a=n(14),u=i(a),c=n(4),h=r(c),f=u.createHash,l=u.createHmac,p=u.randomBytes,d="FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3DC2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F83655D23DCA3AD961C62F356208552BB9ED529077096966D670C354E4ABC9804F1746C08CA18217C32905E462E36CE3BE39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9DE2BCBF6955817183995497CEA956AE515D2261898FA051015728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6BF12FFA06D98A0864D87602733EC86A64521F2B18177B200CBBE117577A615D6C770988C0BAD946E208E24FA074E5AB3143DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF",g="userAttributes.",v=function(){function e(t){o(this,e),this.N=new h.default(d,16),this.g=new h.default("2",16),this.k=new h.default(this.hexHash("00"+this.N.toString(16)+"0"+this.g.toString(16)),16),this.smallAValue=this.generateRandomSmallA(),this.getLargeAValue(function(){}),this.infoBits=s.Buffer.from("Caldera Derived Key","utf8"),this.poolName=t}return e.prototype.getSmallAValue=function(){return this.smallAValue},e.prototype.getLargeAValue=function(e){var t=this;this.largeAValue?e(null,this.largeAValue):this.calculateA(this.smallAValue,function(n,r){n&&e(n,null),t.largeAValue=r,e(null,t.largeAValue)})},e.prototype.generateRandomSmallA=function(){var e=p(128).toString("hex"),t=new h.default(e,16),n=t.mod(this.N);return n},e.prototype.generateRandomString=function(){return p(40).toString("base64")},e.prototype.getRandomPassword=function(){return this.randomPassword},e.prototype.getSaltDevices=function(){return this.SaltToHashDevices},e.prototype.getVerifierDevices=function(){return this.verifierDevices},e.prototype.generateHashDevice=function(e,t,n){var r=this;this.randomPassword=this.generateRandomString();var i=""+e+t+":"+this.randomPassword,o=this.hash(i),s=p(16).toString("hex");this.SaltToHashDevices=this.padHex(new h.default(s,16)),this.g.modPow(new h.default(this.hexHash(this.SaltToHashDevices+o),16),this.N,function(e,t){e&&n(e,null),r.verifierDevices=r.padHex(t),n(null,null)})},e.prototype.calculateA=function(e,t){var n=this;this.g.modPow(e,this.N,function(e,r){e&&t(e,null),r.mod(n.N).equals(h.default.ZERO)&&t(new Error("Illegal paramater. A mod N cannot be 0."),null),t(null,r)})},e.prototype.calculateU=function(e,t){this.UHexHash=this.hexHash(this.padHex(e)+this.padHex(t));var n=new h.default(this.UHexHash,16);return n},e.prototype.hash=function(e){var t=f("sha256").update(e).digest("hex");return new Array(64-t.length).join("0")+t},e.prototype.hexHash=function(e){return this.hash(s.Buffer.from(e,"hex"))},e.prototype.computehkdf=function(e,t){var n=l("sha256",t).update(e).digest(),r=s.Buffer.concat([this.infoBits,s.Buffer.from(String.fromCharCode(1),"utf8")]),i=l("sha256",n).update(r).digest();return i.slice(0,16)},e.prototype.getPasswordAuthenticationKey=function(e,t,n,r,i){var o=this;if(n.mod(this.N).equals(h.default.ZERO))throw new Error("B cannot be zero.");if(this.UValue=this.calculateU(this.largeAValue,n),this.UValue.equals(h.default.ZERO))throw new Error("U cannot be zero.");var a=""+this.poolName+e+":"+t,u=this.hash(a),c=new h.default(this.hexHash(this.padHex(r)+u),16);this.calculateS(c,n,function(e,t){e&&i(e,null);var n=o.computehkdf(s.Buffer.from(o.padHex(t),"hex"),s.Buffer.from(o.padHex(o.UValue.toString(16)),"hex"));i(null,n)})},e.prototype.calculateS=function(e,t,n){var r=this;this.g.modPow(e,this.N,function(i,o){i&&n(i,null);var s=t.subtract(r.k.multiply(o));s.modPow(r.smallAValue.add(r.UValue.multiply(e)),r.N,function(e,t){e&&n(e,null),n(null,t.mod(r.N))})})},e.prototype.getNewPasswordRequiredChallengeUserAttributePrefix=function(){return g},e.prototype.padHex=function(e){var t=e.toString(16);return t.length%2===1?t="0"+t:"89ABCDEFabcdef".indexOf(t[0])!==-1&&(t="00"+t),t},e}();t.default=v},function(e,t){"use strict";function n(e,t){null!=e&&this.fromString(e,t)}function r(){return new n(null)}function i(e,t,n,r,i,o){for(;--o>=0;){var s=t*this[e++]+n[r]+i;i=Math.floor(s/67108864),n[r++]=67108863&s}return i}function o(e,t,n,r,i,o){for(var s=32767&t,a=t>>15;--o>=0;){var u=32767&this[e],c=this[e++]>>15,h=a*u+c*s;u=s*u+((32767&h)<<15)+n[r]+(1073741823&i),i=(u>>>30)+(h>>>15)+a*c+(i>>>30),n[r++]=1073741823&u}return i}function s(e,t,n,r,i,o){for(var s=16383&t,a=t>>14;--o>=0;){var u=16383&this[e],c=this[e++]>>14,h=a*u+c*s;u=s*u+((16383&h)<<14)+n[r]+i,i=(u>>28)+(h>>14)+a*c,n[r++]=268435455&u}return i}function a(e){return Z.charAt(e)}function u(e,t){var n=X[e.charCodeAt(t)];return null==n?-1:n}function c(e){for(var t=this.t-1;t>=0;--t)e[t]=this[t];e.t=this.t,e.s=this.s}function h(e){this.t=1,this.s=e<0?-1:0,e>0?this[0]=e:e<-1?this[0]=e+this.DV:this.t=0}function f(e){var t=r();return t.fromInt(e),t}function l(e,t){var r;if(16==t)r=4;else if(8==t)r=3;else if(2==t)r=1;else if(32==t)r=5;else{if(4!=t)throw new Error("Only radix 2, 4, 8, 16, 32 are supported");r=2}this.t=0,this.s=0;for(var i=e.length,o=!1,s=0;--i>=0;){var a=u(e,i);a<0?"-"==e.charAt(i)&&(o=!0):(o=!1,0==s?this[this.t++]=a:s+r>this.DB?(this[this.t-1]|=(a&(1<<this.DB-s)-1)<<s,this[this.t++]=a>>this.DB-s):this[this.t-1]|=a<<s,s+=r,s>=this.DB&&(s-=this.DB))}this.clamp(),o&&n.ZERO.subTo(this,this)}function p(){for(var e=this.s&this.DM;this.t>0&&this[this.t-1]==e;)--this.t}function d(e){if(this.s<0)return"-"+this.negate().toString();var t;if(16==e)t=4;else if(8==e)t=3;else if(2==e)t=1;else if(32==e)t=5;else{if(4!=e)throw new Error("Only radix 2, 4, 8, 16, 32 are supported");t=2}var n,r=(1<<t)-1,i=!1,o="",s=this.t,u=this.DB-s*this.DB%t;if(s-- >0)for(u<this.DB&&(n=this[s]>>u)>0&&(i=!0,o=a(n));s>=0;)u<t?(n=(this[s]&(1<<u)-1)<<t-u,n|=this[--s]>>(u+=this.DB-t)):(n=this[s]>>(u-=t)&r,u<=0&&(u+=this.DB,--s)),n>0&&(i=!0),i&&(o+=a(n));return i?o:"0"}function g(){var e=r();return n.ZERO.subTo(this,e),e}function v(){return this.s<0?this.negate():this}function y(e){var t=this.s-e.s;if(0!=t)return t;var n=this.t;if(t=n-e.t,0!=t)return this.s<0?-t:t;for(;--n>=0;)if(0!=(t=this[n]-e[n]))return t;return 0}function m(e){var t,n=1;return 0!=(t=e>>>16)&&(e=t,n+=16),0!=(t=e>>8)&&(e=t,n+=8),0!=(t=e>>4)&&(e=t,n+=4),0!=(t=e>>2)&&(e=t,n+=2),0!=(t=e>>1)&&(e=t,n+=1),n}function S(){return this.t<=0?0:this.DB*(this.t-1)+m(this[this.t-1]^this.s&this.DM)}function w(e,t){var n;for(n=this.t-1;n>=0;--n)t[n+e]=this[n];for(n=e-1;n>=0;--n)t[n]=0;t.t=this.t+e,t.s=this.s}function A(e,t){for(var n=e;n<this.t;++n)t[n-e]=this[n];t.t=Math.max(this.t-e,0),t.s=this.s}function C(e,t){var n,r=e%this.DB,i=this.DB-r,o=(1<<i)-1,s=Math.floor(e/this.DB),a=this.s<<r&this.DM;for(n=this.t-1;n>=0;--n)t[n+s+1]=this[n]>>i|a,a=(this[n]&o)<<r;for(n=s-1;n>=0;--n)t[n]=0;t[s]=a,t.t=this.t+s+1,t.s=this.s,t.clamp()}function U(e,t){t.s=this.s;var n=Math.floor(e/this.DB);if(n>=this.t)return void(t.t=0);var r=e%this.DB,i=this.DB-r,o=(1<<r)-1;t[0]=this[n]>>r;for(var s=n+1;s<this.t;++s)t[s-n-1]|=(this[s]&o)<<i,t[s-n]=this[s]>>r;r>0&&(t[this.t-n-1]|=(this.s&o)<<i),t.t=this.t-n,t.clamp()}function E(e,t){for(var n=0,r=0,i=Math.min(e.t,this.t);n<i;)r+=this[n]-e[n],t[n++]=r&this.DM,r>>=this.DB;if(e.t<this.t){for(r-=e.s;n<this.t;)r+=this[n],t[n++]=r&this.DM,r>>=this.DB;r+=this.s}else{for(r+=this.s;n<e.t;)r-=e[n],t[n++]=r&this.DM,r>>=this.DB;r-=e.s}t.s=r<0?-1:0,r<-1?t[n++]=this.DV+r:r>0&&(t[n++]=r),t.t=n,t.clamp()}function T(e,t){var r=this.abs(),i=e.abs(),o=r.t;for(t.t=o+i.t;--o>=0;)t[o]=0;for(o=0;o<i.t;++o)t[o+r.t]=r.am(0,i[o],t,o,0,r.t);t.s=0,t.clamp(),this.s!=e.s&&n.ZERO.subTo(t,t)}function D(e){for(var t=this.abs(),n=e.t=2*t.t;--n>=0;)e[n]=0;for(n=0;n<t.t-1;++n){var r=t.am(n,t[n],e,2*n,0,1);(e[n+t.t]+=t.am(n+1,2*t[n],e,2*n+1,r,t.t-n-1))>=t.DV&&(e[n+t.t]-=t.DV,e[n+t.t+1]=1)}e.t>0&&(e[e.t-1]+=t.am(n,t[n],e,2*n,0,1)),e.s=0,e.clamp()}function I(e,t,i){var o=e.abs();if(!(o.t<=0)){var s=this.abs();if(s.t<o.t)return null!=t&&t.fromInt(0),void(null!=i&&this.copyTo(i));null==i&&(i=r());var a=r(),u=this.s,c=e.s,h=this.DB-m(o[o.t-1]);h>0?(o.lShiftTo(h,a),s.lShiftTo(h,i)):(o.copyTo(a),s.copyTo(i));var f=a.t,l=a[f-1];if(0!=l){var p=l*(1<<this.F1)+(f>1?a[f-2]>>this.F2:0),d=this.FV/p,g=(1<<this.F1)/p,v=1<<this.F2,y=i.t,S=y-f,w=null==t?r():t;for(a.dlShiftTo(S,w),i.compareTo(w)>=0&&(i[i.t++]=1,i.subTo(w,i)),n.ONE.dlShiftTo(f,w),w.subTo(a,a);a.t<f;)a[a.t++]=0;for(;--S>=0;){var A=i[--y]==l?this.DM:Math.floor(i[y]*d+(i[y-1]+v)*g);if((i[y]+=a.am(0,A,i,S,0,f))<A)for(a.dlShiftTo(S,w),i.subTo(w,i);i[y]<--A;)i.subTo(w,i)}null!=t&&(i.drShiftTo(f,t),u!=c&&n.ZERO.subTo(t,t)),i.t=f,i.clamp(),h>0&&i.rShiftTo(h,i),u<0&&n.ZERO.subTo(i,i)}}}function R(e){var t=r();return this.abs().divRemTo(e,null,t),this.s<0&&t.compareTo(n.ZERO)>0&&e.subTo(t,t),t}function P(){if(this.t<1)return 0;var e=this[0];if(0==(1&e))return 0;var t=3&e;return t=t*(2-(15&e)*t)&15,t=t*(2-(255&e)*t)&255,t=t*(2-((65535&e)*t&65535))&65535,t=t*(2-e*t%this.DV)%this.DV,t>0?this.DV-t:-t}function _(e){return 0==this.compareTo(e)}function b(e,t){for(var n=0,r=0,i=Math.min(e.t,this.t);n<i;)r+=this[n]+e[n],t[n++]=r&this.DM,r>>=this.DB;if(e.t<this.t){for(r+=e.s;n<this.t;)r+=this[n],t[n++]=r&this.DM,r>>=this.DB;r+=this.s}else{for(r+=this.s;n<e.t;)r+=e[n],t[n++]=r&this.DM,r>>=this.DB;r+=e.s}t.s=r<0?-1:0,r>0?t[n++]=r:r<-1&&(t[n++]=this.DV+r),t.t=n,t.clamp()}function k(e){var t=r();return this.addTo(e,t),t}function F(e){var t=r();return this.subTo(e,t),t}function B(e){var t=r();return this.multiplyTo(e,t),t}function M(e){var t=r();return this.divRemTo(e,t,null),t}function x(e){this.m=e,this.mp=e.invDigit(),this.mpl=32767&this.mp,this.mph=this.mp>>15,this.um=(1<<e.DB-15)-1,this.mt2=2*e.t}function O(e){var t=r();return e.abs().dlShiftTo(this.m.t,t),t.divRemTo(this.m,null,t),e.s<0&&t.compareTo(n.ZERO)>0&&this.m.subTo(t,t),t}function N(e){var t=r();return e.copyTo(t),this.reduce(t),t}function V(e){for(;e.t<=this.mt2;)e[e.t++]=0;for(var t=0;t<this.m.t;++t){var n=32767&e[t],r=n*this.mpl+((n*this.mph+(e[t]>>15)*this.mpl&this.um)<<15)&e.DM;for(n=t+this.m.t,e[n]+=this.m.am(0,r,e,t,0,this.m.t);e[n]>=e.DV;)e[n]-=e.DV,e[++n]++}e.clamp(),e.drShiftTo(this.m.t,e),e.compareTo(this.m)>=0&&e.subTo(this.m,e)}function K(e,t){e.squareTo(t),this.reduce(t)}function q(e,t,n){e.multiplyTo(t,n),this.reduce(n)}function L(e,t,n){var i,o=e.bitLength(),s=f(1),a=new x(t);if(o<=0)return s;i=o<18?1:o<48?3:o<144?4:o<768?5:6;var u=new Array,c=3,h=i-1,l=(1<<i)-1;if(u[1]=a.convert(this),i>1){var p=r();for(a.sqrTo(u[1],p);c<=l;)u[c]=r(),a.mulTo(p,u[c-2],u[c]),c+=2}var d,g,v=e.t-1,y=!0,S=r();for(o=m(e[v])-1;v>=0;){for(o>=h?d=e[v]>>o-h&l:(d=(e[v]&(1<<o+1)-1)<<h-o,v>0&&(d|=e[v-1]>>this.DB+o-h)),c=i;0==(1&d);)d>>=1,--c;if((o-=c)<0&&(o+=this.DB,--v),y)u[d].copyTo(s),y=!1;else{for(;c>1;)a.sqrTo(s,S),a.sqrTo(S,s),c-=2;c>0?a.sqrTo(s,S):(g=s,s=S,S=g),a.mulTo(S,u[d],s)}for(;v>=0&&0==(e[v]&1<<o);)a.sqrTo(s,S),g=s,s=S,S=g,--o<0&&(o=this.DB-1,--v)}var w=a.revert(s);return n(null,w),w}t.__esModule=!0,t.default=n;var Y,j=0xdeadbeefcafe,H=15715070==(16777215&j),J="undefined"!=typeof navigator;J&&H&&"Microsoft Internet Explorer"==navigator.appName?(n.prototype.am=o,Y=30):J&&H&&"Netscape"!=navigator.appName?(n.prototype.am=i,Y=26):(n.prototype.am=s,Y=28),n.prototype.DB=Y,
-n.prototype.DM=(1<<Y)-1,n.prototype.DV=1<<Y;var W=52;n.prototype.FV=Math.pow(2,W),n.prototype.F1=W-Y,n.prototype.F2=2*Y-W;var G,z,Z="0123456789abcdefghijklmnopqrstuvwxyz",X=new Array;for(G="0".charCodeAt(0),z=0;z<=9;++z)X[G++]=z;for(G="a".charCodeAt(0),z=10;z<36;++z)X[G++]=z;for(G="A".charCodeAt(0),z=10;z<36;++z)X[G++]=z;x.prototype.convert=O,x.prototype.revert=N,x.prototype.reduce=V,x.prototype.mulTo=q,x.prototype.sqrTo=K,n.prototype.copyTo=c,n.prototype.fromInt=h,n.prototype.fromString=l,n.prototype.clamp=p,n.prototype.dlShiftTo=w,n.prototype.drShiftTo=A,n.prototype.lShiftTo=C,n.prototype.rShiftTo=U,n.prototype.subTo=E,n.prototype.multiplyTo=T,n.prototype.squareTo=D,n.prototype.divRemTo=I,n.prototype.invDigit=P,n.prototype.addTo=b,n.prototype.toString=d,n.prototype.negate=g,n.prototype.abs=v,n.prototype.compareTo=y,n.prototype.bitLength=S,n.prototype.mod=R,n.prototype.equals=_,n.prototype.add=k,n.prototype.subtract=F,n.prototype.multiply=B,n.prototype.divide=M,n.prototype.modPow=L,n.ZERO=f(0),n.ONE=f(1)},function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function o(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function s(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}t.__esModule=!0;var a=n(7),u=r(a),c=function(e){function t(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},r=n.AccessToken;return i(this,t),o(this,e.call(this,r||""))}return s(t,e),t}(u.default);t.default=c},function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function o(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function s(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}t.__esModule=!0;var a=n(7),u=r(a),c=function(e){function t(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},r=n.IdToken;return i(this,t),o(this,e.call(this,r||""))}return s(t,e),t}(u.default);t.default=c},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;var i=n(1),o=function(){function e(t){r(this,e),this.jwtToken=t||"",this.payload=this.decodePayload()}return e.prototype.getJwtToken=function(){return this.jwtToken},e.prototype.getExpiration=function(){return this.payload.exp},e.prototype.getIssuedAt=function(){return this.payload.iat},e.prototype.decodePayload=function(){var e=this.jwtToken.split(".")[1];try{return JSON.parse(i.Buffer.from(e,"base64").toString("utf8"))}catch(e){return{}}},e}();t.default=o},function(e,t){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;/*!
-	 * Copyright 2016 Amazon.com,
-	 * Inc. or its affiliates. All Rights Reserved.
-	 *
-	 * Licensed under the Amazon Software License (the "License").
-	 * You may not use this file except in compliance with the
-	 * License. A copy of the License is located at
-	 *
-	 *     http://aws.amazon.com/asl/
-	 *
-	 * or in the "license" file accompanying this file. This file is
-	 * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-	 * CONDITIONS OF ANY KIND, express or implied. See the License
-	 * for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-var r=function(){function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},r=t.RefreshToken;n(this,e),this.token=r||""}return e.prototype.getToken=function(){return this.token},e}();t.default=r},function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}function i(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;var s=n(1),a=n(14),u=i(a),c=n(4),h=r(c),f=n(3),l=r(f),p=n(5),d=r(p),g=n(6),v=r(g),y=n(8),m=r(y),S=n(11),w=r(S),A=n(12),C=r(A),U=n(10),E=r(U),T=n(13),D=r(T),I=u.createHmac,R=function(){function e(t){if(o(this,e),null==t||null==t.Username||null==t.Pool)throw new Error("Username and pool information are required.");this.username=t.Username||"",this.pool=t.Pool,this.Session=null,this.client=t.Pool.client,this.signInUserSession=null,this.authenticationFlowType="USER_SRP_AUTH",this.storage=t.Storage||(new D.default).getStorage()}return e.prototype.setSignInUserSession=function(e){this.clearCachedTokens(),this.signInUserSession=e,this.cacheTokens()},e.prototype.getSignInUserSession=function(){return this.signInUserSession},e.prototype.getUsername=function(){return this.username},e.prototype.getAuthenticationFlowType=function(){return this.authenticationFlowType},e.prototype.setAuthenticationFlowType=function(e){this.authenticationFlowType=e},e.prototype.initiateAuth=function(e,t){var n=this,r=e.getAuthParameters();r.USERNAME=this.username;var i={AuthFlow:"CUSTOM_AUTH",ClientId:this.pool.getClientId(),AuthParameters:r,ClientMetadata:e.getValidationData()};this.getUserContextData()&&(i.UserContextData=this.getUserContextData()),this.client.request("InitiateAuth",i,function(e,r){if(e)return t.onFailure(e);var i=r.ChallengeName,o=r.ChallengeParameters;return"CUSTOM_CHALLENGE"===i?(n.Session=r.Session,t.customChallenge(o)):(n.signInUserSession=n.getCognitoUserSession(r.AuthenticationResult),n.cacheTokens(),t.onSuccess(n.signInUserSession))})},e.prototype.authenticateUser=function(e,t){return"USER_PASSWORD_AUTH"===this.authenticationFlowType?this.authenticateUserPlainUsernamePassword(e,t):"USER_SRP_AUTH"===this.authenticationFlowType?this.authenticateUserDefaultAuth(e,t):t.onFailure(new Error("Authentication flow type is invalid."))},e.prototype.authenticateUserDefaultAuth=function(e,t){var n=this,r=new l.default(this.pool.getUserPoolId().split("_")[1]),i=new C.default,o=void 0,a=void 0,u={};null!=this.deviceKey&&(u.DEVICE_KEY=this.deviceKey),u.USERNAME=this.username,r.getLargeAValue(function(c,f){c&&t.onFailure(c),u.SRP_A=f.toString(16),"CUSTOM_AUTH"===n.authenticationFlowType&&(u.CHALLENGE_NAME="SRP_A");var l={AuthFlow:n.authenticationFlowType,ClientId:n.pool.getClientId(),AuthParameters:u,ClientMetadata:e.getValidationData()};n.getUserContextData(n.username)&&(l.UserContextData=n.getUserContextData(n.username)),n.client.request("InitiateAuth",l,function(u,c){if(u)return t.onFailure(u);var f=c.ChallengeParameters;n.username=f.USER_ID_FOR_SRP,o=new h.default(f.SRP_B,16),a=new h.default(f.SALT,16),n.getCachedDeviceKeyAndPassword(),r.getPasswordAuthenticationKey(n.username,e.getPassword(),o,a,function(e,o){e&&t.onFailure(e);var a=i.getNowString(),u=I("sha256",o).update(s.Buffer.concat([s.Buffer.from(n.pool.getUserPoolId().split("_")[1],"utf8"),s.Buffer.from(n.username,"utf8"),s.Buffer.from(f.SECRET_BLOCK,"base64"),s.Buffer.from(a,"utf8")])).digest("base64"),h={};h.USERNAME=n.username,h.PASSWORD_CLAIM_SECRET_BLOCK=f.SECRET_BLOCK,h.TIMESTAMP=a,h.PASSWORD_CLAIM_SIGNATURE=u,null!=n.deviceKey&&(h.DEVICE_KEY=n.deviceKey);var l=function e(t,r){return n.client.request("RespondToAuthChallenge",t,function(i,o){return i&&"ResourceNotFoundException"===i.code&&i.message.toLowerCase().indexOf("device")!==-1?(h.DEVICE_KEY=null,n.deviceKey=null,n.randomPassword=null,n.deviceGroupKey=null,n.clearCachedDeviceKeyAndPassword(),e(t,r)):r(i,o)})},p={ChallengeName:"PASSWORD_VERIFIER",ClientId:n.pool.getClientId(),ChallengeResponses:h,Session:c.Session};n.getUserContextData()&&(p.UserContextData=n.getUserContextData()),l(p,function(e,i){if(e)return t.onFailure(e);var o=i.ChallengeName;if("NEW_PASSWORD_REQUIRED"===o){n.Session=i.Session;var s=null,a=null,u=[],c=r.getNewPasswordRequiredChallengeUserAttributePrefix();if(i.ChallengeParameters&&(s=JSON.parse(i.ChallengeParameters.userAttributes),a=JSON.parse(i.ChallengeParameters.requiredAttributes)),a)for(var h=0;h<a.length;h++)u[h]=a[h].substr(c.length);return t.newPasswordRequired(s,u)}return n.authenticateUserInternal(i,r,t)})})})})},e.prototype.authenticateUserPlainUsernamePassword=function(e,t){var n=this,r={};if(r.USERNAME=this.username,r.PASSWORD=e.getPassword(),!r.PASSWORD)return void t.onFailure(new Error("PASSWORD parameter is required"));var i=new l.default(this.pool.getUserPoolId().split("_")[1]);this.getCachedDeviceKeyAndPassword(),null!=this.deviceKey&&(r.DEVICE_KEY=this.deviceKey);var o={AuthFlow:"USER_PASSWORD_AUTH",ClientId:this.pool.getClientId(),AuthParameters:r,ClientMetadata:e.getValidationData()};this.getUserContextData(this.username)&&(o.UserContextData=this.getUserContextData(this.username)),this.client.request("InitiateAuth",o,function(e,r){return e?t.onFailure(e):n.authenticateUserInternal(r,i,t)})},e.prototype.authenticateUserInternal=function(e,t,n){var r=this,i=e.ChallengeName,o=e.ChallengeParameters;if("SMS_MFA"===i)return this.Session=e.Session,n.mfaRequired(i,o);if("SELECT_MFA_TYPE"===i)return this.Session=e.Session,n.selectMFAType(i,o);if("MFA_SETUP"===i)return this.Session=e.Session,n.mfaSetup(i,o);if("SOFTWARE_TOKEN_MFA"===i)return this.Session=e.Session,n.totpRequired(i,o);if("CUSTOM_CHALLENGE"===i)return this.Session=e.Session,n.customChallenge(o);if("DEVICE_SRP_AUTH"===i)return void this.getDeviceResponse(n);this.signInUserSession=this.getCognitoUserSession(e.AuthenticationResult),this.cacheTokens();var a=e.AuthenticationResult.NewDeviceMetadata;return null==a?n.onSuccess(this.signInUserSession):void t.generateHashDevice(e.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey,e.AuthenticationResult.NewDeviceMetadata.DeviceKey,function(i){if(i)return n.onFailure(i);var o={Salt:s.Buffer.from(t.getSaltDevices(),"hex").toString("base64"),PasswordVerifier:s.Buffer.from(t.getVerifierDevices(),"hex").toString("base64")};r.verifierDevices=o.PasswordVerifier,r.deviceGroupKey=a.DeviceGroupKey,r.randomPassword=t.getRandomPassword(),r.client.request("ConfirmDevice",{DeviceKey:a.DeviceKey,AccessToken:r.signInUserSession.getAccessToken().getJwtToken(),DeviceSecretVerifierConfig:o,DeviceName:navigator.userAgent},function(t,i){return t?n.onFailure(t):(r.deviceKey=e.AuthenticationResult.NewDeviceMetadata.DeviceKey,r.cacheDeviceKeyAndPassword(),i.UserConfirmationNecessary===!0?n.onSuccess(r.signInUserSession,i.UserConfirmationNecessary):n.onSuccess(r.signInUserSession))})})},e.prototype.completeNewPasswordChallenge=function(e,t,n){var r=this;if(!e)return n.onFailure(new Error("New password is required."));var i=new l.default(this.pool.getUserPoolId().split("_")[1]),o=i.getNewPasswordRequiredChallengeUserAttributePrefix(),s={};t&&Object.keys(t).forEach(function(e){s[o+e]=t[e]}),s.NEW_PASSWORD=e,s.USERNAME=this.username;var a={ChallengeName:"NEW_PASSWORD_REQUIRED",ClientId:this.pool.getClientId(),ChallengeResponses:s,Session:this.Session};this.getUserContextData()&&(a.UserContextData=this.getUserContextData()),this.client.request("RespondToAuthChallenge",a,function(e,t){return e?n.onFailure(e):r.authenticateUserInternal(t,i,n)})},e.prototype.getDeviceResponse=function(e){var t=this,n=new l.default(this.deviceGroupKey),r=new C.default,i={};i.USERNAME=this.username,i.DEVICE_KEY=this.deviceKey,n.getLargeAValue(function(o,a){o&&e.onFailure(o),i.SRP_A=a.toString(16);var u={ChallengeName:"DEVICE_SRP_AUTH",ClientId:t.pool.getClientId(),ChallengeResponses:i};t.getUserContextData()&&(u.UserContextData=t.getUserContextData()),t.client.request("RespondToAuthChallenge",u,function(i,o){if(i)return e.onFailure(i);var a=o.ChallengeParameters,u=new h.default(a.SRP_B,16),c=new h.default(a.SALT,16);n.getPasswordAuthenticationKey(t.deviceKey,t.randomPassword,u,c,function(n,i){if(n)return e.onFailure(n);var u=r.getNowString(),c=I("sha256",i).update(s.Buffer.concat([s.Buffer.from(t.deviceGroupKey,"utf8"),s.Buffer.from(t.deviceKey,"utf8"),s.Buffer.from(a.SECRET_BLOCK,"base64"),s.Buffer.from(u,"utf8")])).digest("base64"),h={};h.USERNAME=t.username,h.PASSWORD_CLAIM_SECRET_BLOCK=a.SECRET_BLOCK,h.TIMESTAMP=u,h.PASSWORD_CLAIM_SIGNATURE=c,h.DEVICE_KEY=t.deviceKey;var f={ChallengeName:"DEVICE_PASSWORD_VERIFIER",ClientId:t.pool.getClientId(),ChallengeResponses:h,Session:o.Session};t.getUserContextData()&&(f.UserContextData=t.getUserContextData()),t.client.request("RespondToAuthChallenge",f,function(n,r){return n?e.onFailure(n):(t.signInUserSession=t.getCognitoUserSession(r.AuthenticationResult),t.cacheTokens(),e.onSuccess(t.signInUserSession))})})})})},e.prototype.confirmRegistration=function(e,t,n){var r={ClientId:this.pool.getClientId(),ConfirmationCode:e,Username:this.username,ForceAliasCreation:t};this.getUserContextData()&&(r.UserContextData=this.getUserContextData()),this.client.request("ConfirmSignUp",r,function(e){return e?n(e,null):n(null,"SUCCESS")})},e.prototype.sendCustomChallengeAnswer=function(e,t){var n=this,r={};r.USERNAME=this.username,r.ANSWER=e;var i=new l.default(this.pool.getUserPoolId().split("_")[1]);this.getCachedDeviceKeyAndPassword(),null!=this.deviceKey&&(r.DEVICE_KEY=this.deviceKey);var o={ChallengeName:"CUSTOM_CHALLENGE",ChallengeResponses:r,ClientId:this.pool.getClientId(),Session:this.Session};this.getUserContextData()&&(o.UserContextData=this.getUserContextData()),this.client.request("RespondToAuthChallenge",o,function(e,r){return e?t.onFailure(e):n.authenticateUserInternal(r,i,t)})},e.prototype.sendMFACode=function(e,t,n){var r=this,i={};i.USERNAME=this.username,i.SMS_MFA_CODE=e;var o=n||"SMS_MFA";"SOFTWARE_TOKEN_MFA"===o&&(i.SOFTWARE_TOKEN_MFA_CODE=e),null!=this.deviceKey&&(i.DEVICE_KEY=this.deviceKey);var a={ChallengeName:o,ChallengeResponses:i,ClientId:this.pool.getClientId(),Session:this.Session};this.getUserContextData()&&(a.UserContextData=this.getUserContextData()),this.client.request("RespondToAuthChallenge",a,function(e,n){if(e)return t.onFailure(e);var i=n.ChallengeName;if("DEVICE_SRP_AUTH"===i)return void r.getDeviceResponse(t);if(r.signInUserSession=r.getCognitoUserSession(n.AuthenticationResult),r.cacheTokens(),null==n.AuthenticationResult.NewDeviceMetadata)return t.onSuccess(r.signInUserSession);var o=new l.default(r.pool.getUserPoolId().split("_")[1]);o.generateHashDevice(n.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey,n.AuthenticationResult.NewDeviceMetadata.DeviceKey,function(e){if(e)return t.onFailure(e);var i={Salt:s.Buffer.from(o.getSaltDevices(),"hex").toString("base64"),PasswordVerifier:s.Buffer.from(o.getVerifierDevices(),"hex").toString("base64")};r.verifierDevices=i.PasswordVerifier,r.deviceGroupKey=n.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey,r.randomPassword=o.getRandomPassword(),r.client.request("ConfirmDevice",{DeviceKey:n.AuthenticationResult.NewDeviceMetadata.DeviceKey,AccessToken:r.signInUserSession.getAccessToken().getJwtToken(),DeviceSecretVerifierConfig:i,DeviceName:navigator.userAgent},function(e,i){return e?t.onFailure(e):(r.deviceKey=n.AuthenticationResult.NewDeviceMetadata.DeviceKey,r.cacheDeviceKeyAndPassword(),i.UserConfirmationNecessary===!0?t.onSuccess(r.signInUserSession,i.UserConfirmationNecessary):t.onSuccess(r.signInUserSession))})})})},e.prototype.changePassword=function(e,t,n){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("ChangePassword",{PreviousPassword:e,ProposedPassword:t,AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(e){return e?n(e,null):n(null,"SUCCESS")}):n(new Error("User is not authenticated"),null)},e.prototype.enableMFA=function(e){if(null==this.signInUserSession||!this.signInUserSession.isValid())return e(new Error("User is not authenticated"),null);var t=[],n={DeliveryMedium:"SMS",AttributeName:"phone_number"};t.push(n),this.client.request("SetUserSettings",{MFAOptions:t,AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(t){return t?e(t,null):e(null,"SUCCESS")})},e.prototype.setUserMfaPreference=function(e,t,n){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("SetUserMFAPreference",{SMSMfaSettings:e,SoftwareTokenMfaSettings:t,AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(e){return e?n(e,null):n(null,"SUCCESS")}):n(new Error("User is not authenticated"),null)},e.prototype.disableMFA=function(e){if(null==this.signInUserSession||!this.signInUserSession.isValid())return e(new Error("User is not authenticated"),null);var t=[];this.client.request("SetUserSettings",{MFAOptions:t,AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(t){return t?e(t,null):e(null,"SUCCESS")})},e.prototype.deleteUser=function(e){var t=this;return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("DeleteUser",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(n){return n?e(n,null):(t.clearCachedTokens(),e(null,"SUCCESS"))}):e(new Error("User is not authenticated"),null)},e.prototype.updateAttributes=function(e,t){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("UpdateUserAttributes",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken(),UserAttributes:e},function(e){return e?t(e,null):t(null,"SUCCESS")}):t(new Error("User is not authenticated"),null)},e.prototype.getUserAttributes=function(e){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("GetUser",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(t,n){if(t)return e(t,null);for(var r=[],i=0;i<n.UserAttributes.length;i++){var o={Name:n.UserAttributes[i].Name,Value:n.UserAttributes[i].Value},s=new E.default(o);r.push(s)}return e(null,r)}):e(new Error("User is not authenticated"),null)},e.prototype.getMFAOptions=function(e){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("GetUser",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(t,n){return t?e(t,null):e(null,n.MFAOptions)}):e(new Error("User is not authenticated"),null)},e.prototype.getUserData=function(e){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("GetUser",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(t,n){return t?e(t,null):e(null,n)}):e(new Error("User is not authenticated"),null)},e.prototype.deleteAttributes=function(e,t){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("DeleteUserAttributes",{UserAttributeNames:e,AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(e){return e?t(e,null):t(null,"SUCCESS")}):t(new Error("User is not authenticated"),null)},e.prototype.resendConfirmationCode=function(e){var t={ClientId:this.pool.getClientId(),Username:this.username};this.client.request("ResendConfirmationCode",t,function(t,n){return t?e(t,null):e(null,n)})},e.prototype.getSession=function(e){if(null==this.username)return e(new Error("Username is null. Cannot retrieve a new session"),null);if(null!=this.signInUserSession&&this.signInUserSession.isValid())return e(null,this.signInUserSession);var t="CognitoIdentityServiceProvider."+this.pool.getClientId()+"."+this.username,n=t+".idToken",r=t+".accessToken",i=t+".refreshToken",o=t+".clockDrift";if(this.storage.getItem(n)){var s=new v.default({IdToken:this.storage.getItem(n)}),a=new d.default({AccessToken:this.storage.getItem(r)}),u=new m.default({RefreshToken:this.storage.getItem(i)}),c=parseInt(this.storage.getItem(o),0)||0,h={IdToken:s,AccessToken:a,RefreshToken:u,ClockDrift:c},f=new w.default(h);if(f.isValid())return this.signInUserSession=f,e(null,this.signInUserSession);if(null==u.getToken())return e(new Error("Cannot retrieve a new session. Please authenticate."),null);this.refreshSession(u,e)}else e(new Error("Local storage is missing an ID Token, Please authenticate"),null)},e.prototype.refreshSession=function(e,t){var n=this,r={};r.REFRESH_TOKEN=e.getToken();var i="CognitoIdentityServiceProvider."+this.pool.getClientId(),o=i+".LastAuthUser";if(this.storage.getItem(o)){this.username=this.storage.getItem(o);var s=i+"."+this.username+".deviceKey";this.deviceKey=this.storage.getItem(s),r.DEVICE_KEY=this.deviceKey}var a={ClientId:this.pool.getClientId(),AuthFlow:"REFRESH_TOKEN_AUTH",AuthParameters:r};this.getUserContextData()&&(a.UserContextData=this.getUserContextData()),this.client.request("InitiateAuth",a,function(r,i){if(r)return"NotAuthorizedException"===r.code&&n.clearCachedTokens(),t(r,null);if(i){var o=i.AuthenticationResult;return Object.prototype.hasOwnProperty.call(o,"RefreshToken")||(o.RefreshToken=e.getToken()),n.signInUserSession=n.getCognitoUserSession(o),n.cacheTokens(),t(null,n.signInUserSession)}})},e.prototype.cacheTokens=function(){var e="CognitoIdentityServiceProvider."+this.pool.getClientId(),t=e+"."+this.username+".idToken",n=e+"."+this.username+".accessToken",r=e+"."+this.username+".refreshToken",i=e+"."+this.username+".clockDrift",o=e+".LastAuthUser";this.storage.setItem(t,this.signInUserSession.getIdToken().getJwtToken()),this.storage.setItem(n,this.signInUserSession.getAccessToken().getJwtToken()),this.storage.setItem(r,this.signInUserSession.getRefreshToken().getToken()),this.storage.setItem(i,""+this.signInUserSession.getClockDrift()),this.storage.setItem(o,this.username)},e.prototype.cacheDeviceKeyAndPassword=function(){var e="CognitoIdentityServiceProvider."+this.pool.getClientId()+"."+this.username,t=e+".deviceKey",n=e+".randomPasswordKey",r=e+".deviceGroupKey";this.storage.setItem(t,this.deviceKey),this.storage.setItem(n,this.randomPassword),this.storage.setItem(r,this.deviceGroupKey)},e.prototype.getCachedDeviceKeyAndPassword=function(){var e="CognitoIdentityServiceProvider."+this.pool.getClientId()+"."+this.username,t=e+".deviceKey",n=e+".randomPasswordKey",r=e+".deviceGroupKey";this.storage.getItem(t)&&(this.deviceKey=this.storage.getItem(t),this.randomPassword=this.storage.getItem(n),this.deviceGroupKey=this.storage.getItem(r))},e.prototype.clearCachedDeviceKeyAndPassword=function(){var e="CognitoIdentityServiceProvider."+this.pool.getClientId()+"."+this.username,t=e+".deviceKey",n=e+".randomPasswordKey",r=e+".deviceGroupKey";this.storage.removeItem(t),this.storage.removeItem(n),this.storage.removeItem(r)},e.prototype.clearCachedTokens=function(){var e="CognitoIdentityServiceProvider."+this.pool.getClientId(),t=e+"."+this.username+".idToken",n=e+"."+this.username+".accessToken",r=e+"."+this.username+".refreshToken",i=e+".LastAuthUser";this.storage.removeItem(t),this.storage.removeItem(n),this.storage.removeItem(r),this.storage.removeItem(i)},e.prototype.getCognitoUserSession=function(e){var t=new v.default(e),n=new d.default(e),r=new m.default(e),i={IdToken:t,AccessToken:n,RefreshToken:r};return new w.default(i)},e.prototype.forgotPassword=function(e){var t={ClientId:this.pool.getClientId(),Username:this.username};this.getUserContextData()&&(t.UserContextData=this.getUserContextData()),this.client.request("ForgotPassword",t,function(t,n){return t?e.onFailure(t):"function"==typeof e.inputVerificationCode?e.inputVerificationCode(n):e.onSuccess(n)})},e.prototype.confirmPassword=function(e,t,n){var r={ClientId:this.pool.getClientId(),Username:this.username,ConfirmationCode:e,Password:t};this.getUserContextData()&&(r.UserContextData=this.getUserContextData()),this.client.request("ConfirmForgotPassword",r,function(e){return e?n.onFailure(e):n.onSuccess()})},e.prototype.getAttributeVerificationCode=function(e,t){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("GetUserAttributeVerificationCode",{AttributeName:e,AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(e,n){return e?t.onFailure(e):"function"==typeof t.inputVerificationCode?t.inputVerificationCode(n):t.onSuccess()}):t.onFailure(new Error("User is not authenticated"))},e.prototype.verifyAttribute=function(e,t,n){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("VerifyUserAttribute",{AttributeName:e,Code:t,AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(e){return e?n.onFailure(e):n.onSuccess("SUCCESS")}):n.onFailure(new Error("User is not authenticated"))},e.prototype.getDevice=function(e){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("GetDevice",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken(),DeviceKey:this.deviceKey},function(t,n){return t?e.onFailure(t):e.onSuccess(n)}):e.onFailure(new Error("User is not authenticated"))},e.prototype.forgetSpecificDevice=function(e,t){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("ForgetDevice",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken(),DeviceKey:e},function(e){return e?t.onFailure(e):t.onSuccess("SUCCESS")}):t.onFailure(new Error("User is not authenticated"))},e.prototype.forgetDevice=function(e){var t=this;this.forgetSpecificDevice(this.deviceKey,{onFailure:e.onFailure,onSuccess:function(n){return t.deviceKey=null,t.deviceGroupKey=null,t.randomPassword=null,t.clearCachedDeviceKeyAndPassword(),e.onSuccess(n)}})},e.prototype.setDeviceStatusRemembered=function(e){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("UpdateDeviceStatus",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken(),DeviceKey:this.deviceKey,DeviceRememberedStatus:"remembered"},function(t){return t?e.onFailure(t):e.onSuccess("SUCCESS")}):e.onFailure(new Error("User is not authenticated"))},e.prototype.setDeviceStatusNotRemembered=function(e){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("UpdateDeviceStatus",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken(),DeviceKey:this.deviceKey,DeviceRememberedStatus:"not_remembered"},function(t){return t?e.onFailure(t):e.onSuccess("SUCCESS")}):e.onFailure(new Error("User is not authenticated"))},e.prototype.listDevices=function(e,t,n){return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("ListDevices",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken(),Limit:e,PaginationToken:t},function(e,t){return e?n.onFailure(e):n.onSuccess(t)}):n.onFailure(new Error("User is not authenticated"))},e.prototype.globalSignOut=function(e){var t=this;return null!=this.signInUserSession&&this.signInUserSession.isValid()?void this.client.request("GlobalSignOut",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(n){return n?e.onFailure(n):(t.clearCachedTokens(),e.onSuccess("SUCCESS"))}):e.onFailure(new Error("User is not authenticated"))},e.prototype.signOut=function(){this.signInUserSession=null,this.clearCachedTokens()},e.prototype.sendMFASelectionAnswer=function(e,t){var n=this,r={};r.USERNAME=this.username,r.ANSWER=e;var i={ChallengeName:"SELECT_MFA_TYPE",ChallengeResponses:r,ClientId:this.pool.getClientId(),Session:this.Session};this.getUserContextData()&&(i.UserContextData=this.getUserContextData()),this.client.request("RespondToAuthChallenge",i,function(r,i){return r?t.onFailure(r):(n.Session=i.Session,"SMS_MFA"===e?t.mfaRequired(i.challengeName,i.challengeParameters):"SOFTWARE_TOKEN_MFA"===e?t.totpRequired(i.challengeName,i.challengeParameters):void 0)})},e.prototype.getUserContextData=function(){var e=this.pool;return e.getUserContextData(this.username)},e.prototype.associateSoftwareToken=function(e){var t=this;null!=this.signInUserSession&&this.signInUserSession.isValid()?this.client.request("AssociateSoftwareToken",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken()},function(t,n){return t?e.onFailure(t):e.associateSecretCode(n.SecretCode)}):this.client.request("AssociateSoftwareToken",{Session:this.Session},function(n,r){return n?e.onFailure(n):(t.Session=r.Session,e.associateSecretCode(r.SecretCode))})},e.prototype.verifySoftwareToken=function(e,t,n){var r=this;null!=this.signInUserSession&&this.signInUserSession.isValid()?this.client.request("VerifySoftwareToken",{AccessToken:this.signInUserSession.getAccessToken().getJwtToken(),UserCode:e,FriendlyDeviceName:t},function(e,t){return e?n.onFailure(e):n.onSuccess(t)}):this.client.request("VerifySoftwareToken",{Session:this.Session,UserCode:e,FriendlyDeviceName:t},function(e,t){if(e)return n.onFailure(e);r.Session=t.Session;var i={};i.USERNAME=r.username;var o={ChallengeName:"MFA_SETUP",ClientId:r.pool.getClientId(),ChallengeResponses:i,Session:r.Session};r.getUserContextData()&&(o.UserContextData=r.getUserContextData()),r.client.request("RespondToAuthChallenge",o,function(e,t){return e?n.onFailure(e):(r.signInUserSession=r.getCognitoUserSession(t.AuthenticationResult),r.cacheTokens(),n.onSuccess(r.signInUserSession))})})},e}();t.default=R},function(e,t){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;/*!
-	 * Copyright 2016 Amazon.com,
-	 * Inc. or its affiliates. All Rights Reserved.
-	 *
-	 * Licensed under the Amazon Software License (the "License").
-	 * You may not use this file except in compliance with the
-	 * License. A copy of the License is located at
-	 *
-	 *     http://aws.amazon.com/asl/
-	 *
-	 * or in the "license" file accompanying this file. This file is
-	 * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-	 * CONDITIONS OF ANY KIND, express or implied. See the License
-	 * for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-var r=function(){function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},r=t.Name,i=t.Value;n(this,e),this.Name=r||"",this.Value=i||""}return e.prototype.getValue=function(){return this.Value},e.prototype.setValue=function(e){return this.Value=e,this},e.prototype.getName=function(){return this.Name},e.prototype.setName=function(e){return this.Name=e,this},e.prototype.toString=function(){return JSON.stringify(this)},e.prototype.toJSON=function(){return{Name:this.Name,Value:this.Value}},e}();t.default=r},function(e,t){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;/*!
-	 * Copyright 2016 Amazon.com,
-	 * Inc. or its affiliates. All Rights Reserved.
-	 *
-	 * Licensed under the Amazon Software License (the "License").
-	 * You may not use this file except in compliance with the
-	 * License. A copy of the License is located at
-	 *
-	 *     http://aws.amazon.com/asl/
-	 *
-	 * or in the "license" file accompanying this file. This file is
-	 * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-	 * CONDITIONS OF ANY KIND, express or implied. See the License
-	 * for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-var r=function(){function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},r=t.IdToken,i=t.RefreshToken,o=t.AccessToken,s=t.ClockDrift;if(n(this,e),null==o||null==r)throw new Error("Id token and Access Token must be present.");this.idToken=r,this.refreshToken=i,this.accessToken=o,this.clockDrift=void 0===s?this.calculateClockDrift():s}return e.prototype.getIdToken=function(){return this.idToken},e.prototype.getRefreshToken=function(){return this.refreshToken},e.prototype.getAccessToken=function(){return this.accessToken},e.prototype.getClockDrift=function(){return this.clockDrift},e.prototype.calculateClockDrift=function(){var e=Math.floor(new Date/1e3),t=Math.min(this.accessToken.getIssuedAt(),this.idToken.getIssuedAt());return e-t},e.prototype.isValid=function(){var e=Math.floor(new Date/1e3),t=e-this.clockDrift;return t<this.accessToken.getExpiration()&&t<this.idToken.getExpiration()},e}();t.default=r},function(e,t){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;/*!
-	 * Copyright 2016 Amazon.com,
-	 * Inc. or its affiliates. All Rights Reserved.
-	 *
-	 * Licensed under the Amazon Software License (the "License").
-	 * You may not use this file except in compliance with the
-	 * License. A copy of the License is located at
-	 *
-	 *     http://aws.amazon.com/asl/
-	 *
-	 * or in the "license" file accompanying this file. This file is
-	 * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-	 * CONDITIONS OF ANY KIND, express or implied. See the License
-	 * for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-var r=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],i=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],o=function(){function e(){n(this,e)}return e.prototype.getNowString=function(){var e=new Date,t=i[e.getUTCDay()],n=r[e.getUTCMonth()],o=e.getUTCDate(),s=e.getUTCHours();s<10&&(s="0"+s);var a=e.getUTCMinutes();a<10&&(a="0"+a);var u=e.getUTCSeconds();u<10&&(u="0"+u);var c=e.getUTCFullYear(),h=t+" "+n+" "+o+" "+s+":"+a+":"+u+" UTC "+c;return h},e}();t.default=o},function(e,t){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;/*!
-	 * Copyright 2016 Amazon.com,
-	 * Inc. or its affiliates. All Rights Reserved.
-	 *
-	 * Licensed under the Amazon Software License (the "License").
-	 * You may not use this file except in compliance with the
-	 * License. A copy of the License is located at
-	 *
-	 *     http://aws.amazon.com/asl/
-	 *
-	 * or in the "license" file accompanying this file. This file is
-	 * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-	 * CONDITIONS OF ANY KIND, express or implied. See the License
-	 * for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-var r={},i=function(){function e(){n(this,e)}return e.setItem=function(e,t){return r[e]=t,r[e]},e.getItem=function(e){return Object.prototype.hasOwnProperty.call(r,e)?r[e]:void 0},e.removeItem=function(e){return delete r[e]},e.clear=function(){return r={}},e}(),o=function(){function e(){n(this,e);try{this.storageWindow=window.localStorage,this.storageWindow.setItem("aws.cognito.test-ls",1),this.storageWindow.removeItem("aws.cognito.test-ls")}catch(e){this.storageWindow=i}}return e.prototype.getStorage=function(){return this.storageWindow},e}();t.default=o},function(e,t,n){function r(e,t,n){a.isBuffer(t)||(t=new a(t)),a.isBuffer(n)||(n=new a(n)),t.length>p?t=e(t):t.length<p&&(t=a.concat([t,d],p));for(var r=new a(p),i=new a(p),o=0;o<p;o++)r[o]=54^t[o],i[o]=92^t[o];var s=e(a.concat([r,n]));return e(a.concat([i,s]))}function i(e,t){e=e||"sha1";var n=l[e],i=[],s=0;return n||o("algorithm:",e,"is not yet supported"),{update:function(e){return a.isBuffer(e)||(e=new a(e)),i.push(e),s+=e.length,this},digest:function(e){var o=a.concat(i),s=t?r(n,t,o):n(o);return i=null,e?s.toString(e):s}}}function o(){var e=[].slice.call(arguments).join(" ");throw new Error([e,"we accept pull requests","http://github.com/dominictarr/crypto-browserify"].join("\n"))}function s(e,t){for(var n in e)t(e[n],n)}var a=n(1).Buffer,u=n(26),c=n(27),h=n(25),f=n(24),l={sha1:u,sha256:c,md5:f},p=64,d=new a(p);d.fill(0),t.createHash=function(e){return i(e)},t.createHmac=function(e,t){return i(e,t)},t.randomBytes=function(e,t){if(!t||!t.call)return new a(h(e));try{t.call(this,void 0,new a(h(e)))}catch(e){t(e)}},s(["createCredentials","createCipher","createCipheriv","createDecipher","createDecipheriv","createSign","createVerify","createDiffieHellman","pbkdf2"],function(e){t[e]=function(){o("sorry,",e,"is not implemented yet")}})},function(e,t){"use strict";function n(e){var t=e.length;if(t%4>0)throw new Error("Invalid string. Length must be a multiple of 4");var n=e.indexOf("=");n===-1&&(n=t);var r=n===t?0:4-n%4;return[n,r]}function r(e){var t=n(e),r=t[0],i=t[1];return 3*(r+i)/4-i}function i(e,t,n){return 3*(t+n)/4-n}function o(e){for(var t,r=n(e),o=r[0],s=r[1],a=new f(i(e,o,s)),u=0,c=s>0?o-4:o,l=0;l<c;l+=4)t=h[e.charCodeAt(l)]<<18|h[e.charCodeAt(l+1)]<<12|h[e.charCodeAt(l+2)]<<6|h[e.charCodeAt(l+3)],a[u++]=t>>16&255,a[u++]=t>>8&255,a[u++]=255&t;return 2===s&&(t=h[e.charCodeAt(l)]<<2|h[e.charCodeAt(l+1)]>>4,a[u++]=255&t),1===s&&(t=h[e.charCodeAt(l)]<<10|h[e.charCodeAt(l+1)]<<4|h[e.charCodeAt(l+2)]>>2,a[u++]=t>>8&255,a[u++]=255&t),a}function s(e){return c[e>>18&63]+c[e>>12&63]+c[e>>6&63]+c[63&e]}function a(e,t,n){for(var r,i=[],o=t;o<n;o+=3)r=(e[o]<<16&16711680)+(e[o+1]<<8&65280)+(255&e[o+2]),i.push(s(r));return i.join("")}function u(e){for(var t,n=e.length,r=n%3,i=[],o=16383,s=0,u=n-r;s<u;s+=o)i.push(a(e,s,s+o>u?u:s+o));return 1===r?(t=e[n-1],i.push(c[t>>2]+c[t<<4&63]+"==")):2===r&&(t=(e[n-2]<<8)+e[n-1],i.push(c[t>>10]+c[t>>4&63]+c[t<<2&63]+"=")),i.join("")}t.byteLength=r,t.toByteArray=o,t.fromByteArray=u;for(var c=[],h=[],f="undefined"!=typeof Uint8Array?Uint8Array:Array,l="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",p=0,d=l.length;p<d;++p)c[p]=l[p],h[l.charCodeAt(p)]=p;h["-".charCodeAt(0)]=62,h["_".charCodeAt(0)]=63},function(e,t){t.read=function(e,t,n,r,i){var o,s,a=8*i-r-1,u=(1<<a)-1,c=u>>1,h=-7,f=n?i-1:0,l=n?-1:1,p=e[t+f];for(f+=l,o=p&(1<<-h)-1,p>>=-h,h+=a;h>0;o=256*o+e[t+f],f+=l,h-=8);for(s=o&(1<<-h)-1,o>>=-h,h+=r;h>0;s=256*s+e[t+f],f+=l,h-=8);if(0===o)o=1-c;else{if(o===u)return s?NaN:(p?-1:1)*(1/0);s+=Math.pow(2,r),o-=c}return(p?-1:1)*s*Math.pow(2,o-r)},t.write=function(e,t,n,r,i,o){var s,a,u,c=8*o-i-1,h=(1<<c)-1,f=h>>1,l=23===i?Math.pow(2,-24)-Math.pow(2,-77):0,p=r?0:o-1,d=r?1:-1,g=t<0||0===t&&1/t<0?1:0;for(t=Math.abs(t),isNaN(t)||t===1/0?(a=isNaN(t)?1:0,s=h):(s=Math.floor(Math.log(t)/Math.LN2),t*(u=Math.pow(2,-s))<1&&(s--,u*=2),t+=s+f>=1?l/u:l*Math.pow(2,1-f),t*u>=2&&(s++,u/=2),s+f>=h?(a=0,s=h):s+f>=1?(a=(t*u-1)*Math.pow(2,i),s+=f):(a=t*Math.pow(2,f-1)*Math.pow(2,i),s=0));i>=8;e[n+p]=255&a,p+=d,a/=256,i-=8);for(s=s<<i|a,c+=i;c>0;e[n+p]=255&s,p+=d,s/=256,c-=8);e[n+p-d]|=128*g}},function(e,t){var n={}.toString;e.exports=Array.isArray||function(e){return"[object Array]"==n.call(e)}},function(e,t,n){var r,i;!function(o){var s=!1;if(r=o,i="function"==typeof r?r.call(t,n,t,e):r,!(void 0!==i&&(e.exports=i)),s=!0,e.exports=o(),s=!0,!s){var a=window.Cookies,u=window.Cookies=o();u.noConflict=function(){return window.Cookies=a,u}}}(function(){function e(){for(var e=0,t={};e<arguments.length;e++){var n=arguments[e];for(var r in n)t[r]=n[r]}return t}function t(n){function r(t,i,o){var s;if("undefined"!=typeof document){if(arguments.length>1){if(o=e({path:"/"},r.defaults,o),"number"==typeof o.expires){var a=new Date;a.setMilliseconds(a.getMilliseconds()+864e5*o.expires),o.expires=a}o.expires=o.expires?o.expires.toUTCString():"";try{s=JSON.stringify(i),/^[\{\[]/.test(s)&&(i=s)}catch(e){}i=n.write?n.write(i,t):encodeURIComponent(String(i)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,decodeURIComponent),t=encodeURIComponent(String(t)),t=t.replace(/%(23|24|26|2B|5E|60|7C)/g,decodeURIComponent),t=t.replace(/[\(\)]/g,escape);var u="";for(var c in o)o[c]&&(u+="; "+c,o[c]!==!0&&(u+="="+o[c]));return document.cookie=t+"="+i+u}t||(s={});for(var h=document.cookie?document.cookie.split("; "):[],f=/(%[0-9A-Z]{2})+/g,l=0;l<h.length;l++){var p=h[l].split("="),d=p.slice(1).join("=");this.json||'"'!==d.charAt(0)||(d=d.slice(1,-1));try{var g=p[0].replace(f,decodeURIComponent);if(d=n.read?n.read(d,g):n(d,g)||d.replace(f,decodeURIComponent),this.json)try{d=JSON.parse(d)}catch(e){}if(t===g){s=d;break}t||(s[g]=d)}catch(e){}}return s}}return r.set=r,r.get=function(e){return r.call(r,e)},r.getJSON=function(){return r.apply({json:!0},[].slice.call(arguments))},r.defaults={},r.remove=function(t,n){r(t,"",e(n,{expires:-1}))},r.withConverter=t,r}return t(function(){})})},function(e,t){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;/*!
-	 * Copyright 2016 Amazon.com,
-	 * Inc. or its affiliates. All Rights Reserved.
-	 *
-	 * Licensed under the Amazon Software License (the "License").
-	 * You may not use this file except in compliance with the
-	 * License. A copy of the License is located at
-	 *
-	 *     http://aws.amazon.com/asl/
-	 *
-	 * or in the "license" file accompanying this file. This file is
-	 * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-	 * CONDITIONS OF ANY KIND, express or implied. See the License
-	 * for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-var r=function(){function e(t){n(this,e);var r=t||{},i=r.ValidationData,o=r.Username,s=r.Password,a=r.AuthParameters;this.validationData=i||{},this.authParameters=a||{},this.username=o,this.password=s}return e.prototype.getUsername=function(){return this.username},e.prototype.getPassword=function(){return this.password},e.prototype.getValidationData=function(){return this.validationData},e.prototype.getAuthParameters=function(){return this.authParameters},e}();t.default=r},function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;var o=n(23),s=r(o),a=function(){function e(t,n){i(this,e),this.endpoint=n||"https://cognito-idp."+t+".amazonaws.com/",this.userAgent=s.default.prototype.userAgent||"aws-amplify/0.1.x js"}return e.prototype.request=function(e,t,n){var r={"Content-Type":"application/x-amz-json-1.1","X-Amz-Target":"AWSCognitoIdentityProviderService."+e,"X-Amz-User-Agent":this.userAgent},i={headers:r,method:"POST",mode:"cors",cache:"no-cache",body:JSON.stringify(t)},o=void 0;fetch(this.endpoint,i).then(function(e){return o=e,e},function(e){if(e instanceof TypeError)throw new Error("Network error");throw e}).then(function(e){return e.json().catch(function(){return{}})}).then(function(e){if(o.ok)return n(null,e);var t=(e.__type||e.code).split("#").pop(),r={code:t,name:t,message:e.message||e.Message||null};return n(r)}).catch(function(e){var t={code:"UnknownError",message:"Unkown error"};if(o&&o.headers&&o.headers.get("x-amzn-errortype"))try{var r=o.headers.get("x-amzn-errortype").split(":")[0];t={code:r,name:r,statusCode:o.status,message:o.status?o.status.toString():null}}catch(e){return t={code:"UnknownError",message:o.headers.get("x-amzn-errortype")},n(t)}else e instanceof Error&&"Network error"===e.message&&(t={code:"NetworkError",name:e.name,message:e.message});return n(t)})},e}();t.default=a},function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;var o=n(20),s=r(o),a=n(9),u=r(a),c=n(13),h=r(c),f=function(){function e(t){i(this,e);var n=t||{},r=n.UserPoolId,o=n.ClientId,a=n.endpoint,u=n.AdvancedSecurityDataCollectionFlag;if(!r||!o)throw new Error("Both UserPoolId and ClientId are required.");if(!/^[\w-]+_.+$/.test(r))throw new Error("Invalid UserPoolId format.");var c=r.split("_")[0];this.userPoolId=r,this.clientId=o,this.client=new s.default(c,a),this.advancedSecurityDataCollectionFlag=u!==!1,this.storage=t.Storage||(new h.default).getStorage()}return e.prototype.getUserPoolId=function(){return this.userPoolId},e.prototype.getClientId=function(){return this.clientId},e.prototype.signUp=function(e,t,n,r,i){var o=this,s={ClientId:this.clientId,Username:e,Password:t,UserAttributes:n,ValidationData:r};this.getUserContextData(e)&&(s.UserContextData=this.getUserContextData(e)),this.client.request("SignUp",s,function(t,n){if(t)return i(t,null);var r={Username:e,Pool:o,Storage:o.storage},s={user:new u.default(r),userConfirmed:n.UserConfirmed,userSub:n.UserSub};return i(null,s)})},e.prototype.getCurrentUser=function(){var e="CognitoIdentityServiceProvider."+this.clientId+".LastAuthUser",t=this.storage.getItem(e);if(t){var n={Username:t,Pool:this,Storage:this.storage};return new u.default(n)}return null},e.prototype.getUserContextData=function(e){if("undefined"!=typeof AmazonCognitoAdvancedSecurityData){var t=AmazonCognitoAdvancedSecurityData;if(this.advancedSecurityDataCollectionFlag){var n=t.getData(e,this.userPoolId,this.clientId);if(n){var r={EncodedData:n};return r}}return{}}},e}();t.default=f},function(e,t,n){"use strict";function r(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n]);return t.default=e,t}function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}t.__esModule=!0;var o=n(18),s=r(o),a=function(){function e(t){i(this,e),this.domain=t.domain,t.path?this.path=t.path:this.path="/",Object.prototype.hasOwnProperty.call(t,"expires")?this.expires=t.expires:this.expires=365,Object.prototype.hasOwnProperty.call(t,"secure")?this.secure=t.secure:this.secure=!0}return e.prototype.setItem=function(e,t){return s.set(e,t,{path:this.path,expires:this.expires,domain:this.domain,secure:this.secure}),s.get(e)},e.prototype.getItem=function(e){return s.get(e)},e.prototype.removeItem=function(e){return s.remove(e,{path:this.path,domain:this.domain,secure:this.secure})},e.prototype.clear=function(){var e=s.get(),t=void 0;for(t=0;t<e.length;++t)s.remove(e[t]);return{}},e}();t.default=a},function(e,t){"use strict";function n(){}t.__esModule=!0,t.default=n,n.prototype.userAgent="aws-amplify/0.1.x js"},function(e,t,n){function r(e,t){e[t>>5]|=128<<t%32,e[(t+64>>>9<<4)+14]=t;for(var n=1732584193,r=-271733879,i=-1732584194,h=271733878,f=0;f<e.length;f+=16){var l=n,p=r,d=i,g=h;n=o(n,r,i,h,e[f+0],7,-680876936),h=o(h,n,r,i,e[f+1],12,-389564586),i=o(i,h,n,r,e[f+2],17,606105819),r=o(r,i,h,n,e[f+3],22,-1044525330),n=o(n,r,i,h,e[f+4],7,-176418897),h=o(h,n,r,i,e[f+5],12,1200080426),i=o(i,h,n,r,e[f+6],17,-1473231341),r=o(r,i,h,n,e[f+7],22,-45705983),n=o(n,r,i,h,e[f+8],7,1770035416),h=o(h,n,r,i,e[f+9],12,-1958414417),i=o(i,h,n,r,e[f+10],17,-42063),r=o(r,i,h,n,e[f+11],22,-1990404162),n=o(n,r,i,h,e[f+12],7,1804603682),h=o(h,n,r,i,e[f+13],12,-40341101),i=o(i,h,n,r,e[f+14],17,-1502002290),r=o(r,i,h,n,e[f+15],22,1236535329),n=s(n,r,i,h,e[f+1],5,-165796510),h=s(h,n,r,i,e[f+6],9,-1069501632),i=s(i,h,n,r,e[f+11],14,643717713),r=s(r,i,h,n,e[f+0],20,-373897302),n=s(n,r,i,h,e[f+5],5,-701558691),h=s(h,n,r,i,e[f+10],9,38016083),i=s(i,h,n,r,e[f+15],14,-660478335),r=s(r,i,h,n,e[f+4],20,-405537848),n=s(n,r,i,h,e[f+9],5,568446438),h=s(h,n,r,i,e[f+14],9,-1019803690),i=s(i,h,n,r,e[f+3],14,-187363961),r=s(r,i,h,n,e[f+8],20,1163531501),n=s(n,r,i,h,e[f+13],5,-1444681467),h=s(h,n,r,i,e[f+2],9,-51403784),i=s(i,h,n,r,e[f+7],14,1735328473),r=s(r,i,h,n,e[f+12],20,-1926607734),n=a(n,r,i,h,e[f+5],4,-378558),h=a(h,n,r,i,e[f+8],11,-2022574463),i=a(i,h,n,r,e[f+11],16,1839030562),r=a(r,i,h,n,e[f+14],23,-35309556),n=a(n,r,i,h,e[f+1],4,-1530992060),h=a(h,n,r,i,e[f+4],11,1272893353),i=a(i,h,n,r,e[f+7],16,-155497632),r=a(r,i,h,n,e[f+10],23,-1094730640),n=a(n,r,i,h,e[f+13],4,681279174),h=a(h,n,r,i,e[f+0],11,-358537222),i=a(i,h,n,r,e[f+3],16,-722521979),r=a(r,i,h,n,e[f+6],23,76029189),n=a(n,r,i,h,e[f+9],4,-640364487),h=a(h,n,r,i,e[f+12],11,-421815835),i=a(i,h,n,r,e[f+15],16,530742520),r=a(r,i,h,n,e[f+2],23,-995338651),n=u(n,r,i,h,e[f+0],6,-198630844),h=u(h,n,r,i,e[f+7],10,1126891415),i=u(i,h,n,r,e[f+14],15,-1416354905),r=u(r,i,h,n,e[f+5],21,-57434055),n=u(n,r,i,h,e[f+12],6,1700485571),h=u(h,n,r,i,e[f+3],10,-1894986606),i=u(i,h,n,r,e[f+10],15,-1051523),r=u(r,i,h,n,e[f+1],21,-2054922799),n=u(n,r,i,h,e[f+8],6,1873313359),h=u(h,n,r,i,e[f+15],10,-30611744),i=u(i,h,n,r,e[f+6],15,-1560198380),r=u(r,i,h,n,e[f+13],21,1309151649),n=u(n,r,i,h,e[f+4],6,-145523070),h=u(h,n,r,i,e[f+11],10,-1120210379),i=u(i,h,n,r,e[f+2],15,718787259),r=u(r,i,h,n,e[f+9],21,-343485551),n=c(n,l),r=c(r,p),i=c(i,d),h=c(h,g)}return Array(n,r,i,h)}function i(e,t,n,r,i,o){return c(h(c(c(t,e),c(r,o)),i),n)}function o(e,t,n,r,o,s,a){return i(t&n|~t&r,e,t,o,s,a)}function s(e,t,n,r,o,s,a){return i(t&r|n&~r,e,t,o,s,a)}function a(e,t,n,r,o,s,a){return i(t^n^r,e,t,o,s,a)}function u(e,t,n,r,o,s,a){return i(n^(t|~r),e,t,o,s,a)}function c(e,t){var n=(65535&e)+(65535&t),r=(e>>16)+(t>>16)+(n>>16);return r<<16|65535&n}function h(e,t){return e<<t|e>>>32-t}var f=n(2);e.exports=function(e){return f.hash(e,r,16)}},function(e,t){!function(){var t,n,r=this;t=function(e){for(var t,t,n=new Array(e),r=0;r<e;r++)0==(3&r)&&(t=4294967296*Math.random()),n[r]=t>>>((3&r)<<3)&255;return n},r.crypto&&crypto.getRandomValues&&(n=function(e){var t=new Uint8Array(e);return crypto.getRandomValues(t),t}),e.exports=n||t}()},function(e,t,n){function r(e,t){e[t>>5]|=128<<24-t%32,e[(t+64>>9<<4)+15]=t;for(var n=Array(80),r=1732584193,u=-271733879,c=-1732584194,h=271733878,f=-1009589776,l=0;l<e.length;l+=16){for(var p=r,d=u,g=c,v=h,y=f,m=0;m<80;m++){m<16?n[m]=e[l+m]:n[m]=a(n[m-3]^n[m-8]^n[m-14]^n[m-16],1);var S=s(s(a(r,5),i(m,u,c,h)),s(s(f,n[m]),o(m)));f=h,h=c,c=a(u,30),u=r,r=S}r=s(r,p),u=s(u,d),c=s(c,g),h=s(h,v),f=s(f,y)}return Array(r,u,c,h,f)}function i(e,t,n,r){return e<20?t&n|~t&r:e<40?t^n^r:e<60?t&n|t&r|n&r:t^n^r}function o(e){return e<20?1518500249:e<40?1859775393:e<60?-1894007588:-899497514}function s(e,t){var n=(65535&e)+(65535&t),r=(e>>16)+(t>>16)+(n>>16);return r<<16|65535&n}function a(e,t){return e<<t|e>>>32-t}var u=n(2);e.exports=function(e){return u.hash(e,r,20,!0)}},function(e,t,n){var r=n(2),i=function(e,t){var n=(65535&e)+(65535&t),r=(e>>16)+(t>>16)+(n>>16);return r<<16|65535&n},o=function(e,t){return e>>>t|e<<32-t},s=function(e,t){return e>>>t},a=function(e,t,n){return e&t^~e&n},u=function(e,t,n){return e&t^e&n^t&n},c=function(e){return o(e,2)^o(e,13)^o(e,22)},h=function(e){return o(e,6)^o(e,11)^o(e,25)},f=function(e){return o(e,7)^o(e,18)^s(e,3)},l=function(e){return o(e,17)^o(e,19)^s(e,10)},p=function(e,t){var n,r,o,s,p,d,g,v,y,m,S,w,A=new Array(1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298),C=new Array(1779033703,3144134277,1013904242,2773480762,1359893119,2600822924,528734635,1541459225),U=new Array(64);e[t>>5]|=128<<24-t%32,e[(t+64>>9<<4)+15]=t;for(var y=0;y<e.length;y+=16){n=C[0],r=C[1],o=C[2],s=C[3],p=C[4],d=C[5],g=C[6],v=C[7];for(var m=0;m<64;m++)m<16?U[m]=e[m+y]:U[m]=i(i(i(l(U[m-2]),U[m-7]),f(U[m-15])),U[m-16]),S=i(i(i(i(v,h(p)),a(p,d,g)),A[m]),U[m]),w=i(c(n),u(n,r,o)),v=g,g=d,d=p,p=i(s,S),s=o,o=r,r=n,n=i(S,w);C[0]=i(n,C[0]),C[1]=i(r,C[1]),C[2]=i(o,C[2]),C[3]=i(s,C[3]),C[4]=i(p,C[4]),C[5]=i(d,C[5]),C[6]=i(g,C[6]),C[7]=i(v,C[7])}return C};e.exports=function(e){return r.hash(e,p,32,!0)}}])});
+
+
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["AmazonCognitoIdentity"] = factory();
+	else
+		root["AmazonCognitoIdentity"] = factory();
+})(typeof self !== 'undefined' ? self : this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
+ */
+/* eslint-disable no-proto */
+
+
+
+var base64 = __webpack_require__(17)
+var ieee754 = __webpack_require__(18)
+var isArray = __webpack_require__(19)
+
+exports.Buffer = Buffer
+exports.SlowBuffer = SlowBuffer
+exports.INSPECT_MAX_BYTES = 50
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Use Object implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
+ * Note:
+ *
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
+  ? global.TYPED_ARRAY_SUPPORT
+  : typedArraySupport()
+
+/*
+ * Export kMaxLength after typed array support is determined.
+ */
+exports.kMaxLength = kMaxLength()
+
+function typedArraySupport () {
+  try {
+    var arr = new Uint8Array(1)
+    arr.__proto__ = {__proto__: Uint8Array.prototype, foo: function () { return 42 }}
+    return arr.foo() === 42 && // typed array instances can be augmented
+        typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+  } catch (e) {
+    return false
+  }
+}
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
+
+function createBuffer (that, length) {
+  if (kMaxLength() < length) {
+    throw new RangeError('Invalid typed array length')
+  }
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = new Uint8Array(length)
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    if (that === null) {
+      that = new Buffer(length)
+    }
+    that.length = length
+  }
+
+  return that
+}
+
+/**
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
+ *
+ * The `Uint8Array` prototype remains unmodified.
+ */
+
+function Buffer (arg, encodingOrOffset, length) {
+  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+    return new Buffer(arg, encodingOrOffset, length)
+  }
+
+  // Common case.
+  if (typeof arg === 'number') {
+    if (typeof encodingOrOffset === 'string') {
+      throw new Error(
+        'If encoding is specified then the first argument must be a string'
+      )
+    }
+    return allocUnsafe(this, arg)
+  }
+  return from(this, arg, encodingOrOffset, length)
+}
+
+Buffer.poolSize = 8192 // not used by this implementation
+
+// TODO: Legacy, not needed anymore. Remove in next major version.
+Buffer._augment = function (arr) {
+  arr.__proto__ = Buffer.prototype
+  return arr
+}
+
+function from (that, value, encodingOrOffset, length) {
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number')
+  }
+
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+    return fromArrayBuffer(that, value, encodingOrOffset, length)
+  }
+
+  if (typeof value === 'string') {
+    return fromString(that, value, encodingOrOffset)
+  }
+
+  return fromObject(that, value)
+}
+
+/**
+ * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+ * if value is a number.
+ * Buffer.from(str[, encoding])
+ * Buffer.from(array)
+ * Buffer.from(buffer)
+ * Buffer.from(arrayBuffer[, byteOffset[, length]])
+ **/
+Buffer.from = function (value, encodingOrOffset, length) {
+  return from(null, value, encodingOrOffset, length)
+}
+
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype
+  Buffer.__proto__ = Uint8Array
+  if (typeof Symbol !== 'undefined' && Symbol.species &&
+      Buffer[Symbol.species] === Buffer) {
+    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+    Object.defineProperty(Buffer, Symbol.species, {
+      value: null,
+      configurable: true
+    })
+  }
+}
+
+function assertSize (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('"size" argument must be a number')
+  } else if (size < 0) {
+    throw new RangeError('"size" argument must not be negative')
+  }
+}
+
+function alloc (that, size, fill, encoding) {
+  assertSize(size)
+  if (size <= 0) {
+    return createBuffer(that, size)
+  }
+  if (fill !== undefined) {
+    // Only pay attention to encoding if it's a string. This
+    // prevents accidentally sending in a number that would
+    // be interpretted as a start offset.
+    return typeof encoding === 'string'
+      ? createBuffer(that, size).fill(fill, encoding)
+      : createBuffer(that, size).fill(fill)
+  }
+  return createBuffer(that, size)
+}
+
+/**
+ * Creates a new filled Buffer instance.
+ * alloc(size[, fill[, encoding]])
+ **/
+Buffer.alloc = function (size, fill, encoding) {
+  return alloc(null, size, fill, encoding)
+}
+
+function allocUnsafe (that, size) {
+  assertSize(size)
+  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < size; ++i) {
+      that[i] = 0
+    }
+  }
+  return that
+}
+
+/**
+ * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+ * */
+Buffer.allocUnsafe = function (size) {
+  return allocUnsafe(null, size)
+}
+/**
+ * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+ */
+Buffer.allocUnsafeSlow = function (size) {
+  return allocUnsafe(null, size)
+}
+
+function fromString (that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8'
+  }
+
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('"encoding" must be a valid string encoding')
+  }
+
+  var length = byteLength(string, encoding) | 0
+  that = createBuffer(that, length)
+
+  var actual = that.write(string, encoding)
+
+  if (actual !== length) {
+    // Writing a hex string, for example, that contains invalid characters will
+    // cause everything after the first invalid character to be ignored. (e.g.
+    // 'abxxcd' will be treated as 'ab')
+    that = that.slice(0, actual)
+  }
+
+  return that
+}
+
+function fromArrayLike (that, array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0
+  that = createBuffer(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+function fromArrayBuffer (that, array, byteOffset, length) {
+  array.byteLength // this throws if `array` is not a valid ArrayBuffer
+
+  if (byteOffset < 0 || array.byteLength < byteOffset) {
+    throw new RangeError('\'offset\' is out of bounds')
+  }
+
+  if (array.byteLength < byteOffset + (length || 0)) {
+    throw new RangeError('\'length\' is out of bounds')
+  }
+
+  if (byteOffset === undefined && length === undefined) {
+    array = new Uint8Array(array)
+  } else if (length === undefined) {
+    array = new Uint8Array(array, byteOffset)
+  } else {
+    array = new Uint8Array(array, byteOffset, length)
+  }
+
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = array
+    that.__proto__ = Buffer.prototype
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromArrayLike(that, array)
+  }
+  return that
+}
+
+function fromObject (that, obj) {
+  if (Buffer.isBuffer(obj)) {
+    var len = checked(obj.length) | 0
+    that = createBuffer(that, len)
+
+    if (that.length === 0) {
+      return that
+    }
+
+    obj.copy(that, 0, 0, len)
+    return that
+  }
+
+  if (obj) {
+    if ((typeof ArrayBuffer !== 'undefined' &&
+        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
+      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+        return createBuffer(that, 0)
+      }
+      return fromArrayLike(that, obj)
+    }
+
+    if (obj.type === 'Buffer' && isArray(obj.data)) {
+      return fromArrayLike(that, obj.data)
+    }
+  }
+
+  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
+}
+
+function checked (length) {
+  // Note: cannot use `length < kMaxLength()` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+  }
+  return length | 0
+}
+
+function SlowBuffer (length) {
+  if (+length != length) { // eslint-disable-line eqeqeq
+    length = 0
+  }
+  return Buffer.alloc(+length)
+}
+
+Buffer.isBuffer = function isBuffer (b) {
+  return !!(b != null && b._isBuffer)
+}
+
+Buffer.compare = function compare (a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers')
+  }
+
+  if (a === b) return 0
+
+  var x = a.length
+  var y = b.length
+
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i]
+      y = b[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+Buffer.isEncoding = function isEncoding (encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'latin1':
+    case 'binary':
+    case 'base64':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true
+    default:
+      return false
+  }
+}
+
+Buffer.concat = function concat (list, length) {
+  if (!isArray(list)) {
+    throw new TypeError('"list" argument must be an Array of Buffers')
+  }
+
+  if (list.length === 0) {
+    return Buffer.alloc(0)
+  }
+
+  var i
+  if (length === undefined) {
+    length = 0
+    for (i = 0; i < list.length; ++i) {
+      length += list[i].length
+    }
+  }
+
+  var buffer = Buffer.allocUnsafe(length)
+  var pos = 0
+  for (i = 0; i < list.length; ++i) {
+    var buf = list[i]
+    if (!Buffer.isBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers')
+    }
+    buf.copy(buffer, pos)
+    pos += buf.length
+  }
+  return buffer
+}
+
+function byteLength (string, encoding) {
+  if (Buffer.isBuffer(string)) {
+    return string.length
+  }
+  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+      (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+    return string.byteLength
+  }
+  if (typeof string !== 'string') {
+    string = '' + string
+  }
+
+  var len = string.length
+  if (len === 0) return 0
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return len
+      case 'utf8':
+      case 'utf-8':
+      case undefined:
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+Buffer.byteLength = byteLength
+
+function slowToString (encoding, start, end) {
+  var loweredCase = false
+
+  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+  // property of a typed array.
+
+  // This behaves neither like String nor Uint8Array in that we set start/end
+  // to their upper/lower bounds if the value passed is out of range.
+  // undefined is handled specially as per ECMA-262 6th Edition,
+  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+  if (start === undefined || start < 0) {
+    start = 0
+  }
+  // Return early if start > this.length. Done here to prevent potential uint32
+  // coercion fail below.
+  if (start > this.length) {
+    return ''
+  }
+
+  if (end === undefined || end > this.length) {
+    end = this.length
+  }
+
+  if (end <= 0) {
+    return ''
+  }
+
+  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0
+  start >>>= 0
+
+  if (end <= start) {
+    return ''
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end)
+
+      case 'ascii':
+        return asciiSlice(this, start, end)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Slice(this, start, end)
+
+      case 'base64':
+        return base64Slice(this, start, end)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = (encoding + '').toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+// Buffer instances.
+Buffer.prototype._isBuffer = true
+
+function swap (b, n, m) {
+  var i = b[n]
+  b[n] = b[m]
+  b[m] = i
+}
+
+Buffer.prototype.swap16 = function swap16 () {
+  var len = this.length
+  if (len % 2 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 16-bits')
+  }
+  for (var i = 0; i < len; i += 2) {
+    swap(this, i, i + 1)
+  }
+  return this
+}
+
+Buffer.prototype.swap32 = function swap32 () {
+  var len = this.length
+  if (len % 4 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 32-bits')
+  }
+  for (var i = 0; i < len; i += 4) {
+    swap(this, i, i + 3)
+    swap(this, i + 1, i + 2)
+  }
+  return this
+}
+
+Buffer.prototype.swap64 = function swap64 () {
+  var len = this.length
+  if (len % 8 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 64-bits')
+  }
+  for (var i = 0; i < len; i += 8) {
+    swap(this, i, i + 7)
+    swap(this, i + 1, i + 6)
+    swap(this, i + 2, i + 5)
+    swap(this, i + 3, i + 4)
+  }
+  return this
+}
+
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
+}
+
+Buffer.prototype.equals = function equals (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
+  return Buffer.compare(this, b) === 0
+}
+
+Buffer.prototype.inspect = function inspect () {
+  var str = ''
+  var max = exports.INSPECT_MAX_BYTES
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
+    if (this.length > max) str += ' ... '
+  }
+  return '<Buffer ' + str + '>'
+}
+
+Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+  if (!Buffer.isBuffer(target)) {
+    throw new TypeError('Argument must be a Buffer')
+  }
+
+  if (start === undefined) {
+    start = 0
+  }
+  if (end === undefined) {
+    end = target ? target.length : 0
+  }
+  if (thisStart === undefined) {
+    thisStart = 0
+  }
+  if (thisEnd === undefined) {
+    thisEnd = this.length
+  }
+
+  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+    throw new RangeError('out of range index')
+  }
+
+  if (thisStart >= thisEnd && start >= end) {
+    return 0
+  }
+  if (thisStart >= thisEnd) {
+    return -1
+  }
+  if (start >= end) {
+    return 1
+  }
+
+  start >>>= 0
+  end >>>= 0
+  thisStart >>>= 0
+  thisEnd >>>= 0
+
+  if (this === target) return 0
+
+  var x = thisEnd - thisStart
+  var y = end - start
+  var len = Math.min(x, y)
+
+  var thisCopy = this.slice(thisStart, thisEnd)
+  var targetCopy = target.slice(start, end)
+
+  for (var i = 0; i < len; ++i) {
+    if (thisCopy[i] !== targetCopy[i]) {
+      x = thisCopy[i]
+      y = targetCopy[i]
+      break
+    }
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+//
+// Arguments:
+// - buffer - a Buffer to search
+// - val - a string, Buffer, or number
+// - byteOffset - an index into `buffer`; will be clamped to an int32
+// - encoding - an optional encoding, relevant is val is a string
+// - dir - true for indexOf, false for lastIndexOf
+function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+  // Empty buffer means no match
+  if (buffer.length === 0) return -1
+
+  // Normalize byteOffset
+  if (typeof byteOffset === 'string') {
+    encoding = byteOffset
+    byteOffset = 0
+  } else if (byteOffset > 0x7fffffff) {
+    byteOffset = 0x7fffffff
+  } else if (byteOffset < -0x80000000) {
+    byteOffset = -0x80000000
+  }
+  byteOffset = +byteOffset  // Coerce to Number.
+  if (isNaN(byteOffset)) {
+    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+    byteOffset = dir ? 0 : (buffer.length - 1)
+  }
+
+  // Normalize byteOffset: negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
+  if (byteOffset >= buffer.length) {
+    if (dir) return -1
+    else byteOffset = buffer.length - 1
+  } else if (byteOffset < 0) {
+    if (dir) byteOffset = 0
+    else return -1
+  }
+
+  // Normalize val
+  if (typeof val === 'string') {
+    val = Buffer.from(val, encoding)
+  }
+
+  // Finally, search either indexOf (if dir is true) or lastIndexOf
+  if (Buffer.isBuffer(val)) {
+    // Special case: looking for empty string/buffer always fails
+    if (val.length === 0) {
+      return -1
+    }
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+  } else if (typeof val === 'number') {
+    val = val & 0xFF // Search for a byte value [0-255]
+    if (Buffer.TYPED_ARRAY_SUPPORT &&
+        typeof Uint8Array.prototype.indexOf === 'function') {
+      if (dir) {
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
+      } else {
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
+      }
+    }
+    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+  }
+
+  throw new TypeError('val must be string, number or Buffer')
+}
+
+function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1
+  var arrLength = arr.length
+  var valLength = val.length
+
+  if (encoding !== undefined) {
+    encoding = String(encoding).toLowerCase()
+    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
+        encoding === 'utf16le' || encoding === 'utf-16le') {
+      if (arr.length < 2 || val.length < 2) {
+        return -1
+      }
+      indexSize = 2
+      arrLength /= 2
+      valLength /= 2
+      byteOffset /= 2
+    }
+  }
+
+  function read (buf, i) {
+    if (indexSize === 1) {
+      return buf[i]
+    } else {
+      return buf.readUInt16BE(i * indexSize)
+    }
+  }
+
+  var i
+  if (dir) {
+    var foundIndex = -1
+    for (i = byteOffset; i < arrLength; i++) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+        if (foundIndex === -1) foundIndex = i
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
+      } else {
+        if (foundIndex !== -1) i -= i - foundIndex
+        foundIndex = -1
+      }
+    }
+  } else {
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength
+    for (i = byteOffset; i >= 0; i--) {
+      var found = true
+      for (var j = 0; j < valLength; j++) {
+        if (read(arr, i + j) !== read(val, j)) {
+          found = false
+          break
+        }
+      }
+      if (found) return i
+    }
+  }
+
+  return -1
+}
+
+Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1
+}
+
+Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
+}
+
+Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
+}
+
+function hexWrite (buf, string, offset, length) {
+  offset = Number(offset) || 0
+  var remaining = buf.length - offset
+  if (!length) {
+    length = remaining
+  } else {
+    length = Number(length)
+    if (length > remaining) {
+      length = remaining
+    }
+  }
+
+  // must be an even number of digits
+  var strLen = string.length
+  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
+
+  if (length > strLen / 2) {
+    length = strLen / 2
+  }
+  for (var i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16)
+    if (isNaN(parsed)) return i
+    buf[offset + i] = parsed
+  }
+  return i
+}
+
+function utf8Write (buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+function asciiWrite (buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length)
+}
+
+function latin1Write (buf, string, offset, length) {
+  return asciiWrite(buf, string, offset, length)
+}
+
+function base64Write (buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length)
+}
+
+function ucs2Write (buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
+}
+
+Buffer.prototype.write = function write (string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8'
+    length = this.length
+    offset = 0
+  // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset
+    length = this.length
+    offset = 0
+  // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0
+    if (isFinite(length)) {
+      length = length | 0
+      if (encoding === undefined) encoding = 'utf8'
+    } else {
+      encoding = length
+      length = undefined
+    }
+  // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
+    throw new Error(
+      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+    )
+  }
+
+  var remaining = this.length - offset
+  if (length === undefined || length > remaining) length = remaining
+
+  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds')
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length)
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length)
+
+      case 'latin1':
+      case 'binary':
+        return latin1Write(this, string, offset, length)
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
+  }
+}
+
+Buffer.prototype.toJSON = function toJSON () {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  }
+}
+
+function base64Slice (buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return base64.fromByteArray(buf)
+  } else {
+    return base64.fromByteArray(buf.slice(start, end))
+  }
+}
+
+function utf8Slice (buf, start, end) {
+  end = Math.min(buf.length, end)
+  var res = []
+
+  var i = start
+  while (i < end) {
+    var firstByte = buf[i]
+    var codePoint = null
+    var bytesPerSequence = (firstByte > 0xEF) ? 4
+      : (firstByte > 0xDF) ? 3
+      : (firstByte > 0xBF) ? 2
+      : 1
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte
+          }
+          break
+        case 2:
+          secondByte = buf[i + 1]
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | (secondByte & 0x3F)
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 3:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | (thirdByte & 0x3F)
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint
+            }
+          }
+          break
+        case 4:
+          secondByte = buf[i + 1]
+          thirdByte = buf[i + 2]
+          fourthByte = buf[i + 3]
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | (fourthByte & 0x3F)
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint
+            }
+          }
+      }
+    }
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD
+      bytesPerSequence = 1
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
+      codePoint = 0xDC00 | codePoint & 0x3FF
+    }
+
+    res.push(codePoint)
+    i += bytesPerSequence
+  }
+
+  return decodeCodePointsArray(res)
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000
+
+function decodeCodePointsArray (codePoints) {
+  var len = codePoints.length
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = ''
+  var i = 0
+  while (i < len) {
+    res += String.fromCharCode.apply(
+      String,
+      codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH)
+    )
+  }
+  return res
+}
+
+function asciiSlice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i] & 0x7F)
+  }
+  return ret
+}
+
+function latin1Slice (buf, start, end) {
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i])
+  }
+  return ret
+}
+
+function hexSlice (buf, start, end) {
+  var len = buf.length
+
+  if (!start || start < 0) start = 0
+  if (!end || end < 0 || end > len) end = len
+
+  var out = ''
+  for (var i = start; i < end; ++i) {
+    out += toHex(buf[i])
+  }
+  return out
+}
+
+function utf16leSlice (buf, start, end) {
+  var bytes = buf.slice(start, end)
+  var res = ''
+  for (var i = 0; i < bytes.length; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
+  }
+  return res
+}
+
+Buffer.prototype.slice = function slice (start, end) {
+  var len = this.length
+  start = ~~start
+  end = end === undefined ? len : ~~end
+
+  if (start < 0) {
+    start += len
+    if (start < 0) start = 0
+  } else if (start > len) {
+    start = len
+  }
+
+  if (end < 0) {
+    end += len
+    if (end < 0) end = 0
+  } else if (end > len) {
+    end = len
+  }
+
+  if (end < start) end = start
+
+  var newBuf
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = this.subarray(start, end)
+    newBuf.__proto__ = Buffer.prototype
+  } else {
+    var sliceLen = end - start
+    newBuf = new Buffer(sliceLen, undefined)
+    for (var i = 0; i < sliceLen; ++i) {
+      newBuf[i] = this[i + start]
+    }
+  }
+
+  return newBuf
+}
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset (offset, ext, length) {
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
+}
+
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length)
+  }
+
+  var val = this[offset + --byteLength]
+  var mul = 1
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul
+  }
+
+  return val
+}
+
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  return this[offset]
+}
+
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return this[offset] | (this[offset + 1] << 8)
+}
+
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return (this[offset] << 8) | this[offset + 1]
+}
+
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return ((this[offset]) |
+      (this[offset + 1] << 8) |
+      (this[offset + 2] << 16)) +
+      (this[offset + 3] * 0x1000000)
+}
+
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] * 0x1000000) +
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
+}
+
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var i = byteLength
+  var mul = 1
+  var val = this[offset + --i]
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul
+  }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
+  return val
+}
+
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  if (!(this[offset] & 0x80)) return (this[offset])
+  return ((0xff - this[offset] + 1) * -1)
+}
+
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset] | (this[offset + 1] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset + 1] | (this[offset] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset]) |
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
+}
+
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] << 24) |
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
+}
+
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, true, 23, 4)
+}
+
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, false, 23, 4)
+}
+
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, true, 52, 8)
+}
+
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, false, 52, 8)
+}
+
+function checkInt (buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var mul = 1
+  var i = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1
+    checkInt(this, value, offset, byteLength, maxBytes, 0)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+function objectWriteUInt16 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+      (littleEndian ? i : 1 - i) * 8
+  }
+}
+
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+function objectWriteUInt32 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+  }
+}
+
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = (value >>> 24)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 1] = (value >>> 8)
+    this[offset] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = 0
+  var mul = 1
+  var sub = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  var sub = 0
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      sub = 1
+    }
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  if (value < 0) value = 0xff + value + 1
+  this[offset] = (value & 0xff)
+  return offset + 1
+}
+
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = (value & 0xff)
+  } else {
+    objectWriteUInt16(this, value, offset, false)
+  }
+  return offset + 2
+}
+
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value & 0xff)
+    this[offset + 1] = (value >>> 8)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 3] = (value >>> 24)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
+  return offset + 4
+}
+
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (value < 0) value = 0xffffffff + value + 1
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = (value & 0xff)
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
+}
+
+function checkIEEE754 (buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range')
+  if (offset < 0) throw new RangeError('Index out of range')
+}
+
+function writeFloat (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 23, 4)
+  return offset + 4
+}
+
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert)
+}
+
+function writeDouble (buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
+  }
+  ieee754.write(buf, value, offset, littleEndian, 52, 8)
+  return offset + 8
+}
+
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert)
+}
+
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert)
+}
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!start) start = 0
+  if (!end && end !== 0) end = this.length
+  if (targetStart >= target.length) targetStart = target.length
+  if (!targetStart) targetStart = 0
+  if (end > 0 && end < start) end = start
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0
+  if (target.length === 0 || this.length === 0) return 0
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+  // Are we oob?
+  if (end > this.length) end = this.length
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start
+  }
+
+  var len = end - start
+  var i
+
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; --i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; ++i) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else {
+    Uint8Array.prototype.set.call(
+      target,
+      this.subarray(start, start + len),
+      targetStart
+    )
+  }
+
+  return len
+}
+
+// Usage:
+//    buffer.fill(number[, offset[, end]])
+//    buffer.fill(buffer[, offset[, end]])
+//    buffer.fill(string[, offset[, end]][, encoding])
+Buffer.prototype.fill = function fill (val, start, end, encoding) {
+  // Handle string cases:
+  if (typeof val === 'string') {
+    if (typeof start === 'string') {
+      encoding = start
+      start = 0
+      end = this.length
+    } else if (typeof end === 'string') {
+      encoding = end
+      end = this.length
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0)
+      if (code < 256) {
+        val = code
+      }
+    }
+    if (encoding !== undefined && typeof encoding !== 'string') {
+      throw new TypeError('encoding must be a string')
+    }
+    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+      throw new TypeError('Unknown encoding: ' + encoding)
+    }
+  } else if (typeof val === 'number') {
+    val = val & 255
+  }
+
+  // Invalid ranges are not set to a default, so can range check early.
+  if (start < 0 || this.length < start || this.length < end) {
+    throw new RangeError('Out of range index')
+  }
+
+  if (end <= start) {
+    return this
+  }
+
+  start = start >>> 0
+  end = end === undefined ? this.length : end >>> 0
+
+  if (!val) val = 0
+
+  var i
+  if (typeof val === 'number') {
+    for (i = start; i < end; ++i) {
+      this[i] = val
+    }
+  } else {
+    var bytes = Buffer.isBuffer(val)
+      ? val
+      : utf8ToBytes(new Buffer(val, encoding).toString())
+    var len = bytes.length
+    for (i = 0; i < end - start; ++i) {
+      this[i + start] = bytes[i % len]
+    }
+  }
+
+  return this
+}
+
+// HELPER FUNCTIONS
+// ================
+
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
+
+function base64clean (str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return ''
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '='
+  }
+  return str
+}
+
+function stringtrim (str) {
+  if (str.trim) return str.trim()
+  return str.replace(/^\s+|\s+$/g, '')
+}
+
+function toHex (n) {
+  if (n < 16) return '0' + n.toString(16)
+  return n.toString(16)
+}
+
+function utf8ToBytes (string, units) {
+  units = units || Infinity
+  var codePoint
+  var length = string.length
+  var leadSurrogate = null
+  var bytes = []
+
+  for (var i = 0; i < length; ++i) {
+    codePoint = string.charCodeAt(i)
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        }
+
+        // valid lead
+        leadSurrogate = codePoint
+
+        continue
+      }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+        leadSurrogate = codePoint
+        continue
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+    }
+
+    leadSurrogate = null
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break
+      bytes.push(codePoint)
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break
+      bytes.push(
+        codePoint >> 0x6 | 0xC0,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break
+      bytes.push(
+        codePoint >> 0xC | 0xE0,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break
+      bytes.push(
+        codePoint >> 0x12 | 0xF0,
+        codePoint >> 0xC & 0x3F | 0x80,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else {
+      throw new Error('Invalid code point')
+    }
+  }
+
+  return bytes
+}
+
+function asciiToBytes (str) {
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF)
+  }
+  return byteArray
+}
+
+function utf16leToBytes (str, units) {
+  var c, hi, lo
+  var byteArray = []
+  for (var i = 0; i < str.length; ++i) {
+    if ((units -= 2) < 0) break
+
+    c = str.charCodeAt(i)
+    hi = c >> 8
+    lo = c % 256
+    byteArray.push(lo)
+    byteArray.push(hi)
+  }
+
+  return byteArray
+}
+
+function base64ToBytes (str) {
+  return base64.toByteArray(base64clean(str))
+}
+
+function blitBuffer (src, dst, offset, length) {
+  for (var i = 0; i < length; ++i) {
+    if ((i + offset >= dst.length) || (i >= src.length)) break
+    dst[i + offset] = src[i]
+  }
+  return i
+}
+
+function isnan (val) {
+  return val !== val // eslint-disable-line no-self-compare
+}
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Buffer = __webpack_require__(0).Buffer;
+var intSize = 4;
+var zeroBuffer = new Buffer(intSize); zeroBuffer.fill(0);
+var chrsz = 8;
+
+function toArray(buf, bigEndian) {
+  if ((buf.length % intSize) !== 0) {
+    var len = buf.length + (intSize - (buf.length % intSize));
+    buf = Buffer.concat([buf, zeroBuffer], len);
+  }
+
+  var arr = [];
+  var fn = bigEndian ? buf.readInt32BE : buf.readInt32LE;
+  for (var i = 0; i < buf.length; i += intSize) {
+    arr.push(fn.call(buf, i));
+  }
+  return arr;
+}
+
+function toBuffer(arr, size, bigEndian) {
+  var buf = new Buffer(size);
+  var fn = bigEndian ? buf.writeInt32BE : buf.writeInt32LE;
+  for (var i = 0; i < arr.length; i++) {
+    fn.call(buf, arr[i], i * 4, true);
+  }
+  return buf;
+}
+
+function hash(buf, fn, hashSize, bigEndian) {
+  if (!Buffer.isBuffer(buf)) buf = new Buffer(buf);
+  var arr = fn(toArray(buf, bigEndian), buf.length * chrsz);
+  return toBuffer(arr, hashSize, bigEndian);
+}
+
+module.exports = { hash: hash };
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer___ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer____default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_buffer___);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_crypto_browserify__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_crypto_browserify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_crypto_browserify__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__BigInteger__ = __webpack_require__(4);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+var createHash = __WEBPACK_IMPORTED_MODULE_1_crypto_browserify__["createHash"];
+var createHmac = __WEBPACK_IMPORTED_MODULE_1_crypto_browserify__["createHmac"];
+var randomBytes = __WEBPACK_IMPORTED_MODULE_1_crypto_browserify__["randomBytes"];
+
+
+
+var initN = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1' + '29024E088A67CC74020BBEA63B139B22514A08798E3404DD' + 'EF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245' + 'E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' + 'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3D' + 'C2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F' + '83655D23DCA3AD961C62F356208552BB9ED529077096966D' + '670C354E4ABC9804F1746C08CA18217C32905E462E36CE3B' + 'E39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9' + 'DE2BCBF6955817183995497CEA956AE515D2261898FA0510' + '15728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64' + 'ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7' + 'ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6B' + 'F12FFA06D98A0864D87602733EC86A64521F2B18177B200C' + 'BBE117577A615D6C770988C0BAD946E208E24FA074E5AB31' + '43DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF';
+
+var newPasswordRequiredChallengeUserAttributePrefix = 'userAttributes.';
+
+/** @class */
+
+var AuthenticationHelper = function () {
+  /**
+   * Constructs a new AuthenticationHelper object
+   * @param {string} PoolName Cognito user pool name.
+   */
+  function AuthenticationHelper(PoolName) {
+    _classCallCheck(this, AuthenticationHelper);
+
+    this.N = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](initN, 16);
+    this.g = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */]('2', 16);
+    this.k = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](this.hexHash('00' + this.N.toString(16) + '0' + this.g.toString(16)), 16);
+
+    this.smallAValue = this.generateRandomSmallA();
+    this.getLargeAValue(function () {});
+
+    this.infoBits = __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from('Caldera Derived Key', 'utf8');
+
+    this.poolName = PoolName;
+  }
+
+  /**
+   * @returns {BigInteger} small A, a random number
+   */
+
+
+  AuthenticationHelper.prototype.getSmallAValue = function getSmallAValue() {
+    return this.smallAValue;
+  };
+
+  /**
+   * @param {nodeCallback<BigInteger>} callback Called with (err, largeAValue)
+   * @returns {void}
+   */
+
+
+  AuthenticationHelper.prototype.getLargeAValue = function getLargeAValue(callback) {
+    var _this = this;
+
+    if (this.largeAValue) {
+      callback(null, this.largeAValue);
+    } else {
+      this.calculateA(this.smallAValue, function (err, largeAValue) {
+        if (err) {
+          callback(err, null);
+        }
+
+        _this.largeAValue = largeAValue;
+        callback(null, _this.largeAValue);
+      });
+    }
+  };
+
+  /**
+   * helper function to generate a random big integer
+   * @returns {BigInteger} a random value.
+   * @private
+   */
+
+
+  AuthenticationHelper.prototype.generateRandomSmallA = function generateRandomSmallA() {
+    var hexRandom = randomBytes(128).toString('hex');
+
+    var randomBigInt = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](hexRandom, 16);
+    var smallABigInt = randomBigInt.mod(this.N);
+
+    return smallABigInt;
+  };
+
+  /**
+   * helper function to generate a random string
+   * @returns {string} a random value.
+   * @private
+   */
+
+
+  AuthenticationHelper.prototype.generateRandomString = function generateRandomString() {
+    return randomBytes(40).toString('base64');
+  };
+
+  /**
+   * @returns {string} Generated random value included in password hash.
+   */
+
+
+  AuthenticationHelper.prototype.getRandomPassword = function getRandomPassword() {
+    return this.randomPassword;
+  };
+
+  /**
+   * @returns {string} Generated random value included in devices hash.
+   */
+
+
+  AuthenticationHelper.prototype.getSaltDevices = function getSaltDevices() {
+    return this.SaltToHashDevices;
+  };
+
+  /**
+   * @returns {string} Value used to verify devices.
+   */
+
+
+  AuthenticationHelper.prototype.getVerifierDevices = function getVerifierDevices() {
+    return this.verifierDevices;
+  };
+
+  /**
+   * Generate salts and compute verifier.
+   * @param {string} deviceGroupKey Devices to generate verifier for.
+   * @param {string} username User to generate verifier for.
+   * @param {nodeCallback<null>} callback Called with (err, null)
+   * @returns {void}
+   */
+
+
+  AuthenticationHelper.prototype.generateHashDevice = function generateHashDevice(deviceGroupKey, username, callback) {
+    var _this2 = this;
+
+    this.randomPassword = this.generateRandomString();
+    var combinedString = '' + deviceGroupKey + username + ':' + this.randomPassword;
+    var hashedString = this.hash(combinedString);
+
+    var hexRandom = randomBytes(16).toString('hex');
+    this.SaltToHashDevices = this.padHex(new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](hexRandom, 16));
+
+    this.g.modPow(new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](this.hexHash(this.SaltToHashDevices + hashedString), 16), this.N, function (err, verifierDevicesNotPadded) {
+      if (err) {
+        callback(err, null);
+      }
+
+      _this2.verifierDevices = _this2.padHex(verifierDevicesNotPadded);
+      callback(null, null);
+    });
+  };
+
+  /**
+   * Calculate the client's public value A = g^a%N
+   * with the generated random number a
+   * @param {BigInteger} a Randomly generated small A.
+   * @param {nodeCallback<BigInteger>} callback Called with (err, largeAValue)
+   * @returns {void}
+   * @private
+   */
+
+
+  AuthenticationHelper.prototype.calculateA = function calculateA(a, callback) {
+    var _this3 = this;
+
+    this.g.modPow(a, this.N, function (err, A) {
+      if (err) {
+        callback(err, null);
+      }
+
+      if (A.mod(_this3.N).equals(__WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */].ZERO)) {
+        callback(new Error('Illegal paramater. A mod N cannot be 0.'), null);
+      }
+
+      callback(null, A);
+    });
+  };
+
+  /**
+   * Calculate the client's value U which is the hash of A and B
+   * @param {BigInteger} A Large A value.
+   * @param {BigInteger} B Server B value.
+   * @returns {BigInteger} Computed U value.
+   * @private
+   */
+
+
+  AuthenticationHelper.prototype.calculateU = function calculateU(A, B) {
+    this.UHexHash = this.hexHash(this.padHex(A) + this.padHex(B));
+    var finalU = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](this.UHexHash, 16);
+
+    return finalU;
+  };
+
+  /**
+   * Calculate a hash from a bitArray
+   * @param {Buffer} buf Value to hash.
+   * @returns {String} Hex-encoded hash.
+   * @private
+   */
+
+
+  AuthenticationHelper.prototype.hash = function hash(buf) {
+    var hashHex = createHash('sha256').update(buf).digest('hex');
+    return new Array(64 - hashHex.length).join('0') + hashHex;
+  };
+
+  /**
+   * Calculate a hash from a hex string
+   * @param {String} hexStr Value to hash.
+   * @returns {String} Hex-encoded hash.
+   * @private
+   */
+
+
+  AuthenticationHelper.prototype.hexHash = function hexHash(hexStr) {
+    return this.hash(__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(hexStr, 'hex'));
+  };
+
+  /**
+   * Standard hkdf algorithm
+   * @param {Buffer} ikm Input key material.
+   * @param {Buffer} salt Salt value.
+   * @returns {Buffer} Strong key material.
+   * @private
+   */
+
+
+  AuthenticationHelper.prototype.computehkdf = function computehkdf(ikm, salt) {
+    var prk = createHmac('sha256', salt).update(ikm).digest();
+    var infoBitsUpdate = __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].concat([this.infoBits, __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(String.fromCharCode(1), 'utf8')]);
+    var hmac = createHmac('sha256', prk).update(infoBitsUpdate).digest();
+    return hmac.slice(0, 16);
+  };
+
+  /**
+   * Calculates the final hkdf based on computed S value, and computed U value and the key
+   * @param {String} username Username.
+   * @param {String} password Password.
+   * @param {BigInteger} serverBValue Server B value.
+   * @param {BigInteger} salt Generated salt.
+   * @param {nodeCallback<Buffer>} callback Called with (err, hkdfValue)
+   * @returns {void}
+   */
+
+
+  AuthenticationHelper.prototype.getPasswordAuthenticationKey = function getPasswordAuthenticationKey(username, password, serverBValue, salt, callback) {
+    var _this4 = this;
+
+    if (serverBValue.mod(this.N).equals(__WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */].ZERO)) {
+      throw new Error('B cannot be zero.');
+    }
+
+    this.UValue = this.calculateU(this.largeAValue, serverBValue);
+
+    if (this.UValue.equals(__WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */].ZERO)) {
+      throw new Error('U cannot be zero.');
+    }
+
+    var usernamePassword = '' + this.poolName + username + ':' + password;
+    var usernamePasswordHash = this.hash(usernamePassword);
+
+    var xValue = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](this.hexHash(this.padHex(salt) + usernamePasswordHash), 16);
+    this.calculateS(xValue, serverBValue, function (err, sValue) {
+      if (err) {
+        callback(err, null);
+      }
+
+      var hkdf = _this4.computehkdf(__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this4.padHex(sValue), 'hex'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this4.padHex(_this4.UValue.toString(16)), 'hex'));
+
+      callback(null, hkdf);
+    });
+  };
+
+  /**
+   * Calculates the S value used in getPasswordAuthenticationKey
+   * @param {BigInteger} xValue Salted password hash value.
+   * @param {BigInteger} serverBValue Server B value.
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  AuthenticationHelper.prototype.calculateS = function calculateS(xValue, serverBValue, callback) {
+    var _this5 = this;
+
+    this.g.modPow(xValue, this.N, function (err, gModPowXN) {
+      if (err) {
+        callback(err, null);
+      }
+
+      var intValue2 = serverBValue.subtract(_this5.k.multiply(gModPowXN));
+      intValue2.modPow(_this5.smallAValue.add(_this5.UValue.multiply(xValue)), _this5.N, function (err2, result) {
+        if (err2) {
+          callback(err2, null);
+        }
+
+        callback(null, result.mod(_this5.N));
+      });
+    });
+  };
+
+  /**
+  * Return constant newPasswordRequiredChallengeUserAttributePrefix
+  * @return {newPasswordRequiredChallengeUserAttributePrefix} constant prefix value
+  */
+
+
+  AuthenticationHelper.prototype.getNewPasswordRequiredChallengeUserAttributePrefix = function getNewPasswordRequiredChallengeUserAttributePrefix() {
+    return newPasswordRequiredChallengeUserAttributePrefix;
+  };
+
+  /**
+   * Converts a BigInteger (or hex string) to hex format padded with zeroes for hashing
+   * @param {BigInteger|String} bigInt Number or string to pad.
+   * @returns {String} Padded hex string.
+   */
+
+
+  AuthenticationHelper.prototype.padHex = function padHex(bigInt) {
+    var hashStr = bigInt.toString(16);
+    if (hashStr.length % 2 === 1) {
+      hashStr = '0' + hashStr;
+    } else if ('89ABCDEFabcdef'.indexOf(hashStr[0]) !== -1) {
+      hashStr = '00' + hashStr;
+    }
+    return hashStr;
+  };
+
+  return AuthenticationHelper;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (AuthenticationHelper);
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Buffer = __webpack_require__(0).Buffer
+var sha = __webpack_require__(20)
+var sha256 = __webpack_require__(21)
+var rng = __webpack_require__(22)
+var md5 = __webpack_require__(23)
+
+var algorithms = {
+  sha1: sha,
+  sha256: sha256,
+  md5: md5
+}
+
+var blocksize = 64
+var zeroBuffer = new Buffer(blocksize); zeroBuffer.fill(0)
+function hmac(fn, key, data) {
+  if(!Buffer.isBuffer(key)) key = new Buffer(key)
+  if(!Buffer.isBuffer(data)) data = new Buffer(data)
+
+  if(key.length > blocksize) {
+    key = fn(key)
+  } else if(key.length < blocksize) {
+    key = Buffer.concat([key, zeroBuffer], blocksize)
+  }
+
+  var ipad = new Buffer(blocksize), opad = new Buffer(blocksize)
+  for(var i = 0; i < blocksize; i++) {
+    ipad[i] = key[i] ^ 0x36
+    opad[i] = key[i] ^ 0x5C
+  }
+
+  var hash = fn(Buffer.concat([ipad, data]))
+  return fn(Buffer.concat([opad, hash]))
+}
+
+function hash(alg, key) {
+  alg = alg || 'sha1'
+  var fn = algorithms[alg]
+  var bufs = []
+  var length = 0
+  if(!fn) error('algorithm:', alg, 'is not yet supported')
+  return {
+    update: function (data) {
+      if(!Buffer.isBuffer(data)) data = new Buffer(data)
+        
+      bufs.push(data)
+      length += data.length
+      return this
+    },
+    digest: function (enc) {
+      var buf = Buffer.concat(bufs)
+      var r = key ? hmac(fn, key, buf) : fn(buf)
+      bufs = null
+      return enc ? r.toString(enc) : r
+    }
+  }
+}
+
+function error () {
+  var m = [].slice.call(arguments).join(' ')
+  throw new Error([
+    m,
+    'we accept pull requests',
+    'http://github.com/dominictarr/crypto-browserify'
+    ].join('\n'))
+}
+
+exports.createHash = function (alg) { return hash(alg) }
+exports.createHmac = function (alg, key) { return hash(alg, key) }
+exports.randomBytes = function(size, callback) {
+  if (callback && callback.call) {
+    try {
+      callback.call(this, undefined, new Buffer(rng(size)))
+    } catch (err) { callback(err) }
+  } else {
+    return new Buffer(rng(size))
+  }
+}
+
+function each(a, f) {
+  for(var i in a)
+    f(a[i], i)
+}
+
+// the least I can do is make error messages for the rest of the node.js/crypto api.
+each(['createCredentials'
+, 'createCipher'
+, 'createCipheriv'
+, 'createDecipher'
+, 'createDecipheriv'
+, 'createSign'
+, 'createVerify'
+, 'createDiffieHellman'
+, 'pbkdf2'], function (name) {
+  exports[name] = function () {
+    error('sorry,', name, 'is not implemented yet')
+  }
+})
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+// A small implementation of BigInteger based on http://www-cs-students.stanford.edu/~tjw/jsbn/
+//
+// All public methods have been removed except the following:
+//   new BigInteger(a, b) (only radix 2, 4, 8, 16 and 32 supported)
+//   toString (only radix 2, 4, 8, 16 and 32 supported)
+//   negate
+//   abs
+//   compareTo
+//   bitLength
+//   mod
+//   equals
+//   add
+//   subtract
+//   multiply
+//   divide
+//   modPow
+
+/* harmony default export */ __webpack_exports__["a"] = (BigInteger);
+
+/*
+ * Copyright (c) 2003-2005  Tom Wu
+ * All Rights Reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+ * WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * IN NO EVENT SHALL TOM WU BE LIABLE FOR ANY SPECIAL, INCIDENTAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND, OR ANY DAMAGES WHATSOEVER
+ * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER OR NOT ADVISED OF
+ * THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF LIABILITY, ARISING OUT
+ * OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ * In addition, the following condition applies:
+ *
+ * All redistributions must retain an intact copy of this copyright notice
+ * and disclaimer.
+ */
+
+// (public) Constructor
+function BigInteger(a, b) {
+  if (a != null) this.fromString(a, b);
+}
+
+// return new, unset BigInteger
+function nbi() {
+  return new BigInteger(null);
+}
+
+// Bits per digit
+var dbits;
+
+// JavaScript engine analysis
+var canary = 0xdeadbeefcafe;
+var j_lm = (canary & 0xffffff) == 0xefcafe;
+
+// am: Compute w_j += (x*this_i), propagate carries,
+// c is initial carry, returns final carry.
+// c < 3*dvalue, x < 2*dvalue, this_i < dvalue
+// We need to select the fastest one that works in this environment.
+
+// am1: use a single mult and divide to get the high bits,
+// max digit bits should be 26 because
+// max internal value = 2*dvalue^2-2*dvalue (< 2^53)
+function am1(i, x, w, j, c, n) {
+  while (--n >= 0) {
+    var v = x * this[i++] + w[j] + c;
+    c = Math.floor(v / 0x4000000);
+    w[j++] = v & 0x3ffffff;
+  }
+  return c;
+}
+// am2 avoids a big mult-and-extract completely.
+// Max digit bits should be <= 30 because we do bitwise ops
+// on values up to 2*hdvalue^2-hdvalue-1 (< 2^31)
+function am2(i, x, w, j, c, n) {
+  var xl = x & 0x7fff,
+      xh = x >> 15;
+  while (--n >= 0) {
+    var l = this[i] & 0x7fff;
+    var h = this[i++] >> 15;
+    var m = xh * l + h * xl;
+    l = xl * l + ((m & 0x7fff) << 15) + w[j] + (c & 0x3fffffff);
+    c = (l >>> 30) + (m >>> 15) + xh * h + (c >>> 30);
+    w[j++] = l & 0x3fffffff;
+  }
+  return c;
+}
+// Alternately, set max digit bits to 28 since some
+// browsers slow down when dealing with 32-bit numbers.
+function am3(i, x, w, j, c, n) {
+  var xl = x & 0x3fff,
+      xh = x >> 14;
+  while (--n >= 0) {
+    var l = this[i] & 0x3fff;
+    var h = this[i++] >> 14;
+    var m = xh * l + h * xl;
+    l = xl * l + ((m & 0x3fff) << 14) + w[j] + c;
+    c = (l >> 28) + (m >> 14) + xh * h;
+    w[j++] = l & 0xfffffff;
+  }
+  return c;
+}
+var inBrowser = typeof navigator !== "undefined";
+if (inBrowser && j_lm && navigator.appName == "Microsoft Internet Explorer") {
+  BigInteger.prototype.am = am2;
+  dbits = 30;
+} else if (inBrowser && j_lm && navigator.appName != "Netscape") {
+  BigInteger.prototype.am = am1;
+  dbits = 26;
+} else {
+  // Mozilla/Netscape seems to prefer am3
+  BigInteger.prototype.am = am3;
+  dbits = 28;
+}
+
+BigInteger.prototype.DB = dbits;
+BigInteger.prototype.DM = (1 << dbits) - 1;
+BigInteger.prototype.DV = 1 << dbits;
+
+var BI_FP = 52;
+BigInteger.prototype.FV = Math.pow(2, BI_FP);
+BigInteger.prototype.F1 = BI_FP - dbits;
+BigInteger.prototype.F2 = 2 * dbits - BI_FP;
+
+// Digit conversions
+var BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
+var BI_RC = new Array();
+var rr, vv;
+rr = "0".charCodeAt(0);
+for (vv = 0; vv <= 9; ++vv) {
+  BI_RC[rr++] = vv;
+}rr = "a".charCodeAt(0);
+for (vv = 10; vv < 36; ++vv) {
+  BI_RC[rr++] = vv;
+}rr = "A".charCodeAt(0);
+for (vv = 10; vv < 36; ++vv) {
+  BI_RC[rr++] = vv;
+}function int2char(n) {
+  return BI_RM.charAt(n);
+}
+function intAt(s, i) {
+  var c = BI_RC[s.charCodeAt(i)];
+  return c == null ? -1 : c;
+}
+
+// (protected) copy this to r
+function bnpCopyTo(r) {
+  for (var i = this.t - 1; i >= 0; --i) {
+    r[i] = this[i];
+  }r.t = this.t;
+  r.s = this.s;
+}
+
+// (protected) set from integer value x, -DV <= x < DV
+function bnpFromInt(x) {
+  this.t = 1;
+  this.s = x < 0 ? -1 : 0;
+  if (x > 0) this[0] = x;else if (x < -1) this[0] = x + this.DV;else this.t = 0;
+}
+
+// return bigint initialized to value
+function nbv(i) {
+  var r = nbi();
+
+  r.fromInt(i);
+
+  return r;
+}
+
+// (protected) set from string and radix
+function bnpFromString(s, b) {
+  var k;
+  if (b == 16) k = 4;else if (b == 8) k = 3;else if (b == 2) k = 1;else if (b == 32) k = 5;else if (b == 4) k = 2;else throw new Error("Only radix 2, 4, 8, 16, 32 are supported");
+  this.t = 0;
+  this.s = 0;
+  var i = s.length,
+      mi = false,
+      sh = 0;
+  while (--i >= 0) {
+    var x = intAt(s, i);
+    if (x < 0) {
+      if (s.charAt(i) == "-") mi = true;
+      continue;
+    }
+    mi = false;
+    if (sh == 0) this[this.t++] = x;else if (sh + k > this.DB) {
+      this[this.t - 1] |= (x & (1 << this.DB - sh) - 1) << sh;
+      this[this.t++] = x >> this.DB - sh;
+    } else this[this.t - 1] |= x << sh;
+    sh += k;
+    if (sh >= this.DB) sh -= this.DB;
+  }
+  this.clamp();
+  if (mi) BigInteger.ZERO.subTo(this, this);
+}
+
+// (protected) clamp off excess high words
+function bnpClamp() {
+  var c = this.s & this.DM;
+  while (this.t > 0 && this[this.t - 1] == c) {
+    --this.t;
+  }
+}
+
+// (public) return string representation in given radix
+function bnToString(b) {
+  if (this.s < 0) return "-" + this.negate().toString();
+  var k;
+  if (b == 16) k = 4;else if (b == 8) k = 3;else if (b == 2) k = 1;else if (b == 32) k = 5;else if (b == 4) k = 2;else throw new Error("Only radix 2, 4, 8, 16, 32 are supported");
+  var km = (1 << k) - 1,
+      d,
+      m = false,
+      r = "",
+      i = this.t;
+  var p = this.DB - i * this.DB % k;
+  if (i-- > 0) {
+    if (p < this.DB && (d = this[i] >> p) > 0) {
+      m = true;
+      r = int2char(d);
+    }
+    while (i >= 0) {
+      if (p < k) {
+        d = (this[i] & (1 << p) - 1) << k - p;
+        d |= this[--i] >> (p += this.DB - k);
+      } else {
+        d = this[i] >> (p -= k) & km;
+        if (p <= 0) {
+          p += this.DB;
+          --i;
+        }
+      }
+      if (d > 0) m = true;
+      if (m) r += int2char(d);
+    }
+  }
+  return m ? r : "0";
+}
+
+// (public) -this
+function bnNegate() {
+  var r = nbi();
+
+  BigInteger.ZERO.subTo(this, r);
+
+  return r;
+}
+
+// (public) |this|
+function bnAbs() {
+  return this.s < 0 ? this.negate() : this;
+}
+
+// (public) return + if this > a, - if this < a, 0 if equal
+function bnCompareTo(a) {
+  var r = this.s - a.s;
+  if (r != 0) return r;
+  var i = this.t;
+  r = i - a.t;
+  if (r != 0) return this.s < 0 ? -r : r;
+  while (--i >= 0) {
+    if ((r = this[i] - a[i]) != 0) return r;
+  }return 0;
+}
+
+// returns bit length of the integer x
+function nbits(x) {
+  var r = 1,
+      t;
+  if ((t = x >>> 16) != 0) {
+    x = t;
+    r += 16;
+  }
+  if ((t = x >> 8) != 0) {
+    x = t;
+    r += 8;
+  }
+  if ((t = x >> 4) != 0) {
+    x = t;
+    r += 4;
+  }
+  if ((t = x >> 2) != 0) {
+    x = t;
+    r += 2;
+  }
+  if ((t = x >> 1) != 0) {
+    x = t;
+    r += 1;
+  }
+  return r;
+}
+
+// (public) return the number of bits in "this"
+function bnBitLength() {
+  if (this.t <= 0) return 0;
+  return this.DB * (this.t - 1) + nbits(this[this.t - 1] ^ this.s & this.DM);
+}
+
+// (protected) r = this << n*DB
+function bnpDLShiftTo(n, r) {
+  var i;
+  for (i = this.t - 1; i >= 0; --i) {
+    r[i + n] = this[i];
+  }for (i = n - 1; i >= 0; --i) {
+    r[i] = 0;
+  }r.t = this.t + n;
+  r.s = this.s;
+}
+
+// (protected) r = this >> n*DB
+function bnpDRShiftTo(n, r) {
+  for (var i = n; i < this.t; ++i) {
+    r[i - n] = this[i];
+  }r.t = Math.max(this.t - n, 0);
+  r.s = this.s;
+}
+
+// (protected) r = this << n
+function bnpLShiftTo(n, r) {
+  var bs = n % this.DB;
+  var cbs = this.DB - bs;
+  var bm = (1 << cbs) - 1;
+  var ds = Math.floor(n / this.DB),
+      c = this.s << bs & this.DM,
+      i;
+  for (i = this.t - 1; i >= 0; --i) {
+    r[i + ds + 1] = this[i] >> cbs | c;
+    c = (this[i] & bm) << bs;
+  }
+  for (i = ds - 1; i >= 0; --i) {
+    r[i] = 0;
+  }r[ds] = c;
+  r.t = this.t + ds + 1;
+  r.s = this.s;
+  r.clamp();
+}
+
+// (protected) r = this >> n
+function bnpRShiftTo(n, r) {
+  r.s = this.s;
+  var ds = Math.floor(n / this.DB);
+  if (ds >= this.t) {
+    r.t = 0;
+    return;
+  }
+  var bs = n % this.DB;
+  var cbs = this.DB - bs;
+  var bm = (1 << bs) - 1;
+  r[0] = this[ds] >> bs;
+  for (var i = ds + 1; i < this.t; ++i) {
+    r[i - ds - 1] |= (this[i] & bm) << cbs;
+    r[i - ds] = this[i] >> bs;
+  }
+  if (bs > 0) r[this.t - ds - 1] |= (this.s & bm) << cbs;
+  r.t = this.t - ds;
+  r.clamp();
+}
+
+// (protected) r = this - a
+function bnpSubTo(a, r) {
+  var i = 0,
+      c = 0,
+      m = Math.min(a.t, this.t);
+  while (i < m) {
+    c += this[i] - a[i];
+    r[i++] = c & this.DM;
+    c >>= this.DB;
+  }
+  if (a.t < this.t) {
+    c -= a.s;
+    while (i < this.t) {
+      c += this[i];
+      r[i++] = c & this.DM;
+      c >>= this.DB;
+    }
+    c += this.s;
+  } else {
+    c += this.s;
+    while (i < a.t) {
+      c -= a[i];
+      r[i++] = c & this.DM;
+      c >>= this.DB;
+    }
+    c -= a.s;
+  }
+  r.s = c < 0 ? -1 : 0;
+  if (c < -1) r[i++] = this.DV + c;else if (c > 0) r[i++] = c;
+  r.t = i;
+  r.clamp();
+}
+
+// (protected) r = this * a, r != this,a (HAC 14.12)
+// "this" should be the larger one if appropriate.
+function bnpMultiplyTo(a, r) {
+  var x = this.abs(),
+      y = a.abs();
+  var i = x.t;
+  r.t = i + y.t;
+  while (--i >= 0) {
+    r[i] = 0;
+  }for (i = 0; i < y.t; ++i) {
+    r[i + x.t] = x.am(0, y[i], r, i, 0, x.t);
+  }r.s = 0;
+  r.clamp();
+  if (this.s != a.s) BigInteger.ZERO.subTo(r, r);
+}
+
+// (protected) r = this^2, r != this (HAC 14.16)
+function bnpSquareTo(r) {
+  var x = this.abs();
+  var i = r.t = 2 * x.t;
+  while (--i >= 0) {
+    r[i] = 0;
+  }for (i = 0; i < x.t - 1; ++i) {
+    var c = x.am(i, x[i], r, 2 * i, 0, 1);
+    if ((r[i + x.t] += x.am(i + 1, 2 * x[i], r, 2 * i + 1, c, x.t - i - 1)) >= x.DV) {
+      r[i + x.t] -= x.DV;
+      r[i + x.t + 1] = 1;
+    }
+  }
+  if (r.t > 0) r[r.t - 1] += x.am(i, x[i], r, 2 * i, 0, 1);
+  r.s = 0;
+  r.clamp();
+}
+
+// (protected) divide this by m, quotient and remainder to q, r (HAC 14.20)
+// r != q, this != m.  q or r may be null.
+function bnpDivRemTo(m, q, r) {
+  var pm = m.abs();
+  if (pm.t <= 0) return;
+  var pt = this.abs();
+  if (pt.t < pm.t) {
+    if (q != null) q.fromInt(0);
+    if (r != null) this.copyTo(r);
+    return;
+  }
+  if (r == null) r = nbi();
+  var y = nbi(),
+      ts = this.s,
+      ms = m.s;
+  var nsh = this.DB - nbits(pm[pm.t - 1]);
+  // normalize modulus
+  if (nsh > 0) {
+    pm.lShiftTo(nsh, y);
+    pt.lShiftTo(nsh, r);
+  } else {
+    pm.copyTo(y);
+    pt.copyTo(r);
+  }
+  var ys = y.t;
+  var y0 = y[ys - 1];
+  if (y0 == 0) return;
+  var yt = y0 * (1 << this.F1) + (ys > 1 ? y[ys - 2] >> this.F2 : 0);
+  var d1 = this.FV / yt,
+      d2 = (1 << this.F1) / yt,
+      e = 1 << this.F2;
+  var i = r.t,
+      j = i - ys,
+      t = q == null ? nbi() : q;
+  y.dlShiftTo(j, t);
+  if (r.compareTo(t) >= 0) {
+    r[r.t++] = 1;
+    r.subTo(t, r);
+  }
+  BigInteger.ONE.dlShiftTo(ys, t);
+  t.subTo(y, y);
+  // "negative" y so we can replace sub with am later
+  while (y.t < ys) {
+    y[y.t++] = 0;
+  }while (--j >= 0) {
+    // Estimate quotient digit
+    var qd = r[--i] == y0 ? this.DM : Math.floor(r[i] * d1 + (r[i - 1] + e) * d2);
+    if ((r[i] += y.am(0, qd, r, j, 0, ys)) < qd) {
+      // Try it out
+      y.dlShiftTo(j, t);
+      r.subTo(t, r);
+      while (r[i] < --qd) {
+        r.subTo(t, r);
+      }
+    }
+  }
+  if (q != null) {
+    r.drShiftTo(ys, q);
+    if (ts != ms) BigInteger.ZERO.subTo(q, q);
+  }
+  r.t = ys;
+  r.clamp();
+  if (nsh > 0) r.rShiftTo(nsh, r);
+  // Denormalize remainder
+  if (ts < 0) BigInteger.ZERO.subTo(r, r);
+}
+
+// (public) this mod a
+function bnMod(a) {
+  var r = nbi();
+  this.abs().divRemTo(a, null, r);
+  if (this.s < 0 && r.compareTo(BigInteger.ZERO) > 0) a.subTo(r, r);
+  return r;
+}
+
+// (protected) return "-1/this % 2^DB"; useful for Mont. reduction
+// justification:
+//         xy == 1 (mod m)
+//         xy =  1+km
+//   xy(2-xy) = (1+km)(1-km)
+// x[y(2-xy)] = 1-k^2m^2
+// x[y(2-xy)] == 1 (mod m^2)
+// if y is 1/x mod m, then y(2-xy) is 1/x mod m^2
+// should reduce x and y(2-xy) by m^2 at each step to keep size bounded.
+// JS multiply "overflows" differently from C/C++, so care is needed here.
+function bnpInvDigit() {
+  if (this.t < 1) return 0;
+  var x = this[0];
+  if ((x & 1) == 0) return 0;
+  var y = x & 3;
+  // y == 1/x mod 2^2
+  y = y * (2 - (x & 0xf) * y) & 0xf;
+  // y == 1/x mod 2^4
+  y = y * (2 - (x & 0xff) * y) & 0xff;
+  // y == 1/x mod 2^8
+  y = y * (2 - ((x & 0xffff) * y & 0xffff)) & 0xffff;
+  // y == 1/x mod 2^16
+  // last step - calculate inverse mod DV directly;
+  // assumes 16 < DB <= 32 and assumes ability to handle 48-bit ints
+  y = y * (2 - x * y % this.DV) % this.DV;
+  // y == 1/x mod 2^dbits
+  // we really want the negative inverse, and -DV < y < DV
+  return y > 0 ? this.DV - y : -y;
+}
+
+function bnEquals(a) {
+  return this.compareTo(a) == 0;
+}
+
+// (protected) r = this + a
+function bnpAddTo(a, r) {
+  var i = 0,
+      c = 0,
+      m = Math.min(a.t, this.t);
+  while (i < m) {
+    c += this[i] + a[i];
+    r[i++] = c & this.DM;
+    c >>= this.DB;
+  }
+  if (a.t < this.t) {
+    c += a.s;
+    while (i < this.t) {
+      c += this[i];
+      r[i++] = c & this.DM;
+      c >>= this.DB;
+    }
+    c += this.s;
+  } else {
+    c += this.s;
+    while (i < a.t) {
+      c += a[i];
+      r[i++] = c & this.DM;
+      c >>= this.DB;
+    }
+    c += a.s;
+  }
+  r.s = c < 0 ? -1 : 0;
+  if (c > 0) r[i++] = c;else if (c < -1) r[i++] = this.DV + c;
+  r.t = i;
+  r.clamp();
+}
+
+// (public) this + a
+function bnAdd(a) {
+  var r = nbi();
+
+  this.addTo(a, r);
+
+  return r;
+}
+
+// (public) this - a
+function bnSubtract(a) {
+  var r = nbi();
+
+  this.subTo(a, r);
+
+  return r;
+}
+
+// (public) this * a
+function bnMultiply(a) {
+  var r = nbi();
+
+  this.multiplyTo(a, r);
+
+  return r;
+}
+
+// (public) this / a
+function bnDivide(a) {
+  var r = nbi();
+
+  this.divRemTo(a, r, null);
+
+  return r;
+}
+
+// Montgomery reduction
+function Montgomery(m) {
+  this.m = m;
+  this.mp = m.invDigit();
+  this.mpl = this.mp & 0x7fff;
+  this.mph = this.mp >> 15;
+  this.um = (1 << m.DB - 15) - 1;
+  this.mt2 = 2 * m.t;
+}
+
+// xR mod m
+function montConvert(x) {
+  var r = nbi();
+  x.abs().dlShiftTo(this.m.t, r);
+  r.divRemTo(this.m, null, r);
+  if (x.s < 0 && r.compareTo(BigInteger.ZERO) > 0) this.m.subTo(r, r);
+  return r;
+}
+
+// x/R mod m
+function montRevert(x) {
+  var r = nbi();
+  x.copyTo(r);
+  this.reduce(r);
+  return r;
+}
+
+// x = x/R mod m (HAC 14.32)
+function montReduce(x) {
+  while (x.t <= this.mt2) {
+    // pad x so am has enough room later
+    x[x.t++] = 0;
+  }for (var i = 0; i < this.m.t; ++i) {
+    // faster way of calculating u0 = x[i]*mp mod DV
+    var j = x[i] & 0x7fff;
+    var u0 = j * this.mpl + ((j * this.mph + (x[i] >> 15) * this.mpl & this.um) << 15) & x.DM;
+    // use am to combine the multiply-shift-add into one call
+    j = i + this.m.t;
+    x[j] += this.m.am(0, u0, x, i, 0, this.m.t);
+    // propagate carry
+    while (x[j] >= x.DV) {
+      x[j] -= x.DV;
+      x[++j]++;
+    }
+  }
+  x.clamp();
+  x.drShiftTo(this.m.t, x);
+  if (x.compareTo(this.m) >= 0) x.subTo(this.m, x);
+}
+
+// r = "x^2/R mod m"; x != r
+function montSqrTo(x, r) {
+  x.squareTo(r);
+
+  this.reduce(r);
+}
+
+// r = "xy/R mod m"; x,y != r
+function montMulTo(x, y, r) {
+  x.multiplyTo(y, r);
+
+  this.reduce(r);
+}
+
+Montgomery.prototype.convert = montConvert;
+Montgomery.prototype.revert = montRevert;
+Montgomery.prototype.reduce = montReduce;
+Montgomery.prototype.mulTo = montMulTo;
+Montgomery.prototype.sqrTo = montSqrTo;
+
+// (public) this^e % m (HAC 14.85)
+function bnModPow(e, m, callback) {
+  var i = e.bitLength(),
+      k,
+      r = nbv(1),
+      z = new Montgomery(m);
+  if (i <= 0) return r;else if (i < 18) k = 1;else if (i < 48) k = 3;else if (i < 144) k = 4;else if (i < 768) k = 5;else k = 6;
+
+  // precomputation
+  var g = new Array(),
+      n = 3,
+      k1 = k - 1,
+      km = (1 << k) - 1;
+  g[1] = z.convert(this);
+  if (k > 1) {
+    var g2 = nbi();
+    z.sqrTo(g[1], g2);
+    while (n <= km) {
+      g[n] = nbi();
+      z.mulTo(g2, g[n - 2], g[n]);
+      n += 2;
+    }
+  }
+
+  var j = e.t - 1,
+      w,
+      is1 = true,
+      r2 = nbi(),
+      t;
+  i = nbits(e[j]) - 1;
+  while (j >= 0) {
+    if (i >= k1) w = e[j] >> i - k1 & km;else {
+      w = (e[j] & (1 << i + 1) - 1) << k1 - i;
+      if (j > 0) w |= e[j - 1] >> this.DB + i - k1;
+    }
+
+    n = k;
+    while ((w & 1) == 0) {
+      w >>= 1;
+      --n;
+    }
+    if ((i -= n) < 0) {
+      i += this.DB;
+      --j;
+    }
+    if (is1) {
+      // ret == 1, don't bother squaring or multiplying it
+      g[w].copyTo(r);
+      is1 = false;
+    } else {
+      while (n > 1) {
+        z.sqrTo(r, r2);
+        z.sqrTo(r2, r);
+        n -= 2;
+      }
+      if (n > 0) z.sqrTo(r, r2);else {
+        t = r;
+        r = r2;
+        r2 = t;
+      }
+      z.mulTo(r2, g[w], r);
+    }
+
+    while (j >= 0 && (e[j] & 1 << i) == 0) {
+      z.sqrTo(r, r2);
+      t = r;
+      r = r2;
+      r2 = t;
+      if (--i < 0) {
+        i = this.DB - 1;
+        --j;
+      }
+    }
+  }
+  var result = z.revert(r);
+  callback(null, result);
+  return result;
+}
+
+// protected
+BigInteger.prototype.copyTo = bnpCopyTo;
+BigInteger.prototype.fromInt = bnpFromInt;
+BigInteger.prototype.fromString = bnpFromString;
+BigInteger.prototype.clamp = bnpClamp;
+BigInteger.prototype.dlShiftTo = bnpDLShiftTo;
+BigInteger.prototype.drShiftTo = bnpDRShiftTo;
+BigInteger.prototype.lShiftTo = bnpLShiftTo;
+BigInteger.prototype.rShiftTo = bnpRShiftTo;
+BigInteger.prototype.subTo = bnpSubTo;
+BigInteger.prototype.multiplyTo = bnpMultiplyTo;
+BigInteger.prototype.squareTo = bnpSquareTo;
+BigInteger.prototype.divRemTo = bnpDivRemTo;
+BigInteger.prototype.invDigit = bnpInvDigit;
+BigInteger.prototype.addTo = bnpAddTo;
+
+// public
+BigInteger.prototype.toString = bnToString;
+BigInteger.prototype.negate = bnNegate;
+BigInteger.prototype.abs = bnAbs;
+BigInteger.prototype.compareTo = bnCompareTo;
+BigInteger.prototype.bitLength = bnBitLength;
+BigInteger.prototype.mod = bnMod;
+BigInteger.prototype.equals = bnEquals;
+BigInteger.prototype.add = bnAdd;
+BigInteger.prototype.subtract = bnSubtract;
+BigInteger.prototype.multiply = bnMultiply;
+BigInteger.prototype.divide = bnDivide;
+BigInteger.prototype.modPow = bnModPow;
+
+// "constants"
+BigInteger.ZERO = nbv(0);
+BigInteger.ONE = nbv(1);
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__CognitoJwtToken__ = __webpack_require__(6);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/*
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+/** @class */
+
+var CognitoAccessToken = function (_CognitoJwtToken) {
+  _inherits(CognitoAccessToken, _CognitoJwtToken);
+
+  /**
+   * Constructs a new CognitoAccessToken object
+   * @param {string=} AccessToken The JWT access token.
+   */
+  function CognitoAccessToken() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        AccessToken = _ref.AccessToken;
+
+    _classCallCheck(this, CognitoAccessToken);
+
+    return _possibleConstructorReturn(this, _CognitoJwtToken.call(this, AccessToken || ''));
+  }
+
+  return CognitoAccessToken;
+}(__WEBPACK_IMPORTED_MODULE_0__CognitoJwtToken__["a" /* default */]);
+
+/* harmony default export */ __webpack_exports__["a"] = (CognitoAccessToken);
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer___ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer____default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_buffer___);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+/** @class */
+
+var CognitoJwtToken = function () {
+  /**
+   * Constructs a new CognitoJwtToken object
+   * @param {string=} token The JWT token.
+   */
+  function CognitoJwtToken(token) {
+    _classCallCheck(this, CognitoJwtToken);
+
+    // Assign object
+    this.jwtToken = token || '';
+    this.payload = this.decodePayload();
+  }
+
+  /**
+   * @returns {string} the record's token.
+   */
+
+
+  CognitoJwtToken.prototype.getJwtToken = function getJwtToken() {
+    return this.jwtToken;
+  };
+
+  /**
+   * @returns {int} the token's expiration (exp member).
+   */
+
+
+  CognitoJwtToken.prototype.getExpiration = function getExpiration() {
+    return this.payload.exp;
+  };
+
+  /**
+   * @returns {int} the token's "issued at" (iat member).
+   */
+
+
+  CognitoJwtToken.prototype.getIssuedAt = function getIssuedAt() {
+    return this.payload.iat;
+  };
+
+  /**
+   * @returns {object} the token's payload.
+   */
+
+
+  CognitoJwtToken.prototype.decodePayload = function decodePayload() {
+    var payload = this.jwtToken.split('.')[1];
+    try {
+      return JSON.parse(__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(payload, 'base64').toString('utf8'));
+    } catch (err) {
+      return {};
+    }
+  };
+
+  return CognitoJwtToken;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (CognitoJwtToken);
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__CognitoJwtToken__ = __webpack_require__(6);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+/** @class */
+
+var CognitoIdToken = function (_CognitoJwtToken) {
+  _inherits(CognitoIdToken, _CognitoJwtToken);
+
+  /**
+   * Constructs a new CognitoIdToken object
+   * @param {string=} IdToken The JWT Id token
+   */
+  function CognitoIdToken() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        IdToken = _ref.IdToken;
+
+    _classCallCheck(this, CognitoIdToken);
+
+    return _possibleConstructorReturn(this, _CognitoJwtToken.call(this, IdToken || ''));
+  }
+
+  return CognitoIdToken;
+}(__WEBPACK_IMPORTED_MODULE_0__CognitoJwtToken__["a" /* default */]);
+
+/* harmony default export */ __webpack_exports__["a"] = (CognitoIdToken);
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/** @class */
+var CognitoRefreshToken = function () {
+  /**
+   * Constructs a new CognitoRefreshToken object
+   * @param {string=} RefreshToken The JWT refresh token.
+   */
+  function CognitoRefreshToken() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        RefreshToken = _ref.RefreshToken;
+
+    _classCallCheck(this, CognitoRefreshToken);
+
+    // Assign object
+    this.token = RefreshToken || '';
+  }
+
+  /**
+   * @returns {string} the record's token.
+   */
+
+
+  CognitoRefreshToken.prototype.getToken = function getToken() {
+    return this.token;
+  };
+
+  return CognitoRefreshToken;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (CognitoRefreshToken);
+
+/***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer___ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_buffer____default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_buffer___);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_crypto_browserify__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_crypto_browserify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_crypto_browserify__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__BigInteger__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__CognitoAccessToken__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__CognitoIdToken__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__CognitoRefreshToken__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__CognitoUserSession__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__DateHelper__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__CognitoUserAttribute__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__StorageHelper__ = __webpack_require__(13);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+//import createHmac from 'create-hmac';
+
+var createHmac = __WEBPACK_IMPORTED_MODULE_1_crypto_browserify__["createHmac"];
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * @callback nodeCallback
+ * @template T result
+ * @param {*} err The operation failure reason, or null.
+ * @param {T} result The operation result.
+ */
+
+/**
+ * @callback onFailure
+ * @param {*} err Failure reason.
+ */
+
+/**
+ * @callback onSuccess
+ * @template T result
+ * @param {T} result The operation result.
+ */
+
+/**
+ * @callback mfaRequired
+ * @param {*} details MFA challenge details.
+ */
+
+/**
+ * @callback customChallenge
+ * @param {*} details Custom challenge details.
+ */
+
+/**
+ * @callback inputVerificationCode
+ * @param {*} data Server response.
+ */
+
+/**
+ * @callback authSuccess
+ * @param {CognitoUserSession} session The new session.
+ * @param {bool=} userConfirmationNecessary User must be confirmed.
+ */
+
+/** @class */
+
+var CognitoUser = function () {
+  /**
+   * Constructs a new CognitoUser object
+   * @param {object} data Creation options
+   * @param {string} data.Username The user's username.
+   * @param {CognitoUserPool} data.Pool Pool containing the user.
+   * @param {object} data.Storage Optional storage object.
+   */
+  function CognitoUser(data) {
+    _classCallCheck(this, CognitoUser);
+
+    if (data == null || data.Username == null || data.Pool == null) {
+      throw new Error('Username and pool information are required.');
+    }
+
+    this.username = data.Username || '';
+    this.pool = data.Pool;
+    this.Session = null;
+
+    this.client = data.Pool.client;
+
+    this.signInUserSession = null;
+    this.authenticationFlowType = 'USER_SRP_AUTH';
+
+    this.storage = data.Storage || new __WEBPACK_IMPORTED_MODULE_10__StorageHelper__["a" /* default */]().getStorage();
+  }
+
+  /**
+   * Sets the session for this user
+   * @param {CognitoUserSession} signInUserSession the session
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.setSignInUserSession = function setSignInUserSession(signInUserSession) {
+    this.clearCachedTokens();
+    this.signInUserSession = signInUserSession;
+    this.cacheTokens();
+  };
+
+  /**
+   * @returns {CognitoUserSession} the current session for this user
+   */
+
+
+  CognitoUser.prototype.getSignInUserSession = function getSignInUserSession() {
+    return this.signInUserSession;
+  };
+
+  /**
+   * @returns {string} the user's username
+   */
+
+
+  CognitoUser.prototype.getUsername = function getUsername() {
+    return this.username;
+  };
+
+  /**
+   * @returns {String} the authentication flow type
+   */
+
+
+  CognitoUser.prototype.getAuthenticationFlowType = function getAuthenticationFlowType() {
+    return this.authenticationFlowType;
+  };
+
+  /**
+   * sets authentication flow type
+   * @param {string} authenticationFlowType New value.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.setAuthenticationFlowType = function setAuthenticationFlowType(authenticationFlowType) {
+    this.authenticationFlowType = authenticationFlowType;
+  };
+
+  /**
+   * This is used for authenticating the user through the custom authentication flow.
+   * @param {AuthenticationDetails} authDetails Contains the authentication data
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {customChallenge} callback.customChallenge Custom challenge
+   *        response required to continue.
+   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.initiateAuth = function initiateAuth(authDetails, callback) {
+    var _this = this;
+
+    var authParameters = authDetails.getAuthParameters();
+    authParameters.USERNAME = this.username;
+
+    var jsonReq = {
+      AuthFlow: 'CUSTOM_AUTH',
+      ClientId: this.pool.getClientId(),
+      AuthParameters: authParameters,
+      ClientMetadata: authDetails.getValidationData()
+    };
+    if (this.getUserContextData()) {
+      jsonReq.UserContextData = this.getUserContextData();
+    }
+
+    this.client.request('InitiateAuth', jsonReq, function (err, data) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      var challengeName = data.ChallengeName;
+      var challengeParameters = data.ChallengeParameters;
+
+      if (challengeName === 'CUSTOM_CHALLENGE') {
+        _this.Session = data.Session;
+        return callback.customChallenge(challengeParameters);
+      }
+      _this.signInUserSession = _this.getCognitoUserSession(data.AuthenticationResult);
+      _this.cacheTokens();
+      return callback.onSuccess(_this.signInUserSession);
+    });
+  };
+
+  /**
+   * This is used for authenticating the user.
+   * stuff
+   * @param {AuthenticationDetails} authDetails Contains the authentication data
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {newPasswordRequired} callback.newPasswordRequired new
+   *        password and any required attributes are required to continue
+   * @param {mfaRequired} callback.mfaRequired MFA code
+   *        required to continue.
+   * @param {customChallenge} callback.customChallenge Custom challenge
+   *        response required to continue.
+   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.authenticateUser = function authenticateUser(authDetails, callback) {
+    if (this.authenticationFlowType === 'USER_PASSWORD_AUTH') {
+      return this.authenticateUserPlainUsernamePassword(authDetails, callback);
+    } else if (this.authenticationFlowType === 'USER_SRP_AUTH') {
+      return this.authenticateUserDefaultAuth(authDetails, callback);
+    }
+    return callback.onFailure(new Error('Authentication flow type is invalid.'));
+  };
+
+  /**
+   * PRIVATE ONLY: This is an internal only method and should not
+   * be directly called by the consumers.
+   * It calls the AuthenticationHelper for SRP related
+   * stuff
+   * @param {AuthenticationDetails} authDetails Contains the authentication data
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {newPasswordRequired} callback.newPasswordRequired new
+   *        password and any required attributes are required to continue
+   * @param {mfaRequired} callback.mfaRequired MFA code
+   *        required to continue.
+   * @param {customChallenge} callback.customChallenge Custom challenge
+   *        response required to continue.
+   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.authenticateUserDefaultAuth = function authenticateUserDefaultAuth(authDetails, callback) {
+    var _this2 = this;
+
+    var authenticationHelper = new __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__["a" /* default */](this.pool.getUserPoolId().split('_')[1]);
+    var dateHelper = new __WEBPACK_IMPORTED_MODULE_8__DateHelper__["a" /* default */]();
+
+    var serverBValue = void 0;
+    var salt = void 0;
+    var authParameters = {};
+
+    if (this.deviceKey != null) {
+      authParameters.DEVICE_KEY = this.deviceKey;
+    }
+
+    authParameters.USERNAME = this.username;
+    authenticationHelper.getLargeAValue(function (errOnAValue, aValue) {
+      // getLargeAValue callback start
+      if (errOnAValue) {
+        callback.onFailure(errOnAValue);
+      }
+
+      authParameters.SRP_A = aValue.toString(16);
+
+      if (_this2.authenticationFlowType === 'CUSTOM_AUTH') {
+        authParameters.CHALLENGE_NAME = 'SRP_A';
+      }
+
+      var jsonReq = {
+        AuthFlow: _this2.authenticationFlowType,
+        ClientId: _this2.pool.getClientId(),
+        AuthParameters: authParameters,
+        ClientMetadata: authDetails.getValidationData()
+      };
+      if (_this2.getUserContextData(_this2.username)) {
+        jsonReq.UserContextData = _this2.getUserContextData(_this2.username);
+      }
+
+      _this2.client.request('InitiateAuth', jsonReq, function (err, data) {
+        if (err) {
+          return callback.onFailure(err);
+        }
+
+        var challengeParameters = data.ChallengeParameters;
+
+        _this2.username = challengeParameters.USER_ID_FOR_SRP;
+        serverBValue = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](challengeParameters.SRP_B, 16);
+        salt = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](challengeParameters.SALT, 16);
+        _this2.getCachedDeviceKeyAndPassword();
+
+        authenticationHelper.getPasswordAuthenticationKey(_this2.username, authDetails.getPassword(), serverBValue, salt, function (errOnHkdf, hkdf) {
+          // getPasswordAuthenticationKey callback start
+          if (errOnHkdf) {
+            callback.onFailure(errOnHkdf);
+          }
+
+          var dateNow = dateHelper.getNowString();
+
+          var signatureString = createHmac('sha256', hkdf).update(__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].concat([__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this2.pool.getUserPoolId().split('_')[1], 'utf8'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this2.username, 'utf8'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(challengeParameters.SECRET_BLOCK, 'base64'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(dateNow, 'utf8')])).digest('base64');
+
+          var challengeResponses = {};
+
+          challengeResponses.USERNAME = _this2.username;
+          challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK = challengeParameters.SECRET_BLOCK;
+          challengeResponses.TIMESTAMP = dateNow;
+          challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
+
+          if (_this2.deviceKey != null) {
+            challengeResponses.DEVICE_KEY = _this2.deviceKey;
+          }
+
+          var respondToAuthChallenge = function respondToAuthChallenge(challenge, challengeCallback) {
+            return _this2.client.request('RespondToAuthChallenge', challenge, function (errChallenge, dataChallenge) {
+              if (errChallenge && errChallenge.code === 'ResourceNotFoundException' && errChallenge.message.toLowerCase().indexOf('device') !== -1) {
+                challengeResponses.DEVICE_KEY = null;
+                _this2.deviceKey = null;
+                _this2.randomPassword = null;
+                _this2.deviceGroupKey = null;
+                _this2.clearCachedDeviceKeyAndPassword();
+                return respondToAuthChallenge(challenge, challengeCallback);
+              }
+              return challengeCallback(errChallenge, dataChallenge);
+            });
+          };
+
+          var jsonReqResp = {
+            ChallengeName: 'PASSWORD_VERIFIER',
+            ClientId: _this2.pool.getClientId(),
+            ChallengeResponses: challengeResponses,
+            Session: data.Session
+          };
+          if (_this2.getUserContextData()) {
+            jsonReqResp.UserContextData = _this2.getUserContextData();
+          }
+          respondToAuthChallenge(jsonReqResp, function (errAuthenticate, dataAuthenticate) {
+            if (errAuthenticate) {
+              return callback.onFailure(errAuthenticate);
+            }
+
+            return _this2.authenticateUserInternal(dataAuthenticate, authenticationHelper, callback);
+          });
+          return undefined;
+          // getPasswordAuthenticationKey callback end
+        });
+        return undefined;
+      });
+      // getLargeAValue callback end
+    });
+  };
+
+  /**
+   * PRIVATE ONLY: This is an internal only method and should not
+   * be directly called by the consumers.
+   * @param {AuthenticationDetails} authDetails Contains the authentication data.
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {mfaRequired} callback.mfaRequired MFA code
+   *        required to continue.
+   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.authenticateUserPlainUsernamePassword = function authenticateUserPlainUsernamePassword(authDetails, callback) {
+    var _this3 = this;
+
+    var authParameters = {};
+    authParameters.USERNAME = this.username;
+    authParameters.PASSWORD = authDetails.getPassword();
+    if (!authParameters.PASSWORD) {
+      callback.onFailure(new Error('PASSWORD parameter is required'));
+      return;
+    }
+    var authenticationHelper = new __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__["a" /* default */](this.pool.getUserPoolId().split('_')[1]);
+    this.getCachedDeviceKeyAndPassword();
+    if (this.deviceKey != null) {
+      authParameters.DEVICE_KEY = this.deviceKey;
+    }
+
+    var jsonReq = {
+      AuthFlow: 'USER_PASSWORD_AUTH',
+      ClientId: this.pool.getClientId(),
+      AuthParameters: authParameters,
+      ClientMetadata: authDetails.getValidationData()
+    };
+    if (this.getUserContextData(this.username)) {
+      jsonReq.UserContextData = this.getUserContextData(this.username);
+    }
+    // USER_PASSWORD_AUTH happens in a single round-trip: client sends userName and password,
+    // Cognito UserPools verifies password and returns tokens.
+    this.client.request('InitiateAuth', jsonReq, function (err, authResult) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      return _this3.authenticateUserInternal(authResult, authenticationHelper, callback);
+    });
+  };
+
+  /**
+  * PRIVATE ONLY: This is an internal only method and should not
+  * be directly called by the consumers.
+  * @param {object} dataAuthenticate authentication data
+  * @param {object} authenticationHelper helper created
+  * @param {callback} callback passed on from caller
+  * @returns {void}
+  */
+
+
+  CognitoUser.prototype.authenticateUserInternal = function authenticateUserInternal(dataAuthenticate, authenticationHelper, callback) {
+    var _this4 = this;
+
+    var challengeName = dataAuthenticate.ChallengeName;
+    var challengeParameters = dataAuthenticate.ChallengeParameters;
+
+    if (challengeName === 'SMS_MFA') {
+      this.Session = dataAuthenticate.Session;
+      return callback.mfaRequired(challengeName, challengeParameters);
+    }
+
+    if (challengeName === 'SELECT_MFA_TYPE') {
+      this.Session = dataAuthenticate.Session;
+      return callback.selectMFAType(challengeName, challengeParameters);
+    }
+
+    if (challengeName === 'MFA_SETUP') {
+      this.Session = dataAuthenticate.Session;
+      return callback.mfaSetup(challengeName, challengeParameters);
+    }
+
+    if (challengeName === 'SOFTWARE_TOKEN_MFA') {
+      this.Session = dataAuthenticate.Session;
+      return callback.totpRequired(challengeName, challengeParameters);
+    }
+
+    if (challengeName === 'CUSTOM_CHALLENGE') {
+      this.Session = dataAuthenticate.Session;
+      return callback.customChallenge(challengeParameters);
+    }
+
+    if (challengeName === 'NEW_PASSWORD_REQUIRED') {
+      this.Session = dataAuthenticate.Session;
+
+      var userAttributes = null;
+      var rawRequiredAttributes = null;
+      var requiredAttributes = [];
+      var userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+
+      if (challengeParameters) {
+        userAttributes = JSON.parse(dataAuthenticate.ChallengeParameters.userAttributes);
+        rawRequiredAttributes = JSON.parse(dataAuthenticate.ChallengeParameters.requiredAttributes);
+      }
+
+      if (rawRequiredAttributes) {
+        for (var i = 0; i < rawRequiredAttributes.length; i++) {
+          requiredAttributes[i] = rawRequiredAttributes[i].substr(userAttributesPrefix.length);
+        }
+      }
+      return callback.newPasswordRequired(userAttributes, requiredAttributes);
+    }
+
+    if (challengeName === 'DEVICE_SRP_AUTH') {
+      this.getDeviceResponse(callback);
+      return undefined;
+    }
+
+    this.signInUserSession = this.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
+    this.cacheTokens();
+
+    var newDeviceMetadata = dataAuthenticate.AuthenticationResult.NewDeviceMetadata;
+    if (newDeviceMetadata == null) {
+      return callback.onSuccess(this.signInUserSession);
+    }
+
+    authenticationHelper.generateHashDevice(dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey, dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey, function (errGenHash) {
+      if (errGenHash) {
+        return callback.onFailure(errGenHash);
+      }
+
+      var deviceSecretVerifierConfig = {
+        Salt: __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(authenticationHelper.getSaltDevices(), 'hex').toString('base64'),
+        PasswordVerifier: __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(authenticationHelper.getVerifierDevices(), 'hex').toString('base64')
+      };
+
+      _this4.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
+      _this4.deviceGroupKey = newDeviceMetadata.DeviceGroupKey;
+      _this4.randomPassword = authenticationHelper.getRandomPassword();
+
+      _this4.client.request('ConfirmDevice', {
+        DeviceKey: newDeviceMetadata.DeviceKey,
+        AccessToken: _this4.signInUserSession.getAccessToken().getJwtToken(),
+        DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
+        DeviceName: navigator.userAgent
+      }, function (errConfirm, dataConfirm) {
+        if (errConfirm) {
+          return callback.onFailure(errConfirm);
+        }
+
+        _this4.deviceKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey;
+        _this4.cacheDeviceKeyAndPassword();
+        if (dataConfirm.UserConfirmationNecessary === true) {
+          return callback.onSuccess(_this4.signInUserSession, dataConfirm.UserConfirmationNecessary);
+        }
+        return callback.onSuccess(_this4.signInUserSession);
+      });
+      return undefined;
+    });
+    return undefined;
+  };
+
+  /**
+  * This method is user to complete the NEW_PASSWORD_REQUIRED challenge.
+  * Pass the new password with any new user attributes to be updated.
+  * User attribute keys must be of format userAttributes.<attribute_name>.
+  * @param {string} newPassword new password for this user
+  * @param {object} requiredAttributeData map with values for all required attributes
+  * @param {object} callback Result callback map.
+  * @param {onFailure} callback.onFailure Called on any error.
+  * @param {mfaRequired} callback.mfaRequired MFA code required to continue.
+  * @param {customChallenge} callback.customChallenge Custom challenge
+  *         response required to continue.
+  * @param {authSuccess} callback.onSuccess Called on success with the new session.
+  * @returns {void}
+  */
+
+
+  CognitoUser.prototype.completeNewPasswordChallenge = function completeNewPasswordChallenge(newPassword, requiredAttributeData, callback) {
+    var _this5 = this;
+
+    if (!newPassword) {
+      return callback.onFailure(new Error('New password is required.'));
+    }
+    var authenticationHelper = new __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__["a" /* default */](this.pool.getUserPoolId().split('_')[1]);
+    var userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+
+    var finalUserAttributes = {};
+    if (requiredAttributeData) {
+      Object.keys(requiredAttributeData).forEach(function (key) {
+        finalUserAttributes[userAttributesPrefix + key] = requiredAttributeData[key];
+      });
+    }
+
+    finalUserAttributes.NEW_PASSWORD = newPassword;
+    finalUserAttributes.USERNAME = this.username;
+    var jsonReq = {
+      ChallengeName: 'NEW_PASSWORD_REQUIRED',
+      ClientId: this.pool.getClientId(),
+      ChallengeResponses: finalUserAttributes,
+      Session: this.Session
+    };
+    if (this.getUserContextData()) {
+      jsonReq.UserContextData = this.getUserContextData();
+    }
+
+    this.client.request('RespondToAuthChallenge', jsonReq, function (errAuthenticate, dataAuthenticate) {
+      if (errAuthenticate) {
+        return callback.onFailure(errAuthenticate);
+      }
+      return _this5.authenticateUserInternal(dataAuthenticate, authenticationHelper, callback);
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used to get a session using device authentication. It is called at the end of user
+   * authentication
+   *
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+   * @returns {void}
+   * @private
+   */
+
+
+  CognitoUser.prototype.getDeviceResponse = function getDeviceResponse(callback) {
+    var _this6 = this;
+
+    var authenticationHelper = new __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__["a" /* default */](this.deviceGroupKey);
+    var dateHelper = new __WEBPACK_IMPORTED_MODULE_8__DateHelper__["a" /* default */]();
+
+    var authParameters = {};
+
+    authParameters.USERNAME = this.username;
+    authParameters.DEVICE_KEY = this.deviceKey;
+    authenticationHelper.getLargeAValue(function (errAValue, aValue) {
+      // getLargeAValue callback start
+      if (errAValue) {
+        callback.onFailure(errAValue);
+      }
+
+      authParameters.SRP_A = aValue.toString(16);
+
+      var jsonReq = {
+        ChallengeName: 'DEVICE_SRP_AUTH',
+        ClientId: _this6.pool.getClientId(),
+        ChallengeResponses: authParameters
+      };
+      if (_this6.getUserContextData()) {
+        jsonReq.UserContextData = _this6.getUserContextData();
+      }
+      _this6.client.request('RespondToAuthChallenge', jsonReq, function (err, data) {
+        if (err) {
+          return callback.onFailure(err);
+        }
+
+        var challengeParameters = data.ChallengeParameters;
+
+        var serverBValue = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](challengeParameters.SRP_B, 16);
+        var salt = new __WEBPACK_IMPORTED_MODULE_2__BigInteger__["a" /* default */](challengeParameters.SALT, 16);
+
+        authenticationHelper.getPasswordAuthenticationKey(_this6.deviceKey, _this6.randomPassword, serverBValue, salt, function (errHkdf, hkdf) {
+          // getPasswordAuthenticationKey callback start
+          if (errHkdf) {
+            return callback.onFailure(errHkdf);
+          }
+
+          var dateNow = dateHelper.getNowString();
+
+          var signatureString = createHmac('sha256', hkdf).update(__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].concat([__WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this6.deviceGroupKey, 'utf8'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(_this6.deviceKey, 'utf8'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(challengeParameters.SECRET_BLOCK, 'base64'), __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(dateNow, 'utf8')])).digest('base64');
+
+          var challengeResponses = {};
+
+          challengeResponses.USERNAME = _this6.username;
+          challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK = challengeParameters.SECRET_BLOCK;
+          challengeResponses.TIMESTAMP = dateNow;
+          challengeResponses.PASSWORD_CLAIM_SIGNATURE = signatureString;
+          challengeResponses.DEVICE_KEY = _this6.deviceKey;
+
+          var jsonReqResp = {
+            ChallengeName: 'DEVICE_PASSWORD_VERIFIER',
+            ClientId: _this6.pool.getClientId(),
+            ChallengeResponses: challengeResponses,
+            Session: data.Session
+          };
+          if (_this6.getUserContextData()) {
+            jsonReqResp.UserContextData = _this6.getUserContextData();
+          }
+
+          _this6.client.request('RespondToAuthChallenge', jsonReqResp, function (errAuthenticate, dataAuthenticate) {
+            if (errAuthenticate) {
+              return callback.onFailure(errAuthenticate);
+            }
+
+            _this6.signInUserSession = _this6.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
+            _this6.cacheTokens();
+
+            return callback.onSuccess(_this6.signInUserSession);
+          });
+          return undefined;
+          // getPasswordAuthenticationKey callback end
+        });
+        return undefined;
+      });
+      // getLargeAValue callback end
+    });
+  };
+
+  /**
+   * This is used for a certain user to confirm the registration by using a confirmation code
+   * @param {string} confirmationCode Code entered by user.
+   * @param {bool} forceAliasCreation Allow migrating from an existing email / phone number.
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.confirmRegistration = function confirmRegistration(confirmationCode, forceAliasCreation, callback) {
+    var jsonReq = {
+      ClientId: this.pool.getClientId(),
+      ConfirmationCode: confirmationCode,
+      Username: this.username,
+      ForceAliasCreation: forceAliasCreation
+    };
+    if (this.getUserContextData()) {
+      jsonReq.UserContextData = this.getUserContextData();
+    }
+    this.client.request('ConfirmSignUp', jsonReq, function (err) {
+      if (err) {
+        return callback(err, null);
+      }
+      return callback(null, 'SUCCESS');
+    });
+  };
+
+  /**
+   * This is used by the user once he has the responses to a custom challenge
+   * @param {string} answerChallenge The custom challenge answer.
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {customChallenge} callback.customChallenge
+   *    Custom challenge response required to continue.
+   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.sendCustomChallengeAnswer = function sendCustomChallengeAnswer(answerChallenge, callback) {
+    var _this7 = this;
+
+    var challengeResponses = {};
+    challengeResponses.USERNAME = this.username;
+    challengeResponses.ANSWER = answerChallenge;
+
+    var authenticationHelper = new __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__["a" /* default */](this.pool.getUserPoolId().split('_')[1]);
+    this.getCachedDeviceKeyAndPassword();
+    if (this.deviceKey != null) {
+      challengeResponses.DEVICE_KEY = this.deviceKey;
+    }
+
+    var jsonReq = {
+      ChallengeName: 'CUSTOM_CHALLENGE',
+      ChallengeResponses: challengeResponses,
+      ClientId: this.pool.getClientId(),
+      Session: this.Session
+    };
+    if (this.getUserContextData()) {
+      jsonReq.UserContextData = this.getUserContextData();
+    }
+    this.client.request('RespondToAuthChallenge', jsonReq, function (err, data) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+
+      return _this7.authenticateUserInternal(data, authenticationHelper, callback);
+    });
+  };
+
+  /**
+   * This is used by the user once he has an MFA code
+   * @param {string} confirmationCode The MFA code entered by the user.
+   * @param {object} callback Result callback map.
+   * @param {string} mfaType The mfa we are replying to.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {authSuccess} callback.onSuccess Called on success with the new session.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.sendMFACode = function sendMFACode(confirmationCode, callback, mfaType) {
+    var _this8 = this;
+
+    var challengeResponses = {};
+    challengeResponses.USERNAME = this.username;
+    challengeResponses.SMS_MFA_CODE = confirmationCode;
+    var mfaTypeSelection = mfaType || 'SMS_MFA';
+    if (mfaTypeSelection === 'SOFTWARE_TOKEN_MFA') {
+      challengeResponses.SOFTWARE_TOKEN_MFA_CODE = confirmationCode;
+    }
+
+    if (this.deviceKey != null) {
+      challengeResponses.DEVICE_KEY = this.deviceKey;
+    }
+
+    var jsonReq = {
+      ChallengeName: mfaTypeSelection,
+      ChallengeResponses: challengeResponses,
+      ClientId: this.pool.getClientId(),
+      Session: this.Session
+    };
+    if (this.getUserContextData()) {
+      jsonReq.UserContextData = this.getUserContextData();
+    }
+
+    this.client.request('RespondToAuthChallenge', jsonReq, function (err, dataAuthenticate) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+
+      var challengeName = dataAuthenticate.ChallengeName;
+
+      if (challengeName === 'DEVICE_SRP_AUTH') {
+        _this8.getDeviceResponse(callback);
+        return undefined;
+      }
+
+      _this8.signInUserSession = _this8.getCognitoUserSession(dataAuthenticate.AuthenticationResult);
+      _this8.cacheTokens();
+
+      if (dataAuthenticate.AuthenticationResult.NewDeviceMetadata == null) {
+        return callback.onSuccess(_this8.signInUserSession);
+      }
+
+      var authenticationHelper = new __WEBPACK_IMPORTED_MODULE_3__AuthenticationHelper__["a" /* default */](_this8.pool.getUserPoolId().split('_')[1]);
+      authenticationHelper.generateHashDevice(dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey, dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey, function (errGenHash) {
+        if (errGenHash) {
+          return callback.onFailure(errGenHash);
+        }
+
+        var deviceSecretVerifierConfig = {
+          Salt: __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(authenticationHelper.getSaltDevices(), 'hex').toString('base64'),
+          PasswordVerifier: __WEBPACK_IMPORTED_MODULE_0_buffer___["Buffer"].from(authenticationHelper.getVerifierDevices(), 'hex').toString('base64')
+        };
+
+        _this8.verifierDevices = deviceSecretVerifierConfig.PasswordVerifier;
+        _this8.deviceGroupKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey;
+        _this8.randomPassword = authenticationHelper.getRandomPassword();
+
+        _this8.client.request('ConfirmDevice', {
+          DeviceKey: dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey,
+          AccessToken: _this8.signInUserSession.getAccessToken().getJwtToken(),
+          DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
+          DeviceName: navigator.userAgent
+        }, function (errConfirm, dataConfirm) {
+          if (errConfirm) {
+            return callback.onFailure(errConfirm);
+          }
+
+          _this8.deviceKey = dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey;
+          _this8.cacheDeviceKeyAndPassword();
+          if (dataConfirm.UserConfirmationNecessary === true) {
+            return callback.onSuccess(_this8.signInUserSession, dataConfirm.UserConfirmationNecessary);
+          }
+          return callback.onSuccess(_this8.signInUserSession);
+        });
+        return undefined;
+      });
+      return undefined;
+    });
+  };
+
+  /**
+   * This is used by an authenticated user to change the current password
+   * @param {string} oldUserPassword The current password.
+   * @param {string} newUserPassword The requested new password.
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.changePassword = function changePassword(oldUserPassword, newUserPassword, callback) {
+    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('ChangePassword', {
+      PreviousPassword: oldUserPassword,
+      ProposedPassword: newUserPassword,
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err) {
+      if (err) {
+        return callback(err, null);
+      }
+      return callback(null, 'SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used by an authenticated user to enable MFA for himself
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.enableMFA = function enableMFA(callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    var mfaOptions = [];
+    var mfaEnabled = {
+      DeliveryMedium: 'SMS',
+      AttributeName: 'phone_number'
+    };
+    mfaOptions.push(mfaEnabled);
+
+    this.client.request('SetUserSettings', {
+      MFAOptions: mfaOptions,
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err) {
+      if (err) {
+        return callback(err, null);
+      }
+      return callback(null, 'SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used by an authenticated user to enable MFA for himself
+   * @param {string[]} smsMfaSettings the sms mfa settings
+   * @param {string[]} softwareTokenMfaSettings the software token mfa settings
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.setUserMfaPreference = function setUserMfaPreference(smsMfaSettings, softwareTokenMfaSettings, callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('SetUserMFAPreference', {
+      SMSMfaSettings: smsMfaSettings,
+      SoftwareTokenMfaSettings: softwareTokenMfaSettings,
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err) {
+      if (err) {
+        return callback(err, null);
+      }
+      return callback(null, 'SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used by an authenticated user to disable MFA for himself
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.disableMFA = function disableMFA(callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    var mfaOptions = [];
+
+    this.client.request('SetUserSettings', {
+      MFAOptions: mfaOptions,
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err) {
+      if (err) {
+        return callback(err, null);
+      }
+      return callback(null, 'SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used by an authenticated user to delete himself
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.deleteUser = function deleteUser(callback) {
+    var _this9 = this;
+
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('DeleteUser', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err) {
+      if (err) {
+        return callback(err, null);
+      }
+      _this9.clearCachedTokens();
+      return callback(null, 'SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * @typedef {CognitoUserAttribute | { Name:string, Value:string }} AttributeArg
+   */
+  /**
+   * This is used by an authenticated user to change a list of attributes
+   * @param {AttributeArg[]} attributes A list of the new user attributes.
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.updateAttributes = function updateAttributes(attributes, callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('UpdateUserAttributes', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+      UserAttributes: attributes
+    }, function (err) {
+      if (err) {
+        return callback(err, null);
+      }
+      return callback(null, 'SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used by an authenticated user to get a list of attributes
+   * @param {nodeCallback<CognitoUserAttribute[]>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.getUserAttributes = function getUserAttributes(callback) {
+    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('GetUser', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err, userData) {
+      if (err) {
+        return callback(err, null);
+      }
+
+      var attributeList = [];
+
+      for (var i = 0; i < userData.UserAttributes.length; i++) {
+        var attribute = {
+          Name: userData.UserAttributes[i].Name,
+          Value: userData.UserAttributes[i].Value
+        };
+        var userAttribute = new __WEBPACK_IMPORTED_MODULE_9__CognitoUserAttribute__["a" /* default */](attribute);
+        attributeList.push(userAttribute);
+      }
+
+      return callback(null, attributeList);
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used by an authenticated user to get the MFAOptions
+   * @param {nodeCallback<MFAOptions>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.getMFAOptions = function getMFAOptions(callback) {
+    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('GetUser', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err, userData) {
+      if (err) {
+        return callback(err, null);
+      }
+
+      return callback(null, userData.MFAOptions);
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used by an authenticated users to get the userData
+   * @param {nodeCallback<UserData>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.getUserData = function getUserData(callback) {
+    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('GetUser', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err, userData) {
+      if (err) {
+        return callback(err, null);
+      }
+
+      return callback(null, userData);
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used by an authenticated user to delete a list of attributes
+   * @param {string[]} attributeList Names of the attributes to delete.
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.deleteAttributes = function deleteAttributes(attributeList, callback) {
+    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      return callback(new Error('User is not authenticated'), null);
+    }
+
+    this.client.request('DeleteUserAttributes', {
+      UserAttributeNames: attributeList,
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err) {
+      if (err) {
+        return callback(err, null);
+      }
+      return callback(null, 'SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used by a user to resend a confirmation code
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.resendConfirmationCode = function resendConfirmationCode(callback) {
+    var jsonReq = {
+      ClientId: this.pool.getClientId(),
+      Username: this.username
+    };
+
+    this.client.request('ResendConfirmationCode', jsonReq, function (err, result) {
+      if (err) {
+        return callback(err, null);
+      }
+      return callback(null, result);
+    });
+  };
+
+  /**
+   * This is used to get a session, either from the session object
+   * or from  the local storage, or by using a refresh token
+   *
+   * @param {nodeCallback<CognitoUserSession>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.getSession = function getSession(callback) {
+    if (this.username == null) {
+      return callback(new Error('Username is null. Cannot retrieve a new session'), null);
+    }
+
+    if (this.signInUserSession != null && this.signInUserSession.isValid()) {
+      return callback(null, this.signInUserSession);
+    }
+
+    var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId() + '.' + this.username;
+    var idTokenKey = keyPrefix + '.idToken';
+    var accessTokenKey = keyPrefix + '.accessToken';
+    var refreshTokenKey = keyPrefix + '.refreshToken';
+    var clockDriftKey = keyPrefix + '.clockDrift';
+
+    if (this.storage.getItem(idTokenKey)) {
+      var idToken = new __WEBPACK_IMPORTED_MODULE_5__CognitoIdToken__["a" /* default */]({
+        IdToken: this.storage.getItem(idTokenKey)
+      });
+      var accessToken = new __WEBPACK_IMPORTED_MODULE_4__CognitoAccessToken__["a" /* default */]({
+        AccessToken: this.storage.getItem(accessTokenKey)
+      });
+      var refreshToken = new __WEBPACK_IMPORTED_MODULE_6__CognitoRefreshToken__["a" /* default */]({
+        RefreshToken: this.storage.getItem(refreshTokenKey)
+      });
+      var clockDrift = parseInt(this.storage.getItem(clockDriftKey), 0) || 0;
+
+      var sessionData = {
+        IdToken: idToken,
+        AccessToken: accessToken,
+        RefreshToken: refreshToken,
+        ClockDrift: clockDrift
+      };
+      var cachedSession = new __WEBPACK_IMPORTED_MODULE_7__CognitoUserSession__["a" /* default */](sessionData);
+      if (cachedSession.isValid()) {
+        this.signInUserSession = cachedSession;
+        return callback(null, this.signInUserSession);
+      }
+
+      if (!refreshToken.getToken()) {
+        return callback(new Error('Cannot retrieve a new session. Please authenticate.'), null);
+      }
+
+      this.refreshSession(refreshToken, callback);
+    } else {
+      callback(new Error('Local storage is missing an ID Token, Please authenticate'), null);
+    }
+
+    return undefined;
+  };
+
+  /**
+   * This uses the refreshToken to retrieve a new session
+   * @param {CognitoRefreshToken} refreshToken A previous session's refresh token.
+   * @param {nodeCallback<CognitoUserSession>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.refreshSession = function refreshSession(refreshToken, callback) {
+    var _this10 = this;
+
+    var authParameters = {};
+    authParameters.REFRESH_TOKEN = refreshToken.getToken();
+    var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId();
+    var lastUserKey = keyPrefix + '.LastAuthUser';
+
+    if (this.storage.getItem(lastUserKey)) {
+      this.username = this.storage.getItem(lastUserKey);
+      var deviceKeyKey = keyPrefix + '.' + this.username + '.deviceKey';
+      this.deviceKey = this.storage.getItem(deviceKeyKey);
+      authParameters.DEVICE_KEY = this.deviceKey;
+    }
+
+    var jsonReq = {
+      ClientId: this.pool.getClientId(),
+      AuthFlow: 'REFRESH_TOKEN_AUTH',
+      AuthParameters: authParameters
+    };
+    if (this.getUserContextData()) {
+      jsonReq.UserContextData = this.getUserContextData();
+    }
+    this.client.request('InitiateAuth', jsonReq, function (err, authResult) {
+      if (err) {
+        if (err.code === 'NotAuthorizedException') {
+          _this10.clearCachedTokens();
+        }
+        return callback(err, null);
+      }
+      if (authResult) {
+        var authenticationResult = authResult.AuthenticationResult;
+        if (!Object.prototype.hasOwnProperty.call(authenticationResult, 'RefreshToken')) {
+          authenticationResult.RefreshToken = refreshToken.getToken();
+        }
+        _this10.signInUserSession = _this10.getCognitoUserSession(authenticationResult);
+        _this10.cacheTokens();
+        return callback(null, _this10.signInUserSession);
+      }
+      return undefined;
+    });
+  };
+
+  /**
+   * This is used to save the session tokens to local storage
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.cacheTokens = function cacheTokens() {
+    var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId();
+    var idTokenKey = keyPrefix + '.' + this.username + '.idToken';
+    var accessTokenKey = keyPrefix + '.' + this.username + '.accessToken';
+    var refreshTokenKey = keyPrefix + '.' + this.username + '.refreshToken';
+    var clockDriftKey = keyPrefix + '.' + this.username + '.clockDrift';
+    var lastUserKey = keyPrefix + '.LastAuthUser';
+
+    this.storage.setItem(idTokenKey, this.signInUserSession.getIdToken().getJwtToken());
+    this.storage.setItem(accessTokenKey, this.signInUserSession.getAccessToken().getJwtToken());
+    this.storage.setItem(refreshTokenKey, this.signInUserSession.getRefreshToken().getToken());
+    this.storage.setItem(clockDriftKey, '' + this.signInUserSession.getClockDrift());
+    this.storage.setItem(lastUserKey, this.username);
+  };
+
+  /**
+   * This is used to cache the device key and device group and device password
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.cacheDeviceKeyAndPassword = function cacheDeviceKeyAndPassword() {
+    var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId() + '.' + this.username;
+    var deviceKeyKey = keyPrefix + '.deviceKey';
+    var randomPasswordKey = keyPrefix + '.randomPasswordKey';
+    var deviceGroupKeyKey = keyPrefix + '.deviceGroupKey';
+
+    this.storage.setItem(deviceKeyKey, this.deviceKey);
+    this.storage.setItem(randomPasswordKey, this.randomPassword);
+    this.storage.setItem(deviceGroupKeyKey, this.deviceGroupKey);
+  };
+
+  /**
+   * This is used to get current device key and device group and device password
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.getCachedDeviceKeyAndPassword = function getCachedDeviceKeyAndPassword() {
+    var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId() + '.' + this.username;
+    var deviceKeyKey = keyPrefix + '.deviceKey';
+    var randomPasswordKey = keyPrefix + '.randomPasswordKey';
+    var deviceGroupKeyKey = keyPrefix + '.deviceGroupKey';
+
+    if (this.storage.getItem(deviceKeyKey)) {
+      this.deviceKey = this.storage.getItem(deviceKeyKey);
+      this.randomPassword = this.storage.getItem(randomPasswordKey);
+      this.deviceGroupKey = this.storage.getItem(deviceGroupKeyKey);
+    }
+  };
+
+  /**
+   * This is used to clear the device key info from local storage
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.clearCachedDeviceKeyAndPassword = function clearCachedDeviceKeyAndPassword() {
+    var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId() + '.' + this.username;
+    var deviceKeyKey = keyPrefix + '.deviceKey';
+    var randomPasswordKey = keyPrefix + '.randomPasswordKey';
+    var deviceGroupKeyKey = keyPrefix + '.deviceGroupKey';
+
+    this.storage.removeItem(deviceKeyKey);
+    this.storage.removeItem(randomPasswordKey);
+    this.storage.removeItem(deviceGroupKeyKey);
+  };
+
+  /**
+   * This is used to clear the session tokens from local storage
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.clearCachedTokens = function clearCachedTokens() {
+    var keyPrefix = 'CognitoIdentityServiceProvider.' + this.pool.getClientId();
+    var idTokenKey = keyPrefix + '.' + this.username + '.idToken';
+    var accessTokenKey = keyPrefix + '.' + this.username + '.accessToken';
+    var refreshTokenKey = keyPrefix + '.' + this.username + '.refreshToken';
+    var lastUserKey = keyPrefix + '.LastAuthUser';
+
+    this.storage.removeItem(idTokenKey);
+    this.storage.removeItem(accessTokenKey);
+    this.storage.removeItem(refreshTokenKey);
+    this.storage.removeItem(lastUserKey);
+  };
+
+  /**
+   * This is used to build a user session from tokens retrieved in the authentication result
+   * @param {object} authResult Successful auth response from server.
+   * @returns {CognitoUserSession} The new user session.
+   * @private
+   */
+
+
+  CognitoUser.prototype.getCognitoUserSession = function getCognitoUserSession(authResult) {
+    var idToken = new __WEBPACK_IMPORTED_MODULE_5__CognitoIdToken__["a" /* default */](authResult);
+    var accessToken = new __WEBPACK_IMPORTED_MODULE_4__CognitoAccessToken__["a" /* default */](authResult);
+    var refreshToken = new __WEBPACK_IMPORTED_MODULE_6__CognitoRefreshToken__["a" /* default */](authResult);
+
+    var sessionData = {
+      IdToken: idToken,
+      AccessToken: accessToken,
+      RefreshToken: refreshToken
+    };
+
+    return new __WEBPACK_IMPORTED_MODULE_7__CognitoUserSession__["a" /* default */](sessionData);
+  };
+
+  /**
+   * This is used to initiate a forgot password request
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {inputVerificationCode?} callback.inputVerificationCode
+   *    Optional callback raised instead of onSuccess with response data.
+   * @param {onSuccess} callback.onSuccess Called on success.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.forgotPassword = function forgotPassword(callback) {
+    var jsonReq = {
+      ClientId: this.pool.getClientId(),
+      Username: this.username
+    };
+    if (this.getUserContextData()) {
+      jsonReq.UserContextData = this.getUserContextData();
+    }
+    this.client.request('ForgotPassword', jsonReq, function (err, data) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      if (typeof callback.inputVerificationCode === 'function') {
+        return callback.inputVerificationCode(data);
+      }
+      return callback.onSuccess(data);
+    });
+  };
+
+  /**
+   * This is used to confirm a new password using a confirmationCode
+   * @param {string} confirmationCode Code entered by user.
+   * @param {string} newPassword Confirm new password.
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {onSuccess<void>} callback.onSuccess Called on success.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.confirmPassword = function confirmPassword(confirmationCode, newPassword, callback) {
+    var jsonReq = {
+      ClientId: this.pool.getClientId(),
+      Username: this.username,
+      ConfirmationCode: confirmationCode,
+      Password: newPassword
+    };
+    if (this.getUserContextData()) {
+      jsonReq.UserContextData = this.getUserContextData();
+    }
+    this.client.request('ConfirmForgotPassword', jsonReq, function (err) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      return callback.onSuccess();
+    });
+  };
+
+  /**
+   * This is used to initiate an attribute confirmation request
+   * @param {string} attributeName User attribute that needs confirmation.
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {inputVerificationCode} callback.inputVerificationCode Called on success.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.getAttributeVerificationCode = function getAttributeVerificationCode(attributeName, callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback.onFailure(new Error('User is not authenticated'));
+    }
+
+    this.client.request('GetUserAttributeVerificationCode', {
+      AttributeName: attributeName,
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err, data) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      if (typeof callback.inputVerificationCode === 'function') {
+        return callback.inputVerificationCode(data);
+      }
+      return callback.onSuccess();
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used to confirm an attribute using a confirmation code
+   * @param {string} attributeName Attribute being confirmed.
+   * @param {string} confirmationCode Code entered by user.
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {onSuccess<string>} callback.onSuccess Called on success.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.verifyAttribute = function verifyAttribute(attributeName, confirmationCode, callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback.onFailure(new Error('User is not authenticated'));
+    }
+
+    this.client.request('VerifyUserAttribute', {
+      AttributeName: attributeName,
+      Code: confirmationCode,
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      return callback.onSuccess('SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used to get the device information using the current device key
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {onSuccess<*>} callback.onSuccess Called on success with device data.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.getDevice = function getDevice(callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback.onFailure(new Error('User is not authenticated'));
+    }
+
+    this.client.request('GetDevice', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+      DeviceKey: this.deviceKey
+    }, function (err, data) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      return callback.onSuccess(data);
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used to forget a specific device
+   * @param {string} deviceKey Device key.
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {onSuccess<string>} callback.onSuccess Called on success.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.forgetSpecificDevice = function forgetSpecificDevice(deviceKey, callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback.onFailure(new Error('User is not authenticated'));
+    }
+
+    this.client.request('ForgetDevice', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+      DeviceKey: deviceKey
+    }, function (err) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      return callback.onSuccess('SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used to forget the current device
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {onSuccess<string>} callback.onSuccess Called on success.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.forgetDevice = function forgetDevice(callback) {
+    var _this11 = this;
+
+    this.forgetSpecificDevice(this.deviceKey, {
+      onFailure: callback.onFailure,
+      onSuccess: function onSuccess(result) {
+        _this11.deviceKey = null;
+        _this11.deviceGroupKey = null;
+        _this11.randomPassword = null;
+        _this11.clearCachedDeviceKeyAndPassword();
+        return callback.onSuccess(result);
+      }
+    });
+  };
+
+  /**
+   * This is used to set the device status as remembered
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {onSuccess<string>} callback.onSuccess Called on success.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.setDeviceStatusRemembered = function setDeviceStatusRemembered(callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback.onFailure(new Error('User is not authenticated'));
+    }
+
+    this.client.request('UpdateDeviceStatus', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+      DeviceKey: this.deviceKey,
+      DeviceRememberedStatus: 'remembered'
+    }, function (err) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      return callback.onSuccess('SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used to set the device status as not remembered
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {onSuccess<string>} callback.onSuccess Called on success.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.setDeviceStatusNotRemembered = function setDeviceStatusNotRemembered(callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback.onFailure(new Error('User is not authenticated'));
+    }
+
+    this.client.request('UpdateDeviceStatus', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+      DeviceKey: this.deviceKey,
+      DeviceRememberedStatus: 'not_remembered'
+    }, function (err) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      return callback.onSuccess('SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used to list all devices for a user
+   *
+   * @param {int} limit the number of devices returned in a call
+   * @param {string} paginationToken the pagination token in case any was returned before
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {onSuccess<*>} callback.onSuccess Called on success with device list.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.listDevices = function listDevices(limit, paginationToken, callback) {
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback.onFailure(new Error('User is not authenticated'));
+    }
+
+    this.client.request('ListDevices', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+      Limit: limit,
+      PaginationToken: paginationToken
+    }, function (err, data) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      return callback.onSuccess(data);
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used to globally revoke all tokens issued to a user
+   * @param {object} callback Result callback map.
+   * @param {onFailure} callback.onFailure Called on any error.
+   * @param {onSuccess<string>} callback.onSuccess Called on success.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.globalSignOut = function globalSignOut(callback) {
+    var _this12 = this;
+
+    if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
+      return callback.onFailure(new Error('User is not authenticated'));
+    }
+
+    this.client.request('GlobalSignOut', {
+      AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+    }, function (err) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      _this12.clearCachedTokens();
+      return callback.onSuccess('SUCCESS');
+    });
+    return undefined;
+  };
+
+  /**
+   * This is used for the user to signOut of the application and clear the cached tokens.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.signOut = function signOut() {
+    this.signInUserSession = null;
+    this.clearCachedTokens();
+  };
+
+  /**
+   * This is used by a user trying to select a given MFA
+   * @param {string} answerChallenge the mfa the user wants
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.sendMFASelectionAnswer = function sendMFASelectionAnswer(answerChallenge, callback) {
+    var _this13 = this;
+
+    var challengeResponses = {};
+    challengeResponses.USERNAME = this.username;
+    challengeResponses.ANSWER = answerChallenge;
+
+    var jsonReq = {
+      ChallengeName: 'SELECT_MFA_TYPE',
+      ChallengeResponses: challengeResponses,
+      ClientId: this.pool.getClientId(),
+      Session: this.Session
+    };
+    if (this.getUserContextData()) {
+      jsonReq.UserContextData = this.getUserContextData();
+    }
+    this.client.request('RespondToAuthChallenge', jsonReq, function (err, data) {
+      if (err) {
+        return callback.onFailure(err);
+      }
+      _this13.Session = data.Session;
+      if (answerChallenge === 'SMS_MFA') {
+        return callback.mfaRequired(data.challengeName, data.challengeParameters);
+      }
+      if (answerChallenge === 'SOFTWARE_TOKEN_MFA') {
+        return callback.totpRequired(data.challengeName, data.challengeParameters);
+      }
+      return undefined;
+    });
+  };
+
+  /**
+   * This returns the user context data for advanced security feature.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.getUserContextData = function getUserContextData() {
+    var pool = this.pool;
+    return pool.getUserContextData(this.username);
+  };
+
+  /**
+   * This is used by an authenticated or a user trying to authenticate to associate a TOTP MFA
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.associateSoftwareToken = function associateSoftwareToken(callback) {
+    var _this14 = this;
+
+    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      this.client.request('AssociateSoftwareToken', {
+        Session: this.Session
+      }, function (err, data) {
+        if (err) {
+          return callback.onFailure(err);
+        }
+        _this14.Session = data.Session;
+        return callback.associateSecretCode(data.SecretCode);
+      });
+    } else {
+      this.client.request('AssociateSoftwareToken', {
+        AccessToken: this.signInUserSession.getAccessToken().getJwtToken()
+      }, function (err, data) {
+        if (err) {
+          return callback.onFailure(err);
+        }
+        return callback.associateSecretCode(data.SecretCode);
+      });
+    }
+  };
+
+  /**
+   * This is used by an authenticated or a user trying to authenticate to verify a TOTP MFA
+   * @param {string} totpCode The MFA code entered by the user.
+   * @param {string} friendlyDeviceName The device name we are assigning to the device.
+   * @param {nodeCallback<string>} callback Called on success or error.
+   * @returns {void}
+   */
+
+
+  CognitoUser.prototype.verifySoftwareToken = function verifySoftwareToken(totpCode, friendlyDeviceName, callback) {
+    var _this15 = this;
+
+    if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
+      this.client.request('VerifySoftwareToken', {
+        Session: this.Session,
+        UserCode: totpCode,
+        FriendlyDeviceName: friendlyDeviceName
+      }, function (err, data) {
+        if (err) {
+          return callback.onFailure(err);
+        }
+        _this15.Session = data.Session;
+        var challengeResponses = {};
+        challengeResponses.USERNAME = _this15.username;
+        var jsonReq = {
+          ChallengeName: 'MFA_SETUP',
+          ClientId: _this15.pool.getClientId(),
+          ChallengeResponses: challengeResponses,
+          Session: _this15.Session
+        };
+        if (_this15.getUserContextData()) {
+          jsonReq.UserContextData = _this15.getUserContextData();
+        }
+        _this15.client.request('RespondToAuthChallenge', jsonReq, function (errRespond, dataRespond) {
+          if (errRespond) {
+            return callback.onFailure(errRespond);
+          }
+          _this15.signInUserSession = _this15.getCognitoUserSession(dataRespond.AuthenticationResult);
+          _this15.cacheTokens();
+          return callback.onSuccess(_this15.signInUserSession);
+        });
+        return undefined;
+      });
+    } else {
+      this.client.request('VerifySoftwareToken', {
+        AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+        UserCode: totpCode,
+        FriendlyDeviceName: friendlyDeviceName
+      }, function (err, data) {
+        if (err) {
+          return callback.onFailure(err);
+        }
+        return callback.onSuccess(data);
+      });
+    }
+  };
+
+  return CognitoUser;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (CognitoUser);
+
+/***/ }),
+/* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/** @class */
+var CognitoUserSession = function () {
+  /**
+   * Constructs a new CognitoUserSession object
+   * @param {CognitoIdToken} IdToken The session's Id token.
+   * @param {CognitoRefreshToken=} RefreshToken The session's refresh token.
+   * @param {CognitoAccessToken} AccessToken The session's access token.
+   * @param {int} ClockDrift The saved computer's clock drift or undefined to force calculation.
+   */
+  function CognitoUserSession() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        IdToken = _ref.IdToken,
+        RefreshToken = _ref.RefreshToken,
+        AccessToken = _ref.AccessToken,
+        ClockDrift = _ref.ClockDrift;
+
+    _classCallCheck(this, CognitoUserSession);
+
+    if (AccessToken == null || IdToken == null) {
+      throw new Error('Id token and Access Token must be present.');
+    }
+
+    this.idToken = IdToken;
+    this.refreshToken = RefreshToken;
+    this.accessToken = AccessToken;
+    this.clockDrift = ClockDrift === undefined ? this.calculateClockDrift() : ClockDrift;
+  }
+
+  /**
+   * @returns {CognitoIdToken} the session's Id token
+   */
+
+
+  CognitoUserSession.prototype.getIdToken = function getIdToken() {
+    return this.idToken;
+  };
+
+  /**
+   * @returns {CognitoRefreshToken} the session's refresh token
+   */
+
+
+  CognitoUserSession.prototype.getRefreshToken = function getRefreshToken() {
+    return this.refreshToken;
+  };
+
+  /**
+   * @returns {CognitoAccessToken} the session's access token
+   */
+
+
+  CognitoUserSession.prototype.getAccessToken = function getAccessToken() {
+    return this.accessToken;
+  };
+
+  /**
+   * @returns {int} the session's clock drift
+   */
+
+
+  CognitoUserSession.prototype.getClockDrift = function getClockDrift() {
+    return this.clockDrift;
+  };
+
+  /**
+   * @returns {int} the computer's clock drift
+   */
+
+
+  CognitoUserSession.prototype.calculateClockDrift = function calculateClockDrift() {
+    var now = Math.floor(new Date() / 1000);
+    var iat = Math.min(this.accessToken.getIssuedAt(), this.idToken.getIssuedAt());
+
+    return now - iat;
+  };
+
+  /**
+   * Checks to see if the session is still valid based on session expiry information found
+   * in tokens and the current time (adjusted with clock drift)
+   * @returns {boolean} if the session is still valid
+   */
+
+
+  CognitoUserSession.prototype.isValid = function isValid() {
+    var now = Math.floor(new Date() / 1000);
+    var adjusted = now - this.clockDrift;
+
+    return adjusted < this.accessToken.getExpiration() && adjusted < this.idToken.getExpiration();
+  };
+
+  return CognitoUserSession;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (CognitoUserSession);
+
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+var weekNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/** @class */
+
+var DateHelper = function () {
+  function DateHelper() {
+    _classCallCheck(this, DateHelper);
+  }
+
+  /**
+   * @returns {string} The current time in "ddd MMM D HH:mm:ss UTC YYYY" format.
+   */
+  DateHelper.prototype.getNowString = function getNowString() {
+    var now = new Date();
+
+    var weekDay = weekNames[now.getUTCDay()];
+    var month = monthNames[now.getUTCMonth()];
+    var day = now.getUTCDate();
+
+    var hours = now.getUTCHours();
+    if (hours < 10) {
+      hours = '0' + hours;
+    }
+
+    var minutes = now.getUTCMinutes();
+    if (minutes < 10) {
+      minutes = '0' + minutes;
+    }
+
+    var seconds = now.getUTCSeconds();
+    if (seconds < 10) {
+      seconds = '0' + seconds;
+    }
+
+    var year = now.getUTCFullYear();
+
+    // ddd MMM D HH:mm:ss UTC YYYY
+    var dateNow = weekDay + ' ' + month + ' ' + day + ' ' + hours + ':' + minutes + ':' + seconds + ' UTC ' + year;
+
+    return dateNow;
+  };
+
+  return DateHelper;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (DateHelper);
+
+/***/ }),
+/* 12 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/** @class */
+var CognitoUserAttribute = function () {
+  /**
+   * Constructs a new CognitoUserAttribute object
+   * @param {string=} Name The record's name
+   * @param {string=} Value The record's value
+   */
+  function CognitoUserAttribute() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        Name = _ref.Name,
+        Value = _ref.Value;
+
+    _classCallCheck(this, CognitoUserAttribute);
+
+    this.Name = Name || '';
+    this.Value = Value || '';
+  }
+
+  /**
+   * @returns {string} the record's value.
+   */
+
+
+  CognitoUserAttribute.prototype.getValue = function getValue() {
+    return this.Value;
+  };
+
+  /**
+   * Sets the record's value.
+   * @param {string} value The new value.
+   * @returns {CognitoUserAttribute} The record for method chaining.
+   */
+
+
+  CognitoUserAttribute.prototype.setValue = function setValue(value) {
+    this.Value = value;
+    return this;
+  };
+
+  /**
+   * @returns {string} the record's name.
+   */
+
+
+  CognitoUserAttribute.prototype.getName = function getName() {
+    return this.Name;
+  };
+
+  /**
+   * Sets the record's name
+   * @param {string} name The new name.
+   * @returns {CognitoUserAttribute} The record for method chaining.
+   */
+
+
+  CognitoUserAttribute.prototype.setName = function setName(name) {
+    this.Name = name;
+    return this;
+  };
+
+  /**
+   * @returns {string} a string representation of the record.
+   */
+
+
+  CognitoUserAttribute.prototype.toString = function toString() {
+    return JSON.stringify(this);
+  };
+
+  /**
+   * @returns {object} a flat object representing the record.
+   */
+
+
+  CognitoUserAttribute.prototype.toJSON = function toJSON() {
+    return {
+      Name: this.Name,
+      Value: this.Value
+    };
+  };
+
+  return CognitoUserAttribute;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (CognitoUserAttribute);
+
+/***/ }),
+/* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var dataMemory = {};
+
+/** @class */
+
+var MemoryStorage = function () {
+  function MemoryStorage() {
+    _classCallCheck(this, MemoryStorage);
+  }
+
+  /**
+   * This is used to set a specific item in storage
+   * @param {string} key - the key for the item
+   * @param {object} value - the value
+   * @returns {string} value that was set
+   */
+  MemoryStorage.setItem = function setItem(key, value) {
+    dataMemory[key] = value;
+    return dataMemory[key];
+  };
+
+  /**
+   * This is used to get a specific key from storage
+   * @param {string} key - the key for the item
+   * This is used to clear the storage
+   * @returns {string} the data item
+   */
+
+
+  MemoryStorage.getItem = function getItem(key) {
+    return Object.prototype.hasOwnProperty.call(dataMemory, key) ? dataMemory[key] : undefined;
+  };
+
+  /**
+   * This is used to remove an item from storage
+   * @param {string} key - the key being set
+   * @returns {string} value - value that was deleted
+   */
+
+
+  MemoryStorage.removeItem = function removeItem(key) {
+    return delete dataMemory[key];
+  };
+
+  /**
+   * This is used to clear the storage
+   * @returns {string} nothing
+   */
+
+
+  MemoryStorage.clear = function clear() {
+    dataMemory = {};
+    return dataMemory;
+  };
+
+  return MemoryStorage;
+}();
+
+/** @class */
+
+
+var StorageHelper = function () {
+
+  /**
+   * This is used to get a storage object
+   * @returns {object} the storage
+   */
+  function StorageHelper() {
+    _classCallCheck(this, StorageHelper);
+
+    try {
+      this.storageWindow = window.localStorage;
+      this.storageWindow.setItem('aws.cognito.test-ls', 1);
+      this.storageWindow.removeItem('aws.cognito.test-ls');
+    } catch (exception) {
+      this.storageWindow = MemoryStorage;
+    }
+  }
+
+  /**
+   * This is used to return the storage
+   * @returns {object} the storage
+   */
+
+
+  StorageHelper.prototype.getStorage = function getStorage() {
+    return this.storageWindow;
+  };
+
+  return StorageHelper;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (StorageHelper);
+
+/***/ }),
+/* 14 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__AuthenticationDetails__ = __webpack_require__(15);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "AuthenticationDetails", function() { return __WEBPACK_IMPORTED_MODULE_0__AuthenticationDetails__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AuthenticationHelper__ = __webpack_require__(2);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "AuthenticationHelper", function() { return __WEBPACK_IMPORTED_MODULE_1__AuthenticationHelper__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__CognitoAccessToken__ = __webpack_require__(5);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoAccessToken", function() { return __WEBPACK_IMPORTED_MODULE_2__CognitoAccessToken__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__CognitoIdToken__ = __webpack_require__(7);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoIdToken", function() { return __WEBPACK_IMPORTED_MODULE_3__CognitoIdToken__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__CognitoRefreshToken__ = __webpack_require__(8);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoRefreshToken", function() { return __WEBPACK_IMPORTED_MODULE_4__CognitoRefreshToken__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__CognitoUser__ = __webpack_require__(9);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoUser", function() { return __WEBPACK_IMPORTED_MODULE_5__CognitoUser__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__CognitoUserAttribute__ = __webpack_require__(12);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoUserAttribute", function() { return __WEBPACK_IMPORTED_MODULE_6__CognitoUserAttribute__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__CognitoUserPool__ = __webpack_require__(24);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoUserPool", function() { return __WEBPACK_IMPORTED_MODULE_7__CognitoUserPool__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__CognitoUserSession__ = __webpack_require__(10);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CognitoUserSession", function() { return __WEBPACK_IMPORTED_MODULE_8__CognitoUserSession__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__CookieStorage__ = __webpack_require__(27);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "CookieStorage", function() { return __WEBPACK_IMPORTED_MODULE_9__CookieStorage__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__DateHelper__ = __webpack_require__(11);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "DateHelper", function() { return __WEBPACK_IMPORTED_MODULE_10__DateHelper__["a"]; });
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/** @class */
+var AuthenticationDetails = function () {
+  /**
+   * Constructs a new AuthenticationDetails object
+   * @param {object=} data Creation options.
+   * @param {string} data.Username User being authenticated.
+   * @param {string} data.Password Plain-text password to authenticate with.
+   * @param {(AttributeArg[])?} data.ValidationData Application extra metadata.
+   * @param {(AttributeArg[])?} data.AuthParamaters Authentication paramaters for custom auth.
+   */
+  function AuthenticationDetails(data) {
+    _classCallCheck(this, AuthenticationDetails);
+
+    var _ref = data || {},
+        ValidationData = _ref.ValidationData,
+        Username = _ref.Username,
+        Password = _ref.Password,
+        AuthParameters = _ref.AuthParameters;
+
+    this.validationData = ValidationData || {};
+    this.authParameters = AuthParameters || {};
+    this.username = Username;
+    this.password = Password;
+  }
+
+  /**
+   * @returns {string} the record's username
+   */
+
+
+  AuthenticationDetails.prototype.getUsername = function getUsername() {
+    return this.username;
+  };
+
+  /**
+   * @returns {string} the record's password
+   */
+
+
+  AuthenticationDetails.prototype.getPassword = function getPassword() {
+    return this.password;
+  };
+
+  /**
+   * @returns {Array} the record's validationData
+   */
+
+
+  AuthenticationDetails.prototype.getValidationData = function getValidationData() {
+    return this.validationData;
+  };
+
+  /**
+   * @returns {Array} the record's authParameters
+   */
+
+
+  AuthenticationDetails.prototype.getAuthParameters = function getAuthParameters() {
+    return this.authParameters;
+  };
+
+  return AuthenticationDetails;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (AuthenticationDetails);
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
+
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
+}
+
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+
+function getLens (b64) {
+  var len = b64.length
+
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
+  }
+
+  // Trim off extra bytes after placeholder bytes are found
+  // See: https://github.com/beatgammit/base64-js/issues/42
+  var validLen = b64.indexOf('=')
+  if (validLen === -1) validLen = len
+
+  var placeHoldersLen = validLen === len
+    ? 0
+    : 4 - (validLen % 4)
+
+  return [validLen, placeHoldersLen]
+}
+
+// base64 is 4/3 + up to two characters of the original data
+function byteLength (b64) {
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function _byteLength (b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function toByteArray (b64) {
+  var tmp
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+
+  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
+
+  var curByte = 0
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  var len = placeHoldersLen > 0
+    ? validLen - 4
+    : validLen
+
+  for (var i = 0; i < len; i += 4) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 18) |
+      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+      revLookup[b64.charCodeAt(i + 3)]
+    arr[curByte++] = (tmp >> 16) & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 2) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 2) |
+      (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 1) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 10) |
+      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+      (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] +
+    lookup[num >> 12 & 0x3F] +
+    lookup[num >> 6 & 0x3F] +
+    lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp =
+      ((uint8[i] << 16) & 0xFF0000) +
+      ((uint8[i + 1] << 8) & 0xFF00) +
+      (uint8[i + 2] & 0xFF)
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(
+      uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)
+    ))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 2] +
+      lookup[(tmp << 4) & 0x3F] +
+      '=='
+    )
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 10] +
+      lookup[(tmp >> 4) & 0x3F] +
+      lookup[(tmp << 2) & 0x3F] +
+      '='
+    )
+  }
+
+  return parts.join('')
+}
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = ((value * c) - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+var toString = {}.toString;
+
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+ * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
+ * in FIPS PUB 180-1
+ * Version 2.1a Copyright Paul Johnston 2000 - 2002.
+ * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * Distributed under the BSD License
+ * See http://pajhome.org.uk/crypt/md5 for details.
+ */
+
+var helpers = __webpack_require__(1);
+
+/*
+ * Calculate the SHA-1 of an array of big-endian words, and a bit length
+ */
+function core_sha1(x, len)
+{
+  /* append padding */
+  x[len >> 5] |= 0x80 << (24 - len % 32);
+  x[((len + 64 >> 9) << 4) + 15] = len;
+
+  var w = Array(80);
+  var a =  1732584193;
+  var b = -271733879;
+  var c = -1732584194;
+  var d =  271733878;
+  var e = -1009589776;
+
+  for(var i = 0; i < x.length; i += 16)
+  {
+    var olda = a;
+    var oldb = b;
+    var oldc = c;
+    var oldd = d;
+    var olde = e;
+
+    for(var j = 0; j < 80; j++)
+    {
+      if(j < 16) w[j] = x[i + j];
+      else w[j] = rol(w[j-3] ^ w[j-8] ^ w[j-14] ^ w[j-16], 1);
+      var t = safe_add(safe_add(rol(a, 5), sha1_ft(j, b, c, d)),
+                       safe_add(safe_add(e, w[j]), sha1_kt(j)));
+      e = d;
+      d = c;
+      c = rol(b, 30);
+      b = a;
+      a = t;
+    }
+
+    a = safe_add(a, olda);
+    b = safe_add(b, oldb);
+    c = safe_add(c, oldc);
+    d = safe_add(d, oldd);
+    e = safe_add(e, olde);
+  }
+  return Array(a, b, c, d, e);
+
+}
+
+/*
+ * Perform the appropriate triplet combination function for the current
+ * iteration
+ */
+function sha1_ft(t, b, c, d)
+{
+  if(t < 20) return (b & c) | ((~b) & d);
+  if(t < 40) return b ^ c ^ d;
+  if(t < 60) return (b & c) | (b & d) | (c & d);
+  return b ^ c ^ d;
+}
+
+/*
+ * Determine the appropriate additive constant for the current iteration
+ */
+function sha1_kt(t)
+{
+  return (t < 20) ?  1518500249 : (t < 40) ?  1859775393 :
+         (t < 60) ? -1894007588 : -899497514;
+}
+
+/*
+ * Add integers, wrapping at 2^32. This uses 16-bit operations internally
+ * to work around bugs in some JS interpreters.
+ */
+function safe_add(x, y)
+{
+  var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+  var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+  return (msw << 16) | (lsw & 0xFFFF);
+}
+
+/*
+ * Bitwise rotate a 32-bit number to the left.
+ */
+function rol(num, cnt)
+{
+  return (num << cnt) | (num >>> (32 - cnt));
+}
+
+module.exports = function sha1(buf) {
+  return helpers.hash(buf, core_sha1, 20, true);
+};
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/**
+ * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
+ * in FIPS 180-2
+ * Version 2.2-beta Copyright Angel Marin, Paul Johnston 2000 - 2009.
+ * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ *
+ */
+
+var helpers = __webpack_require__(1);
+
+var safe_add = function(x, y) {
+  var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+  var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+  return (msw << 16) | (lsw & 0xFFFF);
+};
+
+var S = function(X, n) {
+  return (X >>> n) | (X << (32 - n));
+};
+
+var R = function(X, n) {
+  return (X >>> n);
+};
+
+var Ch = function(x, y, z) {
+  return ((x & y) ^ ((~x) & z));
+};
+
+var Maj = function(x, y, z) {
+  return ((x & y) ^ (x & z) ^ (y & z));
+};
+
+var Sigma0256 = function(x) {
+  return (S(x, 2) ^ S(x, 13) ^ S(x, 22));
+};
+
+var Sigma1256 = function(x) {
+  return (S(x, 6) ^ S(x, 11) ^ S(x, 25));
+};
+
+var Gamma0256 = function(x) {
+  return (S(x, 7) ^ S(x, 18) ^ R(x, 3));
+};
+
+var Gamma1256 = function(x) {
+  return (S(x, 17) ^ S(x, 19) ^ R(x, 10));
+};
+
+var core_sha256 = function(m, l) {
+  var K = new Array(0x428A2F98,0x71374491,0xB5C0FBCF,0xE9B5DBA5,0x3956C25B,0x59F111F1,0x923F82A4,0xAB1C5ED5,0xD807AA98,0x12835B01,0x243185BE,0x550C7DC3,0x72BE5D74,0x80DEB1FE,0x9BDC06A7,0xC19BF174,0xE49B69C1,0xEFBE4786,0xFC19DC6,0x240CA1CC,0x2DE92C6F,0x4A7484AA,0x5CB0A9DC,0x76F988DA,0x983E5152,0xA831C66D,0xB00327C8,0xBF597FC7,0xC6E00BF3,0xD5A79147,0x6CA6351,0x14292967,0x27B70A85,0x2E1B2138,0x4D2C6DFC,0x53380D13,0x650A7354,0x766A0ABB,0x81C2C92E,0x92722C85,0xA2BFE8A1,0xA81A664B,0xC24B8B70,0xC76C51A3,0xD192E819,0xD6990624,0xF40E3585,0x106AA070,0x19A4C116,0x1E376C08,0x2748774C,0x34B0BCB5,0x391C0CB3,0x4ED8AA4A,0x5B9CCA4F,0x682E6FF3,0x748F82EE,0x78A5636F,0x84C87814,0x8CC70208,0x90BEFFFA,0xA4506CEB,0xBEF9A3F7,0xC67178F2);
+  var HASH = new Array(0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19);
+    var W = new Array(64);
+    var a, b, c, d, e, f, g, h, i, j;
+    var T1, T2;
+  /* append padding */
+  m[l >> 5] |= 0x80 << (24 - l % 32);
+  m[((l + 64 >> 9) << 4) + 15] = l;
+  for (var i = 0; i < m.length; i += 16) {
+    a = HASH[0]; b = HASH[1]; c = HASH[2]; d = HASH[3]; e = HASH[4]; f = HASH[5]; g = HASH[6]; h = HASH[7];
+    for (var j = 0; j < 64; j++) {
+      if (j < 16) {
+        W[j] = m[j + i];
+      } else {
+        W[j] = safe_add(safe_add(safe_add(Gamma1256(W[j - 2]), W[j - 7]), Gamma0256(W[j - 15])), W[j - 16]);
+      }
+      T1 = safe_add(safe_add(safe_add(safe_add(h, Sigma1256(e)), Ch(e, f, g)), K[j]), W[j]);
+      T2 = safe_add(Sigma0256(a), Maj(a, b, c));
+      h = g; g = f; f = e; e = safe_add(d, T1); d = c; c = b; b = a; a = safe_add(T1, T2);
+    }
+    HASH[0] = safe_add(a, HASH[0]); HASH[1] = safe_add(b, HASH[1]); HASH[2] = safe_add(c, HASH[2]); HASH[3] = safe_add(d, HASH[3]);
+    HASH[4] = safe_add(e, HASH[4]); HASH[5] = safe_add(f, HASH[5]); HASH[6] = safe_add(g, HASH[6]); HASH[7] = safe_add(h, HASH[7]);
+  }
+  return HASH;
+};
+
+module.exports = function sha256(buf) {
+  return helpers.hash(buf, core_sha256, 32, true);
+};
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports) {
+
+// Original code adapted from Robert Kieffer.
+// details at https://github.com/broofa/node-uuid
+(function() {
+  var _global = this;
+
+  var mathRNG, whatwgRNG;
+
+  // NOTE: Math.random() does not guarantee "cryptographic quality"
+  mathRNG = function(size) {
+    var bytes = new Array(size);
+    var r;
+
+    for (var i = 0, r; i < size; i++) {
+      if ((i & 0x03) == 0) r = Math.random() * 0x100000000;
+      bytes[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return bytes;
+  }
+
+  if (_global.crypto && crypto.getRandomValues) {
+    whatwgRNG = function(size) {
+      var bytes = new Uint8Array(size);
+      crypto.getRandomValues(bytes);
+      return bytes;
+    }
+  }
+
+  module.exports = whatwgRNG || mathRNG;
+
+}())
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+ * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
+ * Digest Algorithm, as defined in RFC 1321.
+ * Version 2.1 Copyright (C) Paul Johnston 1999 - 2002.
+ * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * Distributed under the BSD License
+ * See http://pajhome.org.uk/crypt/md5 for more info.
+ */
+
+var helpers = __webpack_require__(1);
+
+/*
+ * Perform a simple self-test to see if the VM is working
+ */
+function md5_vm_test()
+{
+  return hex_md5("abc") == "900150983cd24fb0d6963f7d28e17f72";
+}
+
+/*
+ * Calculate the MD5 of an array of little-endian words, and a bit length
+ */
+function core_md5(x, len)
+{
+  /* append padding */
+  x[len >> 5] |= 0x80 << ((len) % 32);
+  x[(((len + 64) >>> 9) << 4) + 14] = len;
+
+  var a =  1732584193;
+  var b = -271733879;
+  var c = -1732584194;
+  var d =  271733878;
+
+  for(var i = 0; i < x.length; i += 16)
+  {
+    var olda = a;
+    var oldb = b;
+    var oldc = c;
+    var oldd = d;
+
+    a = md5_ff(a, b, c, d, x[i+ 0], 7 , -680876936);
+    d = md5_ff(d, a, b, c, x[i+ 1], 12, -389564586);
+    c = md5_ff(c, d, a, b, x[i+ 2], 17,  606105819);
+    b = md5_ff(b, c, d, a, x[i+ 3], 22, -1044525330);
+    a = md5_ff(a, b, c, d, x[i+ 4], 7 , -176418897);
+    d = md5_ff(d, a, b, c, x[i+ 5], 12,  1200080426);
+    c = md5_ff(c, d, a, b, x[i+ 6], 17, -1473231341);
+    b = md5_ff(b, c, d, a, x[i+ 7], 22, -45705983);
+    a = md5_ff(a, b, c, d, x[i+ 8], 7 ,  1770035416);
+    d = md5_ff(d, a, b, c, x[i+ 9], 12, -1958414417);
+    c = md5_ff(c, d, a, b, x[i+10], 17, -42063);
+    b = md5_ff(b, c, d, a, x[i+11], 22, -1990404162);
+    a = md5_ff(a, b, c, d, x[i+12], 7 ,  1804603682);
+    d = md5_ff(d, a, b, c, x[i+13], 12, -40341101);
+    c = md5_ff(c, d, a, b, x[i+14], 17, -1502002290);
+    b = md5_ff(b, c, d, a, x[i+15], 22,  1236535329);
+
+    a = md5_gg(a, b, c, d, x[i+ 1], 5 , -165796510);
+    d = md5_gg(d, a, b, c, x[i+ 6], 9 , -1069501632);
+    c = md5_gg(c, d, a, b, x[i+11], 14,  643717713);
+    b = md5_gg(b, c, d, a, x[i+ 0], 20, -373897302);
+    a = md5_gg(a, b, c, d, x[i+ 5], 5 , -701558691);
+    d = md5_gg(d, a, b, c, x[i+10], 9 ,  38016083);
+    c = md5_gg(c, d, a, b, x[i+15], 14, -660478335);
+    b = md5_gg(b, c, d, a, x[i+ 4], 20, -405537848);
+    a = md5_gg(a, b, c, d, x[i+ 9], 5 ,  568446438);
+    d = md5_gg(d, a, b, c, x[i+14], 9 , -1019803690);
+    c = md5_gg(c, d, a, b, x[i+ 3], 14, -187363961);
+    b = md5_gg(b, c, d, a, x[i+ 8], 20,  1163531501);
+    a = md5_gg(a, b, c, d, x[i+13], 5 , -1444681467);
+    d = md5_gg(d, a, b, c, x[i+ 2], 9 , -51403784);
+    c = md5_gg(c, d, a, b, x[i+ 7], 14,  1735328473);
+    b = md5_gg(b, c, d, a, x[i+12], 20, -1926607734);
+
+    a = md5_hh(a, b, c, d, x[i+ 5], 4 , -378558);
+    d = md5_hh(d, a, b, c, x[i+ 8], 11, -2022574463);
+    c = md5_hh(c, d, a, b, x[i+11], 16,  1839030562);
+    b = md5_hh(b, c, d, a, x[i+14], 23, -35309556);
+    a = md5_hh(a, b, c, d, x[i+ 1], 4 , -1530992060);
+    d = md5_hh(d, a, b, c, x[i+ 4], 11,  1272893353);
+    c = md5_hh(c, d, a, b, x[i+ 7], 16, -155497632);
+    b = md5_hh(b, c, d, a, x[i+10], 23, -1094730640);
+    a = md5_hh(a, b, c, d, x[i+13], 4 ,  681279174);
+    d = md5_hh(d, a, b, c, x[i+ 0], 11, -358537222);
+    c = md5_hh(c, d, a, b, x[i+ 3], 16, -722521979);
+    b = md5_hh(b, c, d, a, x[i+ 6], 23,  76029189);
+    a = md5_hh(a, b, c, d, x[i+ 9], 4 , -640364487);
+    d = md5_hh(d, a, b, c, x[i+12], 11, -421815835);
+    c = md5_hh(c, d, a, b, x[i+15], 16,  530742520);
+    b = md5_hh(b, c, d, a, x[i+ 2], 23, -995338651);
+
+    a = md5_ii(a, b, c, d, x[i+ 0], 6 , -198630844);
+    d = md5_ii(d, a, b, c, x[i+ 7], 10,  1126891415);
+    c = md5_ii(c, d, a, b, x[i+14], 15, -1416354905);
+    b = md5_ii(b, c, d, a, x[i+ 5], 21, -57434055);
+    a = md5_ii(a, b, c, d, x[i+12], 6 ,  1700485571);
+    d = md5_ii(d, a, b, c, x[i+ 3], 10, -1894986606);
+    c = md5_ii(c, d, a, b, x[i+10], 15, -1051523);
+    b = md5_ii(b, c, d, a, x[i+ 1], 21, -2054922799);
+    a = md5_ii(a, b, c, d, x[i+ 8], 6 ,  1873313359);
+    d = md5_ii(d, a, b, c, x[i+15], 10, -30611744);
+    c = md5_ii(c, d, a, b, x[i+ 6], 15, -1560198380);
+    b = md5_ii(b, c, d, a, x[i+13], 21,  1309151649);
+    a = md5_ii(a, b, c, d, x[i+ 4], 6 , -145523070);
+    d = md5_ii(d, a, b, c, x[i+11], 10, -1120210379);
+    c = md5_ii(c, d, a, b, x[i+ 2], 15,  718787259);
+    b = md5_ii(b, c, d, a, x[i+ 9], 21, -343485551);
+
+    a = safe_add(a, olda);
+    b = safe_add(b, oldb);
+    c = safe_add(c, oldc);
+    d = safe_add(d, oldd);
+  }
+  return Array(a, b, c, d);
+
+}
+
+/*
+ * These functions implement the four basic operations the algorithm uses.
+ */
+function md5_cmn(q, a, b, x, s, t)
+{
+  return safe_add(bit_rol(safe_add(safe_add(a, q), safe_add(x, t)), s),b);
+}
+function md5_ff(a, b, c, d, x, s, t)
+{
+  return md5_cmn((b & c) | ((~b) & d), a, b, x, s, t);
+}
+function md5_gg(a, b, c, d, x, s, t)
+{
+  return md5_cmn((b & d) | (c & (~d)), a, b, x, s, t);
+}
+function md5_hh(a, b, c, d, x, s, t)
+{
+  return md5_cmn(b ^ c ^ d, a, b, x, s, t);
+}
+function md5_ii(a, b, c, d, x, s, t)
+{
+  return md5_cmn(c ^ (b | (~d)), a, b, x, s, t);
+}
+
+/*
+ * Add integers, wrapping at 2^32. This uses 16-bit operations internally
+ * to work around bugs in some JS interpreters.
+ */
+function safe_add(x, y)
+{
+  var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+  var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+  return (msw << 16) | (lsw & 0xFFFF);
+}
+
+/*
+ * Bitwise rotate a 32-bit number to the left.
+ */
+function bit_rol(num, cnt)
+{
+  return (num << cnt) | (num >>> (32 - cnt));
+}
+
+module.exports = function md5(buf) {
+  return helpers.hash(buf, core_md5, 16);
+};
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__CognitoUser__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__StorageHelper__ = __webpack_require__(13);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+
+
+/** @class */
+
+var CognitoUserPool = function () {
+  /**
+   * Constructs a new CognitoUserPool object
+   * @param {object} data Creation options.
+   * @param {string} data.UserPoolId Cognito user pool id.
+   * @param {string} data.ClientId User pool application client id.
+   * @param {object} data.Storage Optional storage object.
+   * @param {boolean} data.AdvancedSecurityDataCollectionFlag Optional:
+   *        boolean flag indicating if the data collection is enabled
+   *        to support cognito advanced security features. By default, this
+   *        flag is set to true.
+   */
+  function CognitoUserPool(data) {
+    _classCallCheck(this, CognitoUserPool);
+
+    var _ref = data || {},
+        UserPoolId = _ref.UserPoolId,
+        ClientId = _ref.ClientId,
+        endpoint = _ref.endpoint,
+        AdvancedSecurityDataCollectionFlag = _ref.AdvancedSecurityDataCollectionFlag;
+
+    if (!UserPoolId || !ClientId) {
+      throw new Error('Both UserPoolId and ClientId are required.');
+    }
+    if (!/^[\w-]+_.+$/.test(UserPoolId)) {
+      throw new Error('Invalid UserPoolId format.');
+    }
+    var region = UserPoolId.split('_')[0];
+
+    this.userPoolId = UserPoolId;
+    this.clientId = ClientId;
+
+    this.client = new __WEBPACK_IMPORTED_MODULE_0__Client__["a" /* default */](region, endpoint);
+
+    /**
+     * By default, AdvancedSecurityDataCollectionFlag is set to true,
+     * if no input value is provided.
+     */
+    this.advancedSecurityDataCollectionFlag = AdvancedSecurityDataCollectionFlag !== false;
+
+    this.storage = data.Storage || new __WEBPACK_IMPORTED_MODULE_2__StorageHelper__["a" /* default */]().getStorage();
+  }
+
+  /**
+   * @returns {string} the user pool id
+   */
+
+
+  CognitoUserPool.prototype.getUserPoolId = function getUserPoolId() {
+    return this.userPoolId;
+  };
+
+  /**
+   * @returns {string} the client id
+   */
+
+
+  CognitoUserPool.prototype.getClientId = function getClientId() {
+    return this.clientId;
+  };
+
+  /**
+   * @typedef {object} SignUpResult
+   * @property {CognitoUser} user New user.
+   * @property {bool} userConfirmed If the user is already confirmed.
+   */
+  /**
+   * method for signing up a user
+   * @param {string} username User's username.
+   * @param {string} password Plain-text initial password entered by user.
+   * @param {(AttributeArg[])=} userAttributes New user attributes.
+   * @param {(AttributeArg[])=} validationData Application metadata.
+   * @param {nodeCallback<SignUpResult>} callback Called on error or with the new user.
+   * @returns {void}
+   */
+
+
+  CognitoUserPool.prototype.signUp = function signUp(username, password, userAttributes, validationData, callback) {
+    var _this = this;
+
+    var jsonReq = {
+      ClientId: this.clientId,
+      Username: username,
+      Password: password,
+      UserAttributes: userAttributes,
+      ValidationData: validationData
+    };
+    if (this.getUserContextData(username)) {
+      jsonReq.UserContextData = this.getUserContextData(username);
+    }
+    this.client.request('SignUp', jsonReq, function (err, data) {
+      if (err) {
+        return callback(err, null);
+      }
+
+      var cognitoUser = {
+        Username: username,
+        Pool: _this,
+        Storage: _this.storage
+      };
+
+      var returnData = {
+        user: new __WEBPACK_IMPORTED_MODULE_1__CognitoUser__["a" /* default */](cognitoUser),
+        userConfirmed: data.UserConfirmed,
+        userSub: data.UserSub
+      };
+
+      return callback(null, returnData);
+    });
+  };
+
+  /**
+   * method for getting the current user of the application from the local storage
+   *
+   * @returns {CognitoUser} the user retrieved from storage
+   */
+
+
+  CognitoUserPool.prototype.getCurrentUser = function getCurrentUser() {
+    var lastUserKey = 'CognitoIdentityServiceProvider.' + this.clientId + '.LastAuthUser';
+
+    var lastAuthUser = this.storage.getItem(lastUserKey);
+    if (lastAuthUser) {
+      var cognitoUser = {
+        Username: lastAuthUser,
+        Pool: this,
+        Storage: this.storage
+      };
+
+      return new __WEBPACK_IMPORTED_MODULE_1__CognitoUser__["a" /* default */](cognitoUser);
+    }
+
+    return null;
+  };
+
+  /**
+   * This method returns the encoded data string used for cognito advanced security feature.
+   * This would be generated only when developer has included the JS used for collecting the
+   * data on their client. Please refer to documentation to know more about using AdvancedSecurity
+   * features
+   * @param {string} username the username for the context data
+   * @returns {string} the user context data
+   **/
+
+
+  CognitoUserPool.prototype.getUserContextData = function getUserContextData(username) {
+    if (typeof AmazonCognitoAdvancedSecurityData === 'undefined') {
+      return undefined;
+    }
+    /* eslint-disable */
+    var amazonCognitoAdvancedSecurityDataConst = AmazonCognitoAdvancedSecurityData;
+    /* eslint-enable */
+
+    if (this.advancedSecurityDataCollectionFlag) {
+      var advancedSecurityData = amazonCognitoAdvancedSecurityDataConst.getData(username, this.userPoolId, this.clientId);
+      if (advancedSecurityData) {
+        var userContextData = {
+          EncodedData: advancedSecurityData
+        };
+        return userContextData;
+      }
+    }
+    return {};
+  };
+
+  return CognitoUserPool;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (CognitoUserPool);
+
+/***/ }),
+/* 25 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__UserAgent__ = __webpack_require__(26);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+/** @class */
+
+var Client = function () {
+  /**
+   * Constructs a new AWS Cognito Identity Provider client object
+   * @param {string} region AWS region
+   * @param {string} endpoint endpoint
+   */
+  function Client(region, endpoint) {
+    _classCallCheck(this, Client);
+
+    this.endpoint = endpoint || 'https://cognito-idp.' + region + '.amazonaws.com/';
+    this.userAgent = __WEBPACK_IMPORTED_MODULE_0__UserAgent__["a" /* default */].prototype.userAgent || 'aws-amplify/0.1.x js';
+  }
+
+  /**
+   * Makes an unauthenticated request on AWS Cognito Identity Provider API
+   * using fetch
+   * @param {string} operation API operation
+   * @param {object} params Input parameters
+   * @param {function} callback Callback called when a response is returned
+   * @returns {void}
+  */
+
+
+  Client.prototype.request = function request(operation, params, callback) {
+    var headers = {
+      'Content-Type': 'application/x-amz-json-1.1',
+      'X-Amz-Target': 'AWSCognitoIdentityProviderService.' + operation,
+      'X-Amz-User-Agent': this.userAgent
+    };
+
+    var options = {
+      headers: headers,
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      body: JSON.stringify(params)
+    };
+
+    var response = void 0;
+    var responseJsonData = void 0;
+
+    fetch(this.endpoint, options).then(function (resp) {
+      response = resp;
+      return resp;
+    }).catch(function (err) {
+      // If error happens here, the request failed
+      // if it is TypeError throw network error
+      if (err instanceof TypeError) {
+        throw new Error('Network error');
+      }
+      throw err;
+    }).then(function (resp) {
+      return resp.json();
+    }).catch(function (err) {
+      // If error happens here
+      // cannot parse the body stream, return undefined
+      if (response.ok) return callback(null, undefined);else {
+        var error = {
+          code: response.status,
+          statusCode: response.status,
+          message: response.statusText
+        };
+        callback(error);
+      }
+    }).then(function (data) {
+      // return parsed body stream
+      if (response.ok) return callback(null, data);
+      responseJsonData = data;
+
+      // Taken from aws-sdk-js/lib/protocol/json.js
+      // eslint-disable-next-line no-underscore-dangle
+      var code = (data.__type || data.code).split('#').pop();
+      var error = {
+        code: code,
+        name: code,
+        message: data.message || data.Message || null
+      };
+      return callback(error);
+    }).catch(function (err) {
+      // if cannot split the data
+      // default to return 'UnknownError' with the json data from response
+      var error = { code: 'UnknownError', message: 'Unknown error, the response body from fetch is: ' + responseJsonData };
+
+      // first check if we have a service error
+      if (response && response.headers && response.headers.get('x-amzn-errortype')) {
+        try {
+          var code = response.headers.get('x-amzn-errortype').split(':')[0];
+          error = {
+            code: code,
+            name: code,
+            statusCode: response.status,
+            message: response.status ? response.status.toString() : null
+          };
+        } catch (ex) {
+          // pass through so it doesn't get swallowed if we can't parse it
+          error = {
+            code: 'UnknownError',
+            message: response.headers.get('x-amzn-errortype')
+          };
+          return callback(error);
+        }
+        // otherwise check if error is Network error
+      } else if (err instanceof Error && err.message === 'Network error') {
+        error = {
+          code: 'NetworkError',
+          name: err.name,
+          message: err.message
+        };
+      }
+      return callback(error);
+    });
+  };
+
+  return Client;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (Client);
+
+/***/ }),
+/* 26 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+// class for defining the amzn user-agent
+/* harmony default export */ __webpack_exports__["a"] = (UserAgent);
+// constructor
+function UserAgent() {}
+// public
+UserAgent.prototype.userAgent = 'aws-amplify/0.1.x js';
+
+/***/ }),
+/* 27 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_js_cookie__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_js_cookie___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_js_cookie__);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+
+/** @class */
+
+var CookieStorage = function () {
+
+  /**
+   * Constructs a new CookieStorage object
+   * @param {object} data Creation options.
+   * @param {string} data.domain Cookies domain (mandatory).
+   * @param {string} data.path Cookies path (default: '/')
+   * @param {integer} data.expires Cookie expiration (in days, default: 365)
+   * @param {boolean} data.secure Cookie secure flag (default: true)
+   */
+  function CookieStorage(data) {
+    _classCallCheck(this, CookieStorage);
+
+    this.domain = data.domain;
+    if (data.path) {
+      this.path = data.path;
+    } else {
+      this.path = '/';
+    }
+    if (Object.prototype.hasOwnProperty.call(data, 'expires')) {
+      this.expires = data.expires;
+    } else {
+      this.expires = 365;
+    }
+    if (Object.prototype.hasOwnProperty.call(data, 'secure')) {
+      this.secure = data.secure;
+    } else {
+      this.secure = true;
+    }
+  }
+
+  /**
+   * This is used to set a specific item in storage
+   * @param {string} key - the key for the item
+   * @param {object} value - the value
+   * @returns {string} value that was set
+   */
+
+
+  CookieStorage.prototype.setItem = function setItem(key, value) {
+    __WEBPACK_IMPORTED_MODULE_0_js_cookie__["set"](key, value, {
+      path: this.path,
+      expires: this.expires,
+      domain: this.domain,
+      secure: this.secure
+    });
+    return __WEBPACK_IMPORTED_MODULE_0_js_cookie__["get"](key);
+  };
+
+  /**
+   * This is used to get a specific key from storage
+   * @param {string} key - the key for the item
+   * This is used to clear the storage
+   * @returns {string} the data item
+   */
+
+
+  CookieStorage.prototype.getItem = function getItem(key) {
+    return __WEBPACK_IMPORTED_MODULE_0_js_cookie__["get"](key);
+  };
+
+  /**
+   * This is used to remove an item from storage
+   * @param {string} key - the key being set
+   * @returns {string} value - value that was deleted
+   */
+
+
+  CookieStorage.prototype.removeItem = function removeItem(key) {
+    return __WEBPACK_IMPORTED_MODULE_0_js_cookie__["remove"](key, {
+      path: this.path,
+      domain: this.domain,
+      secure: this.secure
+    });
+  };
+
+  /**
+   * This is used to clear the storage
+   * @returns {string} nothing
+   */
+
+
+  CookieStorage.prototype.clear = function clear() {
+    var cookies = __WEBPACK_IMPORTED_MODULE_0_js_cookie__["get"]();
+    var index = void 0;
+    for (index = 0; index < cookies.length; ++index) {
+      __WEBPACK_IMPORTED_MODULE_0_js_cookie__["remove"](cookies[index]);
+    }
+    return {};
+  };
+
+  return CookieStorage;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (CookieStorage);
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * JavaScript Cookie v2.2.0
+ * https://github.com/js-cookie/js-cookie
+ *
+ * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
+ * Released under the MIT license
+ */
+;(function (factory) {
+	var registeredInModuleLoader = false;
+	if (true) {
+		!(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		registeredInModuleLoader = true;
+	}
+	if (true) {
+		module.exports = factory();
+		registeredInModuleLoader = true;
+	}
+	if (!registeredInModuleLoader) {
+		var OldCookies = window.Cookies;
+		var api = window.Cookies = factory();
+		api.noConflict = function () {
+			window.Cookies = OldCookies;
+			return api;
+		};
+	}
+}(function () {
+	function extend () {
+		var i = 0;
+		var result = {};
+		for (; i < arguments.length; i++) {
+			var attributes = arguments[ i ];
+			for (var key in attributes) {
+				result[key] = attributes[key];
+			}
+		}
+		return result;
+	}
+
+	function init (converter) {
+		function api (key, value, attributes) {
+			var result;
+			if (typeof document === 'undefined') {
+				return;
+			}
+
+			// Write
+
+			if (arguments.length > 1) {
+				attributes = extend({
+					path: '/'
+				}, api.defaults, attributes);
+
+				if (typeof attributes.expires === 'number') {
+					var expires = new Date();
+					expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
+					attributes.expires = expires;
+				}
+
+				// We're using "expires" because "max-age" is not supported by IE
+				attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
+
+				try {
+					result = JSON.stringify(value);
+					if (/^[\{\[]/.test(result)) {
+						value = result;
+					}
+				} catch (e) {}
+
+				if (!converter.write) {
+					value = encodeURIComponent(String(value))
+						.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+				} else {
+					value = converter.write(value, key);
+				}
+
+				key = encodeURIComponent(String(key));
+				key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
+				key = key.replace(/[\(\)]/g, escape);
+
+				var stringifiedAttributes = '';
+
+				for (var attributeName in attributes) {
+					if (!attributes[attributeName]) {
+						continue;
+					}
+					stringifiedAttributes += '; ' + attributeName;
+					if (attributes[attributeName] === true) {
+						continue;
+					}
+					stringifiedAttributes += '=' + attributes[attributeName];
+				}
+				return (document.cookie = key + '=' + value + stringifiedAttributes);
+			}
+
+			// Read
+
+			if (!key) {
+				result = {};
+			}
+
+			// To prevent the for loop in the first place assign an empty array
+			// in case there are no cookies at all. Also prevents odd result when
+			// calling "get()"
+			var cookies = document.cookie ? document.cookie.split('; ') : [];
+			var rdecode = /(%[0-9A-Z]{2})+/g;
+			var i = 0;
+
+			for (; i < cookies.length; i++) {
+				var parts = cookies[i].split('=');
+				var cookie = parts.slice(1).join('=');
+
+				if (!this.json && cookie.charAt(0) === '"') {
+					cookie = cookie.slice(1, -1);
+				}
+
+				try {
+					var name = parts[0].replace(rdecode, decodeURIComponent);
+					cookie = converter.read ?
+						converter.read(cookie, name) : converter(cookie, name) ||
+						cookie.replace(rdecode, decodeURIComponent);
+
+					if (this.json) {
+						try {
+							cookie = JSON.parse(cookie);
+						} catch (e) {}
+					}
+
+					if (key === name) {
+						result = cookie;
+						break;
+					}
+
+					if (!key) {
+						result[name] = cookie;
+					}
+				} catch (e) {}
+			}
+
+			return result;
+		}
+
+		api.set = api;
+		api.get = function (key) {
+			return api.call(api, key);
+		};
+		api.getJSON = function () {
+			return api.apply({
+				json: true
+			}, [].slice.call(arguments));
+		};
+		api.defaults = {};
+
+		api.remove = function (key, attributes) {
+			api(key, '', extend(attributes, {
+				expires: -1
+			}));
+		};
+
+		api.withConverter = init;
+
+		return api;
+	}
+
+	return init(function () {});
+}));
+
+
+/***/ })
+/******/ ]);
+});

@@ -11,32 +11,34 @@ AWS Pinpoint enables you to send Analytics data includes user sessions and other
 
 ### Installation and Configuration
 
-Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. Here is how you can enable Analytics category for your app.
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config). 
+{: .callout .callout--info}
+
+**When you are done with the installation**, you can follow below steps to enable Analytics category in your app.
 
 #### Automated Setup
 
-Automated Setup works with `awsmobile-cli` to create your analytics backend. After configuring your backend, you can create a project with fully functioning Analytics category.
+With Amplify CLI, you can easly create your analytics backend configure your app to work with Analytics category.
+
+##### Create Your Backend with the CLI
+
+In order to add Analytics to your app, run the following command in your project's root folder:
 
 ```bash
-$ npm install -g awsmobile-cli
+$ amplify add analytics
 ```
 
-You should run all `awsmobile` commands at *root folder* of your project.
-{: .callout .callout--info}
+The `add` command automatically creates a backend configuration locally, but your backend changes won't be effective until you run `push` command.
 
-In your project's *root folder*, run following command to configure and update your backend:
+In order to update your backend run:
 
 ```bash
-$ cd my-app #Change to your project's root folder
-$ awsmobile init
-$ awsmobile push #Update your backend 
+$ amplify push
 ```
 
-*awsmobile init* enables Analytics module by default for your backend. In case you want to enable/disable it manually, you can use:
+When your backend is successfully updated, your new configuration file `aws-exports.js` is copied under your source directory, e.g. '/src'.
 
-```bash
-$ awsmobile analytics enable 
-```
+##### Configure Your App
 
 In your app's entry point i.e. App.js, import and load the configuration file which has been created and replaced into `/src` folder in the previous step.
 
@@ -102,13 +104,7 @@ In the above configuration, you are required to pass in an *Amazon Pinpoint App 
 
 After successfully configuring your credentials, the library automatically tracks some default metrics for you, without any effort on your part. 
 
-User session analytics data is automatically collected and sent to Amazon Pinpoint. To see these data, please visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/), or run following cli command to launch AWS Mobile Hub console:
-
-```
-$ awsmobile console
-```
-
-On the AWS Mobile Hub console, click **Messaging and Analytics** option under 'Backend' section.
+User session analytics data is automatically collected and sent to Amazon Pinpoint. To see these data, please visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
 
 ### Working with the API
 
@@ -214,7 +210,7 @@ Analytics.updateEndpoint({
 
 #### API Reference
 
-For the complete API documentation for Analytics module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/analyticsclass.html)
+For the complete API documentation for Analytics module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/analyticsclass.html)
 {: .callout .callout--info}
 
 
@@ -350,7 +346,7 @@ Analytics.configure({
 Please note that the default provider (Amazon Pinpoint) is in use when you call `Analytics.record()`. To use your plugin, provide the plugin name in your method call, such as `Analytics.record({..},'myPlugin')`. 
 {: .callout .callout--info}
 
-## Using modularized module
+## Using Modular Imports
 
 If you only need to use Analytics, you can do: `npm install @aws-amplify/analytics` which will only install the Analytics module for you.
 Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.

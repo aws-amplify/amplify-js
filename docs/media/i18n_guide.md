@@ -55,5 +55,5 @@ I18n.get('Sign In');
 
 ### API Reference
 
-For the complete API documentation for i18n module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/i18n.html)
+For the complete API documentation for i18n module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/i18n.html)
 {: .callout .callout--info}

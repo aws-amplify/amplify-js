@@ -339,26 +339,6 @@ var CognitoUser = function () {
               return callback.onFailure(errAuthenticate);
             }
 
-            var challengeName = dataAuthenticate.ChallengeName;
-            if (challengeName === 'NEW_PASSWORD_REQUIRED') {
-              _this2.Session = dataAuthenticate.Session;
-              var userAttributes = null;
-              var rawRequiredAttributes = null;
-              var requiredAttributes = [];
-              var userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
-
-              if (dataAuthenticate.ChallengeParameters) {
-                userAttributes = JSON.parse(dataAuthenticate.ChallengeParameters.userAttributes);
-                rawRequiredAttributes = JSON.parse(dataAuthenticate.ChallengeParameters.requiredAttributes);
-              }
-
-              if (rawRequiredAttributes) {
-                for (var i = 0; i < rawRequiredAttributes.length; i++) {
-                  requiredAttributes[i] = rawRequiredAttributes[i].substr(userAttributesPrefix.length);
-                }
-              }
-              return callback.newPasswordRequired(userAttributes, requiredAttributes);
-            }
             return _this2.authenticateUserInternal(dataAuthenticate, authenticationHelper, callback);
           });
           return undefined;
@@ -457,6 +437,27 @@ var CognitoUser = function () {
     if (challengeName === 'CUSTOM_CHALLENGE') {
       this.Session = dataAuthenticate.Session;
       return callback.customChallenge(challengeParameters);
+    }
+
+    if (challengeName === 'NEW_PASSWORD_REQUIRED') {
+      this.Session = dataAuthenticate.Session;
+
+      var userAttributes = null;
+      var rawRequiredAttributes = null;
+      var requiredAttributes = [];
+      var userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+
+      if (challengeParameters) {
+        userAttributes = JSON.parse(dataAuthenticate.ChallengeParameters.userAttributes);
+        rawRequiredAttributes = JSON.parse(dataAuthenticate.ChallengeParameters.requiredAttributes);
+      }
+
+      if (rawRequiredAttributes) {
+        for (var i = 0; i < rawRequiredAttributes.length; i++) {
+          requiredAttributes[i] = rawRequiredAttributes[i].substr(userAttributesPrefix.length);
+        }
+      }
+      return callback.newPasswordRequired(userAttributes, requiredAttributes);
     }
 
     if (challengeName === 'DEVICE_SRP_AUTH') {
@@ -1161,7 +1162,7 @@ var CognitoUser = function () {
         return callback(null, this.signInUserSession);
       }
 
-      if (refreshToken.getToken() == null) {
+      if (!refreshToken.getToken()) {
         return callback(new Error('Cannot retrieve a new session. Please authenticate.'), null);
       }
 

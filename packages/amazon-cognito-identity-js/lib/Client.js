@@ -50,11 +50,12 @@ var Client = function () {
     };
 
     var response = void 0;
+    var responseJsonData = void 0;
 
     fetch(this.endpoint, options).then(function (resp) {
       response = resp;
       return resp;
-    }, function (err) {
+    }).catch(function (err) {
       // If error happens here, the request failed
       // if it is TypeError throw network error
       if (err instanceof TypeError) {
@@ -62,11 +63,22 @@ var Client = function () {
       }
       throw err;
     }).then(function (resp) {
-      return resp.json().catch(function () {
-        return {};
-      });
+      return resp.json();
+    }).catch(function (err) {
+      // If error happens here
+      // cannot parse the body stream, return undefined
+      if (response.ok) return callback(null, undefined);else {
+        var error = {
+          code: response.status,
+          statusCode: response.status,
+          message: response.statusText
+        };
+        callback(error);
+      }
     }).then(function (data) {
+      // return parsed body stream
       if (response.ok) return callback(null, data);
+      responseJsonData = data;
 
       // Taken from aws-sdk-js/lib/protocol/json.js
       // eslint-disable-next-line no-underscore-dangle
@@ -78,8 +90,9 @@ var Client = function () {
       };
       return callback(error);
     }).catch(function (err) {
-      // default to return 'UnknownError'
-      var error = { code: 'UnknownError', message: 'Unknown error' };
+      // if cannot split the data
+      // default to return 'UnknownError' with the json data from response
+      var error = { code: 'UnknownError', message: 'Unknown error, the response body from fetch is: ' + responseJsonData };
 
       // first check if we have a service error
       if (response && response.headers && response.headers.get('x-amzn-errortype')) {
