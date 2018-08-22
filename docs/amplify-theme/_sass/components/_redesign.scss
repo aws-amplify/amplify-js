@@ -44,7 +44,7 @@
 	//width: 1442px;
 	//height:  75px;
 	//border-bottom: 1px solid rgba($color-dark-blue, .15);
-	z-index:999;
+	z-index: 1000;
     background-color:white;
     margin: auto;
     width: 100%;
@@ -214,10 +214,6 @@
 	li {
 		+ li {
             margin-left: 2.5rem;
-            
-            @media (max-width: 942px) {
-                margin-left: 1.5rem;
-            }
 		}
 	}
 
@@ -257,10 +253,6 @@
     height: 36px;
     width: 180px;
     margin-top: -7px;
-
-    @media (max-width: 859px) {
-        width: 150px;
-    }
     
     .search-image {
         margin-left: 12px;
@@ -280,9 +272,6 @@
         line-height: 24px;
         max-width: 150px;
 
-        @media (max-width: 859px) {
-            max-width: 120px;
-        }
     }
     #search-input:focus {
         outline: none;
@@ -978,7 +967,7 @@ a {
             right: 5px;
 
             .platform-logo {
-                width: 15px;
+                height: 15px;
             }
         }
     }
@@ -1197,6 +1186,10 @@ a {
     }
 
     .above-code-block {
+        color: #828282;
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
+        font-size: 16px;
+        line-height: 24px;
         margin-bottom: 10px;
     }
 }
@@ -1342,6 +1335,7 @@ body {
         display: none !important;
     }
 
+    //display: block;
     position: sticky;
     position: -webkit-sticky;
     top: 0;
@@ -1352,14 +1346,26 @@ body {
     //display: block;
     z-index: 1000;
 
+    .close-button {
+        position: absolute;
+        right: 10px;
+        top: 6px;
+
+        i {
+            margin-right: 0;
+        }
+    }
+
     .icon--x {
         vertical-align: text-top;
+        color: white;
+        cursor: pointer;
     }
 
     .notification-content {
-        width: 90%;
         margin-top: 8px;
         display: inline-block;
+        text-align: center;
     }
 
     .notification-text {
@@ -1367,10 +1373,10 @@ body {
         font-family: "Amazon Ember", "Helvetica", sans-serif;
         font-size: 16px;
         line-height: 24px;
-        text-align: left;
+        width: 105%;
     }
     img {
-        float: right;
+        float: left;
     }
 
     a {
@@ -1395,7 +1401,13 @@ li {
     }
 }
 
+.error-btn-icon {
+    line-height: 55px;
+}
 
+.error-btn-text {
+    line-height: 60px;
+}
 
 //=============================================================================
 /***                   new stuff for developer guide                       ***/
@@ -2369,7 +2381,7 @@ li {
         }
 
         .js-library-selector {
-            z-index: 99999;
+            z-index: 999;
             background-color: #FF9900;
             border-radius: 4px;
             position: absolute;

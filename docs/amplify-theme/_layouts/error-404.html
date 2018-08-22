@@ -11,8 +11,8 @@
 					<p>{{ page.page_content.message }}</p>
 				{% endif %}
 				<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="btn btn--dark btn--rounded btn--w-icon btn--w-icon-left">
-					<i class="icon icon--home"></i>
-					Go back home
+					<i class="icon icon--home error-btn-icon"></i>
+					<p class="error-btn-text inline-block">Go back home</p>
 				</a>
 			</div><!-- /.align-inner -->
 		</div><!-- /.align-container -->
