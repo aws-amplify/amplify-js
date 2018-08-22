@@ -159,10 +159,6 @@ category_list:
           excerpt: #"Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
           url: '/media/ionic_guide' 
           icon: '/images/icons/Misc/Present.svg'
-        - title: Vue.js
-          excerpt: #"Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
-          url: '/media/vuejs_guide' 
-          icon: '/images/icons/Misc/Present.svg'
     - category: Categories
       title: Categories
       excerpt: Add cloud features to your app quickly using our toolchain and declarative APIs.
