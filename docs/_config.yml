@@ -70,9 +70,6 @@ amplify:
             - item_name: Get Started
               item_url: '/media/get_started'
               id: get_started
-            - item_name: Tutorials
-              item_url: '/media/tutorials'
-              id: tutorials
             - item_name: Toolchain
               item_url: '/media/toolchain'
               id: toolchain
@@ -124,8 +121,25 @@ category_list:
           excerpt: get started excerpt
           url: '/media/quick_start'
           icon: '/images/icons/Misc/Present.svg'
-    - category: CloudFeatures
-      title: Cloud Features
+    - category: Tutorials
+      title: Tutorials
+      excerpt: 
+      base_url: 'quick_start'
+      subs:
+        - title: Web Apps
+          excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled React Web app with AWS Amplify.<br/><b>30 min to complete</b>'
+          url: '/media/building-web-apps'
+          icon: '/images/icons/Misc/Present.svg'
+        - title: React Native Apps
+          excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled mobile app with React Native and AWS Amplify.<br/><b>30 min to complete</b>'
+          url: '/media/building-react-native-apps' 
+          icon: '/images/icons/Misc/Present.svg'
+        - title: Ionic 4 Apps
+          excerpt: "Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
+          url: '/media/building-ionic-4-apps' 
+          icon: '/images/icons/Misc/Present.svg'
+    - category: Categories
+      title: Categories
       excerpt: Add cloud features to your app quickly using our toolchain and declarative APIs.
       base_url: '/media/analytics_guide'
       subs:
@@ -206,8 +220,8 @@ category_list:
           services:
               - title: Amazon S3
                 url: https://aws.amazon.com/s3/
-    - category: UtilityModules
-      title: Utility Modules
+    - category: Utilities
+      title: Utilities
       excerpt: Common programming utilities that you can use with your app.
       base_url: '/media/cache_guide'
       subs:
