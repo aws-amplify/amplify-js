@@ -53,13 +53,12 @@ const template = `
       (click)="onSubmit()"
       >Verify</ion-button>
     </div>
-    <div class="amplify-form-cell-left">
+    <div class="amplify-form-row">
       <div class="amplify-form-signup">Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign In</a></div>
-    </div>
-    <div class="amplify-form-cell-right">
       <div class="amplify-form-signup">Lost your code? <a class="amplify-form-link" (click)="onResend()">Resend</a></div>
     </div>
   </div>
+
 <div class="amplify-alert" *ngIf="errorMessage">
   <div class="amplify-alert-body">
     <span class="amplify-alert-icon">&#9888;</span>
@@ -82,6 +81,15 @@ export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);
     
+  }
+
+  _setError(err) {
+    if (!err) {
+      this.errorMessage = null;
+      return;
+    }
+
+    alert(err.message || err);
   }
 
 

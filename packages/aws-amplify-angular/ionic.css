@@ -72,6 +72,7 @@
   --ion-color-dark-tint: #383838;
 }
 
+/*
 .amplify-input-label-ionic {
   height: 18px;
   width: 280.32px;
@@ -91,11 +92,11 @@
 
 .amplify-authenticator-ionic {
   box-shadow: none !important;
+  width: 100% !important;
 }
 
 .amplify-form-header-ionic {
   width: 275px !important;
-  font-family: "Amazon Ember";
 }
 
 .amplify-phone-ionic-selection {
@@ -114,3 +115,4 @@
   width: 100%;
   margin: 0.5em 0;
 }
+*/
