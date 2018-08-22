@@ -278,13 +278,3 @@ Auth.currentCredentials()
     // route53.changeResourceRecordSets();
   })
 ```
-
-## Framework Resources
-
-- [React]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/react_guide)
-
-- [React Native]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/react_native_guide)
-
-- [Angular]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/angular_guide)
-
-- [Ionic]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/ionic_guide)
