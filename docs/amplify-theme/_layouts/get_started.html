@@ -1,3 +1,13 @@
+{% if jekyll.environment == 'production' %}
+<html>
+  <head>
+        <!-- Global site tag (gtag.js) - Google Analytics -->     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115615468-1"></script>     <script>         window.dataLayer = window.dataLayer || [];         function gtag(){dataLayer.push(arguments);}         gtag('js', new Date());         gtag('config', 'UA-115615468-1',{             'linker': {             'domains': ['aws-amplify.github.io']             }         });         var navigateToNextPage = function (elem) {             var path = "/{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/get_started";             location.replace( path + location.search);         };       gtag('event', 'page_view', {         'event_callback': navigateToNextPage         });     </script> <meta http-equiv="refresh" content="5; /url={% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/get_started" />
+  </head>
+  <body>
+    <p>Redirecting to <a href="/{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/get_started">https://aws-amplify.github.io/media/get_started</a></p>
+  </body>
+</html>
+{% else %}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -178,3 +188,4 @@ $ amplify configure</code>
 		{% include site-footer.html %}
 	</body>
 </html>
+{% endif %}
