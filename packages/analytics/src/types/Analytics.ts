@@ -36,7 +36,8 @@ export interface pageViewTrackOpts {
     eventName?: string,
     provider?: string,
     attributes?: EventAttributes,
-    getUrl?: Function
+    getUrl?: Function,
+    getIdentityId?: Function
 }
 
 export interface EventTrackOpts {
@@ -44,11 +45,13 @@ export interface EventTrackOpts {
     events?: Array<string>,
     selectorPrefix?: string,
     provider?: string,
-    attributes?: EventAttributes
+    attributes?: EventAttributes,
+    getIdentityId?: Function
 }
 
 export interface SessionTrackOpts {
     enable: boolean,
     attributes?: EventAttributes,
-    provider?: string
+    provider?: string,
+    getIdentityId?: Function
 }

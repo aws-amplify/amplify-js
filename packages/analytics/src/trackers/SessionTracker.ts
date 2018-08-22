@@ -64,8 +64,15 @@ export default class SessionTracker {
         return true;
     }
 
-    private _trackFunc() {
-        const { attributes } = this._config;
+    private async _trackFunc() {
+        const identityId = typeof this._config.getIdentityId === 'function'? 
+            { identityId: await this._config.getIdentityId() } : undefined;
+        const attributes = Object.assign(
+            {},
+            this._config.attributes,
+            identityId
+        );
+
         if (document[this._hidden]) {
             this._tracker(
                 { 
@@ -89,8 +96,15 @@ export default class SessionTracker {
         }
     }
 
-    private _trackBeforeUnload() {
-        const { attributes } = this._config;
+    private async _trackBeforeUnload() {
+        const identityId = typeof this._config.getIdentityId === 'function'? 
+            { identityId: await this._config.getIdentityId() } : undefined;
+        const attributes = Object.assign(
+            {},
+            this._config.attributes,
+            identityId
+        );
+
         this._tracker(
             { 
                 name: '_session_stop',
@@ -103,26 +117,36 @@ export default class SessionTracker {
         });
     }
 
+    // to keep configure a synchronized function
+    private async _sendInitialEvent() {
+        const identityId = typeof this._config.getIdentityId === 'function'? 
+            { identityId: await this._config.getIdentityId() } : undefined;
+        const attributes = Object.assign(
+            {},
+            this._config.attributes,
+            identityId
+        );
+
+        this._tracker(
+            { 
+                name: '_session_start',
+                attributes
+            },
+            this._config.provider
+        ).catch(e => {
+            logger.debug('record session start event failed.', e);
+        });
+    }
+
     configure(opts?: SessionTrackOpts) {
         if (!this._envCheck()) {
             return this._config;
         }
 
         Object.assign(this._config, opts);
-
-        const { attributes } = this._config;
-
         if (this._config.enable && !this._hasEnabled) {
             // send a start session as soon as it's enabled
-            this._tracker(
-                {
-                    name: '_session_start', 
-                    attributes
-                },
-                this._config.provider
-            ).catch(e => {
-                logger.debug('record session start event failed.', e);
-            });
+            this._sendInitialEvent();
             // listen on events
             document.addEventListener(this._visibilityChange, this._trackFunc, false);
             window.addEventListener("beforeunload", this._trackBeforeUnload, false);

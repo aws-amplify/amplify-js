@@ -71,17 +71,20 @@ export default class PageViewTracker {
         else return false;
     }
 
-    private _pageViewTrackDefault() {
+    private async _pageViewTrackDefault() {
         if (!window || !window.addEventListener || !window.sessionStorage) {
             logger.debug('not in the supported web enviroment');
             return;
         }
         const url = this._config.getUrl();
+        const identityId = typeof this._config.getIdentityId === 'function'? 
+            { identityId: await this._config.getIdentityId() } : undefined;
         const attributes = Object.assign(
             {
                 url
             },
-            this._config.attributes
+            this._config.attributes,
+            identityId
         );
 
         if (this._config.enable && !this._isSameUrl()) {
@@ -98,18 +101,21 @@ export default class PageViewTracker {
         }
     }
 
-    private _trackFunc() {
+    private async _trackFunc() {
         if (!window || !window.addEventListener || !history.pushState || !window.sessionStorage) {
             logger.debug('not in the supported web enviroment');
             return;
         }
 
         const url = this._config.getUrl();
+        const identityId = typeof this._config.getIdentityId === 'function'? 
+            { identityId: await this._config.getIdentityId() } : undefined;
         const attributes = Object.assign(
             {
                 url
             },
-            this._config.attributes
+            this._config.attributes,
+            identityId
         );
 
         if (!this._isSameUrl()){

@@ -20,7 +20,8 @@ describe('SessionTracker test', () => {
             });
 
             expect(tracker).toBeCalledWith({
-                name: '_session_start'
+                name: '_session_start',
+                attributes: {}
             }, 'AWSPinpoint');
             expect(spyon).toBeCalled();
 
@@ -86,7 +87,7 @@ describe('SessionTracker test', () => {
     });
 
     describe('track function test', () => {
-        test('if the page is hidden', () => {
+        test('if the page is hidden', async () => {
             const sessionTracker = new SessionTracker(tracker, {
                 enable: true
             });
@@ -97,14 +98,15 @@ describe('SessionTracker test', () => {
                 value: true
             });
 
-            sessionTracker._trackFunc();
+            await sessionTracker._trackFunc();
 
             expect(tracker).toBeCalledWith({
-                name: '_session_stop'
+                name: '_session_stop',
+                attributes: {}
             }, 'AWSPinpoint');
         });
 
-        test('if the page is not hidden', () => {
+        test('if the page is not hidden', async () => {
             const sessionTracker = new SessionTracker(tracker, {
                 enable: true
             });
@@ -115,10 +117,11 @@ describe('SessionTracker test', () => {
                 value: false
             });
 
-            sessionTracker._trackFunc();
+            await sessionTracker._trackFunc();
 
             expect(tracker).toBeCalledWith({
-                name: '_session_start'
+                name: '_session_start',
+                attributes: {}
             }, 'AWSPinpoint');
         });
     });

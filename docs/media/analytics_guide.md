@@ -383,7 +383,9 @@ Analytics.autoTrack('session', {
         sessionId: 'xxxxx'
     },
     // OPTIONAL, the service provider, by default is the AWS Pinpoint
-    provider: 'AWSPinpoint'
+    provider: 'AWSPinpoint',
+    // OPTIONAL, to get the identity id
+    getIdentityId: () => {}
 })
 ```
 
@@ -430,7 +432,9 @@ Analytics.autoTrack('pageView', {
     getUrl: () => {
         // the default function
         return window.location.origin + window.location.pathname;
-    }
+    },
+    // OPTIONAL, to get the identity id
+    getIdentityId: () => {}
 });
 ```
 Note: This is not supported in React Native.
@@ -453,7 +457,9 @@ Analytics.autoTrack('event', {
     // OPTIONAL, default attributes of the event 
     attributes: {
         attr: 'attr'
-    }
+    },
+    // OPTIONAL, to get the identity id
+    getIdentityId: () => {}
 ```
 
 For example:

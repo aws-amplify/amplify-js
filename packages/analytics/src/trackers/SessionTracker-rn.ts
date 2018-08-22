@@ -46,9 +46,15 @@ export default class SessionTracker {
         return true;
     }
 
-    private _trackFunc(nextAppState) {
+    private async _trackFunc(nextAppState) {
         const currentState = AppState.currentState;
-        const { attributes } = this._config;
+        const identityId = typeof this._config.getIdentityId === 'function'? 
+            { identityId: await this._config.getIdentityId() } : undefined;
+        const attributes = Object.assign(
+            {},
+            this._config.attributes,
+            identityId
+        );
 
         if (currentState.match(/inactive|background/) && nextAppState === 'active') {
             logger.debug('App has come to the foreground, recording start session');
@@ -76,25 +82,36 @@ export default class SessionTracker {
         }
     }
 
+    // to keep configure a synchronized function
+    private async _sendInitialEvent() {
+        const identityId = typeof this._config.getIdentityId === 'function'? 
+            { identityId: await this._config.getIdentityId() } : undefined;
+        const attributes = Object.assign(
+            {},
+            this._config.attributes,
+            identityId
+        );
+
+        this._tracker(
+            { 
+                name: '_session_start',
+                attributes
+            },
+            this._config.provider
+        ).catch(e => {
+            logger.debug('record session start event failed.', e);
+        });
+    }
+
     configure(opts?: SessionTrackOpts) {
         if (!this._envCheck()) {
             return this._config;
         }
 
         Object.assign(this._config, opts);
-
-        const { attributes } = this._config;
         if (this._config.enable && !this._hasEnabled) {
             // send a start session as soon as it's enabled
-            this._tracker(
-                { 
-                    name: '_session_start',
-                    attributes
-                },
-                this._config.provider
-            ).catch(e => {
-                logger.debug('record session start event failed.', e);
-            });
+            this._sendInitialEvent();
             // listen on events
             AppState.addEventListener('change', this._trackFunc, false);
             this._hasEnabled = true;

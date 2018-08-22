@@ -70,7 +70,7 @@ export default class EventTracker {
         return this._config;
     }
 
-    private _trackFunc(event, element) {
+    private async _trackFunc(event, element) {
         // the events specifed in 'amplify-analytics-on' selector
         const customAttrs = {};
         const events = element
@@ -87,13 +87,17 @@ export default class EventTracker {
                 });
         }
 
+        const identityId = typeof this._config.getIdentityId === 'function'? 
+            { identityId: await this._config.getIdentityId() } : undefined;
+
         const attributes = Object.assign(
             {
                 type: event.type,
                 target: `${event.target.localName} with id ${event.target.id}`
             }, 
             this._config.attributes,
-            customAttrs
+            customAttrs,
+            identityId
         );
 
         logger.debug('events needed to be recorded', events);

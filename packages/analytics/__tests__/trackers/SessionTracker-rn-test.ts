@@ -28,7 +28,8 @@ describe('SessionTracker test', () => {
             });
 
             expect(tracker).toBeCalledWith({
-                name: '_session_start'
+                name: '_session_start',
+                attributes: {}
             }, 'AWSPinpoint');
             expect(mockAddEventListener).toBeCalled();
 
@@ -88,7 +89,8 @@ describe('SessionTracker test', () => {
             sessionTracker._trackFunc('active');
 
             expect(tracker).toBeCalledWith({
-                name: '_session_start'
+                name: '_session_start',
+                attributes: {}
             }, 'AWSPinpoint');
         });
 
@@ -106,7 +108,8 @@ describe('SessionTracker test', () => {
             sessionTracker._trackFunc('inactive');
 
             expect(tracker).toBeCalledWith({
-                name: '_session_stop'
+                name: '_session_stop',
+                attributes: {}
             }, 'AWSPinpoint');
         });
     });
