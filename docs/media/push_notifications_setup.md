@@ -130,7 +130,7 @@ apply plugin: 'com.google.gms.google-services'
 
 1. Setup iOS Push Notifications and create a p12 certificate as instructed here in [Amazon Pinpoint Developer Guide](https://docs.aws.amazon.com/pinpoint/latest/developerguide/apns-setup.html).
  
-2. Add your p12 certificate to AWS Mobile Hub project.
+2. Add your p12 certificate to your AWS Mobile Hub project by editing *Mobile push* options under *Messaging and Analytics* feature.
 
 3. Create and link a React Native app:
 ```js
