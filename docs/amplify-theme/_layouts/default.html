@@ -64,7 +64,9 @@
 									{% if site.category_list %}
 										{% for category in site.category_list %}
 										<div class="left-nav-section" id="{{ category.category }}">
-											<p class="gray-section-head hidden-xs">{{ category.title }}</p>
+											{% if category.title != 'Setup & Installation' %}
+												<p class="gray-section-head hidden-xs">{{ category.title }}</p>
+											{% endif %}
 											<div class="feature-list">
 												{% for item in category.subs %}
 													{% if page.url contains item.url %}
