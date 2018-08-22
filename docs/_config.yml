@@ -117,7 +117,7 @@ category_list:
       excerpt: 
       base_url: 'quick_start'
       subs:
-        - title: Get Started
+        - title: Getting Started
           excerpt: get started excerpt
           url: '/media/quick_start'
           icon: '/images/icons/Misc/Present.svg'

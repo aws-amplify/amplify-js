@@ -1,7 +1,7 @@
 ---
 ---
 
-# Get Started
+# Getting Started
 
 <p class="orange-subheader">Welcome builder!</p>
 
@@ -14,17 +14,15 @@ We strongly recommend using the Amplify CLI for building the serverless backend 
 - [Sign up for an AWS Account](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start).
 - Install [Node.js®](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/get-npm) if they are not already on your machine.
 
-Note: Verify that you are running at least Node.js version 8.x or greater and npm version 5.x or greater by running `node -v` and `npm -v` in a terminal/console window. Older versions may produce errors and are unsupported.
+Verify that you are running at least Node.js version 8.x or greater and npm version 5.x or greater by running `node -v` and `npm -v` in a terminal/console window.
 {: .callout .callout--action}
 
-Now, install and configure the Amplify CLI globally.
+- Install and configure the Amplify CLI.
 
 ```bash
 $ npm install -g @aws-amplify/cli
 $ amplify configure
 ```
-
-Check the minimum requirements for your development environment.
 
 ## Step 2. Create a New Project
 
@@ -36,7 +34,9 @@ Check the minimum requirements for your development environment.
     <li class="tab-link ionic" data-tab="ionic">Ionic</li>
 </ul>
 <div id="react" class="tab-content current">
-If you have an existing React application you can skip this section. Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
+If you have an existing React application, skip ahead to [Step 3. Install AWS Amplify](#step-3-install-aws-amplify). 
+
+Use  [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
 
 ```bash
 create-react-app my-app
