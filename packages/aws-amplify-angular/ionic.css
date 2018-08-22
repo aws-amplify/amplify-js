@@ -71,3 +71,46 @@
   --ion-color-dark-shade: #1e1e1e;
   --ion-color-dark-tint: #383838;
 }
+
+.amplify-input-label-ionic {
+  height: 18px;
+  width: 280.32px;
+  color: #152939;
+  font-family: "Amazon Ember";
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  line-height: 18px;
+}
+
+.amplify-input-ionic {
+  padding-top: 16px;
+  padding-bottom: 17px;
+  padding-right: 8px;
+  padding-bottom: 8px;
+}
+
+.amplify-authenticator-ionic {
+  box-shadow: none !important;
+}
+
+.amplify-form-header-ionic {
+  width: 275px !important;
+  font-family: "Amazon Ember";
+}
+
+.amplify-phone-ionic-selection {
+  min-width: 100px;
+};
+
+.amplify-phone-ionic-input {
+  max-width: 264px;
+}
+
+.amplify-interactions-container-ionic {
+  width: 430px !important;
+}
+
+.amplify-form-input-interactions-ionic {
+  width: 100%;
+  margin: 0.5em 0;
+}
