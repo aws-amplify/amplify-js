@@ -178,6 +178,51 @@
         //margin-top: 20px !important;
     }
 
+    .dropbtn {
+        color: #828282;
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+    
+    .dropdown-content a {
+        color: #828282;
+        font-family: "Amazon Ember", "Helvetica", sans-serif;
+        font-size: 16px;
+        height: 32px;
+        font-weight: 500;
+        padding: 4px 10px;
+        text-decoration: none;
+        display: block;
+    }
+    
+    .dropdown-content a:hover {background-color: #f1f1f1}
+    
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+    
+    .dropdown:hover .dropbtn {
+        border-bottom: 2px solid #FF9900;
+    }
+
     select {
         color: #828282;
         font-family: "Amazon Ember", "Helvetica", sans-serif;
@@ -201,14 +246,6 @@
             transition: border-color 0.2s;
             cursor: pointer;
 		}
-    }
-
-    #api-select {
-        width: 50px;
-    }
-
-    #docs-select {
-        width: 60px;
     }
 
 	li {
@@ -1339,7 +1376,6 @@ body {
     position: sticky;
     position: -webkit-sticky;
     top: 0;
-    height: 50px;
     width: 100%;
     background-color: #31465F;
     //width: 101%;
@@ -1349,7 +1385,7 @@ body {
     .close-button {
         position: absolute;
         right: 10px;
-        top: 6px;
+        top: 9px;
 
         i {
             margin-right: 0;
@@ -1364,19 +1400,21 @@ body {
 
     .notification-content {
         margin-top: 8px;
+        width: 95%;
         display: inline-block;
         text-align: center;
-    }
 
-    .notification-text {
-        color: #FFFFFF;
-        font-family: "Amazon Ember", "Helvetica", sans-serif;
-        font-size: 16px;
-        line-height: 24px;
-        width: 105%;
-    }
-    img {
-        float: left;
+        .notification-text {
+            color: #FFFFFF;
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            display: inline-block;
+        }
+        img {
+            display: inline-block;
+            vertical-align: middle;
+        }
     }
 
     a {
@@ -1408,6 +1446,7 @@ li {
 .error-btn-text {
     line-height: 60px;
 }
+
 
 //=============================================================================
 /***                   new stuff for developer guide                       ***/
@@ -1990,7 +2029,7 @@ li {
             }
         }
 
-        select:hover {
+        .dropdown:hover .dropbtn{
             border-bottom: 2px solid white;
             transition: border-color 0.2s;
         }

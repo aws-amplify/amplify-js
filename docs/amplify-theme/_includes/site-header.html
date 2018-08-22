@@ -30,6 +30,11 @@
 				</li>
 			{% endfor %}
 			<li>
+				<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=purejs">
+					Docs
+				</a>
+			</li>
+			<li>
 				<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api">
 					API
 				</a>
@@ -79,22 +84,26 @@
 							</li>
 						{% endfor %}
 						<li>
-							<select id="docs-select">
-								<option selected disabled value="default">Docs</option>
-								<option value="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html">iOS</option>
-								<option value="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html">Android</option>
-								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=purejs">JavaScript</option>
-								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=react-native">React Native</option>
-							</select>
+							<div id="docs-select" class="dropdown">
+								<button class="dropbtn">Docs</button>
+								<div class="dropdown-content">
+									<a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank">iOS</a>
+									<a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank">Android</a>
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=purejs">JavaScript</a>
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=react-native">React Native</a>
+								</div>
+							</div>
 						</li>
 						<li>
-							<select id="api-select">
-								<option selected disabled value="default">API</option>
-								<option value="https://aws.github.io/aws-sdk-ios/docs/reference/">iOS</option>
-								<option value="https://aws.github.io/aws-sdk-android/docs/reference/">Android</option>
-								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api/">JavaScript</option>
-								<option value="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api/">React Native</option>
-							</select>
+							<div id="api-select" class="dropdown">
+								<button class="dropbtn">API</button>
+								<div class="dropdown-content">
+									<a href="https://aws.github.io/aws-sdk-ios/docs/reference/" target="_blank">iOS</a>
+									<a href="https://aws.github.io/aws-sdk-android/docs/reference/" target="_blank">Android</a>
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api/" target="_blank">JavaScript</a>
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api/" target="_blank">React Native</a>
+								</div>
+							</div>
 						</li>
 						<li class="site-search" id="search-input-box">
 							<input placeholder="   Search" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/Search.svg"></input>
