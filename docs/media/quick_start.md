@@ -1,7 +1,7 @@
 ---
 ---
 
-# Get Started
+# Getting Started
 
 <p class="orange-subheader">Welcome builder!</p>
 
@@ -14,17 +14,15 @@ Install the Amplify CLI for building the serverless backend for your app. If you
 - [Sign up for an AWS Account](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start).
 - Install [Node.js®](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/get-npm) if they are not already on your machine.
 
-Note: Verify that you are running at least Node.js version 8.x or greater and npm version 5.x or greater by running `node -v` and `npm -v` in a terminal/console window. Older versions may produce errors and are unsupported.
+Verify that you are running at least Node.js version 8.x or greater and npm version 5.x or greater by running `node -v` and `npm -v` in a terminal/console window.
 {: .callout .callout--action}
 
-Now, install and configure the Amplify CLI globally.
+- Install and configure the Amplify CLI.
 
 ```bash
 $ npm install -g @aws-amplify/cli
 $ amplify configure
 ```
-
-Check the minimum requirements for your development environment.
 
 ## Step 2. Create a New Project
 

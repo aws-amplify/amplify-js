@@ -117,26 +117,51 @@ category_list:
       excerpt: 
       base_url: 'quick_start'
       subs:
-        - title: Get Started
+        - title: Getting Started
           excerpt: get started excerpt
           url: '/media/quick_start'
           icon: '/images/icons/Misc/Present.svg'
+    # - category: Tutorials
+    #   title: Tutorials
+    #   excerpt: 
+    #   base_url: 'building-web-apps'
+    #   subs:
+    #     - title: Web Apps
+    #       excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled React Web app with AWS Amplify.<br/><b>30 min to complete</b>'
+    #       url: '/media/building-web-apps'
+    #       icon: '/images/icons/Misc/Present.svg'
+    #     - title: React Native Apps
+    #       excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled mobile app with React Native and AWS Amplify.<br/><b>30 min to complete</b>'
+    #       url: '/media/building-react-native-apps' 
+    #       icon: '/images/icons/Misc/Present.svg'
+    #     - title: Ionic 4 Apps
+    #       excerpt: "Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
+    #       url: '/media/building-ionic-4-apps' 
+    #       icon: '/images/icons/Misc/Present.svg'
     - category: Tutorials
       title: Tutorials
       excerpt: 
-      base_url: 'quick_start'
+      base_url: 'react_guide'
       subs:
-        - title: Web Apps
-          excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled React Web app with AWS Amplify.<br/><b>30 min to complete</b>'
-          url: '/media/building-web-apps'
+        - title: React
+          excerpt: #'A step-by-step tutorial for learning how to build a cloud-enabled React Web app with AWS Amplify.<br/><b>30 min to complete</b>'
+          url: '/media/react_guide'
           icon: '/images/icons/Misc/Present.svg'
-        - title: React Native Apps
-          excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled mobile app with React Native and AWS Amplify.<br/><b>30 min to complete</b>'
-          url: '/media/building-react-native-apps' 
+        - title: React Native
+          excerpt: #'A step-by-step tutorial for learning how to build a cloud-enabled mobile app with React Native and AWS Amplify.<br/><b>30 min to complete</b>'
+          url: '/media/react_native_guide' 
           icon: '/images/icons/Misc/Present.svg'
-        - title: Ionic 4 Apps
-          excerpt: "Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
-          url: '/media/building-ionic-4-apps' 
+        - title: Angular
+          excerpt: #"Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
+          url: '/media/angular_guide' 
+          icon: '/images/icons/Misc/Present.svg'
+        - title: Ionic
+          excerpt: #"Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
+          url: '/media/ionic_guide' 
+          icon: '/images/icons/Misc/Present.svg'
+        - title: Vue.js
+          excerpt: #"Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
+          url: '/media/vuejs_guide' 
           icon: '/images/icons/Misc/Present.svg'
     - category: Categories
       title: Categories
