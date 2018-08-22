@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.7-unstable.7"></a>
+## [1.0.7-unstable.7](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.7-unstable.6...aws-amplify-react@1.0.7-unstable.7) (2018-08-22)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** Fix import statement ([fe1826a](https://github.com/aws/aws-amplify/commit/fe1826a)), closes [#1482](https://github.com/aws/aws-amplify/issues/1482)
+
+
+
+
 <a name="1.0.7-unstable.6"></a>
 ## [1.0.7-unstable.6](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.7-unstable.5...aws-amplify-react@1.0.7-unstable.6) (2018-08-21)
 
