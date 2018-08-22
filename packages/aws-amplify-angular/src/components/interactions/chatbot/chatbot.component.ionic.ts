@@ -1,9 +1,9 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ChatbotComponentCore } from './chatbot.component.core'
 import { AmplifyService } from '../../../providers';
 
 const template = `
-<div class="amplify-interactions-container amplify-interactions-container-ionic">
+<div class="amplify-interactions-container">
 	<div class="amplify-form-container">
 		<ion-grid>
 			<ion-row *ngIf="chatTitle"> 
@@ -71,7 +71,7 @@ const template = `
   template: template
 })
 export class ChatbotComponentIonic extends ChatbotComponentCore {
-
+  
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);    
   }
