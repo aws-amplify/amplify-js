@@ -32,6 +32,8 @@
 
   --box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15);
   --button-height: 42px;
+
+  --interactions-conversation-height: 250px;
 }
 
 body {
@@ -200,8 +202,21 @@ ion-item {
   cursor: pointer;
 }
 
+@media (min-width: 320px) and (max-width: 480px) {
+  .amplify-photo-picker-container {
+      width: auto;
+  }
+  .amplify-photo-picker-upload {
+      width: auto;
+  }
+}
+
+/**********************************************
+** Interactions
+**********************************************/
+
 .amplify-interactions {
-  width: var(--component-width);
+  width: var(--component-width-desktop);
   margin: 1em auto;
   border-radius: 6px;
   background-color: var(--color-white);
@@ -242,6 +257,10 @@ ion-item {
 
 .amplify-interactions-conversation {
     margin: 1em;
+    width: 100%;
+    padding: 0em 1em 0em 1em;
+    height: var(--interactions-conversation-height);
+    overflow: scroll;
 }
 
 .amplify-interactions-input {
@@ -283,6 +302,15 @@ ion-item {
   color: var(--color-white);
   font-size: 13px;
   line-height: 16px;
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+  .amplify-interactions {
+      width: var(--component-width-mobile)
+  }
+  .amplify-interactions-container {
+      width: 85%;
+  }
 }
 
 
