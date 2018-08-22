@@ -332,35 +332,6 @@
 		<!-- </div>/.section -->
 		<!-- {% endif %} -->
 
-		<!-- {% if page.grid_navigation %}
-			<div class="section section--darker-theme-color-bg">
-				<div class="container">
-					<div class="row">
-						<div class="col-md-12">
-							<div class="nav-grid nav-grid--out">
-								<div class="row">
-									{% for item in page.grid_navigation %}
-										<div class="col-sm-6 col-lg-4">
-											<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }}" class="nav-grid__item">
-												<div class="nav-grid__content" data-mh>
-													<h2 class="nav-grid__title">{{ item.title }}</h2>
-													<p>{{ item.excerpt }}</p>
-												</div><!-- /.nav-grid__content -->
-												<!--<p class="nav-grid__btn">
-													{{ item.cta }}
-													<i class="icon icon--arrow-right"></i>-->
-												<!-- </p> -->
-											<!-- </a>/.nav-grid__item -->
-										<!-- </div>/.col -->
-									<!--{% endfor %}-->
-								<!-- </div>/.row -->
-							<!-- </div>/.nav-grid -->
-						<!-- </div>/.col -->
-					<!-- </div>/.row -->
-				<!-- </div>/.container -->
-			<!-- </div>/.section -->
-		<!--{% endif %} -->
-
 		{% include site-footer.html %}
 	</body>
 </html>
