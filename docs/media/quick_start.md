@@ -186,9 +186,13 @@ You can quickly create your backend from scratch with Automatic Setup, or use Ma
 $ amplify init 
 ```
 
-When you run *amplify init* command you are asked for the details of your project. A configuration file for your app is put in your configured source directory called `aws-exports.js`.
+> When you run `amplify init` command you are asked for the details of your project. A configuration file for your app is put in your configured source directory called `aws-exports.js`.
 
-[Learn more](https://github.com/aws-amplify/amplify-cli) about the AWS Amplify CLI.
+```js
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports';
+Amplify.configure(awsconfig)
+```
 
 #### Manual Setup
 
@@ -249,14 +253,14 @@ Run `amplify` on your CLI at anytime to see available categories.
  - Add [Authentication]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)
  - Add a GraphQL or REST [API]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide)
 
-##### Working with AWS Service Interface Objects
+###### AWS SDK Interfaces
 
 For working with other AWS services you can use service interface objects directly via the JavaScript SDK clients. 
 
 To work with service interface objects, your Amazon Cognito users' [IAM role](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) must have the appropriate permissions to call the requested services.
 {: .callout .callout--warning}
 
-You can call methods on any AWS Service interface object supported by the <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html" target="_blank">AWS JavaScript SDK</a> by passing your credentials from *Auth* to the service call constructor:
+You can call methods on any AWS Service interface object supported by the <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html" target="_blank">AWS JavaScript SDK</a> by passing your credentials from *Auth* to the service call constructor. For example, to use Amazon Route53 in your app:
 
 ```js
 import Route53 from 'aws-sdk/clients/route53';
