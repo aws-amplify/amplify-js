@@ -104,13 +104,7 @@ In the above configuration, you are required to pass in an *Amazon Pinpoint App 
 
 After successfully configuring your credentials, the library automatically tracks some default metrics for you, without any effort on your part. 
 
-User session analytics data is automatically collected and sent to Amazon Pinpoint. To see these data, please visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/), or run following cli command to launch AWS Mobile Hub console:
-
-```
-$ amplify console
-```
-
-On the AWS Mobile Hub console, click **Messaging and Analytics** option under 'Backend' section.
+User session analytics data is automatically collected and sent to Amazon Pinpoint. To see these data, please visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
 
 ### Working with the API
 

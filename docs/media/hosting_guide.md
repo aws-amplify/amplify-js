@@ -32,7 +32,3 @@ $ amplify publish
 
 CDN service, which is provided by Amazon CloudFront, will handle the high-performance delivery of your static assets. If your website includes video or audio files, those assets will be automatically streamed to the browser.
 
----
-
-For complete documentation please visit [Amplify CLI Reference](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html)
-{: .next-link}

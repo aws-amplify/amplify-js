@@ -50,7 +50,7 @@ In this example, AWS Amplify Storage category already knows about the authentica
 Amplify CLI helps you to configure your app's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
-amplify cloud-api enable
+amplify add api
 ```
 
 Amplify CLI creates the necessary folder structure and generates JavaScript files for your app's backend logic:
@@ -63,20 +63,18 @@ After working with your backend code, deploying your app backend is very simple 
 amplify push
 ```
 
-#### Manage your Backend with AWS Mobile Hub
+#### Manage your Backend with Amplify CLI
 
-If you have existing AWS resources such as Amazon API Gateway endpoints or Amazon S3 buckets, you can use them with AWS Amplify by setting up resource credentials in your app's configuration.
+If you have existing AWS resources such as Amazon API Gateway endpoints or Amazon S3 buckets, you can use them with AWS Amplify by setting up resource credentials in your app's configuration. 
 
-Otherwise, AWS Mobile Hub is a great tool for creating AWS resources, related user roles, and security policies.
+Otherwise, AWS Amplify CLI is a great tool for creating AWS resources, related user roles, and security policies.
 
 Mix and match building blocks for app's backend, and start working with cloud operations like Authorization, Storage and Cloud API.
-
-![Services](../images/mobile_hub_services.png?raw=true "Services")
 
 Syncing your latest backend configuration with your local app project is simple with the CLI:
 
 ```bash
-amplify pull
+amplify push
 ```
 
 #### Use your Favorite Frontend Library
