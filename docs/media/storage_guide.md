@@ -80,7 +80,7 @@ To make calls to your S3 bucket from your App, you need to setup CORS Policy for
 
 Following steps will enable your CORS Policy: 
 
-1. Go to [Amazon S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's `userfiles` bucket, which is normally named as [Project Name]-userfiles-mobilehub-[App Id]. If you are using an S3 Bucket that is not created by Mobile Hub, that will your upload bucket for your app.
+1. Go to [Amazon S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's `userfiles` bucket, which is normally named as [Project Name]-userfiles-mobilehub-[App Id]. 
 2. Click on the **Permissions** tab for your bucket, and then click on **CORS configuration** tile.
 3. Update your bucket's CORS Policy to look like:
 

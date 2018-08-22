@@ -231,7 +231,7 @@ PushNotification.configure({
 });
 ```
 
-You can also use `aws-exports.js` file in case you have set up your backend with AWS Mobile Hub.
+You can also use `aws-exports.js` file in case you have set up your backend with Amplify CLI.
 
 ```js
 import { PushNotificationIOS } from 'react-native';

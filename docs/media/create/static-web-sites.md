@@ -50,22 +50,16 @@ Every time you deploy your website, a performance test is executed using real de
 Amplify CLI helps you to configure your website's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
-amplify cloud-api enable
+amplify add api
 ```
 
 Amplify CLI also creates the necessary folder structure and generates JavaScript files necessary for your app's backend logic:
-
-![Cloud API](../images/backend_cloud_api.png?raw=true "Cloud API"){: style="max-height:450px;"}
 
 After working with your backend code, deploying your web backend is very simple:
 
 ```bash
 amplify push
 ```
-
-You can also use AWS Mobile Hub to mix and match building blocks for your website, and start implementing cloud operations like Authorization, Storage and Cloud API.  
-
-![Services](../images/mobile_hub_services.png?raw=true "Services")
 
 #### Engage your audience
 
