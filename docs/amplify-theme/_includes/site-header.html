@@ -1,17 +1,14 @@
 {% if site.amplify.header.logo.text or site.amplify.header.logo.image or site.amplify.header.nav %}
 <div class="notification-bar" id="notification-bar">
 	<div class="notification-content">
-		<div class="col-xs-5">
-			<img class="notification-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Medium/Volume.svg">
-		</div>
-		<p class="notification-text col-xs-7">News: The New VR Component is live and ready to deploy!</p>
+		<img class="notification-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Medium/Volume.svg">
+		<p class="notification-text">Announcement: Launching a powerful new toolchain and a new way to build cloud-connected mobile and web apps</p>
 	</div>
 	<div class="close-button">
-		<a href=''><i class="icon icon--x"></i></a>
+		<i id="close-notif" class="icon icon--x"></i>
 	</div>
 </div>
 {% endif %}
-
 
 {% if site.amplify.header.nav %}
 	<div class="offcanvas visible-xs">
