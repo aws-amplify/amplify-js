@@ -211,6 +211,15 @@
         padding: 4px 10px;
         text-decoration: none;
         display: block;
+        border-bottom: none !important;
+
+        p {
+            display: inline-block;
+        }
+    }
+
+    .dropdown-content a:hover p {
+        border-bottom: 2px solid #FF9900;
     }
     
     .dropdown-content a:hover {background-color: #f1f1f1}
@@ -219,7 +228,7 @@
         display: block;
     }
     
-    .dropdown:hover .dropbtn {
+    .dropbtn:hover {
         border-bottom: 2px solid #FF9900;
     }
 
@@ -788,6 +797,7 @@ a {
     .section-code-block {
         max-width: 100%;
         margin-bottom: 30px;
+        padding-bottom: 12px;
     }
 
     padding: 0;
@@ -1228,6 +1238,8 @@ a {
         font-size: 16px;
         line-height: 24px;
         margin-bottom: 10px;
+        width: 90%;
+        display: block;
     }
 }
 
@@ -1807,6 +1819,18 @@ li {
     margin-top: 0;
     margin-bottom: 34px;
 
+    .section-code-block {
+        width: 90%;
+        padding-bottom: 25px;
+
+        .highlight {
+            .highlight {
+                padding-bottom: 10px;
+            }
+        }
+
+    }
+
     #orange-logos {
         width: 220px;
     }
@@ -2029,7 +2053,7 @@ li {
             }
         }
 
-        .dropdown:hover .dropbtn{
+        .dropbtn:hover{
             border-bottom: 2px solid white;
             transition: border-color 0.2s;
         }
