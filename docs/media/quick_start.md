@@ -35,7 +35,7 @@ $ amplify configure
 
 If you have an existing application you can skip ahead, [Step 3. Install AWS Amplify](#step-3-install-aws-amplify). 
 
-<div id="purejs" class="tab-content">
+<div id="purejs" class="tab-content current">
 
 For this example we will create a new plain JavaScript <a href="https://babeljs.io/docs/en/learn/" target="_blank">ES2015</a> app that uses webpack. Create a new project directory called `amplify-js-app` with the following structure:
 
