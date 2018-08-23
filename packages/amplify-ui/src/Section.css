@@ -1,7 +1,6 @@
 @import './Theme.css';
 
 .container {
-  font-family: "Amazon Ember", "Helvetica Neue", sans-serif;
   font-weight: 400,
 }
 
@@ -13,7 +12,7 @@
   color: var(--deepSquidInk);
   margin-bottom: 24px;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .sectionHeaderHint {

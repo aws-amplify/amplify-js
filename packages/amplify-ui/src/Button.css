@@ -76,6 +76,7 @@
   background-color: #FF9900;
   border: none;
   color: #fff;
+  font-family: "Amazon Ember";
 }
 
 #amazonSignInButton > .signInButtonIcon {
