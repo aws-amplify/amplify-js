@@ -5,6 +5,7 @@ export * from './Form.css';
 export * from './Hint.css';
 export * from './Input.css';
 export * from './Nav.css';
+export * from './PhotoPicker.css';
 export * from './Section.css';
 export * from './SelectInput.css';
 export * from './Strike.css';

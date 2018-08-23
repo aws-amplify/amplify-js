@@ -11,9 +11,16 @@
 
 .sectionHeader {
   color: var(--deepSquidInk);
-  margin-bottom: 30px;
+  margin-bottom: 24px;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.sectionHeaderHint {
+  color: var(--grey);
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 4px;
 }
 
 .sectionBody {
