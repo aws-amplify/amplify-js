@@ -3,42 +3,31 @@
 
 # Analytics
 
-AWS Amplify Analytics module helps you to collect analytics data for your app easily. Analytics is available with [Amazon Pinpoint](#using-amazon-pinpoint) and [Amazon Kinesis](#using-amazon-kinesis), and also you can add your custom provider as a [plugin](#using-a-custom-plugin).
-
-## Using Amazon Pinpoint
-
-AWS Pinpoint enables you to send Analytics data includes user sessions and other custom events that you want to track in your app.
+The Analytics category enables you to collect analytics data for your app. The Analytics category comes with built-in support for [Amazon Pinpoint](#using-amazon-pinpoint) and [Amazon Kinesis](#using-amazon-kinesis).
 
 ### Installation and Configuration
 
-Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. Here is how you can enable Analytics category for your app.
+Ensure you have [installed and configured the Amplify CLI and library]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start).
+{: .callout .callout--info}
 
 #### Automated Setup
 
-Automated Setup works with `awsmobile-cli` to create your analytics backend. After configuring your backend, you can create a project with fully functioning Analytics category.
+Run the following command in your project's root folder:
 
 ```bash
-$ npm install -g awsmobile-cli
+$ amplify add analytics
 ```
 
-You should run all `awsmobile` commands at *root folder* of your project.
-{: .callout .callout--info}
-
-In your project's *root folder*, run following command to configure and update your backend:
+The `add` command automatically creates a backend configuration locally. To update your backend run:
 
 ```bash
-$ cd my-app #Change to your project's root folder
-$ awsmobile init
-$ awsmobile push #Update your backend 
+$ amplify push
 ```
+A configuration file called `aws-exports.js` will be copied to your configured source directory, for example `./src`.
 
-*awsmobile init* enables Analytics module by default for your backend. In case you want to enable/disable it manually, you can use:
+##### Configure Your App
 
-```bash
-$ awsmobile analytics enable 
-```
-
-In your app's entry point i.e. App.js, import and load the configuration file which has been created and replaced into `/src` folder in the previous step.
+Import and load the configuration file in your app. It's recommended you add the Amplify configuration step to your app's root entry point. For example `App.js` in React or `main.ts` in Angular.
 
 ```js
 import Amplify, { Analytics } from 'aws-amplify';
@@ -49,7 +38,7 @@ Amplify.configure(aws_exports);
 
 #### Manual Setup
 
-The manual setup enables you to use your existing Amazon Pinpoint resources in your app:
+The manual setup enables you to use your existing Amazon Pinpoint resource in your app.
 
 ```js
 import { Analytics } from 'aws-amplify';
@@ -98,41 +87,24 @@ Analytics.configure({
 });
 ```
 
-In the above configuration, you are required to pass in an *Amazon Pinpoint App Client ID* so that the library can retrieve base credentials for a user even in an unauthenticated state. 
+User session data is automatically collected unless you disabled analytics. To see the results visit the [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
+{: .callout .callout--info}
 
-After successfully configuring your credentials, the library automatically tracks some default metrics for you, without any effort on your part. 
+### Working with the API 
 
-User session analytics data is automatically collected and sent to Amazon Pinpoint. To see these data, please visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/), or run following cli command to launch AWS Mobile Hub console:
+#### Recording Custom Events
 
-```
-$ awsmobile console
-```
-
-On the AWS Mobile Hub console, click **Messaging and Analytics** option under 'Backend' section.
-
-### Working with the API
-
-#### Collect Session Data
-
-Once configured, the Analytics module starts collecting user session data without any additional code. 
-
-#### Recording a Custom Tracking Event
-
-To record a custom tracking event, call the `record` method:
+To record custom events call the `record` method:
 
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.record({ name: 'albumVisit' });
 ```
 
-#### Record a Custom Tracking Event with Attributes
+#### Record a Custom Event with Attributes
 
 The `record` method lets you add additional attributes to an event. For example, to record *artist* information with an *albumVisit* event:
 
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.record({
     name: 'albumVisit', 
     attributes: { genre: '', artist: '' }
@@ -144,8 +116,6 @@ Analytics.record({
 Metrics data can also be added to an event:
 
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.record({
     name: 'albumVisit', 
     attributes: {}, 
@@ -153,12 +123,10 @@ Analytics.record({
 });
 ```
 
-#### Disable/Enable Analytics
+#### Disable Analytics
 
-You can disable or enable Analytics module as follows:
+You can also completely disable or re-enable Analytics:
 ```js
-import { Analytics } from 'aws-amplify';
-
 // to disable Analytics
 Analytics.disable();
 
@@ -166,36 +134,11 @@ Analytics.disable();
 Analytics.enable();
 ```
 
-#### Record Authentication Events
-
-You can use following events to record Sign-ins, Sign-ups, and Authentication failures.
-
-```js
-import { Analytics } from 'aws-amplify';
-
-// Sign-in event
-Analytics.record({
-    name: '_userauth.sign_in'
-});
-
-// Sign-up event
-Analytics.record({
-    name: '_userauth.sign_up'
-});
-
-// Authentication failure event
-Analytics.record({
-    name: '_userauth.auth_fail'
-});
-```
-
 #### Update User Attributes
 
-In order to update User Attributes, use `updateEndpoint()` method as following:
+An endpoint uniquely identifies your app within Pinpoint. In order to update your <a href="https://docs.aws.amazon.com/pinpoint/latest/apireference/rest-api-endpoints.html" target="_blank">endpoint</a> use the `updateEndpoint()` method:
 
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.updateEndpoint({
     // Customized userId
     UserId: 'XXXXXXXXXXXX',
@@ -212,19 +155,21 @@ Analytics.updateEndpoint({
 })
 ```
 
+<a href="https://docs.aws.amazon.com/pinpoint/latest/developerguide/audience-define-user.html" target="_blank">Learn more</a> about Amazon Pinpoint and Endpoints.
+
 #### API Reference
 
-For the complete API documentation for Analytics module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/analyticsclass.html)
+For a complete API reference visit the [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/analyticsclass.html)
 {: .callout .callout--info}
 
 
 ## Using Amazon Kinesis
 
-Amazon Kinesis Analytics plugin enables you to send Analytics data to an [Amazon Kinesis](https://aws.amazon.com/kinesis) stream for real-time processing.
+The Amazon Kinesis analytics provider allows you to send analytics data to an [Amazon Kinesis](https://aws.amazon.com/kinesis) stream for real-time processing.
 
 ### Installation and Configuration
 
-*AWSKinesisProvider* plugin is available with aws-amplify package. You can import the plugin and register with the Analytics category as follows: 
+Register the *AWSKinesisProvider* with the Analytics category: 
 
 ```js
 import { Analytics, AWSKinesisProvider } from 'aws-amplify';
@@ -232,10 +177,9 @@ Analytics.addPluggable(new AWSKinesisProvider());
 
 ```
 
-Please make sure that you have a defined an IAM user and a related IAM policy to put records into your Kinesis stream.
-{: .callout .callout--warning}
+If you did not use the CLI, ensure you have <a href="https://docs.aws.amazon.com/streams/latest/dev/learning-kinesis-module-one-iam.html" target="_blank">setup IAM permissions</a> for `PutRecords`.
 
-An example IAM policy for Amazon Kinesis:
+Example IAM policy for Amazon Kinesis:
 ```json
 {
     "Version": "2012-10-17",
@@ -252,9 +196,9 @@ An example IAM policy for Amazon Kinesis:
 }
 ```
 
-For more information about IAM user roles and policies, please visit [Amazon Kinesis Developer Documentation](https://docs.aws.amazon.com/streams/latest/dev/learning-kinesis-module-one-iam.html).
+For more information visit [Amazon Kinesis Developer Documentation](https://docs.aws.amazon.com/streams/latest/dev/learning-kinesis-module-one-iam.html).
 
-Provide plugin configuration parameters with `Analytics.configure()` before using your Kinesis in your app:
+Configure Kinesis:
 
 ```js
 
@@ -283,7 +227,7 @@ Analytics.configure({
 
 ### Working with the API
 
-You can send a data to an Amazon Kinesis stream with the *record()* method:
+You can send a data to a Kinesis stream with the standard *record()* method:
 
 ```js
 Analytics.record({
@@ -296,12 +240,11 @@ Analytics.record({
 }, 'AWSKinesis');
 ```
 
-
 ## Using a Custom Plugin
 
-You can create your custom class and plug it into Analytics module. This may be helpful when you need to integrate your app with a custom analytics backend.
+You can create your custom pluggable for Analytics. This may be helpful if you want to integrate your app with a custom analytics backend.
 
-To create a plugin,just implement `AnalyticsProvider` interface:
+To create a plugin implement the `AnalyticsProvider` interface:
 
 ```typescript
 import { Analytics, AnalyticsProvider } from 'aws-amplify';
@@ -326,7 +269,7 @@ export default class MyAnalyticsProvider implements AnalyticsProvider {
 }
 ```
 
-You can now register your plugin as follows:
+You can now register your pluggable:
 
 ```js
 // add the plugin
@@ -340,22 +283,22 @@ Analytics.removePluggable(MyAnalyticsProvider.providerName);
 
 // send configuration into Amplify
 Analytics.configure({
-    YOUR_PLUGIN_NAME: { 
+    MyAnalyticsProvider: { 
         // My Analytics provider configuration 
     }
 });
 
 ```
 
-Please note that the default provider (Amazon Pinpoint) is in use when you call `Analytics.record()`. To use your plugin, provide the plugin name in your method call, such as `Analytics.record({..},'myPlugin')`. 
+The default provider (Amazon Pinpoint) is in use when you call `Analytics.record()` unelss you specify a different provider: `Analytics.record({..},'MyAnalyticsProvider')`. 
 {: .callout .callout--info}
 
-## Using modularized module
+## Using Modular Imports
 
-If you only need to use Analytics, you can do: `npm install @aws-amplify/analytics` which will only install the Analytics module for you.
-Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.
+You can import only specific categories into your app if you are only using specific features, analytics for example: `npm install @aws-amplify/analytics` which will only install the Analytics category. For working with AWS services you will also need to install and configure `@aws-amplify/auth`.
 
-Then in your code, you can import the Analytics module by:
+Import only Analytics:
+
 ```js
 import Analytics from '@aws-amplify/analytics';
 
