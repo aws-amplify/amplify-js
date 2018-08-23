@@ -23,7 +23,7 @@ const myServiceWorker = new ServiceWorker();
 
 You can register a service worker for the browser with `register` method. 
 
-First, you need to create a service worker script **service-worker.js**. Your service worker script includes cache settings for offline access and event handlers for related lifecycle events. [Click to see a sample service worker script]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/sample/service-worker) for your app. 
+First, you need to create a service worker script **service-worker.js**. Your service worker script includes cache settings for offline access and event handlers for related lifecycle events. [Click to see a sample service worker script]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/sample/service-worker) for your app. 
 
 Make sure that worker script is included with your build and provide a script path relative to the source directory when registering:
 
@@ -119,17 +119,17 @@ In your *service-worker.js* file, add the following event listener:
 
 ### Monitoring Lifecycle Events
 
-If you enable AWS Amplify [Analytics]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide) category, *ServiceWorker* module automatically tracks service worker state changes and message events.
+If you enable AWS Amplify [Analytics]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide) category, *ServiceWorker* module automatically tracks service worker state changes and message events.
 
 You can see those analytics events are related metrics in Amazon Pinpoint console.
 
 ### API Reference
 
-For the complete API documentation for ServiceWorker module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/serviceworkerclass.html)
+For the complete API documentation for ServiceWorker module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/serviceworkerclass.html)
 {: .callout .callout--info}
 
 
-## Using modularized module
+## Using Modular Imports
 
 If you only need to use ServiceWorker, you can do: `npm install @aws-amplify/core` which will only install the Core module which contains the ServiceWorkder module.
 

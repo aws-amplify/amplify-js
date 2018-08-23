@@ -6,7 +6,7 @@
 /**
  * Style (style.scss)
  */
- 
+
 
 /* ----- Charset ----- */
 @charset 'utf-8';
@@ -53,6 +53,7 @@
 @import 'components/social-list';
 @import 'components/title-anchor-link';
 @import 'components/_tabs';
+@import 'components/redesign';
 
 /* ----- Themes ----- */
 @import 'themes/green';
