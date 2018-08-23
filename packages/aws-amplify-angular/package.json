@@ -35,6 +35,7 @@
     "@types/zen-observable": "^0.5.3",
     "angular2-template-loader": "^0.6.2",
     "awesome-typescript-loader": "^4.0.1",
+    "aws-amplify": "^0.4.9-unstable.2",
     "babel-core": "^6.26.3",
     "babel-plugin-lodash": "^3.3.4",
     "babel-preset-env": "^1.7.0",
@@ -65,7 +66,6 @@
     "zone.js": "^0.8.26"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.106",
-    "aws-amplify": "^1.0.5"
+    "@types/lodash": "^4.14.106"
   }
 }
