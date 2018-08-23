@@ -34,7 +34,7 @@ export * from './Provider';
 
 import Greetings from './Greetings';
 
-export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null) {
+export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null) {
     return class extends Component {
         constructor(props) {
             super(props);
@@ -78,6 +78,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
 
             return <Authenticator
                 {...this.props}
+                theme={theme}
                 federated={federated}
                 hideDefault={authenticatorComponents.length > 0}
                 onStateChange={this.handleAuthStateChange}

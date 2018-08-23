@@ -38,7 +38,7 @@ export default class Authenticator extends Component {
         this.handleStateChange = this.handleStateChange.bind(this);
         this.handleAuthEvent = this.handleAuthEvent.bind(this);
 
-        this.state = { auth: props.authState || 'signIn' };
+        this.state = { auth: props.authState || 'loading' };
     }
 
     componentWillMount() {
