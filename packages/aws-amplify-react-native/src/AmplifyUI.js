@@ -12,57 +12,21 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, TouchableHighlight } from 'react-native';
-
+import { View, Text, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { I18n } from 'aws-amplify';
+import AmplifyTheme from './AmplifyTheme';
 
-export const Username = (props) => {
+export const FormField = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
-        <TextInput
-            style={theme.input}
-            placeholder={I18n.get('Username')}
-            autoFocus={true}
-            autoCapitalize="none"
-            {...props}
-        />
-    )
-}
-
-export const Password = (props) => {
-    const theme = props.theme || AmplifyTheme;
-    return (
-        <TextInput
-            style={theme.input}
-            placeholder={I18n.get('Password')}
-            secureTextEntry={true}
-            {...props}
-        />
-    )
-}
-
-export const Email = (props) => {
-    const theme = props.theme || AmplifyTheme;
-    return (
-        <TextInput
-            style={theme.input}
-            placeholder={I18n.get('Email')}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            {...props}
-        />
-    )
-}
-
-export const PhoneNumber = (props) => {
-    const theme = props.theme || AmplifyTheme;
-    return (
-        <TextInput
-            style={theme.input}
-            placeholder={I18n.get('Phone Number')}
-            keyboardType="phone-pad"
-            {...props}
-        />
+        <View style={theme.formField}>
+            <Text style={theme.inputLabel}>{props.label} {props.required ? '*' : ''}</Text>
+            <TextInput
+                style={theme.input}
+                autoCapitalize="none"
+                {...props}
+            />
+        </View>
     )
 }
 
@@ -104,7 +68,16 @@ export const ErrorRow = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
         <View style={theme.errorRow}>
-            <Text style={theme.erroRowText}>{props.children}</Text>
+            <Text style={theme.errorRowText}>{props.children}</Text>
         </View>
+    )
+}
+
+export const AmplifyButton = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    return (
+        <TouchableOpacity {...props} style={theme.button}>
+            <Text style={theme.buttonText}>{props.text}</Text>
+        </TouchableOpacity>
     )
 }

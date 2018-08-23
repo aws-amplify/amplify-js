@@ -16,7 +16,7 @@ import {
     View,
     Text,
     TextInput,
-    Button,
+    // Button,
     TouchableWithoutFeedback,
     Keyboard
 } from 'react-native';
@@ -28,8 +28,10 @@ import {
 } from 'aws-amplify';
 import AuthPiece from './AuthPiece';
 import {
+    AmplifyButton,
     Username,
     Password,
+    FormField,
     LinkCell,
     Header,
     ErrorRow
@@ -37,20 +39,6 @@ import {
 import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('SignIn');
-
-const Footer = (props) => {
-    const { theme, onStateChange } = props;
-    return (
-        <View style={theme.sectionFooter}>
-            <LinkCell theme={theme} onPress={() => onStateChange('forgotPassword')}>
-                {I18n.get('Forgot Password')}
-            </LinkCell>
-            <LinkCell theme={theme} onPress={() => onStateChange('signUp')}>
-                {I18n.get('Sign Up')}
-            </LinkCell>
-        </View>
-    )
-}
 
 export default class SignIn extends AuthPiece {
     constructor(props) {
@@ -103,24 +91,39 @@ export default class SignIn extends AuthPiece {
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <View style={theme.section}>
-                    <Header theme={theme}>{I18n.get('Sign In')}</Header>
+                    <Header theme={theme}>{I18n.get('Sign in to your account')}</Header>
                     <View style={theme.sectionBody}>
-                        <Username
+                        <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ username: text })}
+                            label={I18n.get('Username')}
+                            placeholder={I18n.get('Enter your username')}
+                            required={true}
                         />
-                        <Password
+                        <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ password: text })}
+                            label={I18n.get('Password')}
+                            placeholder={I18n.get('Enter your password')}
+                            secureTextEntry={true}
+                            required={true}
                         />
-                        <Button
-                            title={I18n.get('Sign In')}
-                            style={theme.button}
+
+                        <AmplifyButton
+                            text={I18n.get('Sign In').toUpperCase()}
+                            theme={theme}
                             onPress={this.signIn}
                             disabled={!this.state.username || !this.state.password}
                         />
                     </View>
-                    <Footer theme={theme} onStateChange={this.changeState} />
+                    <View style={theme.sectionFooter}>
+                        <LinkCell theme={theme} onPress={() => this.changeState('forgotPassword')}>
+                            {I18n.get('Forgot Password')}
+                        </LinkCell>
+                        <LinkCell theme={theme} onPress={() => this.changeState('signUp')}>
+                            {I18n.get('Sign Up')}
+                        </LinkCell>
+                    </View>
                     <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
             </TouchableWithoutFeedback>

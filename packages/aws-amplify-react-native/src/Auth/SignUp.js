@@ -31,9 +31,11 @@ import {
     Password, 
     Email, 
     PhoneNumber, 
+    FormField,
     LinkCell, 
     Header, 
-    ErrorRow 
+    ErrorRow,
+    AmplifyButton
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -83,26 +85,42 @@ export default class SignUp extends AuthPiece {
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <View style={theme.section}>
-                    <Header theme={theme}>{I18n.get('Sign Up')}</Header>
+                    <Header theme={theme}>{I18n.get('Create a new account')}</Header>
                     <View style={theme.sectionBody}>
-                        <Username
+                        <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ username: text })}
+                            label={I18n.get('Username')}
+                            placeholder={I18n.get('Enter your username')}
+                            required={true}
                         />
-                        <Password
+                        <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ password: text })}
+                            label={I18n.get('Password')}
+                            placeholder={I18n.get('Enter your password')}
+                            secureTextEntry={true}
+                            required={true}
                         />
-                        <Email
+                        <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ email: text })}
+                            label={I18n.get('Email')}
+                            placeholder={I18n.get('Enter your email')}
+                            keyboardType="email-address"
+                            required={true}
                         />
-                        <PhoneNumber
+                        <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ phone_number: text })}
+                            label={I18n.get('Phone Number')}
+                            placeholder={I18n.get('Enter your phone number')}
+                            keyboardType="phone-pad"
+                            required={true}
                         />
-                        <Button
-                            title={I18n.get('Sign Up')}
+                        <AmplifyButton
+                            text={I18n.get('Sign Up').toUpperCase()}
+                            theme={theme}
                             onPress={this.signUp}
                             disabled={!this.state.username || !this.state.password}
                         />

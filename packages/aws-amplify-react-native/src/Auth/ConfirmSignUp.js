@@ -32,7 +32,8 @@ import {
     ConfirmationCode, 
     LinkCell, 
     Header, 
-    ErrorRow 
+    ErrorRow,
+    AmplifyButton
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -100,13 +101,13 @@ export default class ConfirmSignUp extends AuthPiece {
                             theme={theme}
                             onChangeText={(text) => this.setState({ code: text })}
                         />
-                        <Button
-                            title={I18n.get('Confirm')}
+                        <AmplifyButton
+                            text={I18n.get('Confirm')}
                             onPress={this.confirm}
                             disabled={!this.state.username || !this.state.code}
                         />
-                        <Button
-                            title={I18n.get('Resend a Code')}
+                        <AmplifyButton
+                            text={I18n.get('Resend a Code')}
                             onPress={this.resend}
                             disabled={!this.state.username}
                         />

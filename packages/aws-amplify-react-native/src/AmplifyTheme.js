@@ -12,6 +12,10 @@
  */
 
 import { StyleSheet } from 'react-native';
+
+// Colors
+const deepSquidInk = '#152939';
+
 export default AmplifyTheme = StyleSheet.create({
     container: {
         flex: 1,
@@ -19,33 +23,37 @@ export default AmplifyTheme = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-around',
         paddingTop: 20,
-        width: '100%'
+        width: '100%',
+        marginTop: 30,
     },
     section: {
         flex: 1,
-        width: '100%'
+        width: '100%',
+        padding: 20,
     },
     sectionHeader: {
+        // backgroundColor: '#ff9900',
+        // padding: 10,
+        width: '100%',
+        marginBottom: 32
     },
     sectionHeaderText: {
-        width: '100%',
-        padding: 10,
-        textAlign: 'center',
-        backgroundColor: '#007bff',
-        color: '#ffffff',
+        // width: '100%',
+        color: deepSquidInk,
         fontSize: 20,
         fontWeight: '500'
     },
     sectionFooter: {
         width: '100%',
-        marginTop: 15,
         padding: 10,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        marginTop: 15,
+        marginBottom: 20
     },
     sectionFooterLink: {
         fontSize: 14,
-        color: '#007bff',
+        color: '#ff9900',
         alignItems: 'baseline',
         textAlign: 'center'
     },
@@ -56,24 +64,39 @@ export default AmplifyTheme = StyleSheet.create({
         width: '50%'
     },
     errorRow: {
-        flex: 1
+        flex: 1,
     },
-
+    errorRowText: {
+        textAlign: 'center'
+    },
     photo: {
         width: '100%'
     },
     album: {
         width: '100%'
     },
-
-    a: {
-    },
+    a: {},
     button: {
-        backgroundColor: '#007bff'
+        backgroundColor: '#ff9900',
+        alignItems: 'center',
+        padding: 16,
     },
-
+    buttonText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: '600'
+    },
+    formField: {
+        marginBottom: 22
+    },
     input: {
-        margin: 6
+        padding: 16,
+        borderWidth: 1,
+        borderRadius: 3,
+        borderColor: "#C4C4C4",
+    },
+    inputLabel: {
+        marginBottom: 8
     }
 });
 
