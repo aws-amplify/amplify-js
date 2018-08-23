@@ -5,53 +5,39 @@
 
 AWS Amplify helps developers to create high-quality Angular apps quickly by handling the heavy lifting of configuring and integrating cloud services behind the scenes. It also provides a powerful high-level API and ready-to-use security best practices.
 
-For Angular developers, AWS Amplify provides following main benefits:
-- Easy integration with cloud operations with declarative API
-- CLI support for bootstrapping your app backend quickly
-- Local configuration and deployment of your app’s backend logic
-- Deployment of static assets for hosting and streaming
-- Angular UI components for common operations such as Authorization and Storage
-- Monitoring app usage and engaging users with campaign analytics
+## Installation
 
-## Installation and Configuration
-
-AWS Amplify provides Angular Components with [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
+UI Components and service provider available via the [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm module.
 
 Install `aws-amplify` and `aws-amplify-angular` npm packages into your Angular app.
 
 ```bash
-$ npm install --save aws-amplify # or yarn add aws-amplify
-$ npm install --save aws-amplify-angular # or yarn add aws-amplify-angular
+$ npm install --save aws-amplify 
+$ npm install --save aws-amplify-angular 
 ```
 
 ### Setup
 
-To configure your app for AWS Amplify, you need to create a backend configuration with Amplify CLI and import the auto-generated configuration file into your project. 
+Create a backend configuration with the Amplify CLI and import the generated configuration file. 
 
-Following commands will enable Auth category and will create `aws-exports.js` configuration file under your projects `/src` folder. 
+In this example we will enable Authentication with Amazon Cognito User Pools as well as Amazon S3 Storage. This will create an `aws-exports.js` configuration file under your projects `src` directory. 
+
+Ensure you have <a href="https://github.com/aws-amplify/amplify-cli" target="_blank">installed and configured the Amplify CLI</a>.
+{: .callout .callout--info}
 
 ```bash
-$ npm install -g @aws-amplify/cli
 $ amplify init
 $ amplify add auth
 $ amplify add storage
-$ amplify push # Updates your backend
+$ amplify push
 ```
 
-Please visit [Authentication Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)  and [Storage Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide) to learn more about enabling these categories.
+Visit the [Authentication Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide) and [Storage Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide) to learn more about enabling and configuring these categories.
 {: .callout .callout--info}
 
-After creating your backend, the configuration file is copied to `/amplify/#current-cloud-backend/aws-exports.js`, and the source folder you have identified in the `amplify init` command.
+After creating your backend a configuration file will be generated in your configured source directory you identified in the `amplify init` command.
 
-To import the configuration file to your Angular app, you will need to rename `aws_exports.js` to `aws_exports.ts`. Alternatively, you can create a `yarn start` command in your `package.json`.
-```js
-"scripts": {
-    "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",
-    "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"
-}
-```
-
-Import the configuration file and load it in your `main.ts`, which is the entry point of your Angular application. 
+Import the configuration file and load it in `main.ts`: 
 
 ```js
 import Amplify from 'aws-amplify';
@@ -59,28 +45,19 @@ import amplify from './aws-exports';
 Amplify.configure(amplify);
 ```
 
-When working with underlying `aws-js-sdk`, the "node" package should be included in *types* compiler option. Please make sure that you edit `tsconfig.app.json` file in your source file folder, e.g. *src/tsconfig.app.json*.
+Depending on your TypeScript version you may need to rename the `aws-exports.js` to `aws-exports.ts` prior to importing it into your app, or enable the `allowJs` <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html" target="_blank">compiler option</a> in your tsconfig. 
+{: .callout .callout--info}
+
+When working with underlying `aws-js-sdk`, the "node" package should be included in *types* compiler option. update your `src/tsconfig.app.json`:
 ```json
 "compilerOptions": {
     "types" : ["node"]
 }
 ```
 
-NOTE: If you are developing locally (not with npm packages, using a `yarn link`), you will need to modify `.angular-cli.json` :
+## Importing the Angular Module
 
-```js
-"defaults": {
-    "styleExt": "css",
-    "component": {},
-    "build": {
-        "preserveSymlinks": true
-    }
-  }
-```
-
-## Importing Amplify
-
-In your [root module](https://angular.io/guide/bootstrapping) `src/app/app.module.ts`, you can import Amplify modules as following:
+In your [app module](https://angular.io/guide/bootstrapping) `src/app/app.module.ts` import the Amplify Module and Service:
 
 ```js
 import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
@@ -100,33 +77,33 @@ import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 });
 ```
 
-NOTE: the service provider is optional. You can import the core categories normally i.e. `import { Analytic } from 'aws-amplify'` or create your own provider. The service provider does some work for you and exposes the categories as methods. The provider also manages and dispatches authentication state changes using observables which you can subscribe to within your components (see below).
-
 ## Using Amplify Service
 
-AmplifyService is a provider in your Angular app, and it provides AWS Amplify core categories through dependency injection.
+The `AmplifyService` provides AWS Amplify core categories and authentication state through dependency injection and observers.
 
 ### Using Dependency Injection
 
-To use *AmplifyService* with [dependency injection](https://angular.io/guide/dependency-injection-in-action), inject it into the constructor of any component or service, anywhere in your application.
+To use *AmplifyService* with [dependency injection](https://angular.io/guide/dependency-injection-in-action), inject it into the constructor of any component or service anywhere in your application.
 
 ```js
+import { Component } from '@angular/core';
 import { AmplifyService } from 'aws-amplify-angular';
 
-...
-constructor(
-    public navCtrl:NavController,
-    public amplifyService: AmplifyService,
-    public modalCtrl: ModalController
-) {
-    this.amplifyService = amplifyService;
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+    constructor( private amplifyService: AmplifyService ) {}
+
 }
-...
 ```
 
-### Using AWS Amplify Categories
+### Using Categories
 
-You can access and work directly with AWS Amplify Categories via the built-in service provider:
+You can access Categories via the built-in service provider:
 
 ```js
 import { Component } from '@angular/core';
@@ -137,12 +114,9 @@ import { AmplifyService }  from 'aws-amplify-angular';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
 export class AppComponent {
   
-  constructor( public amplify:AmplifyService ) {
-      
-      this.amplifyService = amplify;
+  constructor( private amplifyService:AmplifyService ) {
       
       /** now you can access category APIs:
        * this.amplifyService.auth();          // AWS Amplify Auth
@@ -151,121 +125,85 @@ export class AppComponent {
        * this.amplifyService.api();           // AWS Amplify API
        * this.amplifyService.cache();         // AWS Amplify Cache
        * this.amplifyService.pubsub();        // AWS Amplify PubSub
-     **/
+       **/
   }
   
 }
 ```
 
-You can access all [AWS Amplify Category APIs](https://aws-amplify.github.io/amplify-js/media/developer_guide) with *AmplifyService*. 
+### Subscribe to Authentication State Changes
 
-### Usage Example: Subscribe to Authentication State Changes
-
-Import AmplifyService into your component and listen for auth state changes:
+Import `AmplifyService` into your component and listen for authentication state changes:
 
 ```js
+import { Component } from '@angular/core';
 import { AmplifyService }  from 'aws-amplify-angular';
 
-  // ...
-constructor( public amplifyService: AmplifyService ) {
-
-    this.amplifyService = amplifyService;
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+constructor( private amplifyService: AmplifyService ) {
+    
+    signedIn: boolean;
+    user: any;
+    greeting: string;
 
     this.amplifyService.authStateChange$
         .subscribe(authState => {
-        this.signedIn = authState.state === 'signedIn';
-        if (!authState.user) {
-            this.user = null;
-        } else {
-            this.user = authState.user;
-            this.greeting = "Hello " + this.user.username;
-        }
-        });
+            this.signedIn = authState.state === 'signedIn';
+            if (!authState.user) {
+                this.user = null;
+            } else {
+                this.user = authState.user;
+                this.greeting = "Hello " + this.user.username;
+            }
+    });
 
 }
 ```
 
-## Using View Components
+## Components
 
-AWS Amplifies provides components that you can use in your Angular view templates. 
+AWS Amplifies provides UI components that you can use in your view templates. 
 
 ### Authenticator
 
-Authenticator component creates an out-of-the-box signing/sign-up experience for your Angular app. 
+The Authenticator component creates an drop-in user authentication experience. Add the `amplify-authenticator` component to your `app.component.html` view:
 
-Before using this component, please be sure that you have activated [Authentication category](https://aws-amplify.github.io/amplify-js/media/authentication_guide):
-```bash
-$ amplify add auth
-```
-
-
-To use Authenticator, just add the `amplify-authenticator` directive in your .html view:
 ```html
-  ...
   <amplify-authenticator></amplify-authenticator>
-  ...
 ```
 
 ### Photo Picker
 
-Photo Picker component will render a file upload control that will allow choosing a local image and uploading it to Amazon S3. Once an image is selected, a base64 encoded image preview will be displayed automatically.
-
-Before using this component, please be sure that you have activated [*Storage* with Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
-
-```bash
-$ amplify add storage
-```
-
-To render photo picker in an Angular view, use *amplify-photo-picker* component:
+The Photo Picker component will render a file upload control that will allow choosing a local image and uploading it to Amazon S3. Once an image is selected, a base64 encoded image preview will be displayed automatically. To render photo picker in an Angular view, use *amplify-photo-picker* component:
 
 ```html
 <amplify-photo-picker 
+    path="pics"
     (picked)="onImagePicked($event)"
     (loaded)="onImageLoaded($event)">
 </amplify-photo-picker>
 ```
 
-The component will emit two events:
-
  - `(picked)` - Emitted when an image is selected. The event will contain the `File` object which can be used for upload.
  - `(loaded)` - Emitted when an image preview has been rendered and displayed.
+ - `path` - An optional S3 image path (prefix).
 
-**Uploading Image**
+### Album
 
-Use  `onImagePicked(event)` to upload your photo to S3 using AWS Amplify Storage category:
-
-```js
-onImagePicked( file ) {
-
-    let key = `pics/${file.name}`;
-    
-    this.amplify.storage().put( key, file, {
-      'level': 'private',
-      'contentType': file.type
-    })
-    .then (result => console.log('uploaded: ', result))
-    .catch(err => console.log('upload error: ', err));
-  
-}
-```
-### S3 Album
-
-S3 Album component display a list of images from the connected S3 bucket.
-
-Before using this component, please be sure that you have activated [*Storage* with Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
-
-```bash
-$ amplify add storage
-```
-
-To render the album, use *amplify-s3-album* component in your Angular view:
+The Album component will display a list of images from the configured S3 Storage bucket. Use the *amplify-s3-album* component in your Angular view:
 
 ```html
-<amplify-s3-album path="pics" (selected)="onAlbumImageSelected($event)">
+<amplify-s3-album 
+    path="pics" 
+    (selected)="onAlbumImageSelected($event)">
 </amplify-s3-album>
 ```
 
-`(selected)` event can be used to retrieve the URL of the clicked image on the list:
+- `(selected)` - event used to retrieve the S3 signed URL of the clicked image:
 
 ```js
 onAlbumImageSelected( event ) {
@@ -275,39 +213,33 @@ onAlbumImageSelected( event ) {
 
 ### Interactions
 
-The `amplify-interactions` component provides you with a Chatbot user interface. You can pass it three parameters:
+The `amplify-interactions` component provides you with a drop-in Chat component that supports three properties:
 
 1. `bot`:  The name of the Amazon Lex Chatbot
 
-2. `clearComplete`:  A flag indicating whether or not the messages should be cleared at the
+2. `clearComplete`:  Indicates whether or not the messages should be cleared at the
 end of the conversation.
 
-3. `complete`: A function that is executed when the conversation is completed.
+3. `complete`: Dispatched when the conversation is completed.
 
 ```html
-<amplify-interactions bot="yourBotName" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
+<amplify-interactions 
+    bot="yourBotName" 
+    clearComplete="true" 
+    (complete)="onBotComplete($event)"></amplify-interactions>
 ```
 
-See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/interactions_guide) for information on creating an Amazon Lex Chatbot.
+See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/interactions_guide) for information on creating a Lex Chatbot.
 
 ### Custom Styles
 
-You can use custom styling for AWS Amplify components. Just import your custom *styles.css* that overrides the default styles which can be found in `/node_modules/aws-amplify-angular/theme.css`.
+You can use custom styling for components by importing your custom *styles.css* that overrides the <a href="https://github.com/aws-amplify/amplify-js/blob/master/packages/aws-amplify-angular/src/theme.css" target="_blank">default styles</a>.
 
 ## Angular 6 Support
 
-Currently, the newest version of Angular (6.x) does not provide the shim for the  `global` object, which was provided in previous versions. Specific AWS Amplify dependencies rely on this shim.  While we evaluate the best path forward to address this issue, you have a couple of options for re-creating the shim in your Angular 6 app to make it compatible with Amplify.
+Currently, the newest version of Angular (6.x) does not provide the shim for the  `global` object which was provided in previous versions.
 
-1.  Add the following to your polyfills.ts: ```(window as any).global = window;```.
-
-2.  Add the following script to your index.html ```<head>``` tag:
-``` 
-    <script>
-        if (global === undefined) {
-            var global = window;
-        }
-    </script>
-  ```
+Add the following to the top of your `polyfills.ts` file: ```(window as any).global = window;```.
 
 ## Ionic 4 Components
 The Angular components included in this library can optionally be presented with Ionic-specific styling.  To do so, simply include the ```AmplifyIonicModule``` alongside the ```AmplifyAngularModule```.  Then, pass in ```framework="Ionic"``` into the component.  
@@ -329,9 +261,3 @@ Example:
   <amplify-authenticator-ionic></amplify-authenticator-ionic>
   ...
 ```
-
-## Tutorials
-
-Learn more with tutorials:
-
-- [How to use AWS Amplify and Angular to Build Cloud Enabled JavaScript Applications](https://medium.freecodecamp.org/building-cloud-enabled-javascript-applications-with-aws-amplify-angular-682547fc6477){: target='_new'}
