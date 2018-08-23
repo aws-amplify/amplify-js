@@ -166,6 +166,7 @@ export default class AuthClass {
                 },
                 onFailure: (err) => {
                     logger.debug("Error in cognito hosted auth response", err);
+                    dispatchAuthEvent('signIn_failure', err);
                 }
             };
             // if not logged in, try to parse the url.
@@ -173,6 +174,10 @@ export default class AuthClass {
                 logger.debug('user already logged in');
             }).catch(e => {
                 logger.debug('not logged in, try to parse the url');
+                if (!window || !window.location) {
+                    logger.debug('not in the browser');
+                    return;
+                }
                 const curUrl = window.location.href;
                 this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
             });
@@ -320,7 +325,7 @@ export default class AuthClass {
                     resolve(user);
                 }
             },
-        onFailure: (err) => {
+            onFailure: (err) => {
                 logger.debug('signIn failure', err);
                 dispatchAuthEvent('signIn_failure', err);
                 reject(err);
@@ -861,11 +866,18 @@ export default class AuthClass {
                     }
                 });
 
-                // get user data from Cognito, also to make sure the user is still valid
+                // get user data from Cognito
                 user.getUserData((err, data) => {
                     if (err) {
                         logger.debug('getting user data failed', err);
-                        rej(err);
+                        // Make sure the user is still valid
+                        if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
+                            rej(err);
+                        } else {
+                            // the error may also be thrown when lack of permissions to get user info etc
+                            // in that case we just bypass the error
+                            res(user);
+                        }
                         return;
                     }
                     const preferredMFA = data.PreferredMfaSetting || 'NOMFA';

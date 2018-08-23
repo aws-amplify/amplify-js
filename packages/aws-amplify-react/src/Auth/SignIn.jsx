@@ -106,9 +106,10 @@ export default class SignIn extends AuthPiece {
     }
 
     showComponent(theme) {
-        const { authState, hide, federated, onStateChange } = this.props;
+        const { authState, hide = [], federated, onStateChange } = this.props;
         if (hide && hide.includes(SignIn)) { return null; }
-
+        const hideSignUp = hide.some(component => component.name === 'SignUp')
+        const hideForgotPassword = hide.some(component => component.name === 'ForgotPassword')
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Sign In Account')}</SectionHeader>
@@ -141,14 +142,18 @@ export default class SignIn extends AuthPiece {
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <div style={theme.col6}>
-                        <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
-                            {I18n.get('Forgot Password')}
-                        </Link>
+                        {
+                            !hideForgotPassword && <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
+                                {I18n.get('Forgot Password')}
+                            </Link>
+                        }
                     </div>
                     <div style={Object.assign({textAlign: 'right'}, theme.col6)}>
-                        <Link theme={theme} onClick={() => this.changeState('signUp')}>
-                            {I18n.get('Sign Up')}
-                        </Link>
+                        {
+                            !hideSignUp && <Link theme={theme} onClick={() => this.changeState('signUp')}>
+                                {I18n.get('Sign Up')}
+                            </Link>
+                        }
                     </div>
                 </SectionFooter>
             </FormSection>

@@ -864,6 +864,7 @@ export default class CognitoUser {
 
   /**
    * This is used by an authenticated user to enable MFA for himself
+   * @deprecated
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
@@ -918,6 +919,7 @@ export default class CognitoUser {
 
   /**
    * This is used by an authenticated user to disable MFA for himself
+   * @deprecated
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */

@@ -3,6 +3,172 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.7-unstable.8"></a>
+## [1.0.7-unstable.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.7-unstable.7...@aws-amplify/api@1.0.7-unstable.8) (2018-08-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.7-unstable.7"></a>
+## [1.0.7-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.7-unstable.6...@aws-amplify/api@1.0.7-unstable.7) (2018-08-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.7-unstable.6"></a>
+## [1.0.7-unstable.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.7-unstable.5...@aws-amplify/api@1.0.7-unstable.6) (2018-08-21)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.7-unstable.5"></a>
+## [1.0.7-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.7-unstable.4...@aws-amplify/api@1.0.7-unstable.5) (2018-08-21)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.7-unstable.4"></a>
+## [1.0.7-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.7-unstable.3...@aws-amplify/api@1.0.7-unstable.4) (2018-08-20)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.7-unstable.3"></a>
+## [1.0.7-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.7-unstable.2...@aws-amplify/api@1.0.7-unstable.3) (2018-08-19)
+
+
+### Bug Fixes
+
+* **aws-amplify-angular:** Angular rollup ([#1441](https://github.com/aws/aws-amplify/issues/1441)) ([eb84e01](https://github.com/aws/aws-amplify/commit/eb84e01))
+
+
+
+
+<a name="1.0.7-unstable.2"></a>
+## [1.0.7-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.7-unstable.1...@aws-amplify/api@1.0.7-unstable.2) (2018-08-18)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.7-unstable.1"></a>
+## [1.0.7-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.7-unstable.0...@aws-amplify/api@1.0.7-unstable.1) (2018-08-16)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.7-unstable.0"></a>
+## [1.0.7-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.6...@aws-amplify/api@1.0.7-unstable.0) (2018-08-15)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.6"></a>
+## [1.0.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.6-unstable.5...@aws-amplify/api@1.0.6) (2018-08-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.6-unstable.5"></a>
+## [1.0.6-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.6-unstable.4...@aws-amplify/api@1.0.6-unstable.5) (2018-08-14)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.6-unstable.4"></a>
+## [1.0.6-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.6-unstable.3...@aws-amplify/api@1.0.6-unstable.4) (2018-08-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.6-unstable.3"></a>
+## [1.0.6-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.6-unstable.2...@aws-amplify/api@1.0.6-unstable.3) (2018-08-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.6-unstable.2"></a>
+## [1.0.6-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.6-unstable.1...@aws-amplify/api@1.0.6-unstable.2) (2018-08-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.6-unstable.1"></a>
+## [1.0.6-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.6-unstable.0...@aws-amplify/api@1.0.6-unstable.1) (2018-08-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.6-unstable.0"></a>
+## [1.0.6-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.5...@aws-amplify/api@1.0.6-unstable.0) (2018-08-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api:** error handling for signed requests in RestClient ([#1362](https://github.com/aws/aws-amplify/issues/1362)) ([fbbeffb](https://github.com/aws/aws-amplify/commit/fbbeffb))
+
+
+
+
+<a name="1.0.5"></a>
+## [1.0.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.5-unstable.7...@aws-amplify/api@1.0.5) (2018-08-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.5-unstable.7"></a>
+## [1.0.5-unstable.7](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.5-unstable.6...@aws-amplify/api@1.0.5-unstable.7) (2018-08-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.5-unstable.6"></a>
+## [1.0.5-unstable.6](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.5-unstable.5...@aws-amplify/api@1.0.5-unstable.6) (2018-08-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.5-unstable.5"></a>
+## [1.0.5-unstable.5](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.5-unstable.3...@aws-amplify/api@1.0.5-unstable.5) (2018-08-06)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
 <a name="1.0.5-unstable.3"></a>
 ## [1.0.5-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.5-unstable.2...@aws-amplify/api@1.0.5-unstable.3) (2018-07-31)
 
