@@ -3,9 +3,7 @@
 
 # Getting Started
 
-<p class="orange-subheader">Welcome builder!</p>
-
-AWS Amplify is designed to provide you a more productive environment for connecting cloud services and working with JavaScript. This document will get you started with AWS Amplify library and Amplify CLI for your JavaScript projects.
+AWS Amplify is designed to provide you a more productive environment for connecting cloud services to your app. This document will get you started with your JavaScript or React Native projects. Use the drop-down menu in the top right to view framework-specific instructions.
 
 ## Step 1. Set up your Development Environment 
 
@@ -28,14 +26,115 @@ $ amplify configure
 
 <div class="nav-tab create" data-group='create'>
 <ul class="tabs">
-    <li class="tab-link current react" data-tab="react">React</li>
+    <li class="tab-link purejs current" data-tab="purejs">JavaScript</li>
+    <li class="tab-link react" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
     <li class="tab-link angular" data-tab="angular">Angular</li>
     <li class="tab-link ionic" data-tab="ionic">Ionic</li>
 </ul>
-<div id="react" class="tab-content current">
 
-If you have an existing application you can [skip this section](#step-3-install-aws-amplify). Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
+If you have an existing application you can skip ahead, [Step 3. Install AWS Amplify](#step-3-install-aws-amplify). 
+
+<div id="purejs" class="tab-content">
+
+For this example we will create a new plain JavaScript <a href="https://babeljs.io/docs/en/learn/" target="_blank">ES2015</a> app that uses webpack. Create a new project directory called `amplify-js-app` with the following structure:
+
+```
+- amplify-js-app
+    - index.html
+    - package.json
+    - webpack.config.js
+    - /src
+        |- app.js
+    - /dist
+        |- bundle.js
+```
+
+Change directories to your new project and run:
+
+```
+$ mkdir amplify-js-app
+$ cd amplify-js-app
+$ mkdir src dist
+$ touch index.html webpack.config.js src/app.js
+$ npm init
+```
+
+Follow the prompts to populate your <a href="https://docs.npmjs.com/files/package.json" target="_blank">package.json</a> file wiith project details. 
+
+Install <a href="https://webpack.js.org" target="_blank">webpack</a> and <a href="https://github.com/webpack/webpack-dev-server" target="_blank">webpack-dev-server</a> to locally serve the app:
+
+```
+$ npm install webpack webpack-cli webpack-dev-server --save-dev 
+```
+
+Add the following to the `index.html` file:
+
+```html
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>AWS Amplify with webpack and ES2015</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <h1>AWS Amplify</h1>
+        <script src="dist/bundle.js"></script>
+    </body>
+</html>
+```
+
+Add the following to the `webpack.config.js` file:
+
+```js
+module.exports = {
+    mode: 'development',
+    entry: './src/app.js',
+    output: {
+        filename: './dist/bundle.js'
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/
+            }
+        ]
+    }
+};
+```
+Update the `package.json` file scripts for building and serving your app locally:
+
+```js
+{
+  "name": "amplify-js-app",
+  "version": "1.0.0",
+  "description": "AWS Amplify JavaScript Example",
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5"
+  },
+  "scripts": {
+    "start": "webpack-dev-server"
+  }
+}
+
+```
+
+Then run your app:
+
+```bash
+$ npm start
+```
+
+</div>
+
+<div id="react" class="tab-content">
+
+Use [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
 
 ```bash
 create-react-app my-app
@@ -93,8 +192,8 @@ AWS Amplify is available as an npm package. Run the following commands at the ro
 <ul class="tabs">
     <li class="tab-link angular" data-tab="angular">Angular</li>
     <li class="tab-link ionic" data-tab="ionic">Ionic</li>
-    <li class="tab-link purejs" data-tab="purejs">JavaScript</li>
-    <li class="tab-link react current" data-tab="react">React</li>
+    <li class="tab-link purejs current" data-tab="purejs">JavaScript</li>
+    <li class="tab-link react" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
 </ul>
 <div id="purejs" class="tab-content">
@@ -183,15 +282,19 @@ You can quickly create your backend from scratch with Automatic Setup, or use Ma
 `amplify init` creates a backend project for your app and pulls the service configuration into your project. 
 
 ```bash
-$ amplify init 
+$ amplify init
 ```
 
 > When you run `amplify init` command you are asked for the details of your project. A configuration file for your app is put in your configured source directory called `aws-exports.js`.
 
 ```js
 import Amplify from 'aws-amplify';
-import awsconfig from './aws-exports';
-Amplify.configure(awsconfig)
+import awsmobile from './aws-exports';
+Amplify.configure(awsmobile)
+
+// Optionally add Debug Logging
+Amplify.Logger.LOG_LEVEL = 'DEBUG';
+
 ```
 
 #### Manual Setup
@@ -247,13 +350,25 @@ Run `amplify` on your CLI at anytime to see available categories.
 | notifications |
 ```
 
-🎉 Congratulations! Your app is now integrated with AWS Amplify. Some next Steps:
+For example, to enable static web hosting for your app:
+
+```bash
+$ amplify add hosting
+```
+
+Then, publish your app:
+
+```bash
+$ amplify publish
+```
+
+🎉 Congratulations! Your app is now integrated with AWS Amplify and hosted on Amazon S3. <br/>Some next Steps:
 
  - Add [Analytics]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide)
  - Add [Authentication]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)
  - Add a GraphQL or REST [API]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide)
 
-###### AWS SDK Interfaces
+##### AWS SDK Interfaces
 
 For working with other AWS services you can use service interface objects directly via the JavaScript SDK clients. 
 

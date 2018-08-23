@@ -2,35 +2,24 @@
 ---
 # API
 
-AWS Amplify API module provides a simple solution when making HTTP requests to REST and GraphQL endpoints. Also, with Amplify CLI, you can quickly create and test your API backend, and integrate your cloud API in your code.
+The API category provides a solution for making HTTP requests to REST and GraphQL endpoints. It includes a [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html) signer class which automatically signs all AWS API requests for you.
 
-The API module provides an automatic, lightweight signing process which complies with [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).
-{:  .callout .callout--info}
+## Using REST
 
-## Using REST Endpoints
+The API category can be used for creating signed requests against Amazon API Gateway when the API Gateway Authorization is set to `AWS_IAM`. 
 
-API module provides a simple to use REST client when working with REST endpoints. 
-
-The API module can be used for creating signed requests against Amazon API Gateway when the Amazon API Gateway API Authorization is set to `AWS_IAM`. 
-
-Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config). 
-{: .callout .callout--action}
-
-**When you are done with the installation**, you can follow below steps to enable the API category in your app.
+Ensure you have [installed and configured the Amplify CLI and library]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start).
+{: .callout .callout--info}
 
 ### Automated Setup
 
-AWS Amplify CLI enables you to create a fully functional REST backend, which can trigger a cloud function and access a cloud database. Based on your configuration, your REST backend is automatically provisioned on AWS using multiple services; Amazon API Gateway, AWS Lambda, and Amazon DynamoDB.
-
-##### Create Your Backend with the CLI
-
-To create a fully functioning project with the API category, run following commands in the **root directory** of your project:
+Run the following command in your project's root folder:
 
 ```bash
 $ amplify add api
 ```
 
-and select `REST` as the service type:
+Select `REST` as the service type.
 
 ```bash
 ? Please select from one of the below mentioned services
@@ -38,21 +27,21 @@ and select `REST` as the service type:
 ❯ REST
 ```
 
-The CLI will prompt several options to create your resources. With provided options, you can create a:
-- REST endpoint that triggers a Lambda function
-- REST endpoint which enables CRUD operations on an Amazon DynamoDB table
+The CLI will prompt several options to create your resources. With the provided options you can create:
+- REST endpoints that triggers Lambda functions
+- REST endpoints which enables CRUD operations on an Amazon DynamoDB table
 
-During your setup, you can use your existing Lambda functions and DynamoDB tables, or create new ones simply by following the CLI prompts. When you create your resources, update your backend with `push` command:
+During setup you can use existing Lambda functions and DynamoDB tables or create new ones by following the CLI prompts. After your resources have been created update your backend with the `push` command:
 
 ```bash
-$ amplify push #Updates your backend 
+$ amplify push
 ```
 
-After the push, your updated `aws-exports.js`  configuration file will include an API configuration. In case you have selected to create a Serverless Express Lambda function, the boilerplate code for your function will also be replaced under `amplify/backend/function` folder.
+A configuration file called `aws-exports.js` will be copied to your configured source directory, for example `./src`.
 
 ##### Configure Your App
 
-To configure your app to work with your API, in your project's entry point, i.e. App.js, include the following code:
+Import and load the configuration file in your app. It's recommended you add the Amplify configuration step to your app's root entry point. For example `App.js` in React or `main.ts` in Angular.
 
 ```js
 import Amplify, { API } from 'aws-amplify';
@@ -63,24 +52,21 @@ Amplify.configure(aws_exports);
 
 ### Manual Setup
 
-When you manually configure API category to work with Amazon API gateway, you are required to pass in an *Amazon Cognito Identity Pool ID*, allowing AWS Amplify to retrieve base credentials for a user even in an unauthenticated state. The configuration parameters should also include the API endpoint URL and a friendly name for the API.
-
-Amazon Cognito Identity Pool is required to have access to the API using *Amazon IAM*. You can configure it manually, or let Amplify CLI do it for you with [Automated Setup](#automated-setup). For manual configuration, please see [Amazon API Gateway](http://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started.html) developer guide for more details.
-
-In the manual configuration, you need to provide your AWS Resource credentials to `Amplify.configure()` method:
+For manual configuration you need to provide your AWS Resource configuration and optionally configure authentication.
 
 ```js
 import Amplify, { API } from 'aws-amplify';
 
 Amplify.configure({
+    // OPTIONAL - if your API requires authentication 
     Auth: {
-    // REQUIRED - Amazon Cognito Identity Pool ID
+        // REQUIRED - Amazon Cognito Identity Pool ID
         identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
-    // REQUIRED - Amazon Cognito Region
+        // REQUIRED - Amazon Cognito Region
         region: 'XX-XXXX-X', 
-    // OPTIONAL - Amazon Cognito User Pool ID
+        // OPTIONAL - Amazon Cognito User Pool ID
         userPoolId: 'XX-XXXX-X_abcd1234', 
-    // OPTIONAL - Amazon Cognito Web Client ID
+        // OPTIONAL - Amazon Cognito Web Client ID
         userPoolWebClientId: 'XX-XXXX-X_abcd1234',
     },
     API: {
@@ -107,15 +93,15 @@ Amplify.configure({
 
 ### AWS Regional Endpoints
 
-When working with Amazon API Gateway, you can utilize regional endpoints by passing in the *service* and *region* information to the configuration. For a list of available service endpoints see [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html). 
+You can also utilize regional endpoints by passing in the *service* and *region* information to the configuration. For a list of available service endpoints see [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html). 
 
-As an example, the following API configuration defines a Lambda invocation in `us-east-1` region with the Lambda endpoint `https://lambda.us-east-1.amazonaws.com`.  
+As an example, the following API configuration defines a Lambda invocation in the `us-east-1` region:  
 
 ```js
 API: {
     endpoints: [
         {
-            name: "MyCustomLambdaApi",
+            name: "MyCustomLambda",
             endpoint: "https://lambda.us-east-1.amazonaws.com/2015-03-31/functions/yourFuncName/invocations",
             service: "lambda",
             region: "us-east-1"
@@ -125,9 +111,6 @@ API: {
 ```
 
 For more information related to invoking AWS Lambda functions, see [AWS Lambda Developer Guide](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html).
-
-For more information about working with AWS Lambda without Amazon API Gateway, see [this post](https://forum.serverless.com/t/directly-proxying-lambda-via-cloudfront-without-api-gateway/3808).
-{: .callout .callout--info}
 
  **Configuring Amazon Cognito Regional Endpoints** To call regional service endpoints, your Amazon Cognito role needs to be configured with appropriate access for the related service. See [AWS Cognito Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) for more details.
  {: .callout .callout--warning}
@@ -140,8 +123,7 @@ The following code sample assumes that you have used Automated Setup.
 
 To invoke an endpoint, you need to set `apiName`, `path` and `headers` parameters, and each method returns a Promise.
 
-Under the hood, AWS Amplify use [Axios](https://github.com/axios/axios), so the API status code response > 299 are thrown as an exception.
-If you need to handle errors managed by your API, work with the `error.response` object.
+Under the hood the API category utilizes [Axios](https://github.com/axios/axios) to execute the HTTP requests. API status code response > 299 are thrown as an exception. If you need to handle errors managed by your API, work with the `error.response` object.
 
 #### **GET**
 
@@ -150,8 +132,10 @@ let apiName = 'MyApiName';
 let path = '/path'; 
 let myInit = { // OPTIONAL
     headers: {} // OPTIONAL
-    response: true // OPTIONAL (return entire response object instead of response.data)
-    queryStringParameters: {} // OPTIONAL
+    response: true // OPTIONAL (return the entire Axios response object instead of only response.data)
+    queryStringParameters: {  // OPTIONAL
+        name: 'param'
+    }
 }
 API.get(apiName, path, myInit).then(response => {
     // Add your code here
@@ -160,13 +144,10 @@ API.get(apiName, path, myInit).then(response => {
 });
 ```
 
-Note: To get the full response from the resulting API call, set `response` to `true` in the `init` object.
- {: .callout .callout--info}
-
 Example with async/await
 
 ```js
-async function getData() { 
+async getData() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
