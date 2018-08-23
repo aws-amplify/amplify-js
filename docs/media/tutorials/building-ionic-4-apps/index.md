@@ -663,7 +663,15 @@ After answering the prompt, you should now see the *awsmobilejs* directory in yo
 
 Since we are using TypeScript, change the name of the aws-exports file to *aws-exports.ts*.
 
-Please note that *aws-exports.js* (or *aws-exports.ts*. if you are using TypeScript) file should be located in the root of your source directory. If your source directory is different from */src* and you did not enter the folder name in the previous prompt, copy your *aws-exports.js* file to your source directory. You can find the updated copy of *aws-exports.js* file under *awsmobilejs/#current-backend-info/* directory.
+You should make sure that your `package.json` scripts also rename the file upon build, so that any configuration changes which result in the download of an `aws_exports.js` from AWS Mobile Hub get changed over to the ts extension.
+```js	
+"scripts": {	
+    "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",	
+    "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"	
+}	
+```
+
+Please note that *aws-exports.js* file should be located in the root of your source directory. If your source directory is different from */src* and you did not enter the folder name in the previous prompt, copy your *aws-exports.js* file to your source directory. You can find the updated copy of *aws-exports.js* file under *awsmobilejs/#current-backend-info/* directory.
 {: .callout .callout--info}
 
 AWS resources for your application can be generated using:
@@ -862,7 +870,7 @@ ionic serve
 ```
 Or, run your app in iOS emulator:
 ```bash
-ionic cordova run ios -l
+ionic cordova run ios -l 
 ```
 
 Once your application loads, click on the ‘Home’ tab, and you should see login/signup controls that use ionic-specific buttons and input fields.
