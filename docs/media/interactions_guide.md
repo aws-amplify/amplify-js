@@ -5,69 +5,18 @@
 
 AWS Amplify Interactions category enables AI-powered chatbots in your web or mobile apps. You can use *Interactions* to configure your backend chatbot provider and to integrate a chatbot UI into your app with just a single line of code.
 
+Ensure you have [installed and configured the Amplify CLI and library]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start).
+{: .callout .callout--info}
+
 **Amazon Lex**
 
-AWS Amplify implements [Amazon Lex](https://aws.amazon.com/lex) as the default chatbots service. Amazon Lex supports creating conversational bots with the by the same deep learning technologies that power Amazon Alexa. To learn more about Amazon Lex, please visit [Amazon Lex Developer Guide)](https://docs.aws.amazon.com/lex/latest/dg/what-is.html).
+AWS Amplify implements [Amazon Lex](https://aws.amazon.com/lex) as the default chatbots service. Amazon Lex supports creating conversational bots with the by the same deep learning technologies that power Amazon Alexa.
 
 ## Create your Chatbot
 
-You can create Amazon Lex chatbox either with Amazon Lex console or with AWS Mobile Hub. Creating a bot with Mobile Hub helps you to create user roles automatically with a simplified user interface. 
-
-Regardless of how you create your chatbot, you can edit your bot in Amazon Lex console at a later time. The bots created with Mobile Hub has an automatically added *MOBILEHUB* suffix so you can easily locate them in Amazon Lex console.
-
-To create a chatbot with AWS Mobile Hub, follow these steps;
-
-1. Go to [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home).
-
-2. Create a new Mobile Hub project or select an existing project to add a bot.
-
-3. Go to your project details. Under *Add More Backend Features* section, select *Conversational Bots* option box.
-![Mobile Hub]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_mobile_hub_add.jpg){: class="screencap" style="max-height:600px;"}  
-
-4. Select one of the three sample bots or select *Import a bot* to use an existing bot. When you to import a bot, a list of your existing Amazon Lex bots will be displayed.
-![Mobile Hub2]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_mobile_hub_select_bot.jpg){: class="screencap" style="max-height:400px;"}
-
-5. When you select a sample bot, Mobile Hub creates your bot on Amazon Lex with sample intents and utterances. An intent performs an action in response to a natural language user input, while an utterance is a set of spoken or typed phrases that invoke your intent. You can learn more about how Amazon Lex chatbots work from the [Amazon Lex Developer guide](https://docs.aws.amazon.com/lex/latest/dg/what-is.html).
-![Mobile Hub3]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_mobile_hub_sample_bot.jpg){: class="screencap" style="max-height:600px;"}
-
-6. Click *Create a Bot*. Your bot is now ready to be integrated into your app.
-
-**Editing Your Bot**
-You can edit your bot and add new utterances or integrate with other AWS services by visiting [Amazon Lex console](https://console.aws.amazon.com/lex) any time.  
-![Mobile Hub4]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_lex_console_edit_bot.jpg){: class="screencap" style="max-height:600px;"}
-{: .callout .callout--info}
-
-## Installation and Configuration
-
-Please refer to [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config) for general setup. In this guide, you will learn about how you can and integrate a conversational bot that you have created in the previous step.
-
-### Automated Setup
-
-Run following CLI commands to get your chatbox configuration to your local development environment. You will need your app's Mobile Hub project ID.
-
-```bash
-$ npm install -g @aws-amplify/cli
-$ cd my-app #Change to your project's root folder
-$ amplify init xxxx-yyyy-4491-bd6e-256d74e2b451 # Use your AWS Mobile Hub project ID
-```
-
-**Retrieving your AWS Mobile Hub project id**
-You can find your Mobile Hub project id in the page URL of the project details page on the AWS Mobile Hub console. The URL looks like `https://console.aws.amazon.com/mobilehub/home?region=us-east-1#/xxx-yyy-zzz-aaa-xxx/build` and your project id is included in the URL, e.g: `xxx-yyy-zzz-aaa-xxx`.   <br/><br/>
-Alternatively, you can find your Mobile Hub project id in your project configuration file. To download the configuration file, click *Integrate* button on your project in Mobile Hub console.
-![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}
-/media/images/mobile_hub_app_detail.jpg){: class="screencap" style="max-height:350px;"}  
-You can find your project id in `aws-exports.js` file which you can download with the download link in *No CLI?* section in integration details page. 
-![Mobile Hub5]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_mobile_hub_configure.jpg){: class="screencap" style="max-height:430px;"}  
-Download the configuration file and find your project in `aws_project_id` attribute.
-{: .callout .callout--info}
-
-In your app's entry point, i.e. App.js, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.
-
-```js
-import Amplify, { Auth } from 'aws-amplify';
-import aws_exports from './aws-exports'; // specify the location of aws-exports.js file on your project
-Amplify.configure(aws_exports);
-```
+You can create Amazon Lex chatbox in Amazon Lex console. To create your bot, follow the steps shown in [Amazon Lex Developer Guide](https://docs.aws.amazon.com/lex/latest/dg/getting-started.html).
+ 
+![Interactions]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/interactions_lex_console_edit_bot.jpg){: class="screencap" style="max-height:600px;"}
 
 ### Manual Setup
 
@@ -83,8 +32,8 @@ Amplify.configure({
   },
   Interactions: {
     bots: {
-      "BookTripMOBILEHUB": {
-        "name": "BookTripMOBILEHUB",
+      "BookTrip": {
+        "name": "BookTrip",
         "alias": "$LATEST",
         "region": "us-east-1",
       },
