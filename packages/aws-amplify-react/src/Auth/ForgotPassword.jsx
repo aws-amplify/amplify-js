@@ -11,24 +11,13 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-// import AmplifyTheme from '../AmplifyTheme';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-
-// import {
-//     FormSection,
-//     SectionHeader,
-//     SectionBody,
-//     SectionFooter,
-//     InputRow,
-//     ButtonRow,
-//     Link
-// } from '../AmplifyUI';
 
 import {
     FormSection,
@@ -123,9 +112,6 @@ export default class ForgotPassword extends AuthPiece {
                     name="password"
                     onChange={this.handleInputChange}
                 />
-                <Button theme={theme} onClick={this.submit}>
-                    {I18n.get('Submit')}
-                </Button>
             </div>
         )
     }
@@ -142,14 +128,16 @@ export default class ForgotPassword extends AuthPiece {
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
-                        <Button theme={theme} onClick={this.send}>
-                            {I18n.get('Send Code')}
-                        </Button>
+                        { this.state.delivery ? 
+                            <Button theme={theme} onClick={this.submit}>{I18n.get('Submit')}</Button> :
+                            <Button theme={theme} onClick={this.send}>{I18n.get('Send Code')}</Button>
+                        }
                     </SectionFooterPrimaryContent>
                     <SectionFooterSecondaryContent theme={theme}>
-                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                            {I18n.get('Back to Sign In')}
-                        </Link>
+                        { this.state.delivery ?
+                            <Link theme={theme} onClick={this.send}>{I18n.get('Resend Code')}</Link> :
+                            <Link theme={theme} onClick={() => this.changeState('signIn')}>{I18n.get('Back to Sign In')}</Link>
+                        }
                     </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>

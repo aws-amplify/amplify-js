@@ -17,17 +17,6 @@ import { I18n } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-// import AmplifyTheme from '../AmplifyTheme';
-// import {
-//     FormSection,
-//     SectionHeader,
-//     SectionBody,
-//     SectionFooter,
-//     InputRow,
-//     ButtonRow,
-//     Link
-// } from '../AmplifyUI';
-
 import {
     FormSection,
     SectionHeader,

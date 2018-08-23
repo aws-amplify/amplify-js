@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
@@ -76,35 +76,6 @@ export default class ConfirmSignUp extends AuthPiece {
                     {I18n.get('Confirm Sign Up')}
                 </SectionHeader>
                 <SectionBody theme={theme}>
-                    {/* { username? <MessageRow>{username}</MessageRow>
-                            : <InputRow
-                                placeholder={I18n.get('Username')}
-                                theme={theme}
-                                key="username"
-                                name="username"
-                                onChange={this.handleInputChange}
-                            />
-                    } */}
-                    {/* <InputRow
-                        autoFocus
-                        placeholder={I18n.get('Code')}
-                        theme={theme}
-                        key="code"
-                        name="code"
-                        autoComplete="off"
-                        onChange={this.handleInputChange}
-                    /> */}
-                    {/* <ActionRow theme={theme}>
-                        <Button theme={theme} onClick={this.confirm}>
-                            {I18n.get('Confirm')}
-                        </Button>
-                        <Space theme={theme} />
-                        <Button theme={theme} onClick={this.resend}>
-                            {I18n.get('Resend Code')}
-                        </Button>
-                    </ActionRow> */}
-
-
                     <FormField theme={theme}>
                         <InputLabel>{I18n.get('Username')} *</InputLabel>
                         <Input
@@ -137,13 +108,6 @@ export default class ConfirmSignUp extends AuthPiece {
                         </Hint>
                     </FormField>
                 </SectionBody>
-
-                {/* <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                        {I18n.get('Back to Sign In')}
-                    </Link>
-                </SectionFooter> */}
-
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
                         <Button theme={theme} onClick={this.confirm}>

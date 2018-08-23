@@ -17,33 +17,19 @@ import Auth from '@aws-amplify/auth';
 
 // import AmplifyTheme from '../AmplifyTheme';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-
-// import {
-//     FormSection,
-//     SectionHeader,
-//     SectionBody,
-//     SectionFooter,
-//     InputRow,
-//     ButtonRow,
-//     MessageRow,
-//     Link
-// } from '../AmplifyUI';
-
-
 import {
     FormSection,
     SectionHeader,
     SectionBody,
     SectionFooter,
     InputLabel,
-    CodeInput,
     Input,
     Button,
     MessageRow,
-    Link,
     Toast
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
+import { totpQrcode } from '@aws-amplify/ui';
 
 import QRCode from 'qrcode.react';
 
@@ -125,7 +111,7 @@ export default class TOTPSetupComp extends Component {
         if (!code) return null;
         return (
             <div>
-                <div className='amplify-totp-qrcode'>
+                <div className={totpQrcode}>
                     <QRCode value={code} />
                 </div>
                 <InputLabel>{I18n.get('Enter Security Code:')}</InputLabel>
@@ -153,16 +139,10 @@ export default class TOTPSetupComp extends Component {
                 }
                 <SectionHeader theme={theme}>{I18n.get('Scan then enter verification code')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    {/* <div>
-                        {I18n.get('Scan the QR code below using Google Authenticator, Authy or similar app on your phone then enter the verification code displayed.')}
-                    </div> */}
-                    {/* <ButtonRow theme={theme} onClick={this.setup}>
-                        {I18n.get('Get secret key')}
-                    </ButtonRow> */}
                     {this.showSecretCode(code, theme)}
-                    {this.state.setupMessage? <MessageRow theme={theme}>
-                        {I18n.get(this.state.setupMessage)}
-                    </MessageRow> : null }
+                    {this.state.setupMessage &&
+                        I18n.get(this.state.setupMessage)
+                    }
                 </SectionBody>
 
                 <SectionFooter>

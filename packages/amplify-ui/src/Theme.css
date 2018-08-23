@@ -1,0 +1,27 @@
+
+
+:root {
+  /* Colors */
+  --amazonOrange: #FF9900;
+  --lightAmazonOrange: #FFAC31;
+  --darkAmazonOrange: #E88B01;
+  --squidInk: #232F3E;
+  --lightSquidInk: #31465F;
+  --deepSquidInk: #152939;
+  --grey: #828282;
+  --lightGrey: #C4C4C4;
+  --silver: #E1E4EA;
+  --darkBlue: #31465F;
+  --red: #DD3F5B;
+  --white: #FFFFFF;
+  
+
+  /* Theme */
+  --button-color: var(--white);
+  --button-background-color: var(--amazonOrange);
+  --button-click: var(--darkAmazonOrange);
+  --link-color: var(--amazonOrange);
+  --form-color: var(--white);
+  --input-color: var(--deepSquidInk);
+  --input-background-color: var(--white);
+}

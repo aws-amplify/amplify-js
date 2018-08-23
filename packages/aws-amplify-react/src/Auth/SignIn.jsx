@@ -11,23 +11,12 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React from 'react';
 import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import { FederatedButtons } from './FederatedSignIn';
-
-import {
-    // FormSection,
-    // SectionHeader,
-    // SectionBody,
-    // SectionFooter,
-    // InputRow,
-    // ButtonRow,
-    // Link,
-    // Button,
-} from '../AmplifyUI';
 
 import {
     FormSection,
@@ -116,6 +105,10 @@ export default class SignIn extends AuthPiece {
                 if (err.code === 'UserNotConfirmedException') {
                     logger.debug('the user is not confirmed');
                     this.changeState('confirmSignUp');
+                } 
+                else if (err.code === 'PasswordResetRequiredException') {
+                    logger.debug('the user requires a new password');
+                    this.changeState('requireNewPassword');
                 } else {
                     this.error(err);
                 }
@@ -130,7 +123,7 @@ export default class SignIn extends AuthPiece {
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Sign in to your account')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    {federated &&
+                    {federated && Object.keys(federated).length > 0 &&
                         <div>
                             <FederatedButtons
                                 federated={federated}

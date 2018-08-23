@@ -15,29 +15,13 @@ import React, { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-// import AmplifyTheme from '../AmplifyTheme';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-
-import {
-    // FormSection,
-    // SectionHeader,
-    // SectionBody,
-    // SectionFooter,
-    // InputRow,
-    // RadioRow,
-    // MessageRow,
-    // ButtonRow,
-    // Link
-} from '../AmplifyUI';
-
 import {
     FormSection,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
     RadioRow,
-    MessageRow,
     Button,
     Toast,
 } from '../Amplify-UI/Amplify-UI-Components-React';
@@ -95,17 +79,26 @@ export default class SelectMFAType extends Component {
 
         Auth.setPreferredMFA(user, mfaMethod).then((data) => {
             logger.debug('set preferred mfa success', data);
-            this.setState({selectMessage: 'Successful! Now you have changed to MFA Type: ' + mfaMethod});
- 
+            this.setState({
+                selectMessage: 'Success! Your MFA Type is now: ' + mfaMethod,
+                showToast: true
+            });
+            
         }).catch(err => {
             const { message } = err;
             if (message === 'User has not set up software token mfa' || message === 'User has not verified software token mfa') {
-                this.setState({TOTPSetup: true});
-                this.setState({selectMessage: 'You need to setup TOTP'})
+                this.setState({
+                    TOTPSetup: true,
+                    selectMessage: 'You need to setup TOTP',
+                    showToast: true
+                });
             }
             else {
                 logger.debug('set preferred mfa failed', err);
-                this.setState({selectMessage: 'Failed! You cannot select MFA Type for now!'})
+                this.setState({
+                    selectMessage: 'Failed! You cannot select MFA Type for now!',
+                    showToast: true
+                })
             }
         });
     }
@@ -123,8 +116,8 @@ export default class SelectMFAType extends Component {
         const { SMS, TOTP, Optional } = MFATypes;
         return (
             <FormSection theme={theme}>
-                {this.state.selectMessage && 
-                    <Toast>
+                {this.state.showToast && this.state.selectMessage &&
+                    <Toast onClose={() => this.setState({showToast: false})}>
                         { I18n.get(this.state.selectMessage) }
                     </Toast>
                 }
@@ -162,9 +155,6 @@ export default class SelectMFAType extends Component {
                     </div>
                 </SectionBody>
                 <SectionFooter>
-                    {/* <div>
-                        { this.state.selectMessage && I18n.get(this.state.selectMessage) }
-                    </div> */}
                     <Button theme={theme} onClick={this.verify}>{I18n.get('Verify')}</Button>
                 </SectionFooter>
             </FormSection>

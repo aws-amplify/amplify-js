@@ -52,6 +52,7 @@
     }
   },
   "dependencies": {
+    "@aws-amplify/ui": "./packages/amplify-ui",
     "aws-amplify": "^1.0.7-unstable.3",
     "qrcode.react": "^0.8.0",
     "regenerator-runtime": "^0.11.1"

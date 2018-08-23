@@ -11,23 +11,12 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React from 'react';
 
 import { I18n, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-// import AmplifyTheme from '../AmplifyTheme';
-// import {
-//     FormSection,
-//     SectionHeader,
-//     SectionBody,
-//     SectionFooter,
-//     InputRow,
-//     ButtonRow,
-//     Link
-// } from '../AmplifyUI';
-
 import {
     FormSection,
     FormField,
@@ -41,7 +30,6 @@ import {
     SectionFooterPrimaryContent,
     SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
-
 
 const logger = new Logger('ConfirmSignIn');
 
