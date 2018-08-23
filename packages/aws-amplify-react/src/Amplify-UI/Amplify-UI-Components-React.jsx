@@ -47,9 +47,14 @@ export const SectionHeader = (props) => {
     const style = propStyle(props, theme.sectionHeader);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className={AmplifyUI.sectionHeader}>
+        <div {...p} className={AmplifyUI.sectionHeader} style={style}>
             <SectionHeaderContent theme={theme}>
                 {props.children}
+                {props.hint && 
+                    <div className={AmplifyUI.sectionHeaderHint}>
+                        {props.hint}
+                    </div>
+                }
             </SectionHeaderContent>
         </div>
     )
@@ -67,9 +72,10 @@ export const SectionHeaderContent = (props) => {
 
 export const SectionFooter = (props) => {
     const theme = props.theme || AmplifyTheme;
+    const style = propStyle(props, theme.sectionFooter);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className={AmplifyUI.sectionFooter}>
+        <div {...p} className={AmplifyUI.sectionFooter} style={style}>
             {props.children}
         </div>
     )
@@ -79,7 +85,7 @@ export const SectionFooterPrimaryContent = (props) => {
     const theme = props.theme || AmplifyTheme;
     const style = propStyle(props, theme.sectionFooterPrimaryContent);
     return beforeAfter(
-        <span className={AmplifyUI.sectionFooterPrimaryContent}style={style}>
+        <span className={AmplifyUI.sectionFooterPrimaryContent} style={style}>
             {props.children}
         </span>
     )
@@ -226,7 +232,18 @@ export const Button = (props) => {
     const style = propStyle(props, theme.button);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <button {...p} className={AmplifyUI.button} style={theme.button}>
+        <button {...p} className={AmplifyUI.button} style={style}>
+            {props.children}
+        </button>
+    )
+}
+
+export const PhotoPickerButton = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    const style = propStyle(props, theme.photoPickerButton);
+    const p = JS.objectLessAttributes(props, 'theme');
+    return (
+        <button {...p} className={[AmplifyUI.photoPickerButton, AmplifyUI.button].join(' ')} style={style}>
             {props.children}
         </button>
     )
@@ -262,7 +279,7 @@ export const SignInButtonContent = (props) => {
     const theme = props.theme || AmplifyTheme;
     const style = propStyle(props, theme.signInButtonContent);
     return beforeAfter(
-        <span className={AmplifyUI.signInButtonContent}>
+        <span className={AmplifyUI.signInButtonContent} style={style}>
             {props.children}
         </span>
     )
@@ -290,7 +307,7 @@ export const Hint = (props) => {
     const theme = props.theme || AmplifyTheme;
     const style = propStyle(props, theme.hint);
     return beforeAfter(
-        <div className={AmplifyUI.hint}>
+        <div className={AmplifyUI.hint} style={style}>
             {props.children}
         </div>
     )
@@ -300,7 +317,7 @@ export const InputLabel = (props) => {
     const theme = props.theme || AmplifyTheme;
     const style = propStyle(props, theme.inputLabel);
     return beforeAfter(
-        <div className={AmplifyUI.inputLabel}>
+        <div className={AmplifyUI.inputLabel} style={style}>
             {props.children}
         </div>
     )
@@ -311,7 +328,7 @@ export const NavBar = (props) => {
     const style = propStyle(props, theme.navBar);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className={AmplifyUI.navBar}>
+        <div {...p} className={AmplifyUI.navBar} style={style}>
             {props.children}
         </div>
     )
@@ -322,7 +339,7 @@ export const Nav = (props) => {
     const style = propStyle(props, theme.nav);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className={AmplifyUI.nav}>
+        <div {...p} className={AmplifyUI.nav} style={style}>
             {props.children}
         </div>
     )
@@ -333,7 +350,7 @@ export const NavRight = (props) => {
     const style = propStyle(props, theme.navRight);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className={AmplifyUI.navRight}>
+        <div {...p} className={AmplifyUI.navRight} style={style}>
             {props.children}
         </div>
     )
@@ -344,7 +361,7 @@ export const NavItem = (props) => {
     const style = propStyle(props, theme.navItem);
     const p = JS.objectLessAttributes(props, 'theme');
     return beforeAfter(
-        <div {...p} className={AmplifyUI.navItem}>
+        <div {...p} className={AmplifyUI.navItem} style={style}>
             {props.children}
         </div>
     )
@@ -377,6 +394,23 @@ export const Toast = (props) => {
 
 Toast.defaultProps = {
     onClose: () => void(0)
+}
+
+export const PhotoPlaceholder = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    const style = propStyle(props, theme.photoPlaceholder);
+    return (
+        <div className={AmplifyUI.photoPlaceholder} style={style}>
+            <div className={AmplifyUI.photoPlaceholderIcon}>
+                <svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 24 24'>
+                    <circle cx='12' cy='12' r='3.2' />
+                    <path d='M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z'
+                    />
+                    <path d='M0 0h24v24H0z' fill='none' />
+                </svg>
+            </div>
+        </div>
+    )
 }
 
 export const beforeAfter = (el) => {

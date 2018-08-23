@@ -22,6 +22,8 @@ export const SectionFooterPrimaryContent = {}
 export const SectionFooterSecondaryContent = {}
 export const Input = {}
 export const Button = {}
+export const PhotoPickerButton = {};
+export const PhotoPlaceholder = {};
 export const SignInButton = {}
 export const SignInButtonIcon = {}
 export const SignInButtonContent = {}
@@ -48,6 +50,8 @@ const AmplifyTheme = {
 
   input: Input,
   button: Button,
+  photoPickerButton: PhotoPickerButton,
+  photoPlaceholder: PhotoPlaceholder,
   signInButton: SignInButton,
   signInButtonIcon: SignInButtonIcon,
   signInButtonContent: SignInButtonContent,
