@@ -2133,7 +2133,13 @@ li {
         }
 
         .sections-list.affix {
-            position: relative;
+            position: sticky;
+            position: -webkit-sticky;
+            margin-top: 84px;
+        }
+
+        .styleguide-affix {
+            margin-top: 20px !important;
         }
 
         .version-section {
