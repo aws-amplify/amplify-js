@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.7-unstable.11"></a>
+## [1.0.7-unstable.11](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.7-unstable.10...aws-amplify-react-native@1.0.7-unstable.11) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="1.0.7-unstable.10"></a>
+## [1.0.7-unstable.10](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.7-unstable.9...aws-amplify-react-native@1.0.7-unstable.10) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="1.0.7-unstable.9"></a>
+## [1.0.7-unstable.9](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.7-unstable.8...aws-amplify-react-native@1.0.7-unstable.9) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
 <a name="1.0.7-unstable.8"></a>
 ## [1.0.7-unstable.8](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.7-unstable.7...aws-amplify-react-native@1.0.7-unstable.8) (2018-08-22)
 
