@@ -14,9 +14,6 @@
 import React from 'react';
 import {
     View,
-    Text,
-    TextInput,
-    // Button,
     TouchableWithoutFeedback,
     Keyboard
 } from 'react-native';
@@ -29,14 +26,11 @@ import {
 import AuthPiece from './AuthPiece';
 import {
     AmplifyButton,
-    Username,
-    Password,
     FormField,
     LinkCell,
     Header,
     ErrorRow
 } from '../AmplifyUI';
-import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('SignIn');
 
@@ -54,7 +48,7 @@ export default class SignIn extends AuthPiece {
         this.checkContact = this.checkContact.bind(this);
         this.signIn = this.signIn.bind(this);
     }
-
+    
     checkContact(user) {
         Auth.verifiedContact(user)
             .then(data => {
@@ -108,7 +102,6 @@ export default class SignIn extends AuthPiece {
                             secureTextEntry={true}
                             required={true}
                         />
-
                         <AmplifyButton
                             text={I18n.get('Sign In').toUpperCase()}
                             theme={theme}

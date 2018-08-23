@@ -14,8 +14,11 @@
 import { StyleSheet } from 'react-native';
 
 // Colors
-const deepSquidInk = '#152939';
+export const deepSquidInk = '#152939';
+export const linkUnderlayColor = '#FFF';
+export const errorIconColor = '#DD3F5B';
 
+// Theme
 export default AmplifyTheme = StyleSheet.create({
     container: {
         flex: 1,
@@ -32,13 +35,10 @@ export default AmplifyTheme = StyleSheet.create({
         padding: 20,
     },
     sectionHeader: {
-        // backgroundColor: '#ff9900',
-        // padding: 10,
         width: '100%',
         marginBottom: 32
     },
     sectionHeaderText: {
-        // width: '100%',
         color: deepSquidInk,
         fontSize: 20,
         fontWeight: '500'
@@ -57,17 +57,16 @@ export default AmplifyTheme = StyleSheet.create({
         alignItems: 'baseline',
         textAlign: 'center'
     },
-    sectionBody: {
-    },
     cell: {
         flex: 1,
         width: '50%'
     },
     errorRow: {
-        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center'
     },
     errorRowText: {
-        textAlign: 'center'
+        marginLeft: 10
     },
     photo: {
         width: '100%'
@@ -75,9 +74,13 @@ export default AmplifyTheme = StyleSheet.create({
     album: {
         width: '100%'
     },
-    a: {},
     button: {
         backgroundColor: '#ff9900',
+        alignItems: 'center',
+        padding: 16,
+    },
+    buttonDisabled: {
+        backgroundColor: '#ff990080',
         alignItems: 'center',
         padding: 16,
     },

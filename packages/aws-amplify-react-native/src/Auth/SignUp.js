@@ -25,12 +25,7 @@ import {
     I18n,
     Logger
 } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
 import { 
-    Username, 
-    Password, 
-    Email, 
-    PhoneNumber, 
     FormField,
     LinkCell, 
     Header, 
@@ -40,21 +35,6 @@ import {
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('SignUp');
-
-const Footer = (props) => {
-    const { theme, onStateChange } = props;
-    return (
-        <View style={theme.sectionFooter}>
-            <LinkCell theme={theme} onPress={() => onStateChange('confirmSignUp')}>
-                {I18n.get('Confirm a Code')}
-            </LinkCell>
-            <LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
-                {I18n.get('Sign In')}
-            </LinkCell>
-        </View>
-    )
-}
-
 export default class SignUp extends AuthPiece {
     constructor(props) {
         super(props);
@@ -125,7 +105,14 @@ export default class SignUp extends AuthPiece {
                             disabled={!this.state.username || !this.state.password}
                         />
                     </View>
-                    <Footer theme={theme} onStateChange={this.changeState} />
+                    <View style={theme.sectionFooter}>
+                        <LinkCell theme={theme} onPress={() => this.changeState('confirmSignUp')}>
+                            {I18n.get('Confirm a Code')}
+                        </LinkCell>
+                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                            {I18n.get('Sign In')}
+                        </LinkCell>
+                    </View>
                     <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
             </TouchableWithoutFeedback>

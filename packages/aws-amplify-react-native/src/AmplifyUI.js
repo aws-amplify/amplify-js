@@ -14,7 +14,8 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { I18n } from 'aws-amplify';
-import AmplifyTheme from './AmplifyTheme';
+import AmplifyTheme, { linkUnderlayColor, errorIconColor } from './AmplifyTheme';
+import { Icon } from 'react-native-elements';
 
 export const FormField = (props) => {
     const theme = props.theme || AmplifyTheme;
@@ -24,21 +25,23 @@ export const FormField = (props) => {
             <TextInput
                 style={theme.input}
                 autoCapitalize="none"
+                autoCorrect={false}
                 {...props}
             />
         </View>
     )
 }
-
-export const ConfirmationCode = (props) => {
+export const SectionFooter = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
-        <TextInput
-            style={theme.input}
-            placeholder={I18n.get('Code')}
-            autoFocus={true}
-            {...props}
-        />
+        <View style={theme.sectionFooter}>
+            <LinkCell theme={theme} onPress={() => onStateChange('confirmSignUp')}>
+                {I18n.get('Confirm a Code')}
+            </LinkCell>
+            <LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
+                {I18n.get('Sign In')}
+            </LinkCell>
+        </View>
     )
 }
 
@@ -46,9 +49,7 @@ export const LinkCell = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
         <View style={theme.cell}>
-            <TouchableHighlight
-                onPress={props.onPress}
-            >
+            <TouchableHighlight onPress={props.onPress} underlayColor={linkUnderlayColor}>
                 <Text style={theme.sectionFooterLink}>{props.children}</Text>
             </TouchableHighlight>
         </View>
@@ -66,8 +67,10 @@ export const Header = (props) => {
 
 export const ErrorRow = (props) => {
     const theme = props.theme || AmplifyTheme;
+    if (!props.children) return null;
     return (
         <View style={theme.errorRow}>
+            <Icon name="warning" color={errorIconColor} /> 
             <Text style={theme.errorRowText}>{props.children}</Text>
         </View>
     )
@@ -75,8 +78,13 @@ export const ErrorRow = (props) => {
 
 export const AmplifyButton = (props) => {
     const theme = props.theme || AmplifyTheme;
+    let style = theme.button;
+    if (props.disabled) {
+        style = theme.buttonDisabled;
+    }
+
     return (
-        <TouchableOpacity {...props} style={theme.button}>
+        <TouchableOpacity {...props} style={style}>
             <Text style={theme.buttonText}>{props.text}</Text>
         </TouchableOpacity>
     )
