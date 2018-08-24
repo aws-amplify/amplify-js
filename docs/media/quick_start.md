@@ -3,7 +3,7 @@
 
 # Getting Started
 
-AWS Amplify is designed to provide you a more productive environment for connecting cloud services to your app. This document will get you started with your Web or React Native projects. Use the drop-down menu in the top right to view framework-specific instructions.
+AWS Amplify provides the foundation for your cloud-powered mobile and web apps. AWS Amplify includes a JavaScript library for your Web and React Native projects, a style guide including UI components, and the Amplify CLI toolchain for hosting and for managing backends in the AWS cloud. The goal of this guide is to build or integrate an app with AWS Amplify. Use the drop-down menu in the top right to choose the framework that you want to work with.
 
 ## Step 1. Set up your Development Environment 
 
@@ -44,8 +44,7 @@ Change directories to your new project and run:
 ```
 $ mkdir amplify-js-app
 $ cd amplify-js-app
-$ touch index.html webpack.config.js src/app.js
-$ npm init
+$ touch package.json index.html webpack.config.js src/app.js
 ```
 
 Your project directory structure should now be:
@@ -59,12 +58,32 @@ Your project directory structure should now be:
         |- app.js
 ```
 
-Follow the prompts to populate your <a href="https://docs.npmjs.com/files/package.json" target="_blank">package.json</a> file wiith project details. 
+Replace the `package.json` contents with the following:
 
-Install <a href="https://webpack.js.org" target="_blank">webpack</a> and <a href="https://github.com/webpack/webpack-dev-server" target="_blank">webpack-dev-server</a> to locally serve the app:
+```js
+{
+  "name": "amplify-js-app",
+  "version": "1.0.0",
+  "description": "AWS Amplify JavaScript Example",
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0",
+    "copy-webpack-plugin": "^4.5.2",
+    "webpack-dev-server": "^3.1.5"
+  },
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack"
+  }
+}
 
 ```
-$ npm install webpack webpack-cli copy-webpack-plugin webpack-dev-server --save-dev 
+
+Install the local development dependencies:
+
+```
+$ npm install
 ```
 
 Add the following to the `index.html` file:
@@ -105,27 +124,6 @@ module.exports = {
         new CopyWebpackPlugin(['index.html'])
     ]
 };
-```
-Replace the `package.json` contents with the following:
-
-```js
-{
-  "name": "amplify-js-app",
-  "version": "1.0.0",
-  "description": "AWS Amplify JavaScript Example",
-  "dependencies": {},
-  "devDependencies": {
-    "webpack": "^4.17.1",
-    "webpack-cli": "^3.1.0",
-    "copy-webpack-plugin": "^4.5.2",
-    "webpack-dev-server": "^3.1.5"
-  },
-  "scripts": {
-    "start": "webpack-dev-server",
-    "build": "webpack"
-  }
-}
-
 ```
 
 Run your app:
