@@ -99,14 +99,23 @@
 							<div class='js-library-selector-text'>
 								Select your framework
 							</div>
-							<div class="js-library-selector">
+							<div class="js-library-selector dropdown white-text">
+								<img id="js-library-icon" /> 
+								<button id="js-library-selector" class="dropbtn white-text"></button>
+								<div class="dropdown-content">
+									{% for item in site.js_libraries %}
+										<a href={{ item.url }}>{{ item.title }}</a>
+									{% endfor %}
+								</div>
+							</div>
+							<!-- <div class="js-library-selector">
 								<img id="js-library-icon" /> 
 								<select onchange="location = this.value" id="js-library-select">
 									{% for item in site.js_libraries %}
 										<option value={{ item.url }}>{{ item.title }}</option>
 									{% endfor %}
 								</select>
-							</div>
+							</div> -->
 							{% endif %}
 							<div class="content">
 								{{ content }}
@@ -191,17 +200,19 @@
 			if ( $.urlParam( 'platform' )) {
 				var platform = $.urlParam('platform');
 				if (platform) {
-					let selector = document.getElementById("js-library-select");
-					selector.value = "?platform="+platform;
+					let selector = document.getElementById("js-library-selector");
+					titles = {"react": "React", "react-native": "React Native", "angular": "Angular", "purejs": "JavaScript", "ionic": "Ionic"};
+					selector.innerHTML = titles[platform];
 					let icon = document.getElementById("js-library-icon");
 					icons = {"react": "React-Small-White@1x.png", "react-native": "React-Small-White@1x.png", "angular": "Angular-Med-White@1x.png", "purejs": "JS-Small-White@1x.png", "ionic": "Ionic-Color@1x.png"};
 					icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
 				}
 			}
 			else {
-				var platform = "react";
-				let selector = document.getElementById("js-library-select");
-				selector.value = "?platform="+platform;
+				var platform = "purejs";
+				let selector = document.getElementById("js-library-selector");
+				titles = {"react": "React", "react-native": "React Native", "angular": "Angular", "purejs": "JavaScript", "ionic": "Ionic"};
+				selector.innerHTML = titles[platform];
 				let icon = document.getElementById("js-library-icon");
 				icons = {"react": "React-Small-White@1x.png", "react-native": "React-Small-White@1x.png", "angular": "Angular-Med-White@1x.png", "purejs": "JS-Small-White@1x.png", "ionic": "Ionic-Color@1x.png"};
 				icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
