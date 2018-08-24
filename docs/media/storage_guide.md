@@ -20,13 +20,12 @@ To create a project fully functioning with the Storage category, run the followi
 $ amplify add storage
 ```
 
-and select *S3* in prompted options:
-
+and select *Content* in prompted options:
 
 ```bash
-? Please select from one of the below mentioned services
-❯ awscloudformation:S3
-  awscloudformation:DynamoDB
+? Please select from one of the below mentioned services (Use arrow keys)
+❯ Content (Images, audio, video, etc.)
+  NoSQL Database
 ```
 
 The CLI will walk you though the options to enable Auth, if not enabled previously, and name your S3 bucket. To update your backend run:
