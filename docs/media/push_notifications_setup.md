@@ -29,7 +29,7 @@ Setup instructions are provided for Android and iOS, and configuration for both 
 
 2. Get your push messaging credentials for Android in Firebase console. [Click here for instructions](Get Push Messaging Credentials for Android).
 
-3. Create and native link on a React Native app:
+3. Create a native link on a React Native app:
 
     ```bash
     $ react-native init myapp
