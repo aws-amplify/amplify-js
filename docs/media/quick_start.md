@@ -44,8 +44,7 @@ Change directories to your new project and run:
 ```
 $ mkdir amplify-js-app
 $ cd amplify-js-app
-$ touch index.html webpack.config.js src/app.js
-$ npm init
+$ touch package.json index.html webpack.config.js src/app.js
 ```
 
 Your project directory structure should now be:
@@ -58,8 +57,6 @@ Your project directory structure should now be:
     - /src
         |- app.js
 ```
-
-Follow the prompts to populate your <a href="https://docs.npmjs.com/files/package.json" target="_blank">package.json</a> file wiith project details. 
 
 Install <a href="https://webpack.js.org" target="_blank">webpack</a> and <a href="https://github.com/webpack/webpack-dev-server" target="_blank">webpack-dev-server</a> to locally serve the app:
 
