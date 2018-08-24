@@ -267,6 +267,8 @@ $ npm install --save aws-amplify
 
 In addition to `aws-amplify` core, you can install our angular module which provides a service provider, helpers, and components:
 
+</div>
+<div id="ionic" class="tab-content">
 ```bash
 $ npm install --save aws-amplify-angular
 ``` 
@@ -285,12 +287,6 @@ You can quickly create your backend from scratch with Automatic Setup, or use Ma
 
 ```bash
 $ amplify init
-```
-
-Accept all defaults except for the `Distribution Directory Path`, change this to "." so that our entire folder is uploaded to Amazon S3 for hosting:
-
-```bash
-$ ? Distribution Directory Path (dist): .
 ```
 
 > When you run `amplify init` command you are asked for the details of your project. A configuration file for your app is put in your configured source directory called `aws-exports.js`.
