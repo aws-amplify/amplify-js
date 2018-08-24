@@ -62,11 +62,11 @@ const template = `
   </div>
 </div>
 
-`
+`;
 
 @Component({
   selector: 'amplify-auth-forgot-password-ionic',
-  template: template
+  template
 })
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
 
