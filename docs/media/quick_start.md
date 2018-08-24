@@ -304,16 +304,6 @@ Amplify.Logger.LOG_LEVEL = 'DEBUG';
 
 ```
 
-In the configuration above, you are required to pass in an Amazon Cognito identity pool ID so that AWS Amplify can retrieve base credentials for a user even in an unauthenticated state. 
-
-**Configuration Parameters for existing AWS resources**
-To see the configuration parameters for existing AWS resources, see the *Existing AWS Resources* section in AWS Amplify Developer Guide for each individual service:
-[Amazon Cognito]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide#manual-setup),
-[Amazon S3]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide#manual-setup),
-[Amazon Pinpoint]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide#manual-setup),
-[Amazon API Gateway]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide#manual-setup)
-{: .callout .callout--info}
-
 ### Add Backend Features
 
 You can  use the `amplify add` command with the respective category name to add backend features:
@@ -374,6 +364,15 @@ Amplify.configure({
     }
 });
 ```
+In the configuration above, you are required to pass in an Amazon Cognito identity pool ID so that AWS Amplify can retrieve base credentials for a user even in an unauthenticated state. 
+
+**Configuration Parameters for existing AWS resources**
+To see the configuration parameters for existing AWS resources, see the *Existing AWS Resources* section in AWS Amplify Developer Guide for each individual service:
+[Amazon Cognito]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide#manual-setup),
+[Amazon S3]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide#manual-setup),
+[Amazon Pinpoint]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide#manual-setup),
+[Amazon API Gateway]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide#manual-setup)
+{: .callout .callout--info}
 
 ##### AWS SDK Interfaces
 
