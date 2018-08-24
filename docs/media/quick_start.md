@@ -44,7 +44,6 @@ Change directories to your new project and run:
 ```
 $ mkdir amplify-js-app
 $ cd amplify-js-app
-$ mkdir src dist
 $ touch index.html webpack.config.js src/app.js
 $ npm init
 ```
@@ -58,7 +57,6 @@ Your project directory structure should now be:
     - webpack.config.js
     - /src
         |- app.js
-    - /dist
 ```
 
 Follow the prompts to populate your <a href="https://docs.npmjs.com/files/package.json" target="_blank">package.json</a> file wiith project details. 
@@ -66,7 +64,7 @@ Follow the prompts to populate your <a href="https://docs.npmjs.com/files/packag
 Install <a href="https://webpack.js.org" target="_blank">webpack</a> and <a href="https://github.com/webpack/webpack-dev-server" target="_blank">webpack-dev-server</a> to locally serve the app:
 
 ```
-$ npm install webpack webpack-cli webpack-dev-server --save-dev 
+$ npm install webpack webpack-cli copy-webpack-plugin webpack-dev-server --save-dev 
 ```
 
 Add the following to the `index.html` file:
@@ -93,7 +91,7 @@ module.exports = {
     mode: 'development',
     entry: './src/app.js',
     output: {
-        filename: './dist/bundle.js'
+        filename: 'bundle.js'
     },
     module: {
         rules: [
@@ -102,7 +100,10 @@ module.exports = {
                 exclude: /node_modules/
             }
         ]
-    }
+    },
+    plugins: [
+        new CopyWebpackPlugin(['index.html'])
+    ]
 };
 ```
 Replace the `package.json` contents with the following:
@@ -116,6 +117,7 @@ Replace the `package.json` contents with the following:
   "devDependencies": {
     "webpack": "^4.17.1",
     "webpack-cli": "^3.1.0",
+    "copy-webpack-plugin": "^4.5.2",
     "webpack-dev-server": "^3.1.5"
   },
   "scripts": {
@@ -131,6 +133,7 @@ Run your app:
 ```bash
 $ npm start
 ```
+
 Your app should now be available at <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>
 
 </div>
