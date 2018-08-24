@@ -58,10 +58,32 @@ Your project directory structure should now be:
         |- app.js
 ```
 
-Install <a href="https://webpack.js.org" target="_blank">webpack</a> and <a href="https://github.com/webpack/webpack-dev-server" target="_blank">webpack-dev-server</a> to locally serve the app:
+Replace the `package.json` contents with the following:
+
+```js
+{
+  "name": "amplify-js-app",
+  "version": "1.0.0",
+  "description": "AWS Amplify JavaScript Example",
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0",
+    "copy-webpack-plugin": "^4.5.2",
+    "webpack-dev-server": "^3.1.5"
+  },
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack"
+  }
+}
 
 ```
-$ npm install webpack webpack-cli copy-webpack-plugin webpack-dev-server --save-dev 
+
+Install the local development dependencies:
+
+```
+$ npm install
 ```
 
 Add the following to the `index.html` file:
@@ -102,27 +124,6 @@ module.exports = {
         new CopyWebpackPlugin(['index.html'])
     ]
 };
-```
-Replace the `package.json` contents with the following:
-
-```js
-{
-  "name": "amplify-js-app",
-  "version": "1.0.0",
-  "description": "AWS Amplify JavaScript Example",
-  "dependencies": {},
-  "devDependencies": {
-    "webpack": "^4.17.1",
-    "webpack-cli": "^3.1.0",
-    "copy-webpack-plugin": "^4.5.2",
-    "webpack-dev-server": "^3.1.5"
-  },
-  "scripts": {
-    "start": "webpack-dev-server",
-    "build": "webpack"
-  }
-}
-
 ```
 
 Run your app:
