@@ -77,6 +77,21 @@
 			color: darken($color-callout-danger, 70%);
 		}
 	}
+
+	&--action { 
+		border:none;
+		border-left-style: solid;
+		border-left-width: 2px;
+		border-left-color:orange;
+		border-radius: 0px;
+		strong {
+			color: darken($color-callout-danger, 70%);
+		}
+		a {
+			text-decoration: underline;
+		}
+	}
+
 }
 
 

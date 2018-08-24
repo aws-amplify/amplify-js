@@ -1,3 +1,11 @@
+<html>
+  <head>
+        <!-- Global site tag (gtag.js) - Google Analytics -->     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115615468-1"></script>     <script>         window.dataLayer = window.dataLayer || [];         function gtag(){dataLayer.push(arguments);}         gtag('js', new Date());         gtag('config', 'UA-115615468-1',{             'linker': {             'domains': ['aws-amplify.github.io']             }         });         var navigateToNextPage = function (elem) {             var path = "{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start";             location.replace( path + location.search);         };       gtag('event', 'page_view', {         'event_callback': navigateToNextPage         });     </script> <meta http-equiv="refresh" content="5; url={% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start" />
+  </head>
+  <body>
+    <p>Redirecting to <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start">https://aws-amplify.github.io/amplify-js/media/quick_start</a></p>
+  </body>
+</html>
 Building Ionic 4 apps with AWS Amplify
 ===========
 
@@ -6,14 +14,14 @@ Overview
 
 In this tutorial, you will create an Ionic 4 ‘ToDo List’ app that connects to a serverless backend via the AWS Amplify Library.
 
-The AWS Amplify and the AWS Mobile CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with Ionic and AWS Amplify.
+The AWS Amplify and the Amplify CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with Ionic and AWS Amplify.
 
 
 **By completing this tutorial, you will be able to:**
-- bootstrap an Ionic 4 app with Ionic CLI and start working with the code
-- implement the AWS Amplify library into your app
-- manage your backend resources with the AWS Mobile CLI
-- utilize AWS services such as Amazon Cognito, Amazon DynamoDB, and AWS Lambda
+- Bootstrap an Ionic 4 app with Ionic CLI and start working with the code
+- Implement the AWS Amplify library into your app
+- Manage your backend resources with the Amplify CLI
+- Utilize AWS services such as Amazon Cognito, Amazon DynamoDB, and AWS Lambda
 
 ## Prerequisites
 
@@ -29,7 +37,7 @@ You can also copy and paste code sample while following the tutorials. In this c
 
 Here is the sequence of the tutorial:
 - Part 1: [Create an Ionic 4 App](#part-1-create-an-ionic-4-app)
-- Part 2: [Working with AWS Mobile CLI](#part-2-working-with-aws-mobile-cli)
+- Part 2: [Working with Amplify CLI](#part-2-working-with-aws-mobile-cli)
 - Part 3: [Adding Authorization](#part-3-adding-analytics)
 - Part 4: [Enabling the Cloud Backend](#part-4-adding-authorization)
  
@@ -70,7 +78,6 @@ If you want your application to run as an iOS or Android application as well as 
 To confirm that you're using the correct version of Ionic, navigate into the project directory and execute 'ionic info'. The Ionic Framework value should be greater than 4.
 {: .callout}
  
-
 ## Angular Modules in Ionic
 
 Previous versions of Ionic made use of the Angular framework, and Ionic 4 is no exception. Modern versions of Angular provide a component-based architecture in which the application consists of components, which are in turn executed in the context of a module.
@@ -278,6 +285,7 @@ A little bit of styling in *src/app/pages/list/list.page.scss*:
   margin: 12px 0 0 12px !important;
 }
 ```
+
 ### Create module definition
 
 Make sure that the files you have created previously are exposed to the larger application by creating a module definition file in *src/app/pages/list/list.module.ts* location:
@@ -469,11 +477,13 @@ providers: [AuthGuardService]
 Now you are ready to test your app. Execute one of the following commands from your project root and you should see your app, with the ‘List’ tab visible in the footer.
 
 To run your app in web browser :
+
 ```bash
 $ ionic serve
 ```
 
 To run your app in iOS simulator:
+
 ```bash
 $ ionic cordova run ios -l
 ```
@@ -481,8 +491,8 @@ $ ionic cordova run ios -l
 Note:  If you attempt to run your app in the iOS emulator but only see a blank screen, try running:
 
 ```bash
-ionic cordova plugin rm cordova-plugin-ionic-webview
-ionic cordova plugin add cordova-plugin-ionic-webview@2.0.0-beta.1
+$ ionic cordova plugin rm cordova-plugin-ionic-webview
+$ ionic cordova plugin add cordova-plugin-ionic-webview@2.0.0-beta.1
 ```
 
 ## Implementing CRUD functionality
@@ -591,7 +601,7 @@ Also, add `ListItemModal` in *declarations* and *entryComponents*;
 
 ### Import the modal in your list page 
 
-To use your new modal in your list component, make the following changes in * src/app/pages/list/list.page.ts* file.
+To use your new modal in your list component, make the following changes in *src/app/pages/list/list.page.ts* file.
 
 Import the modal into your component: 
 
@@ -611,100 +621,16 @@ You’ve just created an Ionic 4 and Angular 6 project using the Ionic CLI!
 
 In the next step, you will be cloud-enabling your application using AWS.
 
-# Part 2: Working with AWS Mobile CLI
+# Part 2: Working with Amplify CLI
 
-This section will introduce you to  AWS Mobile CLI and you'll learn how to create backend resources for your Ionic app. The AWS Mobile CLI is a command line tool that allows you to generate AWS resources and connect them to your application quickly. 
+This section will introduce you to Amplify CLI and you'll learn how to create backend resources for your Ionic app. The Amplify CLI is a command line tool that allows you to generate AWS resources and connect them to your application quickly. 
 
-## Install AWS Mobile CLI
+## Install and Configure AWS Amplify 
 
-To install the CLI, execute:
-```bash
-npm install -g awsmobile-cli
-```
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config?platform=angular&ref_url=/amplify-js/media/tutorials/building-ionic-4-apps&ref_content={{"Tutorial: Building Ionic 4 apps with AWS Amplify" | uri_escape }}&ref_content_section=creating-aws-resources-with-the-cli).
+{: .callout .callout--action}
 
-##  Configuring the CLI with IAM user 
-
-The CLI can create and provision AWS resources for you. To enable this, you need to configure the CLI with an IAM user along with their *Access Key ID* and *Secret Access Key*.
-
-**Creating a new IAM user in AWS Console**
-
-Navigate to the AWS Console and select *Services → IAM → Users*, and then click the “Add User” button. Name the user ‘AWSAmplifyTutorial’ and select ‘Programmatic Access’ as the Access Type. On the next screen, use the ‘Attach existing policies directly’ option to select ‘AdministratorAccess’ permissions. Click ‘Create User’ on the next screen and save the *Access Key ID* and *Secret Access Key* that are displayed. You will not be able to view the Secret Access Key after this point!
-
-Be sure that you save the Access Key ID and Secret Access Key in a secure place (and do NOT check it into Github or any public repository).
-
-**Configure the CLI**
-
-Finally, use your terminal to execute:
-```bash
-awsmobile configure
-```
-
-Follow the prompts to enter your Access Key ID, Secret Access Key, and Region.
-
-Your AWS Mobile CLI is now ready for use!
-
-## Creating AWS Resources with the CLI
-
-Run the following command from your project folder:
-```bash
-$ awsmobile init
-```
- 
-The CLI will ask you the name of your project directories to replace the configuration file *aws-exports.js*, and integrate with your run and build commands:
-```bash
-Please tell us about your project:
-? Where is your project's source directory:  src
-? Where is your project's distribution directory that stores build artifacts:  dist
-? What is your project's build command:  npm run-script build
-? What is your project's start command for local test run:  npm run-script start
-```
-
-After answering the prompt, you should now see the *awsmobilejs* directory in your project root, as well as an *aws-exports.js* file in your */src* directory. The *aws-exports*file stores all of your project’s AWS related resource configuration. Again, do NOT check in the *awsmobilejs* directory or *aws-exports* file into source control.
-
-Since we are using TypeScript, change the name of the aws-exports file to *aws-exports.ts*.
-
-You should make sure that your `package.json` scripts also rename the file upon build, so that any configuration changes which result in the download of an `aws_exports.js` from AWS Mobile Hub get changed over to the ts extension.
-```js	
-"scripts": {	
-    "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",	
-    "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"	
-}	
-```
-
-Please note that *aws-exports.js* file should be located in the root of your source directory. If your source directory is different from */src* and you did not enter the folder name in the previous prompt, copy your *aws-exports.js* file to your source directory. You can find the updated copy of *aws-exports.js* file under *awsmobilejs/#current-backend-info/* directory.
-{: .callout .callout--info}
-
-AWS resources for your application can be generated using:
-```bash
-awsmobile <feature> enable
-```
-Alternatively, you can execute the following command to select from a list of available features:
-```bash
-awsmobile features
-```
-
-## Enabling Analytics
-
-In this part of the tutorial, you will be adding analytics to your application with AWS Mobile CLI.
-
-Analytics is enabled by default when you initiate AWS Mobile CLI with:
-```bash
-awsmobile init
-```
-
-So, you don't need to enable analytics explicitly. You can configure analytics setup anytime by using the following command:
-```bash
-$ awsmobile analytics configure
-```
-
-The next step is adding the AWS Amplify library into your Ionic app.
-
-**Updating your Backend**
-When you update your backend configuration with the CLI, you can update your backend with `awsmobile push`.
-Be patient while the CLI updates your backend resources. Once the creation of your resources is complete, you can view them via the [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/home#/). 
-{: .callout .callout--info}
- 
-### Install AWS Amplify
+**When you are done with the installation**, you can continue with the next step in the tutorial.
 
 AWS Amplify will enable adding cloud features to your Ionic 4 app like authentication and user storage. 
 
@@ -713,8 +639,21 @@ $ npm install aws-amplify
 $ npm install aws-amplify-angular
 ```
 
+## Creating AWS Resources with the CLI
+ 
+Since we are using TypeScript, change the name of the aws-exports file to *aws-exports.ts*.
+{: .callout .callout--info}
+
+AWS resources for your application can be generated using:
+```bash
+$ amplify add <feature> 
+```
+
+When you update your backend configuration with the CLI, you can update your backend with `amplify push`.
+
 ### Add Global Shim
-Angular 6 has removed a shim for the global object used by many NPM modules, including some in AWS Amplify.  To accomodate for this change, add the following to your application's <HEAD> tag in *src/index.html*:
+
+Angular 6 has removed a shim for the global object used by many NPM modules, including some in AWS Amplify. To accommodate for this change, add the following to your application's <HEAD> tag in *src/index.html*:
 
 ```html
 <script>
@@ -724,25 +663,31 @@ Angular 6 has removed a shim for the global object used by many NPM modules, inc
 </script>
 ```
 
-### Adding Amplify to your Ionic app
+### Adding Analytics to your Ionic app
 
 The AWS Amplify library provides a mechanism for your front-end application to interact with AWS cloud resources without you having to do the laborious work of configuring resources and coding for integration. 
 
-AWS Amplify analytics category work with Amazon Pinpoint, a service that allows you to collect data about user actions in your app and create targeted campaigns.  
+AWS Amplify analytics category works with Amazon Pinpoint, a service that allows you to collect data about user actions in your app and create targeted campaigns.  
 
-To add Pinpoint analytics to your application, first, you need to import the AWS Amplify library and the configuration file into your app. 
+To add Pinpoint analytics to your application, first, you need to enable it with Amplify CLI:
 
-Open *src/main.ts* and make the following changes, which will use the *aws-exports.js* config file that the AWS Mobile CLI created in your application directory.
+```bash
+$ amplify add analytics
+$ amplify push
+```
+
+The, you need to import `aws-exports.js` configuration file into your app. To do that, open *src/main.ts* and make the following changes in code:
 
 ```js
 import Amplify, { Analytics } from 'aws-amplify';
 import aws_exports from './aws-exports';
+
 Amplify.configure(aws_exports);
 ```
 
 That’s it! No additional code is needed. Your application will now collect and send a default set of analytics data to Amazon Pinpoint, and you can add your custom tracking metrics as needed. If you look in your browser’s network traffic, you should see the application making requests to Amazon Pinpoint.
 
-Since your application doesn’t have much functionality at the moment,  only application launch events are reported. Don't worry, as you add more functionality to your app like authorization and storage, AWS Amplify automatically reports related analytics events.
+Since your application doesn’t have much functionality at the moment, only application launch events are reported. Don't worry, as you add more functionality to your app like authorization and storage, AWS Amplify automatically reports related analytics events.
 
 You’ve just given your application the ability to interact with an AWS resource. In the following section, you will add authentication to your application.
 
@@ -756,16 +701,16 @@ The source code for this section of the tutorial can be found in *tutorial-part-
  
 **What is Amazon Cognito?**
 
-Amazon Cognito is a cloud-based authentication service that helps you manage user access to your applications. The AWS Mobile CLI and AWS-Amplify further help you in authentication by creating and connecting to these resources.
+Amazon Cognito is a cloud-based authentication service that helps you manage user access to your applications. The Amplify CLI and AWS-Amplify further help you in authentication by creating and connecting to these resources.
 
 To enable authentication for your application, first execute the following command:
 ```bash
-awsmobile user-signin enable
+$ amplify add auth
 ```
  
 And then, run following command to update your app backend:
 ```bash
-awsmobile push
+$ amplify push
 ```
  
 ### Enable auth UI 
@@ -905,121 +850,127 @@ In the next part of the tutorial, you’ll learn how to persist data with Amazon
 
 # Part 4: Enabling the Cloud Backend
 
-So far, your todo app enables user sign-in and has a UI that is working with dummy data. In this section, you will integrate your cloud database and cloud API to your app.
+So far, your todo app enables user sign-in and has a UI that is working with dummy data. In this section, you will create a cloud database and a cloud API to access your database.
 
 The source code for this section of the tutorial can be found in *tutorial-part-4* branch of the [project Github repo](https://github.com/aws-samples/aws-amplify-ionic-sample/tree/tutorial-part-4).
 {: .callout}
 
 ## Enable Cloud Database
 
-AWS Mobile CLI makes it easy to create your app's backend, including Cloud database and Cloud API. To enable those features, run:
+The Amplify CLI and Amplify library make it easy to perform create, read, update, and delete ("CRUD") actions against data stored in the cloud through simple API calls in your JavaScript app.
 
-```bash
-$ awsmobile features
-```
+First, you need to create a database.
 
-and select *database* and *cloud-api* from the features list:
+**To create a database**
 
-```bash
-? select features:  
- ◉ user-signin
- ◉ user-files
- ◉ cloud-api
-❯◉ database
- ◉ analytics
- ◉ hosting
- ◯ appsync
-```
- 
-Then, run:
-```bash
-awsmobile database configure 
-```
-to begin setting up your database. The *configure* command will provide the list of options to create database tables and fields:
+1.  Enable the NoSQL database feature and configure your table.
 
-```bash
-? Select from one of the choices below. (Use arrow keys)
-❯ Create a new table 
-  Remove table from the project 
-  Edit table from the project 
-```
- 
-Select *Create a new table*, specify that it is ‘Open’ and name it ‘ToDoItems’:
+    In the root folder of your app, run the following command and select *NoSQL Database* as the service type:
 
-```bash
-? Should the data of this table be open or restricted by user? 
-❯ Open 
-  Restricted 
-? Table name ToDoItems
-```
+    ```bash
+    $ amplify add storage
+    ```
 
-Then, add two columns when prompted:
+2.  Choose `Open` to make the data in this table viewable by all users of your application.
 
-```bash
-You can now add columns to the table.
+    ```terminal
+    ? Should the data of this table be open or restricted by user?
+    ❯ Open
+      Restricted
+    ```
 
-? What would you like to name this column userId
-? Choose the data type string
-? Would you like to add another column Yes
-? What would you like to name this column items
-? Choose the data type list
-? Would you like to add another column No
+3.  For this example type in *ToDoItems* as your `Table name`.
 
-Before you create the database, you must specify how items in your table are uniquely organized. This is done by specifying a Primary key. The primary key uniquely identifies each item in the table, so that no two items can have the same key.
-This could be an individual column or a combination that has "primary key" and a "sort key".
-To learn more about primary key:
-http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey
+    ```terminal
+    ? Please provide table name:  ToDoItems
+    ```
 
-? Select primary key userId
-? Select sort key (No Sort Key)
+### Add columns
 
-You can optionally add global secondary indexes for this table. These are useful when running queries defined by a different column than the primary key.
-To learn more about indexes:
-http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes
+You are creating a table in a [NoSQL database](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SQLtoNoSQL.html) and adding an initial set of columns, each of which has a name and a data type. NoSQL lets you add a column any time you store data that contains a new column. NoSQL tables must have one column defined as the Primary Key, which is a unique identifier for each row.
 
-? Add index No
-```
- 
-You have created a very straightforward DynamoDB data model for your app. For more information on how to configure a production-grade DynamoDB implementation, see [Amazon DynamoDB documentation](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html).
-{:  .callout .callout--info}
+1.  Follow the prompts to add two columns: userId (string), items (list).
 
-Since we have defined this database as 'Open', you should delete the table after working through this tutorial.
+    ```terminal
+    ? What would you like to name this column: userId
+    ? Choose the data type: string
+    ```
+
+2.  When prompted to `? Add another column`, type Y and then choose enter. Repeat the steps to create *items* column.
+
+3.  Select `userId` as the primary key.
+
+    ```terminal
+    ? Please choose partition key for the table:
+    ❯ userId
+      items
+    ```
+
+4.  Choose `(No Sort Key)` as the sort key and then `no` to adding any more indexes, to keep the example simple.
+
+    ```terminal
+    ? Please choose sort key for the table: 
+      userId
+      items
+    ❯ (No Sort Key)
+
+    ? Do you want to add global secondary indexes to your table? (Y/n) n
+    Table ToDoItems saved.
+    ```
+
+    The `ToDoItems` table is now created.
+
+You have created a very simple DynamoDB data model for your app. For more information on how to configure a production-grade DynamoDB implementation, see [Amazon DynamoDB documentation](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html).
+{: .callout .callout--info}
 
 ## Enable Cloud API
 
-Now, you need to create APIs to access the database table that you have created:
-```bash
-awsmobile cloud-api enable
-awsmobile cloud-api configure 
-```
+To access your NoSQL database, you will create an API that can be called from your app to perform CRUD operations.
 
-When prompted, select *Create CRUD API for an existing Amazon DynamoDB table*, and then select *ToDoItems* and restrict access to signed-in users:
+**To create a CRUD API**
 
-```bash
-? Select from one of the choices below. (Use arrow keys)
-  Create a new API 
-  Remove an API from the project 
-  Edit an API from the project 
-> Create CRUD API for an existing Amazon DynamoDB table 
-  Restrict API access to signed-in users: Yes
-```
+1.  Create a new API with the following command, and select 'REST' as the service type.
 
-After running this command, the CLI creates the  `awsmobilejs/backend/cloud-api/ToDoItems/` directory which includes the boilerplate code for your API backend. 
+    ```bash
+    $ amplify add api
+    ```
+    
+    When prompted, provide friendly names for your resources and Choose `CRUD function for Amazon DynamoDB table` template to create your new API.
 
-![](images/cloud-api-folder-structure.png)
- 
-This folder will be deployed to AWS and it will run on AWS Lambda when you update your backend with `awsmobile push` command:
+    ```terminal
+    ? Provide a friendly name for your resource to be used as a label for this category in the project: ToDoItemsCRUD
+    ? Provide a path (e.g., /items) /ToDoItems
+    ? Choose a Lambda source Create a new Lambda function
+    ? Provide a friendly name for your resource to be used as a label for this category in the project: ToDoItemsLambda
+    ? Provide the AWS Lambda function name: ToDoItemsFunction
+    ? Choose the function template that you want to use:
+    ❯ CRUD function for Amazon DynamoDB table (Integration with Amazon API Gateway and Amazon DynamoDB)
+    ```
 
-```bash
-awsmobile push
-```
+3.  Select the `ToDoItems` table created in the previous steps, and choose enter.
+
+    ```terminal
+    ? Choose a DynamoDB data source option Use DynamoDB table configured in the current Amplify project
+    ? Choose from one of the already configured DynamoDB tables (Use arrow keys)
+    ❯ ToDoItems
+    ```
+
+4.  Push your configuration to the cloud. 
+
+    ```bash
+    $ amplify push
+    ```
+
+The required DynamoDB tables, API Gateway endpoints, and Lambda functions will now be created.
+
+After running this command, the CLI creates the  `amplify/backend/api/ToDoItems/` directory which includes the boilerplate code for your API backend. This folder will be deployed to AWS and it will run on AWS Lambda when you update your backend with `amplify push` command.
 
 [AWS Lambda](https://aws.amazon.com/lambda/) is a ‘serverless’ service that allows you to run code without a provisioned server. Your app will utilize AWS Lambda to access your database.
 {: .callout .callout--info}
 
-## Adding CRUD Functionality to Your App 
+## Adding CRUD Functionality to Your App
 
-At that stage,  your database and API resources have been deployed to the cloud. Now, you can add CRUD (create-read-update-delete) functionality to your application which will enable managing todo's in your app. 
+At that stage,  your database and API resources have been deployed to the cloud. Now, you can add CRUD (create-read-update-delete) functionality to your application which will enable managing todo's in your app.
 
 Remember that the todo list would be displayed in `list` page. So, you need to bind the data from your backend data to this page and enable basic CRUD funtionality to work with data.  To accomplish this, you’ll need to update src/app/pages/lists/list.page.ts to match this:
 
@@ -1151,7 +1102,7 @@ You’ve added persisted your app's using Amazon DynamoDB, AWS Lambda, and AWS A
 ## What's next
 
 - Learn more about [AWS Amplify categories]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/developer_guide) to work with many cloud services to create your backend. 
--  Learn more about [API category]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/api_guide) to work with REST and GraphQL endpoints. 
+-  Learn more about [API category]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide) to work with REST and GraphQL endpoints. 
 
 
 

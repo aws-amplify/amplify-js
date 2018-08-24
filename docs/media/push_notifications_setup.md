@@ -5,7 +5,7 @@
 
 AWS Amplify Push Notifications module allows you to integrate push notifications in your app with Amazon Pinpoint targeting and campaign management support.
 
-Push Notifications are currently supported only for *React Native*. For handling Web Push Notification with Service Workers, visit our [Service Workers Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/service_workers_guide#handling-a-push-notification).
+Push Notifications are currently supported only for *React Native*. For handling Web Push Notification with Service Workers, visit our [Service Workers Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/service_workers_guide#handling-a-push-notification).
 {: .callout .callout--info}
 
 This guide provides a step-by-step introduction to start working with push notifications in React Native with Amazon Pinpoint. Amazon Pinpoint helps you to monitor your app's usage, create messaging campaigns targeted to specific user segments or demographics, and collect interaction metrics with push notifications. 
@@ -17,7 +17,7 @@ Setup instructions are provided for Android and iOS, and configuration for both 
 ### Requirements
 1. In order to use Amazon Pinpoint you need to setup credentials (keys or certificates) for your targeted mobile platform; e.g.:Android and/or iOS.
 2. Testing Push Notifications requires a physical device, because simulators or emulators wont' be able to handle push notifications.
-3. Push Notification module is integrated with [AWS Amplify Analytics module]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide) to be able to track notifications. Make sure that you have configured the Analytics module in your app before configuring Push Notification module.
+3. Push Notification module is integrated with [AWS Amplify Analytics module]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide) to be able to track notifications. Make sure that you have configured the Analytics module in your app before configuring Push Notification module.
 3. For setting up iOS push notifications, you need to download and install Xcode from [Apple Developer Center](https://developer.apple.com/xcode/).
 
 ### Setup for Android
@@ -130,7 +130,7 @@ apply plugin: 'com.google.gms.google-services'
 
 1. Setup iOS Push Notifications and create a p12 certificate as instructed here in [Amazon Pinpoint Developer Guide](https://docs.aws.amazon.com/pinpoint/latest/developerguide/apns-setup.html).
  
-2. Add your p12 certificate to AWS Mobile Hub console as instructed here in [Amazon Pinpoint Developer Guide](https://docs.aws.amazon.com/pinpoint/latest/developerguide/getting-started-ios-mobilehub.html).
+2. Add your p12 certificate to your AWS Mobile Hub project by editing *Mobile push* options under *Messaging and Analytics* feature.
 
 3. Create and link a React Native app:
 ```js
@@ -189,12 +189,12 @@ $ react-native link aws-amplify-react-native
  - On Signing (Debug, Release) set the provisioning profile (created on your Apple Developer Account)
  
     *Following screencast shows the required app settings in Xcode:*
-    <img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/identifiers.gif" style="display: block;height: auto;width: 100%;"/>
+    <img src="{%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/identifiers.gif" style="display: block;height: auto;width: 100%;"/>
 
 9. Setup capabilities on your App and enable **Push Notifications** and **Background Modes**. On Background Modes select **Remote notifications**.
 
     *Following screencast shows the required app settings in Xcode:*
-    <img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/capabilities.gif" style="display: block;height: auto;width: 100%;"/>
+    <img src="{%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/capabilities.gif" style="display: block;height: auto;width: 100%;"/>
 
 10. Configure Push Notification module for your app as shown in [Configure your App](#configure-your-app) section.
 
@@ -205,13 +205,13 @@ $ react-native link aws-amplify-react-native
  - In case the build fails, try cleaning the project with *shift + command + k*.
 
     *Following screencast shows the required app settings in Xcode:*
-    <img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/runningApp.gif" style="display: block;height: auto;width: 100%;"/>
+    <img src="{%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/runningApp.gif" style="display: block;height: auto;width: 100%;"/>
 
 ### Configure your App
 
 Push Notification module is integrated with `Analytics` module to be able to track notifications. Make sure that you have configured the Analytics module in your app before configuring Push Notification module.  
 
-If you don't have Analytics already enabled, see our [Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide) to add Analytics to your app.
+If you don't have Analytics already enabled, see our [Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide) to add Analytics to your app.
 {: .callout .callout--info}
 
 First, import `PushNotification` module and configure it with `PushNotification.configure()`.
@@ -231,7 +231,7 @@ PushNotification.configure({
 });
 ```
 
-You can also use `aws-exports.js` file in case you have set up your backend with AWS Mobile Hub.
+You can also use `aws-exports.js` file in case you have set up your backend with Amplify CLI.
 
 ```js
 import { PushNotificationIOS } from 'react-native';
