@@ -35,20 +35,9 @@ $ amplify configure
 
 If you have an existing application you can skip ahead, [Step 3. Install AWS Amplify](#step-3-install-aws-amplify). 
 
-<div id="purejs" class="tab-content">
+<div id="purejs" class="tab-content current">
 
-For this example we will create a new plain JavaScript <a href="https://babeljs.io/docs/en/learn/" target="_blank">ES2015</a> app that uses webpack. Create a new project directory called `amplify-js-app` with the following structure:
-
-```
-- amplify-js-app
-    - index.html
-    - package.json
-    - webpack.config.js
-    - /src
-        |- app.js
-    - /dist
-        |- bundle.js
-```
+For this example we will create a new plain JavaScript <a href="https://babeljs.io/docs/en/learn/" target="_blank">ES2015</a> app that uses webpack. Create a new project directory called `amplify-js-app`.
 
 Change directories to your new project and run:
 
@@ -58,6 +47,18 @@ $ cd amplify-js-app
 $ mkdir src dist
 $ touch index.html webpack.config.js src/app.js
 $ npm init
+```
+
+Your project directory structure should now be:
+
+```
+- amplify-js-app
+    - index.html
+    - package.json
+    - webpack.config.js
+    - /src
+        |- app.js
+    - /dist
 ```
 
 Follow the prompts to populate your <a href="https://docs.npmjs.com/files/package.json" target="_blank">package.json</a> file wiith project details. 
@@ -104,7 +105,7 @@ module.exports = {
     }
 };
 ```
-Update the `package.json` file scripts for building and serving your app locally:
+Replace the `package.json` contents with the following:
 
 ```js
 {
@@ -118,17 +119,19 @@ Update the `package.json` file scripts for building and serving your app locally
     "webpack-dev-server": "^3.1.5"
   },
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "build": "webpack"
   }
 }
 
 ```
 
-Then run your app:
+Run your app:
 
 ```bash
 $ npm start
 ```
+Your app should now be available at <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>
 
 </div>
 
@@ -263,6 +266,8 @@ $ npm install --save aws-amplify
 
 In addition to `aws-amplify` core, you can install our angular module which provides a service provider, helpers, and components:
 
+</div>
+<div id="ionic" class="tab-content">
 ```bash
 $ npm install --save aws-amplify-angular
 ``` 
@@ -276,8 +281,6 @@ See the [Ionic Guide](https://aws-amplify.github.io/amplify-js/media/ionic_guide
 ## Step 4. Set up Your Backend
 
 You can quickly create your backend from scratch with Automatic Setup, or use Manual Setup to integrate AWS resources you have already configured.
-
-#### Automated Setup
 
 `amplify init` creates a backend project for your app and pulls the service configuration into your project. 
 
@@ -297,31 +300,10 @@ Amplify.Logger.LOG_LEVEL = 'DEBUG';
 
 ```
 
-#### Manual Setup
-
-If you want to use your existing AWS resources with your app you will need to **manually configure** your app with your current credentials in your code, for example:
-
-```js
-import Amplify from 'aws-amplify';
-
-Amplify.configure({
-    Auth: {
-        // REQUIRED - Amazon Cognito Identity Pool ID
-        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', 
-        // REQUIRED - Amazon Cognito Region
-        region: 'XX-XXXX-X', 
-        // OPTIONAL - Amazon Cognito User Pool ID
-        userPoolId: 'XX-XXXX-X_abcd1234',
-        // OPTIONAL - Amazon Cognito Web Client ID
-        userPoolWebClientId: 'XX-XXXX-X_abcd1234', 
-    }
-});
-```
-
 In the configuration above, you are required to pass in an Amazon Cognito identity pool ID so that AWS Amplify can retrieve base credentials for a user even in an unauthenticated state. 
 
 **Configuration Parameters for existing AWS resources**
-To see the configuration parameters for existing AWS resources, see the *Manual Setup* section in AWS Amplify Developer Guide for each individual service:
+To see the configuration parameters for existing AWS resources, see the *Existing AWS Resources* section in AWS Amplify Developer Guide for each individual service:
 [Amazon Cognito]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide#manual-setup),
 [Amazon S3]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide#manual-setup),
 [Amazon Pinpoint]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide#manual-setup),
@@ -367,6 +349,27 @@ $ amplify publish
  - Add [Analytics]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide)
  - Add [Authentication]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)
  - Add a GraphQL or REST [API]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide)
+
+#### Existing AWS Resources
+
+If you want to use your existing AWS resources with your app you will need to **manually configure** your app with your current credentials in your code, for example:
+
+```js
+import Amplify from 'aws-amplify';
+
+Amplify.configure({
+    Auth: {
+        // REQUIRED - Amazon Cognito Identity Pool ID
+        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', 
+        // REQUIRED - Amazon Cognito Region
+        region: 'XX-XXXX-X', 
+        // OPTIONAL - Amazon Cognito User Pool ID
+        userPoolId: 'XX-XXXX-X_abcd1234',
+        // OPTIONAL - Amazon Cognito Web Client ID
+        userPoolWebClientId: 'XX-XXXX-X_abcd1234', 
+    }
+});
+```
 
 ##### AWS SDK Interfaces
 
