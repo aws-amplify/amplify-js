@@ -267,6 +267,8 @@ $ npm install --save aws-amplify
 
 In addition to `aws-amplify` core, you can install our angular module which provides a service provider, helpers, and components:
 
+</div>
+<div id="ionic" class="tab-content">
 ```bash
 $ npm install --save aws-amplify-angular
 ``` 
