@@ -160,7 +160,7 @@ When your Cognito User Pool sign-in options are set to "*Username*", and "*Also 
 
 To enforce Cognito User Pool signups with a unique email, you need to change your User Pool's *Attributes* setting in [Amazon Cognito console](https://console.aws.amazon.com/cognito) as the following:
 
-![User Pool Settings](images/cognito_user_pool_settings.png){: style="max-height:300px;"}
+![User Pool Settings]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/cognito_user_pool_settings.png){: style="max-height:300px;"}
 
 #### Sign Out
 ```js
