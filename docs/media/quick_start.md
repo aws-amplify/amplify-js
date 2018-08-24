@@ -3,7 +3,7 @@
 
 # Getting Started
 
-AWS Amplify is designed to provide you a more productive environment for connecting cloud services to your app. This document will get you started with your Web or React Native projects. Use the drop-down menu in the top right to view framework-specific instructions.
+AWS Amplify provides the foundation for your cloud-powered mobile and web apps. AWS Amplify includes a JavaScript library for your Web and React Native projects, a style guide including UI components, and the Amplify CLI toolchain for hosting and for managing backends in the AWS cloud. The goal of this guide is to build or integrate an app with AWS Amplify. Use the drop-down menu in the top right to choose the framework that you want to work with.
 
 ## Step 1. Set up your Development Environment 
 
