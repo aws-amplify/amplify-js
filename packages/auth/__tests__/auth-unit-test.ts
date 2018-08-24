@@ -1643,7 +1643,7 @@ describe('auth unit test', () => {
                             { Name: 'phone_number', Value: 'phone_number' },
                             { Name: 'email_verified', Value: 'false' },
                             { Name: 'phone_number_verified', Value: 'true' },
-                            { Name: 'sub', Value: 'fefefe' }
+                            { Name: 'sub', Value: '123-456789' }
                         ]);
                     });
                 });
@@ -1666,7 +1666,8 @@ describe('auth unit test', () => {
                     email: 'email',
                     phone_number: 'phone_number',
                     email_verified: false,
-                    phone_number_verified: true
+                    phone_number_verified: true,
+                    sub: "123-456789"
                 }
             });
 
