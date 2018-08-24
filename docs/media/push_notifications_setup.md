@@ -29,7 +29,7 @@ Setup instructions are provided for Android and iOS, and configuration for both 
 
 2. Get your push messaging credentials for Android in Firebase console. [Click here for instructions](Get Push Messaging Credentials for Android).
 
-3. Create and link a React Native app:
+3. Create and native link on a React Native app:
 
     ```bash
     $ react-native init myapp
@@ -47,8 +47,8 @@ Setup instructions are provided for Android and iOS, and configuration for both 
     ```bash
     $ cd myapp
     $ amplify init
-    $ amplify push
     $ amplify add notifications
+    $ amplify push
     ```
 
     Choose *FCM* when promoted: 
@@ -172,7 +172,7 @@ Setup instructions are provided for Android and iOS, and configuration for both 
 
 1. Setup iOS Push Notifications and create a p12 certificate as instructed here in [Amazon Pinpoint Developer Guide](https://docs.aws.amazon.com/pinpoint/latest/developerguide/apns-setup.html).
  
-2. Create and link a React Native app:
+2. Create a native link on a React Native app:
 
     ```js
     $ react-native init myapp
@@ -190,8 +190,8 @@ Setup instructions are provided for Android and iOS, and configuration for both 
     ```bash
     $ cd myapp
     $ amplify init
-    $ amplify push
     $ amplify add notifications
+    $ amplify push
     ```
 
     Choose *APNS* when promoted:
