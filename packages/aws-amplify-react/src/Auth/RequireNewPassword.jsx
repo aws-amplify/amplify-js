@@ -56,7 +56,8 @@ export default class RequireNewPassword extends AuthPiece {
 
     change() {
         const user = this.props.authData;
-        const { password, ...requiredAttributes } = this.inputs;
+        const { password } = this.inputs;
+        const requiredAttributes = objectWithoutProperties(this.inputs, ['password'])
         if (!Auth || typeof Auth.completeNewPassword !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -125,4 +126,18 @@ export default class RequireNewPassword extends AuthPiece {
 
 function convertToPlaceholder(str) {
     return str.split('_').map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
+}
+
+function objectWithoutProperties(obj, keys) {
+    const target = {};
+    for (const key in obj) {
+        if (keys.indexOf(key) >= 0) {
+            continue;
+        }
+        if (!Object.prototype.hasOwnProperty.call(obj, key)) {
+            continue;
+        }
+        target[key] = obj[key];
+    }
+    return target;
 }
