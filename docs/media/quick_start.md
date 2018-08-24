@@ -200,14 +200,14 @@ AWS Amplify is available as an npm package. Run the following commands at the ro
     <li class="tab-link react" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
 </ul>
-<div id="purejs" class="tab-content">
+<div id="purejs" class="tab-content current">
 
 ```bash
 $ npm install --save aws-amplify
 ```
 
 </div>
-<div id="react" class="tab-content current">
+<div id="react" class="tab-content">
 
 ```bash
 $ npm install --save aws-amplify
@@ -290,6 +290,8 @@ $ amplify init
 ```
 
 > When you run `amplify init` command you are asked for the details of your project. A configuration file for your app is put in your configured source directory called `aws-exports.js`.
+
+Update the `src/app.js` file:
 
 ```js
 import Amplify from 'aws-amplify';
