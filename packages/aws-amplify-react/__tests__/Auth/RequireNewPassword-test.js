@@ -164,7 +164,7 @@ describe('RequireNewPassword test', () => {
 
             wrapper.setProps(props);
             requireNewPassword.inputs = {
-                password: 'password',
+                password: 'password'
             }
 
             await requireNewPassword.change();
