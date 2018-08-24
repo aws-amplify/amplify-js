@@ -56,8 +56,7 @@ export default class RequireNewPassword extends AuthPiece {
 
     change() {
         const user = this.props.authData;
-        const { password } = this.inputs;
-        const { requiredAttributes } = user.challengeParam;
+        const { password, ...requiredAttributes } = this.inputs;
         if (!Auth || typeof Auth.completeNewPassword !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -81,6 +80,9 @@ export default class RequireNewPassword extends AuthPiece {
         const { hide } = this.props;
         if (hide && hide.includes(RequireNewPassword)) { return null; }
 
+        const user = this.props.authData;
+        const { requiredAttributes } = user.challengeParam;
+
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Change Password')}</SectionHeader>
@@ -94,6 +96,19 @@ export default class RequireNewPassword extends AuthPiece {
                         type="password"
                         onChange={this.handleInputChange}
                     />
+
+                    {requiredAttributes
+                        .map(attribute => (
+                            <InputRow
+                                placeholder={I18n.get(convertToPlaceholder(attribute))}
+                                theme={theme}
+                                key={attribute}
+                                name={attribute}
+                                type="text"
+                                onChange={this.handleInputChange}
+                            />
+                        ))}
+
                     <ButtonRow theme={theme} onClick={this.change}>
                         {I18n.get('Change')}
                     </ButtonRow>
@@ -106,4 +121,8 @@ export default class RequireNewPassword extends AuthPiece {
             </FormSection>
         )
     }
+}
+
+function convertToPlaceholder(str) {
+    return str.split('_').map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
 }
