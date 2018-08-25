@@ -175,7 +175,7 @@
 				{% endfor %}
 				if (flag) {
 					document.getElementById("{{ category.category }}").classList.add('visible-xs');
-					document.getElementById("section-select").value = "{{ category.base_url }}";
+					document.getElementById("section-select").value = "{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ category.base_url }}";
 				}
 				else {
 					document.getElementById("{{ category.category }}").classList.add('hidden-xs');
