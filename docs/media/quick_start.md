@@ -106,6 +106,8 @@ Add the following to the `index.html` file:
 Add the following to the `webpack.config.js` file:
 
 ```js
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
 module.exports = {
     mode: 'development',
     entry: './src/app.js',
