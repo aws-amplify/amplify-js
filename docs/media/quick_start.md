@@ -42,7 +42,7 @@ For this example we will create a new plain JavaScript <a href="https://babeljs.
 Change directories to your new project and run:
 
 ```
-$ mkdir amplify-js-app
+$ mkdir amplify-js-app amplify-js-app/src
 $ cd amplify-js-app
 $ touch package.json index.html webpack.config.js src/app.js
 ```
