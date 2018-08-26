@@ -79,7 +79,7 @@ Add the following to the `package.json` file:
   },
   "scripts": {
     "start": "webpack && webpack-dev-server --mode development",
-    "build": "webpack --mode production"
+    "build": "webpack"
   }
 }
 
