@@ -125,7 +125,7 @@ Add the following to the `index.html` file:
                 <div id="AnalyticsResult"></div>
             </div>
         </div>
-        <script src="dist/bundle.js"></script>
+        <script src="main.bundle.js"></script>
     </body>
 </html>
 ```
