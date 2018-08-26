@@ -319,15 +319,13 @@ See the [Ionic Guide](https://aws-amplify.github.io/amplify-js/media/ionic_guide
 
 ## Step 3. Set up the App Backend
 
-If you'd like to integrate existing AWS backend resources with your app, read ‘Existing AWS resources’.
+If you'd like to integrate existing AWS backend resources with your app, read ‘[Existing AWS resources](#existing-aws-resources)’.
 
-Create new AWS backend resources and pull the AWS services configuration into the app. In a terminal window, change to the root directory of your app and run the following command:
+Create new AWS backend resources and pull the AWS services configuration into the app. In a terminal window, change to the root directory of your app and run the following command (for this app, accepting all defaults is OK):
 
 ```bash
 $ amplify init
 ```
-
-> The `amplify init` command requires details about the app. Accepting all defaults works. A configuration file (`aws-exports.js`) will be added to the source directory.
 
 ### Create the Required AWS Backend Resources
 
@@ -345,7 +343,7 @@ Add one or more cloud services to the app using the `amplify add <category-name>
 | notifications |
 ```
 
-Add analytics to the app with the following command (accept all defaults):
+Add analytics to the app with the following command (accepting all defaults is OK):
 
 ```bash
 $ amplify add analytics
@@ -356,6 +354,8 @@ Create the AWS backend resources and update the aws-exports.js file.
 ```bash
 $ amplify push
 ```
+
+> A configuration file (`aws-exports.js`) will be added to the source directory.
 
 ## Step 4. Integrate the AWS Backend Resources to the App with Amplify
 
