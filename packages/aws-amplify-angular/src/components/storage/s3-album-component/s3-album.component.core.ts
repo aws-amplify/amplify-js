@@ -14,7 +14,7 @@ const template = `
 
 @Component({
   selector: 'amplify-s3-album-core',
-  template: template
+  template
 })
 export class S3AlbumComponentCore {
   list: Array<Object>;
