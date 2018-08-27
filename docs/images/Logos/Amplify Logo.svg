@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="126px" height="94px" viewBox="0 0 126 94" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.1 (57501) - http://www.bohemiancoding.com/sketch -->
+    <title>Logo/Amplify Logo</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="74.916705%" y1="42.4643507%" x2="18.2326755%" y2="84.4872346%" id="linearGradient-1">
+            <stop stop-color="#FFC300" offset="0%"></stop>
+            <stop stop-color="#FF9000" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Logo/Amplify-Logo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group">
+            <path d="M25.2808604,50.192137 L35.8751825,31.8473288 L44.9710103,47.6084247 L27.2434672,78.3045753 L62.6856075,78.3045753 L71.743892,94 L0,94 L25.2808604,50.192137 Z M40.6554116,23.5512493 L49.3887526,8.41853699 L98.814466,93.9997425 L81.3108879,93.9997425 L40.6554116,23.5512493 Z M54.249635,0 L71.7299104,0 L126,94 L108.497716,94 L54.249635,0 Z" id="Fill-1" fill="url(#linearGradient-1)"></path>
+            <polygon id="Fill-1" fill="#FFAF38" points="0 94 72 94 62.9093796 78 27.3407196 78"></polygon>
+        </g>
+    </g>
+</svg>

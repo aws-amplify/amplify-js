@@ -4,46 +4,128 @@ layout: homepage
 keywords:
 
 # Hero section
-title: AWS Amplify
-description: A JavaScript library for application development using cloud services.
+title: The foundation for your cloud-powered mobile & web apps
+#description: A JavaScript library for application development using cloud services.
 buttons:
-    - content: Let's Rock!
+    - content: Get Started
       icon: arrow-right
-      url: '/media/quick_start'
+      url: '/media/get_started'
       external_url: false
 
 # Grid navigation
 marketing_grid:
-    - title: Build for Web and Mobile
-      excerpt: "<p>You can build cloud-powered web and mobile experiences with AWS Amplify. Learn how to build:
-                    <ul>
-                        <li><a href='/amplify-js/media/create/web-apps'>Web apps</a></li>
-                        <li><a href='/amplify-js/media/create/react-native-apps'>React Native apps</a></li>
-                        <li><a href='/amplify-js/media/create/hybrid-mobile-apps'>Hybrid Mobile apps</a> </li>
-                        <li><a href='/amplify-js/media/create/static-web-sites'>Static Websites</a></li>
-                    </ul>
-                  </p>"
-    - title: Declarative API
-      excerpt: " <p>AWS Amplify provides a declarative and easy-to-use API for cloud operations. See how you can add common tasks quickly:
-                    <ul>
-                        <li><a href='/amplify-js/media/examples#add-authentication-to-your-app'>Add authentication to your app</a></li>
-                        <li><a href='/amplify-js/media/examples#store-files-on-the-cloud'>Store user files securely</a></li>
-                        <li><a href='/amplify-js/media/examples#tracking-user-activity-in-your-app'>Track user activity</a> </li>
-                        <li><a href='/amplify-js/media/examples#signing-http-requests'>Secure API requests</a></li>
-                    </ul>
-                </p>"
-    - title: Bring your own frontend 
-      excerpt: "<p>AWS Amplify goes well with any JavaScript based frontend library. Learn more about our frontend support:
-                  <ul>
-                    <li><a href='/amplify-js/media/angular_guide'>Angular</a> and <a href='/amplify-js/media/ionic_guide'>Ionic</a></li>
-                    <li><a href='/amplify-js/media/react_guide'>React</a> </li>
-                    <li><a href='/amplify-js/media/react_native_guide'>React Native</a></li>
-                    <li><a href='/amplify-js/media/vuejs_guide'>Vue.js</a></li>
-                  </ul>
-                </p> "
-    - title: Open and Pluggable
-      excerpt: Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
+    - title: <span class="orange-text">Easy-to-Use</span> Library
+      icon: '/images/icons/Medium/Library-window.png'
+      excerpt: Choose your cloud services and easily connect them to your app with just a few lines of code.
+      url: '/#guides-box'
+    - title: <span class="orange-text">Powerful</span> Toolchain
+      icon: '/images/icons/Medium/CLI-Toolchain.png'
+      excerpt: Effortlessly create and maintain sophisticated serverless backends for your apps.
+      url: '/media/toolchain'
+    - title: <span class="orange-text">Beautiful</span> UI Components
+      icon: '/images/icons/Medium/UI-Components.png'
+      excerpt: Accelerate app development by leveraging our beautiful out-of-the box UI components.
+      url: '/media/ui_library'
 
+cloud_grid_left:
+  - title: Analytics
+    excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
+    url: '/media/analytics_guide'
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+  - title: API 
+    excerpt: A simple and secure solution for making HTTP requests using REST and GraphQL, with support for real-time data.
+    url: '/media/api_guide' 
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+  - title: Authentication
+    excerpt: Authentication APIs with pre-built UI components for your app.
+    url: '/media/authentication_guide'
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+  - title: Storage
+    excerpt: A simple mechanism for managing user content in public, protected or private storage.
+    url: '/media/storage_guide' 
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+
+cloud_grid_right:
+  - title: Interactions
+    excerpt: Create conversational bots powered by deep learning technologies.
+    url: '/media/interactions_guide'   
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+  - title: PubSub
+    excerpt: Connect your app to message-oriented middleware on the cloud.
+    url: '/media/pub_sub_guide'   
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+  - title: Notifications
+    excerpt: Push notifications with campaign analytics and targeting.
+    url: '/media/push_notifications_setup'  
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+
+utility_modules:
+  - title: Cache
+    excerpt: A generic LRU cache for storing data with priority and expiration settings.
+    url: '/media/cache_guide'  
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+  - title: Hub
+    excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
+    url: '/media/hub_guide'
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+  - title: I18n
+    excerpt: A lightweight internationalization solution.
+    url: '/media/i18n_guide' 
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+  - title: Logger
+    excerpt: Console logging utility.
+    url: '/media/logger_guide' 
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
+      - title: React
+        url: '/images/Logos/React-Small-Grey.png'
+  - title: Service Worker
+    excerpt: A utility class to work with PWA and Service Worker APIs.
+    url: '/media/service_workers_guide'
+    platforms:
+      - title: Web
+        url: '/images/Logos/Web-Small-Grey.png'
 
 # Grid navigation
 grid_navigation:

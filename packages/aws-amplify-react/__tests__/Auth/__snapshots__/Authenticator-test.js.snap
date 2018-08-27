@@ -4995,6 +4995,7 @@ exports[`Authenticator normal case render if no error with children 1`] = `
   />
   <div
     authState="signIn"
+    hide={Array []}
     key="aws-amplify-authenticator-props-children-0/.0"
     messageMap={[Function]}
     onAuthEvent={[Function]}

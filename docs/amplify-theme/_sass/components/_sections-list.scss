@@ -81,7 +81,7 @@
 					}
 				}
 
-				&::after {
+				/* &::after {
 					@extend .icon;
 					content: '\e91d';
 					color: #bdbdbd;
@@ -90,8 +90,8 @@
 					position: absolute;
 					right: 0;
 					top: .3125rem;
-					transition: color .2s;
-				}
+					transition: color .5s;
+				} */
 
 				> ul {
 					display: none;
@@ -99,10 +99,10 @@
 
 				&.active {
 
-					&::after {
+					/* &::after {
 						color: $color-dark-blue;
 						
-					}
+					} */
 
 					> ul {
 						display: block;
@@ -118,7 +118,7 @@
 
 			a {
 				@include link-reset;
-				font-size:0.9rem;
+				//font-size:0.9rem;
 				padding-left: 10px;
 				white-space: nowrap;
 				overflow: hidden;
@@ -129,7 +129,7 @@
 
 		}
 
-		.level-2 {
+		/*.level-2 {
 			li {
 				&.active {
 					border-left-color: gray;
@@ -160,7 +160,7 @@
 					border-width: 3px;
 				}
 			}
-		}
+		}*/
 
 	}
 }
@@ -173,5 +173,3 @@
 		
 	}
 }
-
- 
