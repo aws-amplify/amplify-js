@@ -156,10 +156,11 @@ Auth.confirmSignUp(username, code, {
 
 **Forcing Email Uniqueness in Cognito User Pools**
 
-When your User Pool sign-in options are set to "*Username*", and "*Also allow sign in with verified email address*", *signUp()* creates a new user account without validating email uniqueness. In this case you will have multiple user pool identities and previous account's attribute is changed to *email_verified : false*. 
+When your Cognito User Pool sign-in options are set to "*Username*", and "*Also allow sign in with verified email address*", *signUp()* method creates a new user account everytime, without validating email uniqueness. In this case you will end up having multiple user pool identities and previously created account's attribute is changed to *email_verified : false*. 
 
-To restrict signups with unique email, you can change your User Pool settings in your user pool's *Attributes* settings as following:
-![User Pool Settings](images/cognito_user_pool_settings.png){: style="max-height:300px;"}
+To enforce Cognito User Pool signups with a unique email, you need to change your User Pool's *Attributes* setting in [Amazon Cognito console](https://console.aws.amazon.com/cognito) as the following:
+
+![User Pool Settings]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/cognito_user_pool_settings.png){: style="max-height:300px;"}
 
 #### Sign Out
 ```js
