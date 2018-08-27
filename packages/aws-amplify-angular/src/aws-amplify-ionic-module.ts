@@ -41,7 +41,7 @@ const components = [
   entryComponents: [
     ...components
   ],
-  providers: [ AmplifyService ],
+  providers: [ AmplifyService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
     ...components

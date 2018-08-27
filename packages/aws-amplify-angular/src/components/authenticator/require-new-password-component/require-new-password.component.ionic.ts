@@ -2,56 +2,50 @@ import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { RequireNewPasswordComponentCore } from './require-new-password.component.core';
 
-const templatetemp = `
-<div class="amplify-form-container" *ngIf="_show">
+const template = `
+<div class="amplify-authenticator amplify-authenticator-ionic" *ngIf="_show">
   <div class="amplify-form-body">
-
-    <div class="amplify-form-row">
-      
-      <div class="amplify-form-cell-left">
-        <a class="amplify-form-link"
-          (click)="onSignIn()"
-        >Back to Sign In</a>
-      </div>
-
-    </div>
-
+    <div class="amplify-form-header amplify-form-header-ionic">Reset your password</div>
     <ion-list>
-
-    <ion-item>
-      <ion-label stacked>Username</ion-label>
-      <ion-input type="text" 
-        (keyup)="setUsername($event.target.value)"
-        [value]="username"
-      ></ion-input>
-    </ion-item>
+      <ion-item lines="none">
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Username</ion-label>
+        <ion-input type="text"
+          class="amplify-form-input"
+          (keyup)="setUsername($event.target.value)"
+          [value]="username"
+        ></ion-input>
+      </ion-item>
   
-    <ion-item>
-      <ion-label stacked>Code</ion-label>
-      <ion-input 
-        #code
-        type="text" 
-        (keyup)="setCode(code.value)"
-      ></ion-input>
-    </ion-item>
+      <ion-item lines="none">
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Code</ion-label>
+        <ion-input 
+          #code
+          type="text"
+          class="amplify-form-input"
+          (keyup)="setCode(code.value)"
+        ></ion-input>
+      </ion-item>
 
-    <ion-item>
-      <ion-label stacked>Password</ion-label>
-      <ion-input 
-        #password
-        type="password" 
-        (keyup)="setPassword(password.value)"
-        (keyup.enter)="onSubmit()"
-      ></ion-input>
-    </ion-item>
-  
-  </ion-list>
+      <ion-item lines="none">
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">Password</ion-label>
+        <ion-input 
+          #password
+          type="password"
+          class="amplify-form-input"
+          (keyup)="setPassword(password.value)"
+          (keyup.enter)="onSubmit()"
+        ></ion-input>
+      </ion-item>
+
+    </ion-list>
 
     <div class="amplify-form-row">
     <ion-button
+      expand="block"
       (click)="onSend()"
     >Send Code</ion-button>
     <ion-button
+      expand="block"
       (click)="onSubmit()"
     >Submit</ion-button>
     </div>
@@ -61,43 +55,7 @@ const templatetemp = `
   </div>
 </div>
 
-`
-
-const template = `
-<div class="amplify-form-container" *ngIf="_show">
-  <div class="amplify-form-body">
-  <div class="amplify-form-row">
-      <div class="amplify-form-cell-left">
-        <a class="amplify-form-link"
-          (click)="onSignIn()"
-        >Back to Sign In</a>
-      </div>
-    </div>
-    <ion-list>
-      <ion-item>
-    
-        <ion-label stacked>Password</ion-label>
-        <ion-input 
-        #password
-        type="password" 
-        (keyup)="setPassword(password.value)"
-        (keyup.enter)="onSubmit()"
-        ></ion-input>
-      </ion-item>
-    </ion-list>
-    
-    <div class="amplify-form-row">
-      <ion-button
-        (click)="onSubmit()"
-      >Submit</ion-button>
-    </div>
-  </div>
-  <div class="amplify-form-footer">
-    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
-  </div>
-  
-</div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-require-new-password-ionic',

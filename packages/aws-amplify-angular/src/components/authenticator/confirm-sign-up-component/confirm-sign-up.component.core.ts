@@ -3,48 +3,62 @@ import { AmplifyService } from '../../../providers/amplify.service';
 import { AuthState } from '../../../providers/auth.state';
 
 const template = `
-<div class="amplify-form-container" *ngIf="_show">
+<div class="amplify-container" *ngIf="_show">
+<div class="amplify-form-container">
   <div class="amplify-form-body">
+    <div class="amplify-form-header">Confirm Sign up</div>
 
     <div class="amplify-form-row">
-      
-      <div class="amplify-form-cell-left">
-        <a class="amplify-form-link"
-          (click)="onSignIn()"
-        >Back to Sign In</a>
-      </div>
-
-    </div>
-
-    <div class="amplify-form-row">
+      <label class="amplify-input-label" for="amplifyUsername"> Username *</label>
       <input
-        (keyup)="setUsername($event.target.value)"
+        #amplifyUsername
         class="amplify-form-input"
         type="text"
+        disabled
         placeholder="Username"
         [value]="username"
       />
     </div>
     <div class="amplify-form-row">
+      <label class="amplify-input-label" for="code"> Confirmation Code *</label>
       <input #code
+        (change)="setCode(code.value)"
         (keyup)="setCode(code.value)"
         (keyup.enter)="onConfirm()"
         class="amplify-form-input"
         type="text"
-        placeholder="Code"
+        placeholder="Enter your Code"
       />
+      <span class="amplify-form-action">Lost your code?
+        <a class="amplify-form-link"
+            (click)="onResend()"
+          >Resend Code</a></span>    
     </div>
-      
-    <button class="amplify-form-button"
-      (click)="onConfirm()">Confirm</button>
-    <button class="amplify-form-button"
-      (click)="onResend()">Resend</button>
+    
+    <div class="amplify-form-actions">
+      <div class="amplify-form-cell-left">
+        <div class="amplify-form-actions-left">
+          <a class="amplify-form-link" (click)="onSignIn()">Back to Sign in</a>
+        </div>
+      </div>
+
+      <div class="amplify-form-cell-right">
+        <button class="amplify-form-button"
+          (click)="onConfirm()">Confirm</button>
+      </div>
+    </div>
 
   </div>
 
-  <div class="amplify-form-footer">
-    <div class="amplify-form-message-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>
+
+<div class="amplify-alert" *ngIf="errorMessage">
+  <div class="amplify-alert-body">
+    <span class="amplify-alert-icon">&#9888;</span>
+    <div class="amplify-alert-message">{{ errorMessage }}</div>
+    <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
   </div>
+</div>
 
 </div>
 `
@@ -108,6 +122,10 @@ export class ConfirmSignUpComponentCore {
 
   onSignIn() {
     this.amplifyService.setAuthState({ state: 'signIn', user: null });
+  }
+
+  onAlertClose() {
+    this._setError(null);
   }
 
   _setError(err) {
