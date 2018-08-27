@@ -57,6 +57,23 @@ const options = {
     endpointId: 'endpointId',
     region: 'region'
 };
+
+const optionsWithoutId = {
+    appId: undefined,
+    clientInfo: clientInfo,
+    credentials: credentials,
+    endpointId: 'endpointId',
+    region: 'region'
+};
+
+const optionsWithoutRegion = {
+    appId: 'appId',
+    clientInfo: clientInfo,
+    credentials: credentials,
+    endpointId: 'endpointId',
+    region: undefined
+};
+
 const timeSpyOn = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => {
     return 1526939075455;
 });
@@ -66,6 +83,7 @@ const timeSpyOn2 = jest.spyOn(Date.prototype, 'toISOString').mockImplementation(
 });
 const timestamp = new Date().getTime();
 
+jest.useFakeTimers()
 
 describe("AnalyticsProvider test", () => {
     describe('getCategory test', () => {
@@ -95,7 +113,7 @@ describe("AnalyticsProvider test", () => {
     describe('record test', () => {
         test('record without credentials', async () => {
             const analytics = new AnalyticsProvider();
-
+            analytics.configure(options);
             const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                 return Promise.reject('err');
             });
@@ -104,9 +122,33 @@ describe("AnalyticsProvider test", () => {
             spyon.mockClear();
         });
 
+        test('record without appId', async () => {
+            const analytics = new AnalyticsProvider();
+            analytics.configure(optionsWithoutId);
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                return Promise.resolve(credentials);
+            });
+           
+            expect(await analytics.record('params')).toBe(false);
+            spyon.mockClear();
+        });
+
+        test('record without region', async () => {
+            const analytics = new AnalyticsProvider();
+            analytics.configure(optionsWithoutRegion);
+            const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+                return Promise.resolve(credentials);
+            });
+           
+            expect(await analytics.record('params')).toBe(false);
+            spyon.mockClear();
+        });
+
         test('record happy case', async () => {
             const analytics = new AnalyticsProvider();
-        
+            analytics.configure({
+                appId: 'appId'
+            });
             const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
                     return Promise.resolve(credentials);
                 });
