@@ -1,92 +1,47 @@
+<html>
+  <head>
+        <!-- Global site tag (gtag.js) - Google Analytics -->     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115615468-1"></script>     <script>         window.dataLayer = window.dataLayer || [];         function gtag(){dataLayer.push(arguments);}         gtag('js', new Date());         gtag('config', 'UA-115615468-1',{             'linker': {             'domains': ['aws-amplify.github.io']             }         });         var navigateToNextPage = function (elem) {             var path = "{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start";             location.replace( path + location.search);         };       gtag('event', 'page_view', {         'event_callback': navigateToNextPage         });     </script> <meta http-equiv="refresh" content="5; url={% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start" />
+  </head>
+  <body>
+    <p>Redirecting to <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start">https://aws-amplify.github.io/amplify-js/media/quick_start</a></p>
+  </body>
+</html> 
 Building Web Apps with AWS Amplify
 ===========
 
 Overview
 --------
 
-The AWS Amplify and the CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly. In this tutorial, you will learn how to build a cloud-enabled web app with React and AWS Amplify.
+The AWS Amplify library and the AWS Amplify CLI provides a developer experience that allows frontend JavaScript developers to create and integrate backend resources into their apps quickly.
+
+In this tutorial, you will learn how to build a cloud-enabled web app with React and AWS Amplify.
 
 **By completing this tutorial, you will be able to;**
-- Use AWS Mobile CLI to create your backend
+- Use Amplify CLI to create your backend
 - Configure and integrate your backend into your JavaScript app 
 - Deploy your web app for delivery
 
-## Set Up and Installation 
+## Create a new React App
 
-### Prerequisites
-
-1.  [Sign up for the AWS Free Tier](https://aws.amazon.com/free/).
-2.  Install [Node.js](https://nodejs.org/en/download/) with NPM.
-3.  Install AWS Mobile CLI
-
-    ```bash
-    npm install -g awsmobile-cli
-    ```
-
-4.  Configure the CLI with your AWS credentials
-
-    To set up permissions for the toolchain used by the CLI, run:
-
-    ```bash
-    awsmobile configure
-    ```
-
-    If prompted for credentials, follow the steps provided by the CLI.
-
-### Set Up Your Backend
-
-**To configure backend features for your app**
-
-1.  In the root folder of your app, run:
-
-    ```bash
-    awsmobile init
-    ```
-
-    The `init` command creates a backend project for your
-    app. By default, analytics and web hosting are enabled in your
-    backend, and this configuration is automatically pulled into your app
-    when you initialize.
-
-2.  When prompted, provide the source directory for your project. The
-    CLI will generate aws-exports.js in this location. This file
-    contains the configuration and endpoint metadata used to link your
-    frontend to your backend services.
-
-    ```bash
-    ? Where is your project's source directory:  src
-    ```
-
-3.  Respond to further prompts with the following values.
-
-    ```bash
-    ? Where is your project's distribution directory to store build artifacts:  build
-    ? What is your project's build command:  npm run-script build
-    ? What is your project's start command for local test run:  npm run-script start
-    ? What awsmobile project name would you like to use:  YOUR-APP-NAME-2017-11-10-15-17-48
-    ```
-
-After the project is created, you will get a success message which also
-includes details on the path where the *aws-exports.js* is copied.
+Use [Create React App](https://github.com/facebookincubator/create-react-app) to create a new React application. Through the tutorial, you will add cloud features to this application using Amplify CLI and Amplify JavaScript library.
 
 ```bash
-> awsmobile project's details logged at: awsmobilejs/#current-backend-info/backend-details.json
-> awsmobile project's access information logged at: awsmobilejs/#current-backend-info/aws-exports.js
-> awsmobile project's access information copied to: src/aws-exports.js
-> awsmobile project's specifications logged at: awsmobilejs/#current-backend-info/mobile-hub-project.yml
-> contents in #current-backend-info/ is synchronized with the latest information in the aws cloud
+$ npm install -g create-react-app
+$ create-react-app my-app
+$ cd my-app
+$ npm start
 ```
 
-Your project is now initialized.
+## Install and Configure AWS Amplify
 
-#### Connect to Your Backend
+Before start, please be sure that you have installed the Amplify CLI and client libraries by visiting [AWS Amplify JavaScript Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/install_n_config??platform=react&ref_url=/amplify-js/media/tutorials/building-web-apps&ref_content={{"Tutorial: Building Web Apps with AWS Amplify" | uri_escape }}&ref_content_section=configure-your-app).
+{: .callout .callout--action}
 
-AWS Mobile uses the open source [AWS Amplify
-library](https://aws.github.io/aws-amplify) to link your code to the AWS
-features configured for your app.
+**When you are done with the installation**, you can continue with the next step in the tutorial.
 
-This section of the guide shows examples using a React application of
-the kind output by `create-react-app` or a similar tool.
+#### Configure Your App
+
+When you have installed AWS Amplify packages and initialized your project with *amplify init* command, the next step is to configure your app to work with AWS Amplify.
 
 **To connect the app to your configured AWS features**
 
@@ -95,37 +50,31 @@ following imports.
 
 ```js
 import Amplify from 'aws-amplify';
-import awsmobile from './YOUR-PATH-TO/aws-exports';
+import amplify from './YOUR-PATH-TO/aws-exports';
 ```
 
 Then add the following code.
 
 ```js
-Amplify.configure(awsmobile);
+Amplify.configure(amplify);
 ```
 
 ### Run Your App Locally
 
-Your app is now ready to launch and use the default features configured
-by AWS Mobile.
+Your app, which for now consists of a default blank home page, is now ready to launch.
 
 **To launch your app locally in a browser**
 
 In the root folder of your app, run:
 
 ```bash
-awsmobile run
+amplify run
 ```
 
-Behind the scenes, this command runs `npm install` to
-install the Amplify library and also pushes any backend configuration
-changes to AWS Mobile. To run your app locally without pushing backend
+Behind the scenes, this command pushes any backend configuration
+changes to AWS and runs your app. To run your app locally without pushing backend
 changes you can choose to run `npm install` and then
 run `npm start`.
-
-Anytime you launch your app,
-app analytics are gathered and can be visualized 
-in the AWS console.
 
 ### Deploy your app to the cloud
 
@@ -137,65 +86,62 @@ on a robust content distribution network (CDN) and view it in a browser.
 In the root folder of your app, run:
 
 ```bash
-awsmobile publish
+$ amplify hosting add
+```
+
+and select *DEV* for environment setup:
+
+```bash
+? Select the environment setup: DEV (S3 only with HTTP)
+```
+
+After you successfully add hosting to your project, you can use *publish* command to deploy your project for hosting:
+
+```bash
+$ amplify publish
 ```
 
 To push any backend configuration changes to AWS and view content
-locally, run `awsmobile run`. In both cases, any pending
+locally, run `amplify run`. In both cases, any pending
 changes you made to your backend configuration are made to your backend
 resources.
 
-By default, the CLI configures AWS Mobile
-Hosting and Streaming feature, that hosts
-your app on [Amazon CloudFront](https://aws.amazon.com/cloudfront/) CDN
+The CLI configures hosting feature via [Amazon CloudFront](https://aws.amazon.com/cloudfront/) CDN
 endpoints. These locations make your app highly available to the public
-on the Internet and support [media file
-streaming](http://docs.aws.amazon.com/mobile-hub/latest/developerguide/url-cf-dev;Tutorials.html)
+on the Internet and support [media file streaming](http://docs.aws.amazon.com/mobile-hub/latest/developerguide/url-cf-dev;Tutorials.html).
 
-You can also use a custom domain for your
-hosting location.
+You can also use a custom domain for your hosting location.
 
-### Test Your App on Our Mobile Devices
+### Retrieve your App's Backend Status
 
-Invoke a free remote test of your app on a variety of real devices and
-see results, including screenshots.
-
-**To invoke a remote test of your app**
-
-In the root folder of your app, run:
+You can retrieve the status of your app's backend anytime by using *status* command:
 
 ```bash
-awsmobile publish --test
+$ amplify status
 ```
 
-The CLI will open the reporting page for your app in the console to show
-the metrics gathered from the test devices. The device that runs the
-remote test you invoke resides in [AWS Device
-Farm](https://aws.amazon.com/device-farm/) which provides flexible
-configuration of tests and reporting.
+Remember that, when adding a new cloud feature with *amplify add* command, the added functionality is configured locally and it won't be available on your backend until you use *amplify push* command.
 
 ## Add Auth / User Sign-in
 
-The AWS Mobile CLI components for user authentication include a rich,
-configurable UI for sign-up and sign-in.
+The Amplify CLI components for user authentication include a rich, configurable UI for sign-up and sign-in.
 
 **To enable the Auth features**
 
-In the root folder of your app, run:
+In the root folder of your app, run the following commands and select *default configuration* when prompted by *add* command:
 
 ```bash
-awsmobile user-signin enable
-awsmobile push
+$ amplify add auth
+$ amplify push
 ```
 
 ### Connect to Your Backend
 
-The AWS Mobile CLI enables you to integrate ready-made
-sign-up/sign-in/sign-out UI from the command line.
+The Amplify React package enables you to integrate ready-to-use sign-up/sign-in/sign-out UI in your app.
 
 **To add user auth UI to your app**
 
-1.  Install AWS Amplify for React library.
+1.  In case you haven't done already, install AWS Amplify for React library.
 
     ```bash
     npm install --save aws-amplify-react
@@ -214,55 +160,40 @@ sign-up/sign-in/sign-out UI from the command line.
     export default withAuthenticator(App);
     ```
 
-To test, run `npm start`, `awsmobile run`, or
-`awsmobile publish --test`.
+To test, run `npm start`, `amplify run`, or
+`amplify publish`.
 
-Learn more about the AWS Mobile User Sign-in feature, which uses [Amazon
-Cognito](http://docs.aws.amazon.com/cognito/latest/developerguide/welcome.html).
+Learn more about [Amazon
+Cognito](http://docs.aws.amazon.com/cognito/latest/developerguide/welcome.html) which is the underlying service for AWS Amplify Authentication category.
 
 ## Add Cloud Storage
 
-The AWS Mobile CLI and AWS Amplify library make it easy to store and
-manage files in the cloud from your JavaScript app.
+The Amplify CLI and AWS Amplify library make it easy to store and manage files in the cloud from your JavaScript app.
 
 ### Set Up the Backend
 
-Enable the User File Storage feature by running the following commands
-in the root folder of your app.
+Enable the User File Storage feature by running the following commands in the root folder of your app. Select 'Content' when promoted for storage service type:
 
 ```bash
-awsmobile user-files enable
-
-awsmobile push
+amplify add storage
+amplify push
 ```
 
-### Connect to the Backend
+### Connect to Your Backend
 
-The examples in this section show how you would integrate AWS Amplify
-library calls using React (see the [AWS Amplify
-documentation](https://aws.github.io/aws-amplify) to use other flavors
-of Javascript).
-
-The following simple component could be added to a
-`create-react-app` project to present an interface that
-uploads images and download them for display.
+You have enabled your storage backend in the previous step. Now you will use AWS Amplify library to upload files to storage.
 
 ### Upload a file
 
-The `Storage` module enables you to upload files to the
-cloud. All uploaded files are publicly viewable by default.
+The `Storage` module enables you to upload files to the cloud. All uploaded files are publicly viewable by default.
 
 Import the `Storage` module in your component file.
 
 ```js
-// ./src/ImageViewer.js
-
 import { Storage } from 'aws-amplify';
 ```
 
-Add the following function to use the `put` function on the
-`Storage` module to upload the file to the cloud, and set
-your component’s state to the name of the file.
+Add the following function to use the `put` function on the `Storage` module to upload the file to the cloud, and set your component’s state to the name of the file.
 
 ```js
 uploadFile(event) {
@@ -323,7 +254,7 @@ render() {
 }
 ```
 
-### Next Steps
+### Learn More
 
 -   Learn more about the [analytics for the User File Storage
     feature](https://alpha-docs-aws.amazon.com/pinpoint/latest/developerguide/welcome.html).
@@ -332,7 +263,7 @@ render() {
 
 ## Add Cloud APIs
 
-The AWS Mobile CLI and Amplify library make it easy to create and call cloud APIs and their handler logic from your JavaScript code.
+The Amplify CLI and Amplify library make it easy to create and call cloud APIs and their handler logic from your JavaScript code.
 
 ### Set Up Your Backend
 
@@ -342,65 +273,76 @@ In the following examples, you will create an API that is part of a cloud-enable
 
 **To enable and configure an API**
 
-1.  In the root folder of your app, run:
+1.  In the root folder of your app, run the following command and select *REST* as the service type:
 
     ```bash
-    awsmobile cloud-api enable --prompt
+    $ amplify add api
     ```
 
 2.  When prompted, name the API Guesses.
 
-    ```bash
-    ? API name: Guesses
+    ```terminal
+    ? Provide a friendly name for your resource to be used as a label for this category in the project: Guesses
     ```
 
 3.  Name an HTTP path /number. This maps to a method call in the API
     handler.
 
-    ```bash
-    ? HTTP path name (/items): /number
+    ```terminal
+    ? Provide a path (e.g., /items): /number
     ```
 
-4.  Name your Lambda API handler function guesses.
+4.  Crate a new Lambda function and name your Lambda API handler function as 'guesses'.
 
-    ```bash
-    ? Lambda function name (This will be created if it does not already exist): guesses
+    ```terminal
+    ? Choose a Lambda source Create a new Lambda function
+    ? Provide a friendly name for your resource to be used as a label for this category in the project: myfunctions
+    ? Provide the AWS Lambda function name: guesses
     ```
 
-5.  When prompted to add another HTTP path, type N.
+5.  Select 'Serverless express function' as the template for your new Lambda function.
 
-    ```bash
-    ? Add another HTTP path (y/N): N
+    ```terminal
+    ? Choose the function template that you want to use:
+    CRUD function for Amazon DynamoDB table (Integration with Amazon API Gateway and Amazon DynamoDB)
+    ❯ Serverless express function (Integration with Amazon API Gateway)
     ```
 
-6.  The configuration for your Guesses API is now saved locally. Push
+6.  Select 'Yes' when prompted for restricting API access. This will enable only authenticated users to access your API. 
+
+    ```terminal
+    Successfully added the Lambda function locally
+    ? Restrict API access (Y/n) Y
+    ? Who should have access? Authenticated users only
+    ? What kind of access do you want for Authenticated users read/write
+    ```
+
+7.  When prompted to add another HTTP path, type No.
+
+    ```terminal
+    ? Do you want to add another path? No
+    ```
+
+8.  The configuration for your Guesses API is now saved locally. Push
     your configuration to the cloud.
 
     ```bash
-    awsmobile push
+    $ amplify push
     ```
 
-**To test your API and handler**
-
-From the command line, run:
-
-```bash
-awsmobile cloud-api invoke Guesses GET /number
-```
-
-The Cloud Logic API endpoint for the `Guesses` API is now created.
+The Cloud API endpoint for the `Guesses` API is now created.
 
 ### Customize Your API Handler Logic
 
-The AWS Mobile CLI has generated a Lambda function to handle calls to the `Guesses` API. It is saved locally in
-YOUR-APP-ROOT-FOLDER/awsmobilejs/backend/cloud-api/guesses. The app.js file in that directory contains the definitions and functional code for all of the paths that are handled for your API.
+The Amplify CLI has generated a Lambda function to handle calls to the `Guesses` API. It is saved locally in
+*amplify/backend/function/guesses/src* file. The `app.js` file in that directory contains the definitions and functional code for all of the paths that are handled for your API.
 
 **To customize your API handler**
 
-1.  Find the handler for POST requests on the `/number` path. That line starts with `app.post('number',`. Replace the callback function’s body with the following:
+1.  In app.js, find the handler for POST requests on the `/number` path. That line starts with `app.post('number',`. Replace the callback function’s body with the following:
 
     ```js
-    // awsmobilejs/backend/cloud-api/guesses/app.js
+    // amplifyjs/backend/cloud-api/guesses/app.js
 
     app.post('/number', function(req, res) {
       const correct = 12;
@@ -422,22 +364,19 @@ YOUR-APP-ROOT-FOLDER/awsmobilejs/backend/cloud-api/guesses. The app.js file in t
 2.  Push your changes to the cloud.
 
     ```bash
-    awsmobile push
+    $ amplify push
     ```
 
 The `Guesses` API handler logic that implements your new number guessing functionality is now deployed to the cloud.
 
 ### Connect to Your Backend
 
-The examples in this section show how you would integrate AWS Amplify library calls using React (see the [AWS Amplify
-documentation](https://aws.github.io/aws-amplify/) to use other flavors of Javascript).
-
-The following simple component could be added to a `create-react-app` project to present the number guessing
+You will now use a simple component could be added to connect your API backend in your app to play the number guessing
 game.
 
 #### Make a Guess
 
-The `API` module from AWS Amplify allows you to send requests to your Cloud Logic APIs right from your JavaScript application.
+The `API` module from AWS Amplify allows you to send requests to your Cloud APIs from your JavaScript application.
 
 **To make a RESTful API call**
 
@@ -468,18 +407,18 @@ The `API` module from AWS Amplify allows you to send requests to your Cloud Logi
     ```
 
 Open your app locally and test guessing the number by running
-`awsmobile run`.
+`amplify run`.
 
 Your entire component should look like the following:
 
-#### Next Steps
+#### Learn More
 
--   Learn how to retrieve specific items and more with the [API module in AWS Amplify](https://aws.github.io/aws-amplify/media/api_guide.html).
+-   Learn how to retrieve specific items and more with the [API module in AWS Amplify](https://aws-amplify.github.io/amplify-js/media/api_guide.html).
 -   Learn more about what happens behind the scenes, see [Set up Lambda and API Gateway](https://alpha-docs-aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html).
 
 ## Add Cloud Database
 
-The AWS Mobile CLI and Amplify library make it easy to perform create, read, update, and delete ("CRUD") actions against data stored in the cloud through simple API calls in your JavaScript app.
+The Amplify CLI and Amplify library make it easy to perform create, read, update, and delete ("CRUD") actions against data stored in the cloud through simple API calls in your JavaScript app.
 
 ### Set Up Your Backend
 
@@ -487,15 +426,15 @@ The AWS Mobile CLI and Amplify library make it easy to perform create, read, upd
 
 1.  Enable the NoSQL database feature and configure your table.
 
-    In the root folder of your app, run:
+    In the root folder of your app, run the following command and select *NoSQL Database* as the service type:
 
     ```bash
-    awsmobile database enable --prompt
+    $ amplify add storage
     ```
 
 2.  Choose `Open` to make the data in this table viewable by all users of your application.
 
-    ```bash
+    ```terminal
     ? Should the data of this table be open or restricted by user?
     ❯ Open
       Restricted
@@ -503,29 +442,28 @@ The AWS Mobile CLI and Amplify library make it easy to perform create, read, upd
 
 3.  For this example type in todos as your `Table name`.
 
-    ```bash
-    ? Table name: todos
+    ```terminal
+    ? Please provide table name:  todos
     ```
 
 ### Add columns and queries
 
-You are creating a table in a [NoSQL database](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SQLtoNoSQL.html) and adding an initial set of columns, each of which has a name and a data type. NoSQL lets you add a column any time you store data that
-contains a new column. NoSQL tables must have one column defined as the Primary Key, which is a unique identifier for each row.
+You are creating a table in a [NoSQL database](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SQLtoNoSQL.html) and adding an initial set of columns, each of which has a name and a data type. NoSQL lets you add a column any time you store data that contains a new column. NoSQL tables must have one column defined as the Primary Key, which is a unique identifier for each row.
 
 1.  For this example, follow the prompts to add three columns: team (string), todoId (number), and text (string).
 
-    ```bash
+    ```terminal
     ? What would you like to name this column: team
     ? Choose the data type: string
     ```
 
-2.  When prompted to `? Add another column`, type Y and then choose enter. Repeat the steps to create todoId and text
+2.  When prompted to `? Add another column`, type Y and then choose enter. Repeat the steps to create *todoId* and *text*
     columns.
 
 3.  Select `team` as the primary key.
 
-    ```bash
-    ? Select primary key
+    ```terminal
+    ? Please choose partition key for the table:
     ❯ team
       todoId
       text
@@ -533,13 +471,13 @@ contains a new column. NoSQL tables must have one column defined as the Primary 
 
 4.  Choose `(todoId)` as the sort key and then `no` to adding any more indexes, to keep the example simple.
 
-    ```bash
-    ? Select sort key
+    ```terminal
+    ? Please choose sort key for the table: 
     ❯ todoId
       text
       (No Sort Key)
 
-    ? Add index (Y/n): n
+    ? Do you want to add global secondary indexes to your table? (Y/n) n
     Table todos saved.
     ```
 
@@ -551,55 +489,54 @@ To access your NoSQL database, you will create an API that can be called from yo
 
 **To create a CRUD API**
 
-1.  Enable and configure the Cloud Logic feature
+1.  Create a new API with the following command, and select 'REST' as the service type.
 
     ```bash
-    awsmobile cloud-api enable --prompt
+    $ amplify add api
     ```
+    
+    When prompted, provide friendly names for your resources and Choose `CRUD function for Amazon DynamoDB table` template to create your new API.
 
-2.  Choose `Create CRUD API for an existing Amazon DynamoDB table` API for an existing Amazon DynamoDB table" and then choose enter.
-
-    ```bash
-    ? Select from one of the choices below. (Use arrow keys)
-      Create a new API
-    ❯ Create CRUD API for an existing Amazon DynamoDB table
+    ```terminal
+    ? Provide a friendly name for your resource to be used as a label for this category in the project: todosCRUD
+    ? Provide a path (e.g., /items) /todos
+    ? Choose a Lambda source Create a new Lambda function
+    ? Provide a friendly name for your resource to be used as a label for this category in the project: todosCRUD
+    ? Provide the AWS Lambda function name: todosCRUD
+    ? Choose the function template that you want to use:
+    ❯ CRUD function for Amazon DynamoDB table (Integration with Amazon API Gateway and Amazon DynamoDB)
     ```
 
 3.  Select the `todos` table created in the previous steps, and choose enter.
 
-    ```bash
-    ? Select Amazon DynamoDB table to connect to a CRUD API
+    ```terminal
+    ? Choose a DynamoDB data source option Use DynamoDB table configured in the current Amplify project
+    ? Choose from one of the already configured DynamoDB tables (Use arrow keys)
     ❯ todos
     ```
 
-4.  Push your configuration to the cloud. Without this step, the configuration for your database and API is now in place only on your local machine.
+4.  Push your configuration to the cloud. 
 
     ```bash
-    awsmobile push
+    $ amplify push
     ```
 
 The required DynamoDB tables, API Gateway endpoints, and Lambda functions will now be created.
 
 ### Create your first Todo
 
-The AWS Mobile CLI enables you to test your API from the command line.
-
-Run the following command to create your first todo.
+The Amplify CLI enables you to test your API from the command line. Run the following command to create your first todo.
 
 ```bash
-awsmobile cloud-api invoke todosCRUD POST /todos '{"body": {"team": "React", "todoId": 1, "text": "Learn more Amplify"}}'
+$ amplify function invoke todosCRUD POST /todos '{"body": {"team": "React", "todoId": 1, "text": "Learn more Amplify"}}'
 ```
+
+The CLI utilizes [AWS Serverless Express](https://github.com/awslabs/aws-serverless-express) to invoke your backend APIs locally. When you run an *invoke* command, the CLI starts an Express server which you need to manually close after testing your API (Use Ctrl-c to close the server).
+{: .callout .callout--info}
 
 ### Connect to Your Backend
 
-The examples in this section show how you would integrate AWS Amplify
-library calls using React (see the [AWS Amplify
-documentation](https://aws.github.io/aws-amplify/) to use other flavors
-of Javascript).
-
-The following component is a simple Todo list that you might add to a
-`create-react-app` project. The Todos component currently
-adds and displays `todos` to and from an in-memory array.
+The following component is a simple Todo list that you will add to your project. The Todos component currently adds and displays `todos` to and from an in-memory array.
 
 ### Displaying todos from the cloud
 
@@ -660,7 +597,14 @@ submitted.
 
 ## Add Analytics
 
-When you complete the AWS Mobile CLI setup and launch your app, anonymized session and device demographics data flow to the AWS analytics backend.
+To add analytics to your app, run the following command and name your Amazon Pinpoint resource when prompted:
+
+```bash
+$ amplify add analytics
+$ amplify push
+```
+
+When you enable analytics and launch your app, session and device demographics data will flow to Amazon Pinpoint analytics backend.
 
 **To send basic app usage analytics to AWS**
 
@@ -674,14 +618,15 @@ When you use your app the [Amazon Pinpoint](http://docs.aws.amazon.com/pinpoint/
 
 **To view the analytics using the Amazon Pinpoint console**
 
-1.  Run `npm start`, `awsmobile run`, or `awsmobile publish --test` at least once.
-2.  Open your project in the [AWS Mobile Hub console](https://console.aws.amazon.com/mobilehub/).
+1.  Run `npm start`, `amplify run`, or `amplify publish --test` at least once.
+2.  Run the following command to open Amazon Pinpoint console:
 
     ```bash
-    awsmobile console
+    amplify console analytics
     ```
 
 3.  Choose the Analytics icon on the left, to navigate to your project in the [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/).
+
 4.  Choose Analytics on the left.
 
 You should see an uptick in several graphs.
@@ -720,8 +665,8 @@ handleClick = () => {
 **To test:**
 
 1.  Save the changes and run `npm start`,
-    `awsmobile run`, or
-    `awsmobile publish --test` to launch your app. Use your app so that tracked events are triggered.
+    `amplify run`, or
+    `amplify publish` to launch your app. Use your app so that tracked events are triggered.
 2.  In the [Amazon Pinpoint
     console](https://console.aws.amazon.com/pinpoint/), choose Events
     near the top.
@@ -730,39 +675,26 @@ handleClick = () => {
 Custom event data may take a few minutes to become visible in the
 console.
 
-### Next Steps
+### Learn More
 
-Learn more about the analytics in AWS Mobile which is a part of the
-Messaging and Analytics feature. This feature uses [Amazon Pinpoint](http://docs.aws.amazon.com/pinpoint/latest/developerguide/welcome.html).
+Learn more about [Amazon Pinpoint](http://docs.aws.amazon.com/pinpoint/latest/developerguide/welcome.html).
 
 ## Deploy your App
 
-AWS Amplify provides hosting for your Web app or static website with AWS Mobile CLI.  
+AWS Amplify provides hosting for your Web app or static website with Amplify CLI.  
 
-AWS Mobile CLI provides a one-line deploy command that pushes your app’s static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app’s loading performance by serving your content to your users from the nearest edge location.
+Amplify CLI provides a one-line deploy command that pushes your app’s static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app’s loading performance by serving your content to your users from the nearest edge location.
 
 ```bash
-awsmobile publish
+$ amplify publish
 ```
 
 **About Hosting and Streaming**
 
-The AWS Mobile Hosting and Streaming feature are especially useful to web developers. It uses the ability of [Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html) buckets to statically host content and the [Amazon CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html) content distribution network (CDN) to host on an endpoint close to every user globally. Amazon CloudFront endpoints can also stream media content.
+The AWS Mobile Hosting and Streaming feature are especially useful to web developers. It uses the capabilities of [Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html) buckets to host the content, and the [Amazon CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html) content distribution network (CDN) to deliver content globally. 
 
-When you enable Hosting and Streaming an global content delivery network (CDN) distribution is created and associated with your bucket. When propagates the sample web app content to the bucket, the content is then
-propagated to the CDN and becomes available from local endpoints around the globe. If you configure [CloudFront
+Amazon CloudFront endpoints can also stream media content. If you configure [CloudFront
 streaming](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Tutorials.html), then media content you upload to your bucket can be streamed from those endpoints.
-
-**To view the Hosting and Streaming Sample App**
-
-The Hosting and Streaming feature creates a sample JavaScript web app that demonstrates connecting to the AWS resources of your project.
-
-The sample app web assets are deployed to a bucket. The bucket is configured to host static web content for public access.
-
-1.  In the [Mobile Hub console](https://console.aws.amazon.com/mobilehub/home/), open your
-    project and then choose the Hosting and Streaming tile.
-2.  Choose View from S3.
-    This opens a browser and displays the index.html of the sample web app from the bucket.
 
 ### Configure a Custom Domain for Your Web App
 

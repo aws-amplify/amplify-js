@@ -3,6 +3,142 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.7-unstable.25"></a>
+## [1.0.7-unstable.25](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.24...@aws-amplify/auth@1.0.7-unstable.25) (2018-08-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.24"></a>
+## [1.0.7-unstable.24](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.23...@aws-amplify/auth@1.0.7-unstable.24) (2018-08-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.23"></a>
+## [1.0.7-unstable.23](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.21...@aws-amplify/auth@1.0.7-unstable.23) (2018-08-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.22"></a>
+## [1.0.7-unstable.22](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.21...@aws-amplify/auth@1.0.7-unstable.22) (2018-08-25)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.21"></a>
+## [1.0.7-unstable.21](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.20...@aws-amplify/auth@1.0.7-unstable.21) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.20"></a>
+## [1.0.7-unstable.20](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.19...@aws-amplify/auth@1.0.7-unstable.20) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.19"></a>
+## [1.0.7-unstable.19](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.17...@aws-amplify/auth@1.0.7-unstable.19) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.18"></a>
+## [1.0.7-unstable.18](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.17...@aws-amplify/auth@1.0.7-unstable.18) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.17"></a>
+## [1.0.7-unstable.17](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.15...@aws-amplify/auth@1.0.7-unstable.17) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.16"></a>
+## [1.0.7-unstable.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.15...@aws-amplify/auth@1.0.7-unstable.16) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.15"></a>
+## [1.0.7-unstable.15](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.14...@aws-amplify/auth@1.0.7-unstable.15) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.14"></a>
+## [1.0.7-unstable.14](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.13...@aws-amplify/auth@1.0.7-unstable.14) (2018-08-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.13"></a>
+## [1.0.7-unstable.13](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.11...@aws-amplify/auth@1.0.7-unstable.13) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.12"></a>
+## [1.0.7-unstable.12](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.11...@aws-amplify/auth@1.0.7-unstable.12) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.11"></a>
+## [1.0.7-unstable.11](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.10...@aws-amplify/auth@1.0.7-unstable.11) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.10"></a>
+## [1.0.7-unstable.10](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.9...@aws-amplify/auth@1.0.7-unstable.10) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.7-unstable.9"></a>
+## [1.0.7-unstable.9](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.8...@aws-amplify/auth@1.0.7-unstable.9) (2018-08-23)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 <a name="1.0.7-unstable.8"></a>
 ## [1.0.7-unstable.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.7...@aws-amplify/auth@1.0.7-unstable.8) (2018-08-22)
 
