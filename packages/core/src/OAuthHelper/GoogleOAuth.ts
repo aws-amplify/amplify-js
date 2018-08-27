@@ -13,12 +13,13 @@
 import {
     ConsoleLogger as Logger,
 } from '../Logger';
+import JS from '../JS';
 import '../Polyfills';
 
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
-    if (!window || !window.setTimeout) {
+    if (!JS.browserOrNode().isBrowser) {
         logger.debug('not in the browser, directly resolved');
         return res();
     }
