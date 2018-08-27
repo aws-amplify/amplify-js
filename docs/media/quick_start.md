@@ -179,9 +179,9 @@ Open a browser and navigate to <a href="http://localhost:8080" target="_blank">h
 Use [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
 
 ```bash
-create-react-app my-app
-cd my-app
-npm start
+$ npm install -g create-react-app
+$ create-react-app myapp && cd myapp
+$ npm start
 ```
 
 </div>
