@@ -52,9 +52,11 @@
     }
   },
   "dependencies": {
-    "aws-amplify": "^1.0.7-unstable.22",
-    "@aws-amplify/ui": "./packages/amplify-ui",
+    "@aws-amplify/ui": "^1.x",
     "qrcode.react": "^0.8.0",
     "regenerator-runtime": "^0.11.1"
+  },
+  "peerDependencies": {
+    "aws-amplify": "^1.x"
   }
 }
