@@ -858,7 +858,7 @@ export default class AuthClass {
                 }
 
                 // refresh the session if the session expired.
-                user.getSession(function(err, session) {
+                user.getSession((err, session) => {
                     if (err) {
                         logger.debug('Failed to get the user session', err);
                         rej(err); 
