@@ -2,6 +2,9 @@
   "name": "@aws-amplify/ui",
   "version": "1.0.0",
   "main": "dist/aws-amplify-ui.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "webpack",
     "start": "webpack-dev-server",
