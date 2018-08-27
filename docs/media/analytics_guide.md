@@ -16,12 +16,18 @@ Run the following command in your project's root folder:
 $ amplify add analytics
 ```
 
+The CLI will prompt configuration options for the Analytics category such as Amazon Pinpoint resource name and analytics event settings.
+
+{The Analytics category utilizes the Authentication category behind the scenes to authorize your app to send analytics events.}
+{: .callout .callout--info}
+
 The `add` command automatically creates a backend configuration locally. To update your backend run:
 
 ```bash
 $ amplify push
 ```
-A configuration file called `aws-exports.js` will be copied to your configured source directory, for example `./src`.
+
+A configuration file called `aws-exports.js` will be copied to your configured source directory, for example `./src`. The CLI will also print the URL for Amazon Pinpoint console to track your app events.  
 
 ##### Configure Your App
 
