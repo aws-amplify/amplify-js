@@ -63,7 +63,8 @@
     "to-string-loader": "^1.1.5",
     "uglify-js": "^3.4.7",
     "zone": "^0.3.4",
-    "zone.js": "^0.8.26"
+    "zone.js": "^0.8.26",
+    "aws-amplify": "^1.x"
   },
   "peerDependencies": {
     "aws-amplify": "^1.x"
