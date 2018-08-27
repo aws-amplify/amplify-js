@@ -71,8 +71,7 @@ export default class Authenticator extends Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        let { hideDefault, hide, federated } = this.props;
-        if (!hide) { hide = []; }
+        let { hideDefault, hide = [], federated } = this.props;
         if (hideDefault) {
             hide = hide.concat([
                 Greetings,
@@ -87,6 +86,7 @@ export default class Authenticator extends Component {
             ]);
         }
         const props_children = this.props.children || [];
+
         const default_children = [
             <Greetings/>,
             <SignIn federated={federated}/>,
@@ -99,6 +99,8 @@ export default class Authenticator extends Component {
             <TOTPSetup/>
         ];
 
+        const props_children_names  = React.Children.map(props_children, child => child.type.name)
+        hide = hide.filter((component) =>!props_children_names.includes(component.name))
         const render_props_children = React.Children.map(props_children, (child, index) => {
             return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-props-children-' + index,
@@ -107,11 +109,12 @@ export default class Authenticator extends Component {
                     authState: auth,
                     authData: authData,
                     onStateChange: this.handleStateChange,
-                    onAuthEvent: this.handleAuthEvent
+                    onAuthEvent: this.handleAuthEvent,
+                    hide: hide
                 });
         });
-        
-        const render_default_children = React.Children.map(default_children, (child, index) => {
+       
+        const render_default_children = hideDefault ? [] : React.Children.map(default_children, (child, index) => {
                 return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-default-children-' + index,
                     theme: theme,
@@ -125,10 +128,7 @@ export default class Authenticator extends Component {
             });
 
         const render_children = render_default_children.concat(render_props_children);
-
-        const error = this.state.error;
-
-        
+        const error = this.state.error;        
 
         return (
             <Container theme={theme}>

@@ -1,7 +1,7 @@
 ---
-layout: blog-detail
+layout: examples
 ---
-## Static Websites with AWS Amplify
+# Static Websites with AWS Amplify
 
 #### Deploy your Static Website with AWS Amplify
 
@@ -28,10 +28,10 @@ Our CLI will handle deployments and backend service orchestration, so you can fo
 
 #### Deploy your Site with CLI
 
-AWS Mobile CLI provides a one-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app's loading performance by serving your content to your users from the nearest edge location.
+Amplify CLI provides a one-line deploy command that pushes your app's static assets to the Content Delivery Network (CDN). Using a CDN dramatically increases your app's loading performance by serving your content to your users from the nearest edge location.
 
 ```bash
-awsmobile publish
+amplify publish
 ```
 CDN service, which is provided by Amazon CloudFront, will handle the high-performance delivery of your static assets.
 
@@ -47,25 +47,19 @@ Every time you deploy your website, a performance test is executed using real de
 
 #### Easily Add Cloud Features to your Website
 
-AWS Mobile CLI helps you to configure your website's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
+Amplify CLI helps you to configure your website's backend easily. For example, the following command will create a cloud API which is an Amazon API Gateway endpoint:
 
 ```bash
-awsmobile cloud-api enable
+amplify add api
 ```
 
-AWS Mobile CLI also creates the necessary folder structure and generates JavaScript files necessary for your app's backend logic:
-
-![Cloud API](../images/backend_cloud_api.png?raw=true "Cloud API"){: style="max-height:450px;"}
+Amplify CLI also creates the necessary folder structure and generates JavaScript files necessary for your app's backend logic:
 
 After working with your backend code, deploying your web backend is very simple:
 
 ```bash
-awsmobile push
+amplify push
 ```
-
-You can also use AWS Mobile Hub to mix and match building blocks for your website, and start implementing cloud operations like Authorization, Storage and Cloud API.  
-
-![Services](../images/mobile_hub_services.png?raw=true "Services")
 
 #### Engage your audience
 
@@ -79,5 +73,5 @@ Analytics events are displayed in Amazon Pinpoint console. In the console, you c
 
 ### Start Building now!
 
-Start building your static Web app today with AWS Amplify by visiting our [Quick Start Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start?utm_source=static-web-sites&utm_campaign=build-pages).
+Start building your static Web app today with AWS Amplify by visiting our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start?utm_source=static-web-sites&utm_campaign=build-pages).
 {: .next-link .callout .callout--info}

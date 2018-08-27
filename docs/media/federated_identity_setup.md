@@ -7,7 +7,7 @@
 
 Amplify's Authentication category uses AWS Cognito User Pools, which requires identity providers to be registered.  
 
-If you are using Mobile Hub, you can register an identity provider by accessing the *User Sign-In* section and selecting the provider under the *Add sign-in Providers* section.
+If you are using Amplify CLI, you can register an identity provider by using `$ amplify add auth` command.
 
 You may also register identity providers in *Amazon Cognito* console by selecting the related user pool and then accessing the *Federation > Identity providers* section.
 
