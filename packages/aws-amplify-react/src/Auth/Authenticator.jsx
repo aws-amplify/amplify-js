@@ -12,7 +12,7 @@
  */
 
 import React, { Component } from 'react';
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import Greetings from './Greetings';
 import SignIn from './SignIn';
@@ -24,9 +24,10 @@ import VerifyContact from './VerifyContact';
 import ForgotPassword from './ForgotPassword';
 import TOTPSetup from './TOTPSetup';
 
-import AmplifyTheme from '../AmplifyTheme';
-import { Container, ErrorSection, SectionBody } from '../AmplifyUI';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
+
+import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('Authenticator');
 
@@ -36,9 +37,8 @@ export default class Authenticator extends Component {
 
         this.handleStateChange = this.handleStateChange.bind(this);
         this.handleAuthEvent = this.handleAuthEvent.bind(this);
-        this.errorRenderer = this.errorRenderer.bind(this);
 
-        this.state = { auth: props.authState || 'signIn' };
+        this.state = { auth: props.authState || 'loading' };
     }
 
     componentWillMount() {
@@ -61,17 +61,9 @@ export default class Authenticator extends Component {
         if (event.type === 'error') {
             const map = this.props.errorMessage || AmplifyMessageMap;
             const message = (typeof map === 'string')? map : map(event.data);
-            this.setState({ error: message });
+            this.setState({ error: message, showToast: true });
+            
         }
-    }
-
-    errorRenderer(err) {
-        const theme = this.props.theme || AmplifyTheme;
-        return (
-            <ErrorSection theme={theme}>
-                <SectionBody theme={theme}>{err}</SectionBody>
-            </ErrorSection>
-        )
     }
 
     render() {
@@ -136,12 +128,16 @@ export default class Authenticator extends Component {
             });
 
         const render_children = render_default_children.concat(render_props_children);
-        const errorRenderer = this.props.errorRenderer || this.errorRenderer;
-        const error = this.state.error;
+        const error = this.state.error;        
+
         return (
             <Container theme={theme}>
+                {this.state.showToast && 
+                    <Toast onClose={() => this.setState({showToast: false})}>
+                        { I18n.get(error) }
+                    </Toast>
+                }
                 {render_children}
-                {error? errorRenderer(error) : null}
             </Container>
         )
     }

@@ -14,11 +14,10 @@
 import React, { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import AmplifyTheme from '../AmplifyTheme';
 import Picker from './Picker';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+import { FormSection, SectionHeader, SectionBody, PhotoPlaceholder } from '../Amplify-UI/Amplify-UI-Components-React';
 
-const Container = {
-}
 
 const PickerPreview = {
     maxWidth: '100%'
@@ -59,7 +58,9 @@ export default class PhotoPicker extends Component {
         const { preview } = this.props;
         const { previewSrc } = this.state;
 
-        const title = this.props.title || 'Pick a Photo';
+        const headerText = this.props.headerText || 'Photos';
+        const headerHint = this.props.headerHint || 'Add you photos by clicking below'
+        const title = this.props.title || 'Select a Photo';
 
         const theme = this.props.theme || AmplifyTheme;
         const containerStyle = Object.assign({}, Picker, theme.picker);
@@ -71,15 +72,21 @@ export default class PhotoPicker extends Component {
         );
 
         return (
-            <div style={containerStyle}>
-                { previewSrc? <img src={previewSrc} style={previewStyle} /> : null }
+            <FormSection theme={theme}>
+                <SectionHeader theme={theme} hint={headerHint}>{I18n.get(headerText)}</SectionHeader>
+                <SectionBody>
+                    { previewSrc ?
+                        <img src={previewSrc} style={previewStyle} /> : 
+                        <PhotoPlaceholder />
+                    }
+                </SectionBody>
                 <Picker
                     title={title}
                     accept="image/*"
                     theme={theme}
                     onPick={this.handlePick}
                 />
-            </div>
+            </FormSection>
         )
     }
 }

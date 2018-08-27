@@ -16,8 +16,9 @@ import { I18n, Hub, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
-import { NavBar, Nav, NavRight, NavItem, NavButton } from '../AmplifyUI';
-import AmplifyTheme from '../AmplifyTheme';
+import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
+
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 const logger = new Logger('Greetings');
 
@@ -148,7 +149,8 @@ export default class Greetings extends AuthPiece {
                 <NavButton
                     theme={theme}
                     onClick={this.signOut}
-                >{I18n.get('Sign Out')}
+                >
+                    {I18n.get('Sign Out')}
                 </NavButton>
 
             </span>

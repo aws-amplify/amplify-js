@@ -14,10 +14,7 @@
 import React, { Component } from 'react';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
-import AmplifyTheme from '../AmplifyTheme';
-import AmplifyMessageMap from '../AmplifyMessageMap';
-
-const logger = new Logger('AuthPiece');
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 export default class AuthPiece extends Component {
     constructor(props) {
