@@ -174,6 +174,10 @@ export default class AuthClass {
                 logger.debug('user already logged in');
             }).catch(e => {
                 logger.debug('not logged in, try to parse the url');
+                if (!window || !window.location) {
+                    logger.debug('not in the browser');
+                    return;
+                }
                 const curUrl = window.location.href;
                 this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
             });

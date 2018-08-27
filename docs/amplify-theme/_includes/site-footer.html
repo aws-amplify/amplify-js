@@ -5,7 +5,7 @@
 				<div class="col-sm-6">
 					{% if site.amplify.footer.content.logo.text %}
 						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-footer__logo">
-							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/images/layout/logo-footer.png">
+							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/logo-footer.png">
 						</a>
 					{% endif %}
 					
@@ -46,13 +46,31 @@
 {% include google-analytics.html %}
 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script> 
-<script type="text/javascript"> docsearch({ 
- apiKey: '0d52a3ea92602545de13731e81c3c7f8', 
- indexName: 'aws_amplify', 
- inputSelector: '#search-input', 
-//  algoliaOptions: {"facetFilters":["tags:current"],"hitsPerPage":5},      
- debug: false // Set debug to true if you want to inspect the dropdown 
-}); 
+<script type="text/javascript"> 
+var setAlgoliaSearch = function() {
+	if (window.innerWidth > 766){
+		docsearch({ 
+		    apiKey: '0d52a3ea92602545de13731e81c3c7f8', 
+		    indexName: 'aws_amplify',  
+			inputSelector: '#search-input',
+			//  algoliaOptions: {"facetFilters":["tags:current"],"hitsPerPage":5},      
+		    debug: false // Set debug to true if you want to inspect the dropdown 
+		}) 
+	}
+	else {
+		docsearch({ 
+		    apiKey: '0d52a3ea92602545de13731e81c3c7f8', 
+		    indexName: 'aws_amplify',  
+			inputSelector: '#search-input-xs',
+			//  algoliaOptions: {"facetFilters":["tags:current"],"hitsPerPage":5},      
+		    debug: false // Set debug to true if you want to inspect the dropdown 
+		}); 
+	}
+}
+
+setAlgoliaSearch()
+
+window.onresize = setAlgoliaSearch;
 </script> 
 
 <script>

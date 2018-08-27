@@ -5,24 +5,39 @@
 
 AWS Amplify Storage module provides a simple mechanism for managing user content for your app in public, protected or private storage buckets.
 
-## Installation and Configuration
-
-Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. Here is how you can enable Storage category for your app.
-
-The default implementation of the Storage module leverages [Amazon S3](https://aws.amazon.com/s3).
+Ensure you have [installed and configured the Amplify CLI and library]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start).
 {: .callout .callout--info}
 
 ### Automated Setup
 
-To create a project fully functioning with the Storage category.
+AWS Mobile CLI helps you to create and configure the storage buckets for your app. The default implementation of the Storage module leverages [Amazon S3](https://aws.amazon.com/s3).
+
+##### Create Your Backend with the CLI
+
+To create a project fully functioning with the Storage category, run the following command:
 
 ```bash
-$ npm install -g awsmobile-cli
-$ cd my-app #Change to your project's root folder
-$ awsmobile init
-$ awsmobile user-files enable
-$ awsmobile push #Update your backend 
+$ amplify add storage
 ```
+
+and select *S3* in prompted options:
+
+
+```bash
+? Please select from one of the below mentioned services
+❯ awscloudformation:S3
+  awscloudformation:DynamoDB
+```
+
+The CLI will walk you though the options to enable Auth, if not enabled previously, and name your S3 bucket. To update your backend run:
+
+```bash
+$ amplify push
+```
+
+When your backend is successfully updated, your new configuration file `aws-exports.js` is copied under your source directory, e.g. '/src'.
+
+##### Configure Your App
 
 In your app's entry point *i.e. App.js*, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.
 
@@ -61,7 +76,7 @@ To make calls to your S3 bucket from your App, you need to setup CORS Policy for
 
 Following steps will enable your CORS Policy: 
 
-1. Go to [Amazon S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's `userfiles` bucket, which is normally named as [Project Name]-userfiles-mobilehub-[App Id]. If you are using an S3 Bucket that is not created by Mobile Hub, that will your upload bucket for your app.
+1. Go to [Amazon S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's `userfiles` bucket, which is normally named as [Project Name]-userfiles-mobilehub-[App Id]. 
 2. Click on the **Permissions** tab for your bucket, and then click on **CORS configuration** tile.
 3. Update your bucket's CORS Policy to look like:
 
@@ -327,7 +342,7 @@ Storage.list('photos/', {level: 'private'})
 
 #### API Reference
 
-For the complete API documentation for Storage module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/storageclass.html)
+For the complete API documentation for Storage module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/storageclass.html)
 {: .callout .callout--info}
 
 ## Tracking Events
@@ -359,7 +374,7 @@ You can also use the track property directly on [React components](#analytics-fo
 
 `Picker` is used to pick a file from local device storage. `PhotoPicker` and `TextPicker` components are specific to image and text file types .
 
-<img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/photo_picker_and_code.png" width="100%"/>
+<img src="{%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/photo_picker_and_code.png" width="100%"/>
 
 Listen to `PhotoPicker` onPick event:
 ```jsx
@@ -466,7 +481,7 @@ function fileToKey(data) {
 
 `S3Album` renders a list of `S3Image` and `S3Text` objects:
 
-<img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/S3Album_and_code.png" width="100%"/>
+<img src="{%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/S3Album_and_code.png" width="100%"/>
 
 ```jsx
 import { S3Album } from 'aws-amplify-react';
@@ -556,7 +571,7 @@ Add an S3 album component to your template:
 
 ```
 
-See the [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) for usage.
+See the [Angular Guide](https://aws-amplify.github.io/amplify-js/media/angular_guide) for usage.
 
 ## Customization 
 
@@ -615,7 +630,7 @@ If you want to have custom *private* path prefix like *myPrivatePrefix/*, you ne
 ```
 This ensures only the authenticated users has the access to the objects under the path.
 
-## Using modularized module
+## Using Modular Imports
 
 If you only need to use Storage, you can do: `npm install @aws-amplify/storage` which will only install the Storage module for you.
 Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.

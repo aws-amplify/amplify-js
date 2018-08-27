@@ -66,14 +66,12 @@ const template = `
     <a class="amplify-alert-close" (click)="onAlertClose()">&times;</a>
   </div>
 </div>
-
 </div>
-
-`
+`;
 
 @Component({
   selector: 'amplify-auth-forgot-password-ionic',
-  template: template
+  template
 })
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
 

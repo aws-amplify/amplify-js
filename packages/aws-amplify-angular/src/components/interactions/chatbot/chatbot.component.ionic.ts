@@ -68,7 +68,7 @@ const template = `
 
 @Component({
   selector: 'amplify-interactions-ionic',
-  template: template
+  template
 })
 export class ChatbotComponentIonic extends ChatbotComponentCore {
   

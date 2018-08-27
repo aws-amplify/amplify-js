@@ -40,12 +40,12 @@ const template = `
     [authState]="authState"
     ></amplify-auth-require-new-password-core>
   </div>
-`
+`;
 
 
 @Component({
   selector: 'amplify-authenticator-core',
-  template: template
+  template
 })
 export class AuthenticatorComponentCore {
   authState: AuthState = {
@@ -66,7 +66,7 @@ export class AuthenticatorComponentCore {
   subscribe() {
     this.amplifyService.authStateChange$
       .subscribe(state => {
-        this.authState = state
+        this.authState = state;
       });
   }
 

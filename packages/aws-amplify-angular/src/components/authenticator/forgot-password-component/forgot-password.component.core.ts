@@ -69,11 +69,11 @@ const template = `
   </div>
 
 </div>
-`
+`;
 
 @Component({
   selector: 'amplify-auth-forgot-password-core',
-  template: template
+  template
 })
 export class ForgotPasswordComponentCore {
   _authState: AuthState;
@@ -145,7 +145,7 @@ export class ForgotPasswordComponentCore {
       )
       .then(() => {
         const user = { username: this.username };
-        this.amplifyService.setAuthState({ state: 'signIn', user: user });
+        this.amplifyService.setAuthState({ state: 'signIn', user });
       })
       .catch(err => this._setError(err));
   }
