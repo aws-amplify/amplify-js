@@ -92,7 +92,7 @@ If your application grows much larger, you can refactor it into multiple compone
 
 In this section, you will replace the ‘About’ component that comes with the Ionic starter project with a ‘List’ component that holds the ToDo items created by the user.   The component you will create allows users to create or edit individual ToDo items with a modal. The user will also be able to delete items and mark items as complete by interacting with an item in the list.
 
-To being this process, create a directory called *src/app/pages/list*.
+To begin this process, create a directory called *src/app/pages/list*.
 
 ### Define the data model
 
