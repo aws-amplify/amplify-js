@@ -8,7 +8,7 @@
     "test": "lerna exec yarn test",
     "cypress": "lerna exec yarn cypress",
     "cypress:open": "lerna exec yarn cypress:open",
-    "coverage": "codecov",
+    "coverage": "codecov || exit 0",
     "docs": "typedoc packages/aws-amplify/src --excludePrivate --ignoreCompilerErrors --mode file --theme docs/amplify-theme/typedoc --out docs/api",
     "build": "lerna exec yarn build",
     "clean": "lerna run -- clean",
