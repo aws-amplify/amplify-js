@@ -60,6 +60,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         // setup a timer if in the browser
         if (window && window.setInterval) {
             this._setupTimer();
+        } else {
+            logger.debug('The app is not in the browser environment');
         }   
     }
 
@@ -160,6 +162,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         // setup a timer if in the browser
         if (window && window.setInterval) {
             this._setupTimer();
+        } else {
+            logger.debug('The app is not in the browser environment');
         }
         return this._config;
     }

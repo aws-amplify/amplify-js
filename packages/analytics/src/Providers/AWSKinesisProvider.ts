@@ -43,6 +43,8 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         // setup a timer if in the browser
         if (window && window.setInterval) {
             this._setupTimer();
+        } else {
+            logger.debug('The app is not in the browser environment');
         }
 
         this._startSending = this._startSending.bind(this);
@@ -97,6 +99,8 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         // setup a timer if in the browser
         if (window && window.setInterval) {
             this._setupTimer();
+        } else {
+            logger.debug('The app is not in the browser environment');
         }
         return this._config;
     }
