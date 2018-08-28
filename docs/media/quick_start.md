@@ -359,6 +359,17 @@ $ amplify push
 
 ## Step 4. Integrate the AWS Backend Resources to the App with Amplify
 
+<div class="nav-tab install" data-group='install'>
+<ul class="tabs">
+    <li class="tab-link angular" data-tab="angular">Angular</li>
+    <li class="tab-link ionic" data-tab="ionic">Ionic</li>
+    <li class="tab-link purejs current" data-tab="purejs">JavaScript</li>
+    <li class="tab-link react" data-tab="react">React</li>
+    <li class="tab-link react-native" data-tab="react-native">React Native</li>
+</ul>
+
+<div id="purejs" class="tab-content current">
+
 Add the following to the `src/app.js` file:
 
 ```js
@@ -385,6 +396,78 @@ AnalyticsEventButton.addEventListener('click', (evt) => {
 ```
 
 > The code above imports only the Auth and Analytics categories. To import the entire Amplify library use `import Amplify from 'aws-amplify'`. However, importing only the required categories is recommended as it will greatly reduce the final bundle size.
+
+</div>
+
+<div id="react" class="tab-content">
+
+Add the following to the `src/App.js` file:
+
+```js
+import Auth from '@aws-amplify/auth';
+import Analytics from '@aws-amplify/analytics';
+
+import awsmobile from './aws-exports';
+
+// retrieve temporary AWS credentials and sign requests
+Auth.configure(awsmobile);
+// send analytics events to Amazon Pinpoint
+Analytics.configure(awsmobile);
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.handleAnalyticsClick = this.handleAnalyticsClick.bind(this);
+    this.state = {analyticsEventSent: false, resultHtml: ""};
+  }
+
+  handleAnalyticsClick() {
+      Analytics.record('AWS Amplify Tutorial Event')
+        .then( (evt) => {
+            const url = 'https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/'+awsmobile.aws_mobile_analytics_app_id+'/analytics/events';
+            const result = '<p>Event Submitted.</p>';
+            result += '<a href="'+url+'" target="_blank">View Events on the Amazon Pinpoint Console</a>';
+            this.setState({
+                'analyticsEventSent': true,
+                'resultHtml': result
+            });
+        });
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h1 className="App-title">Welcome to React</h1>
+        </header>
+        <div className="App-intro">
+          <button className="App-button">Generate Analytics Event</button>
+          {this.state.analyticsEventSent &&
+            <div>{{this.state.resultHtml}}</div>
+          }
+        </div>
+      </div>
+    );
+  }
+}
+
+export default App;
+
+```
+
+> The code above imports only the Auth and Analytics categories. To import the entire Amplify library use `import Amplify from 'aws-amplify'`. However, importing only the required categories is recommended as it will greatly reduce the final bundle size.
+
+</div>
+
+<div id="react-native" class="tab-content">
+</div>
+
+<div id="angular" class="tab-content">
+</div>
+
+<div id="ionic" class="tab-content">
+</div>
 
 ## Step 5. Host your App on Amazon S3
 
