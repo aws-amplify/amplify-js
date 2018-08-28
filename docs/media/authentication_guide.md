@@ -156,10 +156,11 @@ Auth.confirmSignUp(username, code, {
 
 **Forcing Email Uniqueness in Cognito User Pools**
 
-When your User Pool sign-in options are set to "*Username*", and "*Also allow sign in with verified email address*", *signUp()* creates a new user account without validating email uniqueness. In this case you will have multiple user pool identities and previous account's attribute is changed to *email_verified : false*. 
+When your Cognito User Pool sign-in options are set to "*Username*", and "*Also allow sign in with verified email address*", *signUp()* method creates a new user account everytime, without validating email uniqueness. In this case you will end up having multiple user pool identities and previously created account's attribute is changed to *email_verified : false*. 
 
-To restrict signups with unique email, you can change your User Pool settings in your user pool's *Attributes* settings as following:
-![User Pool Settings](images/cognito_user_pool_settings.png){: style="max-height:300px;"}
+To enforce Cognito User Pool signups with a unique email, you need to change your User Pool's *Attributes* setting in [Amazon Cognito console](https://console.aws.amazon.com/cognito) as the following:
+
+![User Pool Settings]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/images/cognito_user_pool_settings.png){: style="max-height:300px;"}
 
 #### Sign Out
 ```js
@@ -195,6 +196,19 @@ Auth.forgotPasswordSubmit(username, code, new_password)
     .then(data => console.log(data))
     .catch(err => console.log(err));
 ```
+
+#### Retrieve Current Authenticated User
+
+You can call `Auth.currentAuthenticatedUser()` to get the current authenticated user object.
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.currentAuthenticatedUser()
+    .then(user => console.log(user));
+    .catch(err => console.log(err));
+```
+This method can be used to check if a user is logged in when the page is loaded. It will throw an error if there is no user logged in.
+This method should be called after the Auth module is configured. To ensure that you can listen on the auth events `configured`. [Learn how to listen on auth events.]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/hub_guide#listening-authentication-events)
 
 #### Retrieve Current Session
 

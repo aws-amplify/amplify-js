@@ -9,7 +9,7 @@ import { AuthenticatorComponentCore } from './authenticator.component.core';
 @Component({
   selector: 'amplify-authenticator',
   template: `
-              <div>
+              <div class="amplify-component">
                 <ng-template component-host></ng-template>
               </div>
             `

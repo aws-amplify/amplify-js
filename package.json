@@ -14,6 +14,7 @@
     "clean": "lerna run -- clean",
     "format": "lerna run -- format",
     "lint": "lerna run -- lint",
+    "link": "lerna exec yarn link",
     "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]'",
     "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]'",
     "publish:release": "lerna publish --conventional-commits --cd-version=patch --yes --independent --message 'chore(release): Publish [ci skip]'"
@@ -27,14 +28,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws/aws-amplify.git"
+    "url": "https://github.com/aws-amplify/amplify-js.git"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/aws/aws-amplify/issues"
+    "url": "https://github.com/aws-amplify/amplify-js/issues"
   },
-  "homepage": "https://github.com/aws/aws-amplify#readme",
+  "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
     "@types/jest": "^20.0.7",
     "@types/node": "^8.9.5",
