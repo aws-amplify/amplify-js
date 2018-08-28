@@ -47,13 +47,13 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/analytics": "^1.0.6",
-    "@aws-amplify/api": "^1.0.7",
-    "@aws-amplify/auth": "^1.0.7",
-    "@aws-amplify/cache": "^1.0.6",
-    "@aws-amplify/core": "^1.0.6",
-    "@aws-amplify/interactions": "^1.0.6",
-    "@aws-amplify/pubsub": "^1.0.6",
-    "@aws-amplify/storage": "^1.0.6"
+    "@aws-amplify/analytics": "^1.0.6-unstable.3",
+    "@aws-amplify/api": "^1.0.7-unstable.26",
+    "@aws-amplify/auth": "^1.0.7-unstable.26",
+    "@aws-amplify/cache": "^1.0.6-unstable.2",
+    "@aws-amplify/core": "^1.0.6-unstable.1",
+    "@aws-amplify/interactions": "^1.0.6-unstable.1",
+    "@aws-amplify/pubsub": "^1.0.6-unstable.1",
+    "@aws-amplify/storage": "^1.0.6-unstable.1"
   }
 }
