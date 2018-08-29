@@ -33,7 +33,6 @@ const logger = new Logger('InMemoryCache');
  * @member cacheSizeLimit - the limit of cache size
  */
 export class InMemoryCache extends StorageCache implements ICache {
-    private cacheObj;
     private cacheList: CacheList[];
     private curSizeInBytes: number;
     private maxPriority: number;
@@ -48,7 +47,6 @@ export class InMemoryCache extends StorageCache implements ICache {
         const cacheConfig = config ? Object.assign({}, defaultConfig, config) : defaultConfig;
         super(cacheConfig);
         logger.debug('now we start!');
-        this.cacheObj = CacheObject;
         this.cacheList = [];
         this.curSizeInBytes = 0;
         this.maxPriority = 5;
@@ -89,7 +87,7 @@ export class InMemoryCache extends StorageCache implements ICache {
      * @return true if the item is expired.
      */
     private _isExpired(key: string): boolean {
-        const text: string | null = this.cacheObj.getItem(key);
+        const text: string | null = CacheObject.getItem(key);
         const item: CacheItem = JSON.parse(text);
         if (getCurrTime() >= item.expires) {
             return true;
@@ -107,9 +105,9 @@ export class InMemoryCache extends StorageCache implements ICache {
         // delete the key from the list
         this.cacheList[listIdx].removeItem(prefixedKey);
         // decrease the current size of the cache
-        this._decreaseCurSizeInBytes(JSON.parse(this.cacheObj.getItem(prefixedKey)).byteSize);
+        this._decreaseCurSizeInBytes(JSON.parse(CacheObject.getItem(prefixedKey)).byteSize);
         // finally remove the item from memory
-        this.cacheObj.removeItem(prefixedKey);
+        CacheObject.removeItem(prefixedKey);
     }
 
     /**
@@ -126,7 +124,7 @@ export class InMemoryCache extends StorageCache implements ICache {
         // increase the current size of the cache
         this._increaseCurSizeInBytes(item.byteSize);
         // finally add the item into memory
-        this.cacheObj.setItem(prefixedKey, JSON.stringify(item));
+        CacheObject.setItem(prefixedKey, JSON.stringify(item));
     }
 
     /**
@@ -258,7 +256,7 @@ export class InMemoryCache extends StorageCache implements ICache {
                 this._removeItem(prefixedKey, presentKeyPrio - 1);
             } else {
                 // if not expired, great, return the value and refresh it
-                ret = this.cacheObj.getItem(prefixedKey);
+                ret = CacheObject.getItem(prefixedKey);
                 const item: CacheItem = JSON.parse(ret);
                 this.cacheList[item.priority - 1].refresh(prefixedKey);
                 return item.data;
