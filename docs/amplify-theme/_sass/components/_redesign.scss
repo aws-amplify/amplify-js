@@ -39,6 +39,15 @@
     }
 }
 
+.inline-bash {
+    display: inline-block;
+    font-family: "Source Code Pro",monospace;
+    color: #c0341d;
+    background-color: #fcefed;
+    border-radius: .1875rem;
+    padding: .125rem .375rem .1875rem .375rem;
+}
+
 .site-header {
 	position: fixed;
 	//width: 1442px;
@@ -164,66 +173,6 @@
 .col-xs-12 {
     margin-top: 1%;
 }
-
-.dropbtn {
-    color: #828282;
-    font-family: "Amazon Ember", "Helvetica", sans-serif;
-    font-size: 16px;
-    line-height: 24px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-}
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-}
-
-.dropdown-content a {
-    color: #828282;
-    font-family: "Amazon Ember", "Helvetica", sans-serif;
-    font-size: 16px;
-    height: 32px;
-    font-weight: 500;
-    padding: 4px 10px;
-    text-decoration: none;
-    display: block;
-    border-bottom: none !important;
-
-    p {
-        display: inline-block;
-    }
-}
-
-.dropdown-content a:hover p {
-    border-bottom: 2px solid #FF9900;
-}
-
-.dropdown-content a:hover {background-color: #f1f1f1}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropdown:active .dropdown-content {
-    display: block;
-}
-
-
-.dropbtn:hover {
-    border-bottom: 2px solid #FF9900;
-}
-
 
 /* ----- Navigation ----- */
 .site-header__nav {
@@ -1079,7 +1028,6 @@ a {
         }
     }
 
-
     .cloud-grid-item:hover {
         border-color: #FF9900;
     }
@@ -1298,7 +1246,7 @@ a {
         font-size: 16px;
         line-height: 24px;
         margin-bottom: 10px;
-        width: 90%;
+        width: 100%;
         display: block;
     }
 }
@@ -1840,6 +1788,10 @@ li {
     text-decoration: underline;
 }
 
+#npm-link:hover {
+    text-decoration: underline;
+}
+
 .amplify-link-box {
     margin-bottom: 20px;
 }
@@ -1875,20 +1827,67 @@ li {
     transform: rotate(-90deg);
 }
 
+.from-awsmobile {
+    display: inline-block;
+    position: relative;
+    left: 15px;
+    bottom: 30px;
+    font-family: "Amazon Ember", "Helvetica", sans-serif;
+}
+
+.video {
+    float: right;
+}
+
 .section-top-quickstart {
     margin-top: 0;
     margin-bottom: 34px;
 
     .section-code-block {
-        width: 90%;
+        width: 100%;
         padding-bottom: 25px;
 
         .highlight {
+            width: 100%;
             .highlight {
                 padding-bottom: 10px;
             }
         }
+    }
 
+    .cli-content {
+        display: inline-block;
+        width: 50%;
+
+        div {
+            float: left;
+        }
+        ul {
+            float: left;
+        }
+        p {
+            float: left;
+        }
+
+        @media (max-width: 1219px) {
+            width: 90%;
+
+            div {
+                float: none;
+            }
+            ul {
+                float: none;
+            }
+            p {
+                float: none;
+            }
+        }
+    }
+
+    .video {
+        @media (max-width: 1219px) {
+            display: none;
+        }
     }
 
     #orange-logos {
@@ -2219,7 +2218,9 @@ li {
         .sections-list.affix {
             position: sticky;
             position: -webkit-sticky;
-            margin-top: 84px;
+            @media (min-width: 829px) {
+                margin-top: 84px;
+            }
         }
 
         .styleguide-affix {
@@ -2509,6 +2510,87 @@ li {
             max-width: 100% !important;
         }
 
+        .collapse-btn {
+            float: right;
+            position: relative;
+            bottom: 50px;
+            font-size: 11px;
+            height: 40px;
+            padding: 0 10px;
+
+            &:hover {
+                background-color:#FFA41D
+            }
+
+            &:focus {
+                background-color: #FF9900;
+            }
+        }
+
+        .dropbtn {
+            color: #828282;
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
+            font-size: 16px;
+            line-height: 24px;
+            font-weight: 500;
+            margin: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .arrows {
+            -webkit-appearance: menulist;
+            -moz-appearance: menulist;
+            display: inline-block;
+            width: 12px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        
+        .dropdown-content a {
+            color: #828282;
+            font-family: "Amazon Ember", "Helvetica", sans-serif;
+            font-size: 16px;
+            height: 32px;
+            font-weight: 500;
+            padding: 4px 10px;
+            text-decoration: none;
+            display: block;
+            border-bottom: none !important;
+        
+            p {
+                display: inline-block;
+            }
+        }
+        
+        .dropdown-content a:hover p {
+            border-bottom: 2px solid #FF9900;
+        }
+        
+        .dropdown-content a:hover {background-color: #f1f1f1}
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .dropdown:active .dropdown-content {
+            display: block;
+        }
+
         .js-library-selector {
             z-index: 999;
             background-color: #FF9900;
@@ -2525,7 +2607,8 @@ li {
 
             img {
                 height: 20px;
-                left: 10px;
+                left: 4px;
+                margin-left: 5px;
                 position: relative;
                 vertical-align: text-bottom;
                 filter: brightness(0) invert(1);
@@ -2703,6 +2786,10 @@ li {
         width: 60%;
         margin-bottom: 50px;
 
+        @media (max-width: 828px) {
+            width: 100%;
+        }
+
         .marketing-grid__excerpt {
             font-family: "Amazon Ember", "Helvetica", sans-serif;
             font-size: 16px;
@@ -2779,6 +2866,10 @@ li {
             bottom: 450px;
             margin-bottom: -450px;
         }
+    }
+
+    #cli-much-more:hover {
+        text-decoration: underline;
     }
 }
 

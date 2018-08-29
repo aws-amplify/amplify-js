@@ -104,7 +104,7 @@
 								<button id="js-library-selector" class="dropbtn white-text"></button>
 								<div class="dropdown-content">
 									{% for item in site.js_libraries %}
-										<a href={{ item.url }}>{{ item.title }}</a>
+										<a id="{{ item.title | replace: ' ', '-' }}">{{ item.title }}</a>
 									{% endfor %}
 								</div>
 								<div class="arrows"></div>
@@ -207,6 +207,16 @@
 					let icon = document.getElementById("js-library-icon");
 					icons = {"react": "React-Small-White@1x.png", "react-native": "React-Small-White@1x.png", "angular": "Angular-Med-White@1x.png", "purejs": "JS-Small-White@1x.png", "ionic": "Ionic-Color@1x.png"};
 					icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
+				}
+				if ($.urlParam( 'step' )) {
+					{% for item in site.js_libraries %}
+						$("#{{ item.title | replace: ' ', '-' }}").attr("href", "{{ item.url }}"+"&step="+$.urlParam( 'step' ));
+					{% endfor %}
+				}
+				else {
+					{% for item in site.js_libraries %}
+						$("#{{ item.title | replace: ' ', '-' }}").attr("href", "{{ item.url }}");
+					{% endfor %}
 				}
 			}
 			else {
