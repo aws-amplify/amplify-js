@@ -94,7 +94,7 @@ p {
 
 /* ----- Hyperlinks ----- */
 a {
-	color: inherit;
+	color: orange;
 	text-decoration: none;
 	border-bottom: .0625em solid;
 	border-color: inherit;
@@ -147,11 +147,11 @@ ul {
 
 	li {
 		position: relative;
-		padding-left: 1.875rem;
+		padding-left: 1.575rem;
 		margin-bottom: .3125rem;
 
 		&:before {
-			content: '\2014';
+			content: '•';
 			color: $color-list-prefix;
 			position: absolute;
 			left: 0;
