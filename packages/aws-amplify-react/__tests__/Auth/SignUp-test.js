@@ -3,7 +3,7 @@ import SignUp from '../../src/Auth/SignUp';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
+import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'signUp'
@@ -82,16 +82,16 @@ describe('signUp', () => {
             }
             const event_phone = {
                 target: {
-                    name: 'phone_number',
-                    value: '+12345678901'
+                    name: 'phone_line_number',
+                    value: '2345678901'
                 }
             }
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
-            wrapper.find(InputRow).at(2).simulate('change', event_email);
-            wrapper.find(InputRow).at(3).simulate('change', event_phone);
-            await wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Input).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(1).simulate('change', event_password);
+            wrapper.find(Input).at(2).simulate('change', event_email);
+            wrapper.find(Input).at(3).simulate('change', event_phone);
+            await wrapper.find(Button).simulate('click');
 
 
             expect(spyon).toBeCalledWith({"attributes": {"email": "email@amazon.com", "phone_number": "+12345678901"}, "password": "abc", "username": "user1"});
