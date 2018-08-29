@@ -5,7 +5,7 @@
 
 ## Overview 
 
-AWS Amplify provides drop-in UI components with a [style guide](https://tommypraeger.github.io/amplify-js/media/ui_library) for your apps that automatically integrate with your configured cloud services. 
+AWS Amplify provides drop-in UI components with a [style guide](https://aws-amplify.github.io/media/ui_library) for your apps that automatically integrate with your configured cloud services. 
 - [Higher Order Components](https://reactjs.org/docs/higher-order-components.html) (HOC) for both React and React Native applications. 
  - Angular components
  - Ionic components

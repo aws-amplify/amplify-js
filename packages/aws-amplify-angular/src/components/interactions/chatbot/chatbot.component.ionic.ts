@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { ChatbotComponentCore } from './chatbot.component.core';
+import { Component, ViewChild } from '@angular/core';
+import { ChatbotComponentCore } from './chatbot.component.core'
 import { AmplifyService } from '../../../providers';
 
 const template = `
@@ -31,7 +31,7 @@ const template = `
 							</div>
 						</ion-col>
 						<ion-col align-self-end>
-							<ion-chip>
+							<ion-chip style="float:right">
 								<ion-label>{{message.me}}</ion-label>
 							</ion-chip>
 						</ion-col>
@@ -54,13 +54,13 @@ const template = `
 
 		<div class="amplify-form-row">
 		    <ion-input #inputValue
-		    	type='text'
-		        class="amplify-form-input"
+					type='text'
+		        class="amplify-form-input amplify-form-input-interactions-ionic"
 		        placeholder="Message"
 		        [value]="inputText"
 		        (keyup.enter)="onSubmit(inputValue.value)"
-		        (change)="onInputChange($event.target.value)"></ion-input>
-		    <ion-button (click)="onSubmit(inputValue.value)">Send</ion-button>
+		        (ionChange)="onInputChange($event.target.value)"></ion-input>
+		    <ion-button expand="block" (click)="onSubmit(inputValue.value)">Send</ion-button>
 		</div>
 	</div>
 </div>
@@ -71,7 +71,7 @@ const template = `
   template
 })
 export class ChatbotComponentIonic extends ChatbotComponentCore {
-
+  
   constructor(amplifyService: AmplifyService) {
     super(amplifyService);    
   }
