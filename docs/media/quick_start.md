@@ -27,7 +27,7 @@ $ npm install -g @aws-amplify/cli
 $ amplify configure
 ```
 
-Note: These commands will install the CLI globally. For Windows, open a command prompt with Admin permissions. For Mac/Linux, `sudo` may be required.
+Note: These commands will install the CLI globally. If you're using Windows, the CLI currently supports <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10" target="_blank">Windows Subsystem for Linux</a>.
 {: .callout .callout--action}
 
 ## Step 1. Create a New App
@@ -40,8 +40,6 @@ Note: These commands will install the CLI globally. For Windows, open a command 
     <li class="tab-link angular" data-tab="angular">Angular</li>
     <li class="tab-link ionic" data-tab="ionic">Ionic</li>
 </ul>
-
-If you'd like to use an existing app, skip ahead to [Step 2. Install AWS Amplify](#step-2-install-aws-amplify). 
 
 <div id="purejs" class="tab-content current">
 
@@ -303,12 +301,13 @@ See the [Angular Guide](https://aws-amplify.github.io/amplify-js/media/angular_g
 $ npm install --save aws-amplify
 ```
 
-In addition to `aws-amplify` core, you can install our angular module which provides a service provider, helpers, and components:
+In addition to `aws-amplify` core, you can install our angular and ionic modules which provide a service provider, helpers, and components:
 
 </div>
 <div id="ionic" class="tab-content">
 ```bash
 $ npm install --save aws-amplify-angular
+$ npm install --save ionic-angular
 ``` 
 
 See the [Ionic Guide](https://aws-amplify.github.io/amplify-js/media/ionic_guide){: target='_new'} for details and usage.
@@ -318,8 +317,6 @@ See the [Ionic Guide](https://aws-amplify.github.io/amplify-js/media/ionic_guide
 </div>
 
 ## Step 3. Set up the App Backend
-
-If you'd like to integrate existing AWS backend resources with your app, read ‘[Existing AWS resources](#existing-aws-resources)’.
 
 Create new AWS backend resources and pull the AWS services configuration into the app. In a terminal window, change to the root directory of your app and run the following command (for this app, accepting all defaults is OK):
 
@@ -376,20 +373,22 @@ Add the following to the `src/app.js` file:
 import Auth from '@aws-amplify/auth';
 import Analytics from '@aws-amplify/analytics';
 
-import awsmobile from './aws-exports';
+import awsconfig from './aws-exports';
 
 // retrieve temporary AWS credentials and sign requests
-Auth.configure(awsmobile);
+Auth.configure(awsconfig);
 // send analytics events to Amazon Pinpoint
-Analytics.configure(awsmobile);
+Analytics.configure(awsconfig);
 
 const AnalyticsResult = document.getElementById('AnalyticsResult');
 const AnalyticsEventButton = document.getElementById('AnalyticsEventButton');
+let EventsSent = 0;
 AnalyticsEventButton.addEventListener('click', (evt) => {
     Analytics.record('AWS Amplify Tutorial Event')
         .then( (evt) => {
-            const url = 'https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/'+awsmobile.aws_mobile_analytics_app_id+'/analytics/events';
+            const url = 'https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/'+awsconfig.aws_mobile_analytics_app_id+'/analytics/events';
             AnalyticsResult.innerHTML = '<p>Event Submitted.</p>';
+            AnalyticsResult.innerHTML += '<p>Events sent: '+(++EventsSent)+'</p>';
             AnalyticsResult.innerHTML += '<a href="'+url+'" target="_blank">View Events on the Amazon Pinpoint Console</a>';
         });
 });
@@ -401,32 +400,38 @@ AnalyticsEventButton.addEventListener('click', (evt) => {
 
 <div id="react" class="tab-content">
 
-Add the following to the `src/App.js` file:
+Change your `src/App.js` file to the following:
 
 ```js
+import React, { Component } from 'react';
+import logo from './logo.svg';
+import './App.css';
 import Auth from '@aws-amplify/auth';
 import Analytics from '@aws-amplify/analytics';
 
-import awsmobile from './aws-exports';
+import awsconfig from './aws-exports';
 
 // retrieve temporary AWS credentials and sign requests
-Auth.configure(awsmobile);
+Auth.configure(awsconfig);
 // send analytics events to Amazon Pinpoint
-Analytics.configure(awsmobile);
+Analytics.configure(awsconfig);
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.handleAnalyticsClick = this.handleAnalyticsClick.bind(this);
-    this.state = {analyticsEventSent: false, resultHtml: ""};
+    this.state = {analyticsEventSent: false, resultHtml: "", eventsSent: 0};
   }
 
   handleAnalyticsClick() {
       Analytics.record('AWS Amplify Tutorial Event')
         .then( (evt) => {
-            const url = 'https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/'+awsmobile.aws_mobile_analytics_app_id+'/analytics/events';
-            const result = '<p>Event Submitted.</p>';
-            result += '<a href="'+url+'" target="_blank">View Events on the Amazon Pinpoint Console</a>';
+            const url = 'https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/'+awsconfig.aws_mobile_analytics_app_id+'/analytics/events';
+            let result = (<div>
+              <p>Event Submitted.</p>
+              <p>Events sent: {++this.state.eventsSent}</p>
+              <a href={url} target="_blank">View Events on the Amazon Pinpoint Console</a>
+            </div>);
             this.setState({
                 'analyticsEventSent': true,
                 'resultHtml': result
@@ -442,10 +447,9 @@ class App extends Component {
           <h1 className="App-title">Welcome to React</h1>
         </header>
         <div className="App-intro">
-          <button className="App-button">Generate Analytics Event</button>
-          {this.state.analyticsEventSent &&
-            <div>{{this.state.resultHtml}}</div>
-          }
+          <button className="App-button" onClick={this.handleAnalyticsClick}>Generate Analytics Event</button>
+          {this.state.analyticsEventSent}
+          <div>{this.state.resultHtml}</div>
         </div>
       </div>
     );
@@ -453,7 +457,6 @@ class App extends Component {
 }
 
 export default App;
-
 ```
 
 > The code above imports only the Auth and Analytics categories. To import the entire Amplify library use `import Amplify from 'aws-amplify'`. However, importing only the required categories is recommended as it will greatly reduce the final bundle size.
@@ -464,9 +467,205 @@ export default App;
 </div>
 
 <div id="angular" class="tab-content">
+After creating your backend a configuration file will be generated in your configured source directory you identified in the `amplify init` command.
+
+Import the configuration file and load it in `main.ts`: 
+
+```js
+import Amplify from 'aws-amplify';
+import amplify from './aws-exports';
+Amplify.configure(amplify);
+```
+
+Depending on your TypeScript version you may need to rename the `aws-exports.js` to `aws-exports.ts` prior to importing it into your app, or enable the `allowJs` <a href="https://www.typescriptlang.org/docs/handbook/compiler-options.html" target="_blank">compiler option</a> in your tsconfig. 
+{: .callout .callout--info}
+
+When working with underlying `aws-js-sdk`, the "node" package should be included in *types* compiler option. update your `src/tsconfig.app.json`:
+```json
+"compilerOptions": {
+    "types" : ["node"]
+}
+```
+
+In your [app module](https://angular.io/guide/bootstrapping) `src/app/app.module.ts`, change your code to the following:
+
+```js
+import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+
+import { AppComponent } from './app.component';
+import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    CommonModule,
+    AmplifyAngularModule
+  ],
+  providers: [
+    AmplifyService
+  ],
+  bootstrap: [AppComponent]
+})
+
+export class AppModule { }
+```
+
+This imports the Amplify Module and Service.
+
+Note: If you are using Angular 6, you may need to add the following to the top of your `src/polyfills.ts` file: ```(window as any).global = window;```.
+{: .callout .callout--info}
+
+In your `src/app/app.component.ts` file, add the following import statements:
+
+```js
+import { AmplifyService } from 'aws-amplify-angular';
+import awsconfig from '../aws-exports';
+```
+
+To add the analytics event recorder to your app, replace your ```AppComponent``` class with the following:
+```js
+export class AppComponent {
+  title = 'amplify-angular-app';
+  url = 'https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/'
+        + awsconfig.aws_mobile_analytics_app_id + '/analytics/events';
+  eventsSent = 0;
+  analyticsEventSent = false;
+
+  constructor( private amplifyService: AmplifyService ) {}
+
+  handleAnalyticsClick() {
+    this.amplifyService.analytics().record('AWS Amplify Tutorial Event')
+    .then( (evt) => {
+        ++this.eventsSent;
+        this.analyticsEventSent = true;
+    });
+  }
+}
+```
+
+Then, add the following to your `src/app/app.component.html` file:
+```html
+<button (click)="handleAnalyticsClick()">Generate Analytics Event</button>
+<div *ngIf="analyticsEventSent">
+  <p>Event Submitted.</p>
+  <p>Events sent: {% raw %}{{ eventsSent }}{% endraw %}</p>
+  <a href="{% raw %}{{ url }}{% endraw %}" target="_blank">View Events on the Amazon Pinpoint Console</a>
+</div>
+```
 </div>
 
 <div id="ionic" class="tab-content">
+After creating your backend, the configuration file is copied to `/amplify/#current-cloud-backend/aws-exports.js`, and the source folder you have identified in the `amplify init` command.
+
+To import the configuration file to your Ionic app, you will need to rename `aws_exports.js` to `aws_exports.ts`. You should make sure that your `package.json` scripts also rename the file upon build, so that any configuration changes which result in the download of an `aws_exports.js` from AWS Mobile Hub get changed over to the ts extension.
+```js	
+"scripts": {	
+    "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",	
+    "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"	
+}	
+```
+
+Import the configuration file and load it in your `main.ts`, which is the entry point of your Angular application. 
+
+```js
+import Amplify from 'aws-amplify';
+import amplify from './aws-exports';
+Amplify.configure(amplify);
+```
+
+In your [app module](https://angular.io/guide/bootstrapping) `src/app/app.module.ts`, change your code to the following:
+
+```js
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule, RouteReuseStrategy } from '@angular/router';
+
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { CommonModule } from '@angular/common';
+import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
+
+@NgModule({
+  declarations: [AppComponent],
+  entryComponents: [],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, AmplifyAngularModule],
+  providers: [
+    StatusBar,
+    SplashScreen,
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    AmplifyService
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule {}
+```
+
+This imports the Amplify Module and Service.
+
+Note: If you are using Angular 6, you may need to add the following to the top of your `src/polyfills.ts` file: ```(window as any).global = window;```.
+{: .callout .callout--info}
+
+In your `src/app/app.component.ts` file, add the following import statements:
+
+```js
+import { AmplifyService } from 'aws-amplify-angular';
+import awsconfig from '../aws-exports';
+```
+
+To add the analytics event recorder to your app, replace your ```AppComponent``` class with the following:
+```js
+export class AppComponent {
+  constructor(
+    private platform: Platform,
+    private splashScreen: SplashScreen,
+    private statusBar: StatusBar,
+    public amplifyService: AmplifyService
+  ) {
+    this.amplifyService = amplifyService;
+    this.initializeApp();
+  }
+
+  url = 'https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/'
+        + awsconfig.aws_mobile_analytics_app_id + '/analytics/events';
+  eventsSent = 0;
+  analyticsEventSent = false;
+
+  handleAnalyticsClick() {
+    this.amplifyService.analytics().record('AWS Amplify Tutorial Event')
+    .then( (evt) => {
+        ++this.eventsSent;
+        this.analyticsEventSent = true;
+    });
+  }
+
+  initializeApp() {
+    this.platform.ready().then(() => {
+      this.statusBar.styleDefault();
+      this.splashScreen.hide();
+    });
+  }
+}
+
+```
+
+Then, replace your `src/app/app.component.html` code with the following:
+```html
+<ion-button (click)="handleAnalyticsClick()">Generate Analytics Event</ion-button>
+<div *ngIf="analyticsEventSent">
+  <p>Event Submitted.</p>
+  <p>Events sent: {{ eventsSent }}</p>
+  <a href="{{ url }}" target="_blank">View Events on the Amazon Pinpoint Console</a>
+</div>
+```
 </div>
 
 ## Step 5. Host your App on Amazon S3
