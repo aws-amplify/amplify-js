@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 const logger = new Logger('AuthStateWrapper');
 

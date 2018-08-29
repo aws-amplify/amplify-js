@@ -49,7 +49,7 @@ const template = `
 })
 export class AuthenticatorComponentCore {
   authState: AuthState = {
-    state: 'signIn',
+    state: 'loading',
     user: null
   };
 

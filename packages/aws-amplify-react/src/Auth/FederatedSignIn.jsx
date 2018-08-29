@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
     FormSection,
     SectionBody,
-    ActionRow
-} from '../AmplifyUI';
+} from '../Amplify-UI/Amplify-UI-Components-React';
+
 import {
     GoogleButton,
     FacebookButton,
@@ -82,12 +82,21 @@ export class FederatedButtons extends Component {
 
         const theme = this.props.theme || AmplifyTheme;
         return (
-            <ActionRow theme={theme}>
+            // <ActionRow theme={theme}>
+            <div>
+                <div>
                 {this.google(google_client_id)}
+                </div>
+                <div>
                 {this.facebook(facebook_app_id)}
+                </div>
+                <div>
                 {this.amazon(amazon_client_id)}
+                </div>
+                <div>
                 {this.OAuth(oauth_config)}
-            </ActionRow>
+                </div>
+            </div>
         )
     }
 }
