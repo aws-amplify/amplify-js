@@ -208,7 +208,7 @@ Auth.currentAuthenticatedUser()
     .catch(err => console.log(err));
 ```
 This method can be used to check if a user is logged in when the page is loaded. It will throw an error if there is no user logged in.
-This method should be called after the Auth module is configured. To ensure that you can listen on the auth events `configured`. [Learn how to listen on auth events.]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/hub_guide#listening-authentication-events)
+This method should be called after the Auth module is configured or the user is logged in. To ensure that you can listen on the auth events `configured` or `signIn`. [Learn how to listen on auth events.]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/media/hub_guide#listening-authentication-events)
 
 #### Retrieve Current Session
 
