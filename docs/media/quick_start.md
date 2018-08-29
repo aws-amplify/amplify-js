@@ -243,7 +243,7 @@ $ react-native init myReactNativeApp
 $ cd myReactNativeApp
 $ npm install --save aws-amplify
 $ npm install --save aws-amplify-react-native
-$ react-native link amazon-cognito-identity-js
+$ react-native link
 ```
 
 </div>
