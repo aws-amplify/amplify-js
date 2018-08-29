@@ -23,10 +23,12 @@ import {
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    Input,
+    Button,
+    Link,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('RequireNewPassword');
 
@@ -58,6 +60,7 @@ export default class RequireNewPassword extends AuthPiece {
         const user = this.props.authData;
         const { password } = this.inputs;
         const requiredAttributes = objectWithoutProperties(this.inputs, ['password'])
+
         if (!Auth || typeof Auth.completeNewPassword !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -88,7 +91,7 @@ export default class RequireNewPassword extends AuthPiece {
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Change Password')}</SectionHeader>
                 <SectionBody>
-                    <InputRow
+                    <Input
                         autoFocus
                         placeholder={I18n.get('New Password')}
                         theme={theme}
@@ -113,11 +116,19 @@ export default class RequireNewPassword extends AuthPiece {
                     <ButtonRow theme={theme} onClick={this.change}>
                         {I18n.get('Change')}
                     </ButtonRow>
+
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signIn')}>
-                        {I18n.get('Back to Sign In')}
-                    </Link>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        <Button theme={theme} onClick={this.change}>
+                            {I18n.get('Change')}
+                        </Button>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        <Link theme={theme} onClick={() => this.changeState('signIn')}>
+                            {I18n.get('Back to Sign In')}
+                        </Link>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
         )

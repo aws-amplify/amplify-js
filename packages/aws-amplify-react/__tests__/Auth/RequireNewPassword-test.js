@@ -1,6 +1,6 @@
 import Auth from '@aws-amplify/auth';
 import React, { Component } from 'react';
-import { ButtonRow, Link } from '../../src/AmplifyUI';
+import { Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import RequireNewPassword from '../../src/Auth/RequireNewPassword';
 
 describe('RequireNewPassword test', () => {
@@ -76,7 +76,7 @@ describe('RequireNewPassword test', () => {
                 hide: false
             });
 
-            wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Button).simulate('click');
 
             expect(spyon).toBeCalled();
             

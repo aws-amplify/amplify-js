@@ -42,7 +42,7 @@ For this example we will create a new plain JavaScript <a href="https://babeljs.
 Change directories to your new project and run:
 
 ```
-$ mkdir amplify-js-app
+$ mkdir amplify-js-app amplify-js-app/src
 $ cd amplify-js-app
 $ touch package.json index.html webpack.config.js src/app.js
 ```
@@ -106,6 +106,8 @@ Add the following to the `index.html` file:
 Add the following to the `webpack.config.js` file:
 
 ```js
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
 module.exports = {
     mode: 'development',
     entry: './src/app.js',
@@ -200,14 +202,14 @@ AWS Amplify is available as an npm package. Run the following commands at the ro
     <li class="tab-link react" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
 </ul>
-<div id="purejs" class="tab-content">
+<div id="purejs" class="tab-content current">
 
 ```bash
 $ npm install --save aws-amplify
 ```
 
 </div>
-<div id="react" class="tab-content current">
+<div id="react" class="tab-content">
 
 ```bash
 $ npm install --save aws-amplify
@@ -241,7 +243,7 @@ $ react-native init myReactNativeApp
 $ cd myReactNativeApp
 $ npm install --save aws-amplify
 $ npm install --save aws-amplify-react-native
-$ react-native link amazon-cognito-identity-js
+$ react-native link
 ```
 
 </div>
@@ -267,6 +269,8 @@ $ npm install --save aws-amplify
 
 In addition to `aws-amplify` core, you can install our angular module which provides a service provider, helpers, and components:
 
+</div>
+<div id="ionic" class="tab-content">
 ```bash
 $ npm install --save aws-amplify-angular
 ``` 
@@ -287,13 +291,9 @@ You can quickly create your backend from scratch with Automatic Setup, or use Ma
 $ amplify init
 ```
 
-Accept all defaults except for the `Distribution Directory Path`, change this to "." so that our entire folder is uploaded to Amazon S3 for hosting:
-
-```bash
-$ ? Distribution Directory Path (dist): .
-```
-
 > When you run `amplify init` command you are asked for the details of your project. A configuration file for your app is put in your configured source directory called `aws-exports.js`.
+
+Update the `src/app.js` file:
 
 ```js
 import Amplify from 'aws-amplify';

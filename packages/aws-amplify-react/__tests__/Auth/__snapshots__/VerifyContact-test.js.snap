@@ -25,18 +25,13 @@ exports[`VerifyContent test render test render submitView if verifyAttr is set 1
   <SectionHeader
     theme="theme"
   >
-    Verify Contact
+    Account recovery requires verified contact information
   </SectionHeader>
   <SectionBody
     theme="theme"
   >
-    <MessageRow
-      theme="theme"
-    >
-      Account recovery requires verified contact information
-    </MessageRow>
     <div>
-      <InputRow
+      <Input
         autoComplete="off"
         key="code"
         name="code"
@@ -44,23 +39,31 @@ exports[`VerifyContent test render test render submitView if verifyAttr is set 1
         placeholder="Code"
         theme="theme"
       />
-      <ButtonRow
-        onClick={[Function]}
-        theme="theme"
-      >
-        Submit
-      </ButtonRow>
     </div>
   </SectionBody>
   <SectionFooter
     theme="theme"
   >
-    <Link
-      onClick={[Function]}
+    <SectionFooterPrimaryContent
       theme="theme"
     >
-      Skip
-    </Link>
+      <Button
+        onClick={[Function]}
+        theme="theme"
+      >
+        Submit
+      </Button>
+    </SectionFooterPrimaryContent>
+    <SectionFooterSecondaryContent
+      theme="theme"
+    >
+      <Link
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Link>
+    </SectionFooterSecondaryContent>
   </SectionFooter>
 </FormSection>
 `;
@@ -72,26 +75,34 @@ exports[`VerifyContent test render test render verifyView with empty authData 1`
   <SectionHeader
     theme="theme"
   >
-    Verify Contact
+    Account recovery requires verified contact information
   </SectionHeader>
   <SectionBody
     theme="theme"
-  >
-    <MessageRow
-      theme="theme"
-    >
-      Account recovery requires verified contact information
-    </MessageRow>
-  </SectionBody>
+  />
   <SectionFooter
     theme="theme"
   >
-    <Link
-      onClick={[Function]}
+    <SectionFooterPrimaryContent
       theme="theme"
     >
-      Skip
-    </Link>
+      <Button
+        onClick={[Function]}
+        theme="theme"
+      >
+        Verify
+      </Button>
+    </SectionFooterPrimaryContent>
+    <SectionFooterSecondaryContent
+      theme="theme"
+    >
+      <Link
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Link>
+    </SectionFooterSecondaryContent>
   </SectionFooter>
 </FormSection>
 `;
@@ -103,34 +114,36 @@ exports[`VerifyContent test render test render verifyView without phone_number a
   <SectionHeader
     theme="theme"
   >
-    Verify Contact
+    Account recovery requires verified contact information
   </SectionHeader>
   <SectionBody
     theme="theme"
   >
-    <MessageRow
-      theme="theme"
-    >
-      Account recovery requires verified contact information
-    </MessageRow>
-    <div>
-      <ButtonRow
-        onClick={[Function]}
-        theme="theme"
-      >
-        Verify
-      </ButtonRow>
-    </div>
+    <div />
   </SectionBody>
   <SectionFooter
     theme="theme"
   >
-    <Link
-      onClick={[Function]}
+    <SectionFooterPrimaryContent
       theme="theme"
     >
-      Skip
-    </Link>
+      <Button
+        onClick={[Function]}
+        theme="theme"
+      >
+        Verify
+      </Button>
+    </SectionFooterPrimaryContent>
+    <SectionFooterSecondaryContent
+      theme="theme"
+    >
+      <Link
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Link>
+    </SectionFooterSecondaryContent>
   </SectionFooter>
 </FormSection>
 `;
@@ -142,16 +155,11 @@ exports[`VerifyContent test render test render with accepted states 1`] = `
   <SectionHeader
     theme="theme"
   >
-    Verify Contact
+    Account recovery requires verified contact information
   </SectionHeader>
   <SectionBody
     theme="theme"
   >
-    <MessageRow
-      theme="theme"
-    >
-      Account recovery requires verified contact information
-    </MessageRow>
     <div>
       <RadioRow
         key="email"
@@ -169,23 +177,31 @@ exports[`VerifyContent test render test render with accepted states 1`] = `
         theme="theme"
         value="phone_number"
       />
-      <ButtonRow
-        onClick={[Function]}
-        theme="theme"
-      >
-        Verify
-      </ButtonRow>
     </div>
   </SectionBody>
   <SectionFooter
     theme="theme"
   >
-    <Link
-      onClick={[Function]}
+    <SectionFooterPrimaryContent
       theme="theme"
     >
-      Skip
-    </Link>
+      <Button
+        onClick={[Function]}
+        theme="theme"
+      >
+        Verify
+      </Button>
+    </SectionFooterPrimaryContent>
+    <SectionFooterSecondaryContent
+      theme="theme"
+    >
+      <Link
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Link>
+    </SectionFooterSecondaryContent>
   </SectionFooter>
 </FormSection>
 `;
