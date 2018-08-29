@@ -265,7 +265,7 @@ To install React Native specific components, run the following command:
 $ npm install --save aws-amplify-react-native
 ```
 
-If you have created your app with *create-react-native-app* in previous steps, you can [**skip**](#step-4-set-up-your-backend) this section.
+If you have created your app with *create-react-native-app* in previous steps, you can [**skip**](#step-3-set-up-the-app-backend) this section.
 
 AWS Amplify provides native libraries for React Native to support Amazon Cognito sign-in process. If you are using *create-react-native-app* or [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), those libraries are already included in your dependencies. Otherwise, you need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) those libraries to your project.
 {: .callout .callout--info}
@@ -277,7 +277,7 @@ $ react-native init myReactNativeApp
 $ cd myReactNativeApp
 $ npm install --save aws-amplify
 $ npm install --save aws-amplify-react-native
-$ react-native link amazon-cognito-identity-js
+$ react-native link
 ```
 
 </div>
@@ -399,7 +399,6 @@ AnalyticsEventButton.addEventListener('click', (evt) => {
 </div>
 
 <div id="react" class="tab-content">
-
 Change your `src/App.js` file to the following:
 
 ```js
@@ -460,10 +459,75 @@ export default App;
 ```
 
 > The code above imports only the Auth and Analytics categories. To import the entire Amplify library use `import Amplify from 'aws-amplify'`. However, importing only the required categories is recommended as it will greatly reduce the final bundle size.
-
 </div>
 
 <div id="react-native" class="tab-content">
+Change your `src/App.js` file to the following:
+
+```js
+import React from 'react';
+import { Linking, Button, StyleSheet, Text, View } from 'react-native';
+import Auth from '@aws-amplify/auth';
+import Analytics from '@aws-amplify/analytics';
+
+import awsconfig from './aws-exports';
+
+// retrieve temporary AWS credentials and sign requests
+Auth.configure(awsconfig);
+// send analytics events to Amazon Pinpoint
+Analytics.configure(awsconfig);
+
+export default class App extends React.Component {
+    constructor(props) {
+      super(props);
+      this.handleAnalyticsClick = this.handleAnalyticsClick.bind(this);
+      this.state = {resultHtml: <Text></Text>, eventsSent: 0};
+    }
+
+    handleAnalyticsClick() {
+      Analytics.record('AWS Amplify Tutorial Event')
+        .then( (evt) => {
+            const url = 'https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/'+awsconfig.aws_mobile_analytics_app_id+'/analytics/events';
+            let result = (
+              <View>
+                <Text>Event Submitted.</Text>
+                <Text>Events sent: {++this.state.eventsSent}</Text>
+                <Text style={styles.link} onPress={() => Linking.openURL(url)}>
+                  View Events on the Amazon Pinpoint Console
+                </Text>
+              </View>
+            );
+            this.setState({
+                'resultHtml': result
+            });
+        });
+    };
+
+    render() {
+      return (
+        <View style={styles.container}>
+          <Text>Welcome to your React Native App with Amplify!</Text>
+          <Button title="Generate Analytics Event" onPress={this.handleAnalyticsClick} />
+          {this.state.resultHtml}
+        </View>
+      );
+    }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  link: {
+    color: 'blue'
+  }
+});
+```
+
+> The code above imports only the Auth and Analytics categories. To import the entire Amplify library use `import Amplify from 'aws-amplify'`. However, importing only the required categories is recommended as it will greatly reduce the final bundle size.
 </div>
 
 <div id="angular" class="tab-content">
