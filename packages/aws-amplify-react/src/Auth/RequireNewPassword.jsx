@@ -103,7 +103,7 @@ export default class RequireNewPassword extends AuthPiece {
 
                     {requiredAttributes
                         .map(attribute => (
-                            <InputRow
+                            <Input
                                 placeholder={I18n.get(convertToPlaceholder(attribute))}
                                 theme={theme}
                                 key={attribute}
@@ -112,10 +112,6 @@ export default class RequireNewPassword extends AuthPiece {
                                 onChange={this.handleInputChange}
                             />
                         ))}
-
-                    <ButtonRow theme={theme} onClick={this.change}>
-                        {I18n.get('Change')}
-                    </ButtonRow>
 
                 </SectionBody>
                 <SectionFooter theme={theme}>
