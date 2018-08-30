@@ -1,0 +1,35 @@
+{
+  "name": "@aws-amplify/ui",
+  "version": "1.0.2",
+  "main": "dist/aws-amplify-ui.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "webpack",
+    "start": "webpack-dev-server",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && webpack"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer-core": "^5.1.11",
+    "babel-core": "^5.2.17",
+    "babel-loader": "^5.0.0",
+    "css-loader": "^0.15.1",
+    "ejs": "^2.3.1",
+    "extract-text-webpack-plugin": "^0.8.1",
+    "file-loader": "^0.8.4",
+    "gh-pages": "git://github.com/markdalgleish/gh-pages#cli-message",
+    "node-libs-browser": "^0.5.0",
+    "postcss-color-rebeccapurple": "^1.1.0",
+    "postcss-loader": "^0.4.3",
+    "raw-loader": "^0.5.1",
+    "react": "^0.13.3",
+    "react-to-html-webpack-plugin": "^2.2.0",
+    "style-loader": "^0.12.3",
+    "url-loader": "^0.5.6",
+    "webpack": "^1.9.10",
+    "webpack-dev-server": "^1.9.0"
+  }
+}
