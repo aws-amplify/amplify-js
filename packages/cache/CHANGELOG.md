@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.8-unstable.2"></a>
+## [1.0.8-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.7...@aws-amplify/cache@1.0.8-unstable.2) (2018-08-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/cache:** check if window object exists for browser usage ([988e553](https://github.com/aws/aws-amplify/commit/988e553))
+
+
+
+
 <a name="1.0.8-unstable.1"></a>
 ## [1.0.8-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.7...@aws-amplify/cache@1.0.8-unstable.1) (2018-08-30)
 
