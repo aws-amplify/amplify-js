@@ -1,5 +1,5 @@
 import Auth from '@aws-amplify/auth';
-import React from 'react';
+import * as React from 'react';
 import Authenticator from '../../src/Auth/Authenticator';
 import SignIn from '../../src/Auth/SignIn';
 import AmplifyTheme  from '../../src/AmplifyTheme';

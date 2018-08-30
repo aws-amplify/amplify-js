@@ -1,6 +1,6 @@
 import Auth from '@aws-amplify/auth';
 import TOTPSetup from '../../src/Auth/TOTPSetup';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
 import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';

@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import { Component } from 'react';
 
 import Authenticator from './Authenticator';
 
@@ -109,8 +109,4 @@ export class AuthenticatorWrapper extends Component {
             </div>
         )
     }
-}
-
-AuthenticatorWrapper.propTypes = {
-    children: PropTypes.func.isRequired
 }

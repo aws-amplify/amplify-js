@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import { Amplify, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import Greetings from './Greetings';
