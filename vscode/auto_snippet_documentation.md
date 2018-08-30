@@ -1,5 +1,5 @@
 # Automatically Generated Snippet Documentation
-##### prefix: ```Amplify Automated Setup```
+##### prefix: ```Amplify Configure Your App```
 ```js
 import Amplify, { Analytics } from 'aws-amplify';
 import aws_exports from './aws-exports';
@@ -53,16 +53,12 @@ Analytics.configure({
     } 
 });
 ```
-##### prefix: ```Amplify Recording A Custom Tracking Event```
+##### prefix: ```Amplify Recording Custom Events```
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.record({ name: 'albumVisit' });
 ```
-##### prefix: ```Amplify Record A Custom Tracking Event With Attributes```
+##### prefix: ```Amplify Record A Custom Event With Attributes```
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.record({
     name: 'albumVisit', 
     attributes: { genre: '', artist: '' }
@@ -70,47 +66,22 @@ Analytics.record({
 ```
 ##### prefix: ```Amplify Record Engagement Metrics```
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.record({
     name: 'albumVisit', 
     attributes: {}, 
     metrics: { minutesListened: 30 }
 });
 ```
-##### prefix: ```Amplify Disable/Enable Analytics```
+##### prefix: ```Amplify Disable Analytics```
 ```js
-import { Analytics } from 'aws-amplify';
-
 // to disable Analytics
 Analytics.disable();
 
 // to enable Analytics
 Analytics.enable();
 ```
-##### prefix: ```Amplify Record Authentication Events```
-```js
-import { Analytics } from 'aws-amplify';
-
-// Sign-in event
-Analytics.record({
-    name: '_userauth.sign_in'
-});
-
-// Sign-up event
-Analytics.record({
-    name: '_userauth.sign_up'
-});
-
-// Authentication failure event
-Analytics.record({
-    name: '_userauth.auth_fail'
-});
-```
 ##### prefix: ```Amplify Update User Attributes```
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.updateEndpoint({
     // Customized userId
     UserId: 'XXXXXXXXXXXX',
@@ -220,13 +191,13 @@ Analytics.removePluggable(MyAnalyticsProvider.providerName);
 
 // send configuration into Amplify
 Analytics.configure({
-    YOUR_PLUGIN_NAME: { 
+    MyAnalyticsProvider: { 
         // My Analytics provider configuration 
     }
 });
 
 ```
-##### prefix: ```Amplify Using Modularized Module```
+##### prefix: ```Amplify Using Modular Imports```
 ```js
 import Analytics from '@aws-amplify/analytics';
 
@@ -235,34 +206,17 @@ Analytics.configure();
 ```
 ##### prefix: ```Amplify Setup```
 ```js
-"scripts": {
-    "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",
-    "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"
-}
+import Amplify from 'aws-amplify';
+import amplify from './aws-exports';
+Amplify.configure(amplify);
 ```
 ##### prefix: ```Amplify Setup 2```
-```js
-import Amplify from 'aws-amplify';
-import awsmobile from './aws-exports';
-Amplify.configure(awsmobile);
-```
-##### prefix: ```Amplify Setup 3```
 ```json
 "compilerOptions": {
     "types" : ["node"]
 }
 ```
-##### prefix: ```Amplify Setup 4```
-```js
-"defaults": {
-    "styleExt": "css",
-    "component": {},
-    "build": {
-        "preserveSymlinks": true
-    }
-  }
-```
-##### prefix: ```Amplify Importing Amplify```
+##### prefix: ```Amplify Importing The Angular Module```
 ```js
 import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 
@@ -282,19 +236,21 @@ import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 ```
 ##### prefix: ```Amplify Using Dependency Injection```
 ```js
+import { Component } from '@angular/core';
 import { AmplifyService } from 'aws-amplify-angular';
 
-...
-constructor(
-    public navCtrl:NavController,
-    public amplifyService: AmplifyService,
-    public modalCtrl: ModalController
-) {
-    this.amplifyService = amplifyService;
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+    constructor( private amplifyService: AmplifyService ) {}
+
 }
-...
 ```
-##### prefix: ```Amplify Using Aws Amplify Categories```
+##### prefix: ```Amplify Using Categories```
 ```js
 import { Component } from '@angular/core';
 import { AmplifyService }  from 'aws-amplify-angular';
@@ -304,12 +260,9 @@ import { AmplifyService }  from 'aws-amplify-angular';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
 export class AppComponent {
   
-  constructor( public amplify:AmplifyService ) {
-      
-      this.amplifyService = amplify;
+  constructor( private amplifyService:AmplifyService ) {
       
       /** now you can access category APIs:
        * this.amplifyService.auth();          // AWS Amplify Auth
@@ -318,55 +271,47 @@ export class AppComponent {
        * this.amplifyService.api();           // AWS Amplify API
        * this.amplifyService.cache();         // AWS Amplify Cache
        * this.amplifyService.pubsub();        // AWS Amplify PubSub
-     **/
+       **/
   }
   
 }
 ```
-##### prefix: ```Amplify Usage Example: Subscribe To Authentication State Changes```
+##### prefix: ```Amplify Subscribe To Authentication State Changes```
 ```js
+import { Component } from '@angular/core';
 import { AmplifyService }  from 'aws-amplify-angular';
 
-  // ...
-constructor( public amplifyService: AmplifyService ) {
-
-    this.amplifyService = amplifyService;
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+constructor( private amplifyService: AmplifyService ) {
+    
+    signedIn: boolean;
+    user: any;
+    greeting: string;
 
     this.amplifyService.authStateChange$
         .subscribe(authState => {
-        this.signedIn = authState.state === 'signedIn';
-        if (!authState.user) {
-            this.user = null;
-        } else {
-            this.user = authState.user;
-            this.greeting = "Hello " + this.user.username;
-        }
-        });
+            this.signedIn = authState.state === 'signedIn';
+            if (!authState.user) {
+                this.user = null;
+            } else {
+                this.user = authState.user;
+                this.greeting = "Hello " + this.user.username;
+            }
+    });
 
 }
 ```
-##### prefix: ```Amplify Photo Picker```
-```js
-onImagePicked( file ) {
-
-    let key = `pics/${file.name}`;
-    
-    this.amplify.storage().put( key, file, {
-      'level': 'private',
-      'contentType': file.type
-    })
-    .then (result => console.log('uploaded: ', result))
-    .catch(err => console.log('upload error: ', err));
-  
-}
-```
-##### prefix: ```Amplify S3 Album```
+##### prefix: ```Amplify Album```
 ```js
 onAlbumImageSelected( event ) {
       window.open( event, '_blank' );
 }
 ```
-##### prefix: ```Amplify Automated Setup```
+##### prefix: ```Amplify Configure Your App```
 ```js
 import Amplify, { API } from 'aws-amplify';
 import aws_exports from './aws-exports';
@@ -378,14 +323,15 @@ Amplify.configure(aws_exports);
 import Amplify, { API } from 'aws-amplify';
 
 Amplify.configure({
+    // OPTIONAL - if your API requires authentication 
     Auth: {
-    // REQUIRED - Amazon Cognito Identity Pool ID
+        // REQUIRED - Amazon Cognito Identity Pool ID
         identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
-    // REQUIRED - Amazon Cognito Region
+        // REQUIRED - Amazon Cognito Region
         region: 'XX-XXXX-X', 
-    // OPTIONAL - Amazon Cognito User Pool ID
+        // OPTIONAL - Amazon Cognito User Pool ID
         userPoolId: 'XX-XXXX-X_abcd1234', 
-    // OPTIONAL - Amazon Cognito Web Client ID
+        // OPTIONAL - Amazon Cognito Web Client ID
         userPoolWebClientId: 'XX-XXXX-X_abcd1234',
     },
     API: {
@@ -414,7 +360,7 @@ Amplify.configure({
 API: {
     endpoints: [
         {
-            name: "MyCustomLambdaApi",
+            name: "MyCustomLambda",
             endpoint: "https://lambda.us-east-1.amazonaws.com/2015-03-31/functions/yourFuncName/invocations",
             service: "lambda",
             region: "us-east-1"
@@ -428,8 +374,10 @@ let apiName = 'MyApiName';
 let path = '/path'; 
 let myInit = { // OPTIONAL
     headers: {} // OPTIONAL
-    response: true // OPTIONAL (return entire response object instead of response.data)
-    queryStringParameters: {} // OPTIONAL
+    response: true // OPTIONAL (return the entire Axios response object instead of only response.data)
+    queryStringParameters: {  // OPTIONAL
+        name: 'param'
+    }
 }
 API.get(apiName, path, myInit).then(response => {
     // Add your code here
@@ -439,7 +387,7 @@ API.get(apiName, path, myInit).then(response => {
 ```
 ##### prefix: ```Amplify Get** 2```
 ```js
-async function getData() { 
+async getData() { 
     let apiName = 'MyApiName';
     let path = '/path';
     let myInit = { // OPTIONAL
@@ -610,41 +558,14 @@ Amplify.configure({
         custom_header: async () => { 
           return { Authorization : 'token' } 
           // Alternatively, with Cognito User Pools use this:
-          // return { (await Auth.currentSession()).idToken.jwtToken } 
+          // return { Authorization: (await Auth.currentSession()).idToken.jwtToken } 
         }
       }
     ]
   }
 });
 ```
-##### prefix: ```Amplify Configuration For Graphql Server```
-```js
-
-import Amplify, { API } from "aws-amplify";
-import aws_config from "./aws-exports";
- 
-// Considering you have an existing aws-exports.js configuration file 
-Amplify.configure(aws_config);
-
-// Configure a custom GraphQL endpoint
-Amplify.configure({
-  API: {
-    graphql_endpoint: 'https:/www.example.com/my-graphql-endpoint'
-  }
-});
-
-```
-##### prefix: ```Amplify Set Custom Request Headers For Graphql ```
-```js
-Amplify.configure({
-  API: {
-    graphql_headers: async () => ({
-      'My-Custom-Header': 'my value'
-    })
-  }
-});
-```
-##### prefix: ```Amplify Automated Configuration With Cli```
+##### prefix: ```Amplify Using The Configuration File In Your Code```
 ```js
 import aws_config from "./aws-exports";
 Amplify.configure(aws_config);
@@ -697,6 +618,42 @@ let myAppConfig = {
 }
 
 Amplify.configure(myAppConfig);
+```
+##### prefix: ```Amplify Using A Graphql Server```
+```js
+
+import Amplify, { API } from "aws-amplify";
+import aws_config from "./aws-exports";
+ 
+// Considering you have an existing aws-exports.js configuration file 
+Amplify.configure(aws_config);
+
+// Configure a custom GraphQL endpoint
+Amplify.configure({
+  API: {
+    graphql_endpoint: 'https:/www.example.com/my-graphql-endpoint'
+  }
+});
+
+```
+##### prefix: ```Amplify Set Custom Request Headers For Graphql ```
+```js
+Amplify.configure({
+  API: {
+    graphql_headers: async () => ({
+        'My-Custom-Header': 'my value'
+    })
+  }
+});
+```
+##### prefix: ```Amplify Signing Request With Iam```
+```js
+Amplify.configure({
+  API: {
+    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
+    graphql_endpoint_iam_region: 'my_graphql_apigateway_region'
+  }
+});
 ```
 ##### prefix: ```Amplify Query Declarations```
 ```js
@@ -826,15 +783,6 @@ Amplify.configure({
   aws_appsync_apiKey: 'xxxx'
 });
 ```
-##### prefix: ```Amplify Signing Request With Iam```
-```js
-Amplify.configure({
-  API: {
-    graphql_endpoint: 'https://www.example.com/my-graphql-endpoint',
-    graphql_endpoint_iam_region: 'my_graphql_apigateway_region'
-  }
-});
-```
 ##### prefix: ```Amplify Connect```
 ```js
 import React from 'react';
@@ -904,17 +852,17 @@ class CreateEvent extends React.Component {
   )}
 </Connect>
 ```
-##### prefix: ```Amplify Using Modularized Module```
+##### prefix: ```Amplify Using Modular Imports```
 ```js
 import API from '@aws-amplify/api';
 
 API.configure();
 
 ```
-##### prefix: ```Amplify Automated Setup```
+##### prefix: ```Amplify Configure Your App```
 ```js
 import Amplify, { Auth } from 'aws-amplify';
-import aws_exports from './aws-exports'; // specify the location of aws-exports.js file on your project
+import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
 ```
 ##### prefix: ```Amplify Manual Setup```
@@ -929,6 +877,10 @@ Amplify.configure({
         
         // REQUIRED - Amazon Cognito Region
         region: 'XX-XXXX-X',
+
+        // OPTIONAL - Amazon Cognito Federated Identity Pool Region 
+        // Required only if it's different from Amazon Cognito Region
+        identityPoolRegion: 'XX-XXXX-X',
 
         // OPTIONAL - Amazon Cognito User Pool ID
         userPoolId: 'XX-XXXX-X_abcd1234',
@@ -958,10 +910,6 @@ Amplify.configure({
         authenticationFlowType: 'USER_PASSWORD_AUTH'
     }
 });
-```
-##### prefix: ```Amplify Node.Js Support```
-```js
-global.fetch = require('node-fetch');
 ```
 ##### prefix: ```Amplify Sign In```
 ```js
@@ -1035,42 +983,20 @@ Auth.forgotPasswordSubmit(username, code, new_password)
     .then(data => console.log(data))
     .catch(err => console.log(err));
 ```
+##### prefix: ```Amplify Retrieve Current Authenticated User```
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.currentAuthenticatedUser()
+    .then(user => console.log(user));
+    .catch(err => console.log(err));
+```
 ##### prefix: ```Amplify Retrieve Current Session```
 ```js
 let session = Auth.currentSession();
 // CognitoUserSession => { idToken, refreshToken, accessToken }
 ```
-##### prefix: ```Amplify Managing Security Tokens```
-```js
-var data = { UserPoolId : 'us-east-1_resgd', ClientId : 'xyz' };
-var userPool = new AmazonCognitoIdentity.CognitoUserPool(data);
-var cognitoUser = userPool.getCurrentUser();
-
-if (cognitoUser != null) {
-    cognitoUser.getSession(function(err, session) {
-        if (err) { alert(err); return; }
-
-        // Get refresh token before refreshing session
-        refresh_token = session.getRefreshToken();
-
-        if (AWS.config.credentials.needsRefresh()) {
-            cognitoUser.refreshSession(refresh_token, (err, session) => {
-                if(err) { console.log(err); } 
-                else {
-                    AWS.config.credentials.params.Logins['cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>']  = session.getIdToken().getJwtToken();
-                    AWS.config.credentials.refresh((err)=> {
-                        if(err)  { console.log(err); }
-                        else{
-                            console.log("TOKEN SUCCESSFULLY UPDATED");
-                        }
-                    });
-                }
-            });
-        }
-    });
-}
-```
-##### prefix: ```Amplify Using Withauthenticator Hoc```
+##### prefix: ```Amplify Using Components In React```
 ```js
 import { withAuthenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
 ...
@@ -1326,13 +1252,21 @@ Auth.setPreferredMFA(user, 'SMS');
 // Select no-mfa
 Auth.setPreferredMFA(user, 'NOMFA');
 ```
+##### prefix: ```Amplify Retrieving Current Preferred Mfa Type```
+```js
+import { Auth } from 'aws-amplify';
+
+Auth.getPreferredMFA(user).then((data) => {
+    console.log('Current prefered MFA type is: ' + data);
+})
+```
 ##### prefix: ```Amplify Letting User Select Mfa Type```
 ```js
 import Amplify from 'aws-amplify';
-import awsmobile from './aws-exports';
+import amplify from './aws-exports';
 import { SelectMFAType } from 'aws-amplify-react';
 
-Amplify.configure(awsmobile);
+Amplify.configure(amplify);
 
 // Please have at least TWO types
 // Please make sure you set it properly according to your Cognito User pool
@@ -1499,12 +1433,11 @@ export default withAuthenticator(App, false, [
   <ForgotPassword/>
 ]);
 ```
-##### prefix: ```Amplify Using Modularized Module```
+##### prefix: ```Amplify Using Modular Imports```
 ```js
 import Auth from '@aws-amplify/auth';
 
 Auth.configure();
-
 ```
 ##### prefix: ```Amplify Working With The Api```
 ```js
@@ -1583,7 +1516,7 @@ const config = {
 const newCache = Cache.createInstance(config);
 // Please provide a new keyPrefix which is the identifier of Cache.
 ```
-##### prefix: ```Amplify Using Modularized Module```
+##### prefix: ```Amplify Using Modular Imports```
 ```js
 import Cache from '@aws-amplify/cache';
 
@@ -1593,6 +1526,9 @@ Cache.configure();
 ##### prefix: ```Amplify Installation```
 ```js
 import { Hub } from 'aws-amplify';
+
+// or
+import { Hub } from '@aws-amplify/core';
 ```
 ##### prefix: ```Amplify Dispatch()```
 ```js
@@ -1638,6 +1574,8 @@ alex.onHubCapsule = (capsule) => {
         case 'signIn_failure':
             alex.error('user sign in failed');
             break;
+        case 'configured':
+            alex.error('the Auth module is configured');
             
     }
 }
@@ -1647,6 +1585,9 @@ Hub.listen('auth', alex);
 ##### prefix: ```Amplify Installation```
 ```js
 import { I18n } from 'aws-amplify';
+
+// or 
+import { I18n } from '@aws-amplify/core';
 ```
 ##### prefix: ```Amplify Setlanguage()```
 ```js
@@ -1671,12 +1612,6 @@ I18n.putVocabularies(dict);
 ```js
 I18n.get('Sign In');
 ```
-##### prefix: ```Amplify Automated Setup```
-```js
-import Amplify, { Auth } from 'aws-amplify';
-import aws_exports from './aws-exports'; // specify the location of aws-exports.js file on your project
-Amplify.configure(aws_exports);
-```
 ##### prefix: ```Amplify Manual Setup```
 ```js
 import Amplify from 'aws-amplify';
@@ -1688,8 +1623,8 @@ Amplify.configure({
   },
   Interactions: {
     bots: {
-      "BookTripMOBILEHUB": {
-        "name": "BookTripMOBILEHUB",
+      "BookTrip": {
+        "name": "BookTrip",
         "alias": "$LATEST",
         "region": "us-east-1",
       },
@@ -1875,6 +1810,123 @@ export default class App extends React.Component {
 
 }
 ```
+##### prefix: ```Amplify Setup```
+```js
+"scripts": {	
+    "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",	
+    "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"	
+}	
+```
+##### prefix: ```Amplify Setup 2```
+```js
+import Amplify from 'aws-amplify';
+import amplify from './aws-exports';
+Amplify.configure(amplify);
+```
+##### prefix: ```Amplify Importing Amplify```
+```js
+import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
+
+@NgModule({
+  ...
+  imports: [
+    ...
+    AmplifyAngularModule
+  ],
+  ...
+  providers: [
+    ...
+    AmplifyService
+  ]
+  ...
+});
+```
+##### prefix: ```Amplify Using Dependency Injection```
+```js
+import { AmplifyService } from 'aws-amplify-angular';
+
+...
+constructor(
+    public navCtrl:NavController,
+    public amplifyService: AmplifyService,
+    public modalCtrl: ModalController
+) {
+    this.amplifyService = amplifyService;
+}
+...
+```
+##### prefix: ```Amplify Using Aws Amplify Categories```
+```js
+import { Component } from '@angular/core';
+import { AmplifyService }  from 'aws-amplify-angular';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+
+export class AppComponent {
+  
+  constructor( public amplify:AmplifyService ) {
+      
+      this.amplifyService = amplify;
+      
+      /** now you can access category APIs:
+       * this.amplifyService.auth();          // AWS Amplify Auth
+       * this.amplifyService.analytics();     // AWS Amplify Analytics
+       * this.amplifyService.storage();       // AWS Amplify Storage
+       * this.amplifyService.api();           // AWS Amplify API
+       * this.amplifyService.cache();         // AWS Amplify Cache
+       * this.amplifyService.pubsub();        // AWS Amplify PubSub
+     **/
+  }
+  
+}
+```
+##### prefix: ```Amplify Usage Example: Subscribe To Authentication State Changes```
+```js
+import { AmplifyService }  from 'aws-amplify-angular';
+
+  // ...
+constructor( public amplifyService: AmplifyService ) {
+
+    this.amplifyService = amplifyService;
+
+    this.amplifyService.authStateChange$
+        .subscribe(authState => {
+            this.signedIn = authState.state === 'signedIn';
+            if (!authState.user) {
+                this.user = null;
+            } else {
+                this.user = authState.user;
+                this.greeting = "Hello " + this.user.username;
+            }
+        });
+
+}
+```
+##### prefix: ```Amplify Photo Picker```
+```js
+onImagePicked( file ) {
+
+    let key = `pics/${file.name}`;
+    
+    this.amplify.storage().put( key, file, {
+      'level': 'private',
+      'contentType': file.type
+    })
+    .then (result => console.log('uploaded: ', result))
+    .catch(err => console.log('upload error: ', err));
+  
+}
+```
+##### prefix: ```Amplify S3 Album```
+```js
+onAlbumImageSelected( event ) {
+      window.open( event, '_blank' );
+}
+```
 ##### prefix: ```Amplify Installation```
 ```js
 import { Logger } from 'aws-amplify';
@@ -1980,7 +2032,7 @@ const sub1 = PubSub.subscribe('myTopicA').subscribe({
 sub1.unsubscribe();
 // You will no longer get messages for 'myTopicA'
 ```
-##### prefix: ```Amplify Using Modularized Module```
+##### prefix: ```Amplify Using Modular Imports```
 ```js
 import Pubsub from '@aws-amplify/pubsub';
 
@@ -1989,12 +2041,12 @@ Pubsub.configure();
 ```
 ##### prefix: ```Amplify Setup For Ios```
 ```js
-$ react-native init myapp
-$ cd myapp
-$ npm install
-$ npm install aws-amplify --save
-$ npm install aws-amplify-react-native --save
-$ react-native link aws-amplify-react-native
+    $ react-native init myapp
+    $ cd myapp
+    $ npm install
+    $ npm install aws-amplify --save
+    $ npm install aws-amplify-react-native --save
+    $ react-native link aws-amplify-react-native
 ```
 ##### prefix: ```Amplify Configure Your App```
 ```js
@@ -2038,6 +2090,14 @@ PushNotification.onNotification((notification) => {
 PushNotification.onRegister((token) => {
   console.log('in app registration', token);
 });
+```
+##### prefix: ```Amplify Installation And Configuration```
+```js
+import { withAuthenticator } from 'aws-amplify-react';
+```
+##### prefix: ```Amplify Using The Package With Typescript```
+```js
+declare module 'aws-amplify-react';
 ```
 ##### prefix: ```Amplify Installation```
 ```js
@@ -2106,12 +2166,12 @@ addEventListener('push', (event) => {
     })
     
 ```
-##### prefix: ```Amplify Using Modularized Module```
+##### prefix: ```Amplify Using Modular Imports```
 ```js
 import { ServiceWorker } from '@aws-amplify/core';
 
 ```
-##### prefix: ```Amplify Automated Setup```
+##### prefix: ```Amplify Configure Your App```
 ```js
 import Amplify, { Storage } from 'aws-amplify';
 import aws_exports from './aws-exports';
@@ -2328,7 +2388,7 @@ Storage.put('test.txt', 'Hello', {
 .then (result => console.log(result))
 .catch(err => console.log(err));
 ```
-##### prefix: ```Amplify Using Modularized Module```
+##### prefix: ```Amplify Using Modular Imports```
 ```js
 import Storage from '@aws-amplify/storage';
 

@@ -1,6 +1,6 @@
 {
-    "Amplify Analytics Automated Setup": {
-        "prefix": "Amplify Automated Setup",
+    "Amplify Analytics Configure Your App": {
+        "prefix": "Amplify Configure Your App",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Amplify, { Analytics } from 'aws-amplify';",
@@ -59,21 +59,17 @@
             "});",
         ]
     },
-    "Amplify Analytics Recording A Custom Tracking Event": {
-        "prefix": "Amplify Recording A Custom Tracking Event",
+    "Amplify Analytics Recording Custom Events": {
+        "prefix": "Amplify Recording Custom Events",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
-            "import { Analytics } from 'aws-amplify';",
-            "",
             "Analytics.record({ name: 'albumVisit' });",
         ]
     },
-    "Amplify Analytics Record A Custom Tracking Event With Attributes": {
-        "prefix": "Amplify Record A Custom Tracking Event With Attributes",
+    "Amplify Analytics Record A Custom Event With Attributes": {
+        "prefix": "Amplify Record A Custom Event With Attributes",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
-            "import { Analytics } from 'aws-amplify';",
-            "",
             "Analytics.record({",
             "\tname: 'albumVisit', ",
             "\tattributes: { genre: '', artist: '' }",
@@ -84,8 +80,6 @@
         "prefix": "Amplify Record Engagement Metrics",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
-            "import { Analytics } from 'aws-amplify';",
-            "",
             "Analytics.record({",
             "\tname: 'albumVisit', ",
             "\tattributes: {}, ",
@@ -93,12 +87,10 @@
             "});",
         ]
     },
-    "Amplify Analytics Disable/Enable Analytics": {
-        "prefix": "Amplify Disable/Enable Analytics",
+    "Amplify Analytics Disable Analytics": {
+        "prefix": "Amplify Disable Analytics",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
-            "import { Analytics } from 'aws-amplify';",
-            "",
             "// to disable Analytics",
             "Analytics.disable();",
             "",
@@ -106,34 +98,10 @@
             "Analytics.enable();",
         ]
     },
-    "Amplify Analytics Record Authentication Events": {
-        "prefix": "Amplify Record Authentication Events",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "import { Analytics } from 'aws-amplify';",
-            "",
-            "// Sign-in event",
-            "Analytics.record({",
-            "\tname: '_userauth.sign_in'",
-            "});",
-            "",
-            "// Sign-up event",
-            "Analytics.record({",
-            "\tname: '_userauth.sign_up'",
-            "});",
-            "",
-            "// Authentication failure event",
-            "Analytics.record({",
-            "\tname: '_userauth.auth_fail'",
-            "});",
-        ]
-    },
     "Amplify Analytics Update User Attributes": {
         "prefix": "Amplify Update User Attributes",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
-            "import { Analytics } from 'aws-amplify';",
-            "",
             "Analytics.updateEndpoint({",
             "\t// Customized userId",
             "\tUserId: 'XXXXXXXXXXXX',",
@@ -261,15 +229,15 @@
             "",
             "// send configuration into Amplify",
             "Analytics.configure({",
-            "\tYOUR_PLUGIN_NAME: { ",
+            "\tMyAnalyticsProvider: { ",
             "\t\t// My Analytics provider configuration ",
             "\t}",
             "});",
             "",
         ]
     },
-    "Amplify Analytics Using Modularized Module": {
-        "prefix": "Amplify Using Modularized Module",
+    "Amplify Analytics Using Modular Imports": {
+        "prefix": "Amplify Using Modular Imports",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Analytics from '@aws-amplify/analytics';",
@@ -282,23 +250,13 @@
         "prefix": "Amplify Setup",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
-            "\"scripts\": {",
-            "\t\"start\": \"[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve\",",
-            "\t\"build\": \"[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod\"",
-            "}",
+            "import Amplify from 'aws-amplify';",
+            "import amplify from './aws-exports';",
+            "Amplify.configure(amplify);",
         ]
     },
     "Amplify Angular Setup 2": {
         "prefix": "Amplify Setup 2",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "import Amplify from 'aws-amplify';",
-            "import awsmobile from './aws-exports';",
-            "Amplify.configure(awsmobile);",
-        ]
-    },
-    "Amplify Angular Setup 3": {
-        "prefix": "Amplify Setup 3",
         "scope": "json",
         "body": [
             "\"compilerOptions\": {",
@@ -306,21 +264,8 @@
             "}",
         ]
     },
-    "Amplify Angular Setup 4": {
-        "prefix": "Amplify Setup 4",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "\"defaults\": {",
-            "\t\"styleExt\": \"css\",",
-            "\t\"component\": {},",
-            "\t\"build\": {",
-            "\t\t\"preserveSymlinks\": true",
-            "\t}",
-            "}",
-        ]
-    },
-    "Amplify Angular Importing Amplify": {
-        "prefix": "Amplify Importing Amplify",
+    "Amplify Angular Importing The Angular Module": {
+        "prefix": "Amplify Importing The Angular Module",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';",
@@ -344,21 +289,23 @@
         "prefix": "Amplify Using Dependency Injection",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
+            "import { Component } from '@angular/core';",
             "import { AmplifyService } from 'aws-amplify-angular';",
             "",
-            "...",
-            "constructor(",
-            "\tpublic navCtrl:NavController,",
-            "\tpublic amplifyService: AmplifyService,",
-            "\tpublic modalCtrl: ModalController",
-            ") {",
-            "\tthis.amplifyService = amplifyService;",
+            "@Component({",
+            "selector: 'app-root',",
+            "templateUrl: './app.component.html',",
+            "styleUrls: ['./app.component.css']",
+            "})",
+            "export class AppComponent {",
+            "",
+            "\tconstructor( private amplifyService: AmplifyService ) {}",
+            "",
             "}",
-            "...",
         ]
     },
-    "Amplify Angular Using Aws Amplify Categories": {
-        "prefix": "Amplify Using Aws Amplify Categories",
+    "Amplify Angular Using Categories": {
+        "prefix": "Amplify Using Categories",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import { Component } from '@angular/core';",
@@ -369,12 +316,9 @@
             "templateUrl: './app.component.html',",
             "styleUrls: ['./app.component.css']",
             "})",
-            "",
             "export class AppComponent {",
             "",
-            "constructor( public amplify:AmplifyService ) {",
-            "\t",
-            "\tthis.amplifyService = amplify;",
+            "constructor( private amplifyService:AmplifyService ) {",
             "\t",
             "\t/** now you can access category APIs:",
             "\t* this.amplifyService.auth();          // AWS Amplify Auth",
@@ -389,51 +333,40 @@
             "}",
         ]
     },
-    "Amplify Angular Usage Example: Subscribe To Authentication State Changes": {
-        "prefix": "Amplify Usage Example: Subscribe To Authentication State Changes",
+    "Amplify Angular Subscribe To Authentication State Changes": {
+        "prefix": "Amplify Subscribe To Authentication State Changes",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
+            "import { Component } from '@angular/core';",
             "import { AmplifyService }  from 'aws-amplify-angular';",
             "",
-            "// ...",
-            "constructor( public amplifyService: AmplifyService ) {",
-            "",
-            "\tthis.amplifyService = amplifyService;",
+            "@Component({",
+            "selector: 'app-root',",
+            "templateUrl: './app.component.html',",
+            "styleUrls: ['./app.component.css']",
+            "})",
+            "constructor( private amplifyService: AmplifyService ) {",
+            "\t",
+            "\tsignedIn: boolean;",
+            "\tuser: any;",
+            "\tgreeting: string;",
             "",
             "\tthis.amplifyService.authStateChange\\$",
             "\t\t.subscribe(authState => {",
-            "\t\tthis.signedIn = authState.state === 'signedIn';",
-            "\t\tif (!authState.user) {",
-            "\t\t\tthis.user = null;",
-            "\t\t} else {",
-            "\t\t\tthis.user = authState.user;",
-            "\t\t\tthis.greeting = \"Hello \" + this.user.username;",
-            "\t\t}",
-            "\t\t});",
+            "\t\t\tthis.signedIn = authState.state === 'signedIn';",
+            "\t\t\tif (!authState.user) {",
+            "\t\t\t\tthis.user = null;",
+            "\t\t\t} else {",
+            "\t\t\t\tthis.user = authState.user;",
+            "\t\t\t\tthis.greeting = \"Hello \" + this.user.username;",
+            "\t\t\t}",
+            "\t});",
             "",
             "}",
         ]
     },
-    "Amplify Angular Photo Picker": {
-        "prefix": "Amplify Photo Picker",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "onImagePicked( file ) {",
-            "",
-            "\tlet key = `pics/\\${file.name}`;",
-            "\t",
-            "\tthis.amplify.storage().put( key, file, {",
-            "\t'level': 'private',",
-            "\t'contentType': file.type",
-            "\t})",
-            "\t.then (result => console.log('uploaded: ', result))",
-            "\t.catch(err => console.log('upload error: ', err));",
-            "",
-            "}",
-        ]
-    },
-    "Amplify Angular S3 Album": {
-        "prefix": "Amplify S3 Album",
+    "Amplify Angular Album": {
+        "prefix": "Amplify Album",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "onAlbumImageSelected( event ) {",
@@ -441,8 +374,8 @@
             "}",
         ]
     },
-    "Amplify Api Automated Setup": {
-        "prefix": "Amplify Automated Setup",
+    "Amplify Api Configure Your App": {
+        "prefix": "Amplify Configure Your App",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Amplify, { API } from 'aws-amplify';",
@@ -458,14 +391,15 @@
             "import Amplify, { API } from 'aws-amplify';",
             "",
             "Amplify.configure({",
+            "\t// OPTIONAL - if your API requires authentication ",
             "\tAuth: {",
-            "\t// REQUIRED - Amazon Cognito Identity Pool ID",
+            "\t\t// REQUIRED - Amazon Cognito Identity Pool ID",
             "\t\tidentityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',",
-            "\t// REQUIRED - Amazon Cognito Region",
+            "\t\t// REQUIRED - Amazon Cognito Region",
             "\t\tregion: 'XX-XXXX-X', ",
-            "\t// OPTIONAL - Amazon Cognito User Pool ID",
+            "\t\t// OPTIONAL - Amazon Cognito User Pool ID",
             "\t\tuserPoolId: 'XX-XXXX-X_abcd1234', ",
-            "\t// OPTIONAL - Amazon Cognito Web Client ID",
+            "\t\t// OPTIONAL - Amazon Cognito Web Client ID",
             "\t\tuserPoolWebClientId: 'XX-XXXX-X_abcd1234',",
             "\t},",
             "\tAPI: {",
@@ -497,7 +431,7 @@
             "API: {",
             "\tendpoints: [",
             "\t\t{",
-            "\t\t\tname: \"MyCustomLambdaApi\",",
+            "\t\t\tname: \"MyCustomLambda\",",
             "\t\t\tendpoint: \"https://lambda.us-east-1.amazonaws.com/2015-03-31/functions/yourFuncName/invocations\",",
             "\t\t\tservice: \"lambda\",",
             "\t\t\tregion: \"us-east-1\"",
@@ -514,8 +448,10 @@
             "let path = '/path'; ",
             "let myInit = { // OPTIONAL",
             "\theaders: {} // OPTIONAL",
-            "\tresponse: true // OPTIONAL (return entire response object instead of response.data)",
-            "\tqueryStringParameters: {} // OPTIONAL",
+            "\tresponse: true // OPTIONAL (return the entire Axios response object instead of only response.data)",
+            "\tqueryStringParameters: {  // OPTIONAL",
+            "\t\tname: 'param'",
+            "\t}",
             "}",
             "API.get(apiName, path, myInit).then(response => {",
             "\t// Add your code here",
@@ -528,7 +464,7 @@
         "prefix": "Amplify Get** 2",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
-            "async function getData() { ",
+            "async getData() { ",
             "\tlet apiName = 'MyApiName';",
             "\tlet path = '/path';",
             "\tlet myInit = { // OPTIONAL",
@@ -752,41 +688,8 @@
             "});",
         ]
     },
-    "Amplify Api Configuration For Graphql Server": {
-        "prefix": "Amplify Configuration For Graphql Server",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "",
-            "import Amplify, { API } from \"aws-amplify\";",
-            "import aws_config from \"./aws-exports\";",
-            "",
-            "// Considering you have an existing aws-exports.js configuration file ",
-            "Amplify.configure(aws_config);",
-            "",
-            "// Configure a custom GraphQL endpoint",
-            "Amplify.configure({",
-            "API: {",
-            "\tgraphql_endpoint: 'https:/www.example.com/my-graphql-endpoint'",
-            "}",
-            "});",
-            "",
-        ]
-    },
-    "Amplify Api Set Custom Request Headers For Graphql ": {
-        "prefix": "Amplify Set Custom Request Headers For Graphql ",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "Amplify.configure({",
-            "API: {",
-            "\tgraphql_headers: async () => ({",
-            "\t'My-Custom-Header': 'my value'",
-            "\t})",
-            "}",
-            "});",
-        ]
-    },
-    "Amplify Api Automated Configuration With Cli": {
-        "prefix": "Amplify Automated Configuration With Cli",
+    "Amplify Api Using The Configuration File In Your Code": {
+        "prefix": "Amplify Using The Configuration File In Your Code",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import aws_config from \"./aws-exports\";",
@@ -852,6 +755,51 @@
             "}",
             "",
             "Amplify.configure(myAppConfig);",
+        ]
+    },
+    "Amplify Api Using A Graphql Server": {
+        "prefix": "Amplify Using A Graphql Server",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "",
+            "import Amplify, { API } from \"aws-amplify\";",
+            "import aws_config from \"./aws-exports\";",
+            "",
+            "// Considering you have an existing aws-exports.js configuration file ",
+            "Amplify.configure(aws_config);",
+            "",
+            "// Configure a custom GraphQL endpoint",
+            "Amplify.configure({",
+            "API: {",
+            "\tgraphql_endpoint: 'https:/www.example.com/my-graphql-endpoint'",
+            "}",
+            "});",
+            "",
+        ]
+    },
+    "Amplify Api Set Custom Request Headers For Graphql ": {
+        "prefix": "Amplify Set Custom Request Headers For Graphql ",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "Amplify.configure({",
+            "API: {",
+            "\tgraphql_headers: async () => ({",
+            "\t\t'My-Custom-Header': 'my value'",
+            "\t})",
+            "}",
+            "});",
+        ]
+    },
+    "Amplify Api Signing Request With Iam": {
+        "prefix": "Amplify Signing Request With Iam",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "Amplify.configure({",
+            "API: {",
+            "\tgraphql_endpoint: 'https://www.example.com/my-graphql-endpoint',",
+            "\tgraphql_endpoint_iam_region: 'my_graphql_apigateway_region'",
+            "}",
+            "});",
         ]
     },
     "Amplify Api Query Declarations": {
@@ -1000,18 +948,6 @@
             "});",
         ]
     },
-    "Amplify Api Signing Request With Iam": {
-        "prefix": "Amplify Signing Request With Iam",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "Amplify.configure({",
-            "API: {",
-            "\tgraphql_endpoint: 'https://www.example.com/my-graphql-endpoint',",
-            "\tgraphql_endpoint_iam_region: 'my_graphql_apigateway_region'",
-            "}",
-            "});",
-        ]
-    },
     "Amplify Api Connect": {
         "prefix": "Amplify Connect",
         "scope": "javascript,javascriptreact,typescript",
@@ -1090,8 +1026,8 @@
             "</Connect>",
         ]
     },
-    "Amplify Api Using Modularized Module": {
-        "prefix": "Amplify Using Modularized Module",
+    "Amplify Api Using Modular Imports": {
+        "prefix": "Amplify Using Modular Imports",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import API from '@aws-amplify/api';",
@@ -1100,12 +1036,12 @@
             "",
         ]
     },
-    "Amplify Authentication Automated Setup": {
-        "prefix": "Amplify Automated Setup",
+    "Amplify Authentication Configure Your App": {
+        "prefix": "Amplify Configure Your App",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Amplify, { Auth } from 'aws-amplify';",
-            "import aws_exports from './aws-exports'; // specify the location of aws-exports.js file on your project",
+            "import aws_exports from './aws-exports';",
             "Amplify.configure(aws_exports);",
         ]
     },
@@ -1156,13 +1092,6 @@
             "\t\tauthenticationFlowType: 'USER_PASSWORD_AUTH'",
             "\t}",
             "});",
-        ]
-    },
-    "Amplify Authentication Node.Js Support": {
-        "prefix": "Amplify Node.Js Support",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "global.fetch = require('node-fetch');",
         ]
     },
     "Amplify Authentication Sign In": {
@@ -1252,6 +1181,17 @@
             "\t.catch(err => console.log(err));",
         ]
     },
+    "Amplify Authentication Retrieve Current Authenticated User": {
+        "prefix": "Amplify Retrieve Current Authenticated User",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "import { Auth } from 'aws-amplify';",
+            "",
+            "Auth.currentAuthenticatedUser()",
+            "\t.then(user => console.log(user));",
+            "\t.catch(err => console.log(err));",
+        ]
+    },
     "Amplify Authentication Retrieve Current Session": {
         "prefix": "Amplify Retrieve Current Session",
         "scope": "javascript,javascriptreact,typescript",
@@ -1260,41 +1200,8 @@
             "// CognitoUserSession => { idToken, refreshToken, accessToken }",
         ]
     },
-    "Amplify Authentication Managing Security Tokens": {
-        "prefix": "Amplify Managing Security Tokens",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "var data = { UserPoolId : 'us-east-1_resgd', ClientId : 'xyz' };",
-            "var userPool = new AmazonCognitoIdentity.CognitoUserPool(data);",
-            "var cognitoUser = userPool.getCurrentUser();",
-            "",
-            "if (cognitoUser != null) {",
-            "\tcognitoUser.getSession(function(err, session) {",
-            "\t\tif (err) { alert(err); return; }",
-            "",
-            "\t\t// Get refresh token before refreshing session",
-            "\t\trefresh_token = session.getRefreshToken();",
-            "",
-            "\t\tif (AWS.config.credentials.needsRefresh()) {",
-            "\t\t\tcognitoUser.refreshSession(refresh_token, (err, session) => {",
-            "\t\t\t\tif(err) { console.log(err); } ",
-            "\t\t\t\telse {",
-            "\t\t\t\t\tAWS.config.credentials.params.Logins['cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>']  = session.getIdToken().getJwtToken();",
-            "\t\t\t\t\tAWS.config.credentials.refresh((err)=> {",
-            "\t\t\t\t\t\tif(err)  { console.log(err); }",
-            "\t\t\t\t\t\telse{",
-            "\t\t\t\t\t\t\tconsole.log(\"TOKEN SUCCESSFULLY UPDATED\");",
-            "\t\t\t\t\t\t}",
-            "\t\t\t\t\t});",
-            "\t\t\t\t}",
-            "\t\t\t});",
-            "\t\t}",
-            "\t});",
-            "}",
-        ]
-    },
-    "Amplify Authentication Using Withauthenticator Hoc": {
-        "prefix": "Amplify Using Withauthenticator Hoc",
+    "Amplify Authentication Using Components In React": {
+        "prefix": "Amplify Using Components In React",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import { withAuthenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';",
@@ -1607,10 +1514,10 @@
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Amplify from 'aws-amplify';",
-            "import awsmobile from './aws-exports';",
+            "import amplify from './aws-exports';",
             "import { SelectMFAType } from 'aws-amplify-react';",
             "",
-            "Amplify.configure(awsmobile);",
+            "Amplify.configure(amplify);",
             "",
             "// Please have at least TWO types",
             "// Please make sure you set it properly according to your Cognito User pool",
@@ -1933,8 +1840,8 @@
             "// Please provide a new keyPrefix which is the identifier of Cache.",
         ]
     },
-    "Amplify Cache Using Modularized Module": {
-        "prefix": "Amplify Using Modularized Module",
+    "Amplify Cache Using Modular Imports": {
+        "prefix": "Amplify Using Modular Imports",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Cache from '@aws-amplify/cache';",
@@ -1948,6 +1855,9 @@
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import { Hub } from 'aws-amplify';",
+            "",
+            "// or",
+            "import { Hub } from '@aws-amplify/core';",
         ]
     },
     "Amplify Hub Dispatch()": {
@@ -2002,6 +1912,8 @@
             "\t\tcase 'signIn_failure':",
             "\t\t\talex.error('user sign in failed');",
             "\t\t\tbreak;",
+            "\t\tcase 'configured':",
+            "\t\t\talex.error('the Auth module is configured');",
             "\t\t\t",
             "\t}",
             "}",
@@ -2014,6 +1926,9 @@
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import { I18n } from 'aws-amplify';",
+            "",
+            "// or ",
+            "import { I18n } from '@aws-amplify/core';",
         ]
     },
     "Amplify I18N Setlanguage()": {
@@ -2048,15 +1963,6 @@
             "I18n.get('Sign In');",
         ]
     },
-    "Amplify Interactions Automated Setup": {
-        "prefix": "Amplify Automated Setup",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "import Amplify, { Auth } from 'aws-amplify';",
-            "import aws_exports from './aws-exports'; // specify the location of aws-exports.js file on your project",
-            "Amplify.configure(aws_exports);",
-        ]
-    },
     "Amplify Interactions Manual Setup": {
         "prefix": "Amplify Manual Setup",
         "scope": "javascript,javascriptreact,typescript",
@@ -2070,8 +1976,8 @@
             "},",
             "Interactions: {",
             "\tbots: {",
-            "\t\"BookTripMOBILEHUB\": {",
-            "\t\t\"name\": \"BookTripMOBILEHUB\",",
+            "\t\"BookTrip\": {",
+            "\t\t\"name\": \"BookTrip\",",
             "\t\t\"alias\": \"\\$LATEST\",",
             "\t\t\"region\": \"us-east-1\",",
             "\t},",
@@ -2273,6 +2179,147 @@
             "}",
         ]
     },
+    "Amplify Ionic Setup": {
+        "prefix": "Amplify Setup",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "\"scripts\": {	",
+            "\t\"start\": \"[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve\",	",
+            "\t\"build\": \"[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod\"	",
+            "}	",
+        ]
+    },
+    "Amplify Ionic Setup 2": {
+        "prefix": "Amplify Setup 2",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "import Amplify from 'aws-amplify';",
+            "import amplify from './aws-exports';",
+            "Amplify.configure(amplify);",
+        ]
+    },
+    "Amplify Ionic Importing Amplify": {
+        "prefix": "Amplify Importing Amplify",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';",
+            "",
+            "@NgModule({",
+            "...",
+            "imports: [",
+            "\t...",
+            "\tAmplifyAngularModule",
+            "],",
+            "...",
+            "providers: [",
+            "\t...",
+            "\tAmplifyService",
+            "]",
+            "...",
+            "});",
+        ]
+    },
+    "Amplify Ionic Using Dependency Injection": {
+        "prefix": "Amplify Using Dependency Injection",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "import { AmplifyService } from 'aws-amplify-angular';",
+            "",
+            "...",
+            "constructor(",
+            "\tpublic navCtrl:NavController,",
+            "\tpublic amplifyService: AmplifyService,",
+            "\tpublic modalCtrl: ModalController",
+            ") {",
+            "\tthis.amplifyService = amplifyService;",
+            "}",
+            "...",
+        ]
+    },
+    "Amplify Ionic Using Aws Amplify Categories": {
+        "prefix": "Amplify Using Aws Amplify Categories",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "import { Component } from '@angular/core';",
+            "import { AmplifyService }  from 'aws-amplify-angular';",
+            "",
+            "@Component({",
+            "selector: 'app-root',",
+            "templateUrl: './app.component.html',",
+            "styleUrls: ['./app.component.css']",
+            "})",
+            "",
+            "export class AppComponent {",
+            "",
+            "constructor( public amplify:AmplifyService ) {",
+            "\t",
+            "\tthis.amplifyService = amplify;",
+            "\t",
+            "\t/** now you can access category APIs:",
+            "\t* this.amplifyService.auth();          // AWS Amplify Auth",
+            "\t* this.amplifyService.analytics();     // AWS Amplify Analytics",
+            "\t* this.amplifyService.storage();       // AWS Amplify Storage",
+            "\t* this.amplifyService.api();           // AWS Amplify API",
+            "\t* this.amplifyService.cache();         // AWS Amplify Cache",
+            "\t* this.amplifyService.pubsub();        // AWS Amplify PubSub",
+            "\t**/",
+            "}",
+            "",
+            "}",
+        ]
+    },
+    "Amplify Ionic Usage Example: Subscribe To Authentication State Changes": {
+        "prefix": "Amplify Usage Example: Subscribe To Authentication State Changes",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "import { AmplifyService }  from 'aws-amplify-angular';",
+            "",
+            "// ...",
+            "constructor( public amplifyService: AmplifyService ) {",
+            "",
+            "\tthis.amplifyService = amplifyService;",
+            "",
+            "\tthis.amplifyService.authStateChange\\$",
+            "\t\t.subscribe(authState => {",
+            "\t\t\tthis.signedIn = authState.state === 'signedIn';",
+            "\t\t\tif (!authState.user) {",
+            "\t\t\t\tthis.user = null;",
+            "\t\t\t} else {",
+            "\t\t\t\tthis.user = authState.user;",
+            "\t\t\t\tthis.greeting = \"Hello \" + this.user.username;",
+            "\t\t\t}",
+            "\t\t});",
+            "",
+            "}",
+        ]
+    },
+    "Amplify Ionic Photo Picker": {
+        "prefix": "Amplify Photo Picker",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "onImagePicked( file ) {",
+            "",
+            "\tlet key = `pics/\\${file.name}`;",
+            "\t",
+            "\tthis.amplify.storage().put( key, file, {",
+            "\t'level': 'private',",
+            "\t'contentType': file.type",
+            "\t})",
+            "\t.then (result => console.log('uploaded: ', result))",
+            "\t.catch(err => console.log('upload error: ', err));",
+            "",
+            "}",
+        ]
+    },
+    "Amplify Ionic S3 Album": {
+        "prefix": "Amplify S3 Album",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "onAlbumImageSelected( event ) {",
+            "\twindow.open( event, '_blank' );",
+            "}",
+        ]
+    },
     "Amplify Logger Installation": {
         "prefix": "Amplify Installation",
         "scope": "javascript,javascriptreact,typescript",
@@ -2332,7 +2379,7 @@
             "window.LOG_LEVEL = 'DEBUG';",
         ]
     },
-    "Amplify Pub_Sub Aws Iot": {
+    "Amplify Pub Sub Aws Iot": {
         "prefix": "Amplify Aws Iot",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2340,7 +2387,7 @@
             "import { AWSIoTProvider } from 'aws-amplify/lib/PubSub/Providers';",
         ]
     },
-    "Amplify Pub_Sub Aws Iot 2": {
+    "Amplify Pub Sub Aws Iot 2": {
         "prefix": "Amplify Aws Iot 2",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2351,7 +2398,7 @@
             "}));",
         ]
     },
-    "Amplify Pub_Sub Aws Iot 3": {
+    "Amplify Pub Sub Aws Iot 3": {
         "prefix": "Amplify Aws Iot 3",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2360,7 +2407,7 @@
             "\t});",
         ]
     },
-    "Amplify Pub_Sub Third Party Mqtt Providers": {
+    "Amplify Pub Sub Third Party Mqtt Providers": {
         "prefix": "Amplify Third Party Mqtt Providers",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2368,7 +2415,7 @@
             "import { MqttOverWSProvider } from \"aws-amplify/lib/PubSub/Providers\";",
         ]
     },
-    "Amplify Pub_Sub Third Party Mqtt Providers 2": {
+    "Amplify Pub Sub Third Party Mqtt Providers 2": {
         "prefix": "Amplify Third Party Mqtt Providers 2",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2378,7 +2425,7 @@
             "}));",
         ]
     },
-    "Amplify Pub_Sub Subscribe To A Topic": {
+    "Amplify Pub Sub Subscribe To A Topic": {
         "prefix": "Amplify Subscribe To A Topic",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2389,7 +2436,7 @@
             "});",
         ]
     },
-    "Amplify Pub_Sub Subscribe To Multiple Topics": {
+    "Amplify Pub Sub Subscribe To Multiple Topics": {
         "prefix": "Amplify Subscribe To Multiple Topics",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2398,21 +2445,21 @@
             "});",
         ]
     },
-    "Amplify Pub_Sub Publish To A Topic": {
+    "Amplify Pub Sub Publish To A Topic": {
         "prefix": "Amplify Publish To A Topic",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "await PubSub.publish('myTopic1', { msg: 'Hello to all subscribers!' });",
         ]
     },
-    "Amplify Pub_Sub Publish To A Topic 2": {
+    "Amplify Pub Sub Publish To A Topic 2": {
         "prefix": "Amplify Publish To A Topic 2",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "await PubSub.publish(['myTopic1','myTopic2'], { msg: 'Hello to all subscribers!' });",
         ]
     },
-    "Amplify Pub_Sub Unsubscribe From A Topic": {
+    "Amplify Pub Sub Unsubscribe From A Topic": {
         "prefix": "Amplify Unsubscribe From A Topic",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2426,8 +2473,8 @@
             "// You will no longer get messages for 'myTopicA'",
         ]
     },
-    "Amplify Pub_Sub Using Modularized Module": {
-        "prefix": "Amplify Using Modularized Module",
+    "Amplify Pub Sub Using Modular Imports": {
+        "prefix": "Amplify Using Modular Imports",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Pubsub from '@aws-amplify/pubsub';",
@@ -2436,19 +2483,19 @@
             "",
         ]
     },
-    "Amplify Push_Notifications_Setup.M Setup For Ios": {
+    "Amplify Push Notifications Setup For Ios": {
         "prefix": "Amplify Setup For Ios",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
-            "\\$ react-native init myapp",
-            "\\$ cd myapp",
-            "\\$ npm install",
-            "\\$ npm install aws-amplify --save",
-            "\\$ npm install aws-amplify-react-native --save",
-            "\\$ react-native link aws-amplify-react-native",
+            "\t\\$ react-native init myapp",
+            "\t\\$ cd myapp",
+            "\t\\$ npm install",
+            "\t\\$ npm install aws-amplify --save",
+            "\t\\$ npm install aws-amplify-react-native --save",
+            "\t\\$ react-native link aws-amplify-react-native",
         ]
     },
-    "Amplify Push_Notifications_Setup.M Configure Your App": {
+    "Amplify Push Notifications Configure Your App": {
         "prefix": "Amplify Configure Your App",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2466,7 +2513,7 @@
             "});",
         ]
     },
-    "Amplify Push_Notifications_Setup.M Configure Your App 2": {
+    "Amplify Push Notifications Configure Your App 2": {
         "prefix": "Amplify Configure Your App 2",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2481,7 +2528,7 @@
             "PushNotification.configure(aws_exports);",
         ]
     },
-    "Amplify Push_Notifications_Setup.M Working With The Api": {
+    "Amplify Push Notifications Working With The Api": {
         "prefix": "Amplify Working With The Api",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2500,7 +2547,21 @@
             "});",
         ]
     },
-    "Amplify Service_Workers Installation": {
+    "Amplify React Installation And Configuration": {
+        "prefix": "Amplify Installation And Configuration",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "import { withAuthenticator } from 'aws-amplify-react';",
+        ]
+    },
+    "Amplify React Using The Package With Typescript": {
+        "prefix": "Amplify Using The Package With Typescript",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "declare module 'aws-amplify-react';",
+        ]
+    },
+    "Amplify Service Workers Installation": {
         "prefix": "Amplify Installation",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2508,7 +2569,7 @@
             "const myServiceWorker = new ServiceWorker();",
         ]
     },
-    "Amplify Service_Workers Register()": {
+    "Amplify Service Workers Register()": {
         "prefix": "Amplify Register()",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2516,14 +2577,14 @@
             "myServiceWorker = await this.serviceWorker.register('/service-worker.js', '/');",
         ]
     },
-    "Amplify Service_Workers Register() 2": {
+    "Amplify Service Workers Register() 2": {
         "prefix": "Amplify Register() 2",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "\tmyServiceWorker.enablePush('BLx__NGvdasMNkjd6VYPdzQJVBkb2qafh')",
         ]
     },
-    "Amplify Service_Workers Handling A Push Notification": {
+    "Amplify Service Workers Handling A Push Notification": {
         "prefix": "Amplify Handling A Push Notification",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2558,7 +2619,7 @@
             "});",
         ]
     },
-    "Amplify Service_Workers Send()": {
+    "Amplify Service Workers Send()": {
         "prefix": "Amplify Send()",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2569,7 +2630,7 @@
             "",
         ]
     },
-    "Amplify Service_Workers Receiving Messages ": {
+    "Amplify Service Workers Receiving Messages ": {
         "prefix": "Amplify Receiving Messages ",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
@@ -2585,16 +2646,16 @@
             "\t",
         ]
     },
-    "Amplify Service_Workers Using Modularized Module": {
-        "prefix": "Amplify Using Modularized Module",
+    "Amplify Service Workers Using Modular Imports": {
+        "prefix": "Amplify Using Modular Imports",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import { ServiceWorker } from '@aws-amplify/core';",
             "",
         ]
     },
-    "Amplify Storage Automated Setup": {
-        "prefix": "Amplify Automated Setup",
+    "Amplify Storage Configure Your App": {
+        "prefix": "Amplify Configure Your App",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Amplify, { Storage } from 'aws-amplify';",
@@ -2894,8 +2955,8 @@
             ".catch(err => console.log(err));",
         ]
     },
-    "Amplify Storage Using Modularized Module": {
-        "prefix": "Amplify Using Modularized Module",
+    "Amplify Storage Using Modular Imports": {
+        "prefix": "Amplify Using Modular Imports",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Storage from '@aws-amplify/storage';",

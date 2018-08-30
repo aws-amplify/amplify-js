@@ -1,5 +1,5 @@
 # List of guide files to search
-guides = ['analytics_guide.md','angular_guide.md','api_guide.md','authentication_guide.md','cache_guide.md','hub_guide.md','i18n_guide.md','interactions_guide.md','logger_guide.md','pub_sub_guide.md','push_notifications_setup.md','service_workers_guide.md','storage_guide.md']
+guides = ['analytics_guide.md','angular_guide.md','api_guide.md','authentication_guide.md','cache_guide.md','hub_guide.md','i18n_guide.md','interactions_guide.md','ionic_guide.md','logger_guide.md','pub_sub_guide.md','push_notifications_setup.md','react_guide.md','react_native_guide.md','service_workers_guide.md','storage_guide.md']
 
 # Start of file path - CHANGE FOR GITHUB
 filestart = '../docs/media/'
@@ -18,7 +18,9 @@ snippets.write('{\n')
 for guide in guides:
     snippet_index = 1 # counts number of snippets in each section for snippet naming
     _guide_index = guide.find('_guide')
-    title = guide[:_guide_index] # gets doc title for snippet naming
+    title = guide[:_guide_index].replace('_', ' ') # gets doc title for snippet naming
+    if guide == 'push_notifications_setup.md':
+        title = 'Push Notifications'
     
     # Read doc file and separate into lines
     f = open(filestart + guide,'r')
@@ -28,7 +30,6 @@ for guide in guides:
     line_index = 0 # index for which line is being used
     while line_index < len(lines):
         # Finds most recent header
-        heading = title.title()
         if lines[line_index][0] == '#':
             snippet_index = 1
             line = lines[line_index]
