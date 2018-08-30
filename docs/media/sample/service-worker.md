@@ -116,7 +116,7 @@ addEventListener('notificationclick', (event) => {
 	console.log('[Service Worker] Notification click: ', event);
 	event.notification.close();
 	event.waitUntil(
-		clients.openWindow('https://aws.github.io/aws-amplify')
+		clients.openWindow('https://aws-amplify.github.io/amplify-js')
 	);
 });
 
