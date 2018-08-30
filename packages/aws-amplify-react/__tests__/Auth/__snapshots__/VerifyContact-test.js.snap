@@ -25,16 +25,11 @@ exports[`VerifyContent test render test render submitView if verifyAttr is set 1
   <Component
     theme="theme"
   >
-    Verify Contact
+    Account recovery requires verified contact information
   </Component>
   <Component
     theme="theme"
   >
-    <Component
-      theme="theme"
-    >
-      Account recovery requires verified contact information
-    </Component>
     <div>
       <Component
         autoComplete="off"
@@ -44,22 +39,30 @@ exports[`VerifyContent test render test render submitView if verifyAttr is set 1
         placeholder="Code"
         theme="theme"
       />
-      <Component
-        onClick={[Function]}
-        theme="theme"
-      >
-        Submit
-      </Component>
     </div>
   </Component>
   <Component
     theme="theme"
   >
     <Component
-      onClick={[Function]}
       theme="theme"
     >
-      Skip
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Submit
+      </Component>
+    </Component>
+    <Component
+      theme="theme"
+    >
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Component>
     </Component>
   </Component>
 </Component>
@@ -72,25 +75,33 @@ exports[`VerifyContent test render test render verifyView with empty authData 1`
   <Component
     theme="theme"
   >
-    Verify Contact
+    Account recovery requires verified contact information
   </Component>
+  <Component
+    theme="theme"
+  />
   <Component
     theme="theme"
   >
     <Component
       theme="theme"
     >
-      Account recovery requires verified contact information
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Verify
+      </Component>
     </Component>
-  </Component>
-  <Component
-    theme="theme"
-  >
     <Component
-      onClick={[Function]}
       theme="theme"
     >
-      Skip
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Component>
     </Component>
   </Component>
 </Component>
@@ -103,7 +114,12 @@ exports[`VerifyContent test render test render verifyView without phone_number a
   <Component
     theme="theme"
   >
-    Verify Contact
+    Account recovery requires verified contact information
+  </Component>
+  <Component
+    theme="theme"
+  >
+    <div />
   </Component>
   <Component
     theme="theme"
@@ -111,25 +127,22 @@ exports[`VerifyContent test render test render verifyView without phone_number a
     <Component
       theme="theme"
     >
-      Account recovery requires verified contact information
-    </Component>
-    <div>
       <Component
         onClick={[Function]}
         theme="theme"
       >
         Verify
       </Component>
-    </div>
-  </Component>
-  <Component
-    theme="theme"
-  >
+    </Component>
     <Component
-      onClick={[Function]}
       theme="theme"
     >
-      Skip
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Component>
     </Component>
   </Component>
 </Component>
@@ -142,16 +155,11 @@ exports[`VerifyContent test render test render with accepted states 1`] = `
   <Component
     theme="theme"
   >
-    Verify Contact
+    Account recovery requires verified contact information
   </Component>
   <Component
     theme="theme"
   >
-    <Component
-      theme="theme"
-    >
-      Account recovery requires verified contact information
-    </Component>
     <div>
       <Component
         key="email"
@@ -169,22 +177,30 @@ exports[`VerifyContent test render test render with accepted states 1`] = `
         theme="theme"
         value="phone_number"
       />
-      <Component
-        onClick={[Function]}
-        theme="theme"
-      >
-        Verify
-      </Component>
     </div>
   </Component>
   <Component
     theme="theme"
   >
     <Component
-      onClick={[Function]}
       theme="theme"
     >
-      Skip
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Verify
+      </Component>
+    </Component>
+    <Component
+      theme="theme"
+    >
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Component>
     </Component>
   </Component>
 </Component>

@@ -9,6 +9,9 @@ AWS Amplify has a local event bus system called Hub. It is a lightweight impleme
 Import:
 ```js
 import { Hub } from 'aws-amplify';
+
+// or
+import { Hub } from '@aws-amplify/core';
 ```
 
 ## Working with the API
@@ -69,6 +72,8 @@ alex.onHubCapsule = (capsule) => {
         case 'signIn_failure':
             alex.error('user sign in failed');
             break;
+        case 'configured':
+            alex.error('the Auth module is configured');
             
     }
 }
@@ -78,5 +83,5 @@ Hub.listen('auth', alex);
 
 ### API Reference
 
-For the complete API documentation for Hub module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/hubclass.html)
+For the complete API documentation for Hub module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/hubclass.html)
 {: .callout .callout--info}

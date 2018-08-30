@@ -11,22 +11,28 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React from 'react';
 import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import { FederatedButtons } from './FederatedSignIn';
-import AmplifyTheme from '../AmplifyTheme';
+
 import {
     FormSection,
+    FormField,
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    Button,
+    Link,
+    Hint,
+    Input,
+    InputLabel,
+    Strike,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent,
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('SignIn');
 
@@ -99,6 +105,10 @@ export default class SignIn extends AuthPiece {
                 if (err.code === 'UserNotConfirmedException') {
                     logger.debug('the user is not confirmed');
                     this.changeState('confirmSignUp');
+                } 
+                else if (err.code === 'PasswordResetRequiredException') {
+                    logger.debug('the user requires a new password');
+                    this.changeState('requireNewPassword');
                 } else {
                     this.error(err);
                 }
@@ -106,50 +116,67 @@ export default class SignIn extends AuthPiece {
     }
 
     showComponent(theme) {
-        const { authState, hide, federated, onStateChange } = this.props;
+        const { authState, hide = [], federated, onStateChange } = this.props;
         if (hide && hide.includes(SignIn)) { return null; }
-
+        const hideSignUp = hide.some(component => component.name === 'SignUp')
+        const hideForgotPassword = hide.some(component => component.name === 'ForgotPassword')
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Sign In Account')}</SectionHeader>
+                <SectionHeader theme={theme}>{I18n.get('Sign in to your account')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <InputRow
-                        autoFocus
-                        placeholder={I18n.get('Username')}
-                        theme={theme}
-                        key="username"
-                        name="username"
-                        onChange={this.handleInputChange}
-                    />
-                    <InputRow
-                        placeholder={I18n.get('Password')}
-                        theme={theme}
-                        key="password"
-                        type="password"
-                        name="password"
-                        onChange={this.handleInputChange}
-                    />
-                    <ButtonRow theme={theme} onClick={this.signIn}>
-                        {I18n.get('Sign In')}
-                    </ButtonRow>
-                    <FederatedButtons
-                        federated={federated}
-                        theme={theme}
-                        authState={authState}
-                        onStateChange={onStateChange}
-                    />
+                    {federated && Object.keys(federated).length > 0 &&
+                        <div>
+                            <FederatedButtons
+                                federated={federated}
+                                theme={theme}
+                                authState={authState}
+                                onStateChange={onStateChange}
+                            />
+                            <Strike>or</Strike>
+                        </div>
+                    }
+                    <FormField theme={theme}>
+                        <InputLabel>{I18n.get('Username')} *</InputLabel>
+                        <Input
+                            autoFocus
+                            placeholder={I18n.get('Enter your username')}
+                            theme={theme}
+                            key="username"
+                            name="username"
+                            onChange={this.handleInputChange}
+                        />
+                    </FormField>
+                    <FormField theme={theme}>
+                        <InputLabel>{I18n.get('Password')} *</InputLabel>
+                        <Input
+                            placeholder={I18n.get('Enter your password')}
+                            theme={theme}
+                            key="password"
+                            type="password"
+                            name="password"
+                            onChange={this.handleInputChange}
+                        />
+                        <Hint theme={theme}>
+                            {I18n.get('Forget your password? ')}
+                            <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
+                                {I18n.get('Reset password')}
+                            </Link>
+                        </Hint>
+                    </FormField>
+                    
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <div style={theme.col6}>
-                        <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
-                            {I18n.get('Forgot Password')}
-                        </Link>
-                    </div>
-                    <div style={Object.assign({textAlign: 'right'}, theme.col6)}>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        <Button theme={theme} onClick={this.signIn}>
+                            {I18n.get('Sign In')}
+                        </Button>
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        {I18n.get('No account? ')}
                         <Link theme={theme} onClick={() => this.changeState('signUp')}>
-                            {I18n.get('Sign Up')}
+                            {I18n.get('Create account')}
                         </Link>
-                    </div>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
         )
