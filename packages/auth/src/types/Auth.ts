@@ -77,3 +77,7 @@ export interface OAuth {
 export interface ConfirmSignUpOptions {
     forceAliasCreation?: boolean
 }
+
+export interface SignOutOpts {
+    global?: boolean
+}
