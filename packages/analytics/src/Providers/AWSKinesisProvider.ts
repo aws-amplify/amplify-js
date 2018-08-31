@@ -38,12 +38,16 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         this._config.flushSize = this._config.flushSize || FLUSH_SIZE;
         this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
         this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
+        this._timer = null;
 
-        // events batch
-        const that = this;
+        // setup a timer if in the browser
+        if (window && window.setInterval) {
+            this._setupTimer();
+        } else {
+            logger.debug('The app is not in the browser environment');
+        }
 
-         // flush event buffer
-        this._setupTimer();
+        this._startSending = this._startSending.bind(this);
     }
 
     private _setupTimer() {
@@ -53,17 +57,20 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         const { flushSize, flushInterval } = this._config;
         const that = this;
         this._timer = setInterval(
-            () => {
-                const size = this._buffer.length <  flushSize? this._buffer.length : flushSize;
-                const events = [];
-                for (let i = 0; i < size; i += 1) {
-                    const params = this._buffer.shift();
-                    events.push(params);
-                } 
-                that._sendFromBuffer(events);
-            },
+            that._startSending,
             flushInterval
         );
+    }
+
+    private _startSending() {
+        const { flushSize } = this._config;
+        const size = this._buffer.length < flushSize? this._buffer.length : flushSize;
+        const events = [];
+        for (let i = 0; i < size; i += 1) {
+            const params = this._buffer.shift();
+            events.push(params);
+        } 
+        this._sendFromBuffer(events);
     }
 
     /**
@@ -89,7 +96,12 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
 
-        this._setupTimer();
+        // setup a timer if in the browser
+        if (window && window.setInterval) {
+            this._setupTimer();
+        } else {
+            logger.debug('The app is not in the browser environment');
+        }
         return this._config;
     }
 
@@ -118,7 +130,12 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
      */
     private _putToBuffer(params) {
         if (this._buffer.length < BUFFER_SIZE) {
+            const { flushSize } = this._config;
             this._buffer.push(params);
+            // if no timer, directly send the events if over flush size
+            if (!this._timer && this._buffer.length > flushSize ) {
+                this._startSending();
+            } 
             return Promise.resolve(true);
         } else {
             logger.debug('exceed analytics events buffer size');

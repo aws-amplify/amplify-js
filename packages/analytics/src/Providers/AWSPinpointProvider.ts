@@ -55,9 +55,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
         this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
         this._clientInfo = ClientDevice.clientInfo();
+        this._timer = null;
 
-        // flush event buffer
-        this._setupTimer();
+        // setup a timer if in the browser
+        if (window && window.setInterval) {
+            this._setupTimer();
+        } else {
+            logger.debug('The app is not in the browser environment');
+        }   
     }
 
     private _setupTimer() {
@@ -154,7 +159,12 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const conf = config? config : {};
         this._config = Object.assign({}, this._config, conf);
 
-        this._setupTimer();
+        // setup a timer if in the browser
+        if (window && window.setInterval) {
+            this._setupTimer();
+        } else {
+            logger.debug('The app is not in the browser environment');
+        }
         return this._config;
     }
 
@@ -171,7 +181,28 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const timestamp = new Date().getTime();
 
         Object.assign(params, { timestamp, config: this._config, credentials });
-        return this._putToBuffer(params);
+        if (!this._timer) {
+            return this._send(params);
+        } else {
+            return this._putToBuffer(params);
+        }
+    }
+
+    private async _send(params) {
+        const { event, config } = params;
+        const { appId, region } = config;
+        const cacheKey = this.getProviderName() + '_' + appId;
+        config.endpointId = config.endpointId? config.endpointId : await this._getEndpointId(cacheKey);
+        switch (event.name) {
+            case '_session_start':
+                return this._startSession(params);
+            case '_session_stop':
+                return this._stopSession(params);
+            case '_update_endpoint':
+                return this._updateEndpoint(params);
+            default:
+                return this._recordCustomEvent(params);
+        }
     }
 
     /**
