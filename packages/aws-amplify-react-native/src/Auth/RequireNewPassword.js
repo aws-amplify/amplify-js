@@ -14,9 +14,6 @@
 import React from 'react';
 import {
     View,
-    Text,
-    TextInput,
-    Button,
     TouchableWithoutFeedback,
     Keyboard
 } from 'react-native';
@@ -25,9 +22,9 @@ import {
     I18n,
     Logger
 } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
 import {
-    Password,
+    FormField,
+    AmplifyButton,
     LinkCell,
     Header,
     ErrorRow
@@ -35,17 +32,6 @@ import {
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('SignIn');
-
-const Footer = (props) => {
-    const theme = props.theme || AmplifyTheme;
-    return (
-        <View style={theme.sectionFooter}>
-            <LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
-                {I18n.get('Back to Sign In')}
-            </LinkCell>
-        </View>
-    )
-}
 
 export default class RequireNewPassword extends AuthPiece {
     constructor(props) {
@@ -93,17 +79,25 @@ export default class RequireNewPassword extends AuthPiece {
                 <View style={theme.section}>
                     <Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
                     <View style={theme.sectionBody}>
-                        <Password
+                        <FormField
                             theme={theme}
                             onChangeText={(text) => this.setState({ password: text })}
+                            label={I18n.get('Password')}
+                            placeholder={I18n.get('Enter your password')}
+                            secureTextEntry={true}
+                            required={true}
                         />
-                        <Button
-                            title={I18n.get('Change Password')}
+                        <AmplifyButton
+                            text={I18n.get('Change Password')}
                             onPress={this.change}
                             disabled={!this.state.password}
                         />
                     </View>
-                    <Footer theme={theme} onStateChange={this.changeState} />
+                    <View style={theme.sectionFooter}>
+                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                            {I18n.get('Back to Sign In')}
+                        </LinkCell>
+                    </View>
                     <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
             </TouchableWithoutFeedback>

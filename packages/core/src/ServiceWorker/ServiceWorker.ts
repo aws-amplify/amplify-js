@@ -67,7 +67,7 @@ class ServiceWorkerClass {
         this._logger.debug(`registering ${filePath}`);
         this._logger.debug(`registering service worker with scope ${scope}`);
         return new Promise((resolve, reject) => {
-            if ('serviceWorker' in navigator) {
+            if (navigator && 'serviceWorker' in navigator) {
                 navigator.serviceWorker.register(filePath, {
                     'scope': scope
                 }).then((registration) => {
@@ -107,26 +107,31 @@ class ServiceWorkerClass {
         if (!this._registration) throw new Error('Service Worker not registered');
         this._publicKey = publicKey;
         return new Promise((resolve, reject) => {
-            this._registration.pushManager.getSubscription()
-                .then((subscription) => {
-                    if (subscription) {
-                        this._subscription = subscription;
-                        this._logger.debug(`User is subscribed to push: ${JSON.stringify(subscription)}`);
-                        resolve(subscription);
-                    } else {
-                        this._logger.debug(`User is NOT subscribed to push`);
-                        return this._registration.pushManager.subscribe({
-                            'userVisibleOnly': true,
-                            'applicationServerKey': this._urlB64ToUint8Array(publicKey)
-                        }).then((subscription) => {
+            if (window) {
+                this._registration.pushManager.getSubscription()
+                    .then((subscription) => {
+                        if (subscription) {
                             this._subscription = subscription;
-                            this._logger.debug(`User subscribed: ${JSON.stringify(subscription)}`);
+                            this._logger.debug(`User is subscribed to push: ${JSON.stringify(subscription)}`);
                             resolve(subscription);
-                        }).catch((error) => {
-                            this._logger.error(error);
-                        });
-                    }
-                });
+                        } else {
+                            this._logger.debug(`User is NOT subscribed to push`);
+                            return this._registration.pushManager.subscribe({
+                                'userVisibleOnly': true,
+                                'applicationServerKey': this._urlB64ToUint8Array(publicKey)
+                            }).then((subscription) => {
+                                this._subscription = subscription;
+                                this._logger.debug(`User subscribed: ${JSON.stringify(subscription)}`);
+                                resolve(subscription);
+                            }).catch((error) => {
+                                this._logger.error(error);
+                            });
+                        }
+                    });
+            } else {
+                return reject(new Error('Service Worker not available'));
+            }
+            
         });
     }
 

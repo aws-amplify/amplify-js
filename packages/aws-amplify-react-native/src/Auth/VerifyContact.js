@@ -14,10 +14,7 @@
 import React from 'react';
 import { 
     View, 
-    Text, 
-    TextInput,
     Picker, 
-    Button, 
     TouchableWithoutFeedback,
     Keyboard
 } from 'react-native';
@@ -26,9 +23,9 @@ import {
     I18n,
     Logger
 } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
 import { 
-    ConfirmationCode, 
+    AmplifyButton,
+    FormField, 
     LinkCell, 
     Header, 
     ErrorRow 
@@ -36,17 +33,6 @@ import {
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('SignIn');
-
-const Footer = (props) => {
-    const { theme, onStateChange } = props;
-    return (
-        <View style={theme.sectionFooter}>
-            <LinkCell theme={theme} onPress={() => onStateChange('signedIn')}>
-                {I18n.get('Skip')}
-            </LinkCell>
-        </View>
-    )
-}
 
 export default class VerifyContact extends AuthPiece {
     constructor(props) {
@@ -111,8 +97,8 @@ export default class VerifyContact extends AuthPiece {
                     { email? <Picker.Item label={I18n.get('Email')} value="email"/> : null }
                     { phone_number? <Picker.Item label={I18n.get('Phone Number')} value="phone_number"/> : null }
                 </Picker>
-                <Button
-                    title={I18n.get('Verify')}
+                <AmplifyButton
+                    text={I18n.get('Verify')}
                     onPress={this.verify}
                     disabled={!this.state.pickAttr}
                 />
@@ -123,12 +109,15 @@ export default class VerifyContact extends AuthPiece {
     submitBody(theme) {
         return (
             <View style={theme.sectionBody}>
-                <ConfirmationCode
+                <FormField
                     theme={theme}
                     onChangeText={(text) => this.setState({ code: text })}
+                    label={I18n.get('Confirmation Code')}
+                    placeholder={I18n.get('Enter your confirmation code')}
+                    required={true}
                 />
-                <Button
-                    title={I18n.get('Submit')}
+                <AmplifyButton
+                    text={I18n.get('Submit')}
                     onPress={this.submit}
                     disabled={!this.state.code}
                 />
@@ -143,7 +132,11 @@ export default class VerifyContact extends AuthPiece {
                     <Header theme={theme}>{I18n.get('Verify Contact')}</Header>
                     { !this.state.verifyAttr && this.verifyBody(theme) }
                     { this.state.verifyAttr && this.submitBody(theme) }
-                    <Footer theme={theme} onStateChange={this.changeState} />
+                    <View style={theme.sectionFooter}>
+                        <LinkCell theme={theme} onPress={() => onStateChange('signedIn')}>
+                            {I18n.get('Skip')}
+                        </LinkCell>
+                    </View>
                     <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
             </TouchableWithoutFeedback>

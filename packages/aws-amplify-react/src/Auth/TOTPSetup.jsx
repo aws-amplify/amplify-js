@@ -12,21 +12,9 @@
  */
 
 import React, { Component } from 'react';
-import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AuthPiece from './AuthPiece';
-import AmplifyTheme from '../AmplifyTheme';
-import {
-    FormSection,
-    SectionHeader,
-    SectionBody,
-    SectionFooter,
-    InputRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
-
-import QRCode from 'qrcode.react';
 import { TOTPSetupComp } from '../Widget';
 
 const logger = new Logger('TOTPSetup');
