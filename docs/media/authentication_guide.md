@@ -169,6 +169,12 @@ import { Auth } from 'aws-amplify';
 Auth.signOut()
     .then(data => console.log(data))
     .catch(err => console.log(err));
+
+// revoke all the tokens
+Auth.signOut({ global: true })
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+    
 ```
 
 #### Change password
