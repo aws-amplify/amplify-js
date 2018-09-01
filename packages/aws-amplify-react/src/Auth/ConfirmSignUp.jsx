@@ -85,7 +85,7 @@ export default class ConfirmSignUp extends AuthPiece {
                             name="username"
                             onChange={this.handleInputChange}
                             disabled={username}
-                            value={username ? username : ""}
+                            value={username ? username : null}
                         />
                     </FormField>
 
