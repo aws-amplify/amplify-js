@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api",
-  "version": "1.0.8",
+  "version": "1.0.9-unstable.1",
   "description": "Api category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
