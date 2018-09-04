@@ -53,7 +53,7 @@ export default class Authenticator extends Component {
         if (state === this.state.auth) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
-        this.setState({ auth: state, authData: data, error: null });
+        this.setState({ auth: state, authData: data, error: null, showToast: false });
         if (this.props.onStateChange) { this.props.onStateChange(state, data); }
     }
 
@@ -62,12 +62,11 @@ export default class Authenticator extends Component {
             const map = this.props.errorMessage || AmplifyMessageMap;
             const message = (typeof map === 'string')? map : map(event.data);
             this.setState({ error: message, showToast: true });
-            
         }
     }
 
     render() {
-        const { auth, authData } = this.state;
+        const { auth, authData, error, showToast } = this.state;
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
@@ -113,7 +112,7 @@ export default class Authenticator extends Component {
                     hide: hide
                 });
         });
-       
+
         const render_default_children = hideDefault ? [] : React.Children.map(default_children, (child, index) => {
                 return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-default-children-' + index,
@@ -128,11 +127,10 @@ export default class Authenticator extends Component {
             });
 
         const render_children = render_default_children.concat(render_props_children);
-        const error = this.state.error;        
 
         return (
             <Container theme={theme}>
-                {this.state.showToast && 
+                {error && showToast &&
                     <Toast onClose={() => this.setState({showToast: false})}>
                         { I18n.get(error) }
                     </Toast>
