@@ -13,7 +13,7 @@
 
  // the session tracker for web
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import { SessionTrackOpts } from '../types';
 
 const logger = new Logger('SessionTracker');
@@ -22,6 +22,8 @@ const defaultOpts: SessionTrackOpts = {
     enable: false,
     provider: 'AWSPinpoint'
 };
+
+let initialEventSent = false;
 
 export default class SessionTracker {
     private _tracker;
@@ -119,6 +121,13 @@ export default class SessionTracker {
 
     // to keep configure a synchronized function
     private async _sendInitialEvent() {
+        if (initialEventSent) {
+            logger.debug('the start session has been sent when the page is loaded');
+            return;
+        } else {
+            initialEventSent = true;
+        }
+        
         const identityId = typeof this._config.getIdentityId === 'function'? 
             { identityId: await this._config.getIdentityId() } : undefined;
         const attributes = Object.assign(
@@ -151,7 +160,7 @@ export default class SessionTracker {
             document.addEventListener(this._visibilityChange, this._trackFunc, false);
             window.addEventListener("beforeunload", this._trackBeforeUnload, false);
             this._hasEnabled = true;
-        } else {
+        } else if (!this._config.enable && this._hasEnabled) {
             document.removeEventListener(this._visibilityChange, this._trackFunc, false);
             window.removeEventListener("beforeunload", this._trackBeforeUnload, false);
             this._hasEnabled = false;

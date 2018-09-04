@@ -333,7 +333,9 @@ Analytics.autoTrack('session', {
     provider: 'AWSPinpoint',
     // OPTIONAL, to get the identity id
     getIdentityId: () => {}
-})
+    // or
+    getIdentityId: 'xxxxx'
+});
 ```
 
 When the page is loaded, the Analytics module will send an event with:
@@ -352,7 +354,15 @@ To keep backward compatibility, the auto tracking of the session is enabled by d
 Analytics.configure({
     // OPTIONAL - Allow recording session events. Default is true.
     autoSessionRecord: false,
-}
+});
+```
+or 
+```js
+Analytics.autoTrack('session', {
+    enable: false
+});
+
+// Note: this must be called before Amplify.configure() or Analytics.configure() to cancel the session_start event
 ```
 
 ### Page View Tracking

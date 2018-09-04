@@ -77,10 +77,6 @@ export default class AnalyticsClass {
             this._disabled = true;
         }
 
-        if (this._config['autoSessionRecord'] === undefined) {
-            this._config['autoSessionRecord'] = true;
-        }
-
         this._pluggables.forEach((pluggable) => {
             // for backward compatibility
             if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
@@ -94,8 +90,18 @@ export default class AnalyticsClass {
             this.addPluggable(new AWSPinpointProvider());
         }
 
+        // turn on the autoSessionRecord if not specified
+        if (this._config['autoSessionRecord'] === undefined) {
+            this._config['autoSessionRecord'] = true;
+        }
+        this.autoTrack('session', {
+            enable: this._config['autoSessionRecord']
+        });
+
         dispatchAnalyticsEvent('configured', null);
         logger.debug('current configuration', this._config);
+
+        
         return this._config;
     }
 
@@ -246,6 +252,11 @@ export default class AnalyticsClass {
         if (!trackers[trackerType]) {
             logger.debug('invalid tracker type');
             return;
+        }
+
+        // to sync up two different configuration ways of auto session tracking
+        if (trackerType === 'session') {
+           this._config['autoSessionRecord'] = opts['enable'];
         }
         
         const tracker = this._trackers[trackerType];

@@ -22,7 +22,7 @@ import Amplify, {
 } from '@aws-amplify/core';
 
 const logger = new Logger('Analytics');
-let startsessionRecorded = false;
+let endpointUpdated = false;
 let authConfigured = false;
 let analyticsConfigured = false;
 
@@ -40,23 +40,6 @@ export default Analytics;
 export { AnalyticsProvider };
 export { AnalyticsClass };
 export * from './Providers';
-
-// send a session start event if autoSessionRecord is enabled
-const autoSessionRecord = () => {
-    const config = Analytics.configure();
-    startsessionRecorded = true;
-    if (config.autoSessionRecord) {
-        Analytics.updateEndpoint({}).then(() => {
-            Analytics.autoTrack('session', {
-                enable: true
-            });
-        }).catch(e => {
-            logger.debug('Failed to update the endpoint', e);
-        });
-    } else {
-        logger.debug('auto Session record is diasabled');
-    }            
-};
 
 Analytics.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;
@@ -112,8 +95,10 @@ const authEvent = (payload) => {
             break;
         case 'configured':
             authConfigured = true;
-            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                autoSessionRecord();
+            if (authConfigured && analyticsConfigured && !endpointUpdated) {
+                Analytics.updateEndpoint({}).catch(e => {
+                    logger.debug('Failed to update the endpoint', e);
+                });
             }
             break;
     }
@@ -126,8 +111,10 @@ const analyticsEvent = (payload) => {
      switch(event) {
          case 'configured':
             analyticsConfigured = true;
-            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                autoSessionRecord();
+            if (authConfigured && analyticsConfigured && !endpointUpdated) {
+                Analytics.updateEndpoint({}).catch(e => {
+                    logger.debug('Failed to update the endpoint', e);
+                });
             }
             break;
      }
