@@ -24,6 +24,8 @@ const credentials = {
     authenticated: true
 }
 
+jest.useFakeTimers()
+
 describe('kinesis provider test', () => {
     describe('getCategory test', () => {
         test('happy case', () => {

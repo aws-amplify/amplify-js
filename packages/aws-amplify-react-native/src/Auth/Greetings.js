@@ -22,6 +22,7 @@ import {
     I18n,
     Logger
 } from 'aws-amplify';
+import { AmplifyButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 import AuthPiece from './AuthPiece';
 
@@ -50,8 +51,8 @@ export default class Greetings extends AuthPiece {
         return (
             <View style={theme.navRight}>
                 <Text>{greeting}</Text>
-                <Button
-                    title={I18n.get('Sign Out')}
+                <AmplifyButton
+                    text={I18n.get('Sign Out')}
                     style={theme.navButton}
                     onPress={this.signOut}
                 />

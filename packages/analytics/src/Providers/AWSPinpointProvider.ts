@@ -164,7 +164,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     public async record(params): Promise<boolean> {
         const credentials = await this._getCredentials();
-        if (!credentials) return Promise.resolve(false);
+        if (!credentials || !this._config['appId'] || !this._config['region']){
+            logger.debug('cannot send events without credentials, applicationId or region');
+            return Promise.resolve(false);
+        } 
         const timestamp = new Date().getTime();
 
         Object.assign(params, { timestamp, config: this._config, credentials });

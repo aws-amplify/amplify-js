@@ -1,0 +1,168 @@
+{% if site.amplify.header.logo.text or site.amplify.header.logo.image or site.amplify.header.nav %}
+<div class="notification-bar" id="notification-bar">
+	<div class="notification-content">
+		<img class="notification-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Medium/Volume.svg">
+		<p class="notification-text">Announcing the AWS Amplify CLI toolchain. Click <a href="https://aws.amazon.com/blogs/mobile/announcing-the-aws-amplify-cli-toolchain/" target="_blank">here</a> to read more.</p>
+	</div>
+	<div class="close-button">
+		<i id="close-notif" class="icon icon--x"></i>
+	</div>
+</div>
+{% endif %}
+
+{% if site.amplify.header.nav %}
+<div class="offcanvas visible-xs">
+	<ul class="offcanvas__nav">
+		{% for item in site.amplify.header.nav %}
+			<li>
+				{% if item.item_external_url %}
+					<a href="{{ item.item_external_url }}">
+						{{ item.item_name }}   
+					</a>
+				{% else %}
+					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
+						{{ item.item_name }}
+					</a>
+				{% endif %}
+			</li>
+		{% endfor %}
+		<li>
+			<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=purejs">
+				Docs
+			</a>
+		</li>
+		<li>
+			<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api">
+				API
+			</a>
+		</li>
+	</ul><!-- /.offcanvas__nav -->
+</div><!-- /.offcanvas -->
+{% endif %}
+
+{% if site.amplify.header.logo.text or site.amplify.header.logo.image or site.amplify.header.nav %}
+<header class="site-header docs-header">
+	<div class="container site-header-container">
+		<div class="row">
+			<div class="visible-xs toggle-button-container" id="toggle-button-container">
+				<button class="offcanvas-toggle docs-toggle">
+					<span></span>
+					<span></span>
+					<span></span>
+				</button><!-- /.offcanvas-toggle -->
+			</div>
+			<div>
+				{% if site.amplify.header.logo.text %}
+				<div class="logo-container" id="logo-container">
+					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
+						<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Amplify-Logo-White.svg">
+						<p class="header-amplify docs-header-amplify">{{ site.amplify.header.logo.text }} </p>
+					</a>
+				</div>
+				{% elsif site.amplify.header.logo.image %}
+					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
+						<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Amplify-Logo-White.svg">
+					</a><!-- /.site-header__logo -->
+				{% endif %}
+				<div class="language-selector">
+					<select id="language-select">
+						<option value="javascript">JavaScript</option>
+						<option value="cli">Amplify CLI</option>
+					</select>
+				</div>
+				{% if site.amplify.header.nav %}
+					<ul class="site-header__nav hidden-xs">
+					{% for item in site.amplify.header.nav %}
+						<li class="docs-nav">
+							{% if item.item_external_url %}
+								<a class="white-text" href="{{ item.item_external_url }}">
+									{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
+									{{ item.item_name }}
+								</a>
+							{% else %}
+								<a class="white-text" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.item_url }}">
+									{% if item.item_icon %}<i class="icon icon--{{ item.item_icon  }}"></i>{% endif %}
+									{{ item.item_name }}
+								</a>
+							{% endif %}
+						</li>
+					{% endfor %}
+						<li>
+							<div id="docs-select" class="dropdown">
+								<button class="dropbtn white-text">Docs</button>
+								<div class="dropdown-content">
+									<a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html#ios-swift" target="_blank"><p>iOS</p></a>
+									<a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html#android-java" target="_blank"><p>Android</p></a>
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=purejs"><p>JavaScript</p></a>
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=react-native"><p>React Native</p></a>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div id="api-select" class="dropdown">
+								<button class="dropbtn white-text">API</button>
+								<div class="dropdown-content">
+									<a href="https://aws.github.io/aws-sdk-ios/docs/reference/" target="_blank"><p>iOS</p></a>
+									<a href="https://aws.github.io/aws-sdk-android/docs/reference/" target="_blank"><p>Android</p></a>
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api/" target="_blank"><p>JavaScript</p></a>
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/api/" target="_blank"><p>React Native</p></a>
+								</div>
+							</div>
+						</li>
+						<li class="site-search">
+							<input placeholder="Search Docs" type="text" id="search-input"><img class="search-image" id="search-image" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/Search.svg"></input>
+						</li>
+					</ul><!-- /.site-header__nav -->
+					<input type="text" id="search-input-xs" class="visible-xs docs-search-xs"></input>
+					<button id="collapse-search">Cancel</button>
+				{% endif %}
+			</div><!-- /.col -->
+		</div><!-- /.row -->
+		<a id="github-logo-docs" target="_blank" href="https://github.com/aws-amplify"><img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/GitHub-Mark-32px.png" /></a>
+	</div><!-- /.container -->
+</header><!-- /.site-header -->
+{% endif %}
+
+{% if jekyll.environment == 'production' %}
+<script>
+	var setBackgroundImage = function() {
+		const search_box = document.getElementById("language-select");
+		search_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
+		search_box.style.backgroundPosition = "164px 6px";
+	}
+
+	setBackgroundImage();
+</script>
+{% else %}
+<script>
+	var setBackgroundImage = function() {
+		const search_box = document.getElementById("language-select");
+		search_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+		search_box.style.backgroundPosition = "164px 6px";
+	}
+
+	setBackgroundImage();
+</script>
+{% endif %}
+
+
+
+{% if jekyll.environment == 'production' %}
+<script>
+	var setBackgroundImage = function() {
+		const search_box = document.getElementById("search-input-xs");
+		search_box.style.backgroundImage = "url('/amplify-js/images/layout/Search.svg')"; 
+	}
+
+	setBackgroundImage();
+</script>
+{% else %}
+<script>
+	var setBackgroundImage = function() {
+		const search_box = document.getElementById("search-input-xs");
+		search_box.style.backgroundImage = "url('/images/layout/Search.svg')"; 
+	}
+
+	setBackgroundImage();
+</script>
+{% endif %}
