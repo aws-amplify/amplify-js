@@ -1,0 +1,102 @@
+@import './Theme.css';
+
+.button {
+  min-width: 153px;
+  display: inline-block;
+  margin-bottom: 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  user-select: none;
+  background-image: none;
+  color: var(--button-color);
+  background-color: var(--button-background-color);
+  border-color: #ccc;
+  text-transform: uppercase;
+  padding: 14px 0;
+  letter-spacing: 1.1px;
+  border: none;
+}
+
+.button:active {
+  opacity: 1;
+  background-color: var(--button-click);
+}
+
+.button:hover,
+.signInButton:hover {
+  opacity: 0.8;
+}
+
+.signInButton {
+  position: relative;
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  padding: 0;
+  color: #152939;
+  font-size: 14px;
+}
+
+#googleSignInButton {
+  background-color: #4285F4;
+  font-family: Roboto;
+  border: 1px solid #4285F4;
+  color: #fff;
+}
+
+#googleSignInButton > .signInButtonIcon {
+  background-color: #fff;
+  border-radius: 4px 0 0 4px;
+  height: 28px;
+  width: 28px;
+  padding: 12px;
+}
+
+#facebookSignInButton {
+  background-color: #4267B2;
+  border-color: #4267B2;
+  font-family: "Helvetica Neue";
+  color: #fff;
+}
+
+#facebookSignInButton > .signInButtonIcon {
+  height: 33px;
+  width: 18px;
+  padding: 10px 14px;
+}
+
+#amazonSignInButton {
+  background-color: #FF9900;
+  border: none;
+  color: #fff;
+  font-family: "Amazon Ember";
+}
+
+#amazonSignInButton > .signInButtonIcon {
+  padding: 10px;
+  height: 32px;
+  width: 32px;
+}
+
+.signInButtonIcon {
+  position: absolute;
+  left: 0; 
+}
+
+.signInButtonContent {
+  text-align: center;
+  display: block;
+  padding: 18px 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}

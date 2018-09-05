@@ -201,7 +201,7 @@ import { AmplifyService }  from 'aws-amplify-angular';
 ...
 
 constructor( public amplify:AmplifyService ) {
-  // handle auth state change
+  // handle auth state changes
   this.amplify.authStateChange$
     .subscribe(authState => {
       this.authenticated = authState.state === 'signedIn';
