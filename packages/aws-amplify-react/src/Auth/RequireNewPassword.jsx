@@ -59,12 +59,13 @@ export default class RequireNewPassword extends AuthPiece {
     change() {
         const user = this.props.authData;
         const { password } = this.inputs;
-        const requiredAttributes = objectWithoutProperties(this.inputs, ['password'])
+        const { requiredAttributes } = user.challengeParam;
+        const attrs = objectWithProperties(this.inputs, requiredAttributes);
 
         if (!Auth || typeof Auth.completeNewPassword !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
-        Auth.completeNewPassword(user, password, requiredAttributes)
+        Auth.completeNewPassword(user, password, attrs)
             .then(user => {
                 logger.debug('complete new password', user);
                 if (user.challengeName === 'SMS_MFA') {
@@ -135,10 +136,10 @@ function convertToPlaceholder(str) {
     return str.split('_').map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
 }
 
-function objectWithoutProperties(obj, keys) {
+function objectWithProperties(obj, keys) {
     const target = {};
     for (const key in obj) {
-        if (keys.indexOf(key) >= 0) {
+        if (keys.indexOf(key) === -1) {
             continue;
         }
         if (!Object.prototype.hasOwnProperty.call(obj, key)) {
