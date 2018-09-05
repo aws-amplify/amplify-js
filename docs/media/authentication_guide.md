@@ -204,7 +204,7 @@ You can call `Auth.currentAuthenticatedUser()` to get the current authenticated 
 import { Auth } from 'aws-amplify';
 
 Auth.currentAuthenticatedUser()
-    .then(user => console.log(user));
+    .then(user => console.log(user))
     .catch(err => console.log(err));
 ```
 This method can be used to check if a user is logged in when the page is loaded. It will throw an error if there is no user logged in.
