@@ -88,7 +88,7 @@ export default class EventTracker {
         }
 
         const defaultAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : undefined;
+            await this._config.attributes() : this._config.attributes;
 
         const attributes = Object.assign(
             {

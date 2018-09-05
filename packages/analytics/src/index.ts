@@ -99,6 +99,7 @@ const authEvent = (payload) => {
                 Analytics.updateEndpoint({}).catch(e => {
                     logger.debug('Failed to update the endpoint', e);
                 });
+                endpointUpdated = true;
             }
             break;
     }
@@ -115,6 +116,7 @@ const analyticsEvent = (payload) => {
                 Analytics.updateEndpoint({}).catch(e => {
                     logger.debug('Failed to update the endpoint', e);
                 });
+                endpointUpdated = true;
             }
             break;
      }

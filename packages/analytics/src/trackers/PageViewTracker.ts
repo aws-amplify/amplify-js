@@ -78,7 +78,7 @@ export default class PageViewTracker {
         }
         const url = this._config.getUrl();
         const customAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : undefined;
+            await this._config.attributes() : this._config.attributes;
         const attributes = Object.assign(
             {
                 url
@@ -108,7 +108,7 @@ export default class PageViewTracker {
 
         const url = this._config.getUrl();
         const customAttrs = typeof this._config.attributes === 'function'? 
-            await this._config.attributes() : undefined;
+            await this._config.attributes() : this._config.attributes;
         const attributes = Object.assign(
             {
                 url
