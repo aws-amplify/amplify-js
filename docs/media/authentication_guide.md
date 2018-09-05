@@ -170,7 +170,8 @@ Auth.signOut()
     .then(data => console.log(data))
     .catch(err => console.log(err));
 
-// revoke all the tokens
+// By doing this, you are revoking all the auth tokens(id token, access token and refresh token)
+// which means the user is signed out from all the devices
 Auth.signOut({ global: true })
     .then(data => console.log(data))
     .catch(err => console.log(err));
