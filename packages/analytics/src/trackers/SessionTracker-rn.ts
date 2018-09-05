@@ -24,6 +24,8 @@ const defaultOpts: SessionTrackOpts = {
     provider: 'AWSPinpoint'
 };
 
+let initialEventSent = false;
+
 export default class SessionTracker {
     private _tracker;
     private _hasEnabled;
@@ -84,12 +86,18 @@ export default class SessionTracker {
 
     // to keep configure a synchronized function
     private async _sendInitialEvent() {
-        const identityId = typeof this._config.getIdentityId === 'function'? 
-            { identityId: await this._config.getIdentityId() } : undefined;
+        if (initialEventSent) {
+            logger.debug('the start session has been sent when the page is loaded');
+            return;
+        } else {
+            initialEventSent = true;
+        }
+
+        const customAttrs = typeof this._config.attributes === 'function'? 
+            await this._config.attributes() : undefined;
         const attributes = Object.assign(
             {},
-            this._config.attributes,
-            identityId
+            customAttrs
         );
 
         this._tracker(
@@ -115,7 +123,7 @@ export default class SessionTracker {
             // listen on events
             AppState.addEventListener('change', this._trackFunc, false);
             this._hasEnabled = true;
-        } else {
+        } else if (!this._config.enable && this._hasEnabled) {
             AppState.removeEventListener('change', this._trackFunc, false);
             this._hasEnabled = false;
         }

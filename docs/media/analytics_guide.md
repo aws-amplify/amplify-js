@@ -407,8 +407,10 @@ Analytics.autoTrack('event', {
     enable: true,
     // OPTIONAL, events you want to track, by default is 'click'
     events: ['click'],
-    // OPTIONAL, the prefix of the selectors, by default is 'amplify-analytics-'
-    selectorPrefix: 'amplify-analytics-',
+    // OPTIONAL, the prefix of the selectors, by default is 'data-amplify-analytics-'
+    // in order to avoid collision with the user agent, according to https://www.w3schools.com/tags/att_global_data.asp
+    // always put 'data' as the first prefix
+    selectorPrefix: 'data-amplify-analytics-',
     // OPTIONAL, the service provider, by default is the AWS Pinpoint
     provider: 'AWSPinpoint',
     // OPTIONAL, default attributes of the event 
@@ -423,9 +425,9 @@ For example:
 ```html
 <!-- you want to track this button and send an event when it is clicked -->
 <button
-    amplify-analytics-on='click'
-    amplify-analytics-name='click'
-    amplify-analytics-attrs='attr1:attr1_value,attr2:attr2_value'
+    data-amplify-analytics-on='click'
+    data-amplify-analytics-name='click'
+    data-amplify-analytics-attrs='attr1:attr1_value,attr2:attr2_value'
 />
 ```
 When the button above is clicked, an event will be sent automatically and this is equivalent to do:

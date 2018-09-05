@@ -77,14 +77,13 @@ export default class PageViewTracker {
             return;
         }
         const url = this._config.getUrl();
-        const identityId = typeof this._config.getIdentityId === 'function'? 
-            { identityId: await this._config.getIdentityId() } : undefined;
+        const customAttrs = typeof this._config.attributes === 'function'? 
+            await this._config.attributes() : undefined;
         const attributes = Object.assign(
             {
                 url
             },
-            this._config.attributes,
-            identityId
+            customAttrs
         );
 
         if (this._config.enable && !this._isSameUrl()) {
@@ -108,14 +107,13 @@ export default class PageViewTracker {
         }
 
         const url = this._config.getUrl();
-        const identityId = typeof this._config.getIdentityId === 'function'? 
-            { identityId: await this._config.getIdentityId() } : undefined;
+        const customAttrs = typeof this._config.attributes === 'function'? 
+            await this._config.attributes() : undefined;
         const attributes = Object.assign(
             {
                 url
             },
-            this._config.attributes,
-            identityId
+            customAttrs
         );
 
         if (!this._isSameUrl()){

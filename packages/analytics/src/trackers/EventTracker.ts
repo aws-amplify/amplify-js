@@ -20,7 +20,7 @@ const logger = new Logger('EventTracker');
 const defaultOpts: EventTrackOpts = {
     enable: false,
     events: ['click'],
-    selectorPrefix: 'amplify-analytics-',
+    selectorPrefix: 'data-amplify-analytics-',
     provider: 'AWSPinpoint'
 };
 
@@ -87,17 +87,16 @@ export default class EventTracker {
                 });
         }
 
-        const identityId = typeof this._config.getIdentityId === 'function'? 
-            { identityId: await this._config.getIdentityId() } : undefined;
+        const defaultAttrs = typeof this._config.attributes === 'function'? 
+            await this._config.attributes() : undefined;
 
         const attributes = Object.assign(
             {
                 type: event.type,
                 target: `${event.target.localName} with id ${event.target.id}`
             }, 
-            this._config.attributes,
-            customAttrs,
-            identityId
+            defaultAttrs,
+            customAttrs
         );
 
         logger.debug('events needed to be recorded', events);

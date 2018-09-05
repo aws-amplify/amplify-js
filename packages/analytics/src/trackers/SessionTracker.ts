@@ -128,12 +128,11 @@ export default class SessionTracker {
             initialEventSent = true;
         }
         
-        const identityId = typeof this._config.getIdentityId === 'function'? 
-            { identityId: await this._config.getIdentityId() } : undefined;
+        const customAttrs = typeof this._config.attributes === 'function'? 
+            await this._config.attributes() : undefined;
         const attributes = Object.assign(
             {},
-            this._config.attributes,
-            identityId
+            customAttrs
         );
 
         this._tracker(
