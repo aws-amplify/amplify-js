@@ -289,6 +289,14 @@ You can quickly create your backend from scratch with Automatic Setup, or use Ma
 
 ```bash
 $ amplify init
+? Choose your default editor: << choose-your-preferred editor >>
+? Choose the type of app that you're building javascript
+Please tell us about your project
+? What javascript framework are you using angular
+? Source Directory Path: src
+? Distribution Directory Path: dist/myAngularProject
+? Build Command: npm run-script build
+? Start Command: ng serve
 ```
 
 > When you run `amplify init` command you are asked for the details of your project. A configuration file for your app is put in your configured source directory called `aws-exports.js`.
