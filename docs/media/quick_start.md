@@ -287,7 +287,7 @@ You can quickly create your backend from scratch with Automatic Setup, or use Ma
 
 `amplify init` creates a backend project for your app and pulls the service configuration into your project. 
 
-```bash
+```
 $ amplify init
 ? Choose your default editor: << choose-your-preferred editor >>
 ? Choose the type of app that you're building javascript
