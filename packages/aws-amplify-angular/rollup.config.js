@@ -8,23 +8,27 @@ import { uglify } from 'rollup-plugin-uglify';
 import json from 'rollup-plugin-json';
 
 export default {
-  entry: 'dist/index.js',
-  dest: 'dist/bundles/aws-amplify-angular.umd.js',
-  format: 'umd',
-  moduleName: 'ng.aws-amplify-angular',
-  globals: {
-    '@ionic/angular': 'IonicModule',
-    'aws-amplify': 'Amplify',
-    '@angular/core': 'ng.core',
-    'rxjs/Observable': 'Rx',
-    'rxjs/Subscription': 'Rx',
-    'rxjs/ReplaySubject': 'Rx',
-    'rxjs/add/operator/map': 'Rx.Observable.prototype',
-    'rxjs/add/operator/mergeMap': 'Rx.Observable.prototype',
-    'rxjs/add/observable/fromEvent': 'Rx.Observable',
-    'rxjs/add/observable/of': 'Rx.Observable'
+  input: 'dist/index.js',
+  output: {
+    name: 'aws-amplify-angular',
+    file: 'dist/bundles/aws-amplify-angular.umd.js',
+    format: 'umd',
+    globals: {
+      'lodash': '_',
+      '@ionic/angular': 'IonicModule',
+      'aws-amplify': 'Amplify',
+      '@angular/core': 'ng.core',
+      '@angular/common': 'ng.common',
+      'rxjs/Observable': 'Rx',
+      'rxjs/Subscription': 'Rx',
+      'rxjs/ReplaySubject': 'Rx',
+      'rxjs/add/operator/map': 'Rx.Observable.prototype',
+      'rxjs/add/operator/mergeMap': 'Rx.Observable.prototype',
+      'rxjs/add/observable/fromEvent': 'Rx.Observable',
+      'rxjs/add/observable/of': 'Rx.Observable'
+    },
   },
-  external: ['aws-sdk' ,'@angular/core', 'aws-amplify', '@ionic/angular'],
+  external: ['aws-sdk' ,'@angular/core', '@angular/common',  'aws-amplify', '@ionic/angular'],
   plugins: [
     nodeResolve({ preferBuiltins: false, modulesOnly: true }), 
     commonjs({include: 'node_modules/**'}),
@@ -32,7 +36,7 @@ export default {
     builtins(),
     json(),
     uglify(),
-    analyze({limit: 5})
+    analyze({limit: 1})
   ]
 
 }
