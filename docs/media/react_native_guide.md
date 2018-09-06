@@ -20,8 +20,7 @@ AWS Amplify provides React Native Components with `aws-amplify-react-native` npm
 Install following npm packages into your React Native app.
 
 ```bash
-$ npm install aws-amplify
-$ npm install aws-amplify-react
+# aws-amplify-react-native will install the aws-amplify for you
 $ npm install aws-amplify-react-native
 ```
 

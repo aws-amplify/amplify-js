@@ -20,7 +20,7 @@ AWS Amplify provides React Components with `aws-amplify-react` npm package. Also
 Install following npm packages into your React app.
 
 ```bash
-$ npm install aws-amplify
+# aws-amplify-react will install the aws-amplify for you
 $ npm install aws-amplify-react
 ```
 
