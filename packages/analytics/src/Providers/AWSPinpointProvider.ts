@@ -205,7 +205,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     private async _startSession(params) {
         // credentials updated
-        const { timestamp, config, credentials } = params;
+        const { event, timestamp, config, credentials } = params;
+        const { name, attributes, metrics } = event;
 
         this._initClients(config, credentials);
 
@@ -220,10 +221,12 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 {
                     eventType: '_session.start',
                     timestamp: new Date(timestamp).toISOString(),
-                    'session': {
-                        'id': sessionId,
-                        'startTimestamp': new Date(timestamp).toISOString()
-                    }
+                    session: {
+                        id: sessionId,
+                        startTimestamp: new Date(timestamp).toISOString()
+                    },
+                    attributes,
+                    metrics
                 }
             ]
         };
@@ -249,7 +252,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     private async _stopSession(params) {
         // credentials updated
-        const { timestamp, config, credentials } = params;
+        const { event, timestamp, config, credentials } = params;
+        const { name, attributes, metrics } = event;
 
         this._initClients(config, credentials);
 
@@ -263,10 +267,12 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
                 {
                     eventType: '_session.stop',
                     timestamp: new Date(timestamp).toISOString(),
-                    'session': {
-                        'id': sessionId,
-                        'startTimestamp': new Date(timestamp).toISOString()
-                    }
+                    session: {
+                        id: sessionId,
+                        stopTimestamp: new Date(timestamp).toISOString()
+                    },
+                    attributes,
+                    metrics
                 }
             ]
         };
@@ -325,12 +331,16 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         this._initClients(config, credentials);
         
         const clientContext = this._generateClientContext(config);
+        const sessionId = this._sessionId ? this._sessionId : undefined;
         const eventParams = {
             clientContext,
             events: [
                 {
                     eventType: name,
                     timestamp: new Date(timestamp).toISOString(),
+                    session: {
+                        id: sessionId
+                    },
                     attributes,
                     metrics
                 }

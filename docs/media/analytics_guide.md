@@ -325,16 +325,20 @@ For example:
 Analytics.autoTrack('session', {
     // REQUIRED, turn on/off the auto tracking
     enable: true,
-    // OPTIONAL, the attributes of the event
+    // OPTIONAL, the attributes of the event, you can either pass an object or a function 
+    // which allows you to define dynamic attributes
     attributes: {
-        sessionId: 'xxxxx'
+        attr: 'attr'
     },
+    // when using function
+    // attributes: () => {
+    //    const attr = somewhere();
+    //    return {
+    //        myAttr: attr
+    //    }
+    // },
     // OPTIONAL, the service provider, by default is the AWS Pinpoint
-    provider: 'AWSPinpoint',
-    // OPTIONAL, to get the identity id
-    getIdentityId: () => {}
-    // or
-    getIdentityId: 'xxxxx'
+    provider: 'AWSPinpoint'
 });
 ```
 
@@ -343,7 +347,7 @@ When the page is loaded, the Analytics module will send an event with:
 { 
     eventType: '_session_start', 
     attributes: { 
-        sessionId: 'xxxxx' 
+        attr: 'attr' 
     }
 }
 ```
@@ -376,10 +380,18 @@ Analytics.autoTrack('pageView', {
     enable: true,
     // OPTIONAL, the event name, by default is 'pageView'
     eventName: 'pageView',
-    // OPTIONAL, the attributes of the event 
+    // OPTIONAL, the attributes of the event, you can either pass an object or a function 
+    // which allows you to define dynamic attributes
     attributes: {
         attr: 'attr'
     },
+    // when using function
+    // attributes: () => {
+    //    const attr = somewhere();
+    //    return {
+    //        myAttr: attr
+    //    }
+    // },
     // OPTIONAL, by default is 'multiPageApp'
     // you need to change it to 'SPA' if your app is a single-page app like React
     type: 'multiPageApp',
@@ -389,9 +401,7 @@ Analytics.autoTrack('pageView', {
     getUrl: () => {
         // the default function
         return window.location.origin + window.location.pathname;
-    },
-    // OPTIONAL, to get the identity id
-    getIdentityId: () => {}
+    }
 });
 ```
 Note: This is not supported in React Native.
@@ -413,12 +423,18 @@ Analytics.autoTrack('event', {
     selectorPrefix: 'data-amplify-analytics-',
     // OPTIONAL, the service provider, by default is the AWS Pinpoint
     provider: 'AWSPinpoint',
-    // OPTIONAL, default attributes of the event 
+    // OPTIONAL, the default attributes of the event, you can either pass an object or a function 
+    // which allows you to define dynamic attributes
     attributes: {
         attr: 'attr'
-    },
-    // OPTIONAL, to get the identity id
-    getIdentityId: () => {}
+    }
+    // when using function
+    // attributes: () => {
+    //    const attr = somewhere();
+    //    return {
+    //        myAttr: attr
+    //    }
+    // }
 ```
 
 For example:
