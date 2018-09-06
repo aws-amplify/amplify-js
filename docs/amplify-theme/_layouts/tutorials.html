@@ -6,90 +6,112 @@
 	<body class="{{ site.amplify.color_theme }}">
 		{% include site-header.html %}
 
-		{% if page.marketing_grid%}
-		<div class="section section-tutorial">
-	 
-			<div class="container">
-				<div class="row">
- 
-					<div class="col-md-12">
-						<div class="marketing-grid">
+		<div class="page-container">
+			{% if page.marketing_grid%}
+			<div class="section section-category">
+		
+				<div class="container">
+					<div class="row">	
+						<div class="dev-guide-heading">
 							<div class="row">
 								{% for item in page.marketing_grid %}
 									<div class="col-sm-8 col-lg-8">
-										<span class="marketing-grid-item">
-											<div class="marketing-grid-content" data-mh>
-												<h1 class="marketing-grid__title"><b>{{ item.title }}</b></h1>
-												<h4>{{ item.excerpt }}</h4>
+										<span>
+											<div class="dev-guide-content" data-mh>
+												<p class="dev-guide__title">{{ item.title }}</p>
+												<!-- <p class="dev-guide__excerpt">{{ item.excerpt }}</p> -->
 											</div><!-- /.nav-grid__content -->
 										</span><!-- /.nav-grid__item -->
 									</div><!-- /.col -->
 								{% endfor %}
 							</div><!-- /.row -->
 						</div><!-- /.nav-grid -->
-					</div><!-- /.col -->
-				</div><!-- /.row -->
-			</div><!-- /.container -->
-		</div><!-- /.section -->
-		{% endif %}
-
-		{% if page.tutorial_list %}
-			<div class="section section--darker-theme-color-bg">
-				<div class="container">
-						<div class="row">
-							<div class="col-md-12">
-								<div class="nav-grid nav-grid--out nav-grid-tutorials">
-									{% for category in page.tutorial_list %}
-									<h3> {{ category.title}} </h3>
-										<div class="row">
-											{% for item in category.subs %}
-												<div class="col-sm-6 col-lg-4">
-													<a href="{% if item.url_external  %}
-																{{ item.url_external }} 
-															 {% endif %}
-															 {% if item.url %}
-																{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ item.url }} 
-															 {% endif %}"
-														{% if item.url_external  %}
-															 onclick="trackOutboundLink('{{ item.url_external }}'); return false;"; 
-														{% endif %}
-														class="nav-grid__item">
-														<div class="nav-grid__content" data-mh>
-															<h2 class="nav-grid__title {% if item.class %}  with-icon {{ item.class }} {% endif %} " >
-																{% if item.img %} 
-																	<div class='tutorial-image'>
-																		<img src="{{ item.img }}"/> 
-																	</div>
-																{% endif %} 
-																{{ item.title }}
-															</h2>
-															{% if item.excerpt %}
-																<p>{{ item.excerpt }}</p>
-															{% endif %} 
-															<div class='nav-services'>
-																{% for service in item.services %} 
-																	<i onClick="window.open('{{ service.url }}', '_blank'); return false;" >
-																		{{ service.title }}
-																	</i>
-																{% endfor %}
-															</div >
-														</div><!-- /.nav-grid__content -->
-														<p class="nav-grid__btn">
-															{{ item.cta }}
-															<i class="icon icon--arrow-right"></i>
-														</p>
-													</a><!-- /.nav-grid__item -->
-												</div><!-- /.col -->
-											{% endfor %}
-										</div><!-- /.row -->
-									{% endfor %}
-								</div><!-- /.nav-grid -->
-							</div><!-- /.col -->
-						</div><!-- /.row -->
-					
+					</div><!-- /.row -->
 				</div><!-- /.container -->
 			</div><!-- /.section -->
-		{% endif %}
+			{% endif %}
+
+			{% if page.tutorial_list %}
+				<div class="section">
+					<div class="container">
+							<div class="row">
+									<div class="nav-grid nav-grid--out nav-grid-tutorials">
+										{% for category in page.tutorial_list %}
+
+										<div class="section-top section-top-category" {% if category.title == 'AWS Amplify Cloud Features' %}id="bottom-section"{% endif %}>
+											<div class="container">
+													<div class="header">
+														{{ category.title}}
+													</div>
+													<div class="subheader">
+														{{ category.excerpt}}
+													</div>
+													{% if category.enable_filter %} 
+													<div class="content-filter">
+														<div class="row">
+															<div class='filter-item'>
+																<a href=""> 
+																	<button class="btn" id="all-filter">All</button> 
+																</a>
+															</div>
+															<div class='filter-item'>
+																<a href=""> 
+																	<button class="btn btn--light" id="angular-filter">Angular</button> 
+																</a>
+															</div>
+															<div class='filter-item'>
+																<a href=""> 
+																	<button class="btn btn--light" id="react-filter">React</button> 
+																</a>
+															</div>
+														</div>
+													</div>
+													{% endif %}
+													<div class="row">
+														{% for item in category.subs %}
+															<div class="col-xs-12 col-sm-6 col-lg-4">
+																<a href="{% if item.url_external  %}
+																			{{ item.url_external }} 
+																		{% endif %}
+																		{% if item.url %}
+																			{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }} 
+																		{% endif %}" 
+																	{% if item.url_external %} target="_blank" {% endif %}
+																	class="dev-guide-item">					
+																	<div class="dev-guide-content tutorials-content" data-mh>
+																		<div class="dev-guide-title" >
+																			{{ item.title }}
+																		</div>
+																		{% if item.by %} 
+																			<div class="dev-guide-by">
+																				by {{ item.by}}
+																			</div>
+																		{% endif %}
+																		<div class="dev-guide-excerpt">{{ item.excerpt }}</div>
+																	</div><!-- /.nav-grid__content -->
+																	<div class="services-container">
+																		<div class='dev-guide-services'>
+																			{% for service in item.services %} 
+																				<i onClick="window.open('{{ service.url }}', '_blank'); return false;" >
+																					{{ service.title }}
+																				</i>
+																			{% endfor %}
+																		</div >
+																	</div>
+																</a><!-- /.nav-grid__item -->
+															</div><!-- /.col -->
+														{% endfor %}
+													</div><!-- /.row -->
+											</div>
+										</div>
+										{% endfor %}
+									</div><!-- /.nav-grid -->
+							</div><!-- /.row -->
+						
+					</div><!-- /.container -->
+				</div><!-- /.section -->
+			{% endif %}
+		</div>
 
 		{% include site-footer.html %}
 	</body>
