@@ -13,8 +13,8 @@
   <a href="https://npmjs.org/aws-amplify">
     <img src="https://img.shields.io/npm/dm/aws-amplify.svg" alt="npm downloads" height="18">
   </a>
-  <a href="https://codecov.io/gh/aws/aws-amplify">
-    <img src="https://codecov.io/gh/aws/aws-amplify/branch/master/graph/badge.svg" />
+  <a href="https://codecov.io/gh/aws-amplify/amplify-js">
+    <img src="https://codecov.io/gh/aws-amplify/amplify-js/branch/master/graph/badge.svg" />
   </a>
   <a href="https://circleci.com/gh/aws-amplify/amplify-js">
     <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-js/master.svg" alt="build:started">
