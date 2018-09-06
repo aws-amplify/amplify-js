@@ -1320,8 +1320,6 @@ export default class AuthClass {
         const obj = {};
         if (attributes) {
             attributes.map(attribute => {
-                if (attribute.Name === 'sub') return;
-
                 if (attribute.Value === 'true') {
                     obj[attribute.Name] = true;
                 } else if (attribute.Value === 'false') {
