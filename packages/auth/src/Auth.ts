@@ -858,43 +858,43 @@ export default class AuthClass {
                 }
 
                 // refresh the session if the session expired.
-                user.getSession(function(err, session) {
+                user.getSession((err, session) => {
                     if (err) {
                         logger.debug('Failed to get the user session', err);
                         rej(err); 
                         return;
                     }
-                });
-
-                // get user data from Cognito
-                user.getUserData((err, data) => {
-                    if (err) {
-                        logger.debug('getting user data failed', err);
-                        // Make sure the user is still valid
-                        if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
-                            rej(err);
-                        } else {
-                            // the error may also be thrown when lack of permissions to get user info etc
-                            // in that case we just bypass the error
-                            res(user);
+             
+                    // get user data from Cognito
+                    user.getUserData((err, data) => {
+                        if (err) {
+                            logger.debug('getting user data failed', err);
+                            // Make sure the user is still valid
+                            if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
+                                rej(err);
+                            } else {
+                                // the error may also be thrown when lack of permissions to get user info etc
+                                // in that case we just bypass the error
+                                res(user);
+                            }
+                            return;
                         }
-                        return;
-                    }
-                    const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-                    const attributeList = [];
+                        const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+                        const attributeList = [];
 
-                    for (let i = 0; i < data.UserAttributes.length; i++) {
-                        const attribute = {
-                            Name: data.UserAttributes[i].Name,
-                            Value: data.UserAttributes[i].Value,
-                        };
-                        const userAttribute = new CognitoUserAttribute(attribute);
-                        attributeList.push(userAttribute);
-                    }
+                        for (let i = 0; i < data.UserAttributes.length; i++) {
+                            const attribute = {
+                                Name: data.UserAttributes[i].Name,
+                                Value: data.UserAttributes[i].Value,
+                            };
+                            const userAttribute = new CognitoUserAttribute(attribute);
+                            attributeList.push(userAttribute);
+                        }
 
-                    const attributes = this.attributesToObject(attributeList);
-                    Object.assign(user, {attributes, preferredMFA});
-                    res(user);
+                        const attributes = that.attributesToObject(attributeList);
+                        Object.assign(user, {attributes, preferredMFA});
+                        res(user);
+                    });
                 });
             });
         });
@@ -1297,8 +1297,6 @@ export default class AuthClass {
         const obj = {};
         if (attributes) {
             attributes.map(attribute => {
-                if (attribute.Name === 'sub') return;
-
                 if (attribute.Value === 'true') {
                     obj[attribute.Name] = true;
                 } else if (attribute.Value === 'false') {

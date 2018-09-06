@@ -3,7 +3,7 @@
 
 # Getting Started
 
-AWS Amplify is designed to provide you a more productive environment for connecting cloud services to your app. This document will get you started with your Web or React Native projects. Use the drop-down menu in the top right to view framework-specific instructions.
+AWS Amplify provides the foundation for your cloud-powered mobile and web apps. AWS Amplify includes a JavaScript library for your Web and React Native projects, a style guide including UI components, and the Amplify CLI toolchain for hosting and for managing backends in the AWS cloud. The goal of this guide is to build or integrate an app with AWS Amplify. Use the drop-down menu in the top right to choose the framework that you want to work with.
 
 ## Step 1. Set up your Development Environment 
 
@@ -42,11 +42,9 @@ For this example we will create a new plain JavaScript <a href="https://babeljs.
 Change directories to your new project and run:
 
 ```
-$ mkdir amplify-js-app
+$ mkdir amplify-js-app amplify-js-app/src
 $ cd amplify-js-app
-$ mkdir src dist
-$ touch index.html webpack.config.js src/app.js
-$ npm init
+$ touch package.json index.html webpack.config.js src/app.js
 ```
 
 Your project directory structure should now be:
@@ -58,15 +56,34 @@ Your project directory structure should now be:
     - webpack.config.js
     - /src
         |- app.js
-    - /dist
 ```
 
-Follow the prompts to populate your <a href="https://docs.npmjs.com/files/package.json" target="_blank">package.json</a> file wiith project details. 
+Replace the `package.json` contents with the following:
 
-Install <a href="https://webpack.js.org" target="_blank">webpack</a> and <a href="https://github.com/webpack/webpack-dev-server" target="_blank">webpack-dev-server</a> to locally serve the app:
+```js
+{
+  "name": "amplify-js-app",
+  "version": "1.0.0",
+  "description": "AWS Amplify JavaScript Example",
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0",
+    "copy-webpack-plugin": "^4.5.2",
+    "webpack-dev-server": "^3.1.5"
+  },
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack"
+  }
+}
 
 ```
-$ npm install webpack webpack-cli webpack-dev-server --save-dev 
+
+Install the local development dependencies:
+
+```
+$ npm install
 ```
 
 Add the following to the `index.html` file:
@@ -89,11 +106,13 @@ Add the following to the `index.html` file:
 Add the following to the `webpack.config.js` file:
 
 ```js
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
 module.exports = {
     mode: 'development',
     entry: './src/app.js',
     output: {
-        filename: './dist/bundle.js'
+        filename: 'bundle.js'
     },
     module: {
         rules: [
@@ -102,28 +121,11 @@ module.exports = {
                 exclude: /node_modules/
             }
         ]
-    }
+    },
+    plugins: [
+        new CopyWebpackPlugin(['index.html'])
+    ]
 };
-```
-Replace the `package.json` contents with the following:
-
-```js
-{
-  "name": "amplify-js-app",
-  "version": "1.0.0",
-  "description": "AWS Amplify JavaScript Example",
-  "dependencies": {},
-  "devDependencies": {
-    "webpack": "^4.17.1",
-    "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.5"
-  },
-  "scripts": {
-    "start": "webpack-dev-server",
-    "build": "webpack"
-  }
-}
-
 ```
 
 Run your app:
@@ -131,6 +133,7 @@ Run your app:
 ```bash
 $ npm start
 ```
+
 Your app should now be available at <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>
 
 </div>
@@ -199,14 +202,14 @@ AWS Amplify is available as an npm package. Run the following commands at the ro
     <li class="tab-link react" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
 </ul>
-<div id="purejs" class="tab-content">
+<div id="purejs" class="tab-content current">
 
 ```bash
 $ npm install --save aws-amplify
 ```
 
 </div>
-<div id="react" class="tab-content current">
+<div id="react" class="tab-content">
 
 ```bash
 $ npm install --save aws-amplify
@@ -240,7 +243,7 @@ $ react-native init myReactNativeApp
 $ cd myReactNativeApp
 $ npm install --save aws-amplify
 $ npm install --save aws-amplify-react-native
-$ react-native link amazon-cognito-identity-js
+$ react-native link
 ```
 
 </div>
@@ -266,6 +269,8 @@ $ npm install --save aws-amplify
 
 In addition to `aws-amplify` core, you can install our angular module which provides a service provider, helpers, and components:
 
+</div>
+<div id="ionic" class="tab-content">
 ```bash
 $ npm install --save aws-amplify-angular
 ``` 
@@ -282,17 +287,21 @@ You can quickly create your backend from scratch with Automatic Setup, or use Ma
 
 `amplify init` creates a backend project for your app and pulls the service configuration into your project. 
 
-```bash
-$ amplify init
 ```
-
-Accept all defaults except for the `Distribution Directory Path`, change this to "." so that our entire folder is uploaded to Amazon S3 for hosting:
-
-```bash
-$ ? Distribution Directory Path (dist): .
+$ amplify init
+? Choose your default editor: << choose-your-preferred editor >>
+? Choose the type of app that you're building javascript
+Please tell us about your project
+? What javascript framework are you using angular
+? Source Directory Path: src
+? Distribution Directory Path: dist/myAngularProject
+? Build Command: npm run-script build
+? Start Command: ng serve
 ```
 
 > When you run `amplify init` command you are asked for the details of your project. A configuration file for your app is put in your configured source directory called `aws-exports.js`.
+
+Update the `src/app.js` file:
 
 ```js
 import Amplify from 'aws-amplify';

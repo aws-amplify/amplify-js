@@ -12,69 +12,36 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, TouchableHighlight } from 'react-native';
-
+import { View, Text, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { I18n } from 'aws-amplify';
+import AmplifyTheme, { linkUnderlayColor, errorIconColor } from './AmplifyTheme';
+import { Icon } from 'react-native-elements';
 
-export const Username = (props) => {
+export const FormField = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
-        <TextInput
-            style={theme.input}
-            placeholder={I18n.get('Username')}
-            autoFocus={true}
-            autoCapitalize="none"
-            {...props}
-        />
+        <View style={theme.formField}>
+            <Text style={theme.inputLabel}>{props.label} {props.required ? '*' : ''}</Text>
+            <TextInput
+                style={theme.input}
+                autoCapitalize="none"
+                autoCorrect={false}
+                {...props}
+            />
+        </View>
     )
 }
-
-export const Password = (props) => {
+export const SectionFooter = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
-        <TextInput
-            style={theme.input}
-            placeholder={I18n.get('Password')}
-            secureTextEntry={true}
-            {...props}
-        />
-    )
-}
-
-export const Email = (props) => {
-    const theme = props.theme || AmplifyTheme;
-    return (
-        <TextInput
-            style={theme.input}
-            placeholder={I18n.get('Email')}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            {...props}
-        />
-    )
-}
-
-export const PhoneNumber = (props) => {
-    const theme = props.theme || AmplifyTheme;
-    return (
-        <TextInput
-            style={theme.input}
-            placeholder={I18n.get('Phone Number')}
-            keyboardType="phone-pad"
-            {...props}
-        />
-    )
-}
-
-export const ConfirmationCode = (props) => {
-    const theme = props.theme || AmplifyTheme;
-    return (
-        <TextInput
-            style={theme.input}
-            placeholder={I18n.get('Code')}
-            autoFocus={true}
-            {...props}
-        />
+        <View style={theme.sectionFooter}>
+            <LinkCell theme={theme} onPress={() => onStateChange('confirmSignUp')}>
+                {I18n.get('Confirm a Code')}
+            </LinkCell>
+            <LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
+                {I18n.get('Sign In')}
+            </LinkCell>
+        </View>
     )
 }
 
@@ -82,9 +49,7 @@ export const LinkCell = (props) => {
     const theme = props.theme || AmplifyTheme;
     return (
         <View style={theme.cell}>
-            <TouchableHighlight
-                onPress={props.onPress}
-            >
+            <TouchableHighlight onPress={props.onPress} underlayColor={linkUnderlayColor}>
                 <Text style={theme.sectionFooterLink}>{props.children}</Text>
             </TouchableHighlight>
         </View>
@@ -102,9 +67,25 @@ export const Header = (props) => {
 
 export const ErrorRow = (props) => {
     const theme = props.theme || AmplifyTheme;
+    if (!props.children) return null;
     return (
         <View style={theme.errorRow}>
-            <Text style={theme.erroRowText}>{props.children}</Text>
+            <Icon name="warning" color={errorIconColor} /> 
+            <Text style={theme.errorRowText}>{props.children}</Text>
         </View>
+    )
+}
+
+export const AmplifyButton = (props) => {
+    const theme = props.theme || AmplifyTheme;
+    let style = theme.button;
+    if (props.disabled) {
+        style = theme.buttonDisabled;
+    }
+
+    return (
+        <TouchableOpacity {...props} style={style}>
+            <Text style={theme.buttonText}>{props.text}</Text>
+        </TouchableOpacity>
     )
 }

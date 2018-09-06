@@ -1,10 +1,8 @@
+/docs @mlabieniec
 /packages/aws-amplify-angular/ @haverchuck
-/packages/aws-amplify/src/Auth/ @powerful23
+/packages/aws-amplify/src/Auth/ @powerful23 @haverchuck
 /packages/aws-amplify/src/Analytics/ @powerful23
-/packages/aws-amplify-react/ @powerful23
-/packages/aws-amplify/src/API/ @elorzafe
-/packages/aws-amplify/src/Cache/ @elorzafe
-/packages/aws-amplify/src/Storage/ @nidsharm
 /packages/aws-amplify/src/PubSub/ @manueliglesias @elorzafe
 /packages/amazon-cognito-identity-js/ @yuntuowang
 /.github/ @mlabieniec
+/.circleci/ @manueliglesias

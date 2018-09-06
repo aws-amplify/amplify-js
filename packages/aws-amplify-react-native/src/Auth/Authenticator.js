@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View } from 'react-native';
 import { 
     Auth, 
     Analytics,
