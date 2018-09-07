@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.1-unstable.0"></a>
+## [2.0.1-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.0...aws-amplify-react@2.0.1-unstable.0) (2018-09-07)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** fix the break change of federatedSignIn ([5ca239c](https://github.com/aws/aws-amplify/commit/5ca239c))
+
+
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.7-unstable.26...aws-amplify-react@2.0.0) (2018-08-28)
 
