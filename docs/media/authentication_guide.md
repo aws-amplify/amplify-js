@@ -172,7 +172,7 @@ Auth.signOut()
 
 // By doing this, you are revoking all the auth tokens(id token, access token and refresh token)
 // which means the user is signed out from all the devices
-// Note: although the tokens are revoked, the AWS credentials will remain valid
+// Note: although the tokens are revoked, the AWS credentials will remain valid until they expire (which by default is 1 hour)
 Auth.signOut({ global: true })
     .then(data => console.log(data))
     .catch(err => console.log(err));
@@ -212,7 +212,7 @@ You can call `Auth.currentAuthenticatedUser()` to get the current authenticated 
 import { Auth } from 'aws-amplify';
 
 Auth.currentAuthenticatedUser()
-    .then(user => console.log(user));
+    .then(user => console.log(user))
     .catch(err => console.log(err));
 ```
 This method can be used to check if a user is logged in when the page is loaded. It will throw an error if there is no user logged in.
