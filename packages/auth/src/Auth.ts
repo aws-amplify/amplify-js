@@ -1088,19 +1088,30 @@ export default class AuthClass {
         return new Promise((res, rej) => {
             if (opts && opts.global) {
                 logger.debug('user global sign out', user);
-                user.globalSignOut({
-                    onSuccess: (data) => {
-                        logger.debug('global sign out success');
-                        return res();
-                    },
-                    onFailure: (err) => {
-                        logger.debug('global sign out failed', err);
+                // in order to use global signout
+                // we must validate the user as an authenticated user by using getSession
+                user.getSession((err, result) => {
+                    if (err) {
+                        logger.debug('failed to get the user session', err);
                         return rej(err);
-                    }   
+                    }
+                    user.globalSignOut({
+                        onSuccess: (data) => {
+                            logger.debug('global sign out success');
+                            return res();
+                        },
+                        onFailure: (err) => {
+                            logger.debug('global sign out failed', err);
+                            return rej(err);
+                        }   
+                    });
                 });
             } else {
                 logger.debug('user sign out', user);
                 user.signOut();
+                if (this._cognitoAuthClient) {
+                    this._cognitoAuthClient.signOut();
+                }
                 return res();
             }
         });
@@ -1122,9 +1133,6 @@ export default class AuthClass {
             const user = this.userPool.getCurrentUser();
             if (user) {
                 await this.cognitoIdentitySignOut(opts, user);
-                if (this._cognitoAuthClient) {
-                    this._cognitoAuthClient.signOut();
-                }
             } else {
                 logger.debug('no current Cognito user');
             }
