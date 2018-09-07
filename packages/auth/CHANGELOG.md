@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.9-unstable.3"></a>
+## [1.0.9-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.9-unstable.2...@aws-amplify/auth@1.0.9-unstable.3) (2018-09-06)
+
+
+### Features
+
+* **@aws-amplify/auth:** allow globalSignOut ([b8b24c7](https://github.com/aws/aws-amplify/commit/b8b24c7))
+
+
+
+
 <a name="1.0.9-unstable.2"></a>
 ## [1.0.9-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.8...@aws-amplify/auth@1.0.9-unstable.2) (2018-08-31)
 
