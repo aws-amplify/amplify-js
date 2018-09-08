@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.9-unstable.4"></a>
+## [1.0.9-unstable.4](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.9-unstable.3...@aws-amplify/auth@1.0.9-unstable.4) (2018-09-07)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+<a name="1.0.9-unstable.3"></a>
+## [1.0.9-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.9-unstable.2...@aws-amplify/auth@1.0.9-unstable.3) (2018-09-06)
+
+
+### Features
+
+* **@aws-amplify/auth:** allow globalSignOut ([b8b24c7](https://github.com/aws/aws-amplify/commit/b8b24c7))
+
+
+
+
+<a name="1.0.9-unstable.2"></a>
+## [1.0.9-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.8...@aws-amplify/auth@1.0.9-unstable.2) (2018-08-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** allow return sub attribute to user ([fc48010](https://github.com/aws/aws-amplify/commit/fc48010))
+* **@aws-amplify/auth:** correctly throw the error when the refresh token is expired ([c61505a](https://github.com/aws/aws-amplify/commit/c61505a))
+
+
+
+
+<a name="1.0.9-unstable.1"></a>
+## [1.0.9-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.8...@aws-amplify/auth@1.0.9-unstable.1) (2018-08-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** correctly throw the error when the refresh token is expired ([c61505a](https://github.com/aws/aws-amplify/commit/c61505a))
+
+
+
+
 <a name="1.0.8"></a>
 ## [1.0.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.7-unstable.26...@aws-amplify/auth@1.0.8) (2018-08-28)
 
