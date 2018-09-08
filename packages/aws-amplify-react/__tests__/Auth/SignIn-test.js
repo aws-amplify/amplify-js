@@ -1,19 +1,21 @@
 import Auth from '@aws-amplify/auth';
 import SignIn from '../../src/Auth/SignIn';
+import SignUp from '../../src/Auth/SignUp'
+import ForgotPassword from '../../src/Auth/ForgotPassword'
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
 import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
-    'signIn',  
-    'signedUp', 
+    'signIn',
+    'signedUp',
     'signedOut'
 ];
 
 const deniedStates = [
     'signUp',
-    'signedIn', 
+    'signedIn',
     'comfirmSignIn',
     'confirmSignUp',
     'forgotPassword',
@@ -46,6 +48,32 @@ describe('SignIn', () => {
                 expect(wrapper).toMatchSnapshot();
             }
         });
+
+        test('render correctly when hiding SignUp', () => {
+            for (var i = 0; i < acceptedStates.length; i += 1){
+                const wrapper = shallow(<SignIn/>);
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: AmplifyTheme,
+                    hide: [SignUp]
+                });
+
+                expect(wrapper).toMatchSnapshot();
+            }
+        })
+
+        test('render correctly when hiding ForgotPassword', () => {
+            for (var i = 0; i < acceptedStates.length; i += 1){
+                const wrapper = shallow(<SignIn/>);
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: AmplifyTheme,
+                    hide: [ForgotPassword]
+                });
+
+                expect(wrapper).toMatchSnapshot();
+            }
+        })
 
         test('when clicking signIn and new password required', async () => {
             const wrapper = shallow(<SignIn/>);
@@ -235,7 +263,7 @@ describe('SignIn', () => {
 
             wrapper.find(Input).at(0).simulate('change', event_username);
             wrapper.find(Input).at(1).simulate('change', event_password);
-        
+
             await wrapper.find(Button).simulate('click');
 
             spyon.mockClear();
@@ -246,7 +274,7 @@ describe('SignIn', () => {
     describe('null case with other authState', () => {
         test('render corrently', () => {
             const wrapper = shallow(<SignIn/>);
-            
+
             for (var i = 0; i < deniedStates.length; i += 1){
                 wrapper.setProps({
                     authState: deniedStates[i],
@@ -256,7 +284,7 @@ describe('SignIn', () => {
                 expect(wrapper).toMatchSnapshot();
             }
         });
-        
+
     });
 
     describe('sign in test', () => {
