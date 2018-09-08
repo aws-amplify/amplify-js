@@ -41,40 +41,36 @@ export default class Greetings extends AuthPiece {
             .catch(err => this.error(err));
     }
 
-    signedInMessage(username) { return 'Hello ' + username; }
-    signedOutMessage() { return 'Please Sign In / Sign Up'; }
-
-    userGreetings(theme) {
-        const user = this.props.authData || this.props.user;
-        const message = this.props.signedInMessage || this.signInMessage;
-        const greeting = (typeof message === 'function')? message(user.username) : message;
-        return (
-            <View style={theme.navRight}>
-                <Text>{greeting}</Text>
-                <AmplifyButton
-                    text={I18n.get('Sign Out')}
-                    style={theme.navButton}
-                    onPress={this.signOut}
-                />
-            </View>
-        )
-    }
-
-    noUserGreetings(theme) {
-        const message = this.props.signedOutMessage || this.signOutMessage;
-        const greeting = (typeof message === 'function')? message() : message;
-        return <Text style={theme.navRight}>{message}</Text>
-    }
-
     render() {
         const { authState } = this.props;
         const signedIn = (authState === 'signedIn');
         const theme = this.props.theme || AmplifyTheme;
 
-        return (
+        let defaultMessage = "";
+        if (Auth.user && Auth.user.username) {
+            defaultMessage = "Hello, " + Auth.user.username;
+        }
+
+        let message;
+        if (signedIn) {
+            message = this.props.signedInMessage || defaultMessage;
+        } else {
+            message = this.props.signedOutMessage || "Please Sign In / Sign Up";
+        }
+
+        const content = signedIn ? (
             <View style={theme.navBar}>
-                {signedIn? this.userGreetings(theme) : this.noUserGreetings(theme)}
+                <Text>{message}</Text>
+                <AmplifyButton
+                    text={I18n.get('Sign Out')}
+                    onPress={this.signOut}
+                    style={theme.navButton}
+                />
             </View>
-        )
+        ) : (
+            <Text>{message}</Text>
+        );
+
+        return content;
     }
 }
