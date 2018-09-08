@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { AuthOptions, FederatedResponse, ConfirmSignUpOptions } from './types';
+import { AuthOptions, FederatedResponse, ConfirmSignUpOptions, SignOutOpts } from './types';
 
 import {
     AWS,
@@ -1083,11 +1083,46 @@ export default class AuthClass {
         return that.currentUserPoolUser()
             .then(user => that.verifyUserAttributeSubmit(user, attr, code));
     }
+
+    private async cognitoIdentitySignOut(opts: SignOutOpts, user) {
+        return new Promise((res, rej) => {
+            if (opts && opts.global) {
+                logger.debug('user global sign out', user);
+                // in order to use global signout
+                // we must validate the user as an authenticated user by using getSession
+                user.getSession((err, result) => {
+                    if (err) {
+                        logger.debug('failed to get the user session', err);
+                        return rej(err);
+                    }
+                    user.globalSignOut({
+                        onSuccess: (data) => {
+                            logger.debug('global sign out success');
+                            return res();
+                        },
+                        onFailure: (err) => {
+                            logger.debug('global sign out failed', err);
+                            return rej(err);
+                        }   
+                    });
+                });
+            } else {
+                logger.debug('user sign out', user);
+                user.signOut();
+                if (this._cognitoAuthClient) {
+                    this._cognitoAuthClient.signOut();
+                }
+                return res();
+            }
+        });
+    }
+    
     /**
      * Sign out method
+     * @
      * @return - A promise resolved if success
      */
-    public async signOut(): Promise<any> {
+    public async signOut(opts?: SignOutOpts): Promise<any> {
         try {
             await this.cleanCachedItems();
         } catch (e) {
@@ -1097,28 +1132,24 @@ export default class AuthClass {
         if (this.userPool) { 
             const user = this.userPool.getCurrentUser();
             if (user) {
-                logger.debug('user sign out', user);
-                user.signOut();
-                if (this._cognitoAuthClient) {
-                    this._cognitoAuthClient.signOut();
-                }
+                await this.cognitoIdentitySignOut(opts, user);
+            } else {
+                logger.debug('no current Cognito user');
             }
         } else {
             logger.debug('no Congito User pool');
         }
         
-        const that = this;
-        return new Promise(async (resolve, reject) => {
-            try {
-                await Credentials.set(null, 'guest');
-            } catch (e) {
-                logger.debug('cannot load guest credentials for unauthenticated user', e);
-            } finally {
-                dispatchAuthEvent('signOut', that.user);
-                that.user = null;
-                resolve();
-            }
-        });
+
+        try {
+            await Credentials.set(null, 'guest');
+        } catch (e) {
+            logger.debug('cannot load guest credentials for unauthenticated user', e);
+        } finally {
+            dispatchAuthEvent('signOut', this.user);
+            this.user = null;
+            return;
+        }
     }
 
     private async cleanCachedItems() {

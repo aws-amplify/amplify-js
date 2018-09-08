@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.1-unstable.2"></a>
+## [2.0.1-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.0.0...aws-amplify-react-native@2.0.1-unstable.2) (2018-09-05)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** fix the link in the requireNewPassword component ([bdd816a](https://github.com/aws/aws-amplify/commit/bdd816a))
+
+
+
+
 <a name="2.0.1-unstable.1"></a>
 ## [2.0.1-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.0.0...aws-amplify-react-native@2.0.1-unstable.1) (2018-08-30)
 
