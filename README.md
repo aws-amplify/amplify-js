@@ -244,7 +244,7 @@ See our [API Developer Guide](https://aws.github.io/aws-amplify/media/api_guide)
 To access a GraphQL API with your app, you need to make sure to configure the endpoint URL in your app’s configuration.
 
 ```js
-// Configure a custom GraphQL endpoint
+// configure a custom GraphQL endpoint
 Amplify.configure({
   API: {
     graphql_endpoint: 'https://www.example.com/my-graphql-endpoint'
