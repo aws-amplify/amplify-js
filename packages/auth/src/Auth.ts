@@ -1098,6 +1098,9 @@ export default class AuthClass {
                     user.globalSignOut({
                         onSuccess: (data) => {
                             logger.debug('global sign out success');
+                            if (this._cognitoAuthClient) {
+                                this._cognitoAuthClient.signOut();
+                            }
                             return res();
                         },
                         onFailure: (err) => {
