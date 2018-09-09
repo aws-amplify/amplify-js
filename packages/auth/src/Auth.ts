@@ -985,7 +985,7 @@ export default class AuthClass {
     }
 
     /**
-     * Get authenticated credentials of current user.
+     * Get  authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
     public currentUserCredentials() {
