@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.1.1-unstable.0"></a>
+## [1.1.1-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.1.0...@aws-amplify/auth@1.1.1-unstable.0) (2018-09-09)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.0.9-unstable.4...@aws-amplify/auth@1.1.0) (2018-09-09)
 
