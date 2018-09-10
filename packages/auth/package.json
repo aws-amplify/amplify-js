@@ -1,0 +1,85 @@
+{
+  "name": "@aws-amplify/auth",
+  "version": "1.1.1",
+  "description": "Auth category of aws-amplify",
+  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "build-with-test": "npm run clean && npm test && tsc && webpack",
+    "build": "npm run clean && tsc && webpack",
+    "clean": "rimraf lib lib-esm dist",
+    "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
+    "lint": "tslint 'src/**/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aws/aws-amplify.git"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws/aws-amplify/issues"
+  },
+  "homepage": "https://github.com/aws/aws-amplify#readme",
+  "devDependencies": {
+    "@types/jest": "^20.0.8",
+    "@types/node": "^8.10.15",
+    "awesome-typescript-loader": "^3.2.2",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "compression-webpack-plugin": "^1.1.3",
+    "find": "^0.2.7",
+    "jest": "^22.4.3",
+    "json-loader": "^0.5.7",
+    "prepend-file": "^1.3.1",
+    "prettier": "^1.7.4",
+    "rimraf": "^2.6.2",
+    "source-map-loader": "^0.2.1",
+    "ts-jest": "^22.0.0",
+    "tslint": "^5.7.0",
+    "tslint-config-airbnb": "^5.8.0",
+    "typescript-formatter": "^6.0.0",
+    "uglifyjs-webpack-plugin": "^0.4.6",
+    "webpack": "^3.5.5"
+  },
+  "dependencies": {
+    "@aws-amplify/cache": "^1.0.7",
+    "@aws-amplify/core": "^1.0.7",
+    "amazon-cognito-auth-js": "^1.1.9",
+    "amazon-cognito-identity-js": "^2.0.25"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>../../node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json",
+      "jsx"
+    ],
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
+    "mapCoverage": true,
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "functions": 0,
+        "lines": 0,
+        "statements": 0
+      }
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
+}

@@ -1,0 +1,348 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+title: AWS Amplify Developer Documentation
+email: your-email@example.com
+description: >- # this means to ignore newlines until "baseurl:"
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com 
+github:
+  repository_url: https://github.com/aws-amplify/amplify-js/edit/master/docs/
+
+show_downloads: "true"
+include: 
+- api
+- api/assets
+- api/classes
+- api/enums
+- api/interfaces
+- api/modules
+
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
+
+# Build settings
+markdown: kramdown
+kramdown:
+  parse_block_html: true
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+future: true  
+
+
+# Amplify theme settings
+amplify:
+    baseurl: # Since the site is deployed under https://aws-amplify.github.io/amplify-js
+    docs_baseurl: /amplify-js
+    color_theme:  # Available themes: blue (default), green, purple, red and yellow
+    header:
+        logo:
+            text: AWS Amplify
+            image: true
+            platform: for JavaScript
+        nav:
+            - item_name: Get Started
+              item_url: '/media/get_started'
+              id: get_started
+            - item_name: Toolchain
+              item_url: '/media/toolchain'
+              id: toolchain
+            - item_name: Style Guide
+              item_url: '/media/ui_library'
+              id: ui_library
+            #- item_name: 
+            #  item_icon: github
+            #  item_external_url: 'https://github.com/aws-amplify/amplify-js'
+    footer:
+        content:
+            logo:
+                text: AWS Amplify is supported by Amazon Web Services
+                image: true
+            copyright: © 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+        social_list:
+            - network_name: gitter
+              profile_url: 'https://gitter.im/AWS-Amplify/Lobby/'
+            - network_name: github
+              profile_url: 'https://github.com/aws-amplify/amplify-js'
+            - network_name: twitter
+              profile_url: 'https://twitter.com/search?q=%23awsamplify&src=typd'
+            - network_name: youtube
+              profile_url: 'https://www.youtube.com/watch?v=vAjf3lyjf8c'
+              
+    google_analytics:
+        tracking_code: # Add your Google Analytics tracking code to activate Google Analytics
+    comments:
+        disqus_forum_shortname: 'aws-amplify' # Add your disqus forum shortname to activate comments
+
+# SASS settings
+sass:
+    sass_dir: ./amplify-theme/_sass
+    style: :compressed
+
+# Jekyll settings
+layouts_dir: ./amplify-theme/_layouts
+includes_dir: ./amplify-theme/_includes
+exclude: [ 'README.md', 'CHANGELOG.md' ]
+permalink: /:title
+
+category_list:
+    - category: SetupAndInstallation
+      title: Setup & Installation
+      excerpt: 
+      base_url: '/media/quick_start'
+      subs:
+        - title: Getting Started
+          excerpt: get started excerpt
+          url: '/media/quick_start'
+          icon: '/images/icons/Misc/Present.svg'
+    # - category: Tutorials
+    #   title: Tutorials
+    #   excerpt: 
+    #   base_url: 'building-web-apps'
+    #   subs:
+    #     - title: Web Apps
+    #       excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled React Web app with AWS Amplify.<br/><b>30 min to complete</b>'
+    #       url: '/media/building-web-apps'
+    #       icon: '/images/icons/Misc/Present.svg'
+    #     - title: React Native Apps
+    #       excerpt: 'A step-by-step tutorial for learning how to build a cloud-enabled mobile app with React Native and AWS Amplify.<br/><b>30 min to complete</b>'
+    #       url: '/media/building-react-native-apps' 
+    #       icon: '/images/icons/Misc/Present.svg'
+    #     - title: Ionic 4 Apps
+    #       excerpt: "Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
+    #       url: '/media/building-ionic-4-apps' 
+    #       icon: '/images/icons/Misc/Present.svg'
+    - category: Tutorials
+      title: Tutorials
+      excerpt: 
+      base_url: '/media/react_guide'
+      subs:
+        - title: React
+          excerpt: #'A step-by-step tutorial for learning how to build a cloud-enabled React Web app with AWS Amplify.<br/><b>30 min to complete</b>'
+          url: '/media/react_guide'
+          icon: '/images/icons/Misc/Present.svg'
+        - title: React Native
+          excerpt: #'A step-by-step tutorial for learning how to build a cloud-enabled mobile app with React Native and AWS Amplify.<br/><b>30 min to complete</b>'
+          url: '/media/react_native_guide' 
+          icon: '/images/icons/Misc/Present.svg'
+        - title: Angular
+          excerpt: #"Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
+          url: '/media/angular_guide' 
+          icon: '/images/icons/Misc/Present.svg'
+        - title: Ionic
+          excerpt: #"Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
+          url: '/media/ionic_guide' 
+          icon: '/images/icons/Misc/Present.svg'
+    - category: Categories
+      title: Categories
+      excerpt: Add cloud features to your app quickly using our toolchain and declarative APIs.
+      base_url: '/media/analytics_guide'
+      subs:
+        - title: Analytics 
+          excerpt: Drop-in analytics to track user sessions, custom user attributes, and in-app metrics.
+          cta: Read more
+          class: aws-icon-ps-60-pie-bar-charts 
+          url: '/media/analytics_guide'
+          icon: '/images/icons/Misc/Cloud.svg'
+          services:
+            - title: Amazon Pinpoint,
+              url: https://aws.amazon.com/pinpoint/
+            - title: Amazon Kinesis,
+              url: https://aws.amazon.com/kinesis/
+            - title: Custom Plugin
+              url: https://aws-amplify.github.io/amplify-js/media/analytics_guide#using-a-custom-plugin
+        - title: API 
+          excerpt: A simple and secure solution for making HTTP requests using REST and GraphQL, with support for real-time data.
+          cta: Read more
+          class: aws-icon-ps-60-database-server
+          url: '/media/api_guide' 
+          icon: '/images/icons/Misc/Cloud.svg'   
+          services: 
+            - title: Amazon API Gateway,
+              url: https://aws.amazon.com/api-gateway
+            - title: AWS AppSync
+              url: https://aws.amazon.com/appsync
+        - title: Authentication
+          excerpt:  Authentication APIs with pre-built UI components for your app.  
+          cta: Read more
+          class: aws-icon-ps-60-shield-circle
+          url: '/media/authentication_guide'
+          icon: '/images/icons/Misc/Cloud.svg'
+          services:
+            - title: Amazon Cognito,
+              url: https://aws.amazon.com/cognito/
+            - title: OAuth 2.0 ,
+              url: https://aws.amazon.com/cognito/
+            - title: Custom Plugin
+              url:  
+        - title: Interactions 
+          excerpt: Create conversational bots powered by deep learning technologies.
+          cta: Read more
+          class: aws-icon-ps-60-bubble-gear
+          url: '/media/interactions_guide'   
+          icon: '/images/icons/Misc/Cloud.svg'
+          services:
+              - title: Amazon Lex
+                url: https://aws.amazon.com/lex/
+        - title: PubSub 
+          excerpt: Connect your app to message-oriented middleware on the cloud.
+          cta: Read more
+          class: aws-icon-ps-60-circular-circuit
+          url: '/media/pub_sub_guide'   
+          icon: '/images/icons/Misc/Cloud.svg'
+          services:
+              - title: AWS IoT,
+                url: https://aws.amazon.com/iot/
+              - title: Generic MQTT,
+                url: https://docs.aws.amazon.com/iot/latest/developerguide/protocols.html#mqtt
+              - title: Custom Plugin
+                url:  
+        - title: Push Notifications 
+          excerpt: Push notifications with campaign analytics and targeting.
+          cta: Read more
+          class: aws-icon-ps-60-device-message
+          url: '/media/push_notifications_setup'   
+          icon: '/images/icons/Misc/Cloud.svg'
+          services:
+              - title: Amazon Pinpoint
+                url: https://aws.amazon.com/pinpoint/
+        - title: Storage 
+          excerpt: A simple mechanism for managing user content in public, protected or private storage.
+          cta: Read more
+          class: aws-icon-ps-60-file-box
+          url: '/media/storage_guide'   
+          icon: '/images/icons/Misc/Cloud.svg'
+          services:
+              - title: Amazon S3
+                url: https://aws.amazon.com/s3/
+    - category: Utilities
+      title: Utilities
+      excerpt: Common programming utilities that you can use with your app.
+      base_url: '/media/cache_guide'
+      subs:
+        - title: Cache 
+          excerpt: A generic LRU cache for storing data with priority and expiration settings. 
+          cta: Read more
+          url: '/media/cache_guide'  
+          icon: '/images/icons/Misc/Gear.svg'
+        - title: Hub  
+          excerpt: A lightweight local event bus for your app.
+          cta: Read more
+          url: '/media/hub_guide' 
+          icon: '/images/icons/Misc/Gear.svg'
+        - title: I18n  
+          excerpt: A lightweight internationalization solution.
+          cta: Read more
+          url: '/media/i18n_guide'  
+          icon: '/images/icons/Misc/Gear.svg'
+        - title: Logger  
+          excerpt: Console logging utility.
+          cta: Read more
+          url: '/media/logger_guide'  
+          icon: '/images/icons/Misc/Gear.svg'
+        - title: Service Worker 
+          excerpt: A utility class to work with PWA and Service Worker APIs. 
+          cta: Read more
+          url: '/media/service_workers_guide'   
+          icon: '/images/icons/Misc/Gear.svg'   
+          
+    - category: Toolchain
+      title: Toolchain
+      excerpt: Better developer experience when building and deploying your apps.
+      base_url: '/media/hosting_guide'
+      subs:
+        - title: Hosting 
+          excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
+          cta: Read more
+          class: aws-icon-ps-60-network-nodes
+          url: '/media/hosting_guide'   
+          icon: '/images/icons/Misc/Tool.svg'
+          services:
+              - title: Amazon CloudFront
+                url: https://aws.amazon.com/cloudfront/
+        - title: VS Code Extension 
+          excerpt: Code snippets for AWS Amplify in Visual Studio Code.
+          cta: Read more
+          class: aws-icon-ps-60-network-nodes
+          url_external: 'https://marketplace.visualstudio.com/items?itemName=aws-amplify.aws-amplify-vscode'   
+          icon: '/images/icons/Misc/Present.svg'
+
+    - category: UserInterface
+      title: User Interface
+      excerpt: 
+      base_url: '/media/ui_guide'
+      subs:
+        - title: UI Components
+          excerpt: UI excerpt
+          url: '/media/ui_guide'
+          icon: '/images/icons/Misc/Present.svg'
+
+defaults:
+  -
+    scope:
+      path: "" # an empty string here means all files in the project
+    values:
+      layout: "default"
+
+
+examples:
+  - title: Web apps
+    url: 'web-apps' 
+  - title: React Native apps
+    url: 'react-native-apps'
+  - title: Hybrid Mobile
+    url: 'hybrid-mobile-apps'
+  - title: Static Websites
+    url: 'static-web-sites'
+  - title: Code Examples
+    url: 'examples'
+
+styleguide:
+  - title: Colors
+    url: '#colors'
+  - title: 'Typography'
+    url: '#typography'
+  #- title: 'Controls'
+  #  url: '#controls--inputs'
+  #- title: 'Widgets'
+  #  url: '#widgets'
+  - title: Components
+    url: '#aws-components'
+
+js_libraries:
+  - title: React
+    url: '?platform=react'
+  - title: React Native
+    url: '?platform=react-native'
+  - title: Angular
+    url: '?platform=angular'
+  - title: Ionic
+    url: '?platform=ionic'
+  - title: JavaScript
+    url: '?platform=purejs'

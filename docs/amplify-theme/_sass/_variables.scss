@@ -1,0 +1,108 @@
+/**
+ * Variables (_variables.scss)
+ */
+
+/* ----- Colors ----- */
+// General
+$color-white: #fff !default;
+$color-black: #000 !default;
+$color-dark: #333 !default;
+$color-dark-blue: #253951 !default;
+$color-yellow: #f6d000 !default;
+
+// Base
+$color-h2-border: #dadada !default;
+$color-horizontal-rule: #dadada !default;
+$color-list-prefix:#000  !default;
+$color-definition-list: #8a8a8a !default;
+$color-table-border: #f5f5f5 !default;
+$color-table-header-border: #ececec !default;
+$color-table-header-bg: #f5f5f5 !default;
+
+// Code
+$color-code: #c0341d !default;
+$color-code-bg: #fcefed !default;
+$color-pre: #f8f8f2 !default;
+$color-pre-border: #3c4654 !default;
+
+// Section
+$color-section-grey: #f5f5f5 !default;
+
+// Callouts
+$color-callout: #f9f9f9 !default;
+$color-callout-success: #eaffee !default;
+$color-callout-info: #f2f8ff !default;
+$color-callout-warning: #fffae9 !default;
+$color-callout-danger: #ffedeb !default;
+
+// Footer
+$color-footer-bg: white !default;
+$color-footer-copyright: #bdbdbd !default;
+
+// Social list
+$color-social-item: #bdbdbd !default;
+
+// Themes
+$color-theme-green: #F0FAE6 !default;
+$color-theme-blue: #E8F2FC !default;
+$color-theme-purple: #FDE8F8 !default;
+$color-theme-red: #FFECE6 !default;
+$color-theme-yellow: #FCFDE8 !default;
+
+/* ----- Font families ----- */
+$font-family-primary: 'Amazon Ember,Arial,sans-serif', sans-serif !default;
+$font-family-secondary: 'Amazon Ember,Arial,sans-serif', sans-serif !default;
+$font-family-monospace: 'Source Code Pro', monospace !default;
+
+/* ----- Font sizes ----- */
+// Base
+$font-size-base: 1em !default;
+
+// Headings
+$font-size-h1: 2.5em !default;
+$font-size-h2: 2em !default;
+$font-size-h3: 1.75em !default;
+$font-size-h4: 1.5em !default;
+$font-size-h5: 1.25em !default;
+$font-size-h6: 1em !default;
+
+// Other
+$font-size-small: 0.75em !default;
+
+/* ----- Line heights ----- */
+// Base
+$line-height-base: 1.8em !default;
+
+// Headings
+$line-height-headings: 1.5em !default;
+
+/* ----- Z Indexes ----- */
+$z-index-offcanvas: 2 !default;
+$z-index-offcanvas-toggle: 3 !default;
+
+/* ----- Media queries breakpoints ----- */
+// Mobile first
+$screen-xs-min: 480px !default; // Extra small screens, Phones
+$screen-sm-min: 828px !default; // Small screens, Tablets
+$screen-md-min: 992px !default; // Medium screens, Desktop
+$screen-lg-min: 1430px !default; // Large screens, Wide desktops
+
+// Desktop first
+$screen-xs-max: ($screen-sm-min - 1) !default;
+$screen-sm-max: ($screen-md-min - 1) !default;
+$screen-md-max: ($screen-lg-min - 1) !default;
+
+/* ----- Grid system ----- */
+// Columns
+$grid-columns: 12 !default;
+
+// Gutter
+$grid-gutter-width: 30px !default;
+
+// Container
+$container-tablet: (90%) !default;
+$container-sm: $container-tablet !default;
+$container-desktop: (90%) !default;
+$container-md: $container-desktop !default;
+$container-large-desktop: (1400px + $grid-gutter-width) !default;
+$container-lg: $container-large-desktop !default;

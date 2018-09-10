@@ -1,0 +1,82 @@
+{% if site.amplify.footer.content.logo.image or site.amplify.footer.content.logo.text or site.amplify.footer.content.copyright or site.amplify.footer.social_list %}
+	<footer class="site-footer">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-6">
+					{% if site.amplify.footer.content.logo.text %}
+						<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-footer__logo">
+							<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/layout/logo-footer.png">
+						</a>
+					{% endif %}
+					
+					{% if site.amplify.footer.content.copyright %}
+				 
+						<p class="site-footer__copyright">
+							{{ site.amplify.footer.content.logo.text }} </br>
+							{{ site.amplify.footer.content.copyright }}
+						</p>
+						
+					{% endif %}
+				</div><!-- /.col -->
+				{% if site.amplify.footer.social_list %}
+					<div class="col-sm-6 align-right">
+						<ul class="social-list">
+							{% for item in site.amplify.footer.social_list %}
+								<li>
+									<a href="{{ item.profile_url }}" target="_blank" class="social-list__item social-list__item--{{ item.network_name }}">
+										<i class="icon icon--{{ item.network_name }}"></i>
+									</a>
+								</li>
+							{% endfor %}
+						</ul><!-- /.social-list -->
+					</div><!-- /.col -->
+				{% endif %}
+			</div><!-- /.row -->
+		</div><!-- /.container -->
+	</footer><!-- /.site-footer -->
+{% endif %}
+
+<script src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/bootstrap/affix.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/bootstrap/scrollspy.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/vendor/matchHeight.min.js"></script>
+<script type="text/javascript" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/scripts.js"></script>
+
+{% include google-analytics.html %}
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script> 
+<script type="text/javascript"> 
+var setAlgoliaSearch = function() {
+	if (window.innerWidth > 766){
+		docsearch({ 
+		    apiKey: '0d52a3ea92602545de13731e81c3c7f8', 
+		    indexName: 'aws_amplify',  
+			inputSelector: '#search-input',
+			//  algoliaOptions: {"facetFilters":["tags:current"],"hitsPerPage":5},      
+		    debug: false // Set debug to true if you want to inspect the dropdown 
+		}) 
+	}
+	else {
+		docsearch({ 
+		    apiKey: '0d52a3ea92602545de13731e81c3c7f8', 
+		    indexName: 'aws_amplify',  
+			inputSelector: '#search-input-xs',
+			//  algoliaOptions: {"facetFilters":["tags:current"],"hitsPerPage":5},      
+		    debug: false // Set debug to true if you want to inspect the dropdown 
+		}); 
+	}
+}
+
+setAlgoliaSearch()
+
+window.onresize = setAlgoliaSearch;
+</script> 
+
+<script>
+		((window.gitter = {}).chat = {}).options = {
+		  room: 'aws-amplify/Lobby' 
+		};
+	  </script>
+	  <script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer>
+</script>

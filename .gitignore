@@ -1,0 +1,14 @@
+build
+coverage
+Config
+lerna-debug.log
+node_modules/**
+packages/*/node_modules/**
+packages/**/lib/
+packages/**/dist/
+.DS_Store
+.vscode
+.idea
+*.log
+.npm/
+packages/**/cypress/videos/

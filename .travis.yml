@@ -1,0 +1,13 @@
+language: node_js
+sudo: false
+node_js:
+  - 8
+install:
+  - yarn config set workspaces-experimental true
+  - yarn
+script:
+  - yarn bootstrap
+  - yarn build
+  - yarn test --scope aws-amplify
+  - yarn test --scope aws-amplify-react
+  - yarn coverage

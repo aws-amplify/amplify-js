@@ -1,0 +1,67 @@
+{
+  "name": "aws-amplify",
+  "version": "0.1.30",
+  "description": "",
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "pre-commit": "lerna exec yarn test --scope @aws-amplify/core",
+    "test": "lerna exec yarn test",
+    "cypress": "lerna exec yarn cypress",
+    "cypress:open": "lerna exec yarn cypress:open",
+    "coverage": "codecov || exit 0",
+    "docs": "typedoc packages/aws-amplify/src --excludePrivate --ignoreCompilerErrors --mode file --theme docs/amplify-theme/typedoc --out docs/api",
+    "build": "lerna exec yarn build",
+    "clean": "lerna run -- clean",
+    "format": "lerna run -- format",
+    "lint": "lerna run -- lint",
+    "link": "lerna exec yarn link",
+    "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]'",
+    "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]'",
+    "publish:release": "lerna publish --conventional-commits --yes --independent --message 'chore(release): Publish [ci skip]'"
+  },
+  "pre-commit": [
+    "pre-commit"
+  ],
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-js.git"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws-amplify/amplify-js/issues"
+  },
+  "homepage": "https://aws-amplify.github.io/",
+  "devDependencies": {
+    "@types/jest": "^20.0.7",
+    "@types/node": "^8.9.5",
+    "codecov": "^1.0.1",
+    "compression-webpack-plugin": "^1.1.3",
+    "cypress": "^3.0.1",
+    "jest": "^22.4.3",
+    "json-loader": "^0.5.7",
+    "lerna": "2.11.0",
+    "pre-commit": "^1.2.2",
+    "rimraf": "^2.6.2",
+    "source-map-loader": "^0.2.1",
+    "ts-jest": "^22.0.0",
+    "tslint": "^5.7.0",
+    "tslint-config-airbnb": "^5.8.0",
+    "typedoc": "^0.11.0",
+    "typescript": "^2.9.2",
+    "typescript-formatter": "^6.0.0",
+    "uglifyjs-webpack-plugin": "^0.4.6",
+    "webpack": "^3.5.5"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "resetMocks": true,
+    "verbose": true
+  }
+}

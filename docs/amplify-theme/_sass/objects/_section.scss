@@ -1,0 +1,40 @@
+/**
+ * Section (objects/_section.scss)
+ */
+
+/* ----- General ----- */
+.section {
+	//padding: 3.75rem 0 (3.75rem - 1.25rem) 0;
+
+	@media (min-width: $screen-sm-min) {
+		//padding: 4.25rem 0 (4.25rem - 1.25rem) 0;
+	}
+}
+
+.section-top {
+	@media (min-width: $screen-sm-min) {
+		padding-top: 0px;
+		//padding-bottom: 150px;
+	}
+}
+
+.section-category {
+	@media (min-width: $screen-sm-min) {
+		padding-top: 75px;
+		padding-bottom: 150px;
+	}
+}
+
+/* ----- Variations ----- */
+.section--darker-theme-color-bg {
+	background-color: #ececec;
+}
+
+.section--grey {
+	background-color: $color-section-grey;
+}
+
+.col-md-offset-1 {
+	margin-top:1.25rem;
+	margin-left:0px;
+}

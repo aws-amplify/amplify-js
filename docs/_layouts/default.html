@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+{% seo %}
+    <link rel="stylesheet" href="{{ '{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="{{ '{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/amplify-theme/assets/js/respond.js' | relative_url }}"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="{{ '/assets/css/ie.css' | relative_url }}">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <style>
+
+    /** Theme Overrides **/
+    body {
+      color: #333 !important;
+      background: whitesmoke !important;
+    }
+     
+    .wrapper {
+      max-width: 980px !important;
+    }
+     
+    .wrapper section {
+      max-width: 980px !important;
+    }
+
+    a {
+      color: #007eb9 !important;
+    }
+
+    a:hover {
+      color: #e9903a !important;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      color: #333 !important;
+    }
+
+    code {
+      color: #25303e !important;
+    }
+
+    pre {
+      background: #25303e !important;
+      border: 1px solid #25303e !important;
+      box-shadow: 0 1px 6px 0px rgba(0, 0, 0, 0.75) !important;
+    }
+
+    pre code {
+      color: #efefef !important;
+    }
+
+    hr {
+      background: #EEE;
+    }
+
+    section #title {
+      margin: 0 0 15px 0 !important;
+    }
+    section #title p {
+      color: #333;
+      font-size: 16px !important;
+    }
+
+    #header {
+      background: #24303e !important;
+      box-shadow: 0 1px 1px #273546;
+    }
+
+    #header nav {
+      background: transparent;
+    }
+
+    ul {
+      list-style-image: none;
+    }
+    
+    /** Custom **/
+
+    .navbar {
+        overflow: hidden;
+    }
+
+    .navbar a {
+        float: left;
+        font-size: 16px;
+        color: white !important;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    .dropdown {
+        float: left;
+        overflow: hidden;
+    }
+
+    .dropdown .dropbtn {
+      /*
+        font-size: 16px;    
+        border: none;
+        outline: none;
+        color: white;
+        padding: 14px 16px;
+        background-color: inherit;
+        font: inherit;
+        margin: 0;
+      */
+    }
+
+    .navbar a:hover, .dropdown:hover .dropbtn {
+        color: #e9903a !important;
+    }
+
+    .navbar .icon {
+      display: none;
+    }
+
+    .dropdown-content {
+        top: 4em;
+        display: none;
+        position: absolute;
+        background-color: #24303e;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: #fff;
+        float: none;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        text-align: left;
+    }
+
+    .dropdown-content a:hover {
+        color: #e9903a;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+    .left {
+      float:left; 
+     }
+    .right {
+      float:right;  
+    }
+    #footer {
+      height: 2em;
+      margin-top:1em;
+    }
+
+    .aws-button {
+      font-weight: bold !important;
+      display: inline-block;
+      margin: 8px 0 0 0px;
+      min-width: 125px;
+      width: auto;
+      max-width: 100%;
+      padding: 7px 16px 6px !important;
+      border: 1px solid;
+      border-color: #be952c #a68226 #9b7924;
+      line-height: 1.4;
+      vertical-align: middle;
+      text-align: center;
+      font-size: 14px !important;
+      font-weight: 500;
+      text-shadow: hsla(0,0%,100%,.8) 0 1px 0;
+      text-decoration: none!important;
+      background: #eeba37;
+      background-image: linear-gradient(180deg,#fee6b0 0,#eeba37);
+      filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr="#fee6b0",endColorstr="#eeba37");
+      box-shadow: inset 0 1px 0 hsla(0,0%,100%,.6);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .aws-button span {
+      padding: 0 5px 0 5px !important;
+    }
+
+    @media print, screen and (min-width: 481px) {
+      a.icon {
+        display: none;
+      }
+      #githubLink {
+        display:block;
+      }
+      #githubLinkResponsive {
+        display:none;
+      }
+    }
+
+    @media print, screen and (max-width: 480px) {
+      nav { display: block !important; }
+      .navbar { display: none; }
+      #githubLink {
+        display:none;
+      }
+      #githubLinkResponsive {
+        margin: 18px 0 0 0 !important;
+        display:block;
+      }
+      a.icon {
+        position: absolute;
+        top: 20px;
+        display: block !important;
+      }
+      .responsive {
+        position: absolute;
+        display: inline-grid;
+        background: #24303e;
+        top: 4em;
+        left: 0;
+        padding: 1em;
+        overflow: visible;
+      }
+      .responsive a {
+        text-align: left !important;
+      }
+      .dropdown-content {
+        left: 12em;
+      }
+    }
+    </style>
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <a href="javascript:void(0);" style="font-size:25px;" class="icon" onclick="showMobileNav()">&#9776;</a>
+          <a id="githubLinkResponsive" href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
+              <span>aws/aws-amplify</span>
+            </a>
+          <div id="topNav" class="navbar">
+            <a href="/amplify-js/media/get_started.html">Quick Start</a>
+            <a id="githubLink" href="{{ site.github.repository_url }}" target="_blank" class="aws-button" style="float:right;color:#333 !important;">
+              <span>aws/aws-amplify</span>
+            </a>
+            <div class="dropdown">
+              <a class="dropbtn">Developer Guides</a>
+              <div class="dropdown-content">
+                <a href="/amplify-js/media/install_n_config.html">Installation and Configuration</a>
+                <a href="/amplify-js/media/authentication_guide.html">Authentication</a>
+                <a href="/amplify-js/media/analytics_guide.html">Analytics</a>
+                <a href="/amplify-js/media/push_notifications_setup.html">Push Notifications</a>
+                <a href="/amplify-js/media/api_guide.html">API</a>
+                <a href="/amplify-js/media/storage_guide.html">Storage</a>
+                <a href="/amplify-js/media/cache_guide.html">Cache</a>
+              </div>
+            </div>
+            <div class="dropdown">
+              <a class="dropbtn">Utilities </a>
+                <div class="dropdown-content">
+                  <a href="/amplify-js/media/i18n_guide.html">I18n</a>
+                  <a href="/amplify-js/media/logger_guide.html">Logger</a>
+                  <a href="/amplify-js/media/hub_guide.html">Hub</a>
+                </div>
+            </div>
+            <a href="/amplify-js/api/" target="_blank">API</a>
+        </div>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        
+        <div id="title">
+          <h1><a href="/aws-amplify" title="Back to Home">{{ site.title | default: site.github.repository_name }}</a></h1>
+          <p>{{ site.description | default: site.github.project_tagline }}</p>
+        </div>
+        
+        <hr/>
+        
+        <div id="content">
+          {{ content }}
+        </div>
+        
+        <hr/>
+        
+        <div id="footer">
+           <span class="credits left">Project maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></span>
+           <span class="credits right"><a href="https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md">Contributing Guidelines</a></span>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      function showMobileNav() {
+          var x = document.getElementById("topNav");
+          if (x.className === "navbar") {
+              x.className += " responsive";
+          } else {
+              x.className = "navbar";
+          }
+      }
+    </script>
+
+  </body>
+</html>

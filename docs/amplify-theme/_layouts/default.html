@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include site-head.html %}
+	</head>
+	<body class="{{ site.amplify.color_theme }}" data-spy="scroll" data-target=".js-scrollspy">
+		{% include docs-header.html %}
+
+		<div class="section-padding">
+			<div class="container docs-page-container">
+				<!-- <div class="github-edit-link">
+					<a title="Edit this page on github" class="" target="_blank" rel="noopener noreferrer" 
+					href="{{ site.github.repository_url }}{{ page.path }}">
+						<span class="">Edit this page</span> 
+					</a>				
+				</div> -->
+
+				{% if site.category_list %}
+					{% for category in site.category_list %}
+						{% for item in category.subs %}
+							{% if page.url contains item.url %}
+								{% assign isPageInCategories = true %}	
+							{% endif %}	
+						{% endfor %}
+					{% endfor %}
+				{% endif %}
+
+				<div class="row">
+					<div class="col-md-4 col-md-offset-1 dev-guide-container">
+						{% if page.url contains 'tutorials' %}
+						<div class="sections-list-wrapper">
+							<div class="sections-list js-affix js-scrollspy">
+								<div class="dev-guide"> 
+									<div class="left-nav-section" id="{{ category.category }}">
+										<div class="feature-list">
+											<div class='in-this-page js-sections'></div>
+										</div>
+									</div>
+								</div>						
+							</div><!-- /.sections-list -->
+						</div>
+						{% else %}
+						<!-- <div class="version-section">
+							<p>Version</p>
+							<div class="version-selector">
+								<select id="version-selector-select">
+									<option value="1.x.x">1.x.x (Stable release)</option>
+								</select>
+							</div>
+						</div> -->
+						<div class="version-section visible-xs">
+							<p>View Section</p>
+							<div class="version-selector">
+								<select onchange="location = this.value" id="section-select">
+									{% for category in site.category_list %}
+										<option value={% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ category.base_url }}>{{ category.title }}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+						<div class="sections-list-wrapper">
+							<div class="sections-list js-affix js-scrollspy">
+								<div class="dev-guide"> 
+									{% if site.category_list %}
+										{% for category in site.category_list %}
+										<div class="left-nav-section" id="{{ category.category }}">
+											{% if category.title != 'Setup & Installation' %}
+												<p class="gray-section-head hidden-xs">{{ category.title }}</p>
+											{% endif %}
+											<div class="feature-list">
+												{% for item in category.subs %}
+													{% if page.url contains item.url %}
+														<div class='in-this-page js-sections'></div>
+													{% else %}
+														<a href="{% if item.url_external  %}
+																		{{ item.url_external }} 
+																	{% endif %}
+																	{% if item.url %}
+																		{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }} 
+																	{% endif %}" 
+															{% if item.url_external %} 
+																target="_blank" 
+															{% endif %}
+															class="section-head">{{ item.title }}
+														</a>
+													{% endif %}	
+												{% endfor %}
+											</div>
+										</div>
+										{% endfor %}
+									{% endif %}
+								</div>						
+							</div><!-- /.sections-list -->
+						</div>
+						{% endif %}
+					</div><!-- /.col -->
+						<div class="col-md-8 section-top docs-container">
+							{% if page.url contains 'quick_start' %}
+							<div class='js-library-selector-text'>
+								Select your framework
+							</div>
+							<div class="js-library-selector dropdown white-text">
+								<img id="js-library-icon" /> 
+								<button id="js-library-selector" class="dropbtn white-text"></button>
+								<div class="dropdown-content">
+									{% for item in site.js_libraries %}
+										<a href={{ item.url }}>{{ item.title }}</a>
+									{% endfor %}
+								</div>
+								<div class="arrows"></div>
+							</div>
+							<!-- <div class="js-library-selector">
+								<img id="js-library-icon" /> 
+								<select onchange="location = this.value" id="js-library-select">
+									{% for item in site.js_libraries %}
+										<option value={{ item.url }}>{{ item.title }}</option>
+									{% endfor %}
+								</select>
+							</div> -->
+							{% endif %}
+							<div class="content">
+								{{ content }}
+							</div><!-- /.content -->
+						</div><!-- /.col -->
+				</div><!-- /.row -->
+			</div><!-- /.container -->
+		</div><!-- /.section -->
+		<!-- <div class="section section--grey"> -->
+			<!-- <div class="container"> -->
+				<!-- <div class="row"> -->
+					<!-- <div class="col-md-7"> -->
+						<!-- {% include comments.html %} -->
+					<!-- </div>/.col -->
+				<!-- </div>/.row -->
+			<!-- </div>/.container -->
+		<!-- </div>/.section -->
+		<div class="js-footer-area">
+			{% if page.page_nav.prev.content or page.page_nav.next.content %}
+				<nav class="page-nav">
+					<div class="container">
+						<div class="row">
+							<div class="col-xs-12">
+								{% if page.page_nav.prev.content and page.page_nav.prev.url %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.page_nav.prev.url }}" class="page-nav__item page-nav__item--prev">
+										<i class="icon icon--arrow-left"></i>
+										{{ page.page_nav.prev.content }}
+									</a><!-- /.page-nav__item -->
+								{% endif %}
+								{% if page.page_nav.next.content and page.page_nav.next.url %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.page_nav.next.url }}" class="page-nav__item page-nav__item--next">
+										{{ page.page_nav.next.content }}
+										<i class="icon icon--arrow-right"></i>
+									</a><!-- /.page-nav__item -->
+								{% endif %}
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.container -->
+				</nav><!-- /.page-nav -->
+			{% endif %}
+			{% if page.micro_nav == true %}
+				{% include micro-nav.html %}
+			{% endif %}
+			{% include site-footer.html %}
+		</div><!-- /.js-footer-area -->
+	</body>
+	<script>
+		if (window.innerWidth < 828) 
+		{	let flag;
+			{% for category in site.category_list %}
+				flag = false;
+				{% for item in category.subs %}
+					{% if page.url contains item.url %}
+						flag = true;
+					{% endif %}
+				{% endfor %}
+				if (flag) {
+					document.getElementById("{{ category.category }}").classList.add('visible-xs');
+					document.getElementById("section-select").value = "{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ category.base_url }}";
+				}
+				else {
+					document.getElementById("{{ category.category }}").classList.add('hidden-xs');
+				}
+			{% endfor %}
+
+			const view_section_box = document.getElementById("section-select");
+			if (view_section_box) 
+			{
+				{% if jekyll.environment == 'production' %}
+					view_section_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
+				{% else %}
+					view_section_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+				{% endif %}
+				view_section_box.style.backgroundPosition = "240px 5px";
+			}
+		}
+		{% if page.url contains 'quick_start' %}
+			let tabs = document.getElementsByClassName('tabs');
+			for (let i = 0; i < tabs.length; i++) {
+				tabs[i].style.display = 'none';
+			}
+			if ( $.urlParam( 'platform' )) {
+				var platform = $.urlParam('platform');
+				if (platform) {
+					let selector = document.getElementById("js-library-selector");
+					titles = {"react": "React", "react-native": "React Native", "angular": "Angular", "purejs": "JavaScript", "ionic": "Ionic"};
+					selector.innerHTML = titles[platform];
+					let icon = document.getElementById("js-library-icon");
+					icons = {"react": "React-Small-White@1x.png", "react-native": "React-Small-White@1x.png", "angular": "Angular-Med-White@1x.png", "purejs": "JS-Small-White@1x.png", "ionic": "Ionic-Color@1x.png"};
+					icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
+				}
+			}
+			else {
+				var platform = "purejs";
+				let selector = document.getElementById("js-library-selector");
+				titles = {"react": "React", "react-native": "React Native", "angular": "Angular", "purejs": "JavaScript", "ionic": "Ionic"};
+				selector.innerHTML = titles[platform];
+				let icon = document.getElementById("js-library-icon");
+				icons = {"react": "React-Small-White@1x.png", "react-native": "React-Small-White@1x.png", "angular": "Angular-Med-White@1x.png", "purejs": "JS-Small-White@1x.png", "ionic": "Ionic-Color@1x.png"};
+				icon.src = "{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/" + icons[platform];
+			}
+			let selectAddHover = function() {
+				let select_box = document.getElementsByClassName("js-library-selector")[0];
+				if (select_box) {
+					select_box.classList.add("js-library-selector-hover");
+				}
+			}
+			let selectRemoveHover = function() {
+				let select_box = document.getElementsByClassName("js-library-selector")[0];
+				if (select_box) {
+					select_box.classList.remove("js-library-selector-hover");
+				}
+			}
+			let selector = document.getElementById("js-library-select");
+			if (selector) {
+				selector.addEventListener("mouseover", selectAddHover);
+				selector.addEventListener("mouseout", selectRemoveHover);
+			}
+		{% endif %}
+	</script>
+	<!-- 
+	{% if jekyll.environment == 'production' %}
+		<script>
+			var setBackgroundImage = function() {
+				const version_box = document.getElementById("version-selector-select");
+				const view_section_box = document.getElementById("section-select");
+				const js_library_box = document.getElementById("js-library-select");
+				version_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
+				view_section_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat"; 
+				if (js_library_box) js_library_box.style.background = "url('/amplify-js/images/icons/Minis/Arrows.svg') no-repeat";
+				if (window.innerWidth < 828) {
+					version_box.style.backgroundPosition = "240px 5px";
+					view_section_box.style.backgroundPosition = "240px 5px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "160px -4px";
+				}
+				else {
+					version_box.style.backgroundPosition = "164px 3px";
+					view_section_box.style.backgroundPosition = "164px 3px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "160px -4px";
+				}
+			}
+
+			setBackgroundImage();
+		</script>
+	{% else %}
+		<script>
+			var setBackgroundImage = function() {
+				const version_box = document.getElementById("version-selector-select");
+				const view_section_box = document.getElementById("section-select");
+				const js_library_box = document.getElementById("js-library-select");
+				version_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+				view_section_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+				if (js_library_box) js_library_box.style.background = "url('/images/icons/Minis/Arrows.svg') no-repeat"; 
+				if (window.innerWidth < 828) {
+					version_box.style.backgroundPosition = "240px 5px";
+					view_section_box.style.backgroundPosition = "240px 5px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "160px -4px";
+				}
+				else {
+					version_box.style.backgroundPosition = "164px 3px";
+					view_section_box.style.backgroundPosition = "164px 3px";
+					if (js_library_box) js_library_box.style.backgroundPosition = "160px -4px";
+				}
+			}
+
+			setBackgroundImage();
+		</script>
+	{% endif %}
+	</html>
+-->

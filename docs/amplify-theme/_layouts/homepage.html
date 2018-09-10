@@ -1,0 +1,348 @@
+{% if jekyll.environment == 'production' %}
+<html>
+  <head>
+        <!-- Global site tag (gtag.js) - Google Analytics -->     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115615468-1"></script>     <script>         window.dataLayer = window.dataLayer || [];         function gtag(){dataLayer.push(arguments);}         gtag('js', new Date());         gtag('config', 'UA-115615468-1',{             'linker': {             'domains': ['aws-amplify.github.io']             }         });         var navigateToNextPage = function (elem) {             var path = "{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start";             location.replace( path + location.search);         };       gtag('event', 'page_view', {         'event_callback': navigateToNextPage         });     </script> <meta http-equiv="refresh" content="5; url={% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start" />
+  </head>
+  <body>
+    <p>Redirecting to <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start">https://aws-amplify.github.io/amplify-js/media/quick_start</a></p>
+  </body>
+</html>
+{% else %}
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include site-head.html %}
+	</head>
+	<body class="{{ site.amplify.color_theme }}">
+		{% include site-header.html %}
+		<div class="hero-subheader{% if page.grid_navigation %} hero-subheader--before-out{% endif %}">
+			<div class="container homepage-header">
+				<div class="row">
+					<div class="col-md-7">
+						<div class="align-container" data-mh>
+							<div class="align-inner">
+								{% if page.title %}
+									<h1 class="hero-subheader__title">{{ page.title }}</h1>
+								{% endif %}
+								{% if page.description %}
+									<p class="hero-subheader__desc">{{ page.description }}</p>
+								{% endif %}
+								<div id="button-logo-container">
+									{% for button in page.buttons %}
+										{% if button.external_url == true %}
+										<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ button.url }}" class="btn btn--dark btn--rounded btn--w-icon">
+											{% if button.icon %}<i class="icon icon--{{ button.icon }}"></i>{% endif %}
+											{{ button.content }}
+										</a>
+										{% else %}
+										<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ button.url }}" class="btn btn--dark btn--rounded btn--w-icon">
+											{% if button.icon %}<i class="icon icon--{{ button.icon }}"></i>{% endif %}
+											{{ button.content }}
+										</a>
+										{% endif %}
+									{% endfor %}
+									<div class="logos">
+										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Apple-Small-White@1x.png">
+										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Droid-Small-White@1x.png">
+										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/Web-Icon.svg">
+										<img class="logo-sm" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/React-Small-White@1x.png">
+									</div>
+									<img id="half-phone" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Phone-Banner@2x.png">
+								</div>
+							</div><!-- /.align-inner -->
+						</div><!-- /.align-container -->
+					</div><!-- /.col -->
+					{% if page.author.title and page.author.description and page.author.title_url %}
+						<div class="col-md-4 col-md-offset-1 hidden-xs hidden-sm">
+							<div class="align-container" data-mh>
+								<div class="align-inner">
+									<div class="hero-subheader__author">
+										<p class="hero-subheader__author-title">
+											{% if button.external_url == true %}
+											<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.author.title_url }}" class="btn btn--read-more">
+												{{ page.author.title }}
+												<i class="icon icon--arrow-right"></i>
+											</a>
+											{% else %}
+											<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ page.author.title_url }}" class="btn btn--read-more">
+												{{ page.author.title }}
+												<i class="icon icon--arrow-right"></i>
+											</a>
+											{% endif %}
+										</p><!-- /.hero-subheader__author-title -->
+										<p>{{ page.author.description }}</p>
+									</div><!-- /.hero-subheader__author -->
+								</div><!-- /.align-inner -->
+							</div><!-- /.align-container -->
+						</div><!-- /.col -->
+					{% endif %}
+				</div><!-- /.row -->
+			</div><!-- /.container -->
+		</div><!-- /.hero-subheader -->
+		<!--<div class="photo-credit">
+			<span>
+				Photo by <a target="_new" href="https://unsplash.com/@juandinella?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Juan Di Nella</a>
+			</span>
+		</div>-->
+
+		{% if page.marketing_message%}
+		<div class="section section--darker-theme-color-bg">
+				<div class="section-container">
+					<div class="row">
+						<div class="col--12">
+							{{ page.marketing_message }}
+						</div><!-- /.col -->
+					</div><!-- /.row -->
+				</div><!-- /.container -->
+		</div><!-- /.section -->
+		{% endif %}
+
+		{% if page.marketing_grid%}
+		<div class="section section-top" id="marketing-section">
+			<div class="container">
+				<div class="inline-block">
+					<div class="header col-sm-11">
+						Amplify your apps. Build on flexible, scalable, and reliable serverless infrastructure.
+					</div>
+					<!-- <div class="subheader col-sm-11">
+						Default implementation included for AWS; Open and pluggable for any custom backend or service.
+					</div> -->
+				</div>
+				<!-- <div>
+					<a href="media/toolchain"><button class="btn" id="top-section-btn">Get Started</button></a>
+				</div> -->
+				<div class="row">
+					<div class="marketing-grid">
+						<div class="row">
+							{% for item in page.marketing_grid %}
+								<div class="col-sm-4 marketing-div">
+									<div class="marketing-grid-item">
+										<img class="marketing-grid__icon" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{item.icon}}" />
+										<div class="marketing-grid-content" data-mh>
+											<h2 class="marketing-grid__title">{{ item.title }}</h2>
+											<p class="marketing-grid__excerpt">{{ item.excerpt }}</p>
+											<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{item.url}}">
+												<p class="amplify-link">Learn more</p>
+												<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+											</a>
+										</div><!-- /.nav-grid__content -->
+									</div><!-- /.nav-grid__item -->
+								</div><!-- /.col -->
+							{% endfor %}
+						</div><!-- /.row -->
+					</div><!-- /.nav-grid -->
+				</div><!-- /.row -->
+				<!-- <div class="row">
+					<div class="subheader bottom-subheader">
+						For mobile development, check out the AWS Mobile SDKs for <a>iOS</a>, <a>Android</a>, and <a>Xamarin</a>.
+					</div>
+				</div> -->
+			</div><!-- /.container -->
+		</div><!-- /.section -->
+		{% endif %}
+
+		{% if page.marketing_grid%}
+		<div class="section section-top not-top-section" id="guides-box">
+			<div class="container">
+				<div class="header inline-block" id="launch-header">
+					A comprehensive library for building sophisticated cloud-powered apps
+				</div>
+				<div class="highlighter-rouge inline-block section-code-block hidden-xs" id="homepage-code-block">
+					<div class="highlight">
+						<pre class="highlight section-code-block">
+<code>Auth.signUp({
+  username: 'AmandaB',
+  password: 'MyCoolPassword1!',
+  attributes: {
+    email: 'someemail@example.com'
+  }
+});</code>
+						</pre>
+					</div>    
+				</div>
+				<!-- <div class="subheader" id="launch-subheader">
+					AWS Amplify comes with building blocks for frontend and mobile developers to interact with the Cloud. You can mix and match categories below as needed.
+				</div> -->
+				<!-- <div class="amplify-link-box">
+					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/get_started">
+						<p class="amplify-link">Get Started with Amplify</p>
+						<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+					</a>
+				</div> -->
+				<div class="grids-container inline-block">
+					<div class="cloud-grid">
+						<p class="launch-grid-title">Cloud Features</p>
+						<div class="cloud-col">
+							<div class="row">
+								{% for item in page.cloud_grid_left %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-left">
+										<div class="platforms-container hidden-xs">
+											{% for platform in item.platforms %}
+												<img class="platform-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ platform.url }}" />
+											{% endfor %}
+										</div>
+										<img class="grid-icon" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Cloud.svg">
+										<div class="cloud-grid-text">
+											<h2 class="cloud-grid__title">{{ item.title }}</h2>
+											<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
+										</div>
+									</a><!-- /.nav-grid__item -->
+								{% endfor %}
+							</div><!-- /.row -->
+						</div><!-- /.nav-grid -->
+						<div class="cloud-col" id="right-cloud-col">
+							<div class="row">
+								{% for item in page.cloud_grid_right %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item cloud-grid-item-right">
+										<div class="platforms-container hidden-xs">
+											{% for platform in item.platforms %}
+												<img class="platform-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ platform.url }}" />
+											{% endfor %}
+										</div>
+										<img class="grid-icon" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Cloud.svg">
+										<div class="cloud-grid-text">
+											<h2 class="cloud-grid__title">{{ item.title }}</h2>
+											<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
+										</div><!-- /.nav-grid__content -->
+									</a><!-- /.nav-grid__item -->
+								{% endfor %}
+							</div><!-- /.row -->
+						</div><!-- /.nav-grid -->
+					</div><!-- /.col -->
+					<div class="utility-modules-grid">
+						<p class="launch-grid-title">Utilities</p>
+						<div class="row">
+							{% for item in page.utility_modules %}
+									<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}{{ item.url }}" class="cloud-grid-item">
+										<div class="platforms-container hidden-xs">
+											{% for platform in item.platforms %}
+												<img class="platform-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}{{ platform.url }}" />
+											{% endfor %}
+										</div>
+										<div class="cloud-grid-content" data-mh>
+											<img class="grid-icon" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Misc/Gear.svg">
+											<div class="cloud-grid-text">
+												<h2 class="cloud-grid__title">{{ item.title }}</h2>
+												<p class="cloud-grid__excerpt">{{ item.excerpt }}</p>
+											</div>
+										</div><!-- /.nav-grid__content -->
+									</a><!-- /.nav-grid__item -->
+							{% endfor %}
+						</div><!-- /.row -->
+					</div>
+				</div>
+				<div class="subheader bottom-subheader">
+						iOS & Android are supported with our Native SDKs. 
+						<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/get_started">
+							<p class="amplify-link">Get Started</p>
+							<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+						</a>
+				</div>
+			</div><!-- /.container -->
+		</div><!-- /.section -->
+		{% endif %}
+
+		<div class="section section-top cli">
+				<div class="container">
+					<div class="inline-block">
+						<div class="header col-sm-10">
+							Powerful toolchain built for developers.
+						</div>
+					</div>
+					<div class="inline-block">
+						<div class="marketing-content">
+							<p class="subheader inline">The Amplify Command Line Interface (CLI) is a unified toolchain to create and manage your serverless infrastructure on AWS.</p>
+							<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/toolchain">
+								<p class="amplify-link">Learn more</p>
+								<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+							</a>
+						</div>
+					</div>
+					<img id="orange-logos" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Platform-Icons-Color@2x.png" />
+						<!-- <img class = "hidden-xs" id="code-window" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Code-Window@2x.png"> -->
+					<div class="highlighter-rouge inline-block section-code-block hidden-xs" id="cli-code-block">
+						<div class="highlight">
+							<pre class="highlight section-code-block">
+<code>$ amplify status
+| Category  | Resource name  | Operation | Provider plugin   |
+| --------- | -------------- | --------- | ----------------- |
+| Auth      | cognito        | No Change | awscloudformation |
+| Analytics | pinpoint       | Update    | awscloudformation |
+| Storage   | dynamo         | No Change | awscloudformation |
+| Api       | appsync        | Delete    | awscloudformation |
+| Function  | lambda         | No Change | awscloudformation |</code>	
+							</pre>
+						</div>    
+					</div>
+				</div><!-- /.container -->
+			</div><!-- /.section -->
+
+		{% if page.marketing_grid%}
+		<div class="section section-top not-top-section" id="bottom-section">
+			<div class="container">
+				<div class="header" id="library-header">
+					A beautiful component library connected to the cloud.
+				</div>
+				<div class="subheader inline col-sm-7">
+						Launch your apps with our minimally-styled UI components or change them to match your app style.
+					<a class="inline-block" href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/ui_library">
+						<p class="amplify-link">Learn more</p>
+						<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+					</a>
+				</div>
+				<!-- <div>
+					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/media/ui_library">
+						<p class="amplify-link">View the Library</p>
+						<img class="side-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+					</a>
+				</div> -->
+				<div class="image-container">
+					<img class="library-image" id="library-auth" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Auth@1x.png">
+					<img class="library-image" id="library-chat" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Images/Chat@1x.png">
+				</div>
+			</div><!-- /.container -->
+		</div><!-- /.section -->
+		{% endif %}
+
+		<!-- {% if page.marketing_grid%}
+		<div class="section section-top not-top-section" id="bottom-section">
+			<div class="container">
+				<div class="header" id="install-header">
+					Install and configure with the tech of your choice
+				</div>
+				<div class="subheader">
+					Install and configure AWS Amplify to start working with cloud services.
+				</div>
+				<div class="install-container row">
+					<div class="install-box" id="js-box">
+						<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/JS-Small-White@2x.png">
+						<div class="install-text">Build with JavaScript</div>
+						<a href="media/get_started"><button class="install-button" id="js-btn">Get Started</button></a>
+					</div>
+					<div class="install-box" id="react-box">
+						<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/React-Small-White@2x.png">
+						<div class="install-text">Build with React</div>
+						<a href="media/react_guide"><button class="install-button" id="react-btn">Get Started</button></a>
+					</div>
+					<div class="install-box" id="react-native-box">
+						<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/React-Small-White@2x.png">
+						<div class="install-text">Build with React Native</div>
+						<a href="media/react_native_guide"><button class="install-button" id="react-native-btn">Get Started</button></a>
+					</div>
+					<div class="install-box" id="angular-box">
+						<img class="logo-lg" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Angular-Med-White@1x.png">
+						<div class="install-text">Build with Angular</div>
+						<a href="media/angular_guide"><button class="install-button" id="angular-btn">Get Started</button></a>
+					</div>
+				</div>
+				<div>
+					<a href="media/get_started"><button class="btn" id="view-all-platforms-btn">View all platforms</button></a>
+				</div>
+			<!-- </div>/.container -->
+		<!-- </div>/.section -->
+		<!-- {% endif %} -->
+
+		{% include site-footer.html %}
+	</body>
+</html>
+{% endif %}

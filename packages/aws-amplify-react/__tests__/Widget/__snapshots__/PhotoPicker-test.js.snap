@@ -1,0 +1,214 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PhotoPicker test render test render with previewSrc 1`] = `
+<FormSection
+  theme={
+    Object {
+      "a": Object {},
+      "actionRow": Object {},
+      "button": Object {},
+      "container": Object {},
+      "formContainer": Object {},
+      "formField": Object {},
+      "formRow": Object {},
+      "formSection": Object {},
+      "hint": Object {},
+      "input": Object {},
+      "inputLabel": Object {},
+      "photoPickerButton": Object {},
+      "photoPlaceholder": Object {},
+      "radio": Object {},
+      "sectionBody": Object {},
+      "sectionFooter": Object {},
+      "sectionFooterPrimaryContent": Object {},
+      "sectionFooterSecondaryContent": Object {},
+      "sectionHeader": Object {},
+      "signInButton": Object {},
+      "signInButtonContent": Object {},
+      "signInButtonIcon": Object {},
+      "strike": Object {},
+      "strikeContent": Object {},
+    }
+  }
+>
+  <SectionHeader
+    hint="Add you photos by clicking below"
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "button": Object {},
+        "container": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+      }
+    }
+  >
+    Photos
+  </SectionHeader>
+  <SectionBody>
+    <img
+      src={true}
+      style={
+        Object {
+          "maxWidth": "100%",
+        }
+      }
+    />
+  </SectionBody>
+  <Picker
+    accept="image/*"
+    onPick={[Function]}
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "button": Object {},
+        "container": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+      }
+    }
+    title="Select a Photo"
+  />
+</FormSection>
+`;
+
+exports[`PhotoPicker test render test render without previewSrc 1`] = `
+<FormSection
+  theme={
+    Object {
+      "a": Object {},
+      "actionRow": Object {},
+      "button": Object {},
+      "container": Object {},
+      "formContainer": Object {},
+      "formField": Object {},
+      "formRow": Object {},
+      "formSection": Object {},
+      "hint": Object {},
+      "input": Object {},
+      "inputLabel": Object {},
+      "photoPickerButton": Object {},
+      "photoPlaceholder": Object {},
+      "radio": Object {},
+      "sectionBody": Object {},
+      "sectionFooter": Object {},
+      "sectionFooterPrimaryContent": Object {},
+      "sectionFooterSecondaryContent": Object {},
+      "sectionHeader": Object {},
+      "signInButton": Object {},
+      "signInButtonContent": Object {},
+      "signInButtonIcon": Object {},
+      "strike": Object {},
+      "strikeContent": Object {},
+    }
+  }
+>
+  <SectionHeader
+    hint="Add you photos by clicking below"
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "button": Object {},
+        "container": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+      }
+    }
+  >
+    Photos
+  </SectionHeader>
+  <SectionBody>
+    <PhotoPlaceholder />
+  </SectionBody>
+  <Picker
+    accept="image/*"
+    onPick={[Function]}
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "button": Object {},
+        "container": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+      }
+    }
+    title="Select a Photo"
+  />
+</FormSection>
+`;

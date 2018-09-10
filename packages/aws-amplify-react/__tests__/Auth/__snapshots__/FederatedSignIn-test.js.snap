@@ -1,0 +1,246 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FederatedButtons test render test render nothing with incorrect authState 1`] = `""`;
+
+exports[`FederatedButtons test render test render nothing with no federated prop 1`] = `""`;
+
+exports[`FederatedButtons test render test render with correct authState 1`] = `
+<div>
+  <div>
+    <_class
+      google_client_id="google_client_id"
+    />
+  </div>
+  <div>
+    <_class
+      facebook_app_id="facebook_app_id"
+    />
+  </div>
+  <div />
+  <div />
+</div>
+`;
+
+exports[`FederatedButtons test render test render with correct authState and only facebook id 1`] = `
+<div>
+  <div>
+    <_class
+      google_client_id="google_client_id"
+    />
+  </div>
+  <div />
+  <div />
+  <div />
+</div>
+`;
+
+exports[`FederatedButtons test render test render with correct authState and only google id 1`] = `
+<div>
+  <div />
+  <div>
+    <_class
+      facebook_app_id="facebook_app_id"
+    />
+  </div>
+  <div />
+  <div />
+</div>
+`;
+
+exports[`FederatedSignIn test render test render nothing with incorrect authState 1`] = `""`;
+
+exports[`FederatedSignIn test render test render nothing with no federated prop 1`] = `
+<FormSection
+  theme={
+    Object {
+      "a": Object {},
+      "actionRow": Object {},
+      "button": Object {},
+      "container": Object {},
+      "formContainer": Object {},
+      "formField": Object {},
+      "formRow": Object {},
+      "formSection": Object {},
+      "hint": Object {},
+      "input": Object {},
+      "inputLabel": Object {},
+      "photoPickerButton": Object {},
+      "photoPlaceholder": Object {},
+      "radio": Object {},
+      "sectionBody": Object {},
+      "sectionFooter": Object {},
+      "sectionFooterPrimaryContent": Object {},
+      "sectionFooterSecondaryContent": Object {},
+      "sectionHeader": Object {},
+      "signInButton": Object {},
+      "signInButtonContent": Object {},
+      "signInButtonIcon": Object {},
+      "strike": Object {},
+      "strikeContent": Object {},
+    }
+  }
+>
+  <SectionBody
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "button": Object {},
+        "container": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+      }
+    }
+  >
+    <FederatedButtons
+      authState="signIn"
+      federated={Object {}}
+      onStateChange={[MockFunction]}
+      theme={
+        Object {
+          "a": Object {},
+          "actionRow": Object {},
+          "button": Object {},
+          "container": Object {},
+          "formContainer": Object {},
+          "formField": Object {},
+          "formRow": Object {},
+          "formSection": Object {},
+          "hint": Object {},
+          "input": Object {},
+          "inputLabel": Object {},
+          "photoPickerButton": Object {},
+          "photoPlaceholder": Object {},
+          "radio": Object {},
+          "sectionBody": Object {},
+          "sectionFooter": Object {},
+          "sectionFooterPrimaryContent": Object {},
+          "sectionFooterSecondaryContent": Object {},
+          "sectionHeader": Object {},
+          "signInButton": Object {},
+          "signInButtonContent": Object {},
+          "signInButtonIcon": Object {},
+          "strike": Object {},
+          "strikeContent": Object {},
+        }
+      }
+    />
+  </SectionBody>
+</FormSection>
+`;
+
+exports[`FederatedSignIn test render test render with correct authState 1`] = `
+<FormSection
+  theme={
+    Object {
+      "a": Object {},
+      "actionRow": Object {},
+      "button": Object {},
+      "container": Object {},
+      "formContainer": Object {},
+      "formField": Object {},
+      "formRow": Object {},
+      "formSection": Object {},
+      "hint": Object {},
+      "input": Object {},
+      "inputLabel": Object {},
+      "photoPickerButton": Object {},
+      "photoPlaceholder": Object {},
+      "radio": Object {},
+      "sectionBody": Object {},
+      "sectionFooter": Object {},
+      "sectionFooterPrimaryContent": Object {},
+      "sectionFooterSecondaryContent": Object {},
+      "sectionHeader": Object {},
+      "signInButton": Object {},
+      "signInButtonContent": Object {},
+      "signInButtonIcon": Object {},
+      "strike": Object {},
+      "strikeContent": Object {},
+    }
+  }
+>
+  <SectionBody
+    theme={
+      Object {
+        "a": Object {},
+        "actionRow": Object {},
+        "button": Object {},
+        "container": Object {},
+        "formContainer": Object {},
+        "formField": Object {},
+        "formRow": Object {},
+        "formSection": Object {},
+        "hint": Object {},
+        "input": Object {},
+        "inputLabel": Object {},
+        "photoPickerButton": Object {},
+        "photoPlaceholder": Object {},
+        "radio": Object {},
+        "sectionBody": Object {},
+        "sectionFooter": Object {},
+        "sectionFooterPrimaryContent": Object {},
+        "sectionFooterSecondaryContent": Object {},
+        "sectionHeader": Object {},
+        "signInButton": Object {},
+        "signInButtonContent": Object {},
+        "signInButtonIcon": Object {},
+        "strike": Object {},
+        "strikeContent": Object {},
+      }
+    }
+  >
+    <FederatedButtons
+      authState="signIn"
+      federated={Object {}}
+      onStateChange={[MockFunction]}
+      theme={
+        Object {
+          "a": Object {},
+          "actionRow": Object {},
+          "button": Object {},
+          "container": Object {},
+          "formContainer": Object {},
+          "formField": Object {},
+          "formRow": Object {},
+          "formSection": Object {},
+          "hint": Object {},
+          "input": Object {},
+          "inputLabel": Object {},
+          "photoPickerButton": Object {},
+          "photoPlaceholder": Object {},
+          "radio": Object {},
+          "sectionBody": Object {},
+          "sectionFooter": Object {},
+          "sectionFooterPrimaryContent": Object {},
+          "sectionFooterSecondaryContent": Object {},
+          "sectionHeader": Object {},
+          "signInButton": Object {},
+          "signInButtonContent": Object {},
+          "signInButtonIcon": Object {},
+          "strike": Object {},
+          "strikeContent": Object {},
+        }
+      }
+    />
+  </SectionBody>
+</FormSection>
+`;

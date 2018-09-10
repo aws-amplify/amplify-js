@@ -1,0 +1,90 @@
+{
+  "name": "amazon-cognito-identity-js",
+  "description": "Amazon Cognito Identity Provider JavaScript SDK",
+  "version": "2.0.25",
+  "author": {
+    "name": "Amazon Web Services",
+    "email": "aws@amazon.com",
+    "url": "http://aws.amazon.com"
+  },
+  "homepage": "http://aws.amazon.com/cognito",
+  "contributors": [
+    "Simon Buchan with Skilitics",
+    "Jonathan Goldwasser",
+    "Matt Durant",
+    "John Ferlito",
+    "Michael Hart",
+    "Tylor Steinberger",
+    "Paul Watts",
+    "Gleb Promokhov",
+    "Min Bi",
+    "Michael Labieniec",
+    "Chetan Mehta <chetam@amazon.com>",
+    "Ionut Trestian <trestian@amazon.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-amplify.git"
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "licenses": [
+    {
+      "type": "Amazon Software License",
+      "url": "http://aws.amazon.com/asl"
+    }
+  ],
+  "keywords": [
+    "amazon",
+    "aws",
+    "cognito",
+    "identity",
+    "react-native",
+    "reactnative"
+  ],
+  "scripts": {
+    "clean": "rimraf lib es",
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
+    "build:umd": "webpack",
+    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd",
+    "doc": "jsdoc src -d docs",
+    "lint": "eslint src",
+    "test": "eslint src",
+    "lint2": "eslint enhance-rn.js"
+  },
+  "main": "lib/index.js",
+  "react-native": {
+    "lib/index.js": "./enhance-rn.js",
+    "./src/StorageHelper": "./src/StorageHelper-rn.js"
+  },
+  "module": "es/index.js",
+  "jsnext:main": "es/index.js",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "buffer": "4.9.1",
+    "crypto-browserify": "1.0.9",
+    "js-cookie": "^2.1.4"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-core": "^6.13.2",
+    "babel-loader": "^6.2.4",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.23.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "cross-env": "^3.1.4",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^5.0.2",
+    "eslint-import-resolver-webpack": "^0.5.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.2.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "jsdoc": "^3.4.0",
+    "react": "^16.0.0",
+    "react-native": "^0.44.0",
+    "rimraf": "^2.5.4",
+    "webpack": "^3.5.5"
+  }
+}
