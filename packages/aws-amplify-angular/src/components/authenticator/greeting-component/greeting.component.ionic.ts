@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { GreetingComponentCore } from './greeting.component.core';
-import { includes } from '../common';
 
 const template = `
 <div class="amplify-greeting">

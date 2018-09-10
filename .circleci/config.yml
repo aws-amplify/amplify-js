@@ -14,6 +14,7 @@ defaults: &defaults
       environment:
           ## this enables colors in the output
           TERM: xterm
+  parallelism: 4
 
 jobs:
   build:

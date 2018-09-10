@@ -3,7 +3,7 @@ import ConfirmSignIn from '../../src/Auth/ConfirmSignIn';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
+import { Header, Footer, Input, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'confirmSignIn'
@@ -109,8 +109,8 @@ describe('ConfirmSignIn', () => {
                 }
             }
 
-            wrapper.find(InputRow).at(0).simulate('change', event_code);
-            await wrapper.find(ButtonRow).at(0).simulate('click');
+            wrapper.find(Input).at(0).simulate('change', event_code);
+            await wrapper.find(Button).at(0).simulate('click');
 
             expect.assertions(3);
             expect(spyon.mock.calls[0][0]).toBe('user');

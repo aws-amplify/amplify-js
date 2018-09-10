@@ -3,13 +3,13 @@ import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestro
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { AuthClass } from './authenticator.class';
-import {AuthenticatorIonicComponent} from './authenticator.component.ionic'
+import { AuthenticatorIonicComponent } from './authenticator.component.ionic'
 import { AuthenticatorComponentCore } from './authenticator.component.core';
 
 @Component({
   selector: 'amplify-authenticator',
   template: `
-              <div>
+              <div class="amplify-component">
                 <ng-template component-host></ng-template>
               </div>
             `

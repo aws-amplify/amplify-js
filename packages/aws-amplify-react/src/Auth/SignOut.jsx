@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { I18n, JS, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import React from 'react';
+import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
