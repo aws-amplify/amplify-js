@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@aws-amplify/core": "^1.0.7",
+    "@aws-amplify/api": "^1.0.10",
     "aws-sdk": "2.198.0"
   },
   "jest": {

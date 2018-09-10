@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { XRProvider, ProviderOptions } from '../types';
+import { XRProvider, ProviderOptions, SceneConfiguration } from '../types';
 import { ConsoleLogger as Logger, Credentials} from '@aws-amplify/core';
 
 const logger = new Logger('AbstractXRProvider');
@@ -37,6 +37,6 @@ export abstract class AbstractXRProvider implements XRProvider {
 
     protected get options(): ProviderOptions { return { ...this._config }; }
 
-    public abstract loadScene(sceneId: string): void;
+    public abstract loadScene(domElementId: string, sceneConfiguration: SceneConfiguration): void;
 
 }
