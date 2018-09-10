@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Observable } from 'rxjs';
 import Amplify, {
   Logger,
@@ -25,7 +25,7 @@ export class AmplifyService {
   private _pubsub: any;
   private _interactions: InteractionsClass;
 
-  private _authState = new Subject<AuthState>();
+  private _authState = new BehaviorSubject<AuthState>({state: "loading", user: null});
   authStateChange$ = this._authState.asObservable();
 
   constructor() {
