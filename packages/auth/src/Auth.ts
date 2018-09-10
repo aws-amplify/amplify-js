@@ -576,7 +576,7 @@ export default class AuthClass {
         }
 
         const that = this;
-        return new Promise((res, rej) => {
+        return new Promise<string>((res, rej) => {
             user.setUserMfaPreference(smsMfaSettings, totpMfaSettings, (err, result) => {
                 if (err) {
                     logger.debug('Set user mfa preference error', err);
