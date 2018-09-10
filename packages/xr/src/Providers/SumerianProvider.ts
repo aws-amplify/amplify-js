@@ -1,38 +1,27 @@
 import { AbstractXRProvider } from './XRProvider';
-import { ProviderOptions } from '../types';
+import { ProviderOptions, SceneConfiguration } from '../types';
+
+type SumerianSceneConfiguration = SceneConfiguration & { url: string, isSigv4: boolean, sceneId: string };
 
 export class SumerianProvider extends AbstractXRProvider {
   constructor(options: ProviderOptions = {}) {
-      super({ ...options, clientId: options.clientId });
+      super(options);
   }
 
   getProviderName() { return 'SumerianProvider'; }
 
-  async loadScene(sceneId: string) {
+  async loadScene(domElementId: string, sceneConfiguration: SumerianSceneConfiguration) {
 
-    let element = document.getElementById("my-sumerian-scene");
-
-    // console.log("Sumerian Provider: loadScene with id " + sceneId);
-
-    const apiUrl = "https://km58koggw4.execute-api.us-west-2.amazonaws.com/20180801/projects/arn:aws:sumerian:us-west-2:827981793408:project:test/releases/MyRelease/authTokens/public";
-    const apiResponse = await window.fetch(apiUrl);
+    const element = document.getElementById(domElementId);
+    const apiResponse = await window.fetch(sceneConfiguration.url);
     const apiResponseJson = await apiResponse.json();
 
-    // Find the first (and only) scene id in the bundle data.
-    let publishedSceneId = null;
-    for (const id in apiResponseJson.bundleData) {
-        if (/\.scene$/.test(id)) {
-            publishedSceneId = id;
-            break;
-        }
-    }
-
     // Fetch the scene bundle.
-    const sceneBundle = await window.fetch(apiResponseJson.bundleData[publishedSceneId].url, apiResponseJson.bundleData[publishedSceneId].headers);
+    const sceneBundle = await fetch(apiResponseJson.bundleData[sceneConfiguration.sceneId].url, apiResponseJson.bundleData[sceneConfiguration.sceneId].headers);
     const sceneBundleJson = await sceneBundle.json();
 
     // Create the scene loading script from the code embedded in the bundle.
-    const SceneLoader = Function(atob(sceneBundleJson[publishedSceneId].sceneLoadScript))();
+    const SceneLoader = Function(atob(sceneBundleJson[sceneConfiguration.sceneId].sceneLoadScript))();
 
     const progressCallback = (progress) => {
         console.log(`Sumerian scene load progress: ${progress * 100}%`);

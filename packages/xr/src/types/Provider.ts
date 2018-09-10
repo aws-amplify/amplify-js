@@ -22,6 +22,6 @@ export interface XRProvider {
     // return the name of you provider
     getProviderName(): string;
 
-    loadScene(sceneId: string): void;
+    loadScene(domElementId: string, sceneConfiguration: object): void;
 
 }

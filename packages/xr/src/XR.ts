@@ -63,7 +63,7 @@ export default class XR {
         }
     }
 
-    loadScene(sceneId: string) {
-        this._pluggables.map(provider => provider.loadScene(sceneId));
+    loadScene(domElementId: string, sceneConfiguration: object) {
+        this._pluggables.map(provider => provider.loadScene(domElementId, sceneConfiguration));
     }
 }
