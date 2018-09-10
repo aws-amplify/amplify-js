@@ -1,12 +1,11 @@
 {
   "name": "aws-amplify-vue",
-  "version": "110.1.1",
+  "version": "0.1.0",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --target lib --name aws-amplify-vue ./src/Amplify.vue",
     "lint": "vue-cli-service lint",
-    "build-bundle": "vue-cli-service build --target lib --name aws-amplify-vue ./src/Amplify.vue",
     "test": "./node_modules/.bin/vue-cli-service test:unit",
     "debug": "node --debug-brk --inspect ./node_modules/.bin/jest -i"
   },
