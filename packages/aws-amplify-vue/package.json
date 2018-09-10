@@ -17,26 +17,15 @@
     "@aws-amplify/ui": "^1.0.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.0.0-rc.5",
-    "@vue/cli-plugin-eslint": "^3.0.0-rc.5",
+    "@vue/cli-plugin-babel": "^3.0.1",
+    "@vue/cli-plugin-eslint": "^3.0.1",
     "@vue/cli-plugin-unit-jest": "^3.0.1",
-    "@vue/cli-service": "^3.0.0-rc.5",
+    "@vue/cli-service": "^3.0.1",
+    "@vue/eslint-config-airbnb": "^3.0.1",
     "@vue/test-utils": "^1.0.0-beta.20",
-    "eslint": "^5.4.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-loader": "^2.1.0",
-    "eslint-plugin-html": "^4.0.5",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-vue": "^4.7.1",
-    "jest": "^23.5.0",
-    "jest-serializer-vue": "^2.0.2",
-    "jest-transform-stub": "^1.0.0",
-    "node-sass": "^4.9.2",
-    "sass-loader": "^7.0.3",
-    "sinon": "^6.2.0",
-    "vue-jest": "^2.6.0",
-    "vue-template-compiler": "^2.5.16",
-    "vue-test-utils": "^1.0.0-beta.11"
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "^23.0.1",
+    "vue-template-compiler": "^2.5.17"
   },
   "eslintConfig": {
     "root": true,

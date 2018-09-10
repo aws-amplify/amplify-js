@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
+import QrcodeVue from 'qrcode.vue'; // eslint-disable-line
 import * as AmplifyUI from '@aws-amplify/ui';
 import SetMFA from '../src/components/authenticator/SetMFA.vue';
 import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
@@ -125,8 +126,43 @@ describe('SetMFA', () => {
       expect(el.textContent.trim()).toEqual(testText);
     });
 
-    it('...should call setUser on mount clicked', () => {
+    it('...should call setUser on mount', () => {
       expect(mockSetUser).toHaveBeenCalled();
+    });
+
+    it('...should call setMFA on setMFA button click', () => {
+      const el = wrapper.find('#ampliyfSetMFA');
+      el.trigger('click');
+      expect(mockSetMFA).toHaveBeenCalled();
+    });
+
+    it('...verifyTotpToken should not exist initially if displayTotpSetup is not true', () => {
+      const el = wrapper.find('#amplifyVerifyToken').exists();
+      expect(el).toBeFalsy();
+    });
+
+    it('...setup should be called when mfaPreference changes', () => {
+      wrapper.vm.mfaPreference = 'TOTP';
+      expect(mockSetup).toHaveBeenCalled();
+    });
+
+    it('...verifyTotpToken and Qrcode element should exist if displayTotpSetup is true', () => {
+      wrapper.vm.token = 'testtoken';
+      wrapper.vm.displayTotpSetup = true;
+      wrapper.vm.mfaPreference = 'TOTP';
+      const el = wrapper.find('#amplifyVerifyToken').exists();
+      const qr = wrapper.find(`.${AmplifyUI.totpQrcode}`).exists();
+      expect(el).toBeTruthy();
+      expect(qr).toBeTruthy();
+    });
+
+    it('...verifyTotpToken should be called when verifyToken button is clicked', () => {
+      wrapper.vm.token = 'testtoken';
+      wrapper.vm.displayTotpSetup = true;
+      wrapper.vm.mfaPreference = 'TOTP';
+      const el = wrapper.find('#amplifyVerifyToken');
+      el.trigger('click');
+      expect(mockVerifyTotpToken).toHaveBeenCalled();
     });
   });
 });

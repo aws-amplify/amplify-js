@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { shallowMount } from '@vue/test-utils';
 import Authenticator from '../src/components/authenticator/Authenticator.vue';
 import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
@@ -20,31 +21,37 @@ describe('Authenticator', () => {
   });
 
   describe('...when it is mounted...', () => {
-    let vm;
+    let wrapper;
 
     beforeEach(() => {
-      vm = new Vue(Authenticator).$mount();
-      vm.setUser = jest.fn();
+      wrapper = shallowMount(Authenticator);
+      wrapper.vm.setUser = jest.fn();
     });
 
     it('...it should use the amplify plugin with passed modules', () => {
-      expect(vm.$Amplify).toBeTruthy();
+      expect(wrapper.vm.$Amplify).toBeTruthy();
     });
 
     it('...it should be named Authenticator', () => {
-      expect(vm.$options.name).toEqual('Authenticator');
+      expect(wrapper.vm.$options.name).toEqual('Authenticator');
     });
 
     it('...it should instantiate a logger with the name of the component', () => {
-      expect(vm.logger.name).toEqual(vm.$options.name);
+      expect(wrapper.vm.logger.name).toEqual(wrapper.vm.$options.name);
     });
 
     it('...it should have an updateDisplayMap method', () => {
-      expect(vm.updateDisplayMap).toBeTruthy();
+      expect(wrapper.vm.updateDisplayMap).toBeTruthy();
     });
 
     it('...it should have a setError method', () => {
-      expect(vm.setError).toBeTruthy();
+      expect(wrapper.vm.setError).toBeTruthy();
     });
-  });
+    // it('...the signup component should be visible be default', () => {
+    //   const el = wrapper.find('#signIn').exists();
+    //   expect(el).toBeTruthy();
+    // })
+
+  })
+
 });
