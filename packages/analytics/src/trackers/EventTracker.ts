@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { delegate } from 'dom-utils-amplify';
+import { delegate } from '../vendor/dom-utils';
 import { EventTrackOpts } from '../types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
