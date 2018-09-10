@@ -14,22 +14,19 @@
 import React, { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+import { Button, PhotoPickerButton } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const PickerPicker = {
     position: 'relative'
 }
 
-const PickerPreview = {
-    maxWidth: '100%'
-}
-
-const PickerButton = {
-    width: '10em',
-    height: '3em',
-    fontSize: '1.2em',
-    textAlign: 'center'
-}
+// const PickerButton = {
+//     width: '10em',
+//     height: '3em',
+//     fontSize: '1.2em',
+//     textAlign: 'center'
+// }
 
 const PickerInput = {
     width: '100%',
@@ -70,22 +67,23 @@ export default class Picker extends Component {
         const accept = this.props.accept || '*/*';
 
         const theme = this.props.theme || AmplifyTheme;
-        const pickerStyle = Object.assign(
-            {},
-            PickerPicker,
-            theme.pickerPicker
-        );
-        const buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
+        // const pickerStyle = Object.assign(
+        //     {},
+        //     PickerPicker,
+        //     theme.pickerPicker
+        // );
+        // const buttonStyle = Object.assign({}, PickerButton, theme.button, theme.pickerButton);
         const inputStyle = Object.assign({}, PickerInput, theme.pickerInput);
 
         return (
-            <div style={pickerStyle}>
-                <button style={buttonStyle}>
+            <div style={theme.pickerPicker}>
+                <PhotoPickerButton theme={theme}>
                     {I18n.get(title)}
-                </button>
+                </PhotoPickerButton>
                 <input
                     title={I18n.get(title)}
-                    type="file" accept={accept}
+                    type="file"
+                    accept={accept}
                     style={inputStyle}
                     onChange={(e) => this.handleInput(e)}
                 />

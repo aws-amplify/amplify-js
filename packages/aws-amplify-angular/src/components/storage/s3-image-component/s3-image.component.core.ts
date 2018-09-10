@@ -11,7 +11,7 @@ const template = `
 
 @Component({
   selector: 'amplify-s3-image-core',
-  template: template
+  template
 })
 export class S3ImageComponentCore {
   url: any;

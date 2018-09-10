@@ -1,11 +1,8 @@
 jest.mock('@aws-amplify/core/lib/Signer', () => {
     return {
         default: {
-            sign: () => {
-                return {
-                    data: 'data',
-                    headers: {}
-                };
+            sign: (request: any, access_info: any, service_info?: any) => {
+                return request;
             }   
         }
     }
@@ -15,12 +12,18 @@ jest.mock('axios', () => {
     return {
         default: (signed_params) => {
             return new Promise((res, rej) => {
-                res({
-                    data: 'data'
-                })
+                if (signed_params.reject) {
+                    rej({
+                        data: 'error'
+                    });
+                } else {
+                    res({
+                        data: 'data'
+                    });
+                }
             });
         }
-    }
+    };
 });
 
 import { RestClient } from '../src/RestClient';
@@ -41,17 +44,6 @@ const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
 describe('RestClient test', () => {
     describe('ajax', () => {
         test('fetch with signed request', async () => {
-            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {
-                            return signed_params.data;
-                        }
-                    });
-                });
-            });
-
             const apiOptions = {
                 headers: {},
                 endpoints: {},
@@ -67,18 +59,22 @@ describe('RestClient test', () => {
             expect(await restClient.ajax('url', 'method', {})).toEqual('data');
         });
 
-        test('fetch with signed request', async () => {
-            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {
-                            return signed_params.data;
-                        }
-                    });
-                });
-            });
+        test('fetch with signed failing request', async () => {
+            const apiOptions = {
+                headers: {},
+                endpoints: {},
+                credentials: {
+                    accessKeyId: 'accessKeyId',
+                    secretAccessKey: 'secretAccessKey',
+                    sessionToken: 'sessionToken'
+                }
+            };
 
+            const restClient = new RestClient(apiOptions);
+            expect(restClient.ajax('url', 'method', {reject: true})).rejects.toEqual({data: 'error'});
+        });
+
+        test('fetch with signed request', async () => {
             const apiOptions = {
                 headers: {},
                 endpoints: {},
@@ -95,15 +91,6 @@ describe('RestClient test', () => {
         });
 
         test('ajax with no credentials', async () => {
-            window.fetch = jest.fn().mockImplementationOnce(() => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {return 'response JSON'}
-                    });
-                });
-            });
-
             const apiOptions = {
                 headers: {},
                 endpoints: {}
@@ -119,17 +106,6 @@ describe('RestClient test', () => {
         });
 
         test('ajax with extraParams', async () => {
-            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {
-                            return signed_params.data;
-                        }
-                    });
-                });
-            });
-
             const apiOptions = {
                 headers: {},
                 endpoints: {},
@@ -146,17 +122,6 @@ describe('RestClient test', () => {
         });
 
         test('ajax with Authorization header', async () => {
-            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {
-                            return signed_params.data;
-                        }
-                    });
-                });
-            });
-
             const apiOptions = {
                 headers: {},
                 endpoints: {},
@@ -175,17 +140,6 @@ describe('RestClient test', () => {
 
     describe('get test', () => {
         test('happy case', async () => {
-            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {
-                            return signed_params.data;
-                        }
-                    });
-                });
-            });
-
             const spyon = jest.spyOn(RestClient.prototype, 'ajax');
 
             const apiOptions = {
@@ -212,17 +166,6 @@ describe('RestClient test', () => {
 
     describe('put test', () => {
         test('happy case', async () => {
-            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {
-                            return signed_params.data;
-                        }
-                    });
-                });
-            });
-
             const spyon = jest.spyOn(RestClient.prototype, 'ajax');
 
             const apiOptions = {
@@ -249,17 +192,6 @@ describe('RestClient test', () => {
 
     describe('patch test', () => {
         test('happy case', async () => {
-            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {
-                            return signed_params.data;
-                        }
-                    });
-                });
-            });
-
             const spyon = jest.spyOn(RestClient.prototype, 'ajax');
 
             const apiOptions = {
@@ -286,17 +218,6 @@ describe('RestClient test', () => {
 
     describe('post test', () => {
         test('happy case', async () => {
-            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {
-                            return signed_params.data;
-                        }
-                    });
-                });
-            });
-
             const spyon = jest.spyOn(RestClient.prototype, 'ajax');
 
             const apiOptions = {
@@ -323,17 +244,6 @@ describe('RestClient test', () => {
 
     describe('del test', () => {
         test('happy case', async () => {
-            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {
-                            return signed_params.data;
-                        }
-                    });
-                });
-            });
-
             const spyon = jest.spyOn(RestClient.prototype, 'ajax');
 
             const apiOptions = {
@@ -359,17 +269,6 @@ describe('RestClient test', () => {
 
     describe('head test', () => {
         test('happy case', async () => {
-            window.fetch = jest.fn().mockImplementationOnce((signed_params_url, signed_params) => {
-                return new Promise((res, rej) => {
-                    res({
-                        status: '200',
-                        json: () => {
-                            return signed_params.data;
-                        }
-                    });
-                });
-            });
-
             const spyon = jest.spyOn(RestClient.prototype, 'ajax');
 
             const apiOptions = {

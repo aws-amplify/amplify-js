@@ -42,12 +42,13 @@ export interface AuthOptions {
     oauth?: OAuth,
     refreshHandlers?: object,
     storage?: ICognitoStorage,
-    authenticationFlowType?: string
+    authenticationFlowType?: string,
+    identityPoolRegion?: string
 }
 
 /**
-* Details for multi-factor authentication
-*/
+ * Details for multi-factor authentication
+ */
 export interface MfaRequiredDetails {
     challengeName: any,
     challengeParameters: any
@@ -84,4 +85,8 @@ export interface OAuth {
 
 export interface ConfirmSignUpOptions {
     forceAliasCreation?: boolean
+}
+
+export interface SignOutOpts {
+    global?: boolean
 }

@@ -1,24 +1,146 @@
 ---
 ---
 
-# Quick Start
+# Getting Started
 
-**Welcome to rock with AWS Amplify!** 
+AWS Amplify provides the foundation for your cloud-powered mobile and web apps. AWS Amplify includes a JavaScript library for your Web and React Native projects, a style guide including UI components, and the Amplify CLI toolchain for hosting and for managing backends in the AWS cloud. The goal of this guide is to build or integrate an app with AWS Amplify. Use the drop-down menu in the top right to choose the framework that you want to work with.
 
-AWS Amplify is designed to provide you a more productive environment for connecting Cloud services and working with JavaScript. 
+## Step 1. Set up your Development Environment 
 
-AWS Amplify can be used with any JavaScript front-end library. In addition, for React and React Native developers, we have extensions that can be leveraged. In this guide, we showcase the usage with React, React Native and AWS resources to get started.
+Install the Amplify CLI for building the serverless backend for your app. If you have already installed the CLI, skip ahead to [Step 2. Create a New Project](#step-2-create-a-new-project).
 
-## Create an app
+- <a href="https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start" target="_blank">Sign up for an AWS Account</a>
+- Install <a href="https://nodejs.org/en/download/" target="_blank">Node.js®</a> and <a href="https://www.npmjs.com/get-npm" target="_blank">npm</a> if they are not already on your machine.
+
+Verify that you are running at least Node.js version 8.x or greater and npm version 5.x or greater by running `node -v` and `npm -v` in a terminal/console window.
+{: .callout .callout--action}
+
+- Install and configure the Amplify CLI.
+
+```bash
+$ npm install -g @aws-amplify/cli
+$ amplify configure
+```
+
+## Step 2. Create a New Project
 
 <div class="nav-tab create" data-group='create'>
 <ul class="tabs">
-    <li class="tab-link current react" data-tab="react">React</li>
+    <li class="tab-link purejs current" data-tab="purejs">JavaScript</li>
+    <li class="tab-link react" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
     <li class="tab-link angular" data-tab="angular">Angular</li>
+    <li class="tab-link ionic" data-tab="ionic">Ionic</li>
 </ul>
-<div id="react" class="tab-content current">
-If you have an existing React application you can skip this section. Otherwise, please use  [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
+
+If you have an existing application you can skip ahead, [Step 3. Install AWS Amplify](#step-3-install-aws-amplify). 
+
+<div id="purejs" class="tab-content current">
+
+For this example we will create a new plain JavaScript <a href="https://babeljs.io/docs/en/learn/" target="_blank">ES2015</a> app that uses webpack. Create a new project directory called `amplify-js-app`.
+
+Change directories to your new project and run:
+
+```
+$ mkdir amplify-js-app amplify-js-app/src
+$ cd amplify-js-app
+$ touch package.json index.html webpack.config.js src/app.js
+```
+
+Your project directory structure should now be:
+
+```
+- amplify-js-app
+    - index.html
+    - package.json
+    - webpack.config.js
+    - /src
+        |- app.js
+```
+
+Replace the `package.json` contents with the following:
+
+```js
+{
+  "name": "amplify-js-app",
+  "version": "1.0.0",
+  "description": "AWS Amplify JavaScript Example",
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0",
+    "copy-webpack-plugin": "^4.5.2",
+    "webpack-dev-server": "^3.1.5"
+  },
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack"
+  }
+}
+
+```
+
+Install the local development dependencies:
+
+```
+$ npm install
+```
+
+Add the following to the `index.html` file:
+
+```html
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>AWS Amplify with webpack and ES2015</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <h1>AWS Amplify</h1>
+        <script src="dist/bundle.js"></script>
+    </body>
+</html>
+```
+
+Add the following to the `webpack.config.js` file:
+
+```js
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
+module.exports = {
+    mode: 'development',
+    entry: './src/app.js',
+    output: {
+        filename: 'bundle.js'
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/
+            }
+        ]
+    },
+    plugins: [
+        new CopyWebpackPlugin(['index.html'])
+    ]
+};
+```
+
+Run your app:
+
+```bash
+$ npm start
+```
+
+Your app should now be available at <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>
+
+</div>
+
+<div id="react" class="tab-content">
+
+Use [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
 
 ```bash
 create-react-app my-app
@@ -26,11 +148,10 @@ cd my-app
 npm start
 ```
 
-After running the CLI commands, you should see a basic React application running in your browser.
 </div>
 <div id="react-native" class="tab-content" >
 
-If you have an existing React Native application you can skip this section, but note the we have a [linking requirement](#linking-native-libraries-for-react-native) that may apply to your app.
+If you have an existing React Native application, you can skip this section, but note that we have a [linking requirement](#linking-native-libraries-for-react-native) that may apply to your app.
 
 [Create React Native App (CRNA)](https://github.com/react-community/create-react-native-app) is a command line utility to Create React Native apps with no build configuration. Run following commands to install CRNA and create your app:
 
@@ -40,7 +161,7 @@ $ create-react-native-app myAmplifyProject
 $ cd myAmplifyProject
 ```
 
-Note: project name is in camelCase to avoid problems when testing on a physical iOS phone.
+The project name is in camelCase to avoid problems when testing on a physical iOS phone.
 {: .callout .callout--info}
 
 Then run your app:
@@ -50,7 +171,7 @@ $ react-native run-ios  # or run-android
 ```
 </div>
 <div id="angular" class="tab-content">
-If you have an existing Angular application you can skip this section. Otherwise, you can use the [angular-cli](https://github.com/angular/angular-cli) to bootstrap a new angular app:
+If you have an existing Angular application you can skip this section. Otherwise, you can use the [angular-cli](https://github.com/angular/angular-cli) to bootstrap a new Angular app:
 
 ```bash
 $ npm install -g @angular/cli
@@ -58,65 +179,72 @@ $ ng new myAmplifyProject
 $ cd myAmplifyProject
 ```
 </div>
+<div id="ionic" class="tab-content">
+If you have an existing Ionic application you can skip this section. Otherwise, you can use the Ionic CLI to bootstrap a new Ionic app:
+
+```bash
+$ npm install -g ionic
+$ ionic start myAmplifyProject tabs --type=angular 
+$ cd myAmplifyProject
+```
+</div>
 </div>
 
-## Install AWS Amplify 
+## Step 3. Install AWS Amplify 
+
 AWS Amplify is available as an npm package. Run the following commands at the root directory of your application.
 
 <div class="nav-tab install" data-group='install'>
 <ul class="tabs">
     <li class="tab-link angular" data-tab="angular">Angular</li>
-    <li class="tab-link purejs" data-tab="purejs">JavaScript (no library)</li>
-    <li class="tab-link react current" data-tab="react">React</li>
+    <li class="tab-link ionic" data-tab="ionic">Ionic</li>
+    <li class="tab-link purejs current" data-tab="purejs">JavaScript</li>
+    <li class="tab-link react" data-tab="react">React</li>
     <li class="tab-link react-native" data-tab="react-native">React Native</li>
 </ul>
-<div id="purejs" class="tab-content">
+<div id="purejs" class="tab-content current">
 
 ```bash
 $ npm install --save aws-amplify
 ```
 
 </div>
-<div id="react" class="tab-content current">
+<div id="react" class="tab-content">
 
 ```bash
 $ npm install --save aws-amplify
 ```
 
-On a React app, in addition to `aws-amplify`, we provide helpers and higher order components that are packaged in `aws-amplify-react`.
+In addition to *aws-amplify*, we provide react-specific components in *aws-amplify-react*.
 
 ```bash
-$ npm install --save aws-amplify-react # optional HOCs
+$ npm install --save aws-amplify-react
 ```
 </div>
 <div id="react-native" class="tab-content">
 ```bash
 $ npm install --save aws-amplify
 ```
-For React Native, in addition to `aws-amplify`, we provide React Native specific components in `aws-amplify-react-native` package.
+In addition to *aws-amplify*, we provide React Native specific components in `aws-amplify-react-native` package.
 
 ```bash
 $ npm install --save aws-amplify-react-native
 ```
 
-### Linking native libraries for React Native
+If you have created your app with *create-react-native-app* in previous steps, you can [**skip**](#step-4-set-up-your-backend) this section.
 
-If you have created your app with `create-react-native-app` in previous steps, you can **skip** this section.
-
-AWS Amplify provides native libraries for React Native to support Amazon Cognito sign-in process. If you are using `create-react-native-app` or [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), those libraries are already included in your dependencies. Otherwise, you need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) those libraries to your project.
+AWS Amplify provides native libraries for React Native to support Amazon Cognito sign-in process. If you are using *create-react-native-app* or [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), those libraries are already included in your dependencies. Otherwise, you need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) those libraries to your project.
 {: .callout .callout--info}
 
-Following example shows how you can link the libraries for a project that is created with `react-native init`:
+Following example shows how you can link the libraries for a project that is created with *react-native init*:
 
- 
 ```bash
 $ react-native init myReactNativeApp
 $ cd myReactNativeApp
 $ npm install --save aws-amplify
 $ npm install --save aws-amplify-react-native
-$ react-native link amazon-cognito-identity-js
+$ react-native link
 ```
-
 
 </div>
 <div id="angular" class="tab-content">
@@ -124,318 +252,145 @@ $ react-native link amazon-cognito-identity-js
 $ npm install --save aws-amplify
 ```
 
-In addition to `aws-amplify` core, you can install our angular module which provides a service provider, helpers and components:
+In addition to *aws-amplify* core, you can install our angular module which provides a service provider, helpers, and components:
 
 ```bash
 $ npm install --save aws-amplify-angular
 ``` 
 
-See the [angular guide](https://aws.github.io/aws-amplify/media/angular_guide) for details and usage.
+See the [Angular Guide](https://aws-amplify.github.io/amplify-js/media/angular_guide){: target='_new'} for details and usage.
+{: .callout .callout--action}
+
+</div>
+<div id="ionic" class="tab-content">
+```bash
+$ npm install --save aws-amplify
+```
+
+In addition to `aws-amplify` core, you can install our angular module which provides a service provider, helpers, and components:
+
+</div>
+<div id="ionic" class="tab-content">
+```bash
+$ npm install --save aws-amplify-angular
+``` 
+
+See the [Ionic Guide](https://aws-amplify.github.io/amplify-js/media/ionic_guide){: target='_new'} for details and usage.
+{: .callout .callout--action}
+
 </div>
 </div>
 
-## Install AWS Mobile CLI
-
-You will use [awsmobile-cli](https://github.com/aws/awsmobile-cli) to configure your application work with AWS Mobile Hub, a platform for configuring and managing your cloud backend. Also, awsmobile-cli provides utilities for managing your backend, without visiting AWS Mobile Hub console.
-
-```bash
-$ npm install -g awsmobile-cli
-```
-
-If it is the first time you are using `awsmobile-cli`, you need to configure the CLI with your AWS credentials. To setup permissions for the toolchain used by the CLI, run:
-
-```bash
-$ awsmobile configure
-```
-
-If prompted for credentials, follow the steps provided by the CLI. For more information, see [Provide IAM credentials to AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html){:target="_blank"}.
-
-AWS Mobile CLI uses `yarn` package manager to install dependencies. You can install `yarn` with npm:
-
-```bash
-$ npm install -g yarn
-```
-
-Please see other [installation options for *yarn*](https://yarnpkg.com/en/docs/install) for more information.
-
-## Set up Your Backend
-
-AWS Amplify connects to AWS Mobile Hub to work with Amazon Web Services. 
+## Step 4. Set up Your Backend
 
 You can quickly create your backend from scratch with Automatic Setup, or use Manual Setup to integrate AWS resources you have already configured.
 
-### Automatic Setup
+`amplify init` creates a backend project for your app and pulls the service configuration into your project. 
 
-Automatic setup creates and configures new AWS resources for your backend by using the awsmobile-cli. 
-
-To start, make sure your app has a folder named `/src`, as this is used by automatic setup for a backend configuration file fetched from your AWS Mobile Hub project:
-```bash
-$ mkdir src
+```
+$ amplify init
+? Choose your default editor: << choose-your-preferred editor >>
+? Choose the type of app that you're building javascript
+Please tell us about your project
+? What javascript framework are you using angular
+? Source Directory Path: src
+? Distribution Directory Path: dist/myAngularProject
+? Build Command: npm run-script build
+? Start Command: ng serve
 ```
 
-`awsmobile init` creates a backend project for your app and pulls the service configuration into your project. App analytics and web hosting are enabled in new projects by default.
+> When you run `amplify init` command you are asked for the details of your project. A configuration file for your app is put in your configured source directory called `aws-exports.js`.
 
+Update the `src/app.js` file:
 
-```bash
-$ awsmobile init <optional-mobile-hub-project-id-for-existing-projects>
+```js
+import Amplify from 'aws-amplify';
+import awsmobile from './aws-exports';
+Amplify.configure(awsmobile)
+
+// Optionally add Debug Logging
+Amplify.Logger.LOG_LEVEL = 'DEBUG';
+
 ```
 
-When you run `awsmobile init` command, you are asked for the details of your project. You can accept the defaults by typing `return` for each question. Automatic setup uses your answers to create your project in AWS Mobile Hub and copy the required configuration file to `src/aws-exports.js`.
+### Add Backend Features
 
+You can  use the `amplify add` command with the respective category name to add backend features:
+
+```bash
+$ amplify add <category-name>
+```
+
+Run `amplify` on your CLI at anytime to see available categories.
 
 ```terminal
-Please tell us about your project:
-? Where is your project's source directory:  src
-? Where is your project's distribution directory that stores build artifacts:  build
-? What is your project's build command:  npm run-script build
-? What is your project's start command for local test run:  npm run-script start
-
-? What awsmobile project name would you like to use:  amplify-start-2018-02-28-14-44-42
-
-Successfully created AWS Mobile Hub project: amplify-start-2018-02-28-14-44-42
-
-retrieving the latest backend awsmobile project information
-awsmobile project's details logged at: awsmobilejs/#current-backend-info/backend-details.json
-awsmobile project's access information logged at: awsmobilejs/#current-backend-info/aws-exports.js
-awsmobile project's access information copied to: src/aws-exports.js
-awsmobile project's specifications logged at: awsmobilejs/#current-backend-info/mobile-hub-project.yml
-contents in #current-backend-info/ is synchronized with the latest in the aws cloud
+| Category      |
+| ------------- |
+| analytics     |
+| api           |
+| auth          |
+| function      |
+| hosting       |
+| storage       |
+| notifications |
 ```
 
-Please note that backend resources that are created with `awsmobile init` are copied to *awsmobilejs/#current-backend-info* project folder. When you change your backend configuration and run `awsmobile pull`, the contents of the folder will be updated automatically, and a new copy of the configuration file will be copied to *src/aws-exports.js* folder.
-{: .callout .callout--info}
+For example, to enable static web hosting for your app:
 
-You can also manually create and modify your AWS resources in the Mobile Hub console, as described in the following section. To integrate any manual backend changes, you must run:
 ```bash
-awsmobile pull
+$ amplify add hosting
 ```
 
-This will update your app's `src/aws-exports.js` file. This contains the configuration metadata for your backend resources in Mobile Hub, and should not be modified manually. 
+Then, publish your app:
 
-### Manual Setup to work with existing AWS Resources
+```bash
+$ amplify publish
+```
 
-If you want to use your existing AWS resources with your app (S3 buckets, Cognito user pools, etc.), you need to **manually configure** your app with your existing credentials in your code:
+🎉 Congratulations! Your app is now integrated with AWS Amplify and hosted on Amazon S3. <br/>Some next Steps:
 
+ - Add [Analytics]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide)
+ - Add [Authentication]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)
+ - Add a GraphQL or REST [API]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide)
+
+#### Existing AWS Resources
+
+If you want to use your existing AWS resources with your app you will need to **manually configure** your app with your current credentials in your code, for example:
 
 ```js
 import Amplify from 'aws-amplify';
 
 Amplify.configure({
     Auth: {
-    // REQUIRED - Amazon Cognito Identity Pool ID
+        // REQUIRED - Amazon Cognito Identity Pool ID
         identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', 
-    // REQUIRED - Amazon Cognito Region
+        // REQUIRED - Amazon Cognito Region
         region: 'XX-XXXX-X', 
-    // OPTIONAL - Amazon Cognito User Pool ID
+        // OPTIONAL - Amazon Cognito User Pool ID
         userPoolId: 'XX-XXXX-X_abcd1234',
-    // OPTIONAL - Amazon Cognito Web Client ID
+        // OPTIONAL - Amazon Cognito Web Client ID
         userPoolWebClientId: 'XX-XXXX-X_abcd1234', 
     }
 });
 ```
-In the configuration above, you are required to pass in an Amazon Cognito identity pool ID so that AWS Amplify can retrieve base credentials for a user even in an un-authenticated state. 
+In the configuration above, you are required to pass in an Amazon Cognito identity pool ID so that AWS Amplify can retrieve base credentials for a user even in an unauthenticated state. 
 
 **Configuration Parameters for existing AWS resources**
-To see the configuration parameters for existing AWS resources, see the *Manual Setup* section in AWS Amplify Developer Guide for each individual service:
-[Amazon Cognito]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide#manual-setup),
-[Amazon S3]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/storage_guide#manual-setup),
-[Amazon Pinpoint]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide#manual-setup),
-[Amazon API Gateway]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/api_guide#manual-setup)
+To see the configuration parameters for existing AWS resources, see the *Existing AWS Resources* section in AWS Amplify Developer Guide for each individual service:
+[Amazon Cognito]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide#manual-setup),
+[Amazon S3]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide#manual-setup),
+[Amazon Pinpoint]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide#manual-setup),
+[Amazon API Gateway]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide#manual-setup)
 {: .callout .callout--info}
 
+##### AWS SDK Interfaces
 
-## Connect to Your Backend
+For working with other AWS services you can use service interface objects directly via the JavaScript SDK clients. 
 
-Connecting to your backend at run time requires loading the required configuration in your app with `Amplify.configure()` method, at the entry point of your application (typically `App.js` for a React application).
-
-First import the AWS Amplify library:  
-
-```js
-import Amplify from 'aws-amplify';
-```
-
-If you used Automatic Setup, add in the following code before your first [Component](https://reactjs.org/docs/components-and-props.html).
-
-```js
-import Amplify from 'aws-amplify';
-import aws_exports from './aws-exports';
-
-Amplify.configure(aws_exports);
-```
-
-If you used Manual Setup with existing AWS Resources, you will need to call `Amplify.configure()` with your custom configuration details as described in *Manual Setup* section.
-
-### Using with Script Tag
-
-If you are importing AWS Amplify library with a **HTML script tag**, please add the following definition in your code, and access categories with `Amplify` prefix, e.g., **Amplify.Analytics.configure** instead of **Analytics.configure**:
-
-```js
-const Amplify = window['aws-amplify'];
-
-Amplify.Analytics.configure({
-    // ....
- });
-```
-
-See a sample app which uses script tag [here](https://jsfiddle.net/0gmqtq7g/226/).
-
-### Using with TypeScript
-
-If you are using TypeScript, importing the configuration file is done differently. You can rename **aws-exports.js** to **aws-exports.ts** and use import statement. Alternatively, you can use:
-
-```js
-const aws_exports = require('../../aws-exports').default;
-```
-
-## Adding Services to Your Backend
-
-You can use the [awsmobile-cli](https://github.com/aws/awsmobile-cli) to manage your AWS backend.The `awsmobile features` command enables or disables services. 
-
-```
-$ awsmobile features    
-```
-
-```terminal
- select features:  (Press <space> to select, <a> to toggle all, <i> to inverse selection)
-❯◯ user-signin
- ◯ user-files
- ◯ cloud-api
- ◯ database
- ◉ analytics
- ◉ hosting
- ◯ appsync
-```
-
-Remember to use `awsmobile push` to update your backend with the new configuration. This will refresh your `/src/aws-exports.js` file.
-
-```
-$ awsmobile push     
-```
-
-### Accessing AWS Mobile Hub Console
-
-You can access your AWS Mobile Hub Console anytime to monitor or modify your AWS backend services. Simply type following command in your project root directory:
-
-```
-$ awsmobile console
-```
-
-## Start Monitoring Your App Analytics
-
-To see app analytics data, run `awsmobile console`, choose Analytics in the upper right of the AWS Mobile Hub console, and then Analytics again in the upper left of the [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
-
-![Pinpoint Console]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/pinpoint_dashboard.png)
-
-By default, app analytics is enabled for tracking *user session* tracking. To enable additional tracking events, open `/src/App.js`, and add two lines of code.
-
-```js
-import { Analytics } from 'aws-amplify';
-
-...
-    render() {
-        Analytics.record('appRender');
-...
-```
-
-This will record an **appRender** event every time a user launches your app.
-
-You can easily add custom analytics events to suit your purposes. For more information about Analytics Category, see [AWS Amplify Analytics Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/analytics_guide)
-{: .callout .callout--info}
-
-## Add User Authentication to Your App
-
-AWS Amplify provides out-of-the-box user authentication experience with `withAuthenticator` Higher Order Component for React and React Native.
-
-<div class="nav-tab auth" data-group='auth'>
-<ul class="tabs">
-    <li class="tab-link react current" data-tab="react">React</li>
-    <li class="tab-link react-native" data-tab="react-native">React Native</li>
-    <li class="tab-link angular" data-tab="angular">Angular</li>
-</ul>
-<div id="react" class="tab-content current">
-
-In your `App.js`, add an import for `withAuthenticator` and wrap your default component export as seen below:
-```js
-import { withAuthenticator } from 'aws-amplify-react';
-
-...
-export default withAuthenticator(App);
-```
-
-This will wrap the entire application inside an Authentication UI. Only signed in users will have access to use your application's features.
-
-<img src="https://dha4w82d62smt.cloudfront.net/items/2R3r0P453o2s2c2f3W2O/Screen%20Recording%202018-02-11%20at%2003.48%20PM.gif" style="display: block;height: auto;width: 100%;"/>
-
-</div>
-<div id="react-native" class="tab-content" >
-
-For enabling authentication for React Native app, modify `App.js` as following:
-
-```js
-...
-import { withAuthenticator } from 'aws-amplify-react-native';
-
-class App extends React.Component {
-...
-}
-
-export default withAuthenticator(App);
-...
-```
-
-Reload your application on the physical device or emulator/simulator:
-
-<img src="{%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/images/react_native_with_authenticator.png" width="100%"/>
-
-</div>
-<div id="angular" class="tab-content">
-
-For enabling authentication in your Angular app, you can use the service provider Auth API directly or the built in component. Once you've configured the module, you can include the `amplify-authenticator` anywhere in your app:
-
-```js
-
-    // app.component.html
-    <amplify-authenticator></amplify-authenticator>
-
-```
-
-Within your controller, you can listen for authentication state changes using the service provider:
-
-```js
-
-    // app.component.ts
-    import { AmplifyService }  from 'aws-amplify-angular';
-    ...
-    constructor( public amplify:AmplifyService ) {
-        this.amplify = amplify;
-        this.amplify.authStateChange$
-          .subscribe(authState => {
-            this.authenticated = authState.state === 'signedIn';
-            if (!authState.user) {
-              this.user = null;
-            } else {
-              this.user = authState.user;
-            }
-          });
-    }
-    
-```
-
-</div>
-</div>
-
-For more information about Authentication Category, see [AWS Amplify Authentication Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/authentication_guide)
-{: .callout .callout--info}
-
-
-## Working with AWS Service Interface Objects
-
-AWS Amplify provides a declarative API to work with Amazon Cognito, Amazon API Gateway, Amazon Pinpoint and Amazon S3. For working with other AWS Services, you can use service interface objects. 
-
-Note: In order to work with service interface objects, your Amazon Cognito users' [IAM role](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) must have the appropriate permissions to call the requested services.
+To work with service interface objects, your Amazon Cognito users' [IAM role](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) must have the appropriate permissions to call the requested services.
 {: .callout .callout--warning}
 
-You can call methods on any AWS Service interface object by passing your credentials from `Auth` to the service call constructor:
+You can call methods on any AWS Service interface object supported by the <a href="https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html" target="_blank">AWS JavaScript SDK</a> by passing your credentials from *Auth* to the service call constructor. For example, to use Amazon Route53 in your app:
 
 ```js
 import Route53 from 'aws-sdk/clients/route53';
@@ -453,7 +408,3 @@ Auth.currentCredentials()
     // route53.changeResourceRecordSets();
   })
 ```
-
-Full API Documentation for service interface objects is available [here](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/_index.html).
-{: .callout .callout--info}
- 

@@ -1,23 +1,9 @@
-jest.mock('../../src/Categories', () => {
-    const Auth = {
-        resendSignUp() {
-            return;
-        },
-        confirmSignUp() {
-            return;
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import ConfirmSignUp from '../../src/Auth/ConfirmSignUp';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow, Button } from '../../src/AmplifyUI';
+import { Header, Footer, Input, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'confirmSignUp'
@@ -87,7 +73,7 @@ describe('ConfirmSignIn', () => {
                 }
             }
 
-            wrapper.find(InputRow).at(0).simulate('change', event_code);
+            wrapper.find(Input).at(0).simulate('change', event_code);
             await wrapper.find(Button).at(0).simulate('click');
 
             expect.assertions(2);
@@ -134,7 +120,7 @@ describe('ConfirmSignIn', () => {
                 }
             }
 
-            await wrapper.find(Button).at(1).simulate('click');
+            await wrapper.find(Link).at(0).simulate('click');
             
             expect.assertions(1);
             expect(spyon).toBeCalledWith('user');

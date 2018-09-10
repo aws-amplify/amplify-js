@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View } from 'react-native';
 import { 
     Auth, 
     Analytics,
@@ -71,8 +71,13 @@ export default class Authenticator extends React.Component {
         Hub.listen('auth', this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
+        this._isMounted = true;
         this.checkUser();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     onHubCapsule(capsule) {
@@ -82,6 +87,7 @@ export default class Authenticator extends React.Component {
 
     handleStateChange(state, data) {
         logger.debug('authenticator state change ' + state);
+        if (!this._isMounted) return;
         if (state === this.state.authState) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
@@ -103,6 +109,7 @@ export default class Authenticator extends React.Component {
         const statesJumpToSignIn = ['signedIn', 'signedOut', 'loading'];
         Auth.currentAuthenticatedUser()
             .then(user => {
+                if (!this._isMounted) return;
                 if (user) {
                     this.handleStateChange('signedIn', null);
                 } else {
@@ -110,8 +117,15 @@ export default class Authenticator extends React.Component {
                 }
             })
             .catch(err => {
-                if (statesJumpToSignIn.includes(authState)) this.handleStateChange('signIn', null);
+                if (!this._isMounted) return;
                 logger.debug(err);
+                if (statesJumpToSignIn.includes(authState)) {
+                    Auth.signOut()
+                        .then(() => {
+                            this.handleStateChange('signIn', null);
+                        })
+                        .catch(err => this.error(err));       
+                }
             });
     }
 
@@ -147,11 +161,10 @@ export default class Authenticator extends React.Component {
                 });
             });
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            
                 <View style={theme.container}>
                     {children}
                 </View>
-            </TouchableWithoutFeedback>
         );
     }
 }

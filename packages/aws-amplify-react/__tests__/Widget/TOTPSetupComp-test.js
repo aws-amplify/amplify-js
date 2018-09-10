@@ -1,24 +1,7 @@
-jest.mock('../../src/Categories', () => {
-    const Auth = {
-        setupTOTP() {
-             return;
-        },
-        verifyTotpToken() {
-            return;
-        },
-        setPreferredMFA() {
-            return;
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import React, { Component } from 'react';
 import TOTPSetupComp from '../../src/Widget/TOTPSetupComp';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
+import { Header, Footer, InputRow, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../../src/AmplifyTheme';
 
 
@@ -47,7 +30,7 @@ describe('TOTPSetupComp test', () => {
             const wrapper = shallow(<TOTPSetupComp/>);
             wrapper.setState({code: 'code'});
 
-            wrapper.find(ButtonRow).at(1).simulate('click');
+            wrapper.find(Button).simulate('click');
 
             expect(spyon).toBeCalled();
         });
@@ -58,7 +41,7 @@ describe('TOTPSetupComp test', () => {
             });
             const wrapper = shallow(<TOTPSetupComp/>);
 
-            wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Button).simulate('click');
 
             expect(spyon).toBeCalled();
         });

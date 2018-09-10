@@ -1,7 +1,8 @@
 ---
+layout: examples
 ---
 
-## Code Examples
+# Code Examples
 
 AWS Amplify enables easy integration with cloud backend for common service categories such as authentication, analytics, API and storage as outlined in the [Developer Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/developer_guide). 
 
@@ -72,7 +73,7 @@ export default withAuthenticator(App);
 </div>
 </div>
 
-For a complete guide for starting your app with AWS Amplify, please see our [Quick Start Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/quick_start).
+For a complete guide for starting your app with AWS Amplify, please see our [Get Started Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start).
 {: .next-link}
 
 ### Store Files on The Cloud
@@ -106,7 +107,7 @@ Amplify.configure(aws_exports);
 Analytics.record('myCustomEvent');
 ```
 
-See [here](https://aws.github.io/aws-amplify/media/analytics_guide) for the Analytics developer guide. 
+See [here](https://aws-amplify.github.io/amplify-js/media/analytics_guide) for the Analytics developer guide. 
 
 ### Signing HTTP requests
 

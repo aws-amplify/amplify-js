@@ -7,28 +7,14 @@ import { FormComponent } from '../../../components/common/form.component';
 
     describe('FormComponent:', () => {
 
-      beforeAll(() => {
-        TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-      })
-
       let component: FormComponent;
-      let fixture: ComponentFixture<FormComponent>;
-      let titleEl: DebugElement;
     
-      beforeEach(() => {
+      beforeEach(() => { 
+        component = new FormComponent();
+      });
     
-        TestBed.configureTestingModule({
-          declarations: [FormComponent]
-        });
-    
-        // create component and test fixture
-        fixture = TestBed.createComponent(FormComponent);
-    
-        // get test component from the fixture
-        component = fixture.componentInstance;
-    
-        titleEl = fixture.debugElement.query(By.css('.form-title'));
-
+      afterEach(() => {
+        component = null;
       });
 
       it('...should be created', () => {

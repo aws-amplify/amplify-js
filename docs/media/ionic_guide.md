@@ -3,9 +3,20 @@
 
 # Ionic
 
-AWS Amplify provides Angular Components that you can use with Ionic in [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
+AWS Amplify helps developers to create high-quality Ionic apps quickly by handling the heavy lifting of configuring and integrating cloud services behind the scenes. It also provides a powerful high-level API and ready-to-use security best practices.
+
+For Ionic developers, AWS Amplify provides following main benefits:
+
+- Easy integration with cloud operations with declarative API
+- CLI support for bootstrapping your app backend quickly
+- Local configuration and deployment of your app’s backend logic
+- Deployment of static assets for hosting and streaming
+- Ionic UI components for common operations such as Authorization and Storage
+- Monitoring app usage and engaging users with campaign analytics
 
 ## Installation and Configuration
+
+AWS Amplify provides Angular Components that you can use with Ionic in [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
 
 Install `aws-amplify` and `aws-amplify-angular` npm packages into your Angular app.
 
@@ -17,34 +28,38 @@ $ npm install --save ionic-angular
 
 ### Setup
 
-To configure your Ionic app for AWS Amplify, you need to create a backend configuration with AWS Mobile CLI and import the auto-generated configuration file into your project. 
+To configure your Ionic app for AWS Amplify, you need to create a backend configuration with Amplify CLI and import the auto-generated configuration file into your project. 
 
 Following commands will enable Auth category and will create `aws-exports.js` configuration file under your projects `/src` folder. 
 
 ```bash
-$ npm install -g awsmobile-cli
-$ awsmobile init
-$ awsmobile user-signin enable
-$ awsmobile user-files enable
-$ awsmobile push # Update your backend
+$ npm install -g @aws-amplify/cli
+$ amplify init
+$ amplify add auth
+$ amplify add storage
+$ amplify push # Updates your backend
 ```
 
-After creating your backend, the configuration file is copied to `/awsmobilejs/#current-backend-info/aws-exports.js`, and the source folder you have identified in the `awmobile init` command.
+Please visit [Authentication Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)  and [Storage Guide]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/storage_guide) to learn more about enabling these categories.
+{: .callout .callout--info}
 
-To import the configuration file to your Ionic app, you will need to rename `aws_exports.js` to `aws_exports.ts`. Alternatively, you can create a `yarn start` command in your `package.json`.
-```js
-"scripts": {
-    "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",
-    "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"
-}
+
+After creating your backend, the configuration file is copied to `/amplify/#current-cloud-backend/aws-exports.js`, and the source folder you have identified in the `amplify init` command.
+
+To import the configuration file to your Ionic app, you will need to rename `aws_exports.js` to `aws_exports.ts`. You should make sure that your `package.json` scripts also rename the file upon build, so that any configuration changes which result in the download of an `aws_exports.js` from AWS Mobile Hub get changed over to the ts extension.
+```js	
+"scripts": {	
+    "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",	
+    "build": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng build --prod; ng build --prod"	
+}	
 ```
 
 Import the configuration file and load it in your `main.ts`, which is the entry point of your Angular application. 
 
 ```js
 import Amplify from 'aws-amplify';
-import awsmobile from './aws-exports';
-Amplify.configure(awsmobile);
+import amplify from './aws-exports';
+Amplify.configure(amplify);
 ```
 
 ## Importing Amplify
@@ -126,7 +141,7 @@ export class AppComponent {
 }
 ```
 
-You can access all [AWS Amplify Category APIs](https://aws.github.io/aws-amplify/media/developer_guide) with *AmplifyService*. 
+You can access all [AWS Amplify Category APIs](https://aws-amplify.github.io/amplify-js/media/developer_guide) with *AmplifyService*. 
 
 ### Usage Example: Subscribe to Authentication State Changes
 
@@ -162,16 +177,16 @@ AWS Amplifies provides components that you can use in your Angular view template
 
 Authenticator component creates an out-of-the-box signing/sign-up experience for your Angular app. 
 
-Before using this component, please be sure that you have activated [Authentication category](https://aws.github.io/aws-amplify/media/authentication_guide):
+Before using this component, please be sure that you have activated [Authentication category](https://aws-amplify.github.io/amplify-js/media/authentication_guide):
 ```bash
-$ awsmobile user-signin enable
+$ amplify add auth
 ```
 
 
 To use Authenticator, just add the `amplify-authenticator` directive in your .html view:
 ```html
   ...
-  <amplify-authenticator></amplify-authenticator>
+  <amplify-authenticator framework="Ionic"></amplify-authenticator>
   ...
 ```
 
@@ -179,16 +194,16 @@ To use Authenticator, just add the `amplify-authenticator` directive in your .ht
 
 Photo Picker component will render a file upload control that will allow choosing a local image and uploading it to Amazon S3. Once an image is selected, a base64 encoded image preview will be displayed automatically.
 
-Before using this component, please be sure that you have activated [*user-files* with AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
+Before using this component, please be sure that you have activated [*user-files* with Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
 
 ```bash
-$ awsmobile user-files enable
+$ amplify add storage
 ```
 
 To render photo picker in an Angular view, use *amplify-photo-picker* component:
 
 ```html
-<amplify-photo-picker 
+<amplify-photo-picker framework="Ionic"
     (picked)="onImagePicked($event)"
     (loaded)="onImageLoaded($event)">
 </amplify-photo-picker>
@@ -221,16 +236,17 @@ onImagePicked( file ) {
 
 S3 Album component display a list of images from the connected S3 bucket.
 
-Before using this component, please be sure that you have activated [*user-files* with AWS Mobile CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
+Before using this component, please be sure that you have activated [*user-files* with Amplify CLI](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-reference.html):
 
 ```bash
-$ awsmobile user-files enable
+$ amplify add storage
 ```
 
 To render the album, use *amplify-s3-album* component in your Angular view:
 
 ```html
-<amplify-s3-album path="pics" (selected)="onAlbumImageSelected($event)">
+<amplify-s3-album framework="Ionic" 
+    path="pics" (selected)="onAlbumImageSelected($event)">
 </amplify-s3-album>
 ```
 
@@ -242,6 +258,23 @@ onAlbumImageSelected( event ) {
 }
 ```
 
+### Interactions
+
+The `amplify-interactions` component provides you with a Chatbot user interface. You can pass it three parameters:
+
+1. `bot`:  The name of the Amazon Lex Chatbot
+
+2. `clearComplete`:  A flag indicating whether or not the messages should be cleared at the
+end of the conversation.
+
+3. `complete`: A function that is executed when the conversation is completed.
+
+```html
+<amplify-interactions bot="yourBotName" clearComplete="true" (complete)="onBotComplete($event)"></amplify-interactions>
+```
+
+See the [Interactions documentation]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/interactions_guide) for information on creating an Amazon Lex Chatbot.
+
 ### Custom Styles
 
 You can use custom styling for AWS Amplify components. Just import your custom *styles.css* that overrides the default styles which can be found in `/node_modules/aws-amplify-angular/theme.css`.
@@ -250,9 +283,9 @@ You can use custom styling for AWS Amplify components. Just import your custom *
 
 Currently, the newest version of Angular (6.x) does not provide the shim for the  `global` object, which was provided in previous versions. Specific AWS Amplify dependencies rely on this shim.  While we evaluate the best path forward to address this issue, you have a couple of options for re-creating the shim in your Angular 6 app to make it compatible with Amplify.
 
-1.  Add the following to your polyfills.ts: ```(window as any).global = window;```.
+1.  Add the following to your polyfills.ts: `(window as any).global = window;`.
 
-2.  Add the following script to your index.html ```<head>``` tag:
+2.  Add the following script to your index.html `<head>` tag:
 ``` 
     <script>
         if (global === undefined) {
@@ -260,17 +293,3 @@ Currently, the newest version of Angular (6.x) does not provide the shim for the
         }
     </script>
   ```
-
-## Tutorials
-
-Learn more with tutorials:
-
-- [How to use AWS Amplify and Angular to Build Cloud Enabled JavaScript Applications](https://medium.freecodecamp.org/building-cloud-enabled-javascript-applications-with-aws-amplify-angular-682547fc6477){: target='_new'}
-
-
----
-
-To help you start working with AWS Amplify, Ionic team provides a Starter App. See our [Ionic Starter App in Github](https://github.com/ionic-team/starters/tree/master/ionic-angular/official/aws).
-{: .callout .callout--info}
-
-**You can also use our [Angular components]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/angular_guide) with Ionic.**

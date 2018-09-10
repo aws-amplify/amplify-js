@@ -1,18 +1,7 @@
-jest.mock('../../src/Categories', () => {
-    const Auth = {
-        setPreferredMFA() {
-            return Promise.resolve();
-        }
-    };
-
-    return {
-        Auth
-    };
-});
-import { Auth } from '../../src/Categories';
+import Auth from '@aws-amplify/auth';
 import React, { Component } from 'react';
 import SelectMFAType from '../../src/Widget/SelectMFAType';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
+import { Header, Footer, Input, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../../src/AmplifyTheme';
 
 
@@ -82,7 +71,7 @@ describe('SelectMFAType test', () => {
             }
             const wrapper = shallow(<SelectMFAType MFATypes={MFATypes}/>);
 
-            wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Button).simulate('click');
 
             expect(spyon).toBeCalled();
         });

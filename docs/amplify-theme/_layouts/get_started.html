@@ -1,0 +1,190 @@
+{% if jekyll.environment == 'production' %}
+<html>
+  <head>
+        <!-- Global site tag (gtag.js) - Google Analytics -->     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115615468-1"></script>     <script>         window.dataLayer = window.dataLayer || [];         function gtag(){dataLayer.push(arguments);}         gtag('js', new Date());         gtag('config', 'UA-115615468-1',{             'linker': {             'domains': ['aws-amplify.github.io']             }         });         var navigateToNextPage = function (elem) {             var path = "{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start";             location.replace( path + location.search);         };       gtag('event', 'page_view', {         'event_callback': navigateToNextPage         });     </script> <meta http-equiv="refresh" content="5; /url={% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start" />
+  </head>
+  <body>
+    <p>Redirecting to <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start">https://aws-amplify.github.io/amplify-js/media/quick_start</a></p>
+  </body>
+</html>
+{% else %}
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include site-head.html %}
+	</head>
+	<body class="{{ site.amplify.color_theme }}">
+		{% include site-header.html %}
+
+		{% if page.marketing_grid%}
+		<div class="page-container">
+			<div class="section-category">
+		
+				<div class="container">
+					<div class="row">
+	
+						<div>
+							<div class="dev-guide-heading">
+								<div class="row">
+									{% for item in page.marketing_grid %}
+										<div class="col-sm-8 col-lg-8">
+											<span>
+												<div class="dev-guide-content" data-mh>
+													<p class="dev-guide__title">{{ item.title }}</p>
+													<!-- <p class="dev-guide__excerpt">{{ item.excerpt }}</p> -->
+												</div><!-- /.nav-grid__content -->
+											</span><!-- /.nav-grid__item -->
+										</div><!-- /.col -->
+									{% endfor %}
+								</div><!-- /.row -->
+								<div>
+                                    <!-- <a href="cli_guide"> <button class="btn install-amplify-cli" >Install Amplify CLI</button> </a> -->
+                                    <!-- <a href="toolchain">
+                                        <div id="learn-more-about-cli-box">
+                                            <p class="amplify-link">Learn more about the CLI</p>
+                                            <img class="down-arrow" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Small/More-Button-no-shadow.svg" />
+                                        </div>
+                                    </a> -->
+								</div>
+							</div><!-- /.nav-grid -->
+						</div><!-- /.col -->
+					</div><!-- /.row -->
+				</div><!-- /.container -->
+            </div><!-- /.section -->
+		{% endif %}
+            <div class="container">
+                <div class="row">
+                    <div class="section-top section-top-category section-top-quickstart">
+                        <div class="container">
+                            <div class="inline-block">
+                                <div class="header col-sm-7">
+                                    Sign up for an AWS Account
+                                </div>
+                                <div class="subheader col-sm-7">
+                                    There are no upfront charges or any term commitments to create an AWS account and signing up gives you immediate access to the AWS Free Tier
+                                </div>
+                            </div>
+                            <div>
+                                <a href="https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/start" target="_blank"> 
+                                    <button class="btn" id="aws-signup-btn">Create an AWS Account</button> 
+                                </a>
+                            </div>
+                            <img id="aws-logo" class="hidden-xs" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/aws_logo.png" />
+                            <div class="div-number">1</div>
+                        </div>
+                    </div>
+                </div><!-- /.row --> 
+            </div><!-- /.container -->
+
+            <div class="container">
+                <div class="row">
+                    <div class="section-top section-top-category section-top-quickstart">
+                        <div class="container">
+                            <div class="inline-block">
+                                <div class="header col-sm-8">
+                                    Install the CLI
+                                </div>
+                                <div class="subheader above-code-block">
+                                    The Amplify Command Line Interface (CLI) is a unified toolchain to create, integrate, and manage the AWS cloud services for your app. Install <a id="node-link" href="https://nodejs.org/en/download/" target="_blank">Node.js® and npm</a> if they are not already on your machine.
+                                </div>
+                            </div>
+                            <p class="subheader above-code-block"><i>Note: Verify that you are running at least Node.js version 8.x or greater and npm version 5.x or greater by running node -v and npm -v in a terminal/console window. Older versions produce errors, but newer versions are fine.</i></p>
+                            <p class="subheader above-code-block">Now, install and configure the Amplify CLI globally.</p>
+                            <div class="language-bash highlighter-rouge inline-block section-code-block">
+                                <div class="highlight">
+                                    <pre class="highlight section-code-block">
+<code>$ npm install -g @aws-amplify/cli
+$ amplify configure</code>
+                                    </pre>
+                                </div>    
+                            </div>
+                            <div class="div-number">2</div>
+                        </div>
+                    </div>
+                </div><!-- /.row -->      
+            </div><!-- /.container -->
+			
+            <div class="container">
+                <div class="row">
+                    <div class="section-top section-top-category section-top-quickstart"  id="bottom-section">
+                        <div class="container">
+                            <div class="inline-block">
+                                <div class="header col-sm-8" id="get-started-header">
+                                    Start Building with AWS Amplify
+                                </div>
+                            </div>
+                            <!-- <div class="row">
+                                <div class="row-title">
+                                    <p class="title">Platforms with Amplify Library Support</p>
+                                    <p class="subtitle">AWS Amplify provides a declarative easy-to-use library for building cloud-powered web and mobile applications.</p>
+                                </div>
+                                <div class="platform-container">
+                                    <div class="platform-box">
+                                        <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/JS@1x.png" />
+                                        <p class="platform-title">Build with JavaScript</p>
+                                        <a href="get_started"> <button class="btn">Get Started</button> </a>
+                                    </div>
+                                    <div class="platform-box">
+                                        <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/React@1x.png" />
+                                        <p class="platform-title">Build with React</p>
+                                        <a href="react_guide"> <button class="btn">Get Started</button> </a>
+                                    </div>
+                                    <div class="platform-box">
+                                        <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/ReactNat@1x.png" />
+                                        <p class="platform-title">Build with React Native</p>
+                                        <a href="react_native_guide"> <button class="btn">Get Started</button> </a>
+                                    </div>
+                                    <div class="platform-box">
+                                        <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Angular@1x.png" />
+                                        <p class="platform-title">Build with Angular</p>
+                                        <a href="angular_guide"> <button class="btn">Get Started</button> </a>
+                                    </div>
+                                </div> -->
+                            <!-- </div>/.row -->
+                            <div class="row">
+                                <!-- <div class="row-title">
+                                    <p class="title">Platforms with Amplify Library Support</p>
+                                    <p class="subtitle">AWS Amplify provides a delcarative easy-to-use library for building cloud-powered web and mobile applications.</p>
+                                </div> -->
+                                <div class="platform-container">
+                                        <div class="platform-box">
+                                            <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank">
+                                                <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Apple@1x.png" />
+                                                <p class="platform-title">Build with iOS</p>
+                                                <button class="btn">Get Started</button>
+                                            </a>
+                                        </div>
+                                        <div class="platform-box">
+                                            <a href="https://docs.aws.amazon.com/aws-mobile/latest/developerguide/getting-started.html" target="_blank">
+                                                <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/Droid@1x.png" />
+                                                <p class="platform-title">Build with Android</p>
+                                                <button class="btn">Get Started</button>
+                                            </a>
+                                        </div>
+                                        <div class="platform-box">
+                                            <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=purejs">
+                                                <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/web.png" />
+                                                <p class="platform-title">Build for Web</p>
+                                                <button class="btn">Get Started</button>
+                                            </a>
+                                        </div>
+                                        <div class="platform-box">
+                                            <a href="{% if jekyll.environment == 'production' %}{{ site.amplify.docs_baseurl }}{% endif %}/media/quick_start?platform=react-native">
+                                                <img class="circle-badge" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Circle-Badge/ReactNat@1x.png" />
+                                                <p class="platform-title">Build with React Native</p>
+                                                <button class="btn">Get Started</button>
+                                            </a>
+                                        </div>
+                                    </div>
+                            </div><!-- /.row -->
+                            <div class="div-number">3</div>
+                        </div>
+                    </div>
+                </div><!-- /.row -->      
+            </div><!-- /.container -->
+        </div>
+
+		{% include site-footer.html %}
+	</body>
+</html>
+{% endif %}

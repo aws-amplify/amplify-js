@@ -21,10 +21,8 @@ const cacheClass = {
     }
 }
 
-const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'getPromise').mockImplementation(() => {
-    return new Promise((res, rej) => {
-        res('cred');
-    });
+const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'get').mockImplementation((callback) => {
+    callback(null);
 })
 
 const options = {

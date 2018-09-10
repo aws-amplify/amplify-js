@@ -16,6 +16,7 @@ import android.app.AlarmManager;
 import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -178,12 +179,29 @@ public class RNPushNotificationHelper {
                 }
             }
 
+            String NOTIFICATION_CHANNEL_ID = packageName;
+            String NOTIFICATION_CHANNEL_NAME = packageName;
+
+            NotificationManager notificationManager = notificationManager();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, importance);
+                notificationChannel.enableLights(true);
+                notificationChannel.enableVibration(true);
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
                     .setContentTitle(title)
                     .setTicker(bundle.getString("ticker"))
                     .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(bundle.getBoolean("autoCancel", true));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                notification.setChannelId(NOTIFICATION_CHANNEL_ID);
+            }
 
             String group = bundle.getString("group");
             if (group != null) {
@@ -296,8 +314,6 @@ public class RNPushNotificationHelper {
             // broadcast event
             // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
             //         PendingIntent.FLAG_ONE_SHOT);
-
-            NotificationManager notificationManager = notificationManager();
 
             notification.setContentIntent(pendingIntent);
 
