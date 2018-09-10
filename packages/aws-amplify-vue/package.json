@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-vue",
-  "version": "0.1.0",
+  "version": "110.1.1",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -14,8 +14,10 @@
     "qrcode.vue": "^1.6.0",
     "vue": "^2.5.16"
   },
-  "devDependencies": {
+  "peerDependencies": {
     "@aws-amplify/ui": "^1.0.2",
+  },
+  "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0-rc.5",
     "@vue/cli-plugin-eslint": "^3.0.0-rc.5",
     "@vue/cli-plugin-unit-jest": "^3.0.1",
