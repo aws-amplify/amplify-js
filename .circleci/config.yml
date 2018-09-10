@@ -147,5 +147,6 @@ workflows:
               only:
                 - release
                 - master
+                - beta
           requires:
             - unit_test
