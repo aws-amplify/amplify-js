@@ -81,3 +81,9 @@ export interface ConfirmSignUpOptions {
 export interface SignOutOpts {
     global?: boolean
 }
+
+export interface ParseUrlOpts {
+    url: string,
+    onSuccessHandler?: Function,
+    onFailureHandler?: Function
+}

@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { AuthOptions, FederatedResponse, ConfirmSignUpOptions, SignOutOpts } from './types';
+import { AuthOptions, FederatedResponse, ConfirmSignUpOptions, SignOutOpts, ParseUrlOpts } from './types';
 
 import {
     AWS,
@@ -146,41 +146,6 @@ export default class AuthClass {
 
             logger.debug('cognito auth params', cognitoAuthParams);
             this._cognitoAuthClient = new CognitoAuth(cognitoAuthParams);
-            this._cognitoAuthClient.userhandler = {
-                // user signed in
-                onSuccess: (result) => {
-                    that.user = that.userPool.getCurrentUser();
-                    logger.debug("Cognito Hosted authentication result", result);
-                    that.currentSession().then(async (session) => {
-                        try {
-                            await Credentials.clear();
-                            const cred = await Credentials.set(session, 'session');
-                            logger.debug('sign in succefully with', cred);
-                        } catch (e) {
-                            logger.debug('sign in without aws credentials', e);
-                        } finally {
-                            dispatchAuthEvent('signIn', that.user);
-                            dispatchAuthEvent('cognitoHostedUI', that.user);
-                        }
-                    });
-                },
-                onFailure: (err) => {
-                    logger.debug("Error in cognito hosted auth response", err);
-                    dispatchAuthEvent('signIn_failure', err);
-                }
-            };
-            // if not logged in, try to parse the url.
-            this.currentAuthenticatedUser().then(() => {
-                logger.debug('user already logged in');
-            }).catch(e => {
-                logger.debug('not logged in, try to parse the url');
-                if (!window || !window.location) {
-                    logger.debug('not in the browser');
-                    return;
-                }
-                const curUrl = window.location.href;
-                this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
-            });
         }
 
         dispatchAuthEvent('configured', null);
@@ -1325,6 +1290,38 @@ export default class AuthClass {
             identityId: credentials.identityId,
             authenticated: credentials.authenticated
         };
+    }
+
+    /**
+     * Parse the Cognito Hosted UI callback url
+     * @param {string} url - the OAuth callback url
+     */
+    public parseUrl(options: ParseUrlOpts) {
+        const { url, onSuccessHandler, onFailureHandler } = options;
+        const that = this;
+        this._cognitoAuthClient.userhandler = {
+                // user signed in
+                onSuccess: (result) => {
+                    that.user = that.userPool.getCurrentUser();
+                    logger.debug("Cognito Hosted authentication result", result);
+                    that.currentSession().then(async (session) => {
+                        try {
+                            await Credentials.clear();
+                            const cred = await Credentials.set(session, 'session');
+                            logger.debug('sign in succefully with', cred);
+                        } catch (e) {
+                            logger.debug('sign in without aws credentials', e);
+                        } finally {
+                            dispatchAuthEvent('signIn', that.user);
+                            dispatchAuthEvent('cognitoHostedUI', that.user);
+                        }
+                    });
+                },
+                onFailure: (err) => {
+                    logger.debug("Error in cognito hosted auth response", err);
+                    dispatchAuthEvent('signIn_failure', err);
+                }
+            };
     }
 
     private attributesToObject(attributes) {
