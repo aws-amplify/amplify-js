@@ -55,21 +55,21 @@ export default class APIClass {
     configure(options) {
         let opt = options ? options.API || options : {};
         logger.debug('configure API', { opt });
-        
+
         if (opt['aws_project_region']) {
             if (opt['aws_cloud_logic_custom']) {
                 const custom = opt['aws_cloud_logic_custom'];
                 opt.endpoints = (typeof custom === 'string') ? JSON.parse(custom)
                     : custom;
             }
-            
+
             opt = Object.assign({}, opt, {
                 region: opt['aws_project_region'],
                 header: {},
             });
         }
-        
-        if(!Array.isArray(opt.endpoints)) {
+
+        if (!Array.isArray(opt.endpoints)) {
             opt.endpoints = [];
         }
 
@@ -306,7 +306,7 @@ export default class APIClass {
 
         return headers;
     }
-    
+
     /**
      * to get the operation type
      * @param operation 

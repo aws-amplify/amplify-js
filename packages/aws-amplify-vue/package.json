@@ -1,0 +1,61 @@
+{
+  "name": "aws-amplify-vue",
+  "version": "0.1.0",
+  "private": false,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "lint": "vue-cli-service lint",
+    "build": "vue-cli-service build --target lib --name aws-amplify-vue ./src/Amplify.vue",
+    "test": "./node_modules/.bin/vue-cli-service test:unit",
+    "debug": "node --debug-brk --inspect ./node_modules/.bin/jest -i"
+  },
+  "dependencies": {
+    "qrcode.vue": "^1.6.0",
+    "vue": "^2.5.17"
+  },
+  "devDependencies": {
+    "@aws-amplify/ui": "^1.0.2",
+    "@vue/cli-plugin-babel": "^3.0.1",
+    "@vue/cli-plugin-eslint": "^3.0.1",
+    "@vue/cli-plugin-unit-jest": "^3.0.1",
+    "@vue/cli-service": "^3.0.1",
+    "@vue/test-utils": "^1.0.0-beta.20",
+    "babel-eslint": "^8.2.5",
+    "eslint-loader": "^2.1.0",
+    "vue-template-compiler": "^2.5.16",
+    "postcss-loader": "^2.1.6"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "ecmaVersion": 2017,
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ],
+  "files": [
+    "dist/*",
+    "src/*",
+    "public/*",
+    "*.json",
+    "*.js"
+  ],
+  "main": "./dist/aws-amplify-vue.common.js"
+}
