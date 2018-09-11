@@ -22,5 +22,10 @@
     "babel-jest": "^23.0.1",
     "vue-template-compiler": "^2.5.17"
   },
-  "main": "./dist/aws-amplify-vue.common.js"
+  "main": "./dist/aws-amplify-vue.common.js",
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  }
 }
