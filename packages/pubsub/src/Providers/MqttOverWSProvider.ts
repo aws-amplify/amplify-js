@@ -22,13 +22,13 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('MqttOverWSProvider');
 
-export interface MqttProvidertOptions {
+export interface MqttProvidertOptions extends ProvidertOptions {
     clientId?: string,
     url?: string,
 }
 
 class ClientsQueue {
-    private promises: Map<string, Promise<any>> = new Map();
+    private promises: Map<string, Promise<Client>> = new Map();
 
     async get(clientId: string, clientFactory: (string) => Promise<Client>) {
         let promise = this.promises.get(clientId);
@@ -43,6 +43,8 @@ class ClientsQueue {
         return promise;
     }
 
+    get allClients() { return Array.from(this.promises.keys()); }
+
     remove(clientId) {
         this.promises.delete(clientId);
     }
@@ -50,7 +52,7 @@ class ClientsQueue {
 
 export class MqttOverWSProvider extends AbstractPubSubProvider {
 
-    private clientsQueue = new ClientsQueue();
+    private _clientsQueue = new ClientsQueue();
 
     constructor(options: MqttProvidertOptions = {}) {
         super({ ...options, clientId: options.clientId || uuid(), });
@@ -60,17 +62,27 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     protected get endpoint() { return this.options.aws_pubsub_endpoint; }
 
+    protected get clientsQueue() { return this._clientsQueue; }
+
     getProviderName() { return 'MqttOverWSProvider'; }
+
+    public onDisconnect({ clientId, errorCode, ...args }) {
+        if (errorCode !== 0) {
+            logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
+        }
+    }
 
     public async newClient({ url, clientId }: MqttProvidertOptions): Promise<Client> {
         logger.debug('Creating new MQTT client', clientId);
 
         const client = new Client(url, clientId);
-        // client.trace = (...args) => logger.debug(clientId, ...args);
+        // client.trace = (args) => logger.debug(clientId, JSON.stringify(args, null, 2));
         client.onMessageArrived = ({ destinationName: topic, payloadString: msg }) => {
             this._onMessage(topic, msg);
         };
-        client.onConnectionLost = logger.info.bind(logger);
+        client.onConnectionLost = ({ errorCode, ...args }) => {
+            this.onDisconnect({ clientId, errorCode, ...args });
+        };
 
         await new Promise((resolve, reject) => {
             client.connect({
@@ -91,14 +103,14 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
     protected async disconnect(clientId: string): Promise<void> {
         const client = await this.clientsQueue.get(clientId, () => null);
 
-        if (client) {
+        if (client && client.isConnected()) {
             client.disconnect();
-            this.clientsQueue.remove(clientId);
         }
+        this.clientsQueue.remove(clientId);
     }
 
     async publish(topics: string[] | string, msg: any) {
-        const targetTopics = ([] as [string]).concat(topics);
+        const targetTopics = ([] as string[]).concat(topics);
         const message = JSON.stringify(msg);
 
         const url = await this.endpoint;
@@ -109,7 +121,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         targetTopics.forEach(topic => client.send(topic, message));
     }
 
-    private _topicObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
+    protected _topicObservers: Map<string, Set<ZenObservable.SubscriptionObserver<any>>> = new Map();
 
     private _onMessage(topic: string, msg: any) {
         try {
@@ -123,7 +135,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
     }
 
     subscribe(topics: string[] | string, options: MqttProvidertOptions = {}): Observable<any> {
-        const targetTopics = ([] as [string]).concat(topics);
+        const targetTopics = ([] as string[]).concat(topics);
         logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 
         return new Observable(observer => {
@@ -141,7 +153,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
             });
 
             let client: Client;
-            const { clientId = this.clientId} = options;
+            const { clientId = this.clientId } = options;
 
             (async () => {
                 const {
@@ -157,7 +169,9 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
                 if (client) {
                     targetTopics.forEach(topic => {
-                        client.unsubscribe(topic);
+                        if (client.isConnected()) {
+                            client.unsubscribe(topic);
+                        }
 
                         const observersForTopic = this._topicObservers.get(topic) ||
                             (new Set() as Set<ZenObservable.SubscriptionObserver<any>>);
