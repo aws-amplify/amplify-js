@@ -29,7 +29,6 @@ import {
     Hint,
     Input,
     InputLabel,
-    Strike,
     SectionFooterPrimaryContent,
     SectionFooterSecondaryContent,
 } from '../Amplify-UI/Amplify-UI-Components-React';
@@ -124,15 +123,12 @@ export default class SignIn extends AuthPiece {
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Sign in to your account')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <div>
-                        <FederatedButtons
-                            federated={federated}
-                            theme={theme}
-                            authState={authState}
-                            onStateChange={onStateChange}
-                        />
-                        <Strike>or</Strike>
-                    </div>
+                    <FederatedButtons
+                        federated={federated}
+                        theme={theme}
+                        authState={authState}
+                        onStateChange={onStateChange}
+                    />
                     <FormField theme={theme}>
                         <InputLabel>{I18n.get('Username')} *</InputLabel>
                         <Input
