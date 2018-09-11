@@ -17,7 +17,7 @@ module.exports = {
     'jest-serializer-vue',
   ],
   testMatch: [
-    '**/aws-amplify-vue/__tests__/*.(js|jsx|ts|tsx)',
+    '**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)',
   ],
   testURL: 'http://localhost/',
 };
