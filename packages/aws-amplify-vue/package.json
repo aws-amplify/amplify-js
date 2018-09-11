@@ -13,9 +13,6 @@
     "qrcode.vue": "^1.6.0",
     "vue": "^2.5.17"
   },
-  "peerDependencies": {
-    "@aws-amplify/ui": "^1.0.2"
-  },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.1",
     "@vue/cli-plugin-unit-jest": "^3.0.1",
@@ -23,7 +20,6 @@
     "@vue/test-utils": "^1.0.0-beta.20",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.0.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "vue-template-compiler": "^2.5.17"
   },
   "main": "./dist/aws-amplify-vue.common.js"
