@@ -52,7 +52,7 @@
   "dependencies": {
     "@aws-amplify/cache": "^1.0.7",
     "@aws-amplify/core": "^1.0.7",
-    "aws-sdk": "2.198.0",
+    "aws-sdk": "^2.312.0",
     "uuid": "^3.2.1"
   },
   "jest": {
