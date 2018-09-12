@@ -73,7 +73,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
                 }
 
                 return (
-                    <View>
+                    <View style={{flex: 1}}>
                         <Greetings
                             authState={authState}
                             authData={authData}

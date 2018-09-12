@@ -113,6 +113,10 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 
     };
 
+    CognitoUser.prototype.globalSignOut = (callback) => {
+        callback.onSuccess();
+    };
+
     CognitoUser.prototype.confirmRegistration = (confirmationCode, forceAliasCreation, callback) => {
         callback(null, 'Success');
     };
@@ -1349,7 +1353,7 @@ describe('auth unit test', () => {
         });
     });
 
-    describe('signOut', () => {
+    describe('signOut test', () => {
         test('happy case', async () => {
             const auth = new Auth(authOptions);
 
@@ -1399,6 +1403,33 @@ describe('auth unit test', () => {
             // @ts-ignore
 
             await auth.signOut();
+
+            expect.assertions(1);
+            expect(spyon2).toBeCalled();
+
+            spyonAuth.mockClear();
+            spyon.mockClear();
+            spyon2.mockClear();
+        });
+
+        test('happy case for globalSignOut', async () => {
+            const auth = new Auth(authOptions);
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool
+            });
+
+            const spyonAuth = jest.spyOn(Credentials, "clear")
+            .mockImplementationOnce(() => {
+                return Promise.resolve();
+            });
+            const spyon = jest.spyOn(CognitoUserPool.prototype, "getCurrentUser")
+            .mockImplementationOnce(() => {
+                return user;
+            });
+            const spyon2 = jest.spyOn(CognitoUser.prototype, "globalSignOut");
+
+            await auth.signOut({global: true});
 
             expect.assertions(1);
             expect(spyon2).toBeCalled();
@@ -1643,7 +1674,7 @@ describe('auth unit test', () => {
                             { Name: 'phone_number', Value: 'phone_number' },
                             { Name: 'email_verified', Value: 'false' },
                             { Name: 'phone_number_verified', Value: 'true' },
-                            { Name: 'sub', Value: 'fefefe' }
+                            { Name: 'sub', Value: '123-456789' }
                         ]);
                     });
                 });
@@ -1666,7 +1697,8 @@ describe('auth unit test', () => {
                     email: 'email',
                     phone_number: 'phone_number',
                     email_verified: false,
-                    phone_number_verified: true
+                    phone_number_verified: true,
+                    sub: "123-456789"
                 }
             });
 
@@ -1965,15 +1997,19 @@ describe('auth unit test', () => {
                     return callback('err', null);
                 });
 
-            expect.assertions(1);
+            const spyon3 = jest.spyOn(CognitoUser.prototype, 'getUserData');
+
+            expect.assertions(2);
             try {
                 await auth.currentUserPoolUser();
             } catch (e) {
                 expect(e).toBe('err');
+                expect(spyon3).not.toBeCalled();
             }
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon3.mockClear();
         });
 
         test('get user data error because of user is deleted or disabled', async () => {
@@ -2041,7 +2077,6 @@ describe('auth unit test', () => {
             spyon2.mockClear();
             spyon3.mockClear();
         });
-    });
     });
 
     describe('sendCustomChallengeAnswer', () => {

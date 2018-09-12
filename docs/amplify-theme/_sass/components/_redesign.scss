@@ -3148,3 +3148,61 @@ li {
         }
     }
 }
+
+.relative {
+    position: relative;
+}
+
+.docs-header {
+    #search-input-xs {
+        right: -12px;
+        top: -1px;
+    }
+}
+
+#docs-edit-bar {
+    position: absolute;
+    right: 0;
+    top: 62px;
+    background-color: white;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 1px 1px 5px rgba(0,0,0,.3);
+    height: 30px;
+    padding: 0px 10px;
+
+    @media (max-width: 998px) {
+        top: 99px;
+    }
+
+    a {
+        display: inline-block;
+        padding: 0 5px;
+
+        p {
+            display: inline-block;
+            color: #232F3E;
+            margin: 0;
+        }
+
+        img {
+            height: 24px;
+            vertical-align: middle;
+            filter: opacity(75%);
+        }
+    
+        #twitter-logo {
+            height: 28px;
+            position: relative;
+            bottom: 2px;
+            left: 5px;
+            filter: brightness(0) opacity(75%);
+        }
+    }
+
+    a:hover {
+        p {
+            color: #FF9900;
+        }
+    }
+}

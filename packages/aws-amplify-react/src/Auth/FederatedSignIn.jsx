@@ -7,6 +7,7 @@ import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
     FormSection,
     SectionBody,
+    Strike,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import {
@@ -82,7 +83,6 @@ export class FederatedButtons extends Component {
 
         const theme = this.props.theme || AmplifyTheme;
         return (
-            // <ActionRow theme={theme}>
             <div>
                 <div>
                 {this.google(google_client_id)}
@@ -96,6 +96,7 @@ export class FederatedButtons extends Component {
                 <div>
                 {this.OAuth(oauth_config)}
                 </div>
+                <Strike>or</Strike>
             </div>
         )
     }

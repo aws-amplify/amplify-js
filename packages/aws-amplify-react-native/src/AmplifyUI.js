@@ -83,6 +83,10 @@ export const AmplifyButton = (props) => {
         style = theme.buttonDisabled;
     }
 
+    if (props.style) {
+        style = [style, props.style];
+    }
+
     return (
         <TouchableOpacity {...props} style={style}>
             <Text style={theme.buttonText}>{props.text}</Text>

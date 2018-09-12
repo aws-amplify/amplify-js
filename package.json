@@ -17,7 +17,7 @@
     "link": "lerna exec yarn link",
     "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]'",
     "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]'",
-    "publish:release": "lerna publish --conventional-commits --cd-version=patch --yes --independent --message 'chore(release): Publish [ci skip]'"
+    "publish:release": "lerna publish --conventional-commits --yes --independent --message 'chore(release): Publish [ci skip]'"
   },
   "pre-commit": [
     "pre-commit"
@@ -44,7 +44,7 @@
     "cypress": "^3.0.1",
     "jest": "^22.4.3",
     "json-loader": "^0.5.7",
-    "lerna": "^2.4.0",
+    "lerna": "2.11.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2",
     "source-map-loader": "^0.2.1",
