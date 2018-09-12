@@ -138,7 +138,8 @@
 {% endif %}
 
 <script>
-	const pages = ['quick_start', 'react_guide', 'react_native_guide', 'angular_guide', 'ionic_guide', 'analytics_guide', 'api_guide', 'authentication_guide', 'interactions_guide', 'pub_sub_guide', 'push_notifications_setup', 'storage_guide', 'cache_guide', 'hub_guide', 'i18n_guide', 'logger_guide', 'service_workers_guide', 'hosting_guide', 'ui_guide'];
+	let page = window.location.href.split("/");
+	page = page[page.length-1].split("?")[0];
 
 	const feedback_url = "https://github.com/aws-amplify/amplify-js/issues/new/choose";
 	const tweet_url = "https://twitter.com/intent/tweet?text=Get%20started%20with%20AWS%20Amplify%20at%20https://aws-amplify.github.io/amplify-js/media/quick_start";
@@ -146,12 +147,7 @@
 
 	document.getElementById("feedback-link").href = feedback_url;
 	document.getElementById("tweet-link").href = tweet_url;
-
-	pages.forEach( guide => {
-		if (window.location.href.includes(guide)) {
-			document.getElementById("edit-link").href = edit_url + guide + ".md";
-		}
-	});
+	document.getElementById("edit-link").href = edit_url + page + ".md";
 </script>
 
 {% if jekyll.environment == 'production' %}
