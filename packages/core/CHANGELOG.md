@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.9-beta.0"></a>
+## [1.0.9-beta.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.8...@aws-amplify/core@1.0.9-beta.0) (2018-09-12)
+
+
+### Bug Fixes
+
+* **aws-amplify:** update the version of aws-sdk to latest ([482402d](https://github.com/aws/aws-amplify/commit/482402d))
+
+
+
+
 <a name="1.0.8"></a>
 ## [1.0.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.8-unstable.2...@aws-amplify/core@1.0.8) (2018-09-09)
 
