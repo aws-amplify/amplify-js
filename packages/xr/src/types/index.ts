@@ -12,4 +12,4 @@
  */
 export * from './Provider';
 export * from './XR';
-export * from './SceneConfiguration';
+export * from './SceneConfig';

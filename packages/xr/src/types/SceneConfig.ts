@@ -11,4 +11,4 @@
  * and limitations under the License.
  */
 
-export type SceneConfiguration = {};
+export type SceneConfig = {};

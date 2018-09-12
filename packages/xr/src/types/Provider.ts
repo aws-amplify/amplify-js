@@ -10,7 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { ProviderOptions } from './XR';
 
 export interface XRProvider {
     // configure your provider
@@ -22,6 +21,6 @@ export interface XRProvider {
     // return the name of you provider
     getProviderName(): string;
 
-    loadScene(domElementId: string, sceneConfiguration: object): void;
+    loadScene(domElementId: string, sceneConfiguration: object, additionalParameters: any): void;
 
 }

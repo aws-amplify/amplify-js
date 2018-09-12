@@ -13,13 +13,22 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { XRProvider, XROptions } from './types';
 
+import { SumerianProvider } from './Providers/SumerianProvider';
+import { AbstractXRProvider } from '@aws-amplify/xr/src/Providers/XRProvider';
+import { String } from 'aws-sdk/clients/route53domains';
+
 const logger = new Logger('XR');
+
+const DEFAULT_PROVIDER = "SumerianProvider";
 
 export default class XR {
 
     private _options: XROptions;
 
     private _pluggables: XRProvider[];
+
+    private _providerMap: { [key:string]:XRProvider };
+    private _defaultProvider: string;
 
     /**
      * Initialize XR with AWS configurations
@@ -30,6 +39,9 @@ export default class XR {
         this._options = options;
         logger.debug('XR Options', this._options);
         this._pluggables = [];
+        this._defaultProvider = "SumerianProvider";
+        this._providerMap = {};
+        // this._providerMap[DEFAULT_PROVIDER] = SumerianProvider;
     }
 
     /**
@@ -45,6 +57,7 @@ export default class XR {
         this._options = Object.assign({}, this._options, opt);
 
         this._pluggables.map((pluggable) => pluggable.configure(this._options));
+        
 
         return this._options;
     }
@@ -57,13 +70,15 @@ export default class XR {
         if (pluggable && pluggable.getCategory() === 'XR') {
             this._pluggables.push(pluggable);
 
+            this._providerMap[pluggable.getProviderName()] = pluggable;
+
             const config = pluggable.configure(this._options);
 
             return config;
         }
     }
 
-    loadScene(domElementId: string, sceneConfiguration: object) {
-        this._pluggables.map(provider => provider.loadScene(domElementId, sceneConfiguration));
+    async loadScene(domElementId: string, sceneConfiguration: object, additionalParameters: any = {}, provider: string = this._defaultProvider) {
+        return await this._providerMap[provider].loadScene(domElementId, sceneConfiguration, additionalParameters);
     }
 }
