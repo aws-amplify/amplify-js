@@ -94,7 +94,7 @@ export default class RequireNewPassword extends AuthPiece {
                         />
                     </View>
                     <View style={theme.sectionFooter}>
-                        <LinkCell theme={theme} onPress={() => this.onChange('signIn')}>
+                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
                             {I18n.get('Back to Sign In')}
                         </LinkCell>
                     </View>

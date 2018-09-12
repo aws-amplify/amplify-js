@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { AuthOptions, FederatedResponse, ConfirmSignUpOptions } from './types';
+import { AuthOptions, FederatedResponse, ConfirmSignUpOptions, SignOutOpts } from './types';
 
 import {
     AWS,
@@ -858,43 +858,43 @@ export default class AuthClass {
                 }
 
                 // refresh the session if the session expired.
-                user.getSession(function(err, session) {
+                user.getSession((err, session) => {
                     if (err) {
                         logger.debug('Failed to get the user session', err);
                         rej(err); 
                         return;
                     }
-                });
-
-                // get user data from Cognito
-                user.getUserData((err, data) => {
-                    if (err) {
-                        logger.debug('getting user data failed', err);
-                        // Make sure the user is still valid
-                        if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
-                            rej(err);
-                        } else {
-                            // the error may also be thrown when lack of permissions to get user info etc
-                            // in that case we just bypass the error
-                            res(user);
+             
+                    // get user data from Cognito
+                    user.getUserData((err, data) => {
+                        if (err) {
+                            logger.debug('getting user data failed', err);
+                            // Make sure the user is still valid
+                            if (err.message === 'User is disabled' || err.message === 'User does not exist.') {
+                                rej(err);
+                            } else {
+                                // the error may also be thrown when lack of permissions to get user info etc
+                                // in that case we just bypass the error
+                                res(user);
+                            }
+                            return;
                         }
-                        return;
-                    }
-                    const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-                    const attributeList = [];
+                        const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+                        const attributeList = [];
 
-                    for (let i = 0; i < data.UserAttributes.length; i++) {
-                        const attribute = {
-                            Name: data.UserAttributes[i].Name,
-                            Value: data.UserAttributes[i].Value,
-                        };
-                        const userAttribute = new CognitoUserAttribute(attribute);
-                        attributeList.push(userAttribute);
-                    }
+                        for (let i = 0; i < data.UserAttributes.length; i++) {
+                            const attribute = {
+                                Name: data.UserAttributes[i].Name,
+                                Value: data.UserAttributes[i].Value,
+                            };
+                            const userAttribute = new CognitoUserAttribute(attribute);
+                            attributeList.push(userAttribute);
+                        }
 
-                    const attributes = this.attributesToObject(attributeList);
-                    Object.assign(user, {attributes, preferredMFA});
-                    res(user);
+                        const attributes = that.attributesToObject(attributeList);
+                        Object.assign(user, {attributes, preferredMFA});
+                        res(user);
+                    });
                 });
             });
         });
@@ -985,7 +985,7 @@ export default class AuthClass {
     }
 
     /**
-     * Get authenticated credentials of current user.
+     * Get  authenticated credentials of current user.
      * @return - A promise resolves to be current user's credentials
      */
     public currentUserCredentials() {
@@ -1083,11 +1083,49 @@ export default class AuthClass {
         return that.currentUserPoolUser()
             .then(user => that.verifyUserAttributeSubmit(user, attr, code));
     }
+
+    private async cognitoIdentitySignOut(opts: SignOutOpts, user) {
+        return new Promise((res, rej) => {
+            if (opts && opts.global) {
+                logger.debug('user global sign out', user);
+                // in order to use global signout
+                // we must validate the user as an authenticated user by using getSession
+                user.getSession((err, result) => {
+                    if (err) {
+                        logger.debug('failed to get the user session', err);
+                        return rej(err);
+                    }
+                    user.globalSignOut({
+                        onSuccess: (data) => {
+                            logger.debug('global sign out success');
+                            if (this._cognitoAuthClient) {
+                                this._cognitoAuthClient.signOut();
+                            }
+                            return res();
+                        },
+                        onFailure: (err) => {
+                            logger.debug('global sign out failed', err);
+                            return rej(err);
+                        }   
+                    });
+                });
+            } else {
+                logger.debug('user sign out', user);
+                user.signOut();
+                if (this._cognitoAuthClient) {
+                    this._cognitoAuthClient.signOut();
+                }
+                return res();
+            }
+        });
+    }
+    
     /**
      * Sign out method
+     * @
      * @return - A promise resolved if success
      */
-    public async signOut(): Promise<any> {
+    public async signOut(opts?: SignOutOpts): Promise<any> {
         try {
             await this.cleanCachedItems();
         } catch (e) {
@@ -1097,28 +1135,24 @@ export default class AuthClass {
         if (this.userPool) { 
             const user = this.userPool.getCurrentUser();
             if (user) {
-                logger.debug('user sign out', user);
-                user.signOut();
-                if (this._cognitoAuthClient) {
-                    this._cognitoAuthClient.signOut();
-                }
+                await this.cognitoIdentitySignOut(opts, user);
+            } else {
+                logger.debug('no current Cognito user');
             }
         } else {
             logger.debug('no Congito User pool');
         }
         
-        const that = this;
-        return new Promise(async (resolve, reject) => {
-            try {
-                await Credentials.set(null, 'guest');
-            } catch (e) {
-                logger.debug('cannot load guest credentials for unauthenticated user', e);
-            } finally {
-                dispatchAuthEvent('signOut', that.user);
-                that.user = null;
-                resolve();
-            }
-        });
+
+        try {
+            await Credentials.set(null, 'guest');
+        } catch (e) {
+            logger.debug('cannot load guest credentials for unauthenticated user', e);
+        } finally {
+            dispatchAuthEvent('signOut', this.user);
+            this.user = null;
+            return;
+        }
     }
 
     private async cleanCachedItems() {
@@ -1297,8 +1331,6 @@ export default class AuthClass {
         const obj = {};
         if (attributes) {
             attributes.map(attribute => {
-                if (attribute.Name === 'sub') return;
-
                 if (attribute.Value === 'true') {
                     obj[attribute.Name] = true;
                 } else if (attribute.Value === 'false') {
