@@ -606,11 +606,21 @@ const {
     responseType } = config.oauth;
 
 const clientId = config.userPoolWebClientId;
+// The url of the Cognito Hosted UI
 const url = 'https://' + domain + '/login?redirect_uri=' + redirectSignIn + '&response_type=' + responseType + '&client_id=' + clientId;
+// If you only want to log your users in with Google or Facebook, you can construct the url like:
+const url_to_google = 'https://' + domain + '/oauth2/authorize?redirect_uri=' + redirectSignIn + '&response_type=' + responseType + '&client_id=' + clientId + '&identity_provider=Google';
+const url_to_facebook = 'https://' + domain + '/oauth2/authorize?redirect_uri=' + redirectSignIn + '&response_type=' + responseType + '&client_id=' + clientId + '&identity_provider=Facebook';
 
 // Launch hosted UI
 window.location.assign(url);
+
+// Launch Google/Facebook login page
+window.location.assign(url_to_google);
+window.location.assign(url_to_facebook);
 ```
+
+
 
 #### Launching the Hosted UI in React 
 
