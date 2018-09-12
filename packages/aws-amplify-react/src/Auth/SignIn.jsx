@@ -151,7 +151,7 @@ export default class SignIn extends AuthPiece {
                             onChange={this.handleInputChange}
                         />
                         {
-                            hideForgotPassword && <Hint theme={theme}>
+                            !hideForgotPassword && <Hint theme={theme}>
                                 {I18n.get('Forget your password? ')}
                                 <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
                                     {I18n.get('Reset password')}
@@ -168,7 +168,7 @@ export default class SignIn extends AuthPiece {
                         </Button>
                     </SectionFooterPrimaryContent>
                     { 
-                        hideSignUp && <SectionFooterSecondaryContent theme={theme}>
+                        !hideSignUp && <SectionFooterSecondaryContent theme={theme}>
                             {I18n.get('No account? ')}
                             <Link theme={theme} onClick={() => this.changeState('signUp')}>
                                 {I18n.get('Create account')}
