@@ -1300,28 +1300,36 @@ export default class AuthClass {
         const { url, onSuccessHandler, onFailureHandler } = options;
         const that = this;
         this._cognitoAuthClient.userhandler = {
-                // user signed in
-                onSuccess: (result) => {
-                    that.user = that.userPool.getCurrentUser();
-                    logger.debug("Cognito Hosted authentication result", result);
-                    that.currentSession().then(async (session) => {
-                        try {
-                            await Credentials.clear();
-                            const cred = await Credentials.set(session, 'session');
-                            logger.debug('sign in succefully with', cred);
-                        } catch (e) {
-                            logger.debug('sign in without aws credentials', e);
-                        } finally {
-                            dispatchAuthEvent('signIn', that.user);
-                            dispatchAuthEvent('cognitoHostedUI', that.user);
-                        }
-                    });
-                },
-                onFailure: (err) => {
-                    logger.debug("Error in cognito hosted auth response", err);
+            // user signed in
+            onSuccess: (result) => {
+                that.user = that.userPool.getCurrentUser();
+                logger.debug("Cognito Hosted authentication result", result);
+                that.currentSession().then(async (session) => {
+                    try {
+                        await Credentials.clear();
+                        const cred = await Credentials.set(session, 'session');
+                        logger.debug('sign in succefully with', cred);
+                    } catch (e) {
+                        logger.debug('sign in without aws credentials', e);
+                    } finally {
+                        onSuccessHandler();
+                        dispatchAuthEvent('signIn', that.user);
+                        dispatchAuthEvent('cognitoHostedUI', that.user);
+                    }
+                }).catch(err => {
+                    logger.debug("Error when getting currnet session after parsing the url", err);
+                    onFailureHandler();
                     dispatchAuthEvent('signIn_failure', err);
-                }
-            };
+                });
+            },
+            onFailure: (err) => {
+                logger.debug("Error in cognito hosted auth response", err);
+                onFailureHandler();
+                dispatchAuthEvent('signIn_failure', err);
+            }
+        };
+
+        this._cognitoAuthClient.parseCognitoWebResponse(url);
     }
 
     private attributesToObject(attributes) {
