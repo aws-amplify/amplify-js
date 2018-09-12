@@ -50,6 +50,8 @@ class ClientsQueue {
     }
 }
 
+const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
+
 export class MqttOverWSProvider extends AbstractPubSubProvider {
 
     private _clientsQueue = new ClientsQueue();
@@ -63,6 +65,8 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
     protected get endpoint() { return this.options.aws_pubsub_endpoint; }
 
     protected get clientsQueue() { return this._clientsQueue; }
+
+    protected getTopicForValue(value) { return typeof value === 'object' && value[topicSymbol]; }
 
     getProviderName() { return 'MqttOverWSProvider'; }
 
@@ -127,6 +131,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         try {
             const observersForTopic = this._topicObservers.get(topic) || new Set();
             const parsedMessage = JSON.parse(msg);
+
+            if (typeof parsedMessage === 'object') {
+                parsedMessage[topicSymbol] = topic;
+            }
 
             observersForTopic.forEach(observer => observer.next(parsedMessage));
         } catch (error) {

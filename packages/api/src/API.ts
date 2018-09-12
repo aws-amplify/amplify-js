@@ -18,6 +18,7 @@ import { RestClient as RestClass } from './RestClient';
 import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
+import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('API');
 
@@ -342,7 +343,8 @@ export default class APIClass {
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query: queryStr, variables }: GraphQLOptions): Promise<GraphQLResult> {
+    private async _graphql({ query: queryStr, variables }: GraphQLOptions,
+                           additionalHeaders = {}): Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
         }
@@ -363,7 +365,8 @@ export default class APIClass {
             ...(customGraphqlEndpoint &&
                 (customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null })
             ),
-            ... await graphql_headers({ query: doc, variables })
+            ...additionalHeaders,
+            ... await graphql_headers({ query: doc, variables }),
         };
 
         const body = {
@@ -412,6 +415,7 @@ export default class APIClass {
         return response;
     }
 
+    private clientIdentifier = uuid();
 
     private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
@@ -421,8 +425,16 @@ export default class APIClass {
 
                 (async () => {
                     const {
+                        aws_appsync_authenticationType: authenticationType,
+                    } = this._options;
+                    const additionalheaders = {
+                        ...(authenticationType === 'API_KEY' && {
+                            'x-amz-subscriber-id': this.clientIdentifier
+                        })
+                    };
+                    const {
                         extensions: { subscription }
-                    } = await this._graphql({ query, variables });
+                    } = await this._graphql({ query, variables }, additionalheaders);
 
                     const { newSubscriptions } = subscription;
 
