@@ -231,7 +231,7 @@ In addition to *aws-amplify*, we provide React Native specific components in `aw
 $ npm install --save aws-amplify-react-native
 ```
 
-If you have created your app with *create-react-native-app* in previous steps, you can [**skip**](#step-3-set-up-the-app-backend) this section.
+If you have created your app with *create-react-native-app* in previous steps, you can [**skip**](#step-4-set-up-your-backend) this section.
 
 AWS Amplify provides native libraries for React Native to support Amazon Cognito sign-in process. If you are using *create-react-native-app* or [Expo v25.0.0 or greater](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7), those libraries are already included in your dependencies. Otherwise, you need to [link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html) those libraries to your project.
 {: .callout .callout--info}
@@ -267,13 +267,12 @@ See the [Angular Guide](https://aws-amplify.github.io/amplify-js/media/angular_g
 $ npm install --save aws-amplify
 ```
 
-In addition to `aws-amplify` core, you can install our angular and ionic modules which provide a service provider, helpers, and components:
+In addition to `aws-amplify` core, you can install our angular module which provides a service provider, helpers, and components:
 
 </div>
 <div id="ionic" class="tab-content">
 ```bash
 $ npm install --save aws-amplify-angular
-$ npm install --save ionic-angular
 ``` 
 
 See the [Ionic Guide](https://aws-amplify.github.io/amplify-js/media/ionic_guide){: target='_new'} for details and usage.
