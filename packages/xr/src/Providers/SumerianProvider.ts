@@ -1,7 +1,13 @@
-import { AbstractXRProvider } from './XRProvider';
-import { ProviderOptions, SceneConfiguration } from '../types';
+import { RestClient } from '@aws-amplify/api';
+import { ConsoleLogger as Logger} from '@aws-amplify/core';
 
-type SumerianSceneConfiguration = SceneConfiguration & { url: string, isSigv4: boolean, sceneId: string };
+import { AbstractXRProvider } from './XRProvider';
+import { ProviderOptions, SceneConfig } from '../types';
+
+type SumerianSceneConfig = SceneConfig & { url: string, isSigv4: boolean, sceneId: string };
+type SumerianAdditionalParameters =  { publishParamOverrides: any, progressCallback: (progress: number) => void }
+
+const logger = new Logger('AbstractXRProvider');
 
 export class SumerianProvider extends AbstractXRProvider {
   constructor(options: ProviderOptions = {}) {
@@ -10,43 +16,28 @@ export class SumerianProvider extends AbstractXRProvider {
 
   getProviderName() { return 'SumerianProvider'; }
 
-  async loadScene(domElementId: string, sceneConfiguration: SumerianSceneConfiguration) {
+  async loadScene(domElementId: string, sceneConfig: SumerianSceneConfig, additionalParameters?: SumerianAdditionalParameters) {
 
     const element = document.getElementById(domElementId);
-    const apiResponse = await window.fetch(sceneConfiguration.url);
-    const apiResponseJson = await apiResponse.json();
+
+    if (!element) {
+        logger.debug("DOM element id, " + domElementId + " not found");
+        return;
+    }
+
+    const apiResponseJson = await RestClient.get(sceneConfig.url, {});
 
     // Fetch the scene bundle.
-    const sceneBundle = await fetch(apiResponseJson.bundleData[sceneConfiguration.sceneId].url, apiResponseJson.bundleData[sceneConfiguration.sceneId].headers);
+    const sceneBundle = await fetch(apiResponseJson.bundleData[sceneConfig.sceneId].url, apiResponseJson.bundleData[sceneConfig.sceneId].headers);
     const sceneBundleJson = await sceneBundle.json();
 
     // Create the scene loading script from the code embedded in the bundle.
-    const SceneLoader = Function(atob(sceneBundleJson[sceneConfiguration.sceneId].sceneLoadScript))();
+    const SceneLoader = Function(atob(sceneBundleJson[sceneConfig.sceneId].sceneLoadScript))();
 
-    const progressCallback = (progress) => {
-        console.log(`Sumerian scene load progress: ${progress * 100}%`);
-    }
+    const publishParamOverrides = additionalParameters ? additionalParameters.publishParamOverrides : null;
+    const progressCallback = additionalParameters ? additionalParameters.progressCallback : null;
 
-    // Load the scene.
-    SceneLoader.loadScene(element, apiResponseJson, null, progressCallback).then((sceneController) => {
-        for (const warning of sceneController.sceneLoadWarnings) {
-            console.warn('scene load warning: ' + warning);
-        }
-
-        sceneController.on('AudioDisabled', () => {
-            // Show the customer a button they can click to enable audio.
-            // Call sceneController.enableAudio() in the button's onClick or similar.
-        });
-
-        sceneController.on('AudioEnabled', () => {
-            // Now that audio is working, remove the button.
-        });
-
-        // Start the scene.
-        sceneController.start();
-
-    }).catch((error) => {
-        console.error(`Failed to load Sumerian scene: ${error}`);
-    });
+    // Load the scene and return scene controller
+    return await SceneLoader.loadScene(element, apiResponseJson, publishParamOverrides, progressCallback);
   }
 }
