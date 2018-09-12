@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.11"></a>
+## [1.0.11](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.10...@aws-amplify/api@1.0.11) (2018-09-12)
+
+
+### Bug Fixes
+
+* **pubsub:** Better handling of multiple AppSync subscriptions ([#1611](https://github.com/aws/aws-amplify/issues/1611)) ([6c86500](https://github.com/aws/aws-amplify/commit/6c86500))
+
+
+
+
 <a name="1.0.10"></a>
 ## [1.0.10](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.10-unstable.0...@aws-amplify/api@1.0.10) (2018-09-09)
 
