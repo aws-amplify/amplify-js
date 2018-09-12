@@ -205,6 +205,26 @@ Auth.forgotPasswordSubmit(username, code, new_password)
     .catch(err => console.log(err));
 ```
 
+#### Verify phone_number or email address
+Either the phone number or the email address is required for account recovery. You can let the user verify those attributes by:
+```js
+// To initiate the process of verifying the attribute like 'phone_number' or 'email'
+Auth.verifyCurrentUserAttributes(attr)
+.then(() => {
+     console.log('a verification code is sent');
+}).catch(e) => {
+     console.log('failed with error', e);
+});
+
+// To verify attribute with the code
+Auth.verifyCurrentUserAttributeSubmit(attr, 'the_verification_code')
+.then(() => {
+     console.log('phone_number verified');
+}).catch(e) => {
+     console.log('failed with error', e);
+});
+```
+
 #### Retrieve Current Authenticated User
 
 You can call `Auth.currentAuthenticatedUser()` to get the current authenticated user object.
