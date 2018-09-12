@@ -118,6 +118,7 @@ authOptions = {
   },
   signUpOptions: {
     header: 'This is a label at the top of the component',  // type: string, default: 'Sign Up', required: false
+    signUpFields: [], // [see SignUp Options section](#signup-fields)
   },
 
 }
@@ -181,7 +182,8 @@ Options:
 <amplify-sign-up v-bind:signUpOptions="signUpOptions"></amplify-sign-up>
 
 signUpOptions = {
-  header: 'This is a label at the top of the component'  // type: string, default: 'Sign Up'
+  header: 'This is a label at the top of the component',  // type: string, default: 'Sign Up'
+  signUpFields: [], // [see SignUp Fields section](#signup-fields)
 }
 ```
 
@@ -272,6 +274,34 @@ mfaOptions = {
 ```
 
 Events: None
+
+### SignUp Fields
+
+The `aws-amplify-vue` SignUp component allows you to programatically define the user input fields that are displayed to the user. Information entered into these fields will populate the user's record in your User Pool.
+
+Usage: 
+
+```
+<amplify-sign-up v-bind:signUpOptions="signUpOptions"></amplify-sign-up>
+
+this.signOptions = {
+  signUpFields: [
+    {
+      label: 'Label for the input field', // type: string
+      key: 'Key name for the attribute as defined in the User Pool', //type: string
+      required: boolean,
+      type: 'string', 'number' or 'password',
+      displayOrder: 'number indicating the order in which fields will be displayed' // type: number, default: none, required: false
+    }
+  ]
+}
+
+``` 
+
+By default the SignUp Component will display Username, Password, Email and Phone Number fields (all required, and in that order).  You can override the labels, displayOrder or 'required' booleans for these fields by passing objects with 'username', 'password', 'email' or 'phone_number' keys in the signUpOptions.signUpFields array.
+
+Fields passed into the signUpFields array without a displayOrder property will be placed after those fields with defined displayOrders and in alphabetical order by key.
+
 
 ## Storage Components
 

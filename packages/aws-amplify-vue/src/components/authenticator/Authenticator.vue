@@ -13,11 +13,11 @@
 
 <template>
   <div>
-    <amplify-sign-in v-if="displayMap.showSignIn" v-bind:signInOptions="{username: user.username}"></amplify-sign-in>
-    <amplify-sign-up v-if="displayMap.showSignUp"></amplify-sign-up>
-    <amplify-confirm-sign-up v-if="displayMap.showConfirmSignUp" v-bind:confirmSignUpOptions="{username: user.username}"></amplify-confirm-sign-up>
-    <amplify-confirm-sign-in v-if="displayMap.showConfirmSignIn" v-bind:confirmSignInOptions="{user: user}"></amplify-confirm-sign-in>
-    <amplify-forgot-password v-if="displayMap.showForgotPassword"></amplify-forgot-password>
+    <amplify-sign-in v-if="displayMap.showSignIn" v-bind:signInOptions="authOptions.signInOptions"></amplify-sign-in>
+    <amplify-sign-up v-if="displayMap.showSignUp" v-bind:signUpOptions="authOptions.signUpOptions"></amplify-sign-up>
+    <amplify-confirm-sign-up v-if="displayMap.showConfirmSignUp" v-bind:confirmSignUpOptions="authOptions.confirmSignUpOptions"></amplify-confirm-sign-up>
+    <amplify-confirm-sign-in v-if="displayMap.showConfirmSignIn" v-bind:confirmSignInOptions="authOptions.confirmSignInOptions"></amplify-confirm-sign-in>
+    <amplify-forgot-password v-if="displayMap.showForgotPassword" v-bind:forgotPasswordOptions="authOptions.forgotPasswordOptions"></amplify-forgot-password>
   </div>
 </template>
 
@@ -38,10 +38,25 @@ export default {
         logger: {},
     }
   },
+  computed: {
+    options() {
+      const defaults = {
+        signInOptions: {},
+        signUpOptions: {},
+        confirmSignUpOptions: {},
+        confirmSignInOptions: {},
+        forgotPasswordOptions: {}
+      };
+      return Object.assign(defaults, this.authOptions || {})
+    }
+  },
   async mounted() {
     this.logger = new this.$Amplify.Logger(this.$options.name);
     AmplifyEventBus.$on('localUser', user => {
       this.user = user;
+      this.authOptions.signInOptions.username = this.user.username;
+      this.authOptions.confirmSignInOptions.username = this.useruser.username;
+      this.authOptions.confirmSignUpOptions.user = this.user
     });
     AmplifyEventBus.$on('authState', data => {
       this.displayMap = this.updateDisplayMap(data)
