@@ -35,7 +35,7 @@
           </select>
           <input 
             v-bind:class="[amplifyUI.input, signUpField.invalid ? 'invalid': '']" 
-            v-model="phone_number"
+            v-model="signUpField.value"
             type="number"
             :placeholder="signUpField.label"
             v-on:change="clear(signUpField)"
@@ -119,7 +119,7 @@ export default {
         ]
       }
       
-      if (this.signUpOptions.signUpFields && this.signUpOptions.signUpFields.length > 0) {
+      if (this.signUpOptions && this.signUpOptions.signUpFields && this.signUpOptions.signUpFields.length > 0) {
         defaults.signUpFields.forEach((f, i) => {
           const matchKey = this.signUpOptions.signUpFields.findIndex((d) => {
             return d.key === f.key;
@@ -128,29 +128,29 @@ export default {
             this.signUpOptions.signUpFields.push(f);
           }
         });
+        let counter = this.signUpOptions.signUpFields.filter((f) => {
+          return f.displayOrder;
+        }).length;
+
+        const unOrdered = this.signUpOptions.signUpFields.filter((f) => {
+          return !f.displayOrder;
+        }).sort((a, b) => {
+          if (a.key < b.key) {
+            return -1;
+          }
+          return 1
+        }).forEach((m) => {
+          counter++;
+          m.displayOrder = counter;
+          let index = this.signUpOptions.signUpFields.findIndex(y => y.key === m.key);
+          this.signUpOptions.signUpFields[index] = m;
+        })
+
+        return Object.assign(defaults, this.signUpOptions || {})
       } else {
-        this.signUpOptions.signUpFields = defaults.signUpFields;
+        return defaults;
       }
 
-      let counter = this.signUpOptions.signUpFields.filter((f) => {
-        return f.displayOrder;
-      }).length;
-
-      const unOrdered = this.signUpOptions.signUpFields.filter((f) => {
-        return !f.displayOrder;
-      }).sort((a, b) => {
-        if (a.key < b.key) {
-          return -1;
-        }
-        return 1
-      }).forEach((m) => {
-        counter++;
-        m.displayOrder = counter;
-        let index = this.signUpOptions.signUpFields.findIndex(y => y.key === m.key);
-        this.signUpOptions.signUpFields[index] = m;
-      })
-
-      return Object.assign(defaults, this.signUpOptions || {})
     }
   },
   mounted() {
@@ -171,17 +171,23 @@ export default {
       if (!this.validate()) {
         return null;
       }
+
       let user = {
-        username: this.username,
-        password: this.password,
-        attributes: {
-          email: this.email, 
-          phone_number: `+${this.countryCode}${this.phone_number}`
-        }
+        attributes: {},
       };
-      this.options.signUpFields.forEach((f) => {
-        user.attributes[f.key] = f.value;
+
+      this.config.signUpFields.forEach((e) => {
+        if (e.key === 'username') {
+          user.username = e.value
+        } else if (e.key === 'password') {
+          user.password = e.value
+        } else if (e.key === 'phone_number') {
+          user.attributes.phone_number = `+${this.countryCode}${e.value}`
+        } else {
+          user.attributes[e.key] = e.value;
+        };
       })
+
        this.$Amplify.Auth.signUp(user)
             .then(data => {
               this.logger.info('sign up success');
