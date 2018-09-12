@@ -45,7 +45,7 @@ export default function parseUrl(url) {
   const host = a.host.replace(DEFAULT_PORT, '');
 
   // Not all browser support `origin` so we have to build it.
-  const origin = a.origin ? a.origin : a.protocol + '//' + host;
+  const origin = a['origin'] ? a['origin'] : a.protocol + '//' + host;
 
   // Sometimes IE doesn't include the leading slash for pathname.
   // http://bit.ly/1rQNoMg

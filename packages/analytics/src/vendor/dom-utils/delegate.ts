@@ -25,7 +25,7 @@ export default function delegate(
 
     // If opts.composed is true and the event originated from inside a Shadow
     // tree, check the composed path nodes.
-    if (opts.composed && typeof event.composedPath == 'function') {
+    if (opts['composed'] && typeof event['composedPath'] == 'function') {
       const composedPath = event.composedPath();
       for (let i = 0, node; node = composedPath[i]; i++) {
         if (node.nodeType == 1 && matches(node, selector)) {
@@ -42,11 +42,11 @@ export default function delegate(
     }
   };
 
-  ancestor.addEventListener(eventType, listener, opts.useCapture);
+  ancestor.addEventListener(eventType, listener, opts['useCapture']);
 
   return {
     destroy: function() {
-      ancestor.removeEventListener(eventType, listener, opts.useCapture);
+      ancestor.removeEventListener(eventType, listener, opts['useCapture']);
     },
   };
 }

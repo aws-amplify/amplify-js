@@ -26,9 +26,9 @@ export default function dispatch(
     eventName = 'Event';
   }
 
-  initDict.bubbles = initDict.bubbles || false;
-  initDict.cancelable = initDict.cancelable || false;
-  initDict.composed = initDict.composed || false;
+  initDict['bubbles'] = initDict['bubbles'] || false;
+  initDict['cancelable'] = initDict['cancelable'] || false;
+  initDict['composed'] = initDict['composed'] || false;
 
   // If a detail property is passed, this is a custom event.
   if ('detail' in initDict) isCustom = true;
@@ -41,8 +41,8 @@ export default function dispatch(
   } catch(err) {
     event = document.createEvent(eventName);
     const initMethod = 'init' + (isCustom ? 'Custom' : '') + 'Event';
-    event[initMethod](eventType, initDict.bubbles,
-                      initDict.cancelable, initDict.detail);
+    event[initMethod](eventType, initDict['bubbles'],
+                      initDict['cancelable'], initDict['detail']);
   }
 
   return element.dispatchEvent(event);
