@@ -1149,6 +1149,14 @@
             "Auth.signOut()",
             "\t.then(data => console.log(data))",
             "\t.catch(err => console.log(err));",
+            "",
+            "// By doing this, you are revoking all the auth tokens(id token, access token and refresh token)",
+            "// which means the user is signed out from all the devices",
+            "// Note: although the tokens are revoked, the AWS credentials will remain valid until they expire (which by default is 1 hour)",
+            "Auth.signOut({ global: true })",
+            "\t.then(data => console.log(data))",
+            "\t.catch(err => console.log(err));",
+            "\t",
         ]
     },
     "Amplify Authentication Change Password": {
@@ -1188,7 +1196,7 @@
             "import { Auth } from 'aws-amplify';",
             "",
             "Auth.currentAuthenticatedUser()",
-            "\t.then(user => console.log(user));",
+            "\t.then(user => console.log(user))",
             "\t.catch(err => console.log(err));",
         ]
     },
