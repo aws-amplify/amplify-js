@@ -18,7 +18,7 @@ export default class Parser {
         }
 
         // Auth
-        if (config['aws_cognito_identity_pool_id']) {
+        if (config['aws_cognito_identity_pool_id'] || config['aws_user_pools_id']) {
             const Auth = {
                 userPoolId: config['aws_user_pools_id'],
                 userPoolWebClientId: config['aws_user_pools_web_client_id'],

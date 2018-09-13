@@ -17,41 +17,24 @@ import {
     Text, 
     TextInput, 
     Button, 
-    TouchableHighlight 
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import {
     Auth,
     I18n,
     Logger
 } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
 import { 
-    Username, 
-    Password, 
-    Email, 
-    PhoneNumber, 
+    FormField,
     LinkCell, 
     Header, 
-    ErrorRow 
+    ErrorRow,
+    AmplifyButton
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
 const logger = new Logger('SignUp');
-
-const Footer = (props) => {
-    const { theme, onStateChange } = props;
-    return (
-        <View style={theme.sectionFooter}>
-            <LinkCell theme={theme} onPress={() => onStateChange('confirmSignUp')}>
-                {I18n.get('Confirm a Code')}
-            </LinkCell>
-            <LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
-                {I18n.get('Sign In')}
-            </LinkCell>
-        </View>
-    )
-}
-
 export default class SignUp extends AuthPiece {
     constructor(props) {
         super(props);
@@ -80,34 +63,59 @@ export default class SignUp extends AuthPiece {
 
     showComponent(theme) {
         return (
-            <View style={theme.section}>
-                <Header theme={theme}>{I18n.get('Sign Up')}</Header>
-                <View style={theme.sectionBody}>
-                    <Username
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ username: text })}
-                    />
-                    <Password
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ password: text })}
-                    />
-                    <Email
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ email: text })}
-                    />
-                    <PhoneNumber
-                        theme={theme}
-                        onChangeText={(text) => this.setState({ phone_number: text })}
-                    />
-                    <Button
-                        title={I18n.get('Sign Up')}
-                        onPress={this.signUp}
-                        disabled={!this.state.username || !this.state.password}
-                    />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={theme.section}>
+                    <Header theme={theme}>{I18n.get('Create a new account')}</Header>
+                    <View style={theme.sectionBody}>
+                        <FormField
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ username: text })}
+                            label={I18n.get('Username')}
+                            placeholder={I18n.get('Enter your username')}
+                            required={true}
+                        />
+                        <FormField
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ password: text })}
+                            label={I18n.get('Password')}
+                            placeholder={I18n.get('Enter your password')}
+                            secureTextEntry={true}
+                            required={true}
+                        />
+                        <FormField
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ email: text })}
+                            label={I18n.get('Email')}
+                            placeholder={I18n.get('Enter your email')}
+                            keyboardType="email-address"
+                            required={true}
+                        />
+                        <FormField
+                            theme={theme}
+                            onChangeText={(text) => this.setState({ phone_number: text })}
+                            label={I18n.get('Phone Number')}
+                            placeholder={I18n.get('Enter your phone number')}
+                            keyboardType="phone-pad"
+                            required={true}
+                        />
+                        <AmplifyButton
+                            text={I18n.get('Sign Up').toUpperCase()}
+                            theme={theme}
+                            onPress={this.signUp}
+                            disabled={!this.state.username || !this.state.password}
+                        />
+                    </View>
+                    <View style={theme.sectionFooter}>
+                        <LinkCell theme={theme} onPress={() => this.changeState('confirmSignUp')}>
+                            {I18n.get('Confirm a Code')}
+                        </LinkCell>
+                        <LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+                            {I18n.get('Sign In')}
+                        </LinkCell>
+                    </View>
+                    <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
                 </View>
-                <Footer theme={theme} onStateChange={this.changeState} />
-                <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-            </View>
+            </TouchableWithoutFeedback>
         );
     }
 }

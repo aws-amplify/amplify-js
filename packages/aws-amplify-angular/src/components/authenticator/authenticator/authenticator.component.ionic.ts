@@ -1,9 +1,10 @@
 import { Component, Input, ViewEncapsulation, Injector, ElementRef } from '@angular/core';
 
 import { AmplifyService, AuthState } from '../../../providers';
-import { AuthenticatorComponentCore } from '../authenticator/authenticator.component.core';
+import { AuthenticatorComponentCore } from './authenticator.component.core';
 
 const template = `
+<div class="amplify-authenticator amplify-authenticator-ionic ">
 
   <div>
     <amplify-auth-sign-in-ionic [authState]="authState"></amplify-auth-sign-in-ionic>
@@ -38,7 +39,7 @@ const template = `
   </div>
   <div>
     <amplify-auth-greetings-ionic
-      *ngIf="!shouldHide('Greetings')"
+      *ngIf="!shouldHide('Greetings') && authState.state === 'signedIn'"
       [authState]="authState"
     ></amplify-auth-greetings-ionic>
   </div>

@@ -3,7 +3,7 @@ import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestro
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount }      from '../../component.mount';
 import { ForgotPasswordClass } from './forgot-password.class';
-import { ForgotPasswordComponentIonic } from './forgot-password.component.ionic'
+import { ForgotPasswordComponentIonic } from './forgot-password.component.ionic';
 import { ForgotPasswordComponentCore } from './forgot-password.component.core';
 import { AuthState } from '../../../providers';
 
@@ -31,14 +31,16 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   loadComponent() {
 
-    let authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ? new ComponentMount(ForgotPasswordComponentIonic,{hide: this.hide, authState: this.authState}) : new ComponentMount(ForgotPasswordComponentCore, {hide: this.hide, authState: this.authState});
+    const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
+    new ComponentMount(ForgotPasswordComponentIonic,{hide: this.hide, authState: this.authState}) :
+    new ComponentMount(ForgotPasswordComponentCore, {hide: this.hide, authState: this.authState});
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
 
-    let viewContainerRef = this.componentHost.viewContainerRef;
+    const viewContainerRef = this.componentHost.viewContainerRef;
     viewContainerRef.clear();
 
-    let componentRef = viewContainerRef.createComponent(componentFactory);
+    const componentRef = viewContainerRef.createComponent(componentFactory);
     (<ForgotPasswordClass>componentRef.instance).data = authComponent.data;
   }
 }
