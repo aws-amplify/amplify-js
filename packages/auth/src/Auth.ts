@@ -11,7 +11,14 @@
  * and limitations under the License.
  */
 
-import { AuthOptions, FederatedResponse, SignUpParams, FederatedUser, ConfirmSignUpOptions, SignOutOpts } from './types';
+import { 
+    AuthOptions, 
+    FederatedResponse, 
+    SignUpParams, 
+    FederatedUser, 
+    ConfirmSignUpOptions, 
+    SignOutOpts 
+} from './types';
 
 import {
     AWS,
