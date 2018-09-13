@@ -10,6 +10,27 @@ describe('RequireNewPassword test', () => {
 
             wrapper.setProps({
                 authState: 'requireNewPassword',
+                authData: {
+                    challengeParam: {
+                        requiredAttributes: []
+                    } 
+                },
+                hide: false
+            });
+
+            expect(wrapper).toMatchSnapshot();
+        });
+
+        test('render correctly with required attributes', () => {
+            const wrapper = shallow(<RequireNewPassword/>);
+
+            wrapper.setProps({
+                authState: 'requireNewPassword',
+                authData: {
+                    challengeParam: {
+                        requiredAttributes: ['given_name', 'family_name']
+                    } 
+                },
                 hide: false
             });
 
@@ -47,6 +68,11 @@ describe('RequireNewPassword test', () => {
 
             wrapper.setProps({
                 authState: 'requireNewPassword',
+                authData: {
+                    challengeParam: {
+                        requiredAttributes: []
+                    } 
+                },
                 hide: false
             });
 
@@ -64,6 +90,11 @@ describe('RequireNewPassword test', () => {
 
             wrapper.setProps({
                 authState: 'requireNewPassword',
+                authData: {
+                    challengeParam: {
+                        requiredAttributes: []
+                    } 
+                },
                 hide: false
             });
 
@@ -80,7 +111,7 @@ describe('RequireNewPassword test', () => {
             const props = {
                 authData: {
                     challengeParam: {
-                        requiredAttributes: 'requiredAttributes'
+                        requiredAttributes: []
                     } 
                 }
             }
@@ -102,9 +133,9 @@ describe('RequireNewPassword test', () => {
 
             await requireNewPassword.change();
 
-            expect(spyon).toBeCalledWith({"challengeParam": {"requiredAttributes": "requiredAttributes"}}, 
+            expect(spyon).toBeCalledWith({"challengeParam": {"requiredAttributes": []}}, 
                                         'password', 
-                                        'requiredAttributes');
+                                        {});
 
             expect(spyon2).toBeCalledWith('user');
             spyon.mockClear();
@@ -114,7 +145,7 @@ describe('RequireNewPassword test', () => {
             const props = {
                 authData: {
                     challengeParam: {
-                        requiredAttributes: 'requiredAttributes'
+                        requiredAttributes: []
                     } 
                 }
             }
@@ -138,9 +169,9 @@ describe('RequireNewPassword test', () => {
 
             await requireNewPassword.change();
 
-            expect(spyon).toBeCalledWith({"challengeParam": {"requiredAttributes": "requiredAttributes"}}, 
+            expect(spyon).toBeCalledWith({"challengeParam": {"requiredAttributes": []}}, 
                                         'password', 
-                                        'requiredAttributes');
+                                        {});
 
             expect(spyon2).toBeCalledWith('confirmSignIn', { challengeName: 'SMS_MFA' });
             spyon.mockClear();
@@ -150,7 +181,7 @@ describe('RequireNewPassword test', () => {
             const props = {
                 authData: {
                     challengeParam: {
-                        requiredAttributes: 'requiredAttributes'
+                        requiredAttributes: []
                     } 
                 }
             }
@@ -174,9 +205,9 @@ describe('RequireNewPassword test', () => {
 
             await requireNewPassword.change();
 
-            expect(spyon).toBeCalledWith({"challengeParam": {"requiredAttributes": "requiredAttributes"}}, 
+            expect(spyon).toBeCalledWith({"challengeParam": {"requiredAttributes": []}}, 
                                         'password', 
-                                        'requiredAttributes');
+                                        {});
 
             expect(spyon2).toBeCalledWith('TOTPSetup', { challengeName: 'MFA_SETUP' });
             spyon.mockClear();
@@ -210,6 +241,42 @@ describe('RequireNewPassword test', () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+        });
+
+        test('requiredAttributes test', async () => {
+            const props = {
+                authData: {
+                    challengeParam: {
+                        requiredAttributes: ['given_name', 'family_name']
+                    } 
+                }
+            }
+
+            const spyon = jest.spyOn(Auth, 'completeNewPassword').mockImplementationOnce(() => {
+                return new Promise((res, rej) => {
+                    res('user');
+                });
+            });
+            const spyon2 = jest.spyOn(RequireNewPassword.prototype, 'checkContact').mockImplementationOnce(() => { return; });
+
+            const wrapper = shallow(<RequireNewPassword/>);
+            const requireNewPassword = wrapper.instance();
+
+            wrapper.setProps(props);
+            requireNewPassword.inputs = {
+                password: 'password',
+                given_name: 'Max',
+                family_name: 'Power'
+            }
+
+            await requireNewPassword.change();
+
+            expect(spyon).toBeCalledWith({"challengeParam": {"requiredAttributes": ['given_name', 'family_name']}}, 
+                                        'password', 
+                                        {given_name: 'Max', family_name: 'Power'});
+
+            expect(spyon2).toBeCalledWith('user');
+            spyon.mockClear();
         });
     });
 

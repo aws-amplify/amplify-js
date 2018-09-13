@@ -169,6 +169,14 @@ import { Auth } from 'aws-amplify';
 Auth.signOut()
     .then(data => console.log(data))
     .catch(err => console.log(err));
+
+// By doing this, you are revoking all the auth tokens(id token, access token and refresh token)
+// which means the user is signed out from all the devices
+// Note: although the tokens are revoked, the AWS credentials will remain valid until they expire (which by default is 1 hour)
+Auth.signOut({ global: true })
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+    
 ```
 
 #### Change password
@@ -204,11 +212,11 @@ You can call `Auth.currentAuthenticatedUser()` to get the current authenticated 
 import { Auth } from 'aws-amplify';
 
 Auth.currentAuthenticatedUser()
-    .then(user => console.log(user));
+    .then(user => console.log(user))
     .catch(err => console.log(err));
 ```
 This method can be used to check if a user is logged in when the page is loaded. It will throw an error if there is no user logged in.
-This method should be called after the Auth module is configured. To ensure that you can listen on the auth events `configured`. [Learn how to listen on auth events.]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/hub_guide#listening-authentication-events)
+This method should be called after the Auth module is configured or the user is logged in. To ensure that you can listen on the auth events `configured` or `signIn`. [Learn how to listen on auth events.]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/hub_guide#listening-authentication-events)
 
 #### Retrieve Current Session
 

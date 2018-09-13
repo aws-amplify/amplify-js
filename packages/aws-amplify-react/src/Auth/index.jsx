@@ -79,7 +79,7 @@ export function withAuthenticator(Comp, includeGreetings = false, authenticatorC
             return <Authenticator
                 {...this.props}
                 theme={theme}
-                federated={federated}
+                federated={federated || this.props.federated}
                 hideDefault={authenticatorComponents.length > 0}
                 onStateChange={this.handleAuthStateChange}
                 children={authenticatorComponents}
