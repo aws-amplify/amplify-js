@@ -272,7 +272,7 @@ public class RNPushNotificationHelper {
 
             if (!bundle.containsKey("playSound") || bundle.getBoolean("playSound")) {
                 Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                String soundName = bundle.getString("soundName");
+                String soundName = bundle.getString("pinpoint.notification.sound");
                 if (soundName != null) {
                     if (!"default".equalsIgnoreCase(soundName)) {
 
