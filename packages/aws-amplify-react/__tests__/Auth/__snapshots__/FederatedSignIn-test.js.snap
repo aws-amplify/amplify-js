@@ -18,6 +18,9 @@ exports[`FederatedButtons test render test render with correct authState 1`] = `
   </div>
   <div />
   <div />
+  <Strike>
+    or
+  </Strike>
 </div>
 `;
 
@@ -31,6 +34,9 @@ exports[`FederatedButtons test render test render with correct authState and onl
   <div />
   <div />
   <div />
+  <Strike>
+    or
+  </Strike>
 </div>
 `;
 
@@ -44,6 +50,9 @@ exports[`FederatedButtons test render test render with correct authState and onl
   </div>
   <div />
   <div />
+  <Strike>
+    or
+  </Strike>
 </div>
 `;
 
