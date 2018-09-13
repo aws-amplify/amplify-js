@@ -3,7 +3,7 @@ const tracker = jest.fn().mockImplementation(() => {
     return Promise.resolve();
 });
 
-jest.mock('dom-utils-amplify', () => {
+jest.mock('../../src/vendor/dom-utils', () => {
     return {
         delegate: mockDelegate
     }

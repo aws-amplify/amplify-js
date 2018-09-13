@@ -8,9 +8,10 @@
  * @return {!Array} An array of all parent elemets, or an empty array if no
  *     parent elements are found.
  */
-export default function parents(element) {
+export default function parents(ele) {
   const list = [];
-  while (element && element.parentNode && element.parentNode.nodeType == 1) {
+  let element = ele;
+  while (element && element.parentNode && element.parentNode.nodeType === 1) {
     element = /** @type {!Element} */ (element.parentNode);
     list.push(element);
   }

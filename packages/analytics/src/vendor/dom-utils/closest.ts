@@ -14,7 +14,7 @@ import parents from './parents';
  * @return {Element|undefined} The matching element or undefined.
  */
 export default function closest(element, selector, shouldCheckSelf = false) {
-  if (!(element && element.nodeType == 1 && selector)) return;
+  if (!(element && element.nodeType === 1 && selector)) return;
   const parentElements =
       (shouldCheckSelf ? [element] : []).concat(parents(element));
 

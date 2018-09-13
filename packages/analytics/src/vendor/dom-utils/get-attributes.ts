@@ -13,7 +13,7 @@ export default function getAttributes(element) {
   const attrs = {};
 
   // Validate input.
-  if (!(element && element.nodeType == 1)) return attrs;
+  if (!(element && element.nodeType === 1)) return attrs;
 
   // Return an empty object if there are no attributes.
   const map = element.attributes;

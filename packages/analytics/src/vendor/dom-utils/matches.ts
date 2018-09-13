@@ -20,16 +20,16 @@ const nativeMatches = proto.matches ||
  */
 export default function matches(element, test) {
   // Validate input.
-  if (element && element.nodeType == 1 && test) {
+  if (element && element.nodeType === 1 && test) {
     // if test is a string or DOM element test it.
-    if (typeof test == 'string' || test.nodeType == 1) {
-      return element == test ||
+    if (typeof test === 'string' || test.nodeType === 1) {
+      return element === test ||
           matchesSelector(element, /** @type {string} */ (test));
     } else if ('length' in test) {
       // if it has a length property iterate over the items
       // and return true if any match.
       for (let i = 0, item; item = test[i]; i++) {
-        if (element == item || matchesSelector(element, item)) return true;
+        if (element === item || matchesSelector(element, item)) return true;
       }
     }
   }
@@ -46,11 +46,11 @@ export default function matches(element, test) {
  * @return {boolean} True if the selector matches.
  */
 function matchesSelector(element, selector) {
-  if (typeof selector != 'string') return false;
+  if (typeof selector !== 'string') return false;
   if (nativeMatches) return nativeMatches.call(element, selector);
   const nodes = element.parentNode.querySelectorAll(selector);
   for (let i = 0, node; node = nodes[i]; i++) {
-    if (node == element) return true;
+    if (node === element) return true;
   }
   return false;
 }

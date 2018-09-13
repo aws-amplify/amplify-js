@@ -1,7 +1,3 @@
-/**
- * Copyright (c) 2017, Philip Walton <philip@philipwalton.com>
- */
-
 export { default as closest } from './closest';
 export { default as delegate } from './delegate';
 export { default as dispatch } from './dispatch';

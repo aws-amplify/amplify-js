@@ -16,12 +16,14 @@
  *     be false if any of the event listeners called `preventDefault`.
  */
 export default function dispatch(
-    element, eventType, eventName = 'Event', initDict = {}) {
+    element, eventType, evtName = 'Event', init_dict = {}) {
   let event;
   let isCustom;
-
+  let initDict = init_dict;
+  let eventName = evtName;
+  
   // eventName is optional
-  if (typeof eventName == 'object') {
+  if (typeof eventName === 'object') {
     initDict = eventName;
     eventName = 'Event';
   }
