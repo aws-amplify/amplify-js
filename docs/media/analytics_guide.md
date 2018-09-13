@@ -45,7 +45,7 @@ Amplify.configure(aws_exports);
 The manual setup enables you to use your existing Amazon Pinpoint resource in your app.
 
 ```js
-import { Analytics } from 'aws-amplify';
+import Amplify from 'aws-amplify';
 
 Amplify.configure({
     // To get the aws credentials, you need to configure 
