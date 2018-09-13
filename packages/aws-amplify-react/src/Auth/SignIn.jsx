@@ -150,12 +150,14 @@ export default class SignIn extends AuthPiece {
                             name="password"
                             onChange={this.handleInputChange}
                         />
-                        <Hint theme={theme}>
-                            {I18n.get('Forget your password? ')}
-                            <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
-                                {I18n.get('Reset password')}
-                            </Link>
-                        </Hint>
+                        {
+                            !hideForgotPassword && <Hint theme={theme}>
+                                {I18n.get('Forget your password? ')}
+                                <Link theme={theme} onClick={() => this.changeState('forgotPassword')}>
+                                    {I18n.get('Reset password')}
+                                </Link>
+                            </Hint>
+                        }
                     </FormField>
                     
                 </SectionBody>
@@ -165,12 +167,14 @@ export default class SignIn extends AuthPiece {
                             {I18n.get('Sign In')}
                         </Button>
                     </SectionFooterPrimaryContent>
-                    <SectionFooterSecondaryContent theme={theme}>
-                        {I18n.get('No account? ')}
-                        <Link theme={theme} onClick={() => this.changeState('signUp')}>
-                            {I18n.get('Create account')}
-                        </Link>
-                    </SectionFooterSecondaryContent>
+                    {
+                        !hideSignUp && <SectionFooterSecondaryContent theme={theme}>
+                            {I18n.get('No account? ')}
+                            <Link theme={theme} onClick={() => this.changeState('signUp')}>
+                                {I18n.get('Create account')}
+                            </Link>
+                        </SectionFooterSecondaryContent>
+                    }
                 </SectionFooter>
             </FormSection>
         )
