@@ -56,6 +56,7 @@
     "@types/zen-observable": "^0.5.3",
     "axios": "^0.17.0",
     "graphql": "0.13.0",
+    "uuid": "^3.2.1",
     "zen-observable": "^0.8.6"
   },
   "jest": {
