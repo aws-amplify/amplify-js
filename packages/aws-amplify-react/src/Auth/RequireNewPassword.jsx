@@ -60,11 +60,12 @@ export default class RequireNewPassword extends AuthPiece {
         const user = this.props.authData;
         const { password } = this.inputs;
         const { requiredAttributes } = user.challengeParam;
-    
+        const attrs = objectWithProperties(this.inputs, requiredAttributes);
+
         if (!Auth || typeof Auth.completeNewPassword !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
-        Auth.completeNewPassword(user, password, requiredAttributes)
+        Auth.completeNewPassword(user, password, attrs)
             .then(user => {
                 logger.debug('complete new password', user);
                 if (user.challengeName === 'SMS_MFA') {
@@ -84,6 +85,9 @@ export default class RequireNewPassword extends AuthPiece {
         const { hide } = this.props;
         if (hide && hide.includes(RequireNewPassword)) { return null; }
 
+        const user = this.props.authData;
+        const { requiredAttributes } = user.challengeParam;
+
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Change Password')}</SectionHeader>
@@ -97,7 +101,19 @@ export default class RequireNewPassword extends AuthPiece {
                         type="password"
                         onChange={this.handleInputChange}
                     />
-                    
+
+                    {requiredAttributes
+                        .map(attribute => (
+                            <Input
+                                placeholder={I18n.get(convertToPlaceholder(attribute))}
+                                theme={theme}
+                                key={attribute}
+                                name={attribute}
+                                type="text"
+                                onChange={this.handleInputChange}
+                            />
+                        ))}
+
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
@@ -114,4 +130,22 @@ export default class RequireNewPassword extends AuthPiece {
             </FormSection>
         )
     }
+}
+
+function convertToPlaceholder(str) {
+    return str.split('_').map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase()).join(' ')
+}
+
+function objectWithProperties(obj, keys) {
+    const target = {};
+    for (const key in obj) {
+        if (keys.indexOf(key) === -1) {
+            continue;
+        }
+        if (!Object.prototype.hasOwnProperty.call(obj, key)) {
+            continue;
+        }
+        target[key] = obj[key];
+    }
+    return target;
 }
