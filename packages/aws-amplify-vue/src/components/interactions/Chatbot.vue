@@ -52,7 +52,7 @@ import AmplifyEventBus from '../../events/AmplifyEventBus';
 
 export default {
   name: 'Chatbot',
-  props: ['chatbotOptions'],
+  props: ['chatbotConfig'],
   data () {
     return {
 			inputText: '',
@@ -67,7 +67,7 @@ export default {
 				clearComplete: true,
 				botTitle: 'Chatbot'
       }
-      return Object.assign(defaults, this.chatbotOptions || {})
+      return Object.assign(defaults, this.chatbotConfig || {})
     }
   },
   mounted() {

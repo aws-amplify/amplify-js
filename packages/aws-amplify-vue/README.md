@@ -268,20 +268,16 @@ Usage:
 
 ```
 <amplify-sign-up v-bind:signUpConfig="signUpConfig"></amplify-sign-up>
-
-this.signUpConfig = {
-  signUpFields: [
-    {
-      label: 'Label for the input field', // type: string
-      key: 'Key name for the attribute as defined in the User Pool', //type: string
-      required: boolean,
-      type: 'string', 'number' or 'password',
-      displayOrder: 'number indicating the order in which fields will be displayed' // type: number, default: none, required: false
-    }
-  ]
-}
-
 ``` 
+
+| Attribute    | Type   | Description                                                   | Possible Values                |
+|--------------|--------|---------------------------------------------------------------|--------------------------------|
+| label        | string | label for the input field                                     | N/A                            |
+| key          | string | key name for the attribute as defined in the User Pool        | N/A                            |
+| required     | bolean | whether or not the field is required                          | N/A                            |
+| displayOrder | number | number indicating the order in which fields will be displayed | N/A                            |
+| type         | string | the type attribute for the html input element                 | 'string', 'number', 'password' |
+
 
 By default the SignUp Component will display Username, Password, Email and Phone Number fields (all required, and in that order).  You can override the labels, displayOrder or 'required' booleans for these fields by passing objects with 'username', 'password', 'email' or 'phone_number' keys in the signUpConfig.signUpFields array.
 
@@ -299,14 +295,14 @@ Usage: ```<amplify-photo-picker></amplify-photo-picker>```
 Config:
 ```
 <amplify-photo-picker v-bind:photoPickerConfig="photoPickerConfig"></amplify-photo-picker>
-
-photoPickerConfig = {
-  header: 'This is a label at the top of the component',  // type: string, default: 'File Upload', required: false
-  title: 'This is the text displayed in the upload button', // type: string, default 'Upload', required: false
-  accept: 'A string representing the "accept" value for the input element', // type: string, default: '*/*', required: false
-  path: 'The S3 path for the file upload', // type: string, default: none, required: **true**
-}
 ```
+
+| Attribute | Type   | Description                                                            | Default       | Required |
+|-----------|--------|------------------------------------------------------------------------|---------------|----------|
+| header    | string | the component header                                                   | 'File Upload' | no       |
+| title     | string | text displayed in the upload button                                    | 'Upload'      | no       |
+| accept    | string | a string representing the 'accept' attribute in the html input element | '*/*'         | no       |
+| path      | string | S3 path for the file upload                                            | N/A           | yes      |
 
 Events:
 
@@ -320,9 +316,9 @@ The S3Album component displays the image files from the provided S3 path.
 Usage: ```<amplify-s3-album path="uploads"></amplify-s3-album>```
 
 Props:
-```
-path = 'The S3 path from which the images should be retrieved' // type: string, default: none, required: **true**
-```
+
+The S3Album component does not have a config object like most other amplify-vue components. Instead it receives the S3 directory path as a string.  The path is required. 
+
 
 Events: None
 
@@ -330,12 +326,12 @@ Events: None
 
 The S3Image component displays the a single image from the provided path.
 
-Usage: ```<amplify-s3-album imagePath="path"></amplify-s3-album>```
+Usage: ```<amplify-s3-image imagePath="path"></amplify-s3-image>```
 
 Props:
-```
-imagePath = 'The S3 path from which the image should be retrieved' // type: string, default: none, required: **true**
-```
+
+The S3Image component does not have a config object like most other amplify-vue components. Instead it receives the S3 image path as a string.  The path is required. 
+
 Events: None
 
 ## Interaction Components
@@ -349,13 +345,13 @@ Usage: ```<amplify-chatbot></amplify-chatbot>```
 Config:
 ```
 <amplify-chatbot v-bind:chatbotConfig="chatbotConfig"></amplify-chatbot>
-
-chatbotConfig = {
-  bot: 'The name of the chatbot as defined in your Amplify configuration under "aws_bots_config.name"', // type: string, default: none, required: **true**
-  clearComplete: true, // type: boolean, default: true, required: false
-  botTitle: 'The name of the chatbot component in your frontend app' // type: string, default: 'Chatbot', required: false
-}
 ```
+
+| Attribute     | Type    | Description                                                                                   | Default   | Required |
+|---------------|---------|-----------------------------------------------------------------------------------------------|-----------|----------|
+| bot           | string  | the name of the chatbot as defined in your Amplify configuration under "aws_bots_config.name" | N/A       | yes      |
+| clearComplete | boolean | specifies whether the chat messages clear out at the end of the chat session                  | true      | no       |
+| botTitle      | string  | the name of the chatbot component in your frontend app                                        | 'Chatbot' | no       |
 
 Events:
 
