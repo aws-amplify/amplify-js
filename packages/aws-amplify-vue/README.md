@@ -95,34 +95,14 @@ Options:
 
 ```
 <amplify-authenticator v-bind:authOptions="authOptions"></amplify-authenticator>
-
-authOptions = {
-  confirmSignInOptions: {
-    header: 'This is a label at the top of the component',  // type: string, default: 'Confirm Sign In', required: false
-    user: 'The user who is attempting to log in', // type: object, default: user who completed sign in step, required: **true**
-  },
-  confirmSignUpOptions: {
-    header: 'This is a label at the top of the component',  // type: string, default: 'Confirm Sign Up', required: false
-    username: 'The username of the user who is attempting to sign up', // type: string, default: username of user who completed sign up step, required: false
-  },
-  forgotPasswordOptions: {
-    header: 'This is a label at the top of the component',  // type: string, default: 'Forgot Password', required: false
-  },
-  signInOptions: {
-    username: 'This is the default value for the username input field', // type: string, default: '' (unless user has completed signup actions), required: false
-    header: 'This is a label at the top of the component',  // type: string, default: 'Sign In', required: false
-  },
-  signOutOptions: {
-    msg: 'This is a message that appears above the sign out button', // type: string, default: null
-    signOutButton: 'This is a label on the signout button', // type: string, default: 'Sign Out', required: false
-  },
-  signUpOptions: {
-    header: 'This is a label at the top of the component',  // type: string, default: 'Sign Up', required: false
-    signUpFields: [], // [see SignUp Options section](#signup-fields)
-  },
-
-}
 ```
+| Attribute                             | Type   |
+|---------------------------------------|--------|
+| [confirmSignInConfig](#ConfirmSignIn) | object |
+| confirmSignUpConfig                   | object |
+| forgotPasswordConfig                  | object |
+| signInConfig                          | object |
+| signUpConfig                          | object |
 
 Events: None
 
