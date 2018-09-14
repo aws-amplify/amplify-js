@@ -29,6 +29,8 @@ jest.mock('uuid', () => {
     return { v1: mockfn };
 })
 
+jest.useFakeTimers();
+
 import { Pinpoint, AWS, MobileAnalytics, JS, Credentials } from '@aws-amplify/core';
 import AnalyticsProvider from "../../src/Providers/AWSPinpointProvider";
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
