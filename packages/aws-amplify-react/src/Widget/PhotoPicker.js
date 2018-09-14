@@ -78,7 +78,7 @@ export default class PhotoPicker extends Component {
                 <SectionBody>
                     { previewSrc ? 
                         (previewHidden ? 
-                            'The image is selected':
+                            'The image has been selected':
                             <img src={previewSrc} style={previewStyle} />
                         ):
                         <PhotoPlaceholder />
