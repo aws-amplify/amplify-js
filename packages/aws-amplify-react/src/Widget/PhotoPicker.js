@@ -67,16 +67,20 @@ export default class PhotoPicker extends Component {
         const previewStyle = Object.assign(
             {},
             PickerPreview,
-            theme.pickerPreview,
-            (preview && preview !== 'hidden')? {} : AmplifyTheme.hidden
+            theme.pickerPreview
         );
+
+        const previewHidden = !(preview && preview !== 'hidden');
 
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme} hint={headerHint}>{I18n.get(headerText)}</SectionHeader>
                 <SectionBody>
-                    { previewSrc ?
-                        <img src={previewSrc} style={previewStyle} /> : 
+                    { previewSrc ? 
+                        (previewHidden ? 
+                            'The image is selected':
+                            <img src={previewSrc} style={previewStyle} />
+                        ):
                         <PhotoPlaceholder />
                     }
                 </SectionBody>
