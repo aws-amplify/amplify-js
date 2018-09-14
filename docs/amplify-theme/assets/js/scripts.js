@@ -125,11 +125,26 @@
 			} else {
 				smoothScrollOffset = 110;
 			}
-			if (document.getElementsByClassName("styleguide-affix")[0]) {
-				document.getElementsByClassName("styleguide-affix")[0].classList.add("styleguide-affix-notif");
+
+			const styleguideAffix = document.getElementsByClassName("styleguide-affix")[0];
+			if (styleguideAffix) {
+				window.addEventListener("scroll", function() {
+					if (styleguideAffix.classList.contains("affix")) {
+						styleguideAffix.classList.add("styleguide-affix-notif");
+					} else {
+						styleguideAffix.classList.remove("styleguide-affix-notif");
+					}
+				})
 			}
-			if (document.getElementsByClassName("sections-list-notif-check")[0]) {
-				document.getElementsByClassName("sections-list-notif-check")[0].classList.add("sections-list-notif");
+			const docsAffix = document.getElementsByClassName("sections-list-notif-check")[0];
+			if (docsAffix) {
+				window.addEventListener("scroll", function() {
+					if (docsAffix.classList.contains("affix")) {
+						docsAffix.classList.add("sections-list-notif");
+					} else {
+						docsAffix.classList.remove("sections-list-notif");
+					}
+				})
 			}
 			Cookies.set('notificationStatus', 'received');
 		} else {
