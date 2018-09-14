@@ -10,26 +10,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import XRClass from './XR';
 
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
-
-const logger = new Logger('XR');
-
-let _instance: XRClass = null;
-
-if (!_instance) {
-    logger.debug('Create XR Instance');
-    _instance = new XRClass(null);
-}
-
-const XR = _instance;
-Amplify.register(XR);
-
-export default XR;
-
-export * from './Providers/SumerianProvider';
-
-export {XRClass};
-
-export * from './Errors';
+export class XRError extends Error {}
+export class XRNoSceneConfiguredError extends XRError {}
+export class XRSceneNotFoundError extends XRError {}
+export class XRSceneNotLoadedError extends XRError {}
+export class XRNoDomElement extends XRError {}
+export class XRSceneLoadFailure extends XRError {}
