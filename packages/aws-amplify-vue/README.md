@@ -91,18 +91,18 @@ The Authenticator component provides basic basic login/logout functionality for 
 
 Usage: ```<amplify-authenticator></amplify-authenticator>```
 
-Options: 
+Config: 
 
 ```
-<amplify-authenticator v-bind:authOptions="authOptions"></amplify-authenticator>
+<amplify-authenticator v-bind:authConfig="authConfig"></amplify-authenticator>
 ```
 | Attribute                               | Type   |
 |-----------------------------------------|--------|
 | [confirmSignInConfig](#confirmsignin)   | object |
-| [confirmSignUpConfig](#ConfirmSignUp)   | object |
-| [forgotPasswordConfig](#ForgotPassword) | object |
-| [signInConfig](#SignInConfig)           | object |
-| [signUpConfig](#SignUpConfig)           | object |
+| [confirmSignUpConfig](#confirmsignup)   | object |
+| [forgotPasswordConfig](#forgotpassword) | object |
+| [signInConfig](#signinconfig)           | object |
+| [signUpConfig](#signupconfig)           | object |
 
 &ast; The attributes above reference the config objects for the components that are nested inside Authenticator.  See the individual components for details. 
 
@@ -115,15 +115,15 @@ The SignIn component provides your users with the ability to sign in.
 
 Usage: ```<amplify-sign-in></amplify-sign-in>```
 
-Options:
+Config:
 ```
-<amplify-sign-in v-bind:signInOptions="signInOptions"></amplify-sign-in>
+<amplify-sign-in v-bind:signInConfig="signInConfig"></amplify-sign-in>
+```
 
-signInOptions = {
-  username: 'This is the default value for the username input field', // type: string, default: '', required: false
-  header: 'This is a label at the top of the component'  // type: string, default: 'Sign In', required: false
-}
-```
+| Attribute | Type   | Description                             | Default   | Required |
+|-----------|--------|-----------------------------------------|-----------|----------|
+| header    | string | the component header                    | 'Sign In' | no       |
+| username  | string | the default value of the username field | ''        | no       |
 
 Events: 
 
@@ -134,19 +134,19 @@ Events:
 
 ### ConfirmSignIn
 
-The SignIn component provides your users with the ability answer an MFA challenge.  
+The ConfirmSignIn component provides your users with the ability answer an MFA challenge.  
 
 Usage: ```<amplify-confirm-sign-in></amplify-confirm-sign-in>```
 
-Options:
+Config:
 ```
-<amplify-sign-in v-bind:confirmSignInOptions="confirmSignInOptions"></amplify-sign-in>
+<amplify-confirm-sign-in v-bind:confirmsignInConfig="confirmsignInConfig"></amplify-confirm-sign-in>
+```
 
-confirmSignInOptions = {
-  header: 'This is a label at the top of the component',  // type: string, default: 'Sign In', required: false
-  user: 'The user who is attempting to log in', // type: object, default: {}, required: **true**
-}
-```
+| Attribute | Type   | Description                                         | Default   | Required |
+|-----------|--------|-----------------------------------------------------|-----------|----------|
+| header    | string | the component header                                | 'Sign In' | no       |
+| user      | object | the user who is stepping through the signin process | N/A       | yes      |
 
 
 Events: 
@@ -161,15 +161,16 @@ The SignUp component provides your users with the ability to sign up.
 
 Usage: ```<amplify-sign-up></amplify-sign-up>```
 
-Options:
+Config:
 ```
-<amplify-sign-up v-bind:signUpOptions="signUpOptions"></amplify-sign-up>
+<amplify-sign-up v-bind:signUpConfig="signUpConfig"></amplify-sign-up>
+```
 
-signUpOptions = {
-  header: 'This is a label at the top of the component',  // type: string, default: 'Sign Up'
-  signUpFields: [], // [see SignUp Fields section](#signup-fields)
-}
-```
+| Attribute    | Type   | Description                 | Default                     | Required |
+|--------------|--------|-----------------------------|-----------------------------|----------|
+| header       | string | the component header        | 'Sign Up'                   | no       |
+| signUpFields | array  | [see below](#signup-fields) | [see below](#signup-fields) | no       |
+
 
 Events: 
 
@@ -183,11 +184,11 @@ The ConfirmSignUp component provides your users with the ability to verify their
 
 Usage: ```<amplify-confirm-sign-up></amplify-confirm-sign-up>```
 
-Options:
+Config:
 ```
-<amplify-sign-in v-bind:confirmSignUpOptions="confirmSignUpOptions"></amplify-sign-in>
+<amplify-sign-in v-bind:confirmsignUpConfig="confirmsignUpConfig"></amplify-sign-in>
 
-confirmSignUpOptions = {
+confirmsignUpConfig = {
   header: 'This is a label at the top of the component',  // type: string, default: 'Sign In', required: false
   username: 'The username of the user who is attempting to sign up', // type: string, default: '', required: false
 }
@@ -203,11 +204,11 @@ The ForgotPassword component provides your users with the ability to reset their
 
 Usage: ```<amplify-forgot-password></amplify-forgot-password>```
 
-Options:
+Config:
 ```
-<amplify-forgot-password v-bind:forgotPasswordOptions="forgotPasswordOptions"></amplify-forgot-password>
+<amplify-forgot-password v-bind:forgotPasswordConfig="forgotPasswordConfig"></amplify-forgot-password>
 
-forgotPasswordOptions = {
+forgotPasswordConfig = {
   header: 'This is a label at the top of the component',  // type: string, default: 'Forgot Password', required: false
 }
 ```
@@ -222,11 +223,11 @@ The ForgotPassword component provides your users with the ability to sign out.
 
 Usage: ```<amplify-sign-out></amplify-sign-out>```
 
-Options:
+Config:
 ```
-<amplify-sign-out v-bind:signOutOptions="signOutOptions"></amplify-sign-out>
+<amplify-sign-out v-bind:signOutConfig="signOutConfig"></amplify-sign-out>
 
-signOutOptions = {
+signOutConfig = {
   msg: 'A message displayed above the sign out button',  // type: string, default: null, required: false
   signOutButton: 'The text that appears in the sign out button', // type: string, default: 'Sign Out', required: false
 }
@@ -242,11 +243,11 @@ The SetMFA component provides your users with the ability to set their preferren
 
 Usage: ```<amplify-set-mfa></amplify-set-mfa>```
 
-Options:
+Config:
 ```
-<amplify-set-mfa v-bind:mfaOptions="mfaOptions"></amplify-set-mfa>
+<amplify-set-mfa v-bind:mfaConfig="mfaConfig"></amplify-set-mfa>
 
-mfaOptions = {
+mfaConfig = {
   mfaDescription: 'This is a description of MFA for your users', // type: string, default: 'AWS Multi-Factor Authentication (MFA) adds an extra layer of protection on top of your user name and password.',
   mfaTypes: ['An array of MFA types'], // type: array, default: [], possible values: 'SMS', 'TOTP', 'None'
   tokenInstructions: 'These are instructions for decoding the QR code used with TOTP', // type: string, default: 'Scan the QR Code with your phone camera or authentication app to get the MFA code',
@@ -266,9 +267,9 @@ The `aws-amplify-vue` SignUp component allows you to programatically define the 
 Usage: 
 
 ```
-<amplify-sign-up v-bind:signUpOptions="signUpOptions"></amplify-sign-up>
+<amplify-sign-up v-bind:signUpConfig="signUpConfig"></amplify-sign-up>
 
-this.signOptions = {
+this.signUpConfig = {
   signUpFields: [
     {
       label: 'Label for the input field', // type: string
@@ -282,7 +283,7 @@ this.signOptions = {
 
 ``` 
 
-By default the SignUp Component will display Username, Password, Email and Phone Number fields (all required, and in that order).  You can override the labels, displayOrder or 'required' booleans for these fields by passing objects with 'username', 'password', 'email' or 'phone_number' keys in the signUpOptions.signUpFields array.
+By default the SignUp Component will display Username, Password, Email and Phone Number fields (all required, and in that order).  You can override the labels, displayOrder or 'required' booleans for these fields by passing objects with 'username', 'password', 'email' or 'phone_number' keys in the signUpConfig.signUpFields array.
 
 Fields passed into the signUpFields array without a displayOrder property will be placed after those fields with defined displayOrders and in alphabetical order by key.
 
@@ -295,11 +296,11 @@ The PhotoPicker component provides your users to select and preview a file for u
 
 Usage: ```<amplify-photo-picker></amplify-photo-picker>```
 
-Options:
+Config:
 ```
-<amplify-photo-picker v-bind:photoPickerOptions="photoPickerOptions"></amplify-photo-picker>
+<amplify-photo-picker v-bind:photoPickerConfig="photoPickerConfig"></amplify-photo-picker>
 
-photoPickerOptions = {
+photoPickerConfig = {
   header: 'This is a label at the top of the component',  // type: string, default: 'File Upload', required: false
   title: 'This is the text displayed in the upload button', // type: string, default 'Upload', required: false
   accept: 'A string representing the "accept" value for the input element', // type: string, default: '*/*', required: false
@@ -345,11 +346,11 @@ The Chatbot component allows your users to interact with an Amazon Lex chatbot.
 
 Usage: ```<amplify-chatbot></amplify-chatbot>```
 
-Options:
+Config:
 ```
-<amplify-chatbot v-bind:chatbotOptions="chatbotOptions"></amplify-chatbot>
+<amplify-chatbot v-bind:chatbotConfig="chatbotConfig"></amplify-chatbot>
 
-chatbotOptions = {
+chatbotConfig = {
   bot: 'The name of the chatbot as defined in your Amplify configuration under "aws_bots_config.name"', // type: string, default: none, required: **true**
   clearComplete: true, // type: boolean, default: true, required: false
   botTitle: 'The name of the chatbot component in your frontend app' // type: string, default: 'Chatbot', required: false

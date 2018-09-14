@@ -45,7 +45,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'ConfirmSignIn',
-  props: ['confirmSignInOptions'],
+  props: ['confirmSignInConfig'],
   data () {
     return {
       verifyAttr: '',
@@ -61,7 +61,7 @@ export default {
         header: 'Confirm Sign In',
         user: {},
       }
-      return Object.assign(defaults, this.confirmSignInOptions || {})
+      return Object.assign(defaults, this.confirmSignInConfig || {})
     }
   },
   mounted() {
@@ -72,7 +72,6 @@ export default {
   },
   methods: {
     send: function() {
-      this.code = 'TEST'
       this.$Amplify.Auth.verifyCurrentUserAttribute(this.verifyAttr)
         .then(data => {
           this.logger.info('verifyCurrentUserAttribute successs');

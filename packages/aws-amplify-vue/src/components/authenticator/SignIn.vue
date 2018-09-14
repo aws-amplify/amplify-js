@@ -51,7 +51,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'SignIn',
-  props: ['signInOptions'],
+  props: ['signInConfig'],
   data () {
     return {
         password: '',
@@ -66,7 +66,7 @@ export default {
         header: 'Sign In',
         username: ''
       }
-      return Object.assign(defaults, this.signInOptions || {})
+      return Object.assign(defaults, this.signInConfig || {})
     }
   },
   mounted() {

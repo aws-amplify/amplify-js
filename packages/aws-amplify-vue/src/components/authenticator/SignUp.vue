@@ -69,7 +69,7 @@ Vue.use(Vue2Filters)
 
 export default {
   name: 'SignUp',
-  props: ['signUpOptions'],
+  props: ['signUpConfig'],
   data () {
     return {
       username: '',
@@ -119,20 +119,20 @@ export default {
         ]
       }
       
-      if (this.signUpOptions && this.signUpOptions.signUpFields && this.signUpOptions.signUpFields.length > 0) {
+      if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
         defaults.signUpFields.forEach((f, i) => {
-          const matchKey = this.signUpOptions.signUpFields.findIndex((d) => {
+          const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
             return d.key === f.key;
           });
           if (matchKey === -1) {
-            this.signUpOptions.signUpFields.push(f);
+            this.signUpConfig.signUpFields.push(f);
           }
         });
-        let counter = this.signUpOptions.signUpFields.filter((f) => {
+        let counter = this.signUpConfig.signUpFields.filter((f) => {
           return f.displayOrder;
         }).length;
 
-        const unOrdered = this.signUpOptions.signUpFields.filter((f) => {
+        const unOrdered = this.signUpConfig.signUpFields.filter((f) => {
           return !f.displayOrder;
         }).sort((a, b) => {
           if (a.key < b.key) {
@@ -142,11 +142,11 @@ export default {
         }).forEach((m) => {
           counter++;
           m.displayOrder = counter;
-          let index = this.signUpOptions.signUpFields.findIndex(y => y.key === m.key);
-          this.signUpOptions.signUpFields[index] = m;
+          let index = this.signUpConfig.signUpFields.findIndex(y => y.key === m.key);
+          this.signUpConfig.signUpFields[index] = m;
         })
 
-        return Object.assign(defaults, this.signUpOptions || {})
+        return Object.assign(defaults, this.signUpConfig || {})
       } else {
         return defaults;
       }
