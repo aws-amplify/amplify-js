@@ -140,7 +140,7 @@ Usage: ```<amplify-confirm-sign-in></amplify-confirm-sign-in>```
 
 Config:
 ```
-<amplify-confirm-sign-in v-bind:confirmsignInConfig="confirmsignInConfig"></amplify-confirm-sign-in>
+<amplify-confirm-sign-in v-bind:confirmSignInConfig="confirmSignInConfig"></amplify-confirm-sign-in>
 ```
 
 | Attribute | Type   | Description                                         | Default   | Required |
@@ -186,13 +186,14 @@ Usage: ```<amplify-confirm-sign-up></amplify-confirm-sign-up>```
 
 Config:
 ```
-<amplify-sign-in v-bind:confirmsignUpConfig="confirmsignUpConfig"></amplify-sign-in>
-
-confirmsignUpConfig = {
-  header: 'This is a label at the top of the component',  // type: string, default: 'Sign In', required: false
-  username: 'The username of the user who is attempting to sign up', // type: string, default: '', required: false
-}
+<amplify-sign-in v-bind:confirmSignUpConfig="confirmSignUpConfig"></amplify-sign-in>
 ```
+
+| Attribute | Type   | Description                               | Default           | Required |
+|-----------|--------|-------------------------------------------|-------------------|----------|
+| header    | string | the component header                      | 'Confirm Sign Up' | no       |
+| username  | string | the username of the user who is signingup | ''                | no       |
+
 
 Events: 
 
@@ -207,11 +208,11 @@ Usage: ```<amplify-forgot-password></amplify-forgot-password>```
 Config:
 ```
 <amplify-forgot-password v-bind:forgotPasswordConfig="forgotPasswordConfig"></amplify-forgot-password>
-
-forgotPasswordConfig = {
-  header: 'This is a label at the top of the component',  // type: string, default: 'Forgot Password', required: false
-}
 ```
+
+| Attribute | Type   | Description                               | Default           | Required |
+|-----------|--------|-------------------------------------------|-------------------|----------|
+| header    | string | the component header                      | 'Forgot Password' | no       |
 
 Events: 
 
@@ -226,12 +227,12 @@ Usage: ```<amplify-sign-out></amplify-sign-out>```
 Config:
 ```
 <amplify-sign-out v-bind:signOutConfig="signOutConfig"></amplify-sign-out>
-
-signOutConfig = {
-  msg: 'A message displayed above the sign out button',  // type: string, default: null, required: false
-  signOutButton: 'The text that appears in the sign out button', // type: string, default: 'Sign Out', required: false
-}
 ```
+
+| Attribute     | Type   | Description                                 | Default    | Required |
+|---------------|--------|---------------------------------------------|------------|----------|
+| msg           | string | message displayed above the sign out button | null       | no       |
+| signOutButton | string | text that appears in the sign out button    | 'Sign Out' | no       |
 
 Events: 
 
@@ -246,17 +247,16 @@ Usage: ```<amplify-set-mfa></amplify-set-mfa>```
 Config:
 ```
 <amplify-set-mfa v-bind:mfaConfig="mfaConfig"></amplify-set-mfa>
-
-mfaConfig = {
-  mfaDescription: 'This is a description of MFA for your users', // type: string, default: 'AWS Multi-Factor Authentication (MFA) adds an extra layer of protection on top of your user name and password.',
-  mfaTypes: ['An array of MFA types'], // type: array, default: [], possible values: 'SMS', 'TOTP', 'None'
-  tokenInstructions: 'These are instructions for decoding the QR code used with TOTP', // type: string, default: 'Scan the QR Code with your phone camera or authentication app to get the MFA code',
-  smsDescription: 'A description of SMS for your users', // type: string, default: 'SMS text messaging (receive a code on your mobile device)',
-  totpDescription: 'A description of TOTP for your users', // type: string, default: 'One-time password (use a QR code and MFA app to save a token on your mobile device)',
-  noMfaDescription: 'A description of no MFA for your users', // type: string, default: 'Do not enable MFA'
-}
-
 ```
+
+| Attribute         | Type   | Description                                                         | Default                                                                                                        | Possible Values       | Required |
+|-------------------|--------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|-----------------------|----------|
+| mfaDescription    | string | description of MFA for your users                                   | AWS Multi-Factor Authentication (MFA) adds an extra layer of protection on top of your user name and password. | N/A                   | no       |
+| mfaTypes          | array  | an array of MFA types which will result in a radio button selection | []                                                                                                             | 'SMS', 'TOTP', 'None' | no       |
+| tokenInstructions | string | instructions for decoding the QR code used with TOTP                | 'Scan the QR Code with your phone camera or authentication app to get the MFA code.'                           | N/A                   | no       |
+| smsDescription    | string | label for SMS radio button                                          | 'SMS text messaging (receive a code on your mobile device)'                                                    | N/A                   | no       |
+| totpDescription   | string | label for TOTP radio button                                         | 'One-time password (use a QR code and MFA app to save a token on your mobile device)'                          | N/A                   | no       |
+| noMfaDescription  | string | label for 'None' radio button                                       | 'Do not enable MFA'                                                                                            | N/A                   | no       |
 
 Events: None
 

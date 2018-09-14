@@ -74,7 +74,7 @@ import QrcodeVue from 'qrcode.vue';
 
 export default {
   name: 'SetMfa',
-  props: ['mfaOptions'],
+  props: ['mfaConfig'],
   data () {
     return {
         user: null,
@@ -99,17 +99,17 @@ export default {
       const defaults = {
         header: 'Multifactor Authentication Preference',
         mfaDescription: 'AWS Multi-Factor Authentication (MFA) adds an extra layer of protection on top of your user name and password.',
-        tokenInstructions: 'Scan the QR Code with your phone camera or authentication app to get the MFA code',
+        tokenInstructions: 'Scan the QR Code with your phone camera or authentication app to get the MFA code.',
         smsDescription: 'SMS text messaging (receive a code on your mobile device)',
         totpDescription: 'One-time password (use a QR code and MFA app to save a token on your mobile device)',
         noMfaDescription: 'Do not enable MFA',
         mfaTypes: [],
       }
-      return Object.assign(defaults, this.mfaOptions || {})
+      return Object.assign(defaults, this.mfaConfig || {})
     },
     cancelHandler() {
-      if (this.mfaOptions && this.mfaOptions.cancelCB ) {
-        return this.mfaOptions.cancelCB.bind(this.$parent);
+      if (this.mfaConfig && this.mfaConfig.cancelCB ) {
+        return this.mfaConfig.cancelCB.bind(this.$parent);
       } else {
         return AmplifyEventBus.$emit('authState', 'hideMFA')
       }

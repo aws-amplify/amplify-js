@@ -51,7 +51,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'ForgotPassword',
-  props: ['forgotPasswordOptions'],
+  props: ['forgotPasswordConfig'],
   data () {
     return {
         username: '',
@@ -68,7 +68,7 @@ export default {
       const defaults = {
         header: 'Forgot Password',
       }
-      return Object.assign(defaults, this.forgotPasswordOptions || {})
+      return Object.assign(defaults, this.forgotPasswordConfig || {})
     }
   },
   mounted() {

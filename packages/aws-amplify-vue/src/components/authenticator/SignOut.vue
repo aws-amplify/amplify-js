@@ -30,7 +30,7 @@ import { existsSync } from 'fs';
 
 export default {
   name: 'SignOut',
-  props: ['signOutOptions'],
+  props: ['signOutConfig'],
   data () {
     return {
         error: '',
@@ -45,7 +45,7 @@ export default {
         msg: null,
         signOutButton: 'Sign Out'
       }
-      return Object.assign(defaults, this.signOutOptions || {})
+      return Object.assign(defaults, this.signOutConfig || {})
     }
   },
   async mounted() {
