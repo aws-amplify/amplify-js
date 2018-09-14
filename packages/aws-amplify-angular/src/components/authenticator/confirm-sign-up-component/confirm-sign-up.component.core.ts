@@ -75,6 +75,7 @@ export class ConfirmSignUpComponentCore {
   code: string;
   errorMessage: string;
   amplifyService: AmplifyService;
+  @Input() hide: string[] = [];
 
   constructor(amplifyService: AmplifyService) {
     this.amplifyService = amplifyService;
