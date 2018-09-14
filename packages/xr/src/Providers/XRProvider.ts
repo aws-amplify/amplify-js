@@ -37,6 +37,12 @@ export abstract class AbstractXRProvider implements XRProvider {
 
     protected get options(): ProviderOptions { return { ...this._config }; }
 
-    public abstract loadScene(sceneParameters: SceneParameters): void;
+    public abstract loadScene(sceneParameters: SceneParameters, progressCallback: Function): void;
+    public abstract getSceneController(sceneName: string): any;
+    public abstract isVRCapable(sceneName: string): boolean;
+    public abstract start(sceneName: string): void;
+    public abstract enterVR(sceneName: string): void;
+    public abstract exitVR(sceneName: string): void;
+    public abstract enableAudio(sceneName: string): void;
 
 }

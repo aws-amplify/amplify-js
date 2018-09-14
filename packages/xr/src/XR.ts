@@ -73,7 +73,27 @@ export default class XR {
         }
     }
 
-    public async loadScene(sceneParameters: SceneParameters, provider: string = this._defaultProvider) {
-        return await this._providerMap[provider].loadScene(sceneParameters);
+    public async loadScene(sceneParameters: SceneParameters, progressCallback: Function = () => {}, provider: string = this._defaultProvider) {
+        return await this._providerMap[provider].loadScene(sceneParameters, progressCallback);
+    }
+
+    public isVRCapable(sceneName, provider: string = this._defaultProvider) {
+        return this._providerMap[provider].isVRCapable(sceneName);
+    }
+
+    public start(sceneName: string, provider: string = this._defaultProvider) {
+        return this._providerMap[provider].start(sceneName);
+    }
+
+    public enterVR(sceneName: string, provider: string = this._defaultProvider) {
+        return this._providerMap[provider].enterVR(sceneName);
+    }
+
+    public exitVR(sceneName: string, provider: string = this._defaultProvider) {
+        return this._providerMap[provider].exitVR(sceneName);
+    }
+
+    public enableAudio(sceneName: string, provider: string = this._defaultProvider) {
+        return this._providerMap[provider].enableAudio(sceneName);
     }
 }

@@ -11,8 +11,7 @@
  * and limitations under the License.
  */
 
- import { SceneParameters } from './SceneParameters';
-
+import { SceneParameters } from './SceneParameters';
 export interface XRProvider {
     // configure your provider
     configure(config: object): object;
@@ -23,6 +22,11 @@ export interface XRProvider {
     // return the name of you provider
     getProviderName(): string;
 
-    loadScene(sceneParameters: SceneParameters): void;
-
+    loadScene(sceneParameters: SceneParameters, progressCallback: Function);
+    getSceneController(sceneName: string): any;
+    isVRCapable(sceneName: string): boolean;
+    start(sceneName: string);
+    enterVR(sceneName: string);
+    exitVR(sceneName: string);
+    enableAudio(sceneName: string);
 }
