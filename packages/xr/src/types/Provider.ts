@@ -11,6 +11,8 @@
  * and limitations under the License.
  */
 
+ import { SceneParameters } from './SceneParameters';
+
 export interface XRProvider {
     // configure your provider
     configure(config: object): object;
@@ -21,6 +23,6 @@ export interface XRProvider {
     // return the name of you provider
     getProviderName(): string;
 
-    loadScene(domElementId: string, sceneConfiguration: object, additionalParameters: any): void;
+    loadScene(sceneParameters: SceneParameters): void;
 
 }
