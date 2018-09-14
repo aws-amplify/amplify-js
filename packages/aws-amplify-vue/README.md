@@ -98,7 +98,7 @@ Options:
 ```
 | Attribute                               | Type   |
 |-----------------------------------------|--------|
-| [confirmSignInConfig](#ConfirmSignIn)   | object |
+| [confirmSignInConfig](#confirmSignIn)   | object |
 | [confirmSignUpConfig](#ConfirmSignUp)   | object |
 | [forgotPasswordConfig](#ForgotPassword) | object |
 | [signInConfig](#SignInConfig)           | object |
