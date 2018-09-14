@@ -103,6 +103,7 @@ Options:
 | [forgotPasswordConfig](#ForgotPassword) | object |
 | [signInConfig](#SignInConfig)           | object |
 | [signUpConfig](#SignUpConfig)           | object |
+
 &ast; The attributes above reference the config objects for the components that are nested inside Authenticator.  See the individual components for details. 
 
 Events: None
