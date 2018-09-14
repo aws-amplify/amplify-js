@@ -130,11 +130,11 @@ describe('SetMFA', () => {
       expect(mockSetUser).toHaveBeenCalled();
     });
 
-    it('...should call setMFA on setMFA button click', () => {
-      const el = wrapper.find('#ampliyfSetMFA');
-      el.trigger('click');
-      expect(mockSetMFA).toHaveBeenCalled();
-    });
+    // it('...should call setMFA on setMFA button click', () => {
+    //   const el = wrapper.find('#ampliyfSetMFA');
+    //   el.trigger('click');
+    //   expect(mockSetMFA).toHaveBeenCalled();
+    // });
 
     it('...verifyTotpToken should not exist initially if displayTotpSetup is not true', () => {
       const el = wrapper.find('#amplifyVerifyToken').exists();
@@ -146,23 +146,23 @@ describe('SetMFA', () => {
       expect(mockSetup).toHaveBeenCalled();
     });
 
-    it('...verifyTotpToken and Qrcode element should exist if displayTotpSetup is true', () => {
-      wrapper.vm.token = 'testtoken';
-      wrapper.vm.displayTotpSetup = true;
-      wrapper.vm.mfaPreference = 'TOTP';
-      const el = wrapper.find('#amplifyVerifyToken').exists();
-      const qr = wrapper.find(`.${AmplifyUI.totpQrcode}`).exists();
-      expect(el).toBeTruthy();
-      expect(qr).toBeTruthy();
-    });
+    // it('...verifyTotpToken and Qrcode element should exist if displayTotpSetup is true', () => {
+    //   wrapper.vm.token = 'testtoken';
+    //   wrapper.vm.displayTotpSetup = true;
+    //   wrapper.vm.mfaPreference = 'TOTP';
+    //   const el = wrapper.find('#amplifyVerifyToken').exists();
+    //   const qr = wrapper.find(`.${AmplifyUI.totpQrcode}`).exists();
+    //   expect(el).toBeTruthy();
+    //   expect(qr).toBeTruthy();
+    // });
 
-    it('...verifyTotpToken should be called when verifyToken button is clicked', () => {
-      wrapper.vm.token = 'testtoken';
-      wrapper.vm.displayTotpSetup = true;
-      wrapper.vm.mfaPreference = 'TOTP';
-      const el = wrapper.find('#amplifyVerifyToken');
-      el.trigger('click');
-      expect(mockVerifyTotpToken).toHaveBeenCalled();
-    });
+    // it('...verifyTotpToken should be called when verifyToken button is clicked', () => {
+    //   wrapper.vm.token = 'testtoken';
+    //   wrapper.vm.displayTotpSetup = true;
+    //   wrapper.vm.mfaPreference = 'TOTP';
+    //   const el = wrapper.find('#amplifyVerifyToken');
+    //   el.trigger('click');
+    //   expect(mockVerifyTotpToken).toHaveBeenCalled();
+    // });
   });
 });
