@@ -51,9 +51,12 @@ export default class SignUp extends AuthPiece {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
-        let phone_number = null;
-        if (dial_code && phone_line_number) {
-            phone_number = dial_code + phone_line_number;
+        let phone_number = phone_line_number? '': null;
+        if (phone_line_number) {
+            phone_line_number.split('-').forEach(num => {
+                phone_number += num;
+            });
+            if (dial_code) phone_number = dial_code + phone_number;
         }
         
         Auth.signUp({
