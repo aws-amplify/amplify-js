@@ -98,7 +98,7 @@ Options:
 ```
 | Attribute                               | Type   |
 |-----------------------------------------|--------|
-| [confirmSignInConfig](#confirmSignIn)   | object |
+| [confirmSignInConfig](#confirmsignin)   | object |
 | [confirmSignUpConfig](#ConfirmSignUp)   | object |
 | [forgotPasswordConfig](#ForgotPassword) | object |
 | [signInConfig](#SignInConfig)           | object |
@@ -106,7 +106,6 @@ Options:
 
 &ast; The attributes above reference the config objects for the components that are nested inside Authenticator.  See the individual components for details. 
 
-[confirmSignInConfig](#confirmSignIn)  
 
 Events: None
 
