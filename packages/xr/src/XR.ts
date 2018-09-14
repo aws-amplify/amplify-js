@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { XRProvider, XROptions } from './types';
+import { XRProvider, XROptions, SceneParameters } from './types';
 
 import { SumerianProvider } from './Providers/SumerianProvider';
 
@@ -52,8 +52,10 @@ export default class XR {
         const opt = options ? options.XR || options : {};
         logger.debug('configure XR', { opt });
 
-        this._options = Object.assign({}, this._options, opt);
-        Object.values(this._providerMap).map((pluggable) => pluggable.configure(this._options));
+        // this._options = Object.assign({}, this._options, opt);
+        // Object.values(this._providerMap).map((pluggable) => pluggable.configure(this._options));
+
+        Object.entries(this._providerMap).map(([name, provider]) => {provider.configure(opt[name])});
 
         return this._options;
     }
@@ -71,7 +73,7 @@ export default class XR {
         }
     }
 
-    public async loadScene(domElementId: string, sceneConfiguration: object, additionalParameters: object = {}, provider: string = this._defaultProvider) {
-        return await this._providerMap[provider].loadScene(domElementId, sceneConfiguration, additionalParameters);
+    public async loadScene(sceneParameters: SceneParameters, provider: string = this._defaultProvider) {
+        return await this._providerMap[provider].loadScene(sceneParameters);
     }
 }
