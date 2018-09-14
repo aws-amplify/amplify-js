@@ -96,13 +96,14 @@ Options:
 ```
 <amplify-authenticator v-bind:authOptions="authOptions"></amplify-authenticator>
 ```
-| Attribute                             | Type   |
-|---------------------------------------|--------|
-| [confirmSignInConfig](#ConfirmSignIn) | object |
-| confirmSignUpConfig                   | object |
-| forgotPasswordConfig                  | object |
-| signInConfig                          | object |
-| signUpConfig                          | object |
+| Attribute                               | Type   |
+|-----------------------------------------|--------|
+| [confirmSignInConfig](#ConfirmSignIn)   | object |
+| [confirmSignUpConfig](#ConfirmSignUp)   | object |
+| [forgotPasswordConfig](#ForgotPassword) | object |
+| [signInConfig](#SignInConfig)           | object |
+| [signUpConfig](#SignUpConfig)           | object |
+&ast; The attributes above reference the config objects for the components that are nested inside Authenticator.  See the individual components for details. 
 
 Events: None
 
@@ -144,6 +145,7 @@ confirmSignInOptions = {
   user: 'The user who is attempting to log in', // type: object, default: {}, required: **true**
 }
 ```
+
 
 Events: 
 
