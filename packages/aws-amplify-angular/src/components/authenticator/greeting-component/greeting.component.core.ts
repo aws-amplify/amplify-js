@@ -40,7 +40,7 @@ export class GreetingComponentCore {
     this.signedIn = authState.state === 'signedIn';
 
     this.greeting = this.signedIn
-      ? "Hello " + authState.user.username
+      ? "Hello, " + authState.user.username
       : "";
   }
 
