@@ -440,15 +440,21 @@ background-color: var(--color-primary-highlight);
 }
 
 .amplify-greeting {
+  display: flex;
   padding: 1em;
+  margin: 0 auto;
+}
+
+.amplify-greeting-flex-spacer {
+  width: 30%;
 }
 
 .amplify-greeting-sign-out {
-  float:right;
+  flex: auto;
 }
 
 .amplify-footer {
-clear: both;
+  clear: both;
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
