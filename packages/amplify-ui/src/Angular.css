@@ -310,9 +310,9 @@ border: 0px solid var(--color-white) !important;
 .amplify-select-phone-country {
   height: 55px;
   width: 68px;
-  border: 1px solid #C4C4C4;
+  border: var(--input-border);
   border-radius: 3px 0 0 3px;
-  background-color: #F8F4F4;
+  background-color: transparent;
 }
 
 /** Ionic styles for material design */
