@@ -221,53 +221,53 @@ border: 0px solid var(--color-white) !important;
 }
 
 .amplify-interactions-input {
-padding: 1em;
-margin: 1em;
-width: 75%;
-border-radius: 20px 20px 20px 0;
-background-color: #DBDBDB;
-box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.1);
-font-size: 13px;
-line-height: 16px;
-color: #4A4A4A;
+  padding: 1em;
+  margin: 1em;
+  width: 75%;
+  border-radius: 20px 20px 20px 0;
+  background-color: #DBDBDB;
+  box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.1);
+  font-size: 13px;
+  line-height: 16px;
+  color: #4A4A4A;
 }
 
 .amplify-interactions-input-timestamp {
-color: #828282;
-font-size: 10px;
-letter-spacing: 0.5px;
-line-height: 16px;
-margin-left: 1.5em;
+  color: #828282;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  line-height: 16px;
+  margin-left: 1.5em;
 }
 
 .amplify-interactions-response-timestamp {
-color: #828282;
-font-size: 10px;
-letter-spacing: 0.5px;
-line-height: 16px;
-text-align:right;
+  color: #828282;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  line-height: 16px;
+  text-align:right;
 }
 
 .amplify-interactions-response {
-padding: 1em;
-margin: 1em;
-width: 75%;
-margin-left: 5em;
-border-radius: 20px 20px 0 20px;
-background-color: #009ECF;
-box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.1);
-color: var(--color-white);
-font-size: 13px;
-line-height: 16px;
+  padding: 1em;
+  margin: 1em;
+  width: 75%;
+  margin-left: 5em;
+  border-radius: 20px 20px 0 20px;
+  background-color: #009ECF;
+  box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.1);
+  color: var(--color-white);
+  font-size: 13px;
+  line-height: 16px;
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
-.amplify-interactions {
-    width: var(--component-width-mobile)
-}
-.amplify-interactions-container {
-    width: 85%;
-}
+  .amplify-interactions {
+      width: var(--component-width-mobile)
+  }
+  .amplify-interactions-container {
+      width: 85%;
+  }
 }
 
 /************************************
@@ -275,53 +275,65 @@ line-height: 16px;
 ************************************/
 
 .amplify-input-group {
-display:flex;
-margin-left: 0.3em;
-margin-top: 0.5em;
+  display:flex;
+  margin-left: 0.3em;
+  margin-top: 0.5em;
 }
 
 .amplify-input-group > div:first-of-type {
-float:left;
+  float:left;
 }
 
 .amplify-input-group > div:last-child > input {
-border-left: none !important;
-width: 100%;
+  border-left: none !important;
+  width: 100%;
 }
 
 .amplify-input-group > div:last-child {
-display: flex;
-width: 100%;
+  display: flex;
+  width: 100%;
 }
 
 .amplify-input-group > div {
-float:right;
+  at:right;
 }
 
 .amplify-input-group-item > input {
-margin-top:0px !important;
-margin-left:0px !important;
+  margin-top:0px !important;
+  margin-left:0px !important;
 }
 
 .amplify-input-group-label {
-display:block;
+  splay:block;
 }
 
 .amplify-select-phone-country {
-height: 55px;
-width: 68px;
-border: 1px solid #C4C4C4;
-border-radius: 3px 0 0 3px;
-background-color: #F8F4F4;
+  height: 55px;
+  width: 68px;
+  border: 1px solid #C4C4C4;
+  border-radius: 3px 0 0 3px;
+  background-color: #F8F4F4;
+}
+
+/** Ionic styles for material design */
+.md .amplify-select-phone-country {
+  border: none;
+  border-bottom: var(--input-border);
+  background-color: transparent;
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
-.amplify-select-phone-country {
-    margin-top: 0.1em;
-    margin-right: 0em;
-    height:41px;
-    width: auto;
-}
+  .amplify-select-phone-country {
+      margin-top: 0.1em;
+      margin-right: 0em;
+      height:41px;
+      width: auto;
+  }
+
+  /** Ionic styles for material design */
+  .md .amplify-select-phone-country {
+    margin-top: 0.3em;
+  }
 }
 
 /***********************************
@@ -329,49 +341,56 @@ background-color: #F8F4F4;
 ***********************************/
 
 .amplify-form-container {
-height:100%;
+  height:100%;
 }
 
 .amplify-form-header {
-color: var(--color-primary-accent);
-height: 28px;
-font-size: 18px;
-font-weight: bold;
-letter-spacing: 0.49px;
-line-height: 16px;
-margin: 0.2em;
+  color: var(--color-primary-accent);
+  height: 28px;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.49px;
+  line-height: 16px;
+  margin: 0.2em;
 }
 
 .amplify-form-text {
-height: 36px;
-width: 90%;
-color: var(--color-accent-brown);
-font-size: 14px;
-letter-spacing: 0.4px;
-line-height: 20px;
+  height: 36px;
+  width: 90%;
+  color: var(--color-accent-brown);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  line-height: 20px;
 }
 
 .amplify-input-label {
-height: 18px;
-width: 367.92px;
-color: var(--color-accent);
-font-family: var(--font-family);
-font-size: 14px;
-margin: 0.5em;
-letter-spacing: 0.4px;
-line-height: 18px;
+  height: 18px;
+  width: 367.92px;
+  color: var(--color-accent);
+  font-family: var(--font-family);
+  font-size: 14px;
+  margin: 0.5em;
+  letter-spacing: 0.4px;
+  line-height: 18px;
 }
 
 .amplify-form-input {
-height: 42px;
-width: 378px;
-font-size: 14px;
-letter-spacing: 0.4px;
-border: var(--input-border);
-border-radius: 3px;
-background-color: #FFFFFF;
-padding: var(--input-padding);
-margin: 0.5em;
+  height: 42px;
+  width: 378px;
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  border: var(--input-border);
+  border-radius: 3px;
+  background-color: #FFFFFF;
+  padding: var(--input-padding);
+  margin: 0.5em;
+}
+
+/** Ionic styles for material design */
+.md .amplify-form-input {
+  border: none;
+  border-bottom: var(--input-border);
+  border-radius: 0px;
 }
 
 .amplify-form-actions {
