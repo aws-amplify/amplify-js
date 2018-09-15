@@ -92,7 +92,7 @@ export class SumerianProvider extends AbstractXRProvider {
       throw(new XRSceneLoadFailure(error));
     }
 
-    const publishParamOverrides = scene.additionalParameters ? scene.additionalParameters.publishParamOverrides : null;
+    const publishParamOverrides = scene.publishParamOverrides ? scene.publishParamOverrides : null;
 
     const sceneLoadParams = {
       element,
@@ -104,7 +104,7 @@ export class SumerianProvider extends AbstractXRProvider {
     }
 
     // Load the scene and return scene controller
-    const sceneController = await window.SumerianBootstrapper.loadScene(sceneLoadParams);
+    const sceneController = await (<any>window).SumerianBootstrapper.loadScene(sceneLoadParams);
     for (const warning of sceneController.sceneLoadWarnings) {
       logger.warn('loadScene warning: ' + warning);
     }
