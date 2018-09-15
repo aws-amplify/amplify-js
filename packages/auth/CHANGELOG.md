@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.1.2-beta.3"></a>
+## [1.1.2-beta.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.1.2-beta.2...@aws-amplify/auth@1.1.2-beta.3) (2018-09-15)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 <a name="1.1.2-beta.2"></a>
 ## [1.1.2-beta.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.1.2-beta.1...@aws-amplify/auth@1.1.2-beta.2) (2018-09-14)
 

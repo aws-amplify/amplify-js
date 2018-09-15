@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.1-beta.3"></a>
+## [0.1.1-beta.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.1.1-beta.2...aws-amplify-vue@0.1.1-beta.3) (2018-09-15)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-vue
+
 <a name="0.1.1-beta.2"></a>
 ## [0.1.1-beta.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.1.1-beta.1...aws-amplify-vue@0.1.1-beta.2) (2018-09-14)
 
