@@ -82,6 +82,13 @@ input:disabled {
   color: var(--color-gray);
 }
 
+@media (min-width: 320px) and (max-width: 480px) {
+  .amplify-authenticator {
+    width: var(--component-width-mobile);
+    box-shadow: none;
+  }
+}
+
 /********************************************
 ** Storage
 *******************************************/
@@ -153,13 +160,24 @@ background-color: var(--color-white);
   cursor: pointer;
 }
 
+@media (min-width: 320px) and (max-width: 480px) {
+  .amplify-photo-picker-container {
+      width: auto;
+  }
+  .amplify-photo-picker-upload {
+      width: auto;
+  }
+}
 
+/**********************************************
+** Interactions
+**********************************************/
 
 .amplify-interactions {
   width: var(--component-width-desktop);
   margin: 1em auto;
   border-radius: 6px;
-background-color: var(--color-white);
+  background-color: var(--color-white);
   box-shadow: var(--box-shadow);
 }
 
@@ -240,6 +258,14 @@ background-color: var(--color-white);
   line-height: 16px;
 }
 
+@media (min-width: 320px) and (max-width: 480px) {
+  .amplify-interactions {
+      width: var(--component-width-mobile)
+  }
+  .amplify-interactions-container {
+      width: 85%;
+  }
+}
 
 /************************************
 ** Input Groups 
@@ -286,6 +312,15 @@ background-color: var(--color-white);
   background-color: #F8F4F4;
 }
 
+@media (min-width: 320px) and (max-width: 480px) {
+  .amplify-select-phone-country {
+      margin-top: 0.1em;
+      margin-right: 0em;
+      height:41px;
+      width: auto;
+  }
+}
+
 /***********************************
 ** Forms
 ***********************************/
@@ -314,23 +349,23 @@ background-color: var(--color-white);
 }
 
 .amplify-input-label {
-height: 18px;
-width: 367.92px;
-color: var(--color-accent);
-font-family: var(--font-family);
+  height: 18px;
+  width: 367.92px;
+  color: var(--color-accent);
+  font-family: var(--font-family);
   font-size: 14px;
   margin: 0.5em;
-letter-spacing: 0.4px;
-line-height: 18px;
+  letter-spacing: 0.4px;
+  line-height: 18px;
 }
 
 .amplify-form-input {
-height: 42px;
+  height: 42px;
   width: 378px;
   font-size: 14px;
   letter-spacing: 0.4px;
-border: var(--input-border);
-border-radius: 3px;
+  border: var(--input-border);
+  border-radius: 3px;
   background-color: #FFFFFF;
   padding: var(--input-padding);
   margin: 0.5em;
@@ -457,6 +492,13 @@ border-radius: 3px;
   font-size: 15px;
   line-height: 24px;
   margin-left: 0.5em;
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+  .amplify-alert {
+      width: 92%;
+      margin-top: 1em;
+  }
 }
 
 
