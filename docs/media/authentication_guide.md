@@ -612,7 +612,42 @@ const url = 'https://' + domain + '/login?redirect_uri=' + redirectSignIn + '&re
 window.location.assign(url);
 ```
 
-#### Launching the Hosted UI in React 
+#### After redirecting back
+
+After logging in through the Hosted UI, the user will be redirected back to the callback URL. By calling `Auth.configure({oauth})`, the Auth module will try to parse the callback URL and construct a user session for you. Parsing the url and constructing the session is an async process so you need to listen to the auth event. You can then call `Auth.currentSession()` or `Auth.currentAuthenticatedUser()` to check if the user is logged in or not.
+
+Example Code:
+```js
+import Auth from '@aws-amplify/auth';
+import { Hub } from '@aws-amplify/core';
+
+Auth.configure({
+    oauth
+});
+
+// listen to the auth event
+Hub.listen('auth', {
+    onHubCapsule: (capsule) => {
+        const { channel, payload, source } = capsule;
+        if (channel === 'auth' && (payload.event === 'configured' || payload.event === 'signIn')) { 
+            checkUser(); 
+        }
+    }
+});
+
+// somewhere in your code
+checkUser() {
+    Auth.currentAuthenticatedUser()
+        .then(user => {
+            console.log('logged in');
+        })
+        .catch(err => {
+            console.log('not logged in');
+        });
+}
+```
+
+#### Launching the Hosted UI using aws-amplify-react 
 
 With React, you can use `withOAuth` HOC to launch the hosted UI experience. Just wrap your app's main component with our HOC:
 
