@@ -81,7 +81,7 @@ describe('ConfirmSignIn', () => {
           setError: mockSetError,
         },
         propsData: {
-          confirmSignInOptions: {
+          confirmSignInConfig: {
             user: { username: 'TestPerson' },
             header,
           },

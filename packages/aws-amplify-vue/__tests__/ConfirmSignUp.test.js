@@ -83,7 +83,7 @@ describe('ConfirmSignUp', () => {
           setError: mockSetError,
         },
         propsData: {
-          confirmSignUpOptions: {
+          confirmSignUpConfig: {
             username,
             header,
           },
