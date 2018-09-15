@@ -35,7 +35,7 @@ import AmplifyEventBus from '../../events/AmplifyEventBus';
 
 export default {
   name: 'PhotoPicker',
-  props: ['photoPickerOptions'],
+  props: ['photoPickerConfig'],
   data () {
     return {
       logger: {},
@@ -53,7 +53,7 @@ export default {
         title: 'Upload.',
         accept: '*/*',
       }
-      return Object.assign(defaults, this.photoPickerOptions || {})
+      return Object.assign(defaults, this.photoPickerConfig || {})
     },
   },
   mounted() {

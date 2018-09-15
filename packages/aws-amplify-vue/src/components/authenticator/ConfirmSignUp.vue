@@ -49,7 +49,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 export default {
   name: 'ConfirmSignUp',
-  props: ['confirmSignUpOptions'],
+  props: ['confirmSignUpConfig'],
   data () {
     return {
         code: '',
@@ -64,7 +64,7 @@ export default {
         username: '',
         header: 'Confirm Sign Up',
       }
-      return Object.assign(defaults, this.confirmSignUpOptions || {})
+      return Object.assign(defaults, this.confirmSignUpConfig || {})
     }
   },
   mounted: function() {

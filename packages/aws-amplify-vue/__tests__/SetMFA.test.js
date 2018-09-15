@@ -86,7 +86,7 @@ describe('SetMFA', () => {
           setError: mockSetError,
         },
         propsData: {
-          mfaOptions: {
+          mfaConfig: {
             header: testText,
             mfaDescription: testText,
             tokenInstructions: testText,

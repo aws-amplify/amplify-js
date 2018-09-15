@@ -76,7 +76,7 @@ describe('ForgotPassword', () => {
           setError: mockSetError,
         },
         propsData: {
-          forgotPasswordOptions: {
+          forgotPasswordConfig: {
             header,
           },
         },
