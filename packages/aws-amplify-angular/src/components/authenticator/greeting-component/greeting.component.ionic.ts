@@ -8,6 +8,7 @@ const template = `
     <div class="amplify-greeting-flex-spacer"></div>
     <ion-button
         class="amplify-greeting-sign-out"
+        size="small"
         *ngIf="signedIn"
         (click)="onSignOut()"
       >Sign Out</ion-button>

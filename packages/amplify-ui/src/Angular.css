@@ -130,46 +130,49 @@ input:disabled {
 }
 
 .amplify-upload-input {
- margin-top: 0.5em;
+  margin-top: 0.5em;
 }
 
 .amplify-upload-button {
-margin: 0.5em auto !important;
-width: 100% !important;
+  margin: 0.5em auto !important;
+  width: 100% !important;
 }
 
 .amplify-photo-picker-preview {
-width: 100%;
+  width: 100%;
 }
 
 .amplify-image-container {
-display: inline;
+  display: inline;
 }
 
 .amplify-image {
-width: 30%;
-margin: 0.2em;
-border-radius: 6px;
-border: 2px solid var(--color-white);
-cursor: pointer;
+  width: 30%;
+  margin: 0.2em;
+  border-radius: 6px;
+  border: 2px solid var(--color-white);
+  cursor: pointer;
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
-.amplify-photo-picker {
-    width: var(--component-width-mobile);
-}
-.amplify-album {
-    width: var(--component-width-mobile);
-}
-.amplify-album-container {
-    width: var(--component-width-mobile);
-}
-.amplify-photo-picker-container {
-    width: auto;
-}
-.amplify-photo-picker-upload {
-    width: auto;
-}
+  .amplify-photo-picker {
+      width: var(--component-width-mobile);
+  }
+  .amplify-image {
+      width: var(--component-width-mobile);
+  }
+  .amplify-album {
+      width: var(--component-width-mobile);
+  }
+  .amplify-album-container {
+      width: var(--component-width-mobile);
+  }
+  .amplify-photo-picker-container {
+      width: auto;
+  }
+  .amplify-photo-picker-upload {
+      width: auto;
+  }
 }
 
 /**********************************************
@@ -177,17 +180,17 @@ cursor: pointer;
 **********************************************/
 
 .amplify-interactions {
-width: var(--component-width-desktop);
-margin: 1em auto;
-border-radius: 6px;
-background-color: var(--color-white);
-box-shadow: var(--box-shadow);
+  width: var(--component-width-desktop);
+  margin: 1em auto;
+  border-radius: 6px;
+  background-color: var(--color-white);
+  box-shadow: var(--box-shadow);
 }
 
 .amplify-interactions-container {
-width: 400px;
-margin: 0 auto;
-padding: 1em;
+  width: 400px;
+  margin: 0 auto;
+  padding: 1em;
 }
 
 .amplify-interactions-button {
@@ -295,7 +298,7 @@ border: 0px solid var(--color-white) !important;
 }
 
 .amplify-input-group > div {
-  at:right;
+  float:right;
 }
 
 .amplify-input-group-item > input {
@@ -304,7 +307,7 @@ border: 0px solid var(--color-white) !important;
 }
 
 .amplify-input-group-label {
-  splay:block;
+  display:block;
 }
 
 .amplify-select-phone-country {
@@ -320,6 +323,9 @@ border: 0px solid var(--color-white) !important;
   border: none;
   border-bottom: var(--input-border);
   background-color: transparent;
+  margin-top: 0em;
+  width: 110px;
+  height: 44px;
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
@@ -394,29 +400,29 @@ border: 0px solid var(--color-white) !important;
 }
 
 .amplify-form-actions {
-margin-top:1.8em;
+  margin-top:1.8em;
 }
 
 .amplify-signin-username {
-margin-top: 0.8em;
+  margin-top: 0.8em;
 }
 
 .amplify-form-row {
-margin-top: 1em;
+  margin-top: 1em;
 }
 
 .amplify-form-action {
-margin: 0.5em;
-font-size: 12px;
+  margin: 0.5em;
+  font-size: 12px;
 }
 
 .amplify-form-signup {
-margin-top: 1em;
-color: var(--color-gray);
+  margin-top: 1em;
+  color: var(--color-gray);
 }
 
 .amplify-form-body {
-padding: 1.5em;
+  padding: 1.5em;
 }
 
 .amplify-form-row {
@@ -443,19 +449,19 @@ color: var(--color-primary-highlight);
 }
 
 .amplify-form-button {
-margin: 0.4em 0 0 0.5em;
-padding: 0.5em;
-border: none;
-height: var(--button-height);
-width: 155px;
-color: white;
-text-transform: uppercase;
-background-color: var(--color-primary);
-cursor: pointer;
+  margin: 0.4em 0 0 0.5em;
+  padding: 0.5em;
+  border: none;
+  height: var(--button-height);
+  width: 155px;
+  color: white;
+  text-transform: uppercase;
+  background-color: var(--color-primary);
+  cursor: pointer;
 }
 
 .amplify-form-button:hover {
-background-color: var(--color-primary-highlight);
+  background-color: var(--color-primary-highlight);
 }
 
 .amplify-greeting {
@@ -477,9 +483,9 @@ background-color: var(--color-primary-highlight);
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
-.amplify-form-input {
-    width: 100%;
-}
+  .amplify-form-input {
+      width: 100%;
+  }
 }
 
 /************************************

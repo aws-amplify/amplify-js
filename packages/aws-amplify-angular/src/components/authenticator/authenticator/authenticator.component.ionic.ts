@@ -32,7 +32,7 @@ const template = `
 ></amplify-auth-forgot-password-ionic>
 
 <amplify-auth-greetings-ionic
-*ngIf="!shouldHide('Greetings')"
+*ngIf="!shouldHide('Greetings') && authState.state === 'signedIn'"
 [authState]="authState"
 ></amplify-auth-greetings-ionic>
 
