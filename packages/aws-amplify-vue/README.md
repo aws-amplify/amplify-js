@@ -67,7 +67,7 @@ AmplifyEventBus.$on('authState', info => {
 
 The aws-amplify-vue package provides a Vue plugin to access the Amplify library.  You installed the plugin when you set up your application:
 
-```Vue.use(AmplifyVue.plugins.amplifyPlugin, {AmplifyModules})```
+```Vue.use(AmplifyPlugin, AmplifyModules)```
 
 This makes the Amplify library available to the aws-amplify-vue components as well as to your application.  Please note that you can restict the modules that are made available to the plugin by passing only specific modules in the second argument of ```Vue.use``` call.
 
