@@ -16,6 +16,9 @@
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
   },
+  "react-native": {
+    "./lib/trackers": "./lib/trackers/reactnative.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aws/aws-amplify.git"

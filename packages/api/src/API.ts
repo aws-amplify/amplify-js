@@ -467,7 +467,7 @@ export default class APIClass {
                 const cred = Credentials.shear(credentials);
                 logger.debug('set credentials for api', cred);
 
-                return credentials;
+                return true;
             })
             .catch(err => {
                 logger.warn('ensure credentials error', err);
