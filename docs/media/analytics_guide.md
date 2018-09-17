@@ -318,6 +318,8 @@ Analytics.configure();
 
 ## Using Analytics Auto Tracking
 
+Note: this feature is not published yet. You can try it using the unstable version: ```npm install aws-amplify@unstable```.
+
 Analytics Auto Tracking helps you to automatically track user behaviors like sessions start/stop, page view change and web events like clicking, mouseover.
 
 ### Session Tracking
