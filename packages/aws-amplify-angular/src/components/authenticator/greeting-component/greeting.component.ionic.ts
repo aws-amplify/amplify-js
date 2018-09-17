@@ -3,7 +3,7 @@ import { AmplifyService, AuthState } from '../../../providers';
 import { GreetingComponentCore } from './greeting.component.core';
 
 const template = `
-<div class="amplify-greeting">
+<div class="amplify-greeting" *ngIf="signedIn">
     <div class="amplify-greeting-text">{{ greeting }}</div>
     <div class="amplify-greeting-flex-spacer"></div>
     <ion-button

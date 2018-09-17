@@ -31,7 +31,7 @@ const template = `
     ></amplify-auth-forgot-password-core>
 
     <amplify-auth-greetings-core
-    *ngIf="!shouldHide('Greetings') && authState.state === 'signedIn'"
+    *ngIf="!shouldHide('Greetings')"
     [authState]="authState"
     ></amplify-auth-greetings-core>
 
