@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.1.2...@aws-amplify/auth@1.2.1) (2018-09-17)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** add typescript declartions to Auth ([6f02a18](https://github.com/aws/aws-amplify/commit/6f02a18))
+
+
+
+
 <a name="1.1.2"></a>
 ## [1.1.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.1.1...@aws-amplify/auth@1.1.2) (2018-09-12)
 
