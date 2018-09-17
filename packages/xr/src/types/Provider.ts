@@ -25,8 +25,12 @@ export interface XRProvider {
     loadScene(sceneParameters: SceneParameters, progressCallback: Function);
     getSceneController(sceneName: string): any;
     isVRCapable(sceneName: string): boolean;
-    start(sceneName: string);
-    enterVR(sceneName: string);
-    exitVR(sceneName: string);
-    enableAudio(sceneName: string);
+    start(sceneName: string): void;
+    enterVR(sceneName: string): void;
+    exitVR(sceneName: string): void;
+    isMuted(sceneName: string): boolean;
+    setMuted(sceneName: string, muted: boolean): void;
+    onAudioDisabled(sceneName: string, eventHandler: Function): void;
+    onAudioEnabled(sceneName: string, eventHandler: Function): void;
+    enableAudio(sceneName: string): void;
 }

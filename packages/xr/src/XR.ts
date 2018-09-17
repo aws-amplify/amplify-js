@@ -93,6 +93,14 @@ export default class XR {
         return this._providerMap[provider].exitVR(sceneName);
     }
 
+    public isMuted(sceneName: string, provider: string = this._defaultProvider): boolean {
+        return this._providerMap[provider].isMuted(sceneName);
+    }
+    
+    public setMuted(sceneName: string, muted: boolean, provider: string = this._defaultProvider) {
+        return this._providerMap[provider].setMuted(sceneName, muted);
+    }
+
     public enableAudio(sceneName: string, provider: string = this._defaultProvider) {
         return this._providerMap[provider].enableAudio(sceneName);
     }
