@@ -33,18 +33,18 @@ export class SumerianProvider extends AbstractXRProvider {
         });
 
         scriptElement.addEventListener('error', (event) => {
-            reject(new Error("script load failed"));
+            reject(new Error("Failed to load script: " + url));
         });
 
         document.head.appendChild(scriptElement);
     });
-}
+  }
 
   async loadScene(sceneParameters: SumerianSceneParameters, progressCallback: Function) {
     if (!sceneParameters) {
       const errorMsg = "No scene parameters passed into loadScene";
       logger.error(errorMsg);
-      throw(new XRSceneNotLoadedError(errorMsg));
+      throw(new XRSceneLoadFailure(errorMsg));
     }
     
     if (!sceneParameters.domElementId) {
@@ -160,7 +160,7 @@ export class SumerianProvider extends AbstractXRProvider {
 
   isVRCapable(sceneName: string): boolean {
     const sceneController = this.getSceneController(sceneName);
-    return sceneController.vrCapable();
+    return sceneController.vrCapable;
   }
 
   start(sceneName: string) {
@@ -176,6 +176,26 @@ export class SumerianProvider extends AbstractXRProvider {
   exitVR(sceneName: string) {
     const sceneController = this.getSceneController(sceneName);
     sceneController.exitVR();
+  }
+
+  isMuted(sceneName: string): boolean {
+    const sceneController = this.getSceneController(sceneName);
+    return sceneController.muted;
+  }
+
+  setMuted(sceneName: string, muted: boolean) {
+    const sceneController = this.getSceneController(sceneName);
+    sceneController.muted = muted;
+  }
+
+  onAudioDisabled(sceneName: string, eventHandler: Function) {
+    const sceneController = this.getSceneController(sceneName);
+    sceneController.on('AudioDisabled', eventHandler);
+  }
+
+  onAudioEnabled(sceneName: string, eventHandler: Function) {
+    const sceneController = this.getSceneController(sceneName);
+    sceneController.on('AudioEnabled', eventHandler);
   }
 
   enableAudio(sceneName: string) {

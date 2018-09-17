@@ -43,6 +43,10 @@ export abstract class AbstractXRProvider implements XRProvider {
     public abstract start(sceneName: string): void;
     public abstract enterVR(sceneName: string): void;
     public abstract exitVR(sceneName: string): void;
+    public abstract isMuted(sceneName: string): boolean;
+    public abstract setMuted(sceneName: string, muted: boolean): void;
+    public abstract onAudioDisabled(sceneName: string, eventHandler: Function): void;
+    public abstract onAudioEnabled(sceneName: string, eventHandler: Function): void;
     public abstract enableAudio(sceneName: string): void;
 
 }
