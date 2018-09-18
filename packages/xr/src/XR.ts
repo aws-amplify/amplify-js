@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { XRProvider, XROptions, SceneParameters } from './types';
+import { XRProvider, XROptions } from './types';
 
 import { SumerianProvider } from './Providers/SumerianProvider';
 
@@ -24,7 +24,7 @@ export default class XR {
     private _options: XROptions;
 
     // private _pluggables: XRProvider[];
-    private _providerMap: { [key:string]:XRProvider };
+    private _pluggables: { [key:string]:XRProvider };
     private _defaultProvider: string;
 
     /**
@@ -36,7 +36,7 @@ export default class XR {
         this._options = options;
         logger.debug('XR Options', this._options);
         this._defaultProvider = DEFAULT_PROVIDER_NAME;
-        this._providerMap = {};
+        this._pluggables = {};
 
         // Add default provider
         this.addPluggable(new SumerianProvider());
@@ -52,10 +52,13 @@ export default class XR {
         const opt = options ? options.XR || options : {};
         logger.debug('configure XR', { opt });
 
-        // this._options = Object.assign({}, this._options, opt);
-        // Object.values(this._providerMap).map((pluggable) => pluggable.configure(this._options));
-
-        Object.entries(this._providerMap).map(([name, provider]) => {provider.configure(opt[name])});
+        Object.entries(this._pluggables).map(([name, provider]) => {
+            if (name === this._defaultProvider && !opt[this._defaultProvider]) {
+                provider.configure(opt);
+            } else {
+                provider.configure(opt[name]);
+            }
+        });
 
         return this._options;
     }
@@ -66,42 +69,54 @@ export default class XR {
      */
     public async addPluggable(pluggable: XRProvider) {
         if (pluggable && pluggable.getCategory() === 'XR') {
-            this._providerMap[pluggable.getProviderName()] = pluggable;
+            this._pluggables[pluggable.getProviderName()] = pluggable;
             const config = pluggable.configure(this._options);
 
             return config;
         }
     }
 
-    public async loadScene(sceneParameters: SceneParameters, progressCallback: Function = () => {}, provider: string = this._defaultProvider) {
-        return await this._providerMap[provider].loadScene(sceneParameters, progressCallback);
+    public async loadScene(sceneName: string, domElementId: string, progressCallback: Function = () => {}, provider: string = this._defaultProvider) {
+        return await this._pluggables[provider].loadScene(sceneName, domElementId, progressCallback);
     }
 
-    public isVRCapable(sceneName, provider: string = this._defaultProvider) {
-        return this._providerMap[provider].isVRCapable(sceneName);
+    public isSceneLoaded(sceneName: string, provider: string = this._defaultProvider) {
+        return this._pluggables[provider].isSceneLoaded(sceneName);
+    }
+
+    public getSceneController(sceneName: string, provider: string = this._defaultProvider) {
+        return this._pluggables[provider].getSceneController(sceneName);
+    }
+
+    public isVRCapable(sceneName: string, provider: string = this._defaultProvider) {
+        return this._pluggables[provider].isVRCapable(sceneName);
     }
 
     public start(sceneName: string, provider: string = this._defaultProvider) {
-        return this._providerMap[provider].start(sceneName);
+        return this._pluggables[provider].start(sceneName);
     }
 
     public enterVR(sceneName: string, provider: string = this._defaultProvider) {
-        return this._providerMap[provider].enterVR(sceneName);
+        return this._pluggables[provider].enterVR(sceneName);
     }
 
     public exitVR(sceneName: string, provider: string = this._defaultProvider) {
-        return this._providerMap[provider].exitVR(sceneName);
+        return this._pluggables[provider].exitVR(sceneName);
     }
 
-    public isMuted(sceneName: string, provider: string = this._defaultProvider): boolean {
-        return this._providerMap[provider].isMuted(sceneName);
+    public isMuted(sceneName: string, provider: string = this._defaultProvider) {
+        return this._pluggables[provider].isMuted(sceneName);
     }
     
     public setMuted(sceneName: string, muted: boolean, provider: string = this._defaultProvider) {
-        return this._providerMap[provider].setMuted(sceneName, muted);
+        return this._pluggables[provider].setMuted(sceneName, muted);
+    }
+
+    public onSceneEvent(sceneName: string, eventName: string, eventHandler: Function, provider: string = this._defaultProvider) {
+        return this._pluggables[provider].onSceneEvent(sceneName, eventName, eventHandler);
     }
 
     public enableAudio(sceneName: string, provider: string = this._defaultProvider) {
-        return this._providerMap[provider].enableAudio(sceneName);
+        return this._pluggables[provider].enableAudio(sceneName);
     }
 }

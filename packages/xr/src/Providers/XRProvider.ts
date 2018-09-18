@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { XRProvider, ProviderOptions, SceneParameters } from '../types';
+import { XRProvider, ProviderOptions } from '../types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('AbstractXRProvider');
@@ -37,7 +37,8 @@ export abstract class AbstractXRProvider implements XRProvider {
 
     protected get options(): ProviderOptions { return { ...this._config }; }
 
-    public abstract loadScene(sceneParameters: SceneParameters, progressCallback: Function): void;
+    public abstract loadScene(sceneName: string, domElementId: string, progressCallback: Function): void;
+    public abstract isSceneLoaded(sceneName: string);
     public abstract getSceneController(sceneName: string): any;
     public abstract isVRCapable(sceneName: string): boolean;
     public abstract start(sceneName: string): void;
@@ -45,8 +46,6 @@ export abstract class AbstractXRProvider implements XRProvider {
     public abstract exitVR(sceneName: string): void;
     public abstract isMuted(sceneName: string): boolean;
     public abstract setMuted(sceneName: string, muted: boolean): void;
-    public abstract onAudioDisabled(sceneName: string, eventHandler: Function): void;
-    public abstract onAudioEnabled(sceneName: string, eventHandler: Function): void;
+    public abstract onSceneEvent(sceneName: string, eventName: string, eventHandler: Function): void;
     public abstract enableAudio(sceneName: string): void;
-
 }
