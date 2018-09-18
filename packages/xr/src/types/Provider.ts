@@ -10,8 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
-import { SceneParameters } from './SceneParameters';
 export interface XRProvider {
     // configure your provider
     configure(config: object): object;
@@ -22,7 +20,8 @@ export interface XRProvider {
     // return the name of you provider
     getProviderName(): string;
 
-    loadScene(sceneParameters: SceneParameters, progressCallback: Function);
+    loadScene(sceneName: string, domElementId: string, progressCallback: Function);
+    isSceneLoaded(sceneName): boolean;
     getSceneController(sceneName: string): any;
     isVRCapable(sceneName: string): boolean;
     start(sceneName: string): void;
@@ -30,7 +29,6 @@ export interface XRProvider {
     exitVR(sceneName: string): void;
     isMuted(sceneName: string): boolean;
     setMuted(sceneName: string, muted: boolean): void;
-    onAudioDisabled(sceneName: string, eventHandler: Function): void;
-    onAudioEnabled(sceneName: string, eventHandler: Function): void;
+    onSceneEvent(sceneName: string, eventName: string, eventHandler: Function): void;
     enableAudio(sceneName: string): void;
 }

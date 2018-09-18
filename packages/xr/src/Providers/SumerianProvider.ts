@@ -1,7 +1,7 @@
 import { ConsoleLogger as Logger, Signer, Credentials } from '@aws-amplify/core';
 
 import { AbstractXRProvider } from './XRProvider';
-import { ProviderOptions, SceneParameters } from '../types';
+import { ProviderOptions } from '../types';
 import { 
   XRNoSceneConfiguredError,
   XRSceneNotFoundError,
@@ -9,8 +9,6 @@ import {
   XRNoDomElement,
   XRSceneLoadFailure
 } from '../Errors';
-
-type SumerianSceneParameters = SceneParameters & { sceneName: string, domElementId: string }
 
 const SUMERIAN_SERVICE_NAME = 'sumerian';
 
@@ -23,7 +21,7 @@ export class SumerianProvider extends AbstractXRProvider {
 
   getProviderName() { return 'SumerianProvider'; }
 
-  async loadScript(url) {
+  private async loadScript(url) {
     return new Promise((resolve, reject) => {
         const scriptElement = document.createElement('script');
         scriptElement.src = url;
@@ -40,52 +38,62 @@ export class SumerianProvider extends AbstractXRProvider {
     });
   }
 
-  async loadScene(sceneParameters: SumerianSceneParameters, progressCallback: Function) {
-    if (!sceneParameters) {
-      const errorMsg = "No scene parameters passed into loadScene";
+  public async loadScene(sceneName: string, domElementId: string, progressCallback?: Function) {
+    if (!sceneName) {
+      const errorMsg = "No scene name passed into loadScene";
       logger.error(errorMsg);
       throw(new XRSceneLoadFailure(errorMsg));
     }
     
-    if (!sceneParameters.domElementId) {
+    if (!domElementId) {
       const errorMsg = "No dom element id passed into loadScene";
       logger.error(errorMsg);
       throw(new XRNoDomElement(errorMsg));
     }
 
-    const element = document.getElementById(sceneParameters.domElementId);
+    const element = document.getElementById(domElementId);
     if (!element) {
-        const errorMsg = "DOM element id, " + sceneParameters.domElementId + " not found";
+        const errorMsg = "DOM element id, " + domElementId + " not found";
         logger.error(errorMsg);
         throw(new XRNoDomElement(errorMsg));
     }
 
-    const scene = this.getScene(sceneParameters.sceneName);
+    const scene = this.getScene(sceneName);
     if (!scene.sceneConfig) {
-      const errorMsg = "No scene config configured for scene: " + sceneParameters.sceneName;
+      const errorMsg = "No scene config configured for scene: " + sceneName;
       logger.error(errorMsg);
       throw(new XRSceneLoadFailure(errorMsg));
     }
 
-    const credentials = await Credentials.get();
-    const accessInfo = {
-      secret_key: credentials.secretAccessKey,
-      access_key: credentials.accessKeyId,
-      session_token: credentials.sessionToken,
+    const sceneUrl = scene.sceneConfig.url;
+    const sceneId = scene.sceneConfig.sceneId;
+
+    let apiResponse;
+    try {
+      // Get credentials from Auth and sign the request
+      const credentials = await Credentials.get();
+      const accessInfo = {
+        secret_key: credentials.secretAccessKey,
+        access_key: credentials.accessKeyId,
+        session_token: credentials.sessionToken,
+      }
+      
+      const serviceInfo = { region: this.options.region, service: SUMERIAN_SERVICE_NAME };
+      const signedUrl = Signer.signUrl(sceneUrl, accessInfo, serviceInfo);
+      apiResponse = await fetch(signedUrl);
+    } catch (e) {
+      logger.debug('No credentials available, the request will be unsigned');
+      apiResponse = await fetch(sceneUrl);
     }
     
-    const serviceInfo = { region: this.options.region, service: SUMERIAN_SERVICE_NAME };
-    const signedUrl = Signer.signUrl(scene.sceneConfig.url, accessInfo, serviceInfo);
-
-    const apiResponse = await fetch(signedUrl);
     const apiResponseJson = await apiResponse.json();
     
-    const sceneId = scene.sceneConfig.sceneId;
+    // Get bundle data from scene api response
     const sceneBundle = await fetch(apiResponseJson.bundleData[sceneId].url, apiResponseJson.bundleData[sceneId].headers);
     const sceneBundleJson = await sceneBundle.json();
 
     try {
-      // Create the scene loading script from the code embedded in the bundle.
+      // Load the Sumerian bootstrapper script into the DOM
       await this.loadScript(sceneBundleJson[sceneId].bootstrapperUrl);
     } catch(error) {
       logger.error(error);
@@ -93,7 +101,6 @@ export class SumerianProvider extends AbstractXRProvider {
     }
 
     const publishParamOverrides = scene.publishParamOverrides ? scene.publishParamOverrides : null;
-
     const sceneLoadParams = {
       element,
       sceneId,
@@ -103,16 +110,23 @@ export class SumerianProvider extends AbstractXRProvider {
       publishParamOverrides
     }
 
-    // Load the scene and return scene controller
+    // Load the scene into the dom and set the scene controller
     const sceneController = await (<any>window).SumerianBootstrapper.loadScene(sceneLoadParams);
+    scene.sceneController = sceneController;
+    scene.isLoaded = true;
+
+    // Log scene warnings
     for (const warning of sceneController.sceneLoadWarnings) {
       logger.warn('loadScene warning: ' + warning);
     }
-    
-    this.options.scenes[sceneParameters.sceneName].sceneController = sceneController;
   }
 
-  getScene(sceneName) {
+  public isSceneLoaded(sceneName: string) {
+    const scene = this.getScene(sceneName);
+    return scene.isLoaded;
+  }
+
+  private getScene(sceneName: string) {
     if (!this.options.scenes) {
       const errorMsg = "No scenes were defined in the configuration";
       logger.error(errorMsg);
@@ -134,7 +148,7 @@ export class SumerianProvider extends AbstractXRProvider {
     return this.options.scenes[sceneName];
   }
 
-  getSceneController(sceneName: string) {
+  public getSceneController(sceneName: string) {
     if (!this.options.scenes) {
       const errorMsg = "No scenes were defined in the configuration";
       logger.error(errorMsg);
@@ -158,47 +172,42 @@ export class SumerianProvider extends AbstractXRProvider {
     return sceneController;
   }
 
-  isVRCapable(sceneName: string): boolean {
+  public isVRCapable(sceneName: string): boolean {
     const sceneController = this.getSceneController(sceneName);
     return sceneController.vrCapable;
   }
 
-  start(sceneName: string) {
+  public start(sceneName: string) {
     const sceneController = this.getSceneController(sceneName);
     sceneController.start();
   }
 
-  enterVR(sceneName: string) {
+  public enterVR(sceneName: string) {
     const sceneController = this.getSceneController(sceneName);
     sceneController.enterVR();
   }
 
-  exitVR(sceneName: string) {
+  public exitVR(sceneName: string) {
     const sceneController = this.getSceneController(sceneName);
     sceneController.exitVR();
   }
 
-  isMuted(sceneName: string): boolean {
+  public isMuted(sceneName: string): boolean {
     const sceneController = this.getSceneController(sceneName);
     return sceneController.muted;
   }
 
-  setMuted(sceneName: string, muted: boolean) {
+  public setMuted(sceneName: string, muted: boolean) {
     const sceneController = this.getSceneController(sceneName);
     sceneController.muted = muted;
   }
 
-  onAudioDisabled(sceneName: string, eventHandler: Function) {
+  public onSceneEvent(sceneName: string, eventName: string, eventHandler: Function) {
     const sceneController = this.getSceneController(sceneName);
-    sceneController.on('AudioDisabled', eventHandler);
+    sceneController.on(eventName, eventHandler);
   }
 
-  onAudioEnabled(sceneName: string, eventHandler: Function) {
-    const sceneController = this.getSceneController(sceneName);
-    sceneController.on('AudioEnabled', eventHandler);
-  }
-
-  enableAudio(sceneName: string) {
+  public enableAudio(sceneName: string) {
     const sceneController = this.getSceneController(sceneName);
     sceneController.enableAudio();
   }
