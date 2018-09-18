@@ -1,7 +1,7 @@
-import { ConsoleLogger as Logger, Signer, Credentials } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Signer, Credentials, Constants } from '@aws-amplify/core';
 
 import { AbstractXRProvider } from './XRProvider';
-import { ProviderOptions } from '../types';
+import { ProviderOptions, SceneOptions } from '../types';
 import { 
   XRNoSceneConfiguredError,
   XRSceneNotFoundError,
@@ -9,6 +9,9 @@ import {
   XRNoDomElement,
   XRSceneLoadFailure
 } from '../Errors';
+
+
+type SumerianSceneOptions = SceneOptions & { progressCallback: Function }
 
 const SUMERIAN_SERVICE_NAME = 'sumerian';
 
@@ -38,7 +41,8 @@ export class SumerianProvider extends AbstractXRProvider {
     });
   }
 
-  public async loadScene(sceneName: string, domElementId: string, progressCallback?: Function) {
+  public async loadScene(sceneName: string, domElementId: string, sceneOptions: SumerianSceneOptions) { 
+    
     if (!sceneName) {
       const errorMsg = "No scene name passed into loadScene";
       logger.error(errorMsg);
@@ -67,6 +71,10 @@ export class SumerianProvider extends AbstractXRProvider {
 
     const sceneUrl = scene.sceneConfig.url;
     const sceneId = scene.sceneConfig.sceneId;
+    const awsSDKConfigOverride = {
+        region: this.options.region,
+        customUserAgent: `${Constants.userAgent}-SumerianScene`
+    };
 
     let apiResponse;
     try {
@@ -81,6 +89,8 @@ export class SumerianProvider extends AbstractXRProvider {
       const serviceInfo = { region: this.options.region, service: SUMERIAN_SERVICE_NAME };
       const signedUrl = Signer.signUrl(sceneUrl, accessInfo, serviceInfo);
       apiResponse = await fetch(signedUrl);
+      awsSDKConfigOverride["credentials"] = credentials;
+
     } catch (e) {
       logger.debug('No credentials available, the request will be unsigned');
       apiResponse = await fetch(sceneUrl);
@@ -101,13 +111,16 @@ export class SumerianProvider extends AbstractXRProvider {
     }
 
     const publishParamOverrides = scene.publishParamOverrides ? scene.publishParamOverrides : null;
+
+
     const sceneLoadParams = {
       element,
       sceneId,
       sceneBundle: sceneBundleJson,
       apiResponse: apiResponseJson,
-      progressCallback,
-      publishParamOverrides
+      progressCallback: sceneOptions.progressCallback,
+      publishParamOverrides,
+      awsSDKConfigOverride: awsSDKConfigOverride
     }
 
     // Load the scene into the dom and set the scene controller

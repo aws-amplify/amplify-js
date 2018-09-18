@@ -10,6 +10,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+
+import { SceneOptions } from './XR';
+
 export interface XRProvider {
     // configure your provider
     configure(config: object): object;
@@ -20,7 +23,7 @@ export interface XRProvider {
     // return the name of you provider
     getProviderName(): string;
 
-    loadScene(sceneName: string, domElementId: string, progressCallback: Function);
+    loadScene(sceneName: string, domElementId: string, sceneOptions: SceneOptions);
     isSceneLoaded(sceneName): boolean;
     getSceneController(sceneName: string): any;
     isVRCapable(sceneName: string): boolean;
