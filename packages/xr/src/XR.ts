@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { XRProvider, XROptions } from './types';
+import { XRProvider, XROptions, SceneOptions } from './types';
 
 import { SumerianProvider } from './Providers/SumerianProvider';
 
@@ -76,8 +76,8 @@ export default class XR {
         }
     }
 
-    public async loadScene(sceneName: string, domElementId: string, progressCallback: Function = () => {}, provider: string = this._defaultProvider) {
-        return await this._pluggables[provider].loadScene(sceneName, domElementId, progressCallback);
+    public async loadScene(sceneName: string, domElementId: string, sceneOptions: SceneOptions, provider: string = this._defaultProvider) {
+        return await this._pluggables[provider].loadScene(sceneName, domElementId, sceneOptions);
     }
 
     public isSceneLoaded(sceneName: string, provider: string = this._defaultProvider) {

@@ -17,3 +17,7 @@ export interface XROptions {
 export interface ProviderOptions {
   [key: string]: any,
 }
+
+export interface SceneOptions {
+
+}
