@@ -139,7 +139,7 @@ category_list:
     #       url: '/media/building-ionic-4-apps' 
     #       icon: '/images/icons/Misc/Present.svg'
     - category: Tutorials
-      title: Tutorials
+      title: Framework Support
       excerpt: 
       base_url: '/media/react_guide'
       subs:
@@ -160,11 +160,11 @@ category_list:
       excerpt: Better developer experience when building and deploying your apps.
       base_url: '/media/hosting_guide'
       subs:
-        - title: Hosting 
+        - title: CLI
           excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
           cta: Read more
           class: aws-icon-ps-60-network-nodes
-          url: '/media/hosting_guide'   
+          url: '/media/cli_guide'   
           icon: '/images/icons/Misc/Tool.svg'
           services:
               - title: Amazon CloudFront
