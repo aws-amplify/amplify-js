@@ -10,7 +10,7 @@ This page is a guide to quickly build a cloud-powered mobile or web app with AWS
 
 Use the drop-down menu at the top right of this page to choose the framework for your app.
 
-## Step 0. Set up your Development Environment 
+## Step 0. Development Environment 
 
 Install the Amplify CLI. If you have already installed the CLI, skip ahead to [Step 1. Create a New App](#step-1-create-a-new-app).
 
@@ -224,7 +224,7 @@ $ cd myAmplifyProject
 </div>
 </div>
 
-## Step 2. Install the Amplify Library 
+## Step 2. Install Amplify 
 
 In a terminal window, change to the root directory of your app and run the following command:
 
@@ -316,7 +316,16 @@ See the [Ionic Guide](https://aws-amplify.github.io/amplify-js/media/ionic_guide
 </div>
 </div>
 
-## Step 3. Set up the App Backend
+## Step 3. Set up the AWS Backend
+
+<div class="nav-tab setup" data-group='setup'>
+<ul class="tabs">
+    <li class="tab-link purejs current" data-tab="purejs">JavaScript</li>
+    <li class="tab-link react" data-tab="react">React</li>
+    <li class="tab-link react-native" data-tab="react-native">React Native</li>
+    <li class="tab-link angular" data-tab="angular">Angular</li>
+    <li class="tab-link ionic" data-tab="ionic">Ionic</li>
+</ul>
 
 Create new AWS backend resources and pull the AWS services configuration into the app. In a terminal window, change to the root directory of your app and run the following command (for this app, accepting all defaults is OK):
 
@@ -324,7 +333,11 @@ Create new AWS backend resources and pull the AWS services configuration into th
 $ amplify init
 ```
 
-### Create the Required AWS Backend Resources
+<div id="angular" class="tab-content">
+> When asked for the distribution directory (the directory that will be uploaded to S3), answer `dist/MyAngularApp`. If you did not use the name in this tutorial, change "MyAngularApp" with the name of your application. You can run an `ng build` and check your `dist` directory to see what the name is and re-run `amplify configure project` to change your dist directory setting.
+</div>
+
+**Create the Required AWS Backend Resources**
 
 Add one or more cloud services to the app using the `amplify add <category-name>` command. Run `amplify` in the terminal to list available categories (services are organized in categories).
 
@@ -354,7 +367,7 @@ $ amplify push
 
 > A configuration file (`aws-exports.js`) will be added to the source directory.
 
-## Step 4. Integrate the AWS Backend Resources to the App with Amplify
+## Step 4. Integrate AWS Resources
 
 <div class="nav-tab install" data-group='install'>
 <ul class="tabs">
@@ -668,9 +681,9 @@ Then, replace your `src/app/app.component.html` code with the following:
 ```
 </div>
 
-## Step 5. Host your App on Amazon S3
+## Step 5. Host your App
 
-Enable static web hosting for the app. In a terminal window, change to the root directory of your app and run the following command:
+Enable static web hosting for the app on Amazon S3. In a terminal window, change to the root directory of your app and run the following command:
 
 ```bash
 $ amplify add hosting
@@ -697,7 +710,7 @@ What next? Here are some things to add to your app:
  - Add [Data]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide) with serverless GraphQL
 
 
-#### Existing AWS Resources
+**Existing AWS Resources**
 
 If you want to use your existing AWS resources with your app you will need to **manually configure** your app with your current credentials in your code, for example:
 
@@ -728,7 +741,7 @@ To see the configuration parameters for existing AWS resources, see the *Existin
 {: .callout .callout--info}
 
 
-##### AWS SDK Interfaces
+**AWS SDK Interfaces**
 
 For working with other AWS services you can use service interface objects directly via the JavaScript SDK clients. 
 
