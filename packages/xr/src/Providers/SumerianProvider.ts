@@ -1,3 +1,15 @@
+/*
+ * Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
 import { ConsoleLogger as Logger, Signer, Credentials, Constants } from '@aws-amplify/core';
 
 import { AbstractXRProvider } from './XRProvider';
@@ -10,8 +22,7 @@ import {
   XRSceneLoadFailure
 } from '../Errors';
 
-
-type SumerianSceneOptions = SceneOptions & { progressCallback: Function }
+type SumerianSceneOptions = SceneOptions & { progressCallback: Function };
 
 const SUMERIAN_SERVICE_NAME = 'sumerian';
 
@@ -89,7 +100,7 @@ export class SumerianProvider extends AbstractXRProvider {
         // from Amplify
         "X-Amz-User-Agent": Constants.userAgent
       }
-    }
+    };
 
     let apiResponse;
     try {
@@ -99,7 +110,7 @@ export class SumerianProvider extends AbstractXRProvider {
         secret_key: credentials.secretAccessKey,
         access_key: credentials.accessKeyId,
         session_token: credentials.sessionToken,
-      }
+      };
       
       const serviceInfo = { region: this.options.region, service: SUMERIAN_SERVICE_NAME };
       const signedUrl = Signer.signUrl(sceneUrl, accessInfo, serviceInfo);
@@ -114,7 +125,8 @@ export class SumerianProvider extends AbstractXRProvider {
     const apiResponseJson = await apiResponse.json();
     
     // Get bundle data from scene api response
-    const sceneBundle = await fetch(apiResponseJson.bundleData[sceneId].url, apiResponseJson.bundleData[sceneId].headers);
+    const sceneBundleData = apiResponseJson.bundleData[sceneId];
+    const sceneBundle = await fetch(sceneBundleData.url, sceneBundleData.headers);
     const sceneBundleJson = await sceneBundle.json();
 
     try {
@@ -125,18 +137,18 @@ export class SumerianProvider extends AbstractXRProvider {
       throw(new XRSceneLoadFailure(error));
     }
 
-    const publishParamOverrides = scene.publishParamOverrides ? scene.publishParamOverrides : null;
-
+    const progressCallback = sceneOptions.progressCallback ? sceneOptions.progressCallback : undefined;
+    const publishParamOverrides = scene.publishParamOverrides ? scene.publishParamOverrides : undefined;
 
     const sceneLoadParams = {
       element,
       sceneId,
       sceneBundle: sceneBundleJson,
       apiResponse: apiResponseJson,
-      progressCallback: sceneOptions.progressCallback,
+      progressCallback,
       publishParamOverrides,
-      awsSDKConfigOverride: awsSDKConfigOverride
-    }
+      awsSDKConfigOverride
+    };
 
     // Load the scene into the dom and set the scene controller
     const sceneController = await (<any>window).SumerianBootstrapper.loadScene(sceneLoadParams);
@@ -190,7 +202,7 @@ export class SumerianProvider extends AbstractXRProvider {
       throw(new XRSceneNotFoundError(errorMsg));
     }
 
-    const sceneController = scene.sceneController
+    const sceneController = scene.sceneController;
     if (!sceneController) {
       const errorMsg = "Scene controller for '" + sceneName + "' has not been loaded";
       logger.error(errorMsg);

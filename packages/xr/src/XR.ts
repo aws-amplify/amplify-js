@@ -52,6 +52,8 @@ export default class XR {
         const opt = options ? options.XR || options : {};
         logger.debug('configure XR', { opt });
 
+        this._options = Object.assign({}, this._options, opt);
+
         Object.entries(this._pluggables).map(([name, provider]) => {
             if (name === this._defaultProvider && !opt[this._defaultProvider]) {
                 provider.configure(opt);
@@ -76,7 +78,12 @@ export default class XR {
         }
     }
 
-    public async loadScene(sceneName: string, domElementId: string, sceneOptions: SceneOptions, provider: string = this._defaultProvider) {
+    public async loadScene(
+        sceneName: string, 
+        domElementId: string, 
+        sceneOptions: SceneOptions = {},
+        provider: string = this._defaultProvider
+    ) {
         return await this._pluggables[provider].loadScene(sceneName, domElementId, sceneOptions);
     }
 
@@ -112,7 +119,12 @@ export default class XR {
         return this._pluggables[provider].setMuted(sceneName, muted);
     }
 
-    public onSceneEvent(sceneName: string, eventName: string, eventHandler: Function, provider: string = this._defaultProvider) {
+    public onSceneEvent(
+        sceneName: string, 
+        eventName: string, 
+        eventHandler: Function, 
+        provider: string = this._defaultProvider
+    ) {
         return this._pluggables[provider].onSceneEvent(sceneName, eventName, eventHandler);
     }
 
