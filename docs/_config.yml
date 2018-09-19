@@ -241,6 +241,15 @@ category_list:
           services:
               - title: Amazon S3
                 url: https://aws.amazon.com/s3/
+        - title: XR 
+          excerpt: Embed and control AR/VR content in your app.
+          cta: Read more
+          class: aws-icon-ps-60-file-box
+          url: '/media/xr_guide'   
+          icon: '/images/icons/Misc/Cloud.svg'
+          services:
+              - title: Amazon Sumerian
+                url: https://aws.amazon.com/sumerian/
     - category: Utilities
       title: Utilities
       excerpt: Common programming utilities that you can use with your app.
