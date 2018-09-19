@@ -54,9 +54,9 @@ export default {
     this.logger = new this.$Amplify.Logger(this.$options.name);
     AmplifyEventBus.$on('localUser', user => {
       this.user = user;
-      this.options.signInOptions.username = this.user.username;
-      this.options.confirmSignInOptions.user = this.user;
-      this.options.confirmSignUpOptions.username = this.user.username;
+      this.options.signInConfig.username = this.user.username;
+      this.options.confirmSignInConfig.user = this.user;
+      this.options.confirmSignUpConfig.username = this.user.username;
     });
     AmplifyEventBus.$on('authState', data => {
       this.displayMap = this.updateDisplayMap(data)
