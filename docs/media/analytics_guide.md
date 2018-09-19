@@ -102,6 +102,8 @@ User session data is automatically collected unless you disabled analytics. To s
 
 #### Update your IAM Policy:
 
+Note: need to be done in '@aws-amplify/analytics: ^1.1.x'
+
 AWS Pinpoint has updated their service and so you need to update your IAM policy in order to continue using the `record` API.
 The Updated IAM policy for Pinpoint would be like:
 ```json
