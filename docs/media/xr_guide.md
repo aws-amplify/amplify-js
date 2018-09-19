@@ -64,8 +64,6 @@ XR.configure({ // XR category configuration
 });
 ```
 
-## Using Amazon Sumerian
-
 The XR Category allows a Sumerian scene to be rendered into an DIV HTML element with `loadScene` method. When the scene is loaded successfully, *XR.start()* method will start the scene. To render the scene, pass your scene name and the id of the element in the method call:
 
 ```js
@@ -79,7 +77,7 @@ async loadAndStartScene() {
 <div id="sumarian-scene-dom-id"></div>
 ```
 
-### Scene Options
+## Scene API
 
 **Using optional progress handlers and options**
 
@@ -129,7 +127,7 @@ if (XR.isSceneLoaded('scene1')) {
 }
 ```
 
-#### Capturing Audio Events
+### Capturing Audio Events
 
 XR Category's scene controller emits audio-related events during scene playback. You can subscribe to those events with `XR.onSceneEvent` and provide audio controls in your app, e.g.: providing a *volume on* button when the browser audio is disabled.
 
@@ -140,7 +138,7 @@ XR.onSceneEvent('scene1', 'AudioDisabled', () => console.log ('Audio is disabled
 
 ```
 
-#### Enabling Audio
+### Enabling Audio
 
 In some browsers, automatic playback of audio is disabled by default, and it should be enabled in your code. To enable audio for the scene, you can use *enableAudio()* method with the scene name:
 
