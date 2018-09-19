@@ -5,9 +5,12 @@
 
 ***Documentation in progress***
 
-The Amplify XR category allows you to build AR/VR enabled web applications with Amazon Sumerian.
+The XR category enables you to work with augmented reality (AR) and virtual reality (VR) content within your applications. The XR category has built-in support for Amazon Sumerian.
 
 ## Configuration
+
+To download your scene configuration file, visit <a href="https://console.aws.amazon.com/sumerian/home" target="_blank">Amazon Sumerian console</a>, create/open a scene, and select *Publish* from the the right of the screen.
+{: .callout .callout--info}
 
 ```js
 import { XR } from 'aws-amplify';
@@ -25,7 +28,7 @@ XR.configure({ // XR category configuration
 });
 ```
 
-**Or modular import configuration (only XR)**
+**Or modular import configuration (include only XR in your app)**
 
 ```js
 import XR from '@aws-amplify/xr';
@@ -42,7 +45,7 @@ XR.configure({ // XR category configuration
 });
 ```
 
-**Using additional publish parameters**
+**Use additional publish parameters**
 
 ```js
 import XR from '@aws-amplify/xr';
@@ -63,7 +66,7 @@ XR.configure({ // XR category configuration
 
 ## Using Amazon Sumerian
 
-The Amazon Sumerian Provider allows you to import a fully functioning VR, AR, or 3D Sumerian scene into your application.
+The XR Category allows a Sumerian scene to be rendered into an DIV HTML element with `loadScene` method. When the scene is loaded successfully, *XR.start()* method will start the scene. To render the scene, pass your scene name and the id of the element in the method call:
 
 ```js
 // Load scene with sceneName: "scene1" into dom element id: "sumarian-scene-dom-id"
@@ -76,7 +79,11 @@ async loadAndStartScene() {
 <div id="sumarian-scene-dom-id"></div>
 ```
 
-**Using optional progress handlers**
+### Scene Options
+
+**Using optional progress handlers and options**
+
+To configure the appearance and the behavior of your Sumerian scene, you can use `sceneOptions` parameter in the method call:
 
 ```js
 async loadAndStartScene() {
@@ -92,5 +99,58 @@ async loadAndStartScene() {
     XR.start("scene1");
 }
 ```
+
+### Retrieving the Scene Information
+
+You can check the loading status of the scene with *isSceneLoaded* method. Also, you can use *isMuted* method to retrieve audio information about the loaded scene:
+
+```js
+if (XR.isSceneLoaded('scene1')) {
+
+    if (XR.isMuted('scene1')) {
+        // The scene is muted
+        XR.setMuted('scene1', false) // Unmute
+    }
+
+}
+```
+
+### Entering VR mode
+
+For compatible devices, you can enable VR mode for your scene. When a user enters VR mode with a controller attached, the VR controller component tracks its location in 3D space.
+
+```js
+if (XR.isSceneLoaded('scene1')) {
+
+    if (XR.isVRCapable('scene1')) {
+        XR.enterVR('scene1')
+    }
+
+}
+```
+
+#### Capturing Audio Events
+
+XR Category's scene controller emits audio-related events during scene playback. You can subscribe to those events with `XR.onSceneEvent` and provide audio controls in your app, e.g.: providing a *volume on* button when the browser audio is disabled.
+
+```js
+
+XR.onSceneEvent('scene1', 'AudioEnabled', () => console.log ('Audio is enabled') );
+XR.onSceneEvent('scene1', 'AudioDisabled', () => console.log ('Audio is disabled') ));
+
+```
+
+#### Enabling Audio
+
+In some browsers, automatic playback of audio is disabled by default, and it should be enabled in your code. To enable audio for the scene, you can use *enableAudio()* method with the scene name:
+
+```js
+XR.enableAudio('scene1')
+```
+
+#### API Reference
+
+For a complete XR reference visit the [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/xrclass.html)
+{: .callout .callout--info}
 
 ***Documentation in progress***
