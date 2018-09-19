@@ -13,11 +13,11 @@
 
 <template>
   <div>
-    <amplify-sign-in v-if="displayMap.showSignIn" v-bind:signInOptions="options.signInOptions"></amplify-sign-in>
-    <amplify-sign-up v-if="displayMap.showSignUp" v-bind:signUpOptions="options.signUpOptions"></amplify-sign-up>
-    <amplify-confirm-sign-up v-if="displayMap.showConfirmSignUp" v-bind:confirmSignUpOptions="options.confirmSignUpOptions"></amplify-confirm-sign-up>
-    <amplify-confirm-sign-in v-if="displayMap.showConfirmSignIn" v-bind:confirmSignInOptions="options.confirmSignInOptions"></amplify-confirm-sign-in>
-    <amplify-forgot-password v-if="displayMap.showForgotPassword" v-bind:forgotPasswordOptions="options.forgotPasswordOptions"></amplify-forgot-password>
+    <amplify-sign-in v-if="displayMap.showSignIn" v-bind:signInConfig="options.signInConfig"></amplify-sign-in>
+    <amplify-sign-up v-if="displayMap.showSignUp" v-bind:signUpConfig="options.signUpConfig"></amplify-sign-up>
+    <amplify-confirm-sign-up v-if="displayMap.showConfirmSignUp" v-bind:confirmSignUpConfig="options.confirmSignUpConfig"></amplify-confirm-sign-up>
+    <amplify-confirm-sign-in v-if="displayMap.showConfirmSignIn" v-bind:confirmSignInConfig="options.confirmSignInConfig"></amplify-confirm-sign-in>
+    <amplify-forgot-password v-if="displayMap.showForgotPassword" v-bind:forgotPasswordConfig="options.forgotPasswordConfig"></amplify-forgot-password>
   </div>
 </template>
 
@@ -41,11 +41,11 @@ export default {
   computed: {
     options() {
       const defaults = {
-        signInOptions: {},
-        signUpOptions: {},
-        confirmSignUpOptions: {},
-        confirmSignInOptions: {},
-        forgotPasswordOptions: {}
+        signInConfig: {},
+        signUpConfig: {},
+        confirmSignUpConfig: {},
+        confirmSignInConfig: {},
+        forgotPasswordConfig: {}
       };
       return Object.assign(defaults, this.authOptions || {})
     }
