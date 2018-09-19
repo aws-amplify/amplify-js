@@ -46,7 +46,6 @@ export default {
       this.$Amplify.Storage
         .get(this.imagePath)
         .then((url) => {
-          console.log(url)
           this.url = url
           })
         .catch(e => this.setError(e));
