@@ -85,6 +85,7 @@ export default class AuthPiece extends Component {
         }
 
         if (this._isHidden) {
+            this.inputs = {};
             const { track } = this.props;
             if (track) track();
         }

@@ -115,6 +115,19 @@ describe('Authenticator', () => {
         });
     });
 
-    
-});
+    describe('checkUser test', () => {
+        test('happy case', async () => {
+            const wrapper = shallow(<Authenticator/>);
+            const authenticator = wrapper.instance();
 
+            const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            })
+
+            await authenticator.checkUser();
+
+            expect(spyon).toBeCalled();
+        });
+    });
+        
+});

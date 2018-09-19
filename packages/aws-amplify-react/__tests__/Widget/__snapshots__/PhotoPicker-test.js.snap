@@ -65,14 +65,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
     Photos
   </Component>
   <Component>
-    <img
-      src={true}
-      style={
-        Object {
-          "maxWidth": "100%",
-        }
-      }
-    />
+    The image has been selected
   </Component>
   <Picker
     accept="image/*"
