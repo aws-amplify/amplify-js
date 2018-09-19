@@ -136,7 +136,7 @@ export class SumerianProvider extends AbstractXRProvider {
 
   public isSceneLoaded(sceneName: string) {
     const scene = this.getScene(sceneName);
-    return scene.isLoaded;
+    return scene.isLoaded || false;
   }
 
   private getScene(sceneName: string) {
