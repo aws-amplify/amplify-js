@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.0.9...@aws-amplify/analytics@1.1.0) (2018-09-17)
+
+
+### Features
+
+* **@aws-amplify/analytics:** Analytics auto tracking ([585edf2](https://github.com/aws/aws-amplify/commit/585edf2))
+
+
+
+
+<a name="1.0.9"></a>
+## [1.0.9](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.0.8...@aws-amplify/analytics@1.0.9) (2018-09-12)
+
+
+### Bug Fixes
+
+* **aws-amplify:** update the version of aws-sdk to latest ([482402d](https://github.com/aws/aws-amplify/commit/482402d))
+
+
+
+
 <a name="1.0.8"></a>
 ## [1.0.8](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.0.7...@aws-amplify/analytics@1.0.8) (2018-09-09)
 
