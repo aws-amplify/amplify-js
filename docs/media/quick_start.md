@@ -294,7 +294,7 @@ $ amplify init
 Please tell us about your project
 ? What javascript framework are you using angular
 ? Source Directory Path: src
-? Distribution Directory Path: dist/myAngularProject
+? Distribution Directory Path: dist
 ? Build Command: npm run-script build
 ? Start Command: ng serve
 ```

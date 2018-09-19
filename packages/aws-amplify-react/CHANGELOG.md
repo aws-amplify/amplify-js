@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.2"></a>
+## [2.0.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.1...aws-amplify-react@2.0.2) (2018-09-17)
+
+
+### Bug Fixes
+
+* **@aws-amplify-react/auth:** handle required attributes in NEW_PASSWORD_REQUIRED challenge ([5ee6288](https://github.com/aws/aws-amplify/commit/5ee6288))
+* **aws-amplify-react:** fix PhotoPicker preview ([db3331e](https://github.com/aws/aws-amplify/commit/db3331e))
+* **aws-amplify-react:** fix the phone number format in sign up component ([a21d486](https://github.com/aws/aws-amplify/commit/a21d486))
+
+
+
+
 <a name="2.0.1"></a>
 ## [2.0.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.1-unstable.0...aws-amplify-react@2.0.1) (2018-09-09)
 

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -50,7 +50,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/core": "^1.0.9",
+    "@aws-amplify/core": "^1.0.10",
     "@types/paho-mqtt": "^1.0.3",
     "@types/zen-observable": "^0.5.3",
     "paho-mqtt": "^1.0.4",
