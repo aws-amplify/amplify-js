@@ -42,7 +42,7 @@ export class SumerianProvider extends AbstractXRProvider {
   }
 
   public async loadScene(sceneName: string, domElementId: string, sceneOptions: SumerianSceneOptions) { 
-    
+
     if (!sceneName) {
       const errorMsg = "No scene name passed into loadScene";
       logger.error(errorMsg);
@@ -73,8 +73,23 @@ export class SumerianProvider extends AbstractXRProvider {
     const sceneId = scene.sceneConfig.sceneId;
     const awsSDKConfigOverride = {
         region: this.options.region,
+        // This is passed to the AWS clients created in
+        // Sumerian's AwsSystem
+        // This helps other services(like Lex and Polly) to track
+        // traffic coming from Sumerian scenes embedded with Amplify
         customUserAgent: `${Constants.userAgent}-SumerianScene`
     };
+
+    // We are signing the requests to Sumerian ourselves instead of using the AWS SDK
+    // We want to set the user agent header
+    const fetchOptions = {
+      headers: {
+        // This sets the AWS user agent string
+        // So the Sumerian service knows this request is 
+        // from Amplify
+        "X-Amz-User-Agent": Constants.userAgent
+      }
+    }
 
     let apiResponse;
     try {
@@ -88,12 +103,12 @@ export class SumerianProvider extends AbstractXRProvider {
       
       const serviceInfo = { region: this.options.region, service: SUMERIAN_SERVICE_NAME };
       const signedUrl = Signer.signUrl(sceneUrl, accessInfo, serviceInfo);
-      apiResponse = await fetch(signedUrl);
+      apiResponse = await fetch(signedUrl, fetchOptions);
       awsSDKConfigOverride["credentials"] = credentials;
 
     } catch (e) {
       logger.debug('No credentials available, the request will be unsigned');
-      apiResponse = await fetch(sceneUrl);
+      apiResponse = await fetch(sceneUrl, fetchOptions);
     }
     
     const apiResponseJson = await apiResponse.json();
