@@ -78,7 +78,7 @@ export default {
     pick(evt) {
       this.file = evt.target.files[0];
       if (!this.file) { return ;};
-      const { name } = this.file;
+      const name = this.options.defaultName ? this.options.defaultName : this.file.name;
       this.s3ImagePath = `${this.options.path}${name}`;
       const that = this;
       const reader = new FileReader();

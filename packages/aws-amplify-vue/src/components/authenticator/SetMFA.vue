@@ -24,19 +24,19 @@
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionBody" v-if="!displayTotpSetup">
-      <div v-bind:class="amplifyUI.formField" :v-if="options.mfaTypes.includes('SMS')">
+      <div v-bind:class="amplifyUI.formField" v-if="options.mfaTypes.includes('SMS')">
         <div v-bind:class="amplifyUI.inputLabel">
           <input v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="SMS" v-model="mfaPreference"/>
             {{options.smsDescription}}
         </div>
       </div>      
-      <div v-bind:class="amplifyUI.formField"  :v-if="options.mfaTypes.includes('TOTP')">
+      <div v-bind:class="amplifyUI.formField"  v-if="options.mfaTypes.includes('TOTP')">
         <div v-bind:class="amplifyUI.inputLabel">
           <input  v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="TOTP" v-model="mfaPreference"/>  
             {{options.totpDescription}}
         </div>
       </div>
-      <div v-bind:class="amplifyUI.formField"  :v-if="options.mfaTypes.includes('None')">
+      <div v-bind:class="amplifyUI.formField"  v-if="options.mfaTypes.includes('None')">
         <div v-bind:class="amplifyUI.inputLabel">
           <input  v-bind:class="amplifyUI.radio" type="radio" name="mfaPreference" value="NOMFA" v-model="mfaPreference"/>  
             {{options.noMfaDescription}}

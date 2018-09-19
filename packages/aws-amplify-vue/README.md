@@ -297,12 +297,13 @@ Config:
 <amplify-photo-picker v-bind:photoPickerConfig="photoPickerConfig"></amplify-photo-picker>
 ```
 
-| Attribute | Type   | Description                                                            | Default       | Required |
-|-----------|--------|------------------------------------------------------------------------|---------------|----------|
-| header    | string | the component header                                                   | 'File Upload' | no       |
-| title     | string | text displayed in the upload button                                    | 'Upload'      | no       |
-| accept    | string | a string representing the 'accept' attribute in the html input element | '*/*'         | no       |
-| path      | string | S3 path for the file upload                                            | N/A           | yes      |
+| Attribute   | Type   | Description                                                            | Default            | Required |
+|-------------|--------|------------------------------------------------------------------------|--------------------|----------|
+| header      | string | the component header                                                   | 'File Upload'      | no       |
+| title       | string | text displayed in the upload button                                    | 'Upload'           | no       |
+| accept      | string | a string representing the 'accept' attribute in the html input element | '*/*'              | no       |
+| path        | string | S3 path for the file upload                                            | N/A                | yes      |
+| defaultName | string | the name of the file when uploaded to S3                               | original file name | no       |
 
 Events:
 
