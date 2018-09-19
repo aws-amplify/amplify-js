@@ -140,7 +140,7 @@ XR.onSceneEvent('scene1', 'AudioDisabled', () => console.log ('Audio is disabled
 
 ### Enabling Audio
 
-In some browsers, automatic playback of audio is disabled by default, and it should be enabled in your code. To enable audio for the scene, you can use *enableAudio()* method with the scene name:
+In some browsers, playback of audio is disabled until the user provides input. To reliably enable audio in your scene, wait until the user's first input, such as a mouse click or screen touch, and then call the `enableAudio()` method with the scene name.
 
 ```js
 XR.enableAudio('scene1')
