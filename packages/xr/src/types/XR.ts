@@ -19,5 +19,5 @@ export interface ProviderOptions {
 }
 
 export interface SceneOptions {
-
+  [key: string]: any,
 }
