@@ -169,6 +169,10 @@ category_list:
           services:
               - title: Amazon CloudFront
                 url: https://aws.amazon.com/cloudfront/
+        - title: UI Components
+          excerpt: UI excerpt
+          url: '/media/ui_guide'
+          icon: '/images/icons/Misc/Present.svg'
         - title: VS Code Extension 
           excerpt: Code snippets for AWS Amplify in Visual Studio Code.
           cta: Read more
@@ -176,15 +180,15 @@ category_list:
           url_external: 'https://marketplace.visualstudio.com/items?itemName=aws-amplify.aws-amplify-vscode'   
           icon: '/images/icons/Misc/Present.svg'
 
-    - category: UserInterface
-      title: User Interface
-      excerpt: 
-      base_url: '/media/ui_guide'
-      subs:
-        - title: UI Components
-          excerpt: UI excerpt
-          url: '/media/ui_guide'
-          icon: '/images/icons/Misc/Present.svg'
+    # - category: UserInterface
+    #   title: User Interface
+    #   excerpt: 
+    #   base_url: '/media/ui_guide'
+    #   subs:
+    #     - title: UI Components
+    #       excerpt: UI excerpt
+    #       url: '/media/ui_guide'
+    #       icon: '/images/icons/Misc/Present.svg'
     - category: Categories
       title: API Guides
       excerpt: Add cloud features to your app quickly using our toolchain and declarative APIs.
