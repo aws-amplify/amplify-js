@@ -146,7 +146,7 @@ In some browsers, playback of audio is disabled until the user provides input. T
 XR.enableAudio('scene1')
 ```
 
-#### API Reference
+### API Reference
 
 For a complete XR reference visit the [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/xrclass.html)
 {: .callout .callout--info}
