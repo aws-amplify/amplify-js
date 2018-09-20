@@ -117,7 +117,8 @@ if (XR.isSceneLoaded('scene1')) {
 
 For compatible devices, you can enable VR mode for your scene. When a user enters VR mode with a controller attached, the VR controller component tracks its location in 3D space. 
 
-> Entering VR requires user input i.e. button press or similar.
+Entering VR requires user input i.e. button press or similar.
+{: .callout .callout--info}
 
 ```js
 if (XR.isSceneLoaded('scene1')) {
@@ -144,7 +145,8 @@ XR.onSceneEvent('scene1', 'AudioDisabled', () => console.log ('Audio is disabled
 
 In some browsers, playback of audio is disabled until the user provides input. To reliably enable audio in your scene, wait until the user's first input, such as a mouse click or screen touch, and then call the `enableAudio()` method with the scene name.
 
->  If the browser is blocking autoplay, the Audio Disabled event will get thrown the first time the scene attempts to PLAY audio, if no user input has been given
+If the browser is blocking autoplay, the Audio Disabled event will get thrown the first time the scene attempts to PLAY audio, if no user input has been given
+{: .callout .callout--info}
 
 ```js
 XR.enableAudio('scene1')
@@ -153,6 +155,3 @@ XR.enableAudio('scene1')
 ### API Reference
 
 For a complete XR reference visit the [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/xrclass.html)
-{: .callout .callout--info}
-
-***Documentation in progress***
