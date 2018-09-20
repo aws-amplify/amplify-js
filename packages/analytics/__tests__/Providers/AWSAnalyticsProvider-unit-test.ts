@@ -337,6 +337,7 @@ describe("AnalyticsProvider test", () => {
         
            const params = {event: { name: '_session_start', immediate: true}};
         
+           expect.assertions(1);
             try {
                 await analytics.record(params);
             } catch(e) {
@@ -431,6 +432,7 @@ describe("AnalyticsProvider test", () => {
         
            const params = {event: { name: '_session_stop', immediate: true}};
         
+           expect.assertions(1);
             try {
                 await analytics.record(params);
             } catch(e) {
@@ -525,6 +527,7 @@ describe("AnalyticsProvider test", () => {
         
            const params = {event: { name: 'custom event', immediate: true}};
         
+           expect.assertions(1);
             try {
                 await analytics.record(params);
             } catch(e) {
@@ -569,6 +572,7 @@ describe("AnalyticsProvider test", () => {
         
            const params = {event: { name: '_update_endpoint', immediate: true}};
         
+           expect.assertions(1);
             try {
                 await analytics.record(params);
             } catch(e) {
