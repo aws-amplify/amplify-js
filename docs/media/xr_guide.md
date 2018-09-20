@@ -8,7 +8,6 @@ The XR category enables you to work with augmented reality (AR) and virtual real
 ## Configuration
 
 To download your scene configuration file, visit <a href="https://console.aws.amazon.com/sumerian/home" target="_blank">Amazon Sumerian console</a>, create/open a scene, and select *Publish* from the the right of the screen.
-{: .callout .callout--info}
 
 ```js
 import { XR } from 'aws-amplify';
