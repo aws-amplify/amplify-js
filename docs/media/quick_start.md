@@ -3,7 +3,12 @@
 
 # Getting Started
 
-AWS Amplify provides the foundation for your cloud-powered mobile and web apps. AWS Amplify includes a JavaScript library for your Web and React Native projects, a style guide including UI components, and the Amplify CLI toolchain for hosting and for managing backends in the AWS cloud. The goal of this guide is to build or integrate an app with AWS Amplify. Use the drop-down menu in the top right to choose the framework that you want to work with.
+This page is a guide to quickly build a cloud-powered mobile or web app with AWS Amplify. AWS Amplify includes:
+- a JavaScript library with support for React Native and web frameworks including React, Angular, and Ionic
+- a style guide including UI components
+- the Amplify CLI with support for managing the serverless backend, web hosting, and codegen
+
+Use the drop-down menu at the top right of this page to choose the framework for your app.
 
 ## Step 0. Development Environment 
 
@@ -38,17 +43,14 @@ Note: These commands will install the CLI globally. If you're using Windows, the
 
 <div id="purejs" class="tab-content current">
 
-For this example we will create a new plain JavaScript <a href="https://babeljs.io/docs/en/learn/" target="_blank">ES2015</a> app that uses webpack. Create a new project directory called `amplify-js-app`.
-
-Change directories to your new project and run:
+Create a new ‘plain’ JavaScript <a href="https://babeljs.io/docs/en/learn/" target="_blank">ES2015</a> app with webpack. With the following commands, create the directory (`amplify-js-app`) and files for the app.
 
 ```
-$ mkdir amplify-js-app amplify-js-app/src
-$ cd amplify-js-app
+$ mkdir -p amplify-js-app/src && cd amplify-js-app
 $ touch package.json index.html webpack.config.js src/app.js
 ```
 
-Your project directory structure should now be:
+The app directory structure should be:
 
 ```
 - amplify-js-app
@@ -59,7 +61,7 @@ Your project directory structure should now be:
         |- app.js
 ```
 
-Replace the `package.json` contents with the following:
+Add the following to the `package.json` file:
 
 ```js
 {
@@ -74,14 +76,14 @@ Replace the `package.json` contents with the following:
     "webpack-dev-server": "^3.1.5"
   },
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "webpack && webpack-dev-server --mode development",
     "build": "webpack"
   }
 }
 
 ```
 
-Install the local development dependencies:
+Install local development dependencies:
 
 ```
 $ npm install
@@ -94,12 +96,34 @@ Add the following to the `index.html` file:
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>AWS Amplify with webpack and ES2015</title>
+        <title>AWS Amplify</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            html, body { font-family: "Amazon Ember", "Helvetica", "sans-serif"; margin: 0; }
+            a { color: #FF9900; }
+            h1 { font-weight: 300; }
+            .app { width: 100%; }
+            .app-header { color: white; text-align: center; background: linear-gradient(30deg, #f90 55%, #FFC300); width: 100%; margin: 0 0 1em 0; padding: 3em 0 3em 0; box-shadow: 1px 2px 4px rgba(0, 0, 0, .3); }
+            .app-logo { width: 126px; margin: 0 auto; }
+            .app-body { width: 400px; margin: 0 auto; text-align: center; }
+            .app-body button { background-color: #FF9900; font-size: 14px; color: white; text-transform: uppercase; padding: 1em; border: none; }
+            .app-body button:hover { opacity: 0.8; }
+        </style>
     </head>
     <body>
-        <h1>AWS Amplify</h1>
-        <script src="dist/bundle.js"></script>
+        <div class="app">
+            <div class="app-header">
+                <div class="app-logo">
+                    <img src="https://aws-amplify.github.io/images/Logos/Amplify-Logo-White.svg" alt="AWS Amplify" />
+                </div>
+                <h1>Welcome to AWS Amplify</h1>
+            </div>
+            <div class="app-body">
+                <button id="AnalyticsEventButton">Generate Analytics Event</button>
+                <div id="AnalyticsResult"></div>
+            </div>
+        </div>
+        <script src="main.bundle.js"></script>
     </body>
 </html>
 ```
@@ -107,13 +131,16 @@ Add the following to the `index.html` file:
 Add the following to the `webpack.config.js` file:
 
 ```js
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
     mode: 'development',
     entry: './src/app.js',
     output: {
-        filename: 'bundle.js'
+        filename: '[name].bundle.js',
+        path: path.resolve(__dirname, 'dist')
     },
     module: {
         rules: [
@@ -123,19 +150,25 @@ module.exports = {
             }
         ]
     },
+    devServer: {
+        contentBase: './dist',
+        overlay: true,
+        hot: true
+    },
     plugins: [
-        new CopyWebpackPlugin(['index.html'])
+        new CopyWebpackPlugin(['index.html']),
+        new webpack.HotModuleReplacementPlugin()
     ]
 };
 ```
 
-Run your app:
+Run the app:
 
 ```bash
 $ npm start
 ```
 
-Your app should now be available at <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>
+Open a browser and navigate to <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>. The 'Generate Analytics Event' button does not work yet. We'll work on that next.
 
 </div>
 
@@ -144,9 +177,9 @@ Your app should now be available at <a href="http://localhost:8080" target="_bla
 Use [Create React App](https://github.com/facebookincubator/create-react-app) to boostrap your application.
 
 ```bash
-create-react-app my-app
-cd my-app
-npm start
+$ npm install -g create-react-app
+$ create-react-app myapp && cd myapp
+$ npm start
 ```
 
 </div>
@@ -193,7 +226,7 @@ $ cd myAmplifyProject
 
 ## Step 2. Install Amplify 
 
-AWS Amplify is available as an npm package. Run the following commands at the root directory of your application.
+In a terminal window, change to the root directory of your app and run the following command:
 
 <div class="nav-tab install" data-group='install'>
 <ul class="tabs">
@@ -216,7 +249,7 @@ $ npm install --save aws-amplify
 $ npm install --save aws-amplify
 ```
 
-In addition to *aws-amplify*, we provide react-specific components in *aws-amplify-react*.
+To install React specific components, run the following command:
 
 ```bash
 $ npm install --save aws-amplify-react
@@ -226,7 +259,7 @@ $ npm install --save aws-amplify-react
 ```bash
 $ npm install --save aws-amplify
 ```
-In addition to *aws-amplify*, we provide React Native specific components in `aws-amplify-react-native` package.
+To install React Native specific components, run the following command:
 
 ```bash
 $ npm install --save aws-amplify-react-native
@@ -244,7 +277,7 @@ $ react-native init myReactNativeApp
 $ cd myReactNativeApp
 $ npm install --save aws-amplify
 $ npm install --save aws-amplify-react-native
-$ react-native link
+$ react-native link amazon-cognito-identity-js
 ```
 
 </div>
@@ -294,18 +327,10 @@ See the [Ionic Guide](https://aws-amplify.github.io/amplify-js/media/ionic_guide
     <li class="tab-link ionic" data-tab="ionic">Ionic</li>
 </ul>
 
-`amplify init` creates a backend project for your app and pulls the service configuration into your project. 
+Create new AWS backend resources and pull the AWS services configuration into the app. In a terminal window, change to the root directory of your app and run the following command (for this app, accepting all defaults is OK):
 
-```
+```bash
 $ amplify init
-? Choose your default editor: << choose-your-preferred editor >>
-? Choose the type of app that you're building javascript
-Please tell us about your project
-? What javascript framework are you using angular
-? Source Directory Path: src
-? Distribution Directory Path: dist
-? Build Command: npm run-script build
-? Start Command: ng serve
 ```
 
 <div id="angular" class="tab-content">
@@ -314,20 +339,7 @@ Please tell us about your project
 
 **Create the Required AWS Backend Resources**
 
-// Optionally add Debug Logging
-Amplify.Logger.LOG_LEVEL = 'DEBUG';
-
-```
-
-### Add Backend Features
-
-You can  use the `amplify add` command with the respective category name to add backend features:
-
-```bash
-$ amplify add <category-name>
-```
-
-Run `amplify` on your CLI at anytime to see available categories.
+Add one or more cloud services to the app using the `amplify add <category-name>` command. Run `amplify` in the terminal to list available categories (services are organized in categories).
 
 ```terminal
 | Category      |
@@ -677,17 +689,26 @@ Enable static web hosting for the app on Amazon S3. In a terminal window, change
 $ amplify add hosting
 ```
 
-Then, publish your app:
+Run the following command to publish the app:
 
 ```bash
 $ amplify publish
 ```
 
-🎉 Congratulations! Your app is now integrated with AWS Amplify and hosted on Amazon S3. <br/>Some next Steps:
+Open the app in a browser window and push the button to generate analytics events. In the Pinpoint console, open the dashboard for the app and monitor incoming events (there is a short delay before events are visible in the dashboard). 
 
- - Add [Analytics]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/analytics_guide)
+At any time, run the following command in the app directory, to get details of all resources and resource IDs used by the app:
+
+```bash
+$ amplify status
+```
+
+🎉 Congratulations! Your app is built, published, and hosted on Amazon S3.
+
+What next? Here are some things to add to your app:
  - Add [Authentication]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/authentication_guide)
- - Add a GraphQL or REST [API]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide)
+ - Add [Data]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/api_guide) with serverless GraphQL
+
 
 **Existing AWS Resources**
 
