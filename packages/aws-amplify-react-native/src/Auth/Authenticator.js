@@ -134,11 +134,11 @@ export default class Authenticator extends React.Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        const { hideDefault, federated } = this.props;
+        const { hideDefault } = this.props;
         const props_children = this.props.children || [];
         const default_children = [
             <Loading/>,
-            <SignIn federated={federated} />,
+            <SignIn/>,
             <ConfirmSignIn/>,
             <VerifyContact/>,
             <SignUp/>,
