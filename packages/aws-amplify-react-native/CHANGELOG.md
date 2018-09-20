@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.0.1-unstable.3...aws-amplify-react-native@2.0.1) (2018-09-09)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="2.0.1-unstable.3"></a>
+## [2.0.1-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.0.1-unstable.2...aws-amplify-react-native@2.0.1-unstable.3) (2018-09-08)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+<a name="2.0.1-unstable.2"></a>
+## [2.0.1-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.0.0...aws-amplify-react-native@2.0.1-unstable.2) (2018-09-05)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** fix the link in the requireNewPassword component ([bdd816a](https://github.com/aws/aws-amplify/commit/bdd816a))
+
+
+
+
+<a name="2.0.1-unstable.1"></a>
+## [2.0.1-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.0.0...aws-amplify-react-native@2.0.1-unstable.1) (2018-08-30)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** fix the link in the requireNewPassword component ([bdd816a](https://github.com/aws/aws-amplify/commit/bdd816a))
+
+
+
+
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.7-unstable.26...aws-amplify-react-native@2.0.0) (2018-08-28)
+
+
+### Features
+
+* UI Components ([1ff1abd](https://github.com/aws/aws-amplify/commit/1ff1abd))
+
+
+### BREAKING CHANGES
+
+* UI Components
+
+
+
+
+<a name="1.0.7-unstable.26"></a>
+## [1.0.7-unstable.26](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.7-unstable.25...aws-amplify-react-native@1.0.7-unstable.26) (2018-08-28)
+
+
+* Amplify ui migration (#1517) ([41d3184](https://github.com/aws/aws-amplify/commit/41d3184)), closes [#1517](https://github.com/aws/aws-amplify/issues/1517)
+
+
+### BREAKING CHANGES
+
+* UI Components
+
+
+
+
 <a name="1.0.7-unstable.25"></a>
 ## [1.0.7-unstable.25](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@1.0.7-unstable.24...aws-amplify-react-native@1.0.7-unstable.25) (2018-08-27)
 

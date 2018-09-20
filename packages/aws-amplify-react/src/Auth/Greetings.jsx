@@ -12,9 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { I18n, Hub, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
-
 import AuthPiece from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
 
@@ -29,20 +28,16 @@ export default class Greetings extends AuthPiece {
         this.signOut = this.signOut.bind(this);
         this.googleSignOut = this.googleSignOut.bind(this);
         this.facebookSignOut = this.facebookSignOut.bind(this);
-        this.checkUser = this.checkUser.bind(this);
-        this.onHubCapsule = this.onHubCapsule.bind(this);
+       
 
         this.state = {
             authState: props.authState,
             authData: props.authData
         }
-
-        Hub.listen('auth', this);
     }
 
     componentDidMount() {
         this._isMounted = true;
-        this.checkUser();
     }
 
     componentWillUnmount() {
@@ -96,36 +91,6 @@ export default class Greetings extends AuthPiece {
                 return Promise.resolve(null);
             }
         });
-    }
-
-    checkUser() {
-        const that = this;
-        const { authState } = this.state;
-        if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
-            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
-        }
-        return Auth.currentAuthenticatedUser()
-            .then(user => {
-                if (!that._isMounted) { return; }
-                if (authState !== 'signedIn') {
-                    this.setState({
-                        authState: 'signedIn',
-                        authData: user
-                    });
-                    this.changeState('signedIn', user);
-                }
-            })
-            .catch(err => {
-                if (!that._isMounted) { return; }
-                this.signOut();
-            });
-    }
-
-    onHubCapsule(capsule) {
-        const { channel, payload, source } = capsule;
-        if (channel === 'auth' && (payload.event === 'configured' || payload.event === 'cognitoHostedUI')) { 
-            this.checkUser(); 
-        }
     }
 
     inGreeting(name) { return 'Hello ' + name; }
