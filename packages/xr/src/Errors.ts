@@ -17,3 +17,4 @@ export class XRSceneNotFoundError extends XRError {}
 export class XRSceneNotLoadedError extends XRError {}
 export class XRNoDomElement extends XRError {}
 export class XRSceneLoadFailure extends XRError {}
+export class XRProviderNotConfigured extends XRError {}

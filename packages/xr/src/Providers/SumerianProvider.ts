@@ -45,7 +45,7 @@ export class SumerianProvider extends AbstractXRProvider {
         });
 
         scriptElement.addEventListener('error', (event) => {
-            reject(new Error("Failed to load script: " + url));
+            reject(new Error(`Failed to load script: ${url}`));
         });
 
         document.head.appendChild(scriptElement);
@@ -68,14 +68,14 @@ export class SumerianProvider extends AbstractXRProvider {
 
     const element = document.getElementById(domElementId);
     if (!element) {
-        const errorMsg = "DOM element id, " + domElementId + " not found";
+        const errorMsg = `DOM element id, ${domElementId} not found`;
         logger.error(errorMsg);
         throw(new XRNoDomElement(errorMsg));
     }
 
     const scene = this.getScene(sceneName);
     if (!scene.sceneConfig) {
-      const errorMsg = "No scene config configured for scene: " + sceneName;
+      const errorMsg = `No scene config configured for scene: ${sceneName}`;
       logger.error(errorMsg);
       throw(new XRSceneLoadFailure(errorMsg));
     }
@@ -102,10 +102,11 @@ export class SumerianProvider extends AbstractXRProvider {
       }
     };
 
-    let apiResponse;
+    let url = sceneUrl;
     try {
       // Get credentials from Auth and sign the request
       const credentials = await Credentials.get();
+      awsSDKConfigOverride["credentials"] = credentials;
       const accessInfo = {
         secret_key: credentials.secretAccessKey,
         access_key: credentials.accessKeyId,
@@ -113,15 +114,11 @@ export class SumerianProvider extends AbstractXRProvider {
       };
       
       const serviceInfo = { region: this.options.region, service: SUMERIAN_SERVICE_NAME };
-      const signedUrl = Signer.signUrl(sceneUrl, accessInfo, serviceInfo);
-      apiResponse = await fetch(signedUrl, fetchOptions);
-      awsSDKConfigOverride["credentials"] = credentials;
-
+      url = Signer.signUrl(sceneUrl, accessInfo, serviceInfo);
     } catch (e) {
       logger.debug('No credentials available, the request will be unsigned');
-      apiResponse = await fetch(sceneUrl, fetchOptions);
     }
-    
+    const apiResponse = await fetch(url, fetchOptions)
     const apiResponseJson = await apiResponse.json();
     
     // Get bundle data from scene api response
@@ -157,7 +154,7 @@ export class SumerianProvider extends AbstractXRProvider {
 
     // Log scene warnings
     for (const warning of sceneController.sceneLoadWarnings) {
-      logger.warn('loadScene warning: ' + warning);
+      logger.warn(`loadScene warning: ${warning}`);
     }
   }
 
@@ -180,7 +177,7 @@ export class SumerianProvider extends AbstractXRProvider {
     }
 
     if (!this.options.scenes[sceneName]) {
-      const errorMsg = "Scene '" + sceneName + "' is not configured";
+      const errorMsg = `Scene '${sceneName}' is not configured`;
       logger.error(errorMsg);
       throw(new XRSceneNotFoundError(errorMsg));
     }
@@ -197,14 +194,14 @@ export class SumerianProvider extends AbstractXRProvider {
 
     const scene = this.options.scenes[sceneName];
     if (!scene) {
-      const errorMsg = "Scene '" + sceneName + "' is not configured";
+      const errorMsg = `Scene '${sceneName}' is not configured`;
       logger.error(errorMsg);
       throw(new XRSceneNotFoundError(errorMsg));
     }
 
     const sceneController = scene.sceneController;
     if (!sceneController) {
-      const errorMsg = "Scene controller for '" + sceneName + "' has not been loaded";
+      const errorMsg = `Scene controller for '${sceneName}' has not been loaded`;
       logger.error(errorMsg);
       throw(new XRSceneNotLoadedError(errorMsg));
     }

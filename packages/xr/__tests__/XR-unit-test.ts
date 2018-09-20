@@ -28,6 +28,16 @@ describe('XR', () => {
             const config = xr.configure(options);
             expect(config).toEqual(options);
         });
+
+        test('provider not configured', () => {
+            const xr = new XR({});
+            try {
+                xr.getSceneController('scene1', 'ThreeJSProvider');
+            } catch(e) {
+                expect(e.message).toEqual("Provider 'ThreeJSProvider' not configured");
+                expect(e).toBeInstanceOf(Error);
+            }
+        });
     });
 
     describe('SumerianProvider', () => {
