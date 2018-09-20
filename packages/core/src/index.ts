@@ -29,6 +29,7 @@ export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export * from './RNComponents';
 export { default as Credentials } from './Credentials';
 export { default as ServiceWorker } from './ServiceWorker';
+export { ICredentials } from './types';
 export { default as StorageHelper, MemoryStorage } from './StorageHelper';
 export { default as Platform } from './Platform';
 

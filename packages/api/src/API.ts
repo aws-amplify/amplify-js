@@ -18,6 +18,7 @@ import { RestClient as RestClass } from './RestClient';
 import Amplify, { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import { GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
+import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('API');
 
@@ -342,7 +343,8 @@ export default class APIClass {
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query: queryStr, variables }: GraphQLOptions): Promise<GraphQLResult> {
+    private async _graphql({ query: queryStr, variables }: GraphQLOptions, additionalHeaders = {})
+        : Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
         }
@@ -363,7 +365,8 @@ export default class APIClass {
             ...(customGraphqlEndpoint &&
                 (customEndpointRegion ? await this._headerBasedAuth('AWS_IAM') : { Authorization: null })
             ),
-            ... await graphql_headers({ query: doc, variables })
+            ...additionalHeaders,
+            ... await graphql_headers({ query: doc, variables }),
         };
 
         const body = {
@@ -412,6 +415,7 @@ export default class APIClass {
         return response;
     }
 
+    private clientIdentifier = uuid();
 
     private _graphqlSubscribe({ query, variables }: GraphQLOptions): Observable<object> {
         if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
@@ -421,16 +425,44 @@ export default class APIClass {
 
                 (async () => {
                     const {
-                        extensions: { subscription }
-                    } = await this._graphql({ query, variables });
+                        aws_appsync_authenticationType: authenticationType,
+                    } = this._options;
+                    const additionalheaders = {
+                        ...(authenticationType === 'API_KEY' && {
+                            'x-amz-subscriber-id': this.clientIdentifier
+                        })
+                    };
 
-                    const { newSubscriptions } = subscription;
+                    try {
+                        const {
+                            extensions: { subscription },
 
-                    const newTopics = Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+                        } = await this._graphql({ query, variables }, additionalheaders);
 
-                    const observable = Amplify.PubSub.subscribe(newTopics, subscription);
+                        const { newSubscriptions } = subscription;
 
-                    handle = observable.subscribe(observer);
+                        const newTopics =
+                            Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+
+                        const observable = Amplify.PubSub.subscribe(newTopics, subscription);
+
+                        handle = observable.subscribe({
+                            next: (data) => observer.next(data),
+                            complete: () => observer.complete(),
+                            error: (data) => {
+                                const error = { ...data };
+                                if (!error.errors) {
+                                    error.errors = [{
+                                        ...new GraphQLError('Network Error')
+                                    }];
+                                }
+                                observer.error(error);
+                            }
+                        });
+
+                    } catch (error) {
+                        observer.error(error);
+                    }
                 })();
 
                 return () => {
@@ -455,7 +487,7 @@ export default class APIClass {
                 const cred = Credentials.shear(credentials);
                 logger.debug('set credentials for api', cred);
 
-                return credentials;
+                return true;
             })
             .catch(err => {
                 logger.warn('ensure credentials error', err);

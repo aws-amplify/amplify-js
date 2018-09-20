@@ -49,7 +49,7 @@ const template = `
 })
 export class AuthenticatorComponentCore {
   authState: AuthState = {
-    state: 'loading',
+    state: 'signIn',
     user: null
   };
 
@@ -67,6 +67,12 @@ export class AuthenticatorComponentCore {
     this.amplifyService.authStateChange$
       .subscribe(state => {
         this.authState = state;
+      },
+      () => {
+        this.authState = {
+          'state': 'signIn',
+          'user': null
+        }
       });
   }
 

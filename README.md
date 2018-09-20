@@ -124,7 +124,6 @@ import aws_exports from './aws-exports';
 // in this way you are only importing Auth and configuring it.
 Amplify.configure(aws_exports);
 
-
 ```
 
 __Without AWS__
