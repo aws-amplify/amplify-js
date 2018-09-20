@@ -300,13 +300,14 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
         service
     );
 
+    // IoT service does not allow the session token in the canonical request
+    // https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
+    const sessionTokenRequired = accessInfo.session_token && service !== IOT_SERVICE_NAME;
     const queryParams = {
         'X-Amz-Algorithm': DEFAULT_ALGORITHM,
         'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'),
         'X-Amz-Date': now.substr(0, 16),
-        // IoT service does not allow the session token in the canonical request
-        // https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
-        ...(accessInfo.session_token && service != IOT_SERVICE_NAME && { 'X-Amz-Security-Token': `${accessInfo.session_token}` }),
+        ...(sessionTokenRequired && { 'X-Amz-Security-Token': `${accessInfo.session_token}` }),
         ...(expiration && { 'X-Amz-Expires': `${expiration}` }),
         'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(','),
     };
