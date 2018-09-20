@@ -343,8 +343,8 @@ export default class APIClass {
         throw new Error(`invalid operation type: ${operationType}`);
     }
 
-    private async _graphql({ query: queryStr, variables }: GraphQLOptions,
-                           additionalHeaders = {}): Promise<GraphQLResult> {
+    private async _graphql({ query: queryStr, variables }: GraphQLOptions, additionalHeaders = {})
+        : Promise<GraphQLResult> {
         if (!this._api) {
             await this.createInstance();
         }
@@ -432,17 +432,37 @@ export default class APIClass {
                             'x-amz-subscriber-id': this.clientIdentifier
                         })
                     };
-                    const {
-                        extensions: { subscription }
-                    } = await this._graphql({ query, variables }, additionalheaders);
 
-                    const { newSubscriptions } = subscription;
+                    try {
+                        const {
+                            extensions: { subscription },
 
-                    const newTopics = Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+                        } = await this._graphql({ query, variables }, additionalheaders);
 
-                    const observable = Amplify.PubSub.subscribe(newTopics, subscription);
+                        const { newSubscriptions } = subscription;
 
-                    handle = observable.subscribe(observer);
+                        const newTopics =
+                            Object.getOwnPropertyNames(newSubscriptions).map(p => newSubscriptions[p].topic);
+
+                        const observable = Amplify.PubSub.subscribe(newTopics, subscription);
+
+                        handle = observable.subscribe({
+                            next: (data) => observer.next(data),
+                            complete: () => observer.complete(),
+                            error: (data) => {
+                                const error = { ...data };
+                                if (!error.errors) {
+                                    error.errors = [{
+                                        ...new GraphQLError('Network Error')
+                                    }];
+                                }
+                                observer.error(error);
+                            }
+                        });
+
+                    } catch (error) {
+                        observer.error(error);
+                    }
                 })();
 
                 return () => {
