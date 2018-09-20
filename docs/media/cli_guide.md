@@ -2,7 +2,7 @@
 ---
 # CLI  
 
-The Amplify CLI simplifies adding sophisticated serverless cloud features to your app easily by provisioning the backend resources using AWS CloudFormation.
+The Amplify CLI simplifies adding sophisticated serverless cloud features to your app easily by provisioning the backend resources using AWS CloudFormation. <a href="https://aws.amazon.com/blogs/mobile/announcing-the-aws-amplify-cli-toolchain/" target="_blank">Learn more</a>.
 
 - Install [Node.js®](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/get-npm) if they are not already on your machine.
 
