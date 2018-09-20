@@ -45,6 +45,7 @@ Amplify.PubSub = PubSub;
 Amplify.Logger = Logger;
 Amplify.ServiceWorker = ServiceWorker;
 Amplify.Interactions = Interactions;
+Amplify.XR = XR;
 
 export { 
     Auth, 
