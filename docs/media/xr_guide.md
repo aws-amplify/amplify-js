@@ -115,7 +115,9 @@ if (XR.isSceneLoaded('scene1')) {
 
 ### Entering VR mode
 
-For compatible devices, you can enable VR mode for your scene. When a user enters VR mode with a controller attached, the VR controller component tracks its location in 3D space.
+For compatible devices, you can enable VR mode for your scene. When a user enters VR mode with a controller attached, the VR controller component tracks its location in 3D space. 
+
+> Entering VR requires user input i.e. button press or similar.
 
 ```js
 if (XR.isSceneLoaded('scene1')) {
@@ -141,6 +143,8 @@ XR.onSceneEvent('scene1', 'AudioDisabled', () => console.log ('Audio is disabled
 ### Enabling Audio
 
 In some browsers, playback of audio is disabled until the user provides input. To reliably enable audio in your scene, wait until the user's first input, such as a mouse click or screen touch, and then call the `enableAudio()` method with the scene name.
+
+>  If the browser is blocking autoplay, the Audio Disabled event will get thrown the first time the scene attempts to PLAY audio, if no user input has been given
 
 ```js
 XR.enableAudio('scene1')
