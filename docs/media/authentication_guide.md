@@ -292,11 +292,12 @@ export default withAuthenticator(App);
 ```
 Now, your app has complete flows for user sign-in and registration. Since you have wrapped your **App** with `withAuthenticator`, only signed in users can access your app. The routing for login pages and giving access to your **App** Component will be managed automatically.
 
-#### Enabling Federated Identities
+#### Enabling Federated Identities 
 
-You can enable federated Identity login by specifying  *federated* option. Here is a configuration for enabling social login with multiple providers:
+You can enable federated Identity login by specifying  *federated* option (for react-js only). Here is a configuration for enabling social login with multiple providers:
 
 ```js
+import { withAuthenticator } from 'aws-amplify-react';
 const AppWithAuth = withAuthenticator(App);
 
 const federated = {
@@ -452,6 +453,7 @@ Currently, our federated identity components only support Google, Facebook and A
 To enable social sign-in in your app with Federated Identities, add `Google client_id`, `Facebook app_id` and/or `Amazon client_id` properties to *Authenticator* component:
 
 ```jsx
+import { Authenticator } from 'aws-amplify-react';
 const federated = {
     google_client_id: '',
     facebook_app_id: '',
@@ -459,7 +461,7 @@ const federated = {
 };
 
 return (
-    <Authenticator federated={federated}>
+    <Authenticator federated={federated}> //federated option is currently not supported on react-native
 )
 ```
 
@@ -503,7 +505,7 @@ export default class App extends React.Component {
 
 #### Customize UI
 
-To customize the UI for Federated Identities sign-in, you can use `withFederated` component. The following code shows how you customize the login buttons and the layout for social sign-in.
+To customize the UI for Federated Identities sign-in, you can use `withFederated` component (react-js only). The following code shows how you customize the login buttons and the layout for social sign-in.
 
 ```jsx
 import { withFederated } from 'aws-amplify-react';
@@ -535,7 +537,7 @@ const federated = {
     amazon_client_id: ''
 };
 
-<Federated federated={federated} onStateChange={this.handleAuthStateChange} />
+<Federated federated={federated} onStateChange={this.handleAuthStateChange} /> //federated option is currently not supported on react-native
 ```
 
 There is also `withGoogle`, `withFacebook`, `withAmazon` components, in case you need to customize a single provider.
