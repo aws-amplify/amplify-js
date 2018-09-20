@@ -56,9 +56,9 @@ export default class XR {
 
         Object.entries(this._pluggables).map(([name, provider]) => {
             if (name === this._defaultProvider && !opt[this._defaultProvider]) {
-                provider.configure(opt);
+                provider.configure(this._options);
             } else {
-                provider.configure(opt[name]);
+                provider.configure(this._options[name]);
             }
         });
 
