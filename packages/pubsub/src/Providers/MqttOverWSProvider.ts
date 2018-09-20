@@ -10,11 +10,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { Client, Message } from 'paho-mqtt';
+import * as Paho from '../vendor/paho-mqtt';
 import { v4 as uuid } from 'uuid';
 import * as Observable from 'zen-observable';
-
-(<any>global).Paho = (<any>global).Paho || { MQTT: { Client, Message } };
 
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { ProvidertOptions } from '../types';
@@ -28,9 +26,9 @@ export interface MqttProvidertOptions extends ProvidertOptions {
 }
 
 class ClientsQueue {
-    private promises: Map<string, Promise<Client>> = new Map();
+    private promises: Map<string, Promise<Paho.Client>> = new Map();
 
-    async get(clientId: string, clientFactory: (string) => Promise<Client>) {
+    async get(clientId: string, clientFactory: (string) => Promise<Paho.Client>) {
         let promise = this.promises.get(clientId);
         if (promise) {
             return promise;
@@ -76,10 +74,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         }
     }
 
-    public async newClient({ url, clientId }: MqttProvidertOptions): Promise<Client> {
+    public async newClient({ url, clientId }: MqttProvidertOptions): Promise<Paho.Client> {
         logger.debug('Creating new MQTT client', clientId);
 
-        const client = new Client(url, clientId);
+        const client = new Paho.Client(url, clientId);
         // client.trace = (args) => logger.debug(clientId, JSON.stringify(args, null, 2));
         client.onMessageArrived = ({ destinationName: topic, payloadString: msg }) => {
             this._onMessage(topic, msg);
@@ -100,7 +98,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         return client;
     }
 
-    protected async connect(clientId: string, options: MqttProvidertOptions = {}): Promise<Client> {
+    protected async connect(clientId: string, options: MqttProvidertOptions = {}): Promise<Paho.Client> {
         return await this.clientsQueue.get(clientId, clientId => this.newClient({ ...options, clientId }));
     }
 
@@ -160,7 +158,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
                 observersForTopic.add(observer);
             });
 
-            let client: Client;
+            let client: Paho.Client;
             const { clientId = this.clientId } = options;
 
             (async () => {
