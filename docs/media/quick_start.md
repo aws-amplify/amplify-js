@@ -4,7 +4,7 @@
 # Getting Started
 
 This page is a guide to quickly build a cloud-powered mobile or web app with AWS Amplify. AWS Amplify includes:
-- a JavaScript library with support for React Native and web frameworks including React, Angular, and Ionic
+- a JavaScript library with support for React Native and web frameworks including <br/>React, Angular, and Ionic
 - a style guide including UI components
 - the Amplify CLI with support for managing the serverless backend, web hosting, and codegen
 
