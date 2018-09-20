@@ -86,7 +86,7 @@ describe('XR', () => {
             }
         });
 
-        test('isMuted return muted boolean', () => {
+        test('isMuted returns muted boolean on scene controller', () => {
             const xr = new XR({
                 scenes: {
                     'scene1': {
@@ -119,7 +119,7 @@ describe('XR', () => {
             expect(muted).toBe(true);
         });
 
-        test('setMuted sets muted value on scene controller', () => {
+        test('isVRCapable returns vrCapable boolean on scene controller', () => {
             const xr = new XR({
                 scenes: {
                     'scene1': {
@@ -149,7 +149,7 @@ describe('XR', () => {
             expect(isLoaded).toBe(true);
         });
 
-        test('getSceneController returns sceneController', () => {
+        test('getSceneController returns a sceneController', () => {
             const xr = new XR({
                 scenes: {
                     'scene1': {
