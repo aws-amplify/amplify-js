@@ -48,19 +48,6 @@ export default class ConfirmSignIn extends AuthPiece {
         this.checkContact = this.checkContact.bind(this);
     }
 
-    checkContact(user) {
-        Auth.verifiedContact(user)
-            .then(data => {
-                logger.debug('verified user attributes', data);
-                if (!JS.isEmpty(data.verified)) {
-                    this.changeState('signedIn', user);
-                } else {
-                    user = Object.assign(user, data);
-                    this.changeState('verifyContact', user);
-                }
-            });
-    }
-
     confirm() {
         const user = this.props.authData;
         const { code } = this.state;
