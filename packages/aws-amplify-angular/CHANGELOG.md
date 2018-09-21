@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.6-unstable.0"></a>
+## [2.0.6-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.5-unstable.3...aws-amplify-angular@2.0.6-unstable.0) (2018-09-21)
+
+
+### Bug Fixes
+
+* bumping version for deploying on unstable tag ([#1706](https://github.com/aws-amplify/amplify-js/issues/1706)) ([b5d6468](https://github.com/aws-amplify/amplify-js/commit/b5d6468))
+
+
+
+
 <a name="2.0.5"></a>
 ## [2.0.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.4...aws-amplify-angular@2.0.5) (2018-09-21)
 
