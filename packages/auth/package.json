@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "1.2.2-unstable.3",
+  "version": "1.2.2-unstable.4",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
