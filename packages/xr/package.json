@@ -1,7 +1,7 @@
 {
-  "name": "@aws-amplify/api",
-  "version": "1.0.14-unstable.0",
-  "description": "Api category of aws-amplify",
+  "name": "@aws-amplify/xr",
+  "version": "0.1.2-unstable.0",
+  "description": "XR category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -12,6 +12,7 @@
     "test": "tslint 'src/**/*.ts' && jest --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build": "npm run clean && tsc && webpack",
+    "watch": "tsc --watch",
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"
@@ -50,14 +51,9 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/auth": "^1.2.3-unstable.0",
-    "@aws-amplify/cache": "^1.0.12-unstable.0",
+    "@aws-amplify/api": "^1.0.14-unstable.0",
     "@aws-amplify/core": "^1.0.12-unstable.0",
-    "@types/zen-observable": "^0.5.3",
-    "axios": "^0.17.0",
-    "graphql": "0.13.0",
-    "uuid": "^3.2.1",
-    "zen-observable": "^0.8.6"
+    "aws-sdk": "2.198.0"
   },
   "jest": {
     "transform": {
