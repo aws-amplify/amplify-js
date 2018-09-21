@@ -354,9 +354,6 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
             ...additionalQueryParams,
         }
     });
-    let s = result.substr(1);
-    s = `wss:${s}`;
-    new WebSocket(result);
 
     return result;
 };
