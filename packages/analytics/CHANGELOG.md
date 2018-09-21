@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.1.2-unstable.0...@aws-amplify/analytics@1.2.0) (2018-09-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** check the environment before running dom-utils ([4375b21](https://github.com/aws/aws-amplify/commit/4375b21))
+
+
+### Features
+
+* **aws-amplify/analytics:** using Pinpoint New API ([f8e60c1](https://github.com/aws/aws-amplify/commit/f8e60c1))
+
+
+
+
 <a name="1.1.2-unstable.0"></a>
 ## [1.1.2-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/analytics@1.1.0...@aws-amplify/analytics@1.1.2-unstable.0) (2018-09-21)
 

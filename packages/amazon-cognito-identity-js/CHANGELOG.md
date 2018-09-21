@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.29"></a>
+## [2.0.29](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.29-unstable.0...amazon-cognito-identity-js@2.0.29) (2018-09-21)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** clean clockDrift item when signing out ([f07d800](https://github.com/aws/aws-amplify/commit/f07d800))
+
+
+
+
 <a name="2.0.29-unstable.0"></a>
 ## [2.0.29-unstable.0](https://github.com/aws/aws-amplify/compare/amazon-cognito-identity-js@2.0.28-unstable.3...amazon-cognito-identity-js@2.0.29-unstable.0) (2018-09-21)
 
