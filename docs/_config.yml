@@ -16,9 +16,7 @@
 title: AWS Amplify Developer Documentation
 email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
+  AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com 
 github:
@@ -179,16 +177,6 @@ category_list:
           class: aws-icon-ps-60-network-nodes
           url_external: 'https://marketplace.visualstudio.com/items?itemName=aws-amplify.aws-amplify-vscode'   
           icon: '/images/icons/Misc/Present.svg'
-
-    # - category: UserInterface
-    #   title: User Interface
-    #   excerpt: 
-    #   base_url: '/media/ui_guide'
-    #   subs:
-    #     - title: UI Components
-    #       excerpt: UI excerpt
-    #       url: '/media/ui_guide'
-    #       icon: '/images/icons/Misc/Present.svg'
     - category: Categories
       title: API Guides
       excerpt: Add cloud features to your app quickly using our toolchain and declarative APIs.
@@ -285,6 +273,11 @@ category_list:
       excerpt: Common programming utilities that you can use with your app.
       base_url: '/media/cache_guide'
       subs:
+        - title: Service Worker 
+          excerpt: A utility class to work with PWA and Service Worker APIs. 
+          cta: Read more
+          url: '/media/service_workers_guide'   
+          icon: '/images/icons/Misc/Gear.svg'
         - title: Cache 
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
           cta: Read more
@@ -304,11 +297,6 @@ category_list:
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide'  
-          icon: '/images/icons/Misc/Gear.svg'
-        - title: Service Worker 
-          excerpt: A utility class to work with PWA and Service Worker APIs. 
-          cta: Read more
-          url: '/media/service_workers_guide'   
           icon: '/images/icons/Misc/Gear.svg'   
 
 defaults:

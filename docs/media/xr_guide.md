@@ -74,7 +74,7 @@ async loadAndStartScene() {
 }
 
 // HTML
-<div id="sumarian-scene-dom-id"></div>
+<div id="sumerian-scene-dom-id"></div>
 ```
 
 ## Scene API
@@ -93,7 +93,7 @@ async loadAndStartScene() {
         progressCallback
     }
     
-    await XR.loadScene("scene1", "sumarian-scene-dom-id", sceneOptions);
+    await XR.loadScene("scene1", "sumerian-scene-dom-id", sceneOptions);
     XR.start("scene1");
 }
 ```
