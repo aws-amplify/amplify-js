@@ -4,375 +4,6 @@
 
 The API category provides a solution for making HTTP requests to REST and GraphQL endpoints. It includes a [AWS Signature Version 4](http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html) signer class which automatically signs all AWS API requests for you.
 
-## Using REST
-
-The API category can be used for creating signed requests against Amazon API Gateway when the API Gateway Authorization is set to `AWS_IAM`. 
-
-Ensure you have [installed and configured the Amplify CLI and library]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start).
-{: .callout .callout--info}
-
-### Automated Setup
-
-Run the following command in your project's root folder:
-
-```bash
-$ amplify add api
-```
-
-Select `REST` as the service type.
-
-```bash
-? Please select from one of the below mentioned services
-  GraphQL
-❯ REST
-```
-
-The CLI will prompt several options to create your resources. With the provided options you can create:
-- REST endpoints that triggers Lambda functions
-- REST endpoints which enables CRUD operations on an Amazon DynamoDB table
-
-During setup you can use existing Lambda functions and DynamoDB tables or create new ones by following the CLI prompts. After your resources have been created update your backend with the `push` command:
-
-```bash
-$ amplify push
-```
-
-A configuration file called `aws-exports.js` will be copied to your configured source directory, for example `./src`.
-
-##### Configure Your App
-
-Import and load the configuration file in your app. It's recommended you add the Amplify configuration step to your app's root entry point. For example `App.js` in React or `main.ts` in Angular.
-
-```js
-import Amplify, { API } from 'aws-amplify';
-import aws_exports from './aws-exports';
-
-Amplify.configure(aws_exports);
-```
-
-### Manual Setup
-
-For manual configuration you need to provide your AWS Resource configuration and optionally configure authentication.
-
-```js
-import Amplify, { API } from 'aws-amplify';
-
-Amplify.configure({
-    // OPTIONAL - if your API requires authentication 
-    Auth: {
-        // REQUIRED - Amazon Cognito Identity Pool ID
-        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
-        // REQUIRED - Amazon Cognito Region
-        region: 'XX-XXXX-X', 
-        // OPTIONAL - Amazon Cognito User Pool ID
-        userPoolId: 'XX-XXXX-X_abcd1234', 
-        // OPTIONAL - Amazon Cognito Web Client ID
-        userPoolWebClientId: 'XX-XXXX-X_abcd1234',
-    },
-    API: {
-        endpoints: [
-            {
-                name: "MyAPIGatewayAPI",
-                endpoint: "https://1234567890-abcdefgh.amazonaws.com"
-            },
-            {
-                name: "MyCustomCloudFrontApi",
-                endpoint: "https://api.my-custom-cloudfront-domain.com",
-
-            },
-            {
-                name: "MyCustomLambdaApi",
-                endpoint: "https://lambda.us-east-1.amazonaws.com/2015-03-31/functions/yourFuncName/invocations",
-                service: "lambda",
-                region: "us-east-1"
-            }
-        ]
-    }
-});
-```
-
-### AWS Regional Endpoints
-
-You can also utilize regional endpoints by passing in the *service* and *region* information to the configuration. For a list of available service endpoints see [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html). 
-
-As an example, the following API configuration defines a Lambda invocation in the `us-east-1` region:  
-
-```js
-API: {
-    endpoints: [
-        {
-            name: "MyCustomLambda",
-            endpoint: "https://lambda.us-east-1.amazonaws.com/2015-03-31/functions/yourFuncName/invocations",
-            service: "lambda",
-            region: "us-east-1"
-        }
-    ]
-}
-```
-
-For more information related to invoking AWS Lambda functions, see [AWS Lambda Developer Guide](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html).
-
- **Configuring Amazon Cognito Regional Endpoints** To call regional service endpoints, your Amazon Cognito role needs to be configured with appropriate access for the related service. See [AWS Cognito Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) for more details.
- {: .callout .callout--warning}
-
-### Using the API Client
-
-To invoke a REST API, you need the name for the related endpoint. If you manually configure the API, you already have a name for the endpoint. If you use Automated Setup,  you can find the API name in your local configuration file. 
-
-The following code sample assumes that you have used Automated Setup.
-
-To invoke an endpoint, you need to set `apiName`, `path` and `headers` parameters, and each method returns a Promise.
-
-Under the hood the API category utilizes [Axios](https://github.com/axios/axios) to execute the HTTP requests. API status code response > 299 are thrown as an exception. If you need to handle errors managed by your API, work with the `error.response` object.
-
-#### **GET**
-
-```js
-let apiName = 'MyApiName';
-let path = '/path'; 
-let myInit = { // OPTIONAL
-    headers: {} // OPTIONAL
-    response: true // OPTIONAL (return the entire Axios response object instead of only response.data)
-    queryStringParameters: {  // OPTIONAL
-        name: 'param'
-    }
-}
-API.get(apiName, path, myInit).then(response => {
-    // Add your code here
-}).catch(error => {
-    console.log(error.response)
-});
-```
-
-Example with async/await
-
-```js
-async getData() { 
-    let apiName = 'MyApiName';
-    let path = '/path';
-    let myInit = { // OPTIONAL
-        headers: {} // OPTIONAL
-    }
-    return await API.get(apiName, path, myInit);
-}
-
-getData();
-```
-
-**Using Query Parameters**
-
-To use query parameters with *get* method, you can pass them in `queryStringParameters` parameter in your method call:
-
-```js
-let items = await API.get('myCloudApi', '/items', {
-  'queryStringParameters': {
-    'order': 'byPrice'
-  }
-});
-```
-
-**Accessing Query Parameters in Cloud API**
-
-If you are using a Cloud API which is generated with Amplify CLI, your backend is created with Lambda Proxy Integration, and you can access your query parameters within your Lambda function via the *event* object:
-
-```js
-exports.handler = function(event, context, callback) {
-    console.log (event.queryStringParameters);
-}
-```
-
-Alternatively, you can update your backend file which is locates at `amplifyjs/backend/cloud-api/[your-lambda-function]/app.js` with the middleware:
-
-```js
-var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
-app.use(awsServerlessExpressMiddleware.eventContext())
-```
-
-In your request handler use `req.apiGateway.event`:
-
-```js
-app.get('/items', function(req, res) {
-  // req.apiGateway.event.queryStringParameters
-  res.json(req.apiGateway.event)
-});
-```
-
-Then you can use query parameters in your path as follows:
-
-```js
-API.get('sampleCloudApi', '/items?q=test');
-```
-
-To learn more about Lambda Proxy Integration, please visit [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html).
-{: .callout .callout--info}
-
-#### **POST**
-
-Posts data to the API endpoint:
-
-```js
-let apiName = 'MyApiName'; // replace this with your api name.
-let path = '/path'; //replace this with the path you have configured on your API
-let myInit = {
-    body: {}, // replace this with attributes you need
-    headers: {} // OPTIONAL
-}
-
-API.post(apiName, path, myInit).then(response => {
-    // Add your code here
-}).catch(error => {
-    console.log(error.response)
-});
-```
-
-Example with async/await
-
-```js
-async function postData() { 
-    let apiName = 'MyApiName';
-    let path = '/path';
-    let myInit = { // OPTIONAL
-        body: {}, // replace this with attributes you need
-        headers: {} // OPTIONAL
-    }
-    return await API.post(apiName, path, myInit);
-}
-
-postData();
-```
-
-#### **PUT**
-
-When used together with [Cloud API](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/web-access-apis.html), PUT method can be used to create or update records. It updates the record if a matching record is found. Otherwise, a new record is created.
-
-```js
-let apiName = 'MyApiName'; // replace this with your api name.
-let path = '/path'; // replace this with the path you have configured on your API
-let myInit = {
-    body: {}, // replace this with attributes you need
-    headers: {} // OPTIONAL
-}
-
-API.put(apiName, path, myInit).then(response => {
-    // Add your code here
-}).catch(error => {
-    console.log(error.response)
-});
-```
-
-Example with async/await:
-
-```js
-async function putData() { 
-    let apiName = 'MyApiName';
-    let path = '/path';
-    let myInit = { // OPTIONAL
-        body: {}, // replace this with attributes you need
-        headers: {} // OPTIONAL
-    }
-    return await API.put(apiName, path, myInit);
-}
-
-putData();
-```
-
-Update a record:
-
-```js
-const params = {
-    body: {
-        itemId: '12345',
-        itemDesc: ' update description'
-    }
-}
-const apiResponse = await API.put('MyTableCRUD', '/manage-items', params);
-```
-
-#### **DELETE**
-
-```js
-let apiName = 'MyApiName'; // replace this with your api name.
-let path = '/path'; //replace this with the path you have configured on your API
-let myInit = { // OPTIONAL
-    headers: {} // OPTIONAL
-}
-
-API.del(apiName, path, myInit).then(response => {
-    // Add your code here
-}).catch(error => {
-    console.log(error.response)
-});
-```
-
-Example with async/await
-
-```js
-async function deleteData() { 
-    let apiName = 'MyApiName';
-    let path = '/path';
-    let myInit = { // OPTIONAL
-        headers: {} // OPTIONAL
-    }
-    return await API.del(apiName, path, myInit);
-}
-
-deleteData();
-```
-
-#### **HEAD**
-
-```js
-let apiName = 'MyApiName'; // replace this with your api name.
-let path = '/path'; //replace this with the path you have configured on your API
-let myInit = { // OPTIONAL
-    headers: {} // OPTIONAL
-}
-API.head(apiName, path, myInit).then(response => {
-    // Add your code here
-});
-```
-
-Example with async/await:
-
-```js
-async function head() { 
-    let apiName = 'MyApiName';
-    let path = '/path';
-    let myInit = { // OPTIONAL
-        headers: {} // OPTIONAL
-    }
-    return await API.head(apiName, path, myInit);
-}
-
-head();
-```
-
-### Custom Request Headers
-
-When working with a REST endpoint, you may need to set request headers for authorization purposes. This is done by passing a `custom_header` function into the configuration:
-
-```js
-Amplify.configure({
-  API: {
-    endpoints: [
-      {
-        name: "sampleCloudApi",
-        endpoint: "https://xyz.execute-api.us-east-1.amazonaws.com/Development",
-        custom_header: async () => { 
-          return { Authorization : 'token' } 
-          // Alternatively, with Cognito User Pools use this:
-          // return { Authorization: (await Auth.currentSession()).idToken.jwtToken } 
-        }
-      }
-    ]
-  }
-});
-```
-
-### Unauthenticated Requests
-
-You can use the API category to access API Gateway endpoints that don't require authentication. In this case, you need to allow unauthenticated identities in your Amazon Cognito Identity Pool settings. For more information, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html#enable-or-disable-unauthenticated-identities).
- 
 ## Using GraphQL Endpoints
 
 AWS Amplify API Module supports AWS AppSync or any other GraphQL backend.
@@ -851,6 +482,375 @@ class CreateEvent extends React.Component {
   )}
 </Connect>
 ```
+
+## Using REST
+
+The API category can be used for creating signed requests against Amazon API Gateway when the API Gateway Authorization is set to `AWS_IAM`. 
+
+Ensure you have [installed and configured the Amplify CLI and library]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start).
+{: .callout .callout--info}
+
+### Automated Setup
+
+Run the following command in your project's root folder:
+
+```bash
+$ amplify add api
+```
+
+Select `REST` as the service type.
+
+```bash
+? Please select from one of the below mentioned services
+  GraphQL
+❯ REST
+```
+
+The CLI will prompt several options to create your resources. With the provided options you can create:
+- REST endpoints that triggers Lambda functions
+- REST endpoints which enables CRUD operations on an Amazon DynamoDB table
+
+During setup you can use existing Lambda functions and DynamoDB tables or create new ones by following the CLI prompts. After your resources have been created update your backend with the `push` command:
+
+```bash
+$ amplify push
+```
+
+A configuration file called `aws-exports.js` will be copied to your configured source directory, for example `./src`.
+
+##### Configure Your App
+
+Import and load the configuration file in your app. It's recommended you add the Amplify configuration step to your app's root entry point. For example `App.js` in React or `main.ts` in Angular.
+
+```js
+import Amplify, { API } from 'aws-amplify';
+import aws_exports from './aws-exports';
+
+Amplify.configure(aws_exports);
+```
+
+### Manual Setup
+
+For manual configuration you need to provide your AWS Resource configuration and optionally configure authentication.
+
+```js
+import Amplify, { API } from 'aws-amplify';
+
+Amplify.configure({
+    // OPTIONAL - if your API requires authentication 
+    Auth: {
+        // REQUIRED - Amazon Cognito Identity Pool ID
+        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
+        // REQUIRED - Amazon Cognito Region
+        region: 'XX-XXXX-X', 
+        // OPTIONAL - Amazon Cognito User Pool ID
+        userPoolId: 'XX-XXXX-X_abcd1234', 
+        // OPTIONAL - Amazon Cognito Web Client ID
+        userPoolWebClientId: 'XX-XXXX-X_abcd1234',
+    },
+    API: {
+        endpoints: [
+            {
+                name: "MyAPIGatewayAPI",
+                endpoint: "https://1234567890-abcdefgh.amazonaws.com"
+            },
+            {
+                name: "MyCustomCloudFrontApi",
+                endpoint: "https://api.my-custom-cloudfront-domain.com",
+
+            },
+            {
+                name: "MyCustomLambdaApi",
+                endpoint: "https://lambda.us-east-1.amazonaws.com/2015-03-31/functions/yourFuncName/invocations",
+                service: "lambda",
+                region: "us-east-1"
+            }
+        ]
+    }
+});
+```
+
+### AWS Regional Endpoints
+
+You can also utilize regional endpoints by passing in the *service* and *region* information to the configuration. For a list of available service endpoints see [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html). 
+
+As an example, the following API configuration defines a Lambda invocation in the `us-east-1` region:  
+
+```js
+API: {
+    endpoints: [
+        {
+            name: "MyCustomLambda",
+            endpoint: "https://lambda.us-east-1.amazonaws.com/2015-03-31/functions/yourFuncName/invocations",
+            service: "lambda",
+            region: "us-east-1"
+        }
+    ]
+}
+```
+
+For more information related to invoking AWS Lambda functions, see [AWS Lambda Developer Guide](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html).
+
+ **Configuring Amazon Cognito Regional Endpoints** To call regional service endpoints, your Amazon Cognito role needs to be configured with appropriate access for the related service. See [AWS Cognito Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/iam-roles.html) for more details.
+ {: .callout .callout--warning}
+
+### Using the API Client
+
+To invoke a REST API, you need the name for the related endpoint. If you manually configure the API, you already have a name for the endpoint. If you use Automated Setup,  you can find the API name in your local configuration file. 
+
+The following code sample assumes that you have used Automated Setup.
+
+To invoke an endpoint, you need to set `apiName`, `path` and `headers` parameters, and each method returns a Promise.
+
+Under the hood the API category utilizes [Axios](https://github.com/axios/axios) to execute the HTTP requests. API status code response > 299 are thrown as an exception. If you need to handle errors managed by your API, work with the `error.response` object.
+
+#### **GET**
+
+```js
+let apiName = 'MyApiName';
+let path = '/path'; 
+let myInit = { // OPTIONAL
+    headers: {} // OPTIONAL
+    response: true // OPTIONAL (return the entire Axios response object instead of only response.data)
+    queryStringParameters: {  // OPTIONAL
+        name: 'param'
+    }
+}
+API.get(apiName, path, myInit).then(response => {
+    // Add your code here
+}).catch(error => {
+    console.log(error.response)
+});
+```
+
+Example with async/await
+
+```js
+async getData() { 
+    let apiName = 'MyApiName';
+    let path = '/path';
+    let myInit = { // OPTIONAL
+        headers: {} // OPTIONAL
+    }
+    return await API.get(apiName, path, myInit);
+}
+
+getData();
+```
+
+**Using Query Parameters**
+
+To use query parameters with *get* method, you can pass them in `queryStringParameters` parameter in your method call:
+
+```js
+let items = await API.get('myCloudApi', '/items', {
+  'queryStringParameters': {
+    'order': 'byPrice'
+  }
+});
+```
+
+**Accessing Query Parameters in Cloud API**
+
+If you are using a Cloud API which is generated with Amplify CLI, your backend is created with Lambda Proxy Integration, and you can access your query parameters within your Lambda function via the *event* object:
+
+```js
+exports.handler = function(event, context, callback) {
+    console.log (event.queryStringParameters);
+}
+```
+
+Alternatively, you can update your backend file which is locates at `amplifyjs/backend/cloud-api/[your-lambda-function]/app.js` with the middleware:
+
+```js
+var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
+app.use(awsServerlessExpressMiddleware.eventContext())
+```
+
+In your request handler use `req.apiGateway.event`:
+
+```js
+app.get('/items', function(req, res) {
+  // req.apiGateway.event.queryStringParameters
+  res.json(req.apiGateway.event)
+});
+```
+
+Then you can use query parameters in your path as follows:
+
+```js
+API.get('sampleCloudApi', '/items?q=test');
+```
+
+To learn more about Lambda Proxy Integration, please visit [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html).
+{: .callout .callout--info}
+
+#### **POST**
+
+Posts data to the API endpoint:
+
+```js
+let apiName = 'MyApiName'; // replace this with your api name.
+let path = '/path'; //replace this with the path you have configured on your API
+let myInit = {
+    body: {}, // replace this with attributes you need
+    headers: {} // OPTIONAL
+}
+
+API.post(apiName, path, myInit).then(response => {
+    // Add your code here
+}).catch(error => {
+    console.log(error.response)
+});
+```
+
+Example with async/await
+
+```js
+async function postData() { 
+    let apiName = 'MyApiName';
+    let path = '/path';
+    let myInit = { // OPTIONAL
+        body: {}, // replace this with attributes you need
+        headers: {} // OPTIONAL
+    }
+    return await API.post(apiName, path, myInit);
+}
+
+postData();
+```
+
+#### **PUT**
+
+When used together with [Cloud API](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/web-access-apis.html), PUT method can be used to create or update records. It updates the record if a matching record is found. Otherwise, a new record is created.
+
+```js
+let apiName = 'MyApiName'; // replace this with your api name.
+let path = '/path'; // replace this with the path you have configured on your API
+let myInit = {
+    body: {}, // replace this with attributes you need
+    headers: {} // OPTIONAL
+}
+
+API.put(apiName, path, myInit).then(response => {
+    // Add your code here
+}).catch(error => {
+    console.log(error.response)
+});
+```
+
+Example with async/await:
+
+```js
+async function putData() { 
+    let apiName = 'MyApiName';
+    let path = '/path';
+    let myInit = { // OPTIONAL
+        body: {}, // replace this with attributes you need
+        headers: {} // OPTIONAL
+    }
+    return await API.put(apiName, path, myInit);
+}
+
+putData();
+```
+
+Update a record:
+
+```js
+const params = {
+    body: {
+        itemId: '12345',
+        itemDesc: ' update description'
+    }
+}
+const apiResponse = await API.put('MyTableCRUD', '/manage-items', params);
+```
+
+#### **DELETE**
+
+```js
+let apiName = 'MyApiName'; // replace this with your api name.
+let path = '/path'; //replace this with the path you have configured on your API
+let myInit = { // OPTIONAL
+    headers: {} // OPTIONAL
+}
+
+API.del(apiName, path, myInit).then(response => {
+    // Add your code here
+}).catch(error => {
+    console.log(error.response)
+});
+```
+
+Example with async/await
+
+```js
+async function deleteData() { 
+    let apiName = 'MyApiName';
+    let path = '/path';
+    let myInit = { // OPTIONAL
+        headers: {} // OPTIONAL
+    }
+    return await API.del(apiName, path, myInit);
+}
+
+deleteData();
+```
+
+#### **HEAD**
+
+```js
+let apiName = 'MyApiName'; // replace this with your api name.
+let path = '/path'; //replace this with the path you have configured on your API
+let myInit = { // OPTIONAL
+    headers: {} // OPTIONAL
+}
+API.head(apiName, path, myInit).then(response => {
+    // Add your code here
+});
+```
+
+Example with async/await:
+
+```js
+async function head() { 
+    let apiName = 'MyApiName';
+    let path = '/path';
+    let myInit = { // OPTIONAL
+        headers: {} // OPTIONAL
+    }
+    return await API.head(apiName, path, myInit);
+}
+
+head();
+```
+
+### Custom Request Headers
+
+When working with a REST endpoint, you may need to set request headers for authorization purposes. This is done by passing a `custom_header` function into the configuration:
+
+```js
+Amplify.configure({
+  API: {
+    endpoints: [
+      {
+        name: "sampleCloudApi",
+        endpoint: "https://xyz.execute-api.us-east-1.amazonaws.com/Development",
+        custom_header: async () => { 
+          return { Authorization : 'token' } 
+          // Alternatively, with Cognito User Pools use this:
+          // return { Authorization: (await Auth.currentSession()).idToken.jwtToken } 
+        }
+      }
+    ]
+  }
+});
+```
+
+### Unauthenticated Requests
+
+You can use the API category to access API Gateway endpoints that don't require authentication. In this case, you need to allow unauthenticated identities in your Amazon Cognito Identity Pool settings. For more information, please visit [Amazon Cognito Developer Documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html#enable-or-disable-unauthenticated-identities).
 
 ## Customization
 

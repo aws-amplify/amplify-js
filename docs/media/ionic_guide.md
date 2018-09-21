@@ -1,32 +1,23 @@
 ---
 ---
 
-# Ionic
+# Angular & Ionic
 
 AWS Amplify helps developers to create high-quality Ionic apps quickly by handling the heavy lifting of configuring and integrating cloud services behind the scenes. It also provides a powerful high-level API and ready-to-use security best practices.
 
-For Ionic developers, AWS Amplify provides following main benefits:
-
-- Easy integration with cloud operations with declarative API
-- CLI support for bootstrapping your app backend quickly
-- Local configuration and deployment of your app’s backend logic
-- Deployment of static assets for hosting and streaming
-- Ionic UI components for common operations such as Authorization and Storage
-- Monitoring app usage and engaging users with campaign analytics
-
-## Installation and Configuration
+## Installation
 
 AWS Amplify provides Angular Components that you can use with Ionic in [aws-amplify-angular](https://www.npmjs.com/package/aws-amplify-angular) npm package.
 
 Install `aws-amplify` and `aws-amplify-angular` npm packages into your Angular app.
 
 ```bash
-$ npm install --save aws-amplify # or yarn add aws-amplify
-$ npm install --save aws-amplify-angular # or yarn add aws-amplify-angular
+$ npm install --save aws-amplify
+$ npm install --save aws-amplify-angular
 $ npm install --save ionic-angular
 ```
 
-### Setup
+## Setup the AWS Backend
 
 To configure your Ionic app for AWS Amplify, you need to create a backend configuration with Amplify CLI and import the auto-generated configuration file into your project. 
 
@@ -44,9 +35,8 @@ Please visit [Authentication Guide]({%if jekyll.environment == 'production'%}{{s
 {: .callout .callout--info}
 
 
-After creating your backend, the configuration file is copied to `/amplify/#current-cloud-backend/aws-exports.js`, and the source folder you have identified in the `amplify init` command.
+A configuration file is placed inside your configured source directory. To import the configuration file to your Ionic app, you will need to rename `aws_exports.js` to `aws_exports.ts`. You can setup your `package.json` npm scripts to rename the file for you, so that any configuration changes which result in a new generated `aws_exports.js` file get changed over to the `.ts` extension.
 
-To import the configuration file to your Ionic app, you will need to rename `aws_exports.js` to `aws_exports.ts`. You should make sure that your `package.json` scripts also rename the file upon build, so that any configuration changes which result in the download of an `aws_exports.js` from AWS Mobile Hub get changed over to the ts extension.
 ```js	
 "scripts": {	
     "start": "[ -f src/aws-exports.js ] && mv src/aws-exports.js src/aws-exports.ts || ng serve; ng serve",	
@@ -54,15 +44,15 @@ To import the configuration file to your Ionic app, you will need to rename `aws
 }	
 ```
 
-Import the configuration file and load it in your `main.ts`, which is the entry point of your Angular application. 
+## Import and Configure Amplify
+
+Import the configuration file and configure Amplify in your `main.ts` file. 
 
 ```js
 import Amplify from 'aws-amplify';
 import amplify from './aws-exports';
 Amplify.configure(amplify);
 ```
-
-## Importing Amplify
 
 In your [home page component](https://angular.io/guide/bootstrapping) `src/app/app.module.ts`, you can import Amplify modules as following:
 
@@ -86,13 +76,9 @@ import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 
 NOTE: the service provider is optional. You can import the core categories normally i.e. `import { Analytic } from 'aws-amplify'` or create your own provider. The service provider does some work for you and exposes the categories as methods. The provider also manages and dispatches authentication state changes using observables which you can subscribe to within your components (see below).
 
-## Using Amplify Service
+## Using the AWS Amplify API
 
-AmplifyService is a provider in your Angular app, and it provides AWS Amplify core categories through dependency injection.
-
-### Using Dependency Injection
-
-To use *AmplifyService* with [dependency injection](https://angular.io/guide/dependency-injection-in-action), inject it into the constructor of any component or service, anywhere in your application.
+AmplifyService is a provider in your Angular app, and it provides AWS Amplify core categories through dependency injection. To use *AmplifyService* with [dependency injection](https://angular.io/guide/dependency-injection-in-action), inject it into the constructor of any component or service, anywhere in your application.
 
 ```js
 import { AmplifyService } from 'aws-amplify-angular';
@@ -107,8 +93,6 @@ constructor(
 }
 ...
 ```
-
-### Using AWS Amplify Categories
 
 You can access and work directly with AWS Amplify Categories via the built-in service provider:
 
@@ -129,13 +113,16 @@ export class AppComponent {
       this.amplifyService = amplify;
       
       /** now you can access category APIs:
+       *
        * this.amplifyService.auth();          // AWS Amplify Auth
        * this.amplifyService.analytics();     // AWS Amplify Analytics
        * this.amplifyService.storage();       // AWS Amplify Storage
        * this.amplifyService.api();           // AWS Amplify API
        * this.amplifyService.cache();         // AWS Amplify Cache
        * this.amplifyService.pubsub();        // AWS Amplify PubSub
-     **/
+       * this.amplifyService.interactions();  // AWS Amplify Interactions
+       *     
+      **/
   }
   
 }
@@ -143,7 +130,7 @@ export class AppComponent {
 
 You can access all [AWS Amplify Category APIs](https://aws-amplify.github.io/amplify-js/media/developer_guide) with *AmplifyService*. 
 
-### Usage Example: Subscribe to Authentication State Changes
+## Subscribe to Authentication State Changes
 
 Import AmplifyService into your component and listen for auth state changes:
 
@@ -169,7 +156,7 @@ constructor( public amplifyService: AmplifyService ) {
 }
 ```
 
-## Using View Components
+## Use View Components
 
 AWS Amplifies provides components that you can use in your Angular view templates. 
 

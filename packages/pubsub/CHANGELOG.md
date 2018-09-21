@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.12-unstable.0"></a>
+## [1.0.12-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.10...@aws-amplify/pubsub@1.0.12-unstable.0) (2018-09-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api:** send websocket disconnect errors thru observable and add paho client on vendor ([#1698](https://github.com/aws/aws-amplify/issues/1698)) ([72c6b4b](https://github.com/aws/aws-amplify/commit/72c6b4b))
+
+
+
+
+<a name="1.0.11"></a>
+## [1.0.11](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.10...@aws-amplify/pubsub@1.0.11) (2018-09-21)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
 <a name="1.0.10"></a>
 ## [1.0.10](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.9...@aws-amplify/pubsub@1.0.10) (2018-09-17)
 
