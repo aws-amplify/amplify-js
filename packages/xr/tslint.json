@@ -1,0 +1,72 @@
+
+{
+  "defaultSeverity": "error",
+  "plugins": [
+      "prettier"
+  ],
+  "extends": [
+      //"tslint-config-airbnb"
+  ],
+  "jsRules": {},
+  "rules": {
+      "prefer-const": true,
+      "max-line-length": [true, 120],
+      "no-empty-interface": true,
+      "no-var-keyword": true,
+      "object-literal-shorthand": true,
+      "no-eval": true,
+      "space-before-function-paren": [
+      true,
+      {
+          "anonymous": "never",
+          "named": "never"
+      }
+      ],
+      "no-parameter-reassignment": true,
+      "align": [
+          true,
+          "arguments",
+          "parameters"
+      ],
+      "no-duplicate-imports": true,
+      "one-variable-per-declaration": [
+          false,
+          "ignore-for-loop"
+      ],
+      "triple-equals": [
+          true,
+          "allow-null-check"
+      ],
+      "no-boolean-literal-compare": true,
+      "comment-format": [
+          true,
+          "check-space"
+      ],
+      "indent": [
+          true,
+          "space",
+          2
+      ],
+      "whitespace": [
+          false,
+          "check-branch",
+          "check-decl",
+          "check-operator",
+          "check-preblock"
+      ],
+      "eofline": true,
+      "variable-name": [
+          true,
+          "check-format", // 22.2
+          "allow-pascal-case",
+          "allow-snake-case",
+          "allow-leading-underscore"
+      ],
+      "semicolon": [
+          true,
+          "always",
+          "ignore-interfaces"
+      ]
+  },
+  "rulesDirectory": []
+}
