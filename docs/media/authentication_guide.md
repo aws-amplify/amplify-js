@@ -209,7 +209,7 @@ Auth.forgotPasswordSubmit(username, code, new_password)
 Either the phone number or the email address is required for account recovery. You can let the user verify those attributes by:
 ```js
 // To initiate the process of verifying the attribute like 'phone_number' or 'email'
-Auth.verifyCurrentUserAttributes(attr)
+Auth.verifyCurrentUserAttribute(attr)
 .then(() => {
      console.log('a verification code is sent');
 }).catch(e) => {
@@ -1063,7 +1063,7 @@ The *Greetings* component has two states: signedIn, and signedOut. To customize 
 
 ### Customize `withAuthenticator`
 
-The `withAuthenticator` HOC gives you some nice default authentication screens out-of-box. If you want to use your own components rather then provided default components, you can pass the list of customized components to `withAuthenticator`:
+The `withAuthenticator` HOC gives you some nice default authentication screens out-of-box. If you want to use your own components rather than the provided default components, you can pass the list of customized components to `withAuthenticator`:
 
 ```js
 import React, { Component } from 'react';
