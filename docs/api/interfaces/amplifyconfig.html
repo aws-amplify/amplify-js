@@ -874,9 +874,45 @@ img { max-width: 100%; }
 </style>
 </head>
 <body>
-<body>
-	{% include site-header.html %}
-</body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell logo">
+					<a href="/amplify-js/api">
+						<img src="/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+					</a>
+				</div>
+				<div class="table-cell" style="">
+					<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="https://aws-amplify.github.io/amplify-js/api#typedoc-main-index" class="tsd-widget menu no-caption">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
 <nav class="tsd-navigation secondary">
 	<ul>
 		<li class="current tsd-kind-interface">
@@ -897,13 +933,7 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="amplifyconfig.html#storage" class="tsd-kind-icon">Storage</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="amplifyconfig.html#xr" class="tsd-kind-icon">XR</a>
-				</li>
 			</ul>
-		</li>
-		<li class=" tsd-kind-interface">
-			<a href="icredentials.html" class="tsd-kind-icon">ICredentials</a>
 		</li>
 	</ul>
 </nav>
@@ -929,7 +959,6 @@ img { max-width: 100%; }
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="amplifyconfig.html#auth" class="tsd-kind-icon">Auth</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="amplifyconfig.html#cache" class="tsd-kind-icon">Cache</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="amplifyconfig.html#storage" class="tsd-kind-icon">Storage</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="amplifyconfig.html#xr" class="tsd-kind-icon">XR</a></li>
 						</ul>
 					</section>
 				</div>
@@ -943,7 +972,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">API<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/21058e35/packages/aws-amplify/src/Common/types/types.ts#L4">Common/types/types.ts:4</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/986a9ec4/packages/aws-amplify/src/Common/types/AmplifyConfig.ts#L4">Common/types/AmplifyConfig.ts:4</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -953,7 +982,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Analytics<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/21058e35/packages/aws-amplify/src/Common/types/types.ts#L2">Common/types/types.ts:2</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/986a9ec4/packages/aws-amplify/src/Common/types/AmplifyConfig.ts#L2">Common/types/AmplifyConfig.ts:2</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -963,7 +992,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Auth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/21058e35/packages/aws-amplify/src/Common/types/types.ts#L3">Common/types/types.ts:3</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/986a9ec4/packages/aws-amplify/src/Common/types/AmplifyConfig.ts#L3">Common/types/AmplifyConfig.ts:3</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -973,7 +1002,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/21058e35/packages/aws-amplify/src/Common/types/types.ts#L6">Common/types/types.ts:6</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/986a9ec4/packages/aws-amplify/src/Common/types/AmplifyConfig.ts#L6">Common/types/AmplifyConfig.ts:6</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -983,17 +1012,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">Storage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/21058e35/packages/aws-amplify/src/Common/types/types.ts#L5">Common/types/types.ts:5</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="xr" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> XR</h3>
-				<div class="tsd-signature tsd-kind-icon">XR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/21058e35/packages/aws-amplify/src/Common/types/types.ts#L7">Common/types/types.ts:7</a></li>
+						<li>Defined in <a href="https://github.com/mbahar/aws-amplify/blob/986a9ec4/packages/aws-amplify/src/Common/types/AmplifyConfig.ts#L5">Common/types/AmplifyConfig.ts:5</a></li>
 					</ul>
 				</aside>
 			</section>
