@@ -2,10 +2,9 @@ import PubSub from '../src/PubSub';
 import { MqttOverWSProvider, AWSIoTProvider } from '../src/Providers';
 // import Amplify from '../../src/';
 import { Credentials } from '@aws-amplify/core';
-import { Client } from 'paho-mqtt';
+import { Client } from '../src/vendor/paho-mqtt';
 jest.mock('paho-mqtt');
 
-global.Paho = global.Paho || { MQTT: { Client } };
 
 const credentials = {
     accessKeyId: 'accessKeyId',
