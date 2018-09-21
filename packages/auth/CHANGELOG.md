@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.3-unstable.0"></a>
+## [1.2.3-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.2-unstable.3...@aws-amplify/auth@1.2.3-unstable.0) (2018-09-21)
+
+
+### Bug Fixes
+
+* bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
+
+
+
+
 <a name="1.2.2"></a>
 ## [1.2.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/auth@1.2.1...@aws-amplify/auth@1.2.2) (2018-09-21)
 
