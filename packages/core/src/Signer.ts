@@ -307,8 +307,8 @@ const signUrl = function(urlToSign: String, accessInfo: any, serviceInfo?: any, 
         'X-Amz-Algorithm': DEFAULT_ALGORITHM,
         'X-Amz-Credential': [accessInfo.access_key, credentialScope].join('/'),
         'X-Amz-Date': now.substr(0, 16),
-        ...(sessionTokenRequired && { 'X-Amz-Security-Token': `${accessInfo.session_token}` }),
-        ...(expiration && { 'X-Amz-Expires': `${expiration}` }),
+        ...(sessionTokenRequired ? { 'X-Amz-Security-Token': `${accessInfo.session_token}` } : {}),
+        ...(expiration ? { 'X-Amz-Expires': `${expiration}` } : {}),
         'X-Amz-SignedHeaders': Object.keys(signedHeaders).join(','),
     };
 
