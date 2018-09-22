@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.15-unstable.1"></a>
+## [1.0.15-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.15-unstable.0...@aws-amplify/api@1.0.15-unstable.1) (2018-09-22)
+
+
+### Bug Fixes
+
+* **pubsub,api-test:** Do not disconnect active mqtt connections when establishing new ones. ([#1649](https://github.com/aws/aws-amplify/issues/1649)) ([b19d688](https://github.com/aws/aws-amplify/commit/b19d688))
+
+
+
+
 <a name="1.0.15-unstable.0"></a>
 ## [1.0.15-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.14...@aws-amplify/api@1.0.15-unstable.0) (2018-09-22)
 
