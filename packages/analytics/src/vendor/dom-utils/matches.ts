@@ -2,7 +2,7 @@
  * Copyright (c) 2017, Philip Walton <philip@philipwalton.com>
  */
 
-const proto = window['Element'].prototype;
+const proto = window && window['Element']? window['Element'].prototype: null;
 const nativeMatches = proto.matches ||
       proto.matchesSelector ||
       proto.webkitMatchesSelector ||
