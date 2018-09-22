@@ -1,9 +1,12 @@
+/* eslint-disable */
 import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import ForgotPassword from '../src/components/authenticator/ForgotPassword.vue';
+import AmplifyEventBus from '../src/events/AmplifyEventBus';
 import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
+/* eslint-enable */
 
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
@@ -22,6 +25,7 @@ describe('ForgotPassword', () => {
 
   let wrapper;
   let header;
+  let testState;
   const mockSubmit = jest.fn();
   const mockVerify = jest.fn();
   const mockSignIn = jest.fn();
@@ -30,6 +34,7 @@ describe('ForgotPassword', () => {
   describe('...when it is mounted without props...', () => {
     beforeEach(() => {
       wrapper = shallowMount(ForgotPassword);
+      testState = null;
     });
 
     it('...it should use the amplify plugin with passed modules', () => {
@@ -62,6 +67,34 @@ describe('ForgotPassword', () => {
 
     it('...have default options', () => {
       expect(wrapper.vm.options.header).toEqual('Forgot Password');
+    });
+
+    it('...should call Auth.forgotPassword when submit method is called', () => {
+      wrapper.vm.submit();
+      expect(wrapper.vm.$Amplify.Auth.forgotPassword).toBeCalledWith(wrapper.vm.username);
+    });
+
+    it('...should set the local error variable when setError is called', () => {
+      wrapper.vm.setError('I messed up');
+      expect(wrapper.vm.error).toEqual('I messed up');
+    });
+
+    it('...should call Auth.forgotPasswordSubmit when verify method is called', () => {
+      wrapper.vm.verify();
+      expect(wrapper.vm.$Amplify.Auth.forgotPasswordSubmit).toBeCalledWith(wrapper.vm.username,
+        wrapper.vm.password,
+        wrapper.vm.code);
+    });
+
+    it('...should emit authState when signIn method called', () => {
+      testState = 0;
+      AmplifyEventBus.$on('authState', (val) => {
+        if (val === 'signedOut') {
+          testState = 1;
+        }
+      });
+      wrapper.vm.signIn();
+      expect(testState).toEqual(1);
     });
   });
 

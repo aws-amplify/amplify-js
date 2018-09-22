@@ -1,9 +1,12 @@
+/* eslint-disable */
 import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import ConfirmSignUp from '../src/components/authenticator/ConfirmSignUp.vue';
+import AmplifyEventBus from '../src/events/AmplifyEventBus';
 import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
+/* eslint-enable */
 
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
@@ -23,6 +26,7 @@ describe('ConfirmSignUp', () => {
   let wrapper;
   let header;
   let username;
+  let testState;
   const mockConfirm = jest.fn();
   const mockResend = jest.fn();
   const mockSignIn = jest.fn();
@@ -31,6 +35,7 @@ describe('ConfirmSignUp', () => {
   describe('...when it is mounted without props...', () => {
     beforeEach(() => {
       wrapper = shallowMount(ConfirmSignUp);
+      testState = null;
     });
 
     it('...it should use the amplify plugin with passed modules', () => {
@@ -68,6 +73,28 @@ describe('ConfirmSignUp', () => {
 
     it('...should set the error property when a valid username is not received', () => {
       expect(wrapper.vm.error).toEqual('Valid username not received.');
+    });
+
+    it('...should call Auth.confirmSignUp when confirm method is called', () => {
+      wrapper.vm.confirm();
+      expect(wrapper.vm.$Amplify.Auth.confirmSignUp).toBeCalled();
+    });
+
+    it('...should call Auth.resendSignUp when confirm method is called', () => {
+      wrapper.vm.resend();
+      expect(wrapper.vm.$Amplify.Auth.resendSignUp).toBeCalledWith(wrapper.vm.options.username);
+    });
+
+
+    it('...should emit authState when signIn method called', () => {
+      testState = 0;
+      AmplifyEventBus.$on('authState', (val) => {
+        if (val === 'signedOut') {
+          testState = 1;
+        }
+      });
+      wrapper.vm.signIn();
+      expect(testState).toEqual(1);
     });
   });
 

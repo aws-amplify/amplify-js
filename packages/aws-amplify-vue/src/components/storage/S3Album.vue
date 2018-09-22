@@ -54,7 +54,7 @@ export default {
   methods: {
     getImages() {
       if (!this.path) { 
-        setError('Album path not provided');
+        this.setError('Album path not provided');
         return; 
       }
       const that = this;
@@ -68,7 +68,7 @@ export default {
     },
     pushImage(img) {
       if (!img) {
-        setError('Image path not provided');
+        this.setError('Image path not provided');
         return;
       }
       this.items.push({key: 123, path: img});

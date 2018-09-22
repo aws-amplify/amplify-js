@@ -67,7 +67,8 @@ export default {
       }
       this.user = val;
       return this.displayMap = this.updateDisplayMap('signedIn');
-    });
+    })
+    .catch(e => this.setError(e))
   },
   methods: {
     updateDisplayMap: state => {

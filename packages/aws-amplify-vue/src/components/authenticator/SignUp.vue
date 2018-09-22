@@ -13,10 +13,10 @@
 
 <template>
   <div v-bind:class="amplifyUI.formSection">
-    <div v-bind:class="amplifyUI.sectionHeader">{{this.config.header}}</div>
+    <div v-bind:class="amplifyUI.sectionHeader">{{this.options.header}}</div>
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField" 
-          v-for="signUpField in orderBy(config.signUpFields, 'displayOrder')" 
+          v-for="signUpField in orderBy(this.options.signUpFields, 'displayOrder')" 
           :signUpField="signUpField" 
           v-bind:key="signUpField.key"
         >
@@ -72,16 +72,12 @@ export default {
   props: ['signUpConfig'],
   data () {
     return {
-      username: '',
-      password: '',
-      email: '',
       country: 'USA (+1)',
       countryCode: '1',
-      phone_number: '',
       countries,
       amplifyUI: AmplifyUI,
+      error: '',
       logger: {},
-      config: {}
     }
   },
   computed: {
@@ -118,7 +114,7 @@ export default {
           }
         ]
       }
-      
+
       if (this.signUpConfig && this.signUpConfig.signUpFields && this.signUpConfig.signUpFields.length > 0) {
         defaults.signUpFields.forEach((f, i) => {
           const matchKey = this.signUpConfig.signUpFields.findIndex((d) => {
@@ -145,17 +141,18 @@ export default {
           let index = this.signUpConfig.signUpFields.findIndex(y => y.key === m.key);
           this.signUpConfig.signUpFields[index] = m;
         })
-
-        return Object.assign(defaults, this.signUpConfig || {})
-      } else {
-        return defaults;
+      } else if (this.signUpConfig &&
+          this.signUpConfig.signUpFields &&
+          (!Array.isArray(this.signUpConfig.signUpFields) || this.signUpConfig.signUpFields.length === 0)
+        ) {
+        delete this.signUpConfig.signUpFields;
       }
 
+      return Object.assign(defaults, this.signUpConfig || {})
     }
   },
   mounted() {
     this.logger = new this.$Amplify.Logger(this.$options.name);
-    this.config = Object.assign({}, this.options);
   },
   watch: {
     /* 
@@ -176,7 +173,7 @@ export default {
         attributes: {},
       };
 
-      this.config.signUpFields.forEach((e) => {
+      this.options.signUpFields.forEach((e) => {
         if (e.key === 'username') {
           user.username = e.value
         } else if (e.key === 'password') {

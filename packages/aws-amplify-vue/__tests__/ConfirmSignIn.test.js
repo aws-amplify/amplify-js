@@ -1,9 +1,12 @@
+/* eslint-disable */
 import Vue from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import * as AmplifyUI from '@aws-amplify/ui';
 import ConfirmSignIn from '../src/components/authenticator/ConfirmSignIn.vue';
+import AmplifyEventBus from '../src/events/AmplifyEventBus';
 import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
+/* eslint-enable */
 
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
@@ -26,6 +29,7 @@ describe('ConfirmSignIn', () => {
   const mockSubmit = jest.fn();
   const mockSignIn = jest.fn();
   const mockSetError = jest.fn();
+  let testState;
 
   describe('...when it is mounted without props...', () => {
     beforeEach(() => {
@@ -67,6 +71,25 @@ describe('ConfirmSignIn', () => {
 
     it('...should set the error property when a valid user is not received', () => {
       expect(wrapper.vm.error).toEqual('Valid user not received.');
+    });
+
+    it('...should call Auth.verifyCurrentUserAttribute when send function is called', () => {
+      wrapper.vm.send();
+      expect(AmplifyMocks.Auth.verifyCurrentUserAttribute).toHaveBeenCalled();
+    });
+
+    it('...should call Auth.confirmSignIn when submit function is called', () => {
+      wrapper.vm.submit();
+      expect(AmplifyMocks.Auth.confirmSignIn).toHaveBeenCalled();
+    });
+
+    it('...should call emit the authState event when signIn function is called', () => {
+      AmplifyEventBus.$on('authState', () => {
+        testState = 'eventsAreEmitting';
+      });
+      expect(testState).toBeUndefined();
+      wrapper.vm.signIn();
+      expect(testState).toEqual('eventsAreEmitting');
     });
   });
 

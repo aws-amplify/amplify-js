@@ -52,8 +52,8 @@
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">
       <span v-bind:class="amplifyUI.sectionFooterPrimaryContent">
-        <button v-bind:class="amplifyUI.button" v-on:click="setMFA" v-if="!displayTotpSetup">Set MFA</button>
-        <button v-bind:class="amplifyUI.button" v-on:click="verifyTotpToken" v-if="displayTotpSetup">Verify Token</button>
+        <button id="setMfa" v-bind:class="amplifyUI.button" v-on:click="setMFA" v-if="!displayTotpSetup">Set MFA</button>
+        <button id="verify" v-bind:class="amplifyUI.button" v-on:click="verifyTotpToken" v-if="displayTotpSetup">Verify Token</button>
       </span>
       <span v-bind:class="amplifyUI.sectionFooterSecondaryContent">
         <a v-bind:class="amplifyUI.a" v-on:click="cancel">Cancel</a>
