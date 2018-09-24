@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.4"></a>
+## [2.0.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.4-unstable.0...aws-amplify-react@2.0.4) (2018-09-21)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.0.4-unstable.0"></a>
+## [2.0.4-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.3-unstable.0...aws-amplify-react@2.0.4-unstable.0) (2018-09-21)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.0.3"></a>
+## [2.0.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.2...aws-amplify-react@2.0.3) (2018-09-21)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.0.3-unstable.0"></a>
+## [2.0.3-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.2...aws-amplify-react@2.0.3-unstable.0) (2018-09-20)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** Fix import statement ([#1695](https://github.com/aws/aws-amplify/issues/1695)) ([07bdfc2](https://github.com/aws/aws-amplify/commit/07bdfc2)), closes [#1482](https://github.com/aws/aws-amplify/issues/1482) [#1484](https://github.com/aws/aws-amplify/issues/1484)
+
+
+
+
+<a name="2.0.2"></a>
+## [2.0.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.1...aws-amplify-react@2.0.2) (2018-09-17)
+
+
+### Bug Fixes
+
+* **@aws-amplify-react/auth:** handle required attributes in NEW_PASSWORD_REQUIRED challenge ([5ee6288](https://github.com/aws/aws-amplify/commit/5ee6288))
+* **aws-amplify-react:** fix PhotoPicker preview ([db3331e](https://github.com/aws/aws-amplify/commit/db3331e))
+* **aws-amplify-react:** fix the phone number format in sign up component ([a21d486](https://github.com/aws/aws-amplify/commit/a21d486))
+
+
+
+
+<a name="2.0.1"></a>
+## [2.0.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.1-unstable.0...aws-amplify-react@2.0.1) (2018-09-09)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.0.1-unstable.0"></a>
+## [2.0.1-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.0...aws-amplify-react@2.0.1-unstable.0) (2018-09-07)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** fix the break change of federatedSignIn ([5ca239c](https://github.com/aws/aws-amplify/commit/5ca239c))
+
+
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@1.0.7-unstable.26...aws-amplify-react@2.0.0) (2018-08-28)
 
