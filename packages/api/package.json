@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api",
-  "version": "1.0.11-beta.5",
+  "version": "1.0.11-beta.6",
   "description": "Api category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -50,7 +50,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/auth": "^1.1.2-beta.5",
+    "@aws-amplify/auth": "^1.1.2-beta.6",
     "@aws-amplify/cache": "^1.0.9-beta.0",
     "@aws-amplify/core": "^1.0.9-beta.0",
     "@types/zen-observable": "^0.5.3",
