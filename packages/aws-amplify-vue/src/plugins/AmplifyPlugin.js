@@ -17,7 +17,7 @@ const AmplifyPlugin = {
       }
     });
     if (missingModules.length > 0) {
-      throw new Error(`AmplifyPlugin installation method did not receive required modules: ${missingModules.join(', ')}.`); //eslint-disable-line
+      return new Error(`AmplifyPlugin installation method did not receive required modules: ${missingModules.join(', ')}.`); //eslint-disable-line
     }
 
     Vue.prototype.$Amplify = AmplifyModules;

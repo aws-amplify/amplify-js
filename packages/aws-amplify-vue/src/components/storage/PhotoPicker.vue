@@ -50,7 +50,7 @@ export default {
     options() {
       const defaults = {
         header: 'File Upload',
-        title: 'Upload.',
+        title: 'Upload',
         accept: '*/*',
       }
       return Object.assign(defaults, this.photoPickerConfig || {})

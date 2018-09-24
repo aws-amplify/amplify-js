@@ -1,7 +1,7 @@
 import Vue from 'vue';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils'; // eslint-disable-line
 import QrcodeVue from 'qrcode.vue'; // eslint-disable-line
-import * as AmplifyUI from '@aws-amplify/ui';
+import * as AmplifyUI from '@aws-amplify/ui'; // eslint-disable-line
 import SetMFA from '../src/components/authenticator/SetMFA.vue';
 import { AmplifyPlugin } from '../src/plugins/AmplifyPlugin';
 import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
@@ -72,6 +72,38 @@ describe('SetMFA', () => {
     it('...have default options', () => {
       expect(wrapper.vm.options.header).toEqual('Multifactor Authentication Preference');
     });
+    it('...should call Auth.setPreferredMFA when setMFA function is called', () => {
+      wrapper.vm.setMFA();
+      expect(wrapper.vm.$Amplify.Auth.setPreferredMFA).toHaveBeenCalledTimes(1);
+    });
+    it('...should call Auth.verifyTotpToken when verifyTotpToken function is called', () => {
+      wrapper.vm.verifyTotpToken();
+      expect(wrapper.vm.$Amplify.Auth.verifyTotpToken).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('...whent it is mounted with props but methods unmocked', () => {
+    beforeEach(() => {
+      wrapper = shallowMount(SetMFA, {
+        propsData: {
+          mfaConfig: {
+            header: testText,
+            mfaDescription: testText,
+            tokenInstructions: testText,
+            smsDescription: testText,
+            totpDescription: testText,
+            noMfaDescription: testText,
+            mfaTypes: [],
+          },
+        },
+      });
+    });
+    it('...should call Auth.setupTOTP when setup function is called', async () => {
+      wrapper.vm.setup();
+      let testToken = `otpauth://totp/AWSCognito:${wrapper.vm.user.username}?secret=gibberish&issuer=AWSCognito`;
+      await expect(wrapper.vm.$Amplify.Auth.setupTOTP).toBeCalledWith(wrapper.vm.user);
+      expect(wrapper.vm.token).toEqual(testToken);
+    });
   });
 
   describe('...when it is mounted with props...', () => {
@@ -130,15 +162,43 @@ describe('SetMFA', () => {
       expect(mockSetUser).toHaveBeenCalled();
     });
 
-    // it('...should call setMFA on setMFA button click', () => {
-    //   const el = wrapper.find('#ampliyfSetMFA');
-    //   el.trigger('click');
-    //   expect(mockSetMFA).toHaveBeenCalled();
-    // });
+    it('...should display setMFA button if !displayTotpSetup', () => {
+      const el = wrapper.find('#setMfa').exists;
+      expect(el).toBeTruthy();
+    });
 
-    it('...verifyTotpToken should not exist initially if displayTotpSetup is not true', () => {
-      const el = wrapper.find('#amplifyVerifyToken').exists();
+    it('...should not display setMFA button if displayTotpSetup', () => {
+      wrapper.vm.token = 'token';
+      wrapper.vm.displayTotpSetup = true;
+      const el = wrapper.find('#setMFA').element;
       expect(el).toBeFalsy();
+    });
+
+    it('...should call setMFA on setMFA button click', () => {
+      const el = wrapper.find(`.${AmplifyUI.sectionFooterPrimaryContent} > button`);
+      el.trigger('click');
+      expect(mockSetMFA).toHaveBeenCalled();
+    });
+
+
+    it('...should display verifyTotpToken button if displayTotpSetup', () => {
+      wrapper.vm.token = 'token';
+      wrapper.vm.displayTotpSetup = true;
+      const el = wrapper.find('#verify').exists;
+      expect(el).toBeTruthy();
+    });
+
+    it('...should not display verifyTotpToken button if !displayTotpSetup', () => {
+      const el = wrapper.find('#verify').element;
+      expect(el).toBeFalsy();
+    });
+
+    it('...should call verifyTotpToken on verifyTotpToken button click', () => {
+      wrapper.vm.token = 'token';
+      wrapper.vm.displayTotpSetup = true;
+      const el = wrapper.find('#verify');
+      el.trigger('click');
+      expect(mockVerifyTotpToken).toHaveBeenCalled();
     });
 
     it('...setup should be called when mfaPreference changes', () => {
@@ -146,23 +206,16 @@ describe('SetMFA', () => {
       expect(mockSetup).toHaveBeenCalled();
     });
 
-    // it('...verifyTotpToken and Qrcode element should exist if displayTotpSetup is true', () => {
-    //   wrapper.vm.token = 'testtoken';
-    //   wrapper.vm.displayTotpSetup = true;
-    //   wrapper.vm.mfaPreference = 'TOTP';
-    //   const el = wrapper.find('#amplifyVerifyToken').exists();
-    //   const qr = wrapper.find(`.${AmplifyUI.totpQrcode}`).exists();
-    //   expect(el).toBeTruthy();
-    //   expect(qr).toBeTruthy();
-    // });
+    it('...Qrcode element should not exist if displayTotpSetup is false', () => {
+      const qr = wrapper.find(`.${AmplifyUI.totpQrcode}`).exists();
+      expect(qr).toBeFalsy();
+    });
 
-    // it('...verifyTotpToken should be called when verifyToken button is clicked', () => {
-    //   wrapper.vm.token = 'testtoken';
-    //   wrapper.vm.displayTotpSetup = true;
-    //   wrapper.vm.mfaPreference = 'TOTP';
-    //   const el = wrapper.find('#amplifyVerifyToken');
-    //   el.trigger('click');
-    //   expect(mockVerifyTotpToken).toHaveBeenCalled();
-    // });
+    it('...vQrcode element should exist if displayTotpSetup is true', () => {
+      wrapper.vm.token = 'testtoken';
+      wrapper.vm.displayTotpSetup = true;
+      const qr = wrapper.find(`.${AmplifyUI.totpQrcode}`).exists();
+      expect(qr).toBeTruthy();
+    });
   });
 });
