@@ -107,13 +107,6 @@ export default {
       }
       return Object.assign(defaults, this.mfaConfig || {})
     },
-    cancelHandler() {
-      if (this.mfaConfig && this.mfaConfig.cancelCB ) {
-        return this.mfaConfig.cancelCB.bind(this.$parent);
-      } else {
-        return AmplifyEventBus.$emit('authState', 'hideMFA')
-      }
-    }
   },
   watch: {
     mfaPreference(value) {
@@ -172,7 +165,7 @@ export default {
       this.logger.error(this.error);
     },
     cancel: function() {
-      return this.cancelHandler();
+      return this.options.cancelHandler ? this.options.cancelHandler() : null;
     }
   }
 }

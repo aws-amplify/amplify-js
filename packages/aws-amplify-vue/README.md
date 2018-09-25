@@ -249,14 +249,15 @@ Config:
 <amplify-set-mfa v-bind:mfaConfig="mfaConfig"></amplify-set-mfa>
 ```
 
-| Attribute         | Type   | Description                                                         | Default                                                                                                        | Possible Values       | Required |
-|-------------------|--------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|-----------------------|----------|
-| mfaDescription    | string | description of MFA for your users                                   | AWS Multi-Factor Authentication (MFA) adds an extra layer of protection on top of your user name and password. | N/A                   | no       |
-| mfaTypes          | array  | an array of MFA types which will result in a radio button selection | []                                                                                                             | 'SMS', 'TOTP', 'None' | no       |
-| tokenInstructions | string | instructions for decoding the QR code used with TOTP                | 'Scan the QR Code with your phone camera or authentication app to get the MFA code.'                           | N/A                   | no       |
-| smsDescription    | string | label for SMS radio button                                          | 'SMS text messaging (receive a code on your mobile device)'                                                    | N/A                   | no       |
-| totpDescription   | string | label for TOTP radio button                                         | 'One-time password (use a QR code and MFA app to save a token on your mobile device)'                          | N/A                   | no       |
-| noMfaDescription  | string | label for 'None' radio button                                       | 'Do not enable MFA'                                                                                            | N/A                   | no       |
+| Attribute         | Type     | Description                                                         | Default                                                                                                        | Possible Values       | Required |
+|-------------------|----------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|-----------------------|----------|
+| mfaDescription    | string   | description of MFA for your users                                   | AWS Multi-Factor Authentication (MFA) adds an extra layer of protection on top of your user name and password. | N/A                   | no       |
+| mfaTypes          | array    | an array of MFA types which will result in a radio button selection | []                                                                                                             | 'SMS', 'TOTP', 'None' | no       |
+| tokenInstructions | string   | instructions for decoding the QR code used with TOTP                | 'Scan the QR Code with your phone camera or authentication app to get the MFA code.'                           | N/A                   | no       |
+| smsDescription    | string   | label for SMS radio button                                          | 'SMS text messaging (receive a code on your mobile device)'                                                    | N/A                   | no       |
+| totpDescription   | string   | label for TOTP radio button                                         | 'One-time password (use a QR code and MFA app to save a token on your mobile device)'                          | N/A                   | no       |
+| noMfaDescription  | string   | label for 'None' radio button                                       | 'Do not enable MFA'                                                                                            | N/A                   | no       |
+| cancelHandler     | function | function called when user clicks on 'Cancel' button                 |  None                                                                                                          | N/A                   | no       |
 
 Events: None
 
