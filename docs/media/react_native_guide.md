@@ -21,7 +21,6 @@ Install following npm packages into your React Native app.
 
 ```bash
 $ npm install aws-amplify
-$ npm install aws-amplify-react
 $ npm install aws-amplify-react-native
 ```
 

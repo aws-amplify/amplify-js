@@ -29,3 +29,26 @@ export interface EventAttributes {
 export interface EventMetrics {
     [key: string]: number;
 }
+
+export interface pageViewTrackOpts {
+    enable: boolean,
+    type?: string
+    eventName?: string,
+    provider?: string,
+    attributes?: EventAttributes | Function,
+    getUrl?: Function
+}
+
+export interface EventTrackOpts {
+    enable: boolean,
+    events?: Array<string>,
+    selectorPrefix?: string,
+    provider?: string,
+    attributes?: EventAttributes | Function
+}
+
+export interface SessionTrackOpts {
+    enable: boolean,
+    attributes?: EventAttributes | Function,
+    provider?: string,
+}
