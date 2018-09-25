@@ -3,6 +3,115 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.15-unstable.3"></a>
+## [1.0.15-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.15-unstable.2...@aws-amplify/api@1.0.15-unstable.3) (2018-09-24)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.15-unstable.2"></a>
+## [1.0.15-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.15-unstable.1...@aws-amplify/api@1.0.15-unstable.2) (2018-09-22)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.15-unstable.1"></a>
+## [1.0.15-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.15-unstable.0...@aws-amplify/api@1.0.15-unstable.1) (2018-09-22)
+
+
+### Bug Fixes
+
+* **pubsub,api-test:** Do not disconnect active mqtt connections when establishing new ones. ([#1649](https://github.com/aws/aws-amplify/issues/1649)) ([b19d688](https://github.com/aws/aws-amplify/commit/b19d688))
+
+
+
+
+<a name="1.0.15-unstable.0"></a>
+## [1.0.15-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.14...@aws-amplify/api@1.0.15-unstable.0) (2018-09-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api:** Content-Type header on init options ([#1720](https://github.com/aws/aws-amplify/issues/1720)) ([dbe37e0](https://github.com/aws/aws-amplify/commit/dbe37e0))
+
+
+
+
+<a name="1.0.14"></a>
+## [1.0.14](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.14-unstable.0...@aws-amplify/api@1.0.14) (2018-09-21)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.14-unstable.0"></a>
+## [1.0.14-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.13-unstable.3...@aws-amplify/api@1.0.14-unstable.0) (2018-09-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api:** send websocket disconnect errors thru observable and add paho client on vendor ([#1698](https://github.com/aws/aws-amplify/issues/1698)) ([72c6b4b](https://github.com/aws/aws-amplify/commit/72c6b4b))
+* bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
+
+
+
+
+<a name="1.0.13"></a>
+## [1.0.13](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.12...@aws-amplify/api@1.0.13) (2018-09-21)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.13-unstable.3"></a>
+## [1.0.13-unstable.3](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.13-unstable.2...@aws-amplify/api@1.0.13-unstable.3) (2018-09-20)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.13-unstable.2"></a>
+## [1.0.13-unstable.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.13-unstable.1...@aws-amplify/api@1.0.13-unstable.2) (2018-09-20)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.13-unstable.1"></a>
+## [1.0.13-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.13-unstable.0...@aws-amplify/api@1.0.13-unstable.1) (2018-09-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.13-unstable.0"></a>
+## [1.0.13-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.12...@aws-amplify/api@1.0.13-unstable.0) (2018-09-17)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/api
+
+<a name="1.0.12"></a>
+## [1.0.12](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.11...@aws-amplify/api@1.0.12) (2018-09-17)
+
+
+### Bug Fixes
+
+* **pubsub,api,appsync:** Use subscriber-id header (AppSync subscription) ([#1618](https://github.com/aws/aws-amplify/issues/1618)) ([03f2517](https://github.com/aws/aws-amplify/commit/03f2517))
+
+
+
+
 <a name="1.0.11"></a>
 ## [1.0.11](https://github.com/aws/aws-amplify/compare/@aws-amplify/api@1.0.10...@aws-amplify/api@1.0.11) (2018-09-12)
 

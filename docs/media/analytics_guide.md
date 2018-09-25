@@ -100,6 +100,31 @@ Amplify.configure({
 User session data is automatically collected unless you disabled analytics. To see the results visit the [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
 {: .callout .callout--info}
 
+#### Update your IAM Policy:
+
+Note: need to be done in '@aws-amplify/analytics: ^1.2.x' or higher
+
+AWS Pinpoint has updated their service and so you need to update your IAM policy in order to continue using the `record` API.
+The Updated IAM policy for Pinpoint would be like:
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "mobiletargeting:UpdateEndpoint",
+                // to use the updated Pinpoint API
+                "mobiletargeting:PutEvents"
+            ],
+            "Resource": [
+                "arn:aws:mobiletargeting:*:${accountID}:apps/${appId}*"
+            ]
+        }
+    ]
+}
+```
+
 ### Working with the API 
 
 #### Recording Custom Events
@@ -317,8 +342,6 @@ Analytics.configure();
 ```
 
 ## Using Analytics Auto Tracking
-
-Note: this feature is not published yet. You can try it using the unstable version: ```npm install aws-amplify@unstable```.
 
 Analytics Auto Tracking helps you to automatically track user behaviors like sessions start/stop, page view change and web events like clicking, mouseover.
 

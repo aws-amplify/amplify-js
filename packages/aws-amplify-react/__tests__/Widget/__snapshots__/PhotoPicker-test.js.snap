@@ -65,14 +65,7 @@ exports[`PhotoPicker test render test render with previewSrc 1`] = `
     Photos
   </SectionHeader>
   <SectionBody>
-    <img
-      src={true}
-      style={
-        Object {
-          "maxWidth": "100%",
-        }
-      }
-    />
+    The image has been selected
   </SectionBody>
   <Picker
     accept="image/*"
