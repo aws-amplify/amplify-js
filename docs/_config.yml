@@ -16,9 +16,7 @@
 title: AWS Amplify Developer Documentation
 email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
+  AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com 
 github:
@@ -84,7 +82,7 @@ amplify:
             logo:
                 text: AWS Amplify is supported by Amazon Web Services
                 image: true
-            copyright: © 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+            copyright: © 2018-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
         social_list:
             - network_name: gitter
               profile_url: 'https://gitter.im/AWS-Amplify/Lobby/'
@@ -139,28 +137,48 @@ category_list:
     #       url: '/media/building-ionic-4-apps' 
     #       icon: '/images/icons/Misc/Present.svg'
     - category: Tutorials
-      title: Tutorials
+      title: Framework Support
       excerpt: 
       base_url: '/media/react_guide'
       subs:
-        - title: React
+        - title: React & React Native
           excerpt: #'A step-by-step tutorial for learning how to build a cloud-enabled React Web app with AWS Amplify.<br/><b>30 min to complete</b>'
           url: '/media/react_guide'
           icon: '/images/icons/Misc/Present.svg'
-        - title: React Native
-          excerpt: #'A step-by-step tutorial for learning how to build a cloud-enabled mobile app with React Native and AWS Amplify.<br/><b>30 min to complete</b>'
-          url: '/media/react_native_guide' 
-          icon: '/images/icons/Misc/Present.svg'
-        - title: Angular
-          excerpt: #"Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
-          url: '/media/angular_guide' 
-          icon: '/images/icons/Misc/Present.svg'
-        - title: Ionic
+        - title: Angular & Ionic
           excerpt: #"Learn to build a cloud enabled 'Notes App' with Ionic 4 and AWS Amplify <br/><b>45 min to complete</b>"
           url: '/media/ionic_guide' 
           icon: '/images/icons/Misc/Present.svg'
+        - title: Vue
+          excerpt: #"Learn to build a cloud enabled App with Vue.js and AWS Amplify <br/><b>45 min to complete</b>"
+          url: '/media/vue_guide' 
+          icon: '/images/icons/Misc/Present.svg'
+    - category: Toolchain
+      title: Toolchain
+      excerpt: Better developer experience when building and deploying your apps.
+      base_url: '/media/hosting_guide'
+      subs:
+        - title: CLI
+          excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
+          cta: Read more
+          class: aws-icon-ps-60-network-nodes
+          url: '/media/cli_guide'   
+          icon: '/images/icons/Misc/Tool.svg'
+          services:
+              - title: Amazon CloudFront
+                url: https://aws.amazon.com/cloudfront/
+        - title: UI Components
+          excerpt: UI excerpt
+          url: '/media/ui_guide'
+          icon: '/images/icons/Misc/Present.svg'
+        - title: VS Code Extension 
+          excerpt: Code snippets for AWS Amplify in Visual Studio Code.
+          cta: Read more
+          class: aws-icon-ps-60-network-nodes
+          url_external: 'https://marketplace.visualstudio.com/items?itemName=aws-amplify.aws-amplify-vscode'   
+          icon: '/images/icons/Misc/Present.svg'
     - category: Categories
-      title: Categories
+      title: API Guides
       excerpt: Add cloud features to your app quickly using our toolchain and declarative APIs.
       base_url: '/media/analytics_guide'
       subs:
@@ -241,11 +259,25 @@ category_list:
           services:
               - title: Amazon S3
                 url: https://aws.amazon.com/s3/
+        - title: XR 
+          excerpt: Build AR/VR enabled web applications.
+          cta: Read more
+          class: aws-icon-ps-60-file-box
+          url: '/media/xr_guide'   
+          icon: '/images/icons/Misc/Cloud.svg'
+          services:
+              - title: Amazon S3
+                url: https://aws.amazon.com/s3/
     - category: Utilities
       title: Utilities
       excerpt: Common programming utilities that you can use with your app.
       base_url: '/media/cache_guide'
       subs:
+        - title: Service Worker 
+          excerpt: A utility class to work with PWA and Service Worker APIs. 
+          cta: Read more
+          url: '/media/service_workers_guide'   
+          icon: '/images/icons/Misc/Gear.svg'
         - title: Cache 
           excerpt: A generic LRU cache for storing data with priority and expiration settings. 
           cta: Read more
@@ -265,43 +297,7 @@ category_list:
           excerpt: Console logging utility.
           cta: Read more
           url: '/media/logger_guide'  
-          icon: '/images/icons/Misc/Gear.svg'
-        - title: Service Worker 
-          excerpt: A utility class to work with PWA and Service Worker APIs. 
-          cta: Read more
-          url: '/media/service_workers_guide'   
           icon: '/images/icons/Misc/Gear.svg'   
-          
-    - category: Toolchain
-      title: Toolchain
-      excerpt: Better developer experience when building and deploying your apps.
-      base_url: '/media/hosting_guide'
-      subs:
-        - title: Hosting 
-          excerpt: Deploy your Web app or static website for global CDN distribution with media streaming support.
-          cta: Read more
-          class: aws-icon-ps-60-network-nodes
-          url: '/media/hosting_guide'   
-          icon: '/images/icons/Misc/Tool.svg'
-          services:
-              - title: Amazon CloudFront
-                url: https://aws.amazon.com/cloudfront/
-        - title: VS Code Extension 
-          excerpt: Code snippets for AWS Amplify in Visual Studio Code.
-          cta: Read more
-          class: aws-icon-ps-60-network-nodes
-          url_external: 'https://marketplace.visualstudio.com/items?itemName=aws-amplify.aws-amplify-vscode'   
-          icon: '/images/icons/Misc/Present.svg'
-
-    - category: UserInterface
-      title: User Interface
-      excerpt: 
-      base_url: '/media/ui_guide'
-      subs:
-        - title: UI Components
-          excerpt: UI excerpt
-          url: '/media/ui_guide'
-          icon: '/images/icons/Misc/Present.svg'
 
 defaults:
   -

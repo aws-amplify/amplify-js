@@ -28,16 +28,17 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
         throw new Error('Operation not supported');
     }
 
-    private async disconnectAll() {
-        const clientIds = this.clientsQueue.allClients;
+    private _cleanUp(clientId: string) {
+        const topicsForClient = Array.from(this._topicClient.entries())
+            .filter(([, c]) => c.clientId === clientId)
+            .map(([t]) => t);
 
-        await Promise.all(clientIds.map(clientId => this.disconnect(clientId)));
+        topicsForClient.forEach(t => this._cleanUpForTopic(t));
     }
 
-    private _cleanUp(clientId: string) {
-        const toKeep = Array.from(this._topicClient.entries()).filter(([t, c]) => c.clientId !== clientId);
-
-        this._topicClient = new Map(toKeep);
+    private _cleanUpForTopic(topic) {
+        this._topicClient.delete(topic);
+        this._topicAlias.delete(topic);
     }
 
     public onDisconnect({ clientId, errorCode, ...args }) {
@@ -62,6 +63,8 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
 
     private _topicClient: Map<string, Client> = new Map();
 
+    private _topicAlias: Map<string, string> = new Map();
+
     protected async disconnect(clientId: string): Promise<void> {
         const client = await this.clientsQueue.get(clientId, () => null);
 
@@ -72,13 +75,11 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
 
     subscribe(topics: string[] | string, options: any = {}): Observable<any> {
 
-        return new Observable(observer => {
+        const result = new Observable<any>(observer => {
             const targetTopics = ([] as string[]).concat(topics);
             logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 
             (async () => {
-                await this.disconnectAll();
-
                 // Add these topics to map
                 targetTopics.forEach(t => {
                     if (!this._topicObservers.has(t)) {
@@ -88,11 +89,20 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
                     this._topicObservers.get(t).add(observer);
                 });
 
-                const { mqttConnections = [] } = options;
-                const activeTopics = Array.from(this._topicObservers.keys());
+                const { mqttConnections = [], newSubscriptions } = options;
+
+                // creates a map of {"topic": "alias"}
+                const newAliases = Object.entries(newSubscriptions)
+                    .map(([alias, v]: [string, { topic: string }]) => [v.topic, alias]);
+
+                // Merge new aliases with old ones
+                this._topicAlias = new Map([
+                    ...Array.from(this._topicAlias.entries()),
+                    ...(newAliases as [string, string][])
+                ]);
 
                 // group by urls
-                const map: [string, { url: string, topics: Set<string> }][] = Object.entries(activeTopics.reduce(
+                const map: [string, { url: string, topics: Set<string> }][] = Object.entries(targetTopics.reduce(
                     (acc, elem) => {
                         const connectionInfoForTopic = mqttConnections.find(c => c.topics.indexOf(elem) > -1);
 
@@ -154,6 +164,16 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
                     this._topicObservers.delete(t);
                 });
             };
+        });
+
+        return Observable.from(result).map(value => {
+            const topic = this.getTopicForValue(value);
+            const alias = this._topicAlias.get(topic);
+
+            value.data = Object.entries(value.data)
+                .reduce((obj, [origKey, val]) => (obj[((alias || origKey) as string)] = val, obj), {});
+
+            return value;
         });
     }
 }

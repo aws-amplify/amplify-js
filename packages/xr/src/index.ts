@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -10,5 +10,26 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import XRClass from './XR';
 
-import './Polyfills';
+import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+
+const logger = new Logger('XR');
+
+let _instance: XRClass = null;
+
+if (!_instance) {
+    logger.debug('Create XR Instance');
+    _instance = new XRClass(null);
+}
+
+const XR = _instance;
+Amplify.register(XR);
+
+export default XR;
+
+export * from './Providers/SumerianProvider';
+
+export {XRClass};
+
+export * from './Errors';
