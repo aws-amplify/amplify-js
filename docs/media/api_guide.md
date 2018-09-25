@@ -127,12 +127,14 @@ When prompted, provide a folder location for your GraphQL query files, and a tar
 To generate both GraphQL statements(queries, mutations and subscriptions) and types, run:
 
 ```bash
-$ amplify codegen 
+$ amplify codegen
+```
 
 To generate only GraphQL statements(queries, mutations and subscriptions), run:
 
 ```bash
 $ amplify codegen statements
+```
 
 To generate only GraphQL types, run:
 
