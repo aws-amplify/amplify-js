@@ -4,7 +4,7 @@
 
 The Amplify Cache module provides a generic [LRU](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) cache for JavaScript developers to store data with priority and expiration settings. 
 
-It is a key/value structure where expiration values can be configured **globally** or on a **per-key basis**. For instance, you may wish to cache all JSON responses from the API module for the next 10 minutes, but like to store user input values or preferences for a month.  
+It is a key/value structure where expiration values can be configured **globally** or on a **per-key basis**. For instance, you may wish to cache all JSON responses from the API module for the next 10 minutes and opt to store user input values or preferences for a month.  
 
 ## Installation
 
