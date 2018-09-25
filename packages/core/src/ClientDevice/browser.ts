@@ -38,8 +38,16 @@ function browserClientInfo() {
     const type = browserType(userAgent);
     const timezone = browserTimezone();
 
+	let os;
+	if (userAgent.match(/iPhone|iPad|iPod/)) {
+		os = 'ios';
+	}
+	else if (userAgent.match(/Android/)) {
+		os = 'android';
+	}
+
     return {
-        'platform': platform,
+        'platform': os ? os : platform,
         'make': product || vendor,
         'model': type.type,
         'version': type.version,
