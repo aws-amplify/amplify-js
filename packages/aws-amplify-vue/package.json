@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-vue",
-  "version": "0.1.1-beta.6",
+  "version": "0.1.0",
   "private": false,
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -25,9 +25,9 @@
     "@vue/cli-service": "^3.0.1",
     "@vue/test-utils": "^1.0.0-beta.20",
     "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "^8.2.5",
-    "eslint-loader": "^2.1.0",
-    "postcss-loader": "^2.1.6",
+    "babel-eslint": "8.2.5",
+    "eslint-loader": "2.1.0",
+    "postcss-loader": "2.1.6",
     "vue-template-compiler": "^2.5.16"
   },
   "eslintConfig": {
