@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
- import { ICookieStorageData, ICognitoStorage, CognitoUserAttribute } from "amazon-cognito-identity-js";
-
+import { ICookieStorageData, ICognitoStorage, CognitoUserAttribute, CognitoUser, CognitoUserSession } from "amazon-cognito-identity-js";
+import { ICredentials } from '@aws-amplify/core';
 /**
 * Parameters for user sign up
 */
@@ -71,7 +71,9 @@ export interface FederatedResponse {
  */
 export interface FederatedUser {
     name: string,
-    email?: string
+    id?: string,
+    email?: string,
+    attributes?: Object
 }
 
 export interface OAuth {
@@ -89,4 +91,41 @@ export interface ConfirmSignUpOptions {
 
 export interface SignOutOpts {
     global?: boolean
+}
+
+export interface AuthTokens {
+    idToken?: string,
+    accessToken?: string,
+    refreshToken?: string,
+    expires_at?: string
+}
+
+export interface ExternalSession {
+    username: string,
+    attributes?: Object,
+    tokens: AuthTokens,
+    provider: string,
+    refreshHandler?: Function
+}
+
+export interface SetSessionResult {
+    session: FederatedProviderSession | CognitoUserSession,
+    user?: CognitoUser | FederatedUser,
+    credentials?: ICredentials
+}
+
+export interface FederatedProviderSession {
+    idToken?: string,
+    accessToken?: string,
+    refreshToken?: string,
+    expires_at?: string,
+    type: string
+}
+
+export interface AuthProvider {
+    getProviderName(): string,
+    getCategory(): string,
+    setSession(params: ExternalSession): Promise<SetSessionResult>,
+    getSession(): Promise<any>;
+    clearSession(): Promise<void>;
 }

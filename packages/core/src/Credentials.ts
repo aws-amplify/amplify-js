@@ -165,7 +165,7 @@ export class Credentials {
         });
 
         const that = this;
-        return this._loadCredentials(credentials, 'guest', false, null);
+        return this._loadCredentials(credentials, 'guest', false);
     }
 
     private _setCredentialsFromAWS() {
@@ -173,7 +173,7 @@ export class Credentials {
         logger.debug('setting credentials from aws');
         const that = this;
         if (credentials instanceof AWS.Credentials){
-            return this._loadCredentials(credentials, 'aws', undefined, null);
+            return this._loadCredentials(credentials, 'aws', undefined);
         } else {
             logger.debug('AWS.config.credentials is not an instance of AWS Credentials');
             return Promise.reject('AWS.config.credentials is not an instance of AWS Credentials');
@@ -181,7 +181,7 @@ export class Credentials {
     }
 
     private _setCredentialsFromFederation(params) {
-        const { provider, token, identity_id, user, expires_at } = params;
+        const { provider, token, identity_id } = params;
         const domains = {
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
@@ -215,8 +215,7 @@ export class Credentials {
         return this._loadCredentials(
             credentials, 
             'federated', 
-            true, 
-            params,
+            true
         );
     }
 
@@ -240,10 +239,10 @@ export class Credentials {
         });
 
         const that = this;
-        return this._loadCredentials(credentials, 'userPool', true, null);
+        return this._loadCredentials(credentials, 'userPool', true);
     }
 
-    private _loadCredentials(credentials, source, authenticated, info): Promise<ICredentials> {
+    private _loadCredentials(credentials, source, authenticated): Promise<ICredentials> {
         const that = this;
         const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
@@ -258,43 +257,6 @@ export class Credentials {
                 that._credentials = credentials;
                 that._credentials.authenticated = authenticated;
                 that._credentials_source = source;
-                if (source === 'federated') {
-                    const user = Object.assign(
-                        { id: this._credentials.identityId },
-                        info.user
-                    );
-                    const { provider, token, expires_at, identity_id } = info;
-                    try {
-                        this._storage.setItem(
-                            'aws-amplify-federatedInfo',
-                            JSON.stringify({
-                                provider, 
-                                token, 
-                                user, 
-                                expires_at, 
-                                identity_id 
-                            })
-                        );
-                    } catch(e) {
-                        logger.debug('Failed to put federated info into auth storage', e);
-                    }
-                    if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
-                        Amplify.Cache.setItem(
-                            'federatedInfo', 
-                            { 
-                                provider, 
-                                token, 
-                                user, 
-                                expires_at, 
-                                identity_id 
-                            }, 
-                            { priority: 1 }
-                        );
-                    } else {
-                        rej('No Cache module registered in Amplify');
-                        return;
-                    }
-                }
                 if (source === 'guest') {
                     try {
                         await this._storageSync;

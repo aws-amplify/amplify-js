@@ -17,7 +17,9 @@ import {
     SignUpParams, 
     FederatedUser, 
     ConfirmSignUpOptions, 
-    SignOutOpts 
+    SignOutOpts,
+    ExternalSession,
+    AuthProvider
 } from './types';
 
 import {
@@ -47,6 +49,7 @@ import {
     CognitoUserAttribute
 } from 'amazon-cognito-identity-js';
 import { CognitoAuth } from 'amazon-cognito-auth-js';
+import { AWSCognitoProvider } from './providers';
 
 const logger = new Logger('AuthClass');
 const dispatchAuthEvent = (event, data) => {
@@ -66,21 +69,24 @@ export default class AuthClass {
     private _gettingCredPromise = null;
     private _storage;
     private _storageSync;
+    private _keyPrefix;
+    private _pluggables;
 
     /**
      * Initialize Auth with AWS configurations
      * @param {Object} config - Configuration of the Auth
      */
     constructor(config: AuthOptions) {
-        this.configure(config);
-
         this.currentUserCredentials = this.currentUserCredentials.bind(this);
+
+        this._pluggables = [];
 
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
         } else {
             logger.warn('No AWS.config');
         }
+         this.configure(config);
     }
 
     public getModuleName() {
@@ -104,6 +110,8 @@ export default class AuthClass {
             storage,
             identityPoolRegion
         } = this._config;
+
+        this._keyPrefix = `AmplifyAuth_${userPoolId}_${identityPoolId}`;
 
         if (!this._config.storage) {
             // backward compatbility
@@ -196,10 +204,27 @@ export default class AuthClass {
             });
         }
 
+        if (!this._pluggables) {
+            this.addPluggable(new AWSCognitoProvider({
+                ...config, 
+                storage: this._storage,
+                _keyPrefix: this._keyPrefix
+            }));
+        }
+
         dispatchAuthEvent('configured', null);
         return this._config;
     }
 
+    public async addPluggable(pluggable: AuthProvider) {
+        if (pluggable && pluggable.getCategory() === 'Auth') {
+            this._pluggables.push(pluggable);
+            // const config = pluggable.configure(this._options);
+            // return config;
+        }
+    }
+
+    /*<---------------------------------- Registration Related Methods -------------------------------->*/
     /**
      * Sign up with username, password and other attrbutes like phone, email
      * @param {String | object} params - The user attirbutes used for signin
@@ -295,6 +320,7 @@ export default class AuthClass {
         });
     }
 
+    /*<---------------------------------- Sign In Related Methods --------------------------------->*/
     /**
      * Sign in
      * @param {String} username - The username to be signed in
@@ -423,6 +449,61 @@ export default class AuthClass {
         });
     }
 
+    /**
+     * Send MFA code to confirm sign in
+     * @param {Object} user - The CognitoUser object
+     * @param {String} code - The confirmation code
+     */
+    public confirmSignIn(
+        user: CognitoUser | any, 
+        code: string, 
+        mfaType?: 'SMS_MFA'|'SOFTWARE_TOKEN_MFA'|null
+    ): Promise<CognitoUser | any> {
+        if (!code) { return Promise.reject('Code cannot be empty'); }
+
+        const that = this;
+        return new Promise((resolve, reject) => {
+            user.sendMFACode(
+                code, {
+                    onSuccess: async (session) => {
+                        logger.debug(session);
+                        try {
+                            await Credentials.clear();
+                            const cred = await Credentials.set(session, 'session');
+                            logger.debug('succeed to get cognito credentials', cred);
+                        } catch (e) {
+                            logger.debug('cannot get cognito credentials', e);
+                        } finally {
+                            that.user = user;
+                            dispatchAuthEvent('signIn', user);
+                            resolve(user);
+                        }
+                    },
+                    onFailure: (err) => {
+                        logger.debug('confirm signIn failure', err);
+                        reject(err);
+                    }
+                }, 
+                mfaType);
+        });
+    }
+
+    /**
+     * Send the answer to a custom challenge
+     * @param {CognitoUser} user - The CognitoUser object
+     * @param {String} challengeResponses - The confirmation code
+     */
+    public sendCustomChallengeAnswer(user:CognitoUser | any, challengeResponses: string): Promise<CognitoUser | any> {
+        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!challengeResponses) { return Promise.reject('Challenge response cannot be empty'); }
+
+        const that = this;
+        return new Promise((resolve, reject) => {
+            user.sendCustomChallengeAnswer(challengeResponses, this.authCallbacks(user, resolve, reject));
+        });
+    }
+
+    /*<---------------------------------- MFA Related Methods ------------------------------------>*/
     /**
      * get user current preferred mfa option
      * this method doesn't work with totp, we need to deprecate it.
@@ -684,45 +765,8 @@ export default class AuthClass {
         });
     }
 
-    /**
-     * Send MFA code to confirm sign in
-     * @param {Object} user - The CognitoUser object
-     * @param {String} code - The confirmation code
-     */
-    public confirmSignIn(
-        user: CognitoUser | any, 
-        code: string, 
-        mfaType?: 'SMS_MFA'|'SOFTWARE_TOKEN_MFA'|null
-    ): Promise<CognitoUser | any> {
-        if (!code) { return Promise.reject('Code cannot be empty'); }
-
-        const that = this;
-        return new Promise((resolve, reject) => {
-            user.sendMFACode(
-                code, {
-                    onSuccess: async (session) => {
-                        logger.debug(session);
-                        try {
-                            await Credentials.clear();
-                            const cred = await Credentials.set(session, 'session');
-                            logger.debug('succeed to get cognito credentials', cred);
-                        } catch (e) {
-                            logger.debug('cannot get cognito credentials', e);
-                        } finally {
-                            that.user = user;
-                            dispatchAuthEvent('signIn', user);
-                            resolve(user);
-                        }
-                    },
-                    onFailure: (err) => {
-                        logger.debug('confirm signIn failure', err);
-                        reject(err);
-                    }
-                }, 
-                mfaType);
-        });
-    }
-
+    
+    /*<---------------------------- ResetPassword Related Methods ---------------------------->*/
     public completeNewPassword(
         user: CognitoUser | any,
         password: string,
@@ -769,20 +813,90 @@ export default class AuthClass {
     }
 
     /**
-     * Send the answer to a custom challenge
-     * @param {CognitoUser} user - The CognitoUser object
-     * @param {String} challengeResponses - The confirmation code
+     * Change a password for an authenticated user
+     * @param {Object} user - The CognitoUser object
+     * @param {String} oldPassword - the current password
+     * @param {String} newPassword - the requested new password
+     * @return - A promise resolves if success
      */
-    public sendCustomChallengeAnswer(user:CognitoUser | any, challengeResponses: string): Promise<CognitoUser | any> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (!challengeResponses) { return Promise.reject('Challenge response cannot be empty'); }
-
-        const that = this;
+    public changePassword(user: CognitoUser | any, oldPassword: string, newPassword: string): Promise<"SUCCESS"> {
         return new Promise((resolve, reject) => {
-            user.sendCustomChallengeAnswer(challengeResponses, this.authCallbacks(user, resolve, reject));
+            this.userSession(user).then(session => {
+                user.changePassword(oldPassword, newPassword, (err, data) => {
+                    if (err) {
+                        logger.debug('change password failure', err);
+                        return reject(err);
+                    } else {
+                        return resolve(data);
+                    }
+                });
+            });
         });
     }
 
+    /**
+     * Initiate a forgot password request
+     * @param {String} username - the username to change password
+     * @return - A promise resolves if success
+     */
+    public forgotPassword(username: string): Promise<any> {
+        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!username) { return Promise.reject('Username cannot be empty'); }
+
+        const user = this.createCognitoUser(username);
+        return new Promise((resolve, reject) => {
+            user.forgotPassword({
+                onSuccess: () => { 
+                    resolve();
+                    return; 
+                },
+                onFailure: err => {
+                    logger.debug('forgot password failure', err);
+                    reject(err);
+                    return;
+                },
+                inputVerificationCode: data => {
+                    resolve(data);
+                    return;
+                }
+            });
+        });
+    }
+
+    /**
+     * Confirm a new password using a confirmation Code
+     * @param {String} username - The username
+     * @param {String} code - The confirmation code
+     * @param {String} password - The new password
+     * @return - A promise that resolves if success
+     */
+    public forgotPasswordSubmit(
+        username: string,
+        code: string,
+        password: string
+    ): Promise<void> {
+        if (!this.userPool) { return Promise.reject('No userPool'); }
+        if (!username) { return Promise.reject('Username cannot be empty'); }
+        if (!code) { return Promise.reject('Code cannot be empty'); }
+        if (!password) { return Promise.reject('Password cannot be empty'); }
+
+        const user = this.createCognitoUser(username);
+        return new Promise((resolve, reject) => {
+            user.confirmPassword(code, password, {
+                onSuccess: () => { 
+                    resolve(); 
+                    return;
+                },
+                onFailure: err => { 
+                    reject(err); 
+                    return;
+                }
+            });
+        });
+    }
+
+    
+    /*<----------------------------- Attributes Related Methods -------------------------------->*/
     /**
      * Update an authenticated users' attributes
      * @param {CognitoUser} - The currently logged in user object
@@ -852,6 +966,64 @@ export default class AuthClass {
             });
     }
 
+    /**
+     * Initiate an attribute confirmation request
+     * @param {Object} user - The CognitoUser
+     * @param {Object} attr - The attributes to be verified
+     * @return - A promise resolves to callback data if success
+     */
+    public verifyUserAttribute(user: CognitoUser | any, attr: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            user.getAttributeVerificationCode(attr, {
+                onSuccess() { return resolve(); },
+                onFailure(err) { return reject(err); }
+            });
+        });
+    }
+
+    /**
+     * Confirm an attribute using a confirmation code
+     * @param {Object} user - The CognitoUser
+     * @param {Object} attr - The attribute to be verified
+     * @param {String} code - The confirmation code
+     * @return - A promise resolves to callback data if success
+     */
+    public verifyUserAttributeSubmit(user: CognitoUser | any, attr: string, code: string): Promise<string> {
+        if (!code) { return Promise.reject('Code cannot be empty'); }
+
+        return new Promise((resolve, reject) => {
+            user.verifyAttribute(attr, code, {
+                onSuccess(data) { 
+                    resolve(data); 
+                    return;
+                },
+                onFailure(err) { 
+                    reject(err); 
+                    return;
+                }
+            });
+        });
+    }
+
+    public verifyCurrentUserAttribute(attr: string): Promise<void> {
+        const that = this;
+        return that.currentUserPoolUser()
+            .then(user => that.verifyUserAttribute(user, attr));
+    }
+
+    /**
+     * Confirm current user's attribute using a confirmation code
+     * @param {Object} attr - The attribute to be verified
+     * @param {String} code - The confirmation code
+     * @return - A promise resolves to callback data if success
+     */
+    verifyCurrentUserAttributeSubmit(attr: string, code: string): Promise<string> {
+        const that = this;
+        return that.currentUserPoolUser()
+            .then(user => that.verifyUserAttributeSubmit(user, attr, code));
+    }
+
+    /*<---------------- Current User/Session/Credentials Related Methods ----------------------->*/
     /**
      * Get current authenticated user
      * @return - A promise resolves to curret authenticated CognitoUser if success
@@ -947,30 +1119,37 @@ export default class AuthClass {
      * @return - A promise resolves to session object if success
      */
     public currentSession() : Promise<CognitoUserSession> {
-        const that = this;
         logger.debug('Getting current session');
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-
         return new Promise((res, rej) => {
-            that.currentUserPoolUser().then(user => {
-                that.userSession(user).then(session => {
-                    res(session);
-                    return;
-                }).catch(e => {
-                    logger.debug('Failed to get the current session', e);
-                    rej(e);
-                    return;
-                });
-            }).catch(e => {
-                logger.debug('Failed to get the current user', e);
-                rej(e);
-                return;
+            this._storageSync.then(() => {
+                const sessionSource = this._storage.getItem(`${this._keyPrefix}_sessionSource`);
+                if (!sessionSource || sessionSource === 'AWSCognito') {
+                    if (!this.userPool) { 
+                        return rej('No userPool'); 
+                    }
+                    this.currentUserPoolUser().then(user => {
+                        this.userSession(user).then(session => {
+                            return res(session);
+                        }).catch(e => {
+                            logger.debug('Failed to get the current session', e);
+                            return rej(e);
+                        });
+                    }).catch(e => {
+                        logger.debug('Failed to get the current user', e);
+                        return rej(e);
+                    });
+                } else {
+                    const providerClass: AuthProvider = this._pluggables.filter(
+                        pluggable => pluggable.getProviderName() === sessionSource
+                    );
+                    return providerClass.getSession();
+                }
             });
         });
     }
 
     /**
-     * Get the corresponding user session
+     * Get the Cognito User session
      * @param {Object} user - The CognitoUser object
      * @return - A promise resolves to the session
      */
@@ -1033,222 +1212,6 @@ export default class AuthClass {
     }
 
     /**
-     * Initiate an attribute confirmation request
-     * @param {Object} user - The CognitoUser
-     * @param {Object} attr - The attributes to be verified
-     * @return - A promise resolves to callback data if success
-     */
-    public verifyUserAttribute(user: CognitoUser | any, attr: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            user.getAttributeVerificationCode(attr, {
-                onSuccess() { return resolve(); },
-                onFailure(err) { return reject(err); }
-            });
-        });
-    }
-
-    /**
-     * Confirm an attribute using a confirmation code
-     * @param {Object} user - The CognitoUser
-     * @param {Object} attr - The attribute to be verified
-     * @param {String} code - The confirmation code
-     * @return - A promise resolves to callback data if success
-     */
-    public verifyUserAttributeSubmit(user: CognitoUser | any, attr: string, code: string): Promise<string> {
-        if (!code) { return Promise.reject('Code cannot be empty'); }
-
-        return new Promise((resolve, reject) => {
-            user.verifyAttribute(attr, code, {
-                onSuccess(data) { 
-                    resolve(data); 
-                    return;
-                },
-                onFailure(err) { 
-                    reject(err); 
-                    return;
-                }
-            });
-        });
-    }
-
-    public verifyCurrentUserAttribute(attr: string): Promise<void> {
-        const that = this;
-        return that.currentUserPoolUser()
-            .then(user => that.verifyUserAttribute(user, attr));
-    }
-
-    /**
-     * Confirm current user's attribute using a confirmation code
-     * @param {Object} attr - The attribute to be verified
-     * @param {String} code - The confirmation code
-     * @return - A promise resolves to callback data if success
-     */
-    verifyCurrentUserAttributeSubmit(attr: string, code: string): Promise<string> {
-        const that = this;
-        return that.currentUserPoolUser()
-            .then(user => that.verifyUserAttributeSubmit(user, attr, code));
-    }
-
-    private async cognitoIdentitySignOut(opts: SignOutOpts, user: CognitoUser | any) {
-        return new Promise((res, rej) => {
-            if (opts && opts.global) {
-                logger.debug('user global sign out', user);
-                // in order to use global signout
-                // we must validate the user as an authenticated user by using getSession
-                user.getSession((err, result) => {
-                    if (err) {
-                        logger.debug('failed to get the user session', err);
-                        return rej(err);
-                    }
-                    user.globalSignOut({
-                        onSuccess: (data) => {
-                            logger.debug('global sign out success');
-                            if (this._cognitoAuthClient) {
-                                this._cognitoAuthClient.signOut();
-                            }
-                            return res();
-                        },
-                        onFailure: (err) => {
-                            logger.debug('global sign out failed', err);
-                            return rej(err);
-                        }   
-                    });
-                });
-            } else {
-                logger.debug('user sign out', user);
-                user.signOut();
-                if (this._cognitoAuthClient) {
-                    this._cognitoAuthClient.signOut();
-                }
-                return res();
-            }
-        });
-    }
-    
-    /**
-     * Sign out method
-     * @
-     * @return - A promise resolved if success
-     */
-    public async signOut(opts?: SignOutOpts): Promise<any> {
-        try {
-            await this.cleanCachedItems();
-        } catch (e) {
-            logger.debug('failed to clear cached items');
-        }
-
-        if (this.userPool) { 
-            const user = this.userPool.getCurrentUser();
-            if (user) {
-                await this.cognitoIdentitySignOut(opts, user);
-            } else {
-                logger.debug('no current Cognito user');
-            }
-        } else {
-            logger.debug('no Congito User pool');
-        }
-        
-
-        try {
-            await Credentials.set(null, 'guest');
-        } catch (e) {
-            logger.debug('cannot load guest credentials for unauthenticated user', e);
-        } finally {
-            dispatchAuthEvent('signOut', this.user);
-            this.user = null;
-            return;
-        }
-    }
-
-    private async cleanCachedItems() {
-        // clear cognito cached item
-        await Credentials.clear();
-    }
-
-    /**
-     * Change a password for an authenticated user
-     * @param {Object} user - The CognitoUser object
-     * @param {String} oldPassword - the current password
-     * @param {String} newPassword - the requested new password
-     * @return - A promise resolves if success
-     */
-    public changePassword(user: CognitoUser | any, oldPassword: string, newPassword: string): Promise<"SUCCESS"> {
-        return new Promise((resolve, reject) => {
-            this.userSession(user).then(session => {
-                user.changePassword(oldPassword, newPassword, (err, data) => {
-                    if (err) {
-                        logger.debug('change password failure', err);
-                        return reject(err);
-                    } else {
-                        return resolve(data);
-                    }
-                });
-            });
-        });
-    }
-
-    /**
-     * Initiate a forgot password request
-     * @param {String} username - the username to change password
-     * @return - A promise resolves if success
-     */
-    public forgotPassword(username: string): Promise<any> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (!username) { return Promise.reject('Username cannot be empty'); }
-
-        const user = this.createCognitoUser(username);
-        return new Promise((resolve, reject) => {
-            user.forgotPassword({
-                onSuccess: () => { 
-                    resolve();
-                    return; 
-                },
-                onFailure: err => {
-                    logger.debug('forgot password failure', err);
-                    reject(err);
-                    return;
-                },
-                inputVerificationCode: data => {
-                    resolve(data);
-                    return;
-                }
-            });
-        });
-    }
-
-    /**
-     * Confirm a new password using a confirmation Code
-     * @param {String} username - The username
-     * @param {String} code - The confirmation code
-     * @param {String} password - The new password
-     * @return - A promise that resolves if success
-     */
-    public forgotPasswordSubmit(
-        username: string,
-        code: string,
-        password: string
-    ): Promise<void> {
-        if (!this.userPool) { return Promise.reject('No userPool'); }
-        if (!username) { return Promise.reject('Username cannot be empty'); }
-        if (!code) { return Promise.reject('Code cannot be empty'); }
-        if (!password) { return Promise.reject('Password cannot be empty'); }
-
-        const user = this.createCognitoUser(username);
-        return new Promise((resolve, reject) => {
-            user.confirmPassword(code, password, {
-                onSuccess: () => { 
-                    resolve(); 
-                    return;
-                },
-                onFailure: err => { 
-                    reject(err); 
-                    return;
-                }
-            });
-        });
-    }
-
-    /**
      * Get user information
      * @async
      * @return {Object }- current User's information
@@ -1290,7 +1253,95 @@ export default class AuthClass {
         }
     }
 
+    /*<----------------------------- SignOut Related Methods -------------------------------->*/
+
+    private async cognitoIdentitySignOut(opts: SignOutOpts, user: CognitoUser | any) {
+        return new Promise((res, rej) => {
+            if (opts && opts.global) {
+                logger.debug('user global sign out', user);
+                // in order to use global signout
+                // we must validate the user as an authenticated user by using getSession
+                user.getSession((err, result) => {
+                    if (err) {
+                        logger.debug('failed to get the user session', err);
+                        return rej(err);
+                    }
+                    user.globalSignOut({
+                        onSuccess: (data) => {
+                            logger.debug('global sign out success');
+                            if (this._cognitoAuthClient) {
+                                this._cognitoAuthClient.signOut();
+                            }
+                            this._storage.removeItem(`${this._keyPrefix}_sessionSource`);
+                            return res();
+                        },
+                        onFailure: (err) => {
+                            logger.debug('global sign out failed', err);
+                            return rej(err);
+                        }   
+                    });
+                });
+            } else {
+                logger.debug('user sign out', user);
+                user.signOut();
+                if (this._cognitoAuthClient) {
+                    this._cognitoAuthClient.signOut();
+                }
+                this._storage.removeItem(`${this._keyPrefix}_sessionSource`);
+                return res();
+            }
+        });
+    }
+    
     /**
+     * Sign out method
+     * @
+     * @return - A promise resolved if success
+     */
+    public async signOut(opts?: SignOutOpts): Promise<any> {
+        try {
+            await this.cleanCachedItems();
+        } catch (e) {
+            logger.debug('failed to clear cached items');
+        }
+
+        await this._storageSync;
+        const sessionSource = this._storage.getItem(`${this._keyPrefix}_sessionSource`);
+        if (!sessionSource || sessionSource === 'AWSCognito') {
+            if (!this.userPool) {
+                throw('No userPool'); 
+            }
+            const user = this.userPool.getCurrentUser();
+            if (user) {
+                await this.cognitoIdentitySignOut(opts, user);
+            } else {
+                logger.debug('no current Cognito user');
+            }  
+        } else {
+            const providerClass: AuthProvider = this._pluggables.filter(
+                pluggable => pluggable.getProviderName() === sessionSource
+            );
+            await providerClass.clearSession();
+        }
+
+        try {
+            await Credentials.set(null, 'guest');
+        } catch (e) {
+            logger.debug('cannot load guest credentials for unauthenticated user', e);
+        } finally {
+            dispatchAuthEvent('signOut', this.user);
+            this.user = null;
+            return;
+        }
+    }
+
+    private async cleanCachedItems() {
+        // clear cognito cached item
+        await Credentials.clear();
+    }
+
+    /**
+     * @deprecated
      * For federated login
      * @param {String} provider - federation login provider
      * @param {FederatedResponse} response - response should have the access token
@@ -1363,5 +1414,13 @@ export default class AuthClass {
             user.setAuthenticationFlowType(authenticationFlowType);
         }
         return user;
+    }
+
+
+    public async setSession(params: ExternalSession) {
+        const { provider } = params;
+
+        const providerClass: AuthProvider = this._pluggables.filter(pluggable => pluggable.getProviderName() === provider);
+        return await providerClass.setSession(params);
     }
 }
