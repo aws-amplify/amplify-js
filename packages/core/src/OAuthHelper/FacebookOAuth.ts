@@ -14,7 +14,6 @@ import {
     ConsoleLogger as Logger,
 } from '../Logger';
 import JS from '../JS';
-import '../Polyfills';
 
 const logger = new Logger('CognitoCredentials');
 

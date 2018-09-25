@@ -3,56 +3,107 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-<a name="1.0.11-beta.6"></a>
-## [1.0.11-beta.6](https://github.com/aws/aws-amplify/compare/aws-amplify@1.0.11-beta.5...aws-amplify@1.0.11-beta.6) (2018-09-24)
+<a name="1.1.4-unstable.3"></a>
+## [1.1.4-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.4-unstable.2...aws-amplify@1.1.4-unstable.3) (2018-09-24)
 
 
 
 
 **Note:** Version bump only for package aws-amplify
 
-<a name="1.0.11-beta.5"></a>
-## [1.0.11-beta.5](https://github.com/aws/aws-amplify/compare/aws-amplify@1.0.11-beta.4...aws-amplify@1.0.11-beta.5) (2018-09-19)
+<a name="1.1.4-unstable.2"></a>
+## [1.1.4-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.4-unstable.1...aws-amplify@1.1.4-unstable.2) (2018-09-22)
 
 
 
 
 **Note:** Version bump only for package aws-amplify
 
-<a name="1.0.11-beta.4"></a>
-## [1.0.11-beta.4](https://github.com/aws/aws-amplify/compare/aws-amplify@1.0.11-beta.3...aws-amplify@1.0.11-beta.4) (2018-09-16)
+<a name="1.1.4-unstable.1"></a>
+## [1.1.4-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.4-unstable.0...aws-amplify@1.1.4-unstable.1) (2018-09-22)
 
 
 
 
 **Note:** Version bump only for package aws-amplify
 
-<a name="1.0.11-beta.3"></a>
-## [1.0.11-beta.3](https://github.com/aws/aws-amplify/compare/aws-amplify@1.0.11-beta.2...aws-amplify@1.0.11-beta.3) (2018-09-15)
+<a name="1.1.4-unstable.0"></a>
+## [1.1.4-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.3...aws-amplify@1.1.4-unstable.0) (2018-09-22)
 
 
 
 
 **Note:** Version bump only for package aws-amplify
 
-<a name="1.0.11-beta.2"></a>
-## [1.0.11-beta.2](https://github.com/aws/aws-amplify/compare/aws-amplify@1.0.11-beta.1...aws-amplify@1.0.11-beta.2) (2018-09-14)
+<a name="1.1.3"></a>
+## [1.1.3](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.3-unstable.0...aws-amplify@1.1.3) (2018-09-21)
 
 
 
 
 **Note:** Version bump only for package aws-amplify
 
-<a name="1.0.11-beta.1"></a>
-## [1.0.11-beta.1](https://github.com/aws/aws-amplify/compare/aws-amplify@1.0.11-beta.0...aws-amplify@1.0.11-beta.1) (2018-09-12)
+<a name="1.1.3-unstable.0"></a>
+## [1.1.3-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.2-unstable.3...aws-amplify@1.1.3-unstable.0) (2018-09-21)
+
+
+### Bug Fixes
+
+* bumping version for deploying on unstable tag ([#1706](https://github.com/aws/aws-amplify/issues/1706)) ([b5d6468](https://github.com/aws/aws-amplify/commit/b5d6468))
+
+
+
+
+<a name="1.1.2"></a>
+## [1.1.2](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.1...aws-amplify@1.1.2) (2018-09-21)
 
 
 
 
 **Note:** Version bump only for package aws-amplify
 
-<a name="1.0.11-beta.0"></a>
-## [1.0.11-beta.0](https://github.com/aws/aws-amplify/compare/aws-amplify@1.0.10...aws-amplify@1.0.11-beta.0) (2018-09-12)
+<a name="1.1.2-unstable.3"></a>
+## [1.1.2-unstable.3](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.2-unstable.2...aws-amplify@1.1.2-unstable.3) (2018-09-20)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.2-unstable.2"></a>
+## [1.1.2-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.2-unstable.1...aws-amplify@1.1.2-unstable.2) (2018-09-20)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.2-unstable.1"></a>
+## [1.1.2-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.2-unstable.0...aws-amplify@1.1.2-unstable.1) (2018-09-17)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.2-unstable.0"></a>
+## [1.1.2-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.1...aws-amplify@1.1.2-unstable.0) (2018-09-17)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.1.1"></a>
+## [1.1.1](https://github.com/aws/aws-amplify/compare/aws-amplify@1.0.11...aws-amplify@1.1.1) (2018-09-17)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
+<a name="1.0.11"></a>
+## [1.0.11](https://github.com/aws/aws-amplify/compare/aws-amplify@1.0.10...aws-amplify@1.0.11) (2018-09-12)
 
 
 
