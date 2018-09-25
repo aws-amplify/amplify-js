@@ -124,10 +124,20 @@ $ amplify add codegen
 
 When prompted, provide a folder location for your GraphQL query files, and a target file for the generated output.
 
-To generate your types, run:
+To generate both GraphQL statements(queries, mutations and subscriptions) and types, run:
 
 ```bash
-$ amplify codegen generate
+$ amplify codegen 
+
+To generate only GraphQL statements(queries, mutations and subscriptions), run:
+
+```bash
+$ amplify codegen statements
+
+To generate only GraphQL types, run:
+
+```bash
+$ amplify codegen types
 ```
 
 A TypeScript or Flow type definition file will be generated in your target folder.  
