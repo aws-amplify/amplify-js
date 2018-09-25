@@ -74,7 +74,7 @@ You can now use `amplify publish` to build and publish your app again. This time
 
 ## Add Analytics and Storage
 
-Next, we'll add some features, like tracking user behavior analytics and uploading/downloading images in the cloud. Start by running `amplify add analytics` in your project. You can enable analytics for authenticated users only, or for users that aren't authenticated. You would be pormpted to ask whether you want to allow guests and unauthenticated users to send analytics events, so you can choose `Yes`. You you an also try a new project without authentication configured to test this feature.
+Next, we'll add some features, like tracking user behavior analytics and uploading/downloading images in the cloud. Start by running `amplify add analytics` in your project. You can enable analytics for authenticated users only, or for users that aren't authenticated. You would be prompted to ask whether you want to allow guests and unauthenticated users to send analytics events, so you can choose `Yes`. You you an also try a new project without authentication configured to test this feature.
 
 Run `amplify add storage` and then select **Content (Images, audio, video, etc.)**. You'll then be prompted for autorization related questions. Choose **Auth and guest users** to give both authorized and guest users access. In the next prompts, based on your previous selection you would be asked to configure read/write permissions for the authorized and guest users. When complete, run `amplify push` to create the cloud resources.
 
