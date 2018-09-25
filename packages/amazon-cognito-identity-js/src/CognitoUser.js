@@ -1292,11 +1292,13 @@ export default class CognitoUser {
     const accessTokenKey = `${keyPrefix}.${this.username}.accessToken`;
     const refreshTokenKey = `${keyPrefix}.${this.username}.refreshToken`;
     const lastUserKey = `${keyPrefix}.LastAuthUser`;
+    const clockDriftKey = `${keyPrefix}.${this.username}.clockDrift`;
 
     this.storage.removeItem(idTokenKey);
     this.storage.removeItem(accessTokenKey);
     this.storage.removeItem(refreshTokenKey);
     this.storage.removeItem(lastUserKey);
+    this.storage.removeItem(clockDriftKey);
   }
 
   /**

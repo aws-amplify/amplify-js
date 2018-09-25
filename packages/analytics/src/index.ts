@@ -18,12 +18,11 @@ import Amplify, {
     ConsoleLogger as Logger,
     Hub,
     Linking,
-    AppState,
     Platform
 } from '@aws-amplify/core';
 
 const logger = new Logger('Analytics');
-let startsessionRecorded = false;
+let endpointUpdated = false;
 let authConfigured = false;
 let analyticsConfigured = false;
 
@@ -41,35 +40,6 @@ export default Analytics;
 export { AnalyticsProvider };
 export { AnalyticsClass };
 export * from './Providers';
-
-// listen on app state change
-const dispatchAppStateEvent = (event, data) => {
-    Hub.dispatch('appState', { event, data }, 'AppState');
-};
-
-if (Platform.isReactNative) {
-    AppState.addEventListener('change', (nextAppState) => {
-        switch(nextAppState) {
-            case 'active':
-                dispatchAppStateEvent('active', {});
-        }
-    });
-}
-
-// send a session start event if autoSessionRecord is enabled
-const autoSessionRecord = () => {
-    const config = Analytics.configure();
-    startsessionRecorded = true;
-    if (config.autoSessionRecord) {
-        Analytics.updateEndpoint({}).then(() => {
-            Analytics.startSession().catch(e => {
-                logger.debug('start Session error', e);
-            });
-        });
-    } else {
-        logger.debug('auto Session record is diasabled');
-    }            
-};
 
 Analytics.onHubCapsule = (capsule) => {
     const { channel, payload, source } = capsule;
@@ -125,8 +95,11 @@ const authEvent = (payload) => {
             break;
         case 'configured':
             authConfigured = true;
-            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                autoSessionRecord();
+            if (authConfigured && analyticsConfigured && !endpointUpdated) {
+                Analytics.updateEndpoint({}).catch(e => {
+                    logger.debug('Failed to update the endpoint', e);
+                });
+                endpointUpdated = true;
             }
             break;
     }
@@ -139,8 +112,11 @@ const analyticsEvent = (payload) => {
      switch(event) {
          case 'configured':
             analyticsConfigured = true;
-            if (authConfigured && analyticsConfigured && !startsessionRecorded) {
-                autoSessionRecord();
+            if (authConfigured && analyticsConfigured && !endpointUpdated) {
+                Analytics.updateEndpoint({}).catch(e => {
+                    logger.debug('Failed to update the endpoint', e);
+                });
+                endpointUpdated = true;
             }
             break;
      }

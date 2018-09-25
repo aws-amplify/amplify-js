@@ -57,6 +57,17 @@ export default AmplifyTheme = StyleSheet.create({
         alignItems: 'baseline',
         textAlign: 'center'
     },
+    navBar: {
+        marginTop: 35,
+        padding: 15,
+        flexDirection:'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+    navButton: {
+        marginLeft: 12,
+        borderRadius: 4
+    },
     cell: {
         flex: 1,
         width: '50%'

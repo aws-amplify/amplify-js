@@ -20,12 +20,19 @@ import {
 } from '@aws-amplify/core';
 import AWSPinpointProvider from './Providers/AWSPinpointProvider';
 
-import { AnalyticsProvider, EventAttributes, EventMetrics } from './types';
+import { AnalyticsProvider, EventAttributes, EventMetrics, pageViewTrackOpts } from './types';
+import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
 
 const dispatchAnalyticsEvent = (event, data) => {
     Hub.dispatch('analytics', { event, data }, 'Analytics');
+};
+
+const trackers = {
+    'pageView': PageViewTracker,
+    'event': EventTracker,
+    'session': SessionTracker
 };
 
 /**
@@ -37,6 +44,7 @@ export default class AnalyticsClass {
     private _pluggables: AnalyticsProvider[];
     private _disabled;
     private _autoSessionRecord;
+    private _trackers;
 
     /**
      * Initialize Analtyics
@@ -46,6 +54,9 @@ export default class AnalyticsClass {
         this._config = {};
         this._pluggables = [];
         this._disabled = false;
+        this._trackers = {};
+
+        this.record = this.record.bind(this);
     }
 
     public getModuleName() {
@@ -66,10 +77,6 @@ export default class AnalyticsClass {
             this._disabled = true;
         }
 
-        if (this._config['autoSessionRecord'] === undefined) {
-            this._config['autoSessionRecord'] = true;
-        }
-
         this._pluggables.forEach((pluggable) => {
             // for backward compatibility
             if (pluggable.getProviderName() === 'AWSPinpoint' && !this._config['AWSPinpoint']) {
@@ -83,8 +90,18 @@ export default class AnalyticsClass {
             this.addPluggable(new AWSPinpointProvider());
         }
 
+        // turn on the autoSessionRecord if not specified
+        if (this._config['autoSessionRecord'] === undefined) {
+            this._config['autoSessionRecord'] = true;
+        }
+        this.autoTrack('session', {
+            enable: this._config['autoSessionRecord']
+        });
+
         dispatchAnalyticsEvent('configured', null);
         logger.debug('current configuration', this._config);
+
+        
         return this._config;
     }
 
@@ -208,8 +225,6 @@ export default class AnalyticsClass {
         return this._sendEvent(params);
     }
 
-    
-
     public async updateEndpoint(attrs, provider?) {
         const event = Object.assign({ name: '_update_endpoint' }, attrs);
 
@@ -231,5 +246,24 @@ export default class AnalyticsClass {
         });
 
         return Promise.resolve();
+    }
+
+    public autoTrack(trackerType, opts) {
+        if (!trackers[trackerType]) {
+            logger.debug('invalid tracker type');
+            return;
+        }
+
+        // to sync up two different configuration ways of auto session tracking
+        if (trackerType === 'session') {
+           this._config['autoSessionRecord'] = opts['enable'];
+        }
+        
+        const tracker = this._trackers[trackerType];
+        if (!tracker) {
+            this._trackers[trackerType] = new (trackers[trackerType])(this.record, opts);
+        } else {
+            tracker.configure(opts);
+        }
     }
 }
