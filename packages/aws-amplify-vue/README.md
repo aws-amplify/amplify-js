@@ -1,25 +1,20 @@
----
----
+# AWS Amplify Package - aws-amplify-vue
 
-# Vue
+The ```aws-amplify-vue``` package is a set of Vue components which integrates your Vue application with the AWS-Amplify library.
 
-Vue.js support is currently in beta and installable via `aws-amplify-vue@beta` from npm.
-{: .callout .callout--info}
+It is intended for use with Vue applications using version 2.5 or above, and was created using the Vue 3.0 CLI.
 
-The ```aws-amplify-vue``` package is a set of Vue components which integrates your Vue application with the AWS-Amplify library. It is intended for use with Vue applications using version 2.5 or above, and was created using the Vue 3.0 CLI.
-
-## Configuration 
+## Setup 
 
 In your Vue app, install the following:
 
-```bash
-npm i aws-amplify
-npm i aws-amplify-vue
+```
+npm i aws-amplify aws-amplify-vue
 ```
 
 Then, alter main.js:
 
-```js
+```
 import Amplify, * as AmplifyModules from 'aws-amplify';
 import { AmplifyPlugin } from 'aws-amplify-vue';
 import aws_exports from './aws-exports';
@@ -37,7 +32,7 @@ new Vue({
 
 In App.vue:
 
-```js
+```
 <script>
 import { components } from 'aws-amplify-vue'
 
@@ -54,17 +49,15 @@ export default {
 
 ## AmplifyEventBus
 
-The aws-amplify-vue package implments a Vue EventBus for emitting and listening to events within it's components.  The events emmitted by the components are listed within the documentation for each individual component.
+The aws-amplify-vue package implements a Vue EventBus for emitting and listening to events within it's components.  The events emmitted by the components are listed within the documentation for each individual component.
 
 To listen to these events within one of your components, import the EventBus:
-
-```js
+```
 import { AmplifyEventBus } from 'aws-amplify-vue';
 ```
 
 Then, register an event listener (potentially within a lifecycle hook):
-
-```js
+```
 AmplifyEventBus.$on('authState', info => {
   console.log(`Here is the auth event that was just emitted by an Amplify component: ${info}`)
 });
@@ -76,7 +69,7 @@ The aws-amplify-vue package provides a Vue plugin to access the Amplify library.
 
 ```Vue.use(AmplifyPlugin, AmplifyModules);```
 
-This makes the Amplify library available to the aws-amplify-vue components as well as to your application.  Please note that you can restict the modules that are made available to the plugin by passing only specific modules in the second argument of ```Vue.use``` call.
+This makes the Amplify library available to the aws-amplify-vue components as well as to your application.  Please note that you can restrict the modules that are made available to the plugin by passing only specific modules in the second argument of ```Vue.use``` call.
 
 ### Using the AmplifyPlugin
 
@@ -112,6 +105,7 @@ Config:
 | [signUpConfig](#signupconfig)           | object |
 
 &ast; The attributes above reference the config objects for the components that are nested inside Authenticator.  See the individual components for details. 
+
 
 Events: None
 
@@ -290,6 +284,7 @@ By default the SignUp Component will display Username, Password, Email and Phone
 
 Fields passed into the signUpFields array without a displayOrder property will be placed after those fields with defined displayOrders and in alphabetical order by key.
 
+
 ## Storage Components
 
 ### PhotoPicker
@@ -340,6 +335,7 @@ Props:
 The S3Image component does not have a config object like most other amplify-vue components. Instead it receives the S3 image path as a string.  The path is required. 
 
 Events: None
+
 ## Interaction Components
 
 ### Chatbot
