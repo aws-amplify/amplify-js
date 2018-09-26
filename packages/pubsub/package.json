@@ -11,7 +11,7 @@
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
-    "build": "npm run clean && tsc && webpack",
+    "build": "npm run clean && tsc && cp -r src/vendor lib/vendor && webpack",
     "clean": "rimraf lib lib-esm dist",
     "format": "tsfmt --useTsfmt tsfmt.json -r src/**/*.ts",
     "lint": "tslint 'src/**/*.ts'"

@@ -191,20 +191,4 @@ describe('Greetings', () => {
             await greetings.facebookSignOut()
         });
     });
-
-    describe('checkUser test', () => {
-        test('happy case', async () => {
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
-
-            const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
-                return Promise.resolve('user');
-            })
-
-            await greetings.checkUser();
-
-            expect(spyon).toBeCalled();
-        });
-        
-    });
 });

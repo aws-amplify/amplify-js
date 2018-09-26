@@ -15,7 +15,7 @@ npm i aws-amplify aws-amplify-vue
 Then, alter main.js:
 
 ```
-import * as AmplifyModules from 'aws-amplify';
+import Amplify, * as AmplifyModules from 'aws-amplify';
 import * as AmplifyVue from 'aws-amplify-vue';
 import aws_exports from './aws-exports';
 Amplify.configure(aws_exports)
@@ -49,7 +49,7 @@ export default {
 
 ## AmplifyEventBus
 
-The aws-amplify-vue package implments a Vue EventBus for emitting and listening to events within it's components.  The events emmitted by the components are listed within the documentation for each individual component.
+The aws-amplify-vue package implements a Vue EventBus for emitting and listening to events within it's components.  The events emmitted by the components are listed within the documentation for each individual component.
 
 To listen to these events within one of your components, import the EventBus:
 ```
@@ -69,7 +69,7 @@ The aws-amplify-vue package provides a Vue plugin to access the Amplify library.
 
 ```Vue.use(AmplifyVue.plugins.amplifyPlugin, {AmplifyModules})```
 
-This makes the Amplify library available to the aws-amplify-vue components as well as to your application.  Please note that you can restict the modules that are made available to the plugin by passing only specific modules in the second argument of ```Vue.use``` call.
+This makes the Amplify library available to the aws-amplify-vue components as well as to your application.  Please note that you can restrict the modules that are made available to the plugin by passing only specific modules in the second argument of ```Vue.use``` call.
 
 ### Using the AmplifyPlugin
 
@@ -134,7 +134,7 @@ Events:
 
 ### ConfirmSignIn
 
-The ConfirmSignIn component provides your users with the ability answer an MFA challenge.  
+The ConfirmSignIn component provides your users with the ability to answer an MFA challenge.  
 
 Usage: ```<amplify-confirm-sign-in></amplify-confirm-sign-in>```
 
@@ -220,7 +220,7 @@ Events:
 
 ### SignOut
 
-The ForgotPassword component provides your users with the ability to sign out.  
+The SignOut component provides your users with the ability to sign out.  
 
 Usage: ```<amplify-sign-out></amplify-sign-out>```
 
@@ -240,7 +240,7 @@ Events:
 
 ### SetMFA
 
-The SetMFA component provides your users with the ability to set their preferrend Multifactor Authentication (MFA) method.  It has the ability to show three options - SMS Text Message, TOTP, or None (depending on the options that you pass into it).
+The SetMFA component provides your users with the ability to set their preferred Multifactor Authentication (MFA) method.  It has the ability to show three options - SMS Text Message, TOTP, or None (depending on the options that you pass into it).
 
 Usage: ```<amplify-set-mfa></amplify-set-mfa>```
 
@@ -326,7 +326,7 @@ Events: None
 
 ### S3Image
 
-The S3Image component displays the a single image from the provided path.
+The S3Image component displays a single image from the provided path.
 
 Usage: ```<amplify-s3-image imagePath="path"></amplify-s3-image>```
 
@@ -354,6 +354,20 @@ Config:
 | bot           | string  | the name of the chatbot as defined in your Amplify configuration under "aws_bots_config.name" | N/A       | yes      |
 | clearComplete | boolean | specifies whether the chat messages clear out at the end of the chat session                  | true      | no       |
 | botTitle      | string  | the name of the chatbot component in your frontend app                                        | 'Chatbot' | no       |
+
+
+If not in your aws.exports file, the bot can also be defined in the AWS configure method:
+```
+ Interactions: {
+    bots: {
+      "BookTrip": {
+        "name": "BookTrip",
+        "alias": "$LATEST",
+        "region": "us-east-1",
+      },
+    }
+  }
+```
 
 Events:
 

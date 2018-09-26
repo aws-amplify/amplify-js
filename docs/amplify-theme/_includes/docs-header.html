@@ -51,7 +51,7 @@
 					<span></span>
 				</button><!-- /.offcanvas-toggle -->
 			</div>
-			<div>
+			<div class="relative">
 				{% if site.amplify.header.logo.text %}
 				<div class="logo-container" id="logo-container">
 					<a href="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/" class="site-header__logo">
@@ -116,12 +116,39 @@
 					<input type="text" id="search-input-xs" class="visible-xs docs-search-xs"></input>
 					<button id="collapse-search">Cancel</button>
 				{% endif %}
+				<div id="docs-edit-bar" class="hidden-xs">
+					<a id="feedback-link" target="_blank" href="#">
+						<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Minis/outline-feedback-24px.svg" />
+						<p>Feedback</p>
+					</a>
+					<a id="edit-link" target="_blank" href="#">
+						<img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/icons/Minis/outline-create-24px.svg" />
+						<p>Edit</p>
+					</a>
+					<a id="tweet-link" target="_blank" href="#">
+						<img id="twitter-logo" src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/Twitter_Logo_Blue.svg" />
+						<p>Tweet</p>
+					</a>
+				</div>
 			</div><!-- /.col -->
 		</div><!-- /.row -->
 		<a id="github-logo-docs" target="_blank" href="https://github.com/aws-amplify"><img src="{% if jekyll.environment == 'production' %}{{ site.amplify.baseurl }}{% endif %}/images/Logos/GitHub-Mark-32px.png" /></a>
 	</div><!-- /.container -->
 </header><!-- /.site-header -->
 {% endif %}
+
+<script>
+	let page = window.location.href.split("/");
+	page = page[page.length-1].split("?")[0];
+
+	const feedback_url = "https://github.com/aws-amplify/amplify-js/issues/new/choose";
+	const tweet_url = "https://twitter.com/intent/tweet?text=Get%20started%20with%20AWS%20Amplify%20at%20https://aws-amplify.github.io/amplify-js/media/quick_start";
+	const edit_url = "https://github.com/aws-amplify/amplify-js/blob/master/docs/media/";
+
+	document.getElementById("feedback-link").href = feedback_url;
+	document.getElementById("tweet-link").href = tweet_url;
+	document.getElementById("edit-link").href = edit_url + page + ".md";
+</script>
 
 {% if jekyll.environment == 'production' %}
 <script>
