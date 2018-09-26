@@ -100,6 +100,7 @@ Config:
 ```
 <amplify-authenticator v-bind:authConfig="authConfig"></amplify-authenticator>
 ```
+
 | Attribute                               | Type   |
 |-----------------------------------------|--------|
 | [confirmSignInConfig](#confirmsignin)   | object |
