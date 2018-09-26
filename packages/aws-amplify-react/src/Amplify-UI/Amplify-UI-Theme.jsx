@@ -35,6 +35,10 @@ export const A = {}
 export const Hint = {}
 export const Radio = {}
 export const InputLabel = {}
+export const AmazonSignInButton = {};
+export const FacebookSignInButton = {};
+export const GoogleSignInButton = {};
+export const OAuthSignInButton = {};
 
 const AmplifyTheme = {
   container: Container,
@@ -55,6 +59,11 @@ const AmplifyTheme = {
   signInButton: SignInButton,
   signInButtonIcon: SignInButtonIcon,
   signInButtonContent: SignInButtonContent,
+  amazonSignInButton: AmazonSignInButton,
+  facebookSignInButton: FacebookSignInButton,
+  googleSignInButton: GoogleSignInButton,
+  oAuthSignInButton: OAuthSignInButton,
+
   formRow: FormRow,
   strike: Strike,
   strikeContent: StrikeContent,
@@ -63,7 +72,7 @@ const AmplifyTheme = {
 
   hint: Hint,
   radio: Radio,
-  inputLabel: InputLabel,
+  inputLabel: InputLabel
 }
 
 export default AmplifyTheme;
