@@ -95,9 +95,14 @@ const authEvent = (payload) => {
             break;
         case 'configured':
             authConfigured = true;
-            if (authConfigured && analyticsConfigured && !endpointUpdated) {
-                Analytics.updateEndpoint({}).catch(e => {
-                    logger.debug('Failed to update the endpoint', e);
+            if (authConfigured && analyticsConfigured) {
+                if (!endpointUpdated) {
+                    Analytics.updateEndpoint({}).catch(e => {
+                        logger.debug('Failed to update the endpoint', e);
+                    });
+                }
+                Analytics.autoTrack('session', {
+                    enable: (Analytics.configure())['autoSessionRecord']
                 });
                 endpointUpdated = true;
             }
@@ -112,9 +117,14 @@ const analyticsEvent = (payload) => {
      switch(event) {
          case 'configured':
             analyticsConfigured = true;
-            if (authConfigured && analyticsConfigured && !endpointUpdated) {
-                Analytics.updateEndpoint({}).catch(e => {
-                    logger.debug('Failed to update the endpoint', e);
+            if (authConfigured && analyticsConfigured) {
+                if (!endpointUpdated) {
+                    Analytics.updateEndpoint({}).catch(e => {
+                        logger.debug('Failed to update the endpoint', e);
+                    });
+                }
+                Analytics.autoTrack('session', {
+                    enable: (Analytics.configure())['autoSessionRecord']
                 });
                 endpointUpdated = true;
             }
