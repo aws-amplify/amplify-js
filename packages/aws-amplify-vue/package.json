@@ -20,6 +20,7 @@
     "@vue/cli-plugin-unit-jest": "^3.0.1",
     "@vue/cli-service": "^3.0.1",
     "@vue/test-utils": "^1.0.0-beta.20",
+    "babel-jest": "^23.0.1",
     "vue-template-compiler": "^2.5.17",
     "postcss-loader": "^2.1.6"
   },
