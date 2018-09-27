@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -10,5 +11,14 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+/* eslint-enable */
 
-import './Polyfills';
+import Vue from 'vue';
+
+import Chatbot from './Chatbot.vue';
+
+Vue.component('amplify-chatbot', Chatbot);
+
+export {
+  Chatbot, // eslint-disable-line
+};

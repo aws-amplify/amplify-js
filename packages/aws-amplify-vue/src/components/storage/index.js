@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -10,23 +11,21 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+/* eslint-enable */
+
+import Vue from 'vue';
+
+import PhotoPicker from './PhotoPicker.vue';
+import S3Album from './S3Album.vue';
+import S3Image from './S3Image.vue';
 
 
-import { MemoryStorage } from '../StorageHelper';
+Vue.component('amplify-photo-picker', PhotoPicker);
+Vue.component('amplify-s3-album', S3Album);
+Vue.component('amplify-s3-image', S3Image);
 
-if (!(<any>global).window) {
-    (<any>global).window = {
-        setTimeout,
-        clearTimeout,
-        WebSocket: (<any>global).WebSocket,
-        ArrayBuffer: (<any>global).ArrayBuffer,
-        addEventListener(){ },
-        navigator: { onLine: true },
-        location: {
-            href: ''
-        }
-    };
-}
-if (!(<any>global).window.localStorage) {
-    (<any>global).window.localStorage = MemoryStorage;
-}
+export {
+  PhotoPicker,
+  S3Album,
+  S3Image,
+};

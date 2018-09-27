@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.4-unstable.0"></a>
+## [2.0.4-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.0.3...aws-amplify-react-native@2.0.4-unstable.0) (2018-09-24)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** check contact before getting signed in ([5707577](https://github.com/aws/aws-amplify/commit/5707577))
+
+
+
+
 <a name="2.0.3"></a>
 ## [2.0.3](https://github.com/aws/aws-amplify/compare/aws-amplify-react-native@2.0.3-unstable.0...aws-amplify-react-native@2.0.3) (2018-09-21)
 

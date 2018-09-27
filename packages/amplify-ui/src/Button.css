@@ -42,6 +42,7 @@
   padding: 0;
   color: #152939;
   font-size: 14px;
+  box-sizing: content-box;
 }
 
 #googleSignInButton {
