@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
-import AmplifyTheme from '../../AmplifyTheme';
-import { SignInButton } from '../../AmplifyUI';
+import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
+import { oAuthSignInButton } from '@aws-amplify/ui';
+import { 
+    SignInButton, 
+    SignInButtonContent
+} from '../../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('withOAuth');
 
@@ -49,8 +53,11 @@ const Button = (props) => (
         id="OAuth_signin_btn"
         onClick={props.OAuthSignIn}
         theme={props.theme || AmplifyTheme}
+        variant={'oAuthSignInButton'}
     >
-        {props.label || 'Sign in with AWS'}
+        <SignInButtonContent theme={props.theme || AmplifyTheme}>
+            {props.label || 'Sign in with AWS'}
+        </SignInButtonContent>
     </SignInButton>
 )
 

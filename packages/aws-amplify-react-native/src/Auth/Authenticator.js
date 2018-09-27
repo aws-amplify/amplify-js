@@ -12,12 +12,13 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View } from 'react-native';
 import { 
     Auth, 
     Analytics,
     Logger,
-    Hub
+    Hub,
+    JS
 } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
@@ -67,12 +68,18 @@ export default class Authenticator extends React.Component {
         this.handleStateChange = this.handleStateChange.bind(this);
         this.checkUser = this.checkUser.bind(this);
         this.onHubCapsule = this.onHubCapsule.bind(this);
+        this.checkContact = this.checkContact.bind(this);
 
         Hub.listen('auth', this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
+        this._isMounted = true;
         this.checkUser();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     onHubCapsule(capsule) {
@@ -82,6 +89,7 @@ export default class Authenticator extends React.Component {
 
     handleStateChange(state, data) {
         logger.debug('authenticator state change ' + state);
+        if (!this._isMounted) return;
         if (state === this.state.authState) { return; }
 
         if (state === 'signedOut') { state = 'signIn'; }
@@ -98,18 +106,33 @@ export default class Authenticator extends React.Component {
         }
     }
 
+    checkContact(user) {
+        Auth.verifiedContact(user)
+            .then(data => {
+                logger.debug('verified user attributes', data);
+                if (!JS.isEmpty(data.verified)) {
+                    this.handleStateChange('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    this.handleStateChange('verifyContact', user);
+                }
+            });
+    }
+
     checkUser() {
         const { authState } = this.state;
         const statesJumpToSignIn = ['signedIn', 'signedOut', 'loading'];
         Auth.currentAuthenticatedUser()
             .then(user => {
+                if (!this._isMounted) return;
                 if (user) {
-                    this.handleStateChange('signedIn', null);
+                    this.checkContact(user);
                 } else {
                     if (statesJumpToSignIn.includes(authState)) this.handleStateChange('signIn', null);
                 }
             })
             .catch(err => {
+                if (!this._isMounted) return;
                 logger.debug(err);
                 if (statesJumpToSignIn.includes(authState)) {
                     Auth.signOut()
@@ -126,11 +149,11 @@ export default class Authenticator extends React.Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        const { hideDefault, federated } = this.props;
+        const { hideDefault } = this.props;
         const props_children = this.props.children || [];
         const default_children = [
             <Loading/>,
-            <SignIn federated={federated} />,
+            <SignIn/>,
             <ConfirmSignIn/>,
             <VerifyContact/>,
             <SignUp/>,
@@ -153,11 +176,10 @@ export default class Authenticator extends React.Component {
                 });
             });
         return (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            
                 <View style={theme.container}>
                     {children}
                 </View>
-            </TouchableWithoutFeedback>
         );
     }
 }

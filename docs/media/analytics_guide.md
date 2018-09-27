@@ -3,42 +3,35 @@
 
 # Analytics
 
-AWS Amplify Analytics module helps you to collect analytics data for your app easily. Analytics is available with [Amazon Pinpoint](#using-amazon-pinpoint) and [Amazon Kinesis](#using-amazon-kinesis), and also you can add your custom provider as a [plugin](#using-a-custom-plugin).
+The Analytics category enables you to collect analytics data for your app. The Analytics category comes with built-in support for [Amazon Pinpoint](#using-amazon-pinpoint) and [Amazon Kinesis](#using-amazon-kinesis).
 
-## Using Amazon Pinpoint
-
-AWS Pinpoint enables you to send Analytics data includes user sessions and other custom events that you want to track in your app.
-
-### Installation and Configuration
-
-Please refer to [AWS Amplify Installation Guide]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/media/install_n_config) for general setup. Here is how you can enable Analytics category for your app.
+Ensure you have [installed and configured the Amplify CLI and library]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/quick_start).
+{: .callout .callout--info}
 
 #### Automated Setup
 
-Automated Setup works with `awsmobile-cli` to create your analytics backend. After configuring your backend, you can create a project with fully functioning Analytics category.
+Run the following command in your project's root folder:
 
 ```bash
-$ npm install -g awsmobile-cli
+$ amplify add analytics
 ```
 
-You should run all `awsmobile` commands at *root folder* of your project.
+The CLI will prompt configuration options for the Analytics category such as Amazon Pinpoint resource name and analytics event settings.
+
+{The Analytics category utilizes the Authentication category behind the scenes to authorize your app to send analytics events.}
 {: .callout .callout--info}
 
-In your project's *root folder*, run following command to configure and update your backend:
+The `add` command automatically creates a backend configuration locally. To update your backend run:
 
 ```bash
-$ cd my-app #Change to your project's root folder
-$ awsmobile init
-$ awsmobile push #Update your backend 
+$ amplify push
 ```
 
-*awsmobile init* enables Analytics module by default for your backend. In case you want to enable/disable it manually, you can use:
+A configuration file called `aws-exports.js` will be copied to your configured source directory, for example `./src`. The CLI will also print the URL for Amazon Pinpoint console to track your app events.  
 
-```bash
-$ awsmobile analytics enable 
-```
+##### Configure Your App
 
-In your app's entry point i.e. App.js, import and load the configuration file which has been created and replaced into `/src` folder in the previous step.
+Import and load the configuration file in your app. It's recommended you add the Amplify configuration step to your app's root entry point. For example `App.js` in React or `main.ts` in Angular.
 
 ```js
 import Amplify, { Analytics } from 'aws-amplify';
@@ -49,90 +42,104 @@ Amplify.configure(aws_exports);
 
 #### Manual Setup
 
-The manual setup enables you to use your existing Amazon Pinpoint resources in your app:
+The manual setup enables you to use your existing Amazon Pinpoint resource in your app.
 
 ```js
-import { Analytics } from 'aws-amplify';
+import Amplify from 'aws-amplify';
 
-Analytics.configure({
-    // OPTIONAL - disable Analytics if true
-    disabled: false,
-    // OPTIONAL - Allow recording session events. Default is true.
-    autoSessionRecord: true,
+Amplify.configure({
+    // To get the aws credentials, you need to configure 
+    // the Auth module with your Cognito Federated Identity Pool
+    Auth: {
+        identityPoolId: 'us-east-1:xxx-xxx-xxx-xxx-xxx',
+        region: 'us-east-1'
+    },
+    Analytics: {
+        // OPTIONAL - disable Analytics if true
+        disabled: false,
+        // OPTIONAL - Allow recording session events. Default is true.
+        autoSessionRecord: true,
 
-    AWSPinpoint: {
-        // OPTIONAL -  Amazon Pinpoint App Client ID
-        appId: 'XXXXXXXXXXabcdefghij1234567890ab',
-        // OPTIONAL -  Amazon service region
-        region: 'XX-XXXX-X',
-        // OPTIONAL -  Customized endpoint
-        endpointId: 'XXXXXXXXXXXX',
-        // OPTIONAL - client context
-        clientContext: {
-            clientId: 'xxxxx',
-            appTitle: 'xxxxx',
-            appVersionName: 'xxxxx',
-            appVersionCode: 'xxxxx',
-            appPackageName: 'xxxxx',
-            platform: 'xxxxx',
-            platformVersion: 'xxxxx',
-            model: 'xxxxx',
-            make: 'xxxxx',
-            locale: 'xxxxx'
-        },
+        AWSPinpoint: {
+            // OPTIONAL -  Amazon Pinpoint App Client ID
+            appId: 'XXXXXXXXXXabcdefghij1234567890ab',
+            // OPTIONAL -  Amazon service region
+            region: 'XX-XXXX-X',
+            // OPTIONAL -  Customized endpoint
+            endpointId: 'XXXXXXXXXXXX',
+            // OPTIONAL - client context
+            clientContext: {
+                clientId: 'xxxxx',
+                appTitle: 'xxxxx',
+                appVersionName: 'xxxxx',
+                appVersionCode: 'xxxxx',
+                appPackageName: 'xxxxx',
+                platform: 'xxxxx',
+                platformVersion: 'xxxxx',
+                model: 'xxxxx',
+                make: 'xxxxx',
+                locale: 'xxxxx'
+            },
 
-        // Buffer settings used for reporting analytics events.
+            // Buffer settings used for reporting analytics events.
+            // OPTIONAL - The buffer size for events in number of items.
+            bufferSize: 1000,
 
-        // OPTIONAL - The buffer size for events in number of items.
-        bufferSize: 1000,
+            // OPTIONAL - The interval in milliseconds to perform a buffer check and flush if necessary.
+            flushInterval: 5000, // 5s 
 
-        // OPTIONAL - The interval in milliseconds to perform a buffer check and flush if necessary.
-        flushInterval: 5000, // 5s 
+            // OPTIONAL - The number of events to be deleted from the buffer when flushed.
+            flushSize: 100,
 
-        // OPTIONAL - The number of events to be deleted from the buffer when flushed.
-        flushSize: 100,
-
-        // OPTIONAL - The limit for failed recording retries.
-        resendLimit: 5
-    } 
+            // OPTIONAL - The limit for failed recording retries.
+            resendLimit: 5
+        } 
 });
 ```
 
-In the above configuration, you are required to pass in an *Amazon Pinpoint App Client ID* so that the library can retrieve base credentials for a user even in an unauthenticated state. 
+User session data is automatically collected unless you disabled analytics. To see the results visit the [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/).
+{: .callout .callout--info}
 
-After successfully configuring your credentials, the library automatically tracks some default metrics for you, without any effort on your part. 
+#### Update your IAM Policy:
 
-User session analytics data is automatically collected and sent to Amazon Pinpoint. To see these data, please visit [Amazon Pinpoint console](https://console.aws.amazon.com/pinpoint/home/), or run following cli command to launch AWS Mobile Hub console:
+Note: need to be done in '@aws-amplify/analytics: ^1.2.x' or higher
 
+AWS Pinpoint has updated their service and so you need to update your IAM policy in order to continue using the `record` API.
+The Updated IAM policy for Pinpoint would be like:
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "mobiletargeting:UpdateEndpoint",
+                // to use the updated Pinpoint API
+                "mobiletargeting:PutEvents"
+            ],
+            "Resource": [
+                "arn:aws:mobiletargeting:*:${accountID}:apps/${appId}*"
+            ]
+        }
+    ]
+}
 ```
-$ awsmobile console
-```
 
-On the AWS Mobile Hub console, click **Messaging and Analytics** option under 'Backend' section.
+### Working with the API 
 
-### Working with the API
+#### Recording Custom Events
 
-#### Collect Session Data
-
-Once configured, the Analytics module starts collecting user session data without any additional code. 
-
-#### Recording a Custom Tracking Event
-
-To record a custom tracking event, call the `record` method:
+To record custom events call the `record` method:
 
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.record({ name: 'albumVisit' });
 ```
 
-#### Record a Custom Tracking Event with Attributes
+#### Record a Custom Event with Attributes
 
 The `record` method lets you add additional attributes to an event. For example, to record *artist* information with an *albumVisit* event:
 
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.record({
     name: 'albumVisit', 
     attributes: { genre: '', artist: '' }
@@ -144,8 +151,6 @@ Analytics.record({
 Metrics data can also be added to an event:
 
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.record({
     name: 'albumVisit', 
     attributes: {}, 
@@ -153,12 +158,10 @@ Analytics.record({
 });
 ```
 
-#### Disable/Enable Analytics
+#### Disable Analytics
 
-You can disable or enable Analytics module as follows:
+You can also completely disable or re-enable Analytics:
 ```js
-import { Analytics } from 'aws-amplify';
-
 // to disable Analytics
 Analytics.disable();
 
@@ -166,36 +169,11 @@ Analytics.disable();
 Analytics.enable();
 ```
 
-#### Record Authentication Events
-
-You can use following events to record Sign-ins, Sign-ups, and Authentication failures.
-
-```js
-import { Analytics } from 'aws-amplify';
-
-// Sign-in event
-Analytics.record({
-    name: '_userauth.sign_in'
-});
-
-// Sign-up event
-Analytics.record({
-    name: '_userauth.sign_up'
-});
-
-// Authentication failure event
-Analytics.record({
-    name: '_userauth.auth_fail'
-});
-```
-
 #### Update User Attributes
 
-In order to update User Attributes, use `updateEndpoint()` method as following:
+An endpoint uniquely identifies your app within Pinpoint. In order to update your <a href="https://docs.aws.amazon.com/pinpoint/latest/apireference/rest-api-endpoints.html" target="_blank">endpoint</a> use the `updateEndpoint()` method:
 
 ```js
-import { Analytics } from 'aws-amplify';
-
 Analytics.updateEndpoint({
     // Customized userId
     UserId: 'XXXXXXXXXXXX',
@@ -212,19 +190,21 @@ Analytics.updateEndpoint({
 })
 ```
 
+<a href="https://docs.aws.amazon.com/pinpoint/latest/developerguide/audience-define-user.html" target="_blank">Learn more</a> about Amazon Pinpoint and Endpoints.
+
 #### API Reference
 
-For the complete API documentation for Analytics module, visit our [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/api/classes/analyticsclass.html)
+For a complete API reference visit the [API Reference]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/api/classes/analyticsclass.html)
 {: .callout .callout--info}
 
 
 ## Using Amazon Kinesis
 
-Amazon Kinesis Analytics plugin enables you to send Analytics data to an [Amazon Kinesis](https://aws.amazon.com/kinesis) stream for real-time processing.
+The Amazon Kinesis analytics provider allows you to send analytics data to an [Amazon Kinesis](https://aws.amazon.com/kinesis) stream for real-time processing.
 
 ### Installation and Configuration
 
-*AWSKinesisProvider* plugin is available with aws-amplify package. You can import the plugin and register with the Analytics category as follows: 
+Register the *AWSKinesisProvider* with the Analytics category: 
 
 ```js
 import { Analytics, AWSKinesisProvider } from 'aws-amplify';
@@ -232,10 +212,9 @@ Analytics.addPluggable(new AWSKinesisProvider());
 
 ```
 
-Please make sure that you have a defined an IAM user and a related IAM policy to put records into your Kinesis stream.
-{: .callout .callout--warning}
+If you did not use the CLI, ensure you have <a href="https://docs.aws.amazon.com/streams/latest/dev/learning-kinesis-module-one-iam.html" target="_blank">setup IAM permissions</a> for `PutRecords`.
 
-An example IAM policy for Amazon Kinesis:
+Example IAM policy for Amazon Kinesis:
 ```json
 {
     "Version": "2012-10-17",
@@ -252,9 +231,9 @@ An example IAM policy for Amazon Kinesis:
 }
 ```
 
-For more information about IAM user roles and policies, please visit [Amazon Kinesis Developer Documentation](https://docs.aws.amazon.com/streams/latest/dev/learning-kinesis-module-one-iam.html).
+For more information visit [Amazon Kinesis Developer Documentation](https://docs.aws.amazon.com/streams/latest/dev/learning-kinesis-module-one-iam.html).
 
-Provide plugin configuration parameters with `Analytics.configure()` before using your Kinesis in your app:
+Configure Kinesis:
 
 ```js
 
@@ -283,7 +262,7 @@ Analytics.configure({
 
 ### Working with the API
 
-You can send a data to an Amazon Kinesis stream with the *record()* method:
+You can send a data to a Kinesis stream with the standard *record()* method:
 
 ```js
 Analytics.record({
@@ -296,12 +275,11 @@ Analytics.record({
 }, 'AWSKinesis');
 ```
 
-
 ## Using a Custom Plugin
 
-You can create your custom class and plug it into Analytics module. This may be helpful when you need to integrate your app with a custom analytics backend.
+You can create your custom pluggable for Analytics. This may be helpful if you want to integrate your app with a custom analytics backend.
 
-To create a plugin,just implement `AnalyticsProvider` interface:
+To create a plugin implement the `AnalyticsProvider` interface:
 
 ```typescript
 import { Analytics, AnalyticsProvider } from 'aws-amplify';
@@ -326,7 +304,7 @@ export default class MyAnalyticsProvider implements AnalyticsProvider {
 }
 ```
 
-You can now register your plugin as follows:
+You can now register your pluggable:
 
 ```js
 // add the plugin
@@ -340,25 +318,178 @@ Analytics.removePluggable(MyAnalyticsProvider.providerName);
 
 // send configuration into Amplify
 Analytics.configure({
-    YOUR_PLUGIN_NAME: { 
+    MyAnalyticsProvider: { 
         // My Analytics provider configuration 
     }
 });
 
 ```
 
-Please note that the default provider (Amazon Pinpoint) is in use when you call `Analytics.record()`. To use your plugin, provide the plugin name in your method call, such as `Analytics.record({..},'myPlugin')`. 
+The default provider (Amazon Pinpoint) is in use when you call `Analytics.record()` unelss you specify a different provider: `Analytics.record({..},'MyAnalyticsProvider')`. 
 {: .callout .callout--info}
 
-## Using modularized module
+## Using Modular Imports
 
-If you only need to use Analytics, you can do: `npm install @aws-amplify/analytics` which will only install the Analytics module for you.
-Note: if you're using Cognito Federated Identity Pool to get AWS credentials, please also install `@aws-amplify/auth`.
+You can import only specific categories into your app if you are only using specific features, analytics for example: `npm install @aws-amplify/analytics` which will only install the Analytics category. For working with AWS services you will also need to install and configure `@aws-amplify/auth`.
 
-Then in your code, you can import the Analytics module by:
+Import only Analytics:
+
 ```js
 import Analytics from '@aws-amplify/analytics';
 
 Analytics.configure();
 
+```
+
+## Using Analytics Auto Tracking
+
+Analytics Auto Tracking helps you to automatically track user behaviors like sessions start/stop, page view change and web events like clicking, mouseover.
+
+### Session Tracking
+
+You can track the session both in a web app or a React Native app by using Analytics.
+A web session can be defined in different ways. To keep it simple we define that the web session is active when the page is not hidden and inactive when the page is hidden. 
+A session in the React Native app is active when the app is in the foreground and inactive when the app is in the background.
+
+For example: 
+```js
+Analytics.autoTrack('session', {
+    // REQUIRED, turn on/off the auto tracking
+    enable: true,
+    // OPTIONAL, the attributes of the event, you can either pass an object or a function 
+    // which allows you to define dynamic attributes
+    attributes: {
+        attr: 'attr'
+    },
+    // when using function
+    // attributes: () => {
+    //    const attr = somewhere();
+    //    return {
+    //        myAttr: attr
+    //    }
+    // },
+    // OPTIONAL, the service provider, by default is the AWS Pinpoint
+    provider: 'AWSPinpoint'
+});
+```
+
+When the page is loaded, the Analytics module will send an event with:
+```js
+{ 
+    eventType: '_session_start', 
+    attributes: { 
+        attr: 'attr' 
+    }
+}
+```
+to the AWS Pinpoint Service. 
+
+To keep backward compatibility, the auto tracking of the session is enabled by default. You can turn it off by:
+```js
+Analytics.configure({
+    // OPTIONAL - Allow recording session events. Default is true.
+    autoSessionRecord: false,
+});
+```
+or 
+```js
+Analytics.autoTrack('session', {
+    enable: false
+});
+
+// Note: this must be called before Amplify.configure() or Analytics.configure() to cancel the session_start event
+```
+
+### Page View Tracking
+
+If you want to track which page/url in your webapp is the most frequently viewed one, you can use this feature. It will automatically send events containing url information when the page is visited.
+
+To turn it on:
+```js
+Analytics.autoTrack('pageView', {
+    // REQUIRED, turn on/off the auto tracking
+    enable: true,
+    // OPTIONAL, the event name, by default is 'pageView'
+    eventName: 'pageView',
+    // OPTIONAL, the attributes of the event, you can either pass an object or a function 
+    // which allows you to define dynamic attributes
+    attributes: {
+        attr: 'attr'
+    },
+    // when using function
+    // attributes: () => {
+    //    const attr = somewhere();
+    //    return {
+    //        myAttr: attr
+    //    }
+    // },
+    // OPTIONAL, by default is 'multiPageApp'
+    // you need to change it to 'SPA' if your app is a single-page app like React
+    type: 'multiPageApp',
+    // OPTIONAL, the service provider, by default is the AWS Pinpoint
+    provider: 'AWSPinpoint',
+    // OPTIONAL, to get the current page url
+    getUrl: () => {
+        // the default function
+        return window.location.origin + window.location.pathname;
+    }
+});
+```
+Note: This is not supported in React Native.
+
+### Page Event Tracking
+
+If you want to track user interactions with elements on the page, you can use this feature. All you need to do is attach the specified selectors to your dom element and turn on the auto tracking.
+
+To turn it on:
+```js
+Analytics.autoTrack('event', {
+    // REQUIRED, turn on/off the auto tracking
+    enable: true,
+    // OPTIONAL, events you want to track, by default is 'click'
+    events: ['click'],
+    // OPTIONAL, the prefix of the selectors, by default is 'data-amplify-analytics-'
+    // in order to avoid collision with the user agent, according to https://www.w3schools.com/tags/att_global_data.asp
+    // always put 'data' as the first prefix
+    selectorPrefix: 'data-amplify-analytics-',
+    // OPTIONAL, the service provider, by default is the AWS Pinpoint
+    provider: 'AWSPinpoint',
+    // OPTIONAL, the default attributes of the event, you can either pass an object or a function 
+    // which allows you to define dynamic attributes
+    attributes: {
+        attr: 'attr'
+    }
+    // when using function
+    // attributes: () => {
+    //    const attr = somewhere();
+    //    return {
+    //        myAttr: attr
+    //    }
+    // }
+```
+
+For example:
+```html
+<!-- you want to track this button and send an event when it is clicked -->
+<button
+    data-amplify-analytics-on='click'
+    data-amplify-analytics-name='click'
+    data-amplify-analytics-attrs='attr1:attr1_value,attr2:attr2_value'
+/>
+```
+When the button above is clicked, an event will be sent automatically and this is equivalent to do:
+```html
+<script>
+    var sendEvent = function() {
+        Analytics.record({
+            name: 'click',
+            attributes: {
+                attr: 'attr', // the default ones
+                attr1: attr1_value, // defined in the button component
+                attr2: attr2_value, // defined in the button component
+            }
+        });
+    }
+</script>
+<button onclick="sendEvent()"/>
 ```

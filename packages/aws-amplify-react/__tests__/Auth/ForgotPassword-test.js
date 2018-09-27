@@ -3,7 +3,7 @@ import ForgotPassword from '../../src/Auth/ForgotPassword';
 import React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
+import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'forgotPassword'
@@ -89,10 +89,10 @@ describe('forgotPassword', () => {
                 }
             }
 
-            wrapper.find(InputRow).at(0).simulate('change', event_code);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
+            wrapper.find(Input).at(0).simulate('change', event_code);
+            wrapper.find(Input).at(1).simulate('change', event_password);
 
-            await wrapper.find(ButtonRow).simulate('click');
+            await wrapper.find(Button).simulate('click');
 
             expect(spyon).toBeCalledWith(undefined, 'code', 'abc');
 
@@ -121,9 +121,9 @@ describe('forgotPassword', () => {
                 }
             }
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(0).simulate('change', event_username);
 
-            await wrapper.find(ButtonRow).simulate('click');
+            await wrapper.find(Button).simulate('click');
 
             expect(spyon).toBeCalledWith('user1');
 

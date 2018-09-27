@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Button, TextInput, Text, KeyboardAvoidingView, ScrollView } from "react-native";
+import { View, TextInput, Text, KeyboardAvoidingView, ScrollView } from "react-native";
 import { Interactions } from 'aws-amplify';
 import { I18n } from "aws-amplify";
+import { AmplifyButton } from "../AmplifyUI";
 
 const styles = {
     container: {
@@ -156,7 +157,7 @@ export class ChatBot extends Component {
                         blurOnSubmit={false}
                     >
                     </TextInput>
-                    <Button
+                    <AmplifyButton
                         onPress={this.submit.bind(this)}
                         type="submit"
                         style={[styles.button, overrideStyles.button]}
