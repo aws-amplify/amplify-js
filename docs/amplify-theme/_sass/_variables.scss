@@ -13,7 +13,7 @@ $color-yellow: #f6d000 !default;
 // Base
 $color-h2-border: #dadada !default;
 $color-horizontal-rule: #dadada !default;
-$color-list-prefix: #a0a0a0 !default;
+$color-list-prefix:#000  !default;
 $color-definition-list: #8a8a8a !default;
 $color-table-border: #f5f5f5 !default;
 $color-table-header-border: #ececec !default;
@@ -83,7 +83,7 @@ $z-index-offcanvas-toggle: 3 !default;
 /* ----- Media queries breakpoints ----- */
 // Mobile first
 $screen-xs-min: 480px !default; // Extra small screens, Phones
-$screen-sm-min: 768px !default; // Small screens, Tablets
+$screen-sm-min: 828px !default; // Small screens, Tablets
 $screen-md-min: 992px !default; // Medium screens, Desktop
 $screen-lg-min: 1430px !default; // Large screens, Wide desktops
 

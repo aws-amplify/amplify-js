@@ -2,19 +2,21 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { AmplifyService } from '../../../providers';
 
 const template = `
-<div class="amplify-album-container">
-  <amplify-s3-image-core
-    class="amplify-image-container"
-    *ngFor="let item of list"
-    path="{{item.path}}"
-    (selected)="onImageSelected($event)"
-  ></amplify-s3-image-core>
+<div class="amplify-album">
+  <div class="amplify-album-container">
+    <amplify-s3-image-core
+      class="amplify-image-container"
+      *ngFor="let item of list"
+      path="{{item.path}}"
+      (selected)="onImageSelected($event)"
+    ></amplify-s3-image-core>
+  </div>
 </div>
 `;
 
 @Component({
   selector: 'amplify-s3-album-core',
-  template: template
+  template
 })
 export class S3AlbumComponentCore {
   list: Array<Object>;
