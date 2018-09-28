@@ -35,12 +35,6 @@ export default class PushNotification {
         this.updateEndpoint = this.updateEndpoint.bind(this);
         this.handleCampaignPush = this.handleCampaignPush.bind(this);
         this.handleCampaignOpened = this.handleCampaignOpened.bind(this);
-        this._checkIfOpenedByCampaign = this._checkIfOpenedByCampaign.bind(this);
-        
-
-        if ( Platform.OS === 'ios' ) {
-            AppState.addEventListener('change', this._checkIfOpenedByCampaign, false);
-        }
     }
 
     getModuleName() {
@@ -108,20 +102,14 @@ export default class PushNotification {
         });
         this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
         this.addEventListenerForIOS(REMOTE_NOTIFICATION_RECEIVED, this.handleCampaignPush);
-    }
 
-    _checkIfOpenedByCampaign(nextAppState) {
-        const currentState = AppState.currentState;
-        // the app is turned from background to foreground
-        if (currentState.match(/inactive|background/) && nextAppState === 'active') {
-            PushNotificationIOS.getInitialNotification().then(data => {
-                if (data) {
-                    this.handleCampaignOpened(data);
-                }
-            }).catch(e => {
-                logger.debug('Failed to get the initial notification.', e);
-            });
-        };
+        PushNotificationIOS.getInitialNotification().then(data => {
+            if (data) {
+                this.handleCampaignOpened(data);
+            }
+        }).catch(e => {
+            logger.debug('Failed to get the initial notification.', e);
+        });
     }
 
     handleCampaignPush(rawMessage) {
