@@ -19,6 +19,6 @@ const AppState = {
 };
 
 // if not in react native, just use local storage
-const AsyncStorage = window.localStorage;
+const AsyncStorage = window? window.localStorage : undefined;
 
 export { Linking, AppState, AsyncStorage };
