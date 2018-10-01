@@ -60,12 +60,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         // flush event buffer
         this._setupTimer();
-
-        logger.warn(
-            'Please ensure you have updated you Pinpoint IAM Policy' +
-            'with the Action: \"mobiletargeting:PutEvents\" in order to' +
-            'continue using AWS Pinpoint Service'
-        );
     }
 
     private _setupTimer() {
