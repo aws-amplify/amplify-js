@@ -11,3 +11,4 @@ export * from './SelectInput.css';
 export * from './Strike.css';
 export * from './Toast.css';
 export * from './Totp.css';
+export * from './XR.css';
