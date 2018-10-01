@@ -123,7 +123,7 @@ export class SumerianProvider extends AbstractXRProvider {
     
     // Get bundle data from scene api response
     const sceneBundleData = apiResponseJson.bundleData[sceneId];
-    const sceneBundle = await fetch(sceneBundleData.url, sceneBundleData.headers);
+    const sceneBundle = await fetch(sceneBundleData.url, { headers : sceneBundleData.headers });
     const sceneBundleJson = await sceneBundle.json();
 
     try {
