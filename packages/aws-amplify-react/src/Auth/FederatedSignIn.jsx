@@ -14,7 +14,8 @@ import {
     GoogleButton,
     FacebookButton,
     AmazonButton,
-    OAuthButton
+    OAuthButton,
+    Auth0Button
 } from './Provider';
 
 const logger = new Logger('FederatedSignIn');
@@ -63,6 +64,16 @@ export class FederatedButtons extends Component {
               />
     }
 
+    auth0(auth0_config) {
+        if (!auth0_config) { return null;}
+        const { theme, onStateChange } = this.props;
+        return <OAuthButton
+                label={auth0_config? auth0_config.label : undefined}
+                theme={theme}
+                onStateChange={onStateChange}
+              />
+    }
+
     render() {
         const { authState } = this.props;
         if (!['signIn', 'signedOut', 'signedUp'].includes(authState)) { return null; }
@@ -76,10 +87,13 @@ export class FederatedButtons extends Component {
         if (config.oauth) {
             federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
         }
+        if (config.auth0) {
+            federated.auth0_config = Object.assign({}, federated.auth0_config, config.auth0);
+        }
 
         if (JS.isEmpty(federated)) { return null; }
 
-        const { google_client_id, facebook_app_id, amazon_client_id, oauth_config } = federated;
+        const { google_client_id, facebook_app_id, amazon_client_id, oauth_config, auth0_config } = federated;
 
         const theme = this.props.theme || AmplifyTheme;
         return (
@@ -95,6 +109,9 @@ export class FederatedButtons extends Component {
                 </div>
                 <div>
                 {this.OAuth(oauth_config)}
+                </div>
+                <div>
+                {this.auth0(auth0_config)}
                 </div>
                 <Strike>or</Strike>
             </div>
@@ -113,6 +130,9 @@ export default class FederatedSignIn extends Component {
         const config = Auth.configure();
         if (config.oauth) {
             federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+        }
+        if (config.auth0) {
+            federated.auth0_config = Object.assign({}, federated.auth0_config, config.auth0);
         }
 
         if (!federated) {

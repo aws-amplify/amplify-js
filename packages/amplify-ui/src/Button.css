@@ -60,6 +60,21 @@
   padding: 12px;
 }
 
+#auth0SignInButton {
+  background-color: #4285F4;
+  font-family: Roboto;
+  border: 1px solid #4285F4;
+  color: #fff;
+}
+
+#auth0SignInButton > .signInButtonIcon {
+  background-color: #fff;
+  border-radius: 4px 0 0 4px;
+  height: 28px;
+  width: 28px;
+  padding: 12px;
+}
+
 #facebookSignInButton {
   background-color: #4267B2;
   border-color: #4267B2;
