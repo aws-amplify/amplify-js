@@ -60,12 +60,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
         // flush event buffer
         this._setupTimer();
-
-        logger.warn(
-            'Please ensure you have updated you Pinpoint IAM Policy' +
-            'with the Action: \"mobiletargeting:PutEvents\" in order to' +
-            'continue using AWS Pinpoint Service'
-        );
     }
 
     private _setupTimer() {
@@ -253,7 +247,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         const { name, attributes, metrics, eventId, session } = event;
         const { appId, endpointId } = config;
 
-        const endpointContext = this._generateEndpointContext(config);
+        const endpointContext = {};
 
         const eventParams = {
             ApplicationId: appId,
@@ -419,37 +413,65 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
      */
     private _endpointRequest(config, event) {
         const { credentials } = config;
-        const clientInfo = this._clientInfo;
-        const {
-            Address, 
-            RequestId, 
-            Attributes,
-            UserAttributes,
-            UserId,
-            OptOut
-        } = event;
-
-        const ChannelType = Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
-
-        const ret = {
-            Address,
-            Attributes,
+        const clientInfo = this._clientInfo || {};
+        const clientContext = config.clientContext || {};
+        // for now we have three different ways for default endpoint configurations
+        // clientInfo
+        // clientContext (deprecated)
+        // config.endpoint
+        const defaultEndpointConfig = config.endpoint || {};
+        const demographicByClientInfo = {
+            AppVersion: clientInfo.appVersion,
+            Make: clientInfo.make,
+            Model: clientInfo.model,
+            ModelVersion: clientInfo.version,
+            Platform: clientInfo.platform
+        };
+        const demographicByClientContext = {};
+        if (clientContext['make']) demographicByClientContext['Make'] = clientContext['make'];
+        if (clientContext['model']) demographicByClientContext['Model'] = clientContext['model'];
+        if (clientContext['locale']) demographicByClientContext['Locale'] = clientContext['local'];
+        if (clientContext['appVersion']) demographicByClientContext['AppVersion'] = clientContext['appVersion'];
+        if (clientContext['platform']) demographicByClientContext['Platform'] = clientContext['platform'];
+        if (clientContext['platformVersion']) {
+            demographicByClientContext['PlatformVersion'] = clientContext['platformVersion'];
+        }
+        const ChannelType = event.Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
+        const tmp = {
             ChannelType,
-            Demographic: {
-                AppVersion: event.appVersion || clientInfo.appVersion,
-                Make: clientInfo.make,
-                Model: clientInfo.model,
-                ModelVersion: clientInfo.version,
-                Platform: clientInfo.platform
+            RequestId: uuid(),
+            EffectiveDate:new Date().toISOString(),
+            ...defaultEndpointConfig,
+            ...event,
+            Attributes: {
+                ...defaultEndpointConfig.Attributes,
+                ...event.Attributes
             },
-            OptOut,
-            RequestId,
-            EffectiveDate: Address? new Date().toISOString() : undefined,
-            User: { 
-                UserId: UserId? UserId: credentials.identityId,
-                UserAttributes
+            Demographic: {
+                ...demographicByClientInfo,
+                ...demographicByClientContext,
+                ...defaultEndpointConfig.Demographic,
+                ...event.Demographic
+            },
+            Location: {
+                ...defaultEndpointConfig.Location,
+                ...event.Location
+            },
+            Metrics: {
+                ...defaultEndpointConfig.Metrics,
+                ...event.Metrics
+            },
+            User: {
+                UserId: event.UserId|| defaultEndpointConfig.UserId || credentials.identityId,
+                UserAttributes: {
+                    ...defaultEndpointConfig.UserAttributes,
+                    ...event.UserAttributes
+                }
             }
         };
+
+        // eliminate unnecessary params
+        const { UserId, UserAttributes, name, session, eventId, immediate, ...ret } = tmp;
         return ret;
     }
 
