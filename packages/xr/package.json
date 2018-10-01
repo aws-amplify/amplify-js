@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/xr",
-  "version": "0.1.4-unstable.3",
+  "version": "0.1.4-unstable.4",
   "description": "XR category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
