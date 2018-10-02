@@ -5,8 +5,7 @@ import API, { graphqlOperation } from '../src/API';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import { Signer, ConsoleLogger as Logger, Credentials, Amplify } from '@aws-amplify/core';
-import { anonOperationNotAloneMessage } from 'graphql/validation/rules/LoneAnonymousOperation';
+import { Signer, Credentials } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 
 jest.mock('axios');
@@ -384,7 +383,6 @@ describe('API test', () => {
         });
 
         test('custom_header', async () => {
-            Logger.LOG_LEVEL = 'DEBUG';
             const custom_config = {
                 API: {
                     endpoints: [
@@ -409,7 +407,6 @@ describe('API test', () => {
                     res({});
                 });
             });
-            console.log('api options', JSON.stringify(api._options, null, 2));
             await api.get('apiName', 'path', {});
 
             expect(spyonRequest).toBeCalledWith({
@@ -470,7 +467,7 @@ describe('API test', () => {
                 }
             }
             await api.get('apiName', '/items', init);
-            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "queryStringParameters": {"ke:y3": "val:ue 3"}, "url": "endpoint/items?ke%3Ay3=val%3Aue%203"};
+            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "url": "endpoint/items?ke%3Ay3=val%3Aue%203"};
             expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
         });
 
@@ -572,7 +569,7 @@ describe('API test', () => {
                 }
             }
             await api.get('apiName', '/items?key1=value1&key2=value', init);
-            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "queryStringParameters": {"key2": "value2_real"}, "url": "endpoint/items?key1=value1&key2=value2_real"};
+            const expectedParams = {"data": null, "headers": {}, "host": undefined, "method": "GET", "path": "/", "url": "endpoint/items?key1=value1&key2=value2_real"};
             expect(spyonSigner).toBeCalledWith( expectedParams, creds2 , { region: 'us-east-1', service: 'execute-api'});
         });
 
@@ -653,7 +650,6 @@ describe('API test', () => {
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce(() => {
-                console.log('spyon2, post');
                 return Promise.resolve();
             });
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {

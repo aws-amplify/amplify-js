@@ -88,6 +88,17 @@ $ npm install aws-amplify-angular --save
 
 Visit our [Installation Guide for Web](https://aws.github.io/aws-amplify/media/install_n_config?platform=javascript) to start building your web app.  
 
+__Vue__
+
+If you are developing a [Vue](https://github.com/vuejs/vue) app, you can install an additional package `aws-amplify-vue`. This package contains a [Vue plugin](https://vuejs.org/v2/guide/plugins.html) for the Amplify library along with [Vue components](https://vuejs.org/v2/guide/components.html).
+
+```bash
+$ npm install aws-amplify --save
+$ npm install aws-amplify-vue --save
+```
+
+Visit our [Installation Guide for Web](https://aws-amplify.github.io/amplify-js/media/vue_guide#vue) to start building your Vue app.  
+
 __React Native__
 
 For React Native development, install `aws-amplify` 
@@ -123,7 +134,6 @@ import aws_exports from './aws-exports';
 
 // in this way you are only importing Auth and configuring it.
 Amplify.configure(aws_exports);
-
 
 ```
 

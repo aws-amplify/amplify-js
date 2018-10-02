@@ -48,19 +48,6 @@ export default class SignIn extends AuthPiece {
         this.checkContact = this.checkContact.bind(this);
         this.signIn = this.signIn.bind(this);
     }
-    
-    checkContact(user) {
-        Auth.verifiedContact(user)
-            .then(data => {
-                logger.debug('verified user attributes', data);
-                if (!JS.isEmpty(data.verified)) {
-                    this.changeState('signedIn', user);
-                } else {
-                    user = Object.assign(user, data);
-                    this.changeState('verifyContact', user);
-                }
-            });
-    }
 
     signIn() {
         const { username, password } = this.state;
