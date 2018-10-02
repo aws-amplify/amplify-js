@@ -192,7 +192,11 @@ export default class AuthClass {
                     return;
                 }
                 const curUrl = window.location.href;
-                this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
+                try {
+                    this._cognitoAuthClient.parseCognitoWebResponse(curUrl);
+                } catch (err) {
+                    logger.debug('something wrong when parsing the url', err);
+                }
             });
         }
 

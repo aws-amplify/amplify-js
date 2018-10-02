@@ -16,7 +16,7 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
-import auth0 from 'auth-js';
+import auth0 from 'auth0-js';
 import { auth0SignInButton } from '@aws-amplify/ui';
 import {
     SignInButton,
@@ -43,22 +43,55 @@ export default function withAuth0(Comp) {
 
         initialize() {
             const config = this.props.auth0_config || Auth.configure().auth0;
-            logger.debug('withAuth0 configuration', config);
+            const { onError, onStateChange, authState } = this.props;
             if (!config) {
                 logger.debug('Auth0 is not configured');
+                return;
             }
+
+            logger.debug('withAuth0 configuration', config);
 
             if (!this._auth0) {
                 this._auth0 = new auth0.WebAuth(config);
             }
             
-            this._auth0.parseHash((err, authResult) => {
-                if (authResult && authResult.accessToken && authResult.idToken) {
-                    console.log(authResult);
-                } else if (err) {
-                    console.log(err);
-                }
-            });
+            if (authState !== 'signedIn') {
+                this._auth0.parseHash((err, authResult) => {
+                    if (err) {
+                        logger.debug('Failed to parse the url for Auth0', err);
+                        return;
+                    }
+                    this._auth0.client.userInfo(authResult.accessToken, (err, user) => {
+                        let username = undefined;
+                        let email = undefined;
+                        if (err) {
+                            logger.debug('Failed to get the user info', err);
+                        } else {
+                            username = user.name;
+                            email = user.email;
+                        }
+
+                        Auth.federatedSignIn(
+                            config.domain,
+                            {
+                                token: authResult.idToken,
+                                expires_at: authResult.expires_in * 7200 + new Date().getTime()
+                            },
+                            { name: username, email }
+                        ).then((cred) => {
+                            if (onStateChange) {
+                                Auth.currentAuthenticatedUser().then(user => {
+                                    onStateChange('signedIn', user);
+                                });
+                            }
+                        }).catch((e) => {
+                            logger.debug('Failed to get the aws credentials', e);
+                            if (onError) onError(e);
+                        });
+                    });
+                });
+            }
+           
         }
 
         async signIn() {
