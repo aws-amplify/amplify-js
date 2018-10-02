@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-vue",
-  "version": "0.1.1",
+  "version": "0.1.2-unstable.0",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
