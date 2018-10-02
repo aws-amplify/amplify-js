@@ -13,7 +13,7 @@
 
  import React, { Component } from 'react';
 
-import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
 import auth0 from 'auth-js';
@@ -31,19 +31,14 @@ export default function withAuth0(Comp) {
     return class extends Component {
         constructor(props) {
             super(props);
-            Hub.listen('auth', this);
             this._auth0 = null;
 
             this.initialize = this.initialize.bind(this);
-            this.onHubCapsule = this.onHubCapsule.bind(this);
             this.signIn = this.signIn.bind(this);
         }
 
-        onHubCapsule(capsule) {
-            const { channel, payload } = capsule;
-            if (channel === 'auth' && payload.event === 'configured') { 
-                this.initialize();
-            }
+        componentDidMount() {
+            this.initialize();
         }
 
         initialize() {
@@ -53,7 +48,10 @@ export default function withAuth0(Comp) {
                 logger.debug('Auth0 is not configured');
             }
 
-            this._auth0 = new auth0.WebAuth(config);
+            if (!this._auth0) {
+                this._auth0 = new auth0.WebAuth(config);
+            }
+            
             this._auth0.parseHash((err, authResult) => {
                 if (authResult && authResult.accessToken && authResult.idToken) {
                     console.log(authResult);

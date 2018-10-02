@@ -67,7 +67,7 @@ export class FederatedButtons extends Component {
     auth0(auth0_config) {
         if (!auth0_config) { return null;}
         const { theme, onStateChange } = this.props;
-        return <OAuthButton
+        return <Auth0Button
                 label={auth0_config? auth0_config.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
