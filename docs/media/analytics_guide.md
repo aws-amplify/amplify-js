@@ -325,7 +325,7 @@ Analytics.configure({
 
 ```
 
-The default provider (Amazon Pinpoint) is in use when you call `Analytics.record()` unelss you specify a different provider: `Analytics.record({..},'MyAnalyticsProvider')`. 
+The default provider (Amazon Pinpoint) is in use when you call `Analytics.record()` unless you specify a different provider: `Analytics.record({..},'MyAnalyticsProvider')`. 
 {: .callout .callout--info}
 
 ## Using Modular Imports
