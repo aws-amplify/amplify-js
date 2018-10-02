@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-angular",
-  "version": "2.0.8-unstable.6",
+  "version": "2.0.8-unstable.7",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
   "module": "dist/index.js",
@@ -29,7 +29,7 @@
     "@angular/forms": "^6.0.3",
     "@angular/platform-browser": "^5.2.9",
     "@angular/platform-browser-dynamic": "^5.2.9",
-    "@aws-amplify/ui": "^1.0.4",
+    "@aws-amplify/ui": "^1.0.5-unstable.0",
     "@types/jest": "^23.1.5",
     "@types/node": "^9.4.6",
     "@types/paho-mqtt": "^1.0.3",
