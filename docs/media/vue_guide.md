@@ -51,7 +51,7 @@ export default {
 
 ## AmplifyEventBus
 
-The aws-amplify-vue package implments a Vue EventBus for emitting and listening to events within it's components.  The events emmitted by the components are listed within the documentation for each individual component.
+The aws-amplify-vue package implements a Vue EventBus for emitting and listening to events within it's components.  The events emmitted by the components are listed within the documentation for each individual component.
 
 To listen to these events within one of your components, import the EventBus:
 
