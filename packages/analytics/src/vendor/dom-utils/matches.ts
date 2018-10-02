@@ -3,12 +3,12 @@
  */
 
 const proto = window && window['Element']? window['Element'].prototype: null;
-const nativeMatches = proto.matches ||
+const nativeMatches = proto ? proto.matches ||
       proto.matchesSelector ||
       proto.webkitMatchesSelector ||
       proto.mozMatchesSelector ||
       proto.msMatchesSelector ||
-      proto.oMatchesSelector;
+      proto.oMatchesSelector : null;
 
 
 /**
