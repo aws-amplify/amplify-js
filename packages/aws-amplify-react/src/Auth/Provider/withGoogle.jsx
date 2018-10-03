@@ -22,6 +22,7 @@ import {
     SignInButtonIcon,
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
+import Constants from '../common/constants';
 
 
 const logger = new Logger('withGoogle');
@@ -40,17 +41,18 @@ export default function withGoogle(Comp) {
 
         signIn() {
             const ga = window.gapi.auth2.getAuthInstance();
-            const { onError, onAuthEvent } = this.props;
+            const { onError } = this.props;
             ga.signIn().then(
                 googleUser => {
                     this.federatedSignIn(googleUser);
-                    if (onAuthEvent) {
-                        onAuthEvent(null, {
-                            type: 'source',
-                            payload: {
-                                provider: 'Google',
-                            } 
-                        });
+                    const payload = {
+                        provider: Constants.GOOGLE
+                    }
+
+                    try {
+                        localStorage.setItem(Constants.authSourceKey, JSON.stringify(payload));
+                    } catch (e) {
+                        logger.debug('Failed to cache auth source into localStorage', e);
                     }
                 },
                 error => {

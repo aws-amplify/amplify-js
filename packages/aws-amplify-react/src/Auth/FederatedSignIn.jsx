@@ -24,12 +24,11 @@ export class FederatedButtons extends Component {
     google(google_client_id) {
         if (!google_client_id) { return null; }
 
-        const { theme, onStateChange, onAuthEvent } = this.props;
+        const { theme, onStateChange } = this.props;
         return <GoogleButton
                 google_client_id={google_client_id}
                 theme={theme}
                 onStateChange={onStateChange}
-                onAuthEvent={onAuthEvent}
               />
     }
 
@@ -41,7 +40,6 @@ export class FederatedButtons extends Component {
                 facebook_app_id={facebook_app_id}
                 theme={theme}
                 onStateChange={onStateChange}
-                onAuthEvent={onAuthEvent}
                 />
     }
 
@@ -53,7 +51,6 @@ export class FederatedButtons extends Component {
                 amazon_client_id={amazon_client_id}
                 theme={theme}
                 onStateChange={onStateChange}
-                onAuthEvent={onAuthEvent}
               />
     }
 
@@ -64,7 +61,6 @@ export class FederatedButtons extends Component {
                 label={oauth_config? oauth_config.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
-                onAuthEvent={onAuthEvent}
               />
     }
 
@@ -75,7 +71,6 @@ export class FederatedButtons extends Component {
                 label={auth0_config? auth0_config.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
-                onAuthEvent={onAuthEvent}
               />
     }
 
@@ -126,7 +121,7 @@ export class FederatedButtons extends Component {
 
 export default class FederatedSignIn extends Component {
     render() {
-        const { authState, onStateChange, onAuthEvent } = this.props;
+        const { authState, onStateChange } = this.props;
         let federated = this.props.federated || {};
         if (!Auth || typeof Auth.configure !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
@@ -156,7 +151,6 @@ export default class FederatedSignIn extends Component {
                         theme={theme}
                         authState={authState}
                         onStateChange={onStateChange}
-                        onAuthEvent={onAuthEvent}
                     />
                 </SectionBody>
             </FormSection>

@@ -18,6 +18,7 @@ import AuthPiece from './AuthPiece';
 import { NavBar, Nav, NavRight, NavItem, NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+import Constants from './common/constants';
 
 const logger = new Logger('Greetings');
 
@@ -45,16 +46,22 @@ export default class Greetings extends AuthPiece {
     }
 
     signOut() {
-        const { source = { provider: 'Cognito' } } = this.props;
-        logger.debug('sign out from the source', source);
-        switch (source.provider) {
-            case 'Google':
+        let payload = {};
+        try {
+            payload = JSON.parse(localStorage.getItem(Constants.AUTH_SOURCE_KEY));
+        } catch (e) {
+            logger.debug(`Failed to parse the info from ${Constants.AUTH_SOURCE_KEY} from localStorage with ${e}`);
+        }
+
+        logger.debug('sign out from the source', payload);
+        switch (payload.provider) {
+            case Constants.GOOGLE:
                 this.googleSignOut();
                 break;
-            case 'Facebook':
+            case Constants.FACEBOOK:
                 this.facebookSignOut();
                 break;
-            case 'Auth0':
+            case Constants.AUTH0:
                 this.auth0SignOut();
                 break;
             default:

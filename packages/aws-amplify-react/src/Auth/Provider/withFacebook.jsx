@@ -22,6 +22,7 @@ import {
     SignInButtonIcon,
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
+import Constants from '../common/constants';
 
 
 const logger = new Logger('withFacebook');
@@ -41,7 +42,7 @@ export default function withFacebook(Comp) {
 
         signIn() {
             const fb = window.FB;
-            const { onAuthEvent } = this.props;
+
             fb.getLoginStatus(response => {
                 if (response.status === 'connected') {
                     this.federatedSignIn(response.authResponse);
@@ -50,14 +51,17 @@ export default function withFacebook(Comp) {
                         if (!response || !response.authResponse) {
                             return;
                         }
-                        if (onAuthEvent) {
-                        onAuthEvent(null, {
-                            type: 'source',
-                            payload: {
-                                provider: 'Facebook',
-                            } 
-                        });
-                    }
+
+                        const payload = {
+                            provider: Constants.FACEBOOK
+                        }
+
+                        try {
+                            localStorage.setItem(Constants.authSourceKey, JSON.stringify(payload));
+                        } catch (e) {
+                            logger.debug('Failed to cache auth source into localStorage', e);
+                        }
+
                         this.federatedSignIn(response.authResponse);
                     }, {scope: 'public_profile,email'});
                 }

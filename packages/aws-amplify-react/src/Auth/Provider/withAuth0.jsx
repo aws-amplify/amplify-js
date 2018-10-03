@@ -23,6 +23,7 @@ import {
     SignInButtonIcon,
     SignInButtonContent
 } from '../../Amplify-UI/Amplify-UI-Components-React';
+import Constants from '../common/constants';
 
 
 const logger = new Logger('withAuth0');
@@ -62,20 +63,21 @@ export default function withAuth0(Comp) {
                         logger.debug('Failed to parse the url for Auth0', err);
                         return;
                     }
-                    if (onAuthEvent) {
-                        onAuthEvent(null, {
-                            type: 'source',
-                            payload: {
-                                provider: 'Auth0',
-                                opts: {
-                                    returnTo: config.returnTo,
-                                    clientID: config.clientID,
-                                    federated: config.federated
-                                }
-                            } 
-                        });
+                    const payload = {
+                        provider: Constants.AUTH0,
+                        opts: {
+                            returnTo: config.returnTo,
+                            clientID: config.clientID,
+                            federated: config.federated
+                        }
                     }
 
+                    try {
+                        localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
+                    } catch (e) {
+                        logger.debug('Failed to cache auth source into localStorage', e);
+                    }
+              
                     this._auth0.client.userInfo(authResult.accessToken, (err, user) => {
                         let username = undefined;
                         let email = undefined;

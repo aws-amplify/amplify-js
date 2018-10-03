@@ -98,15 +98,12 @@ export default class Authenticator extends Component {
             const map = this.props.errorMessage || AmplifyMessageMap;
             const message = (typeof map === 'string')? map : map(event.data);
             this.setState({ error: message, showToast: true });
-        } else if (event.type === 'source') {
-            this.setState({
-                source: event.payload
-            });
+            
         }
     }
 
     render() {
-        const { auth, authData, source } = this.state;
+        const { auth, authData } = this.state;
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
@@ -149,8 +146,7 @@ export default class Authenticator extends Component {
                     authData: authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide,
-                    source
+                    hide: hide
                 });
         });
        
@@ -163,8 +159,7 @@ export default class Authenticator extends Component {
                     authData: authData,
                     onStateChange: this.handleStateChange,
                     onAuthEvent: this.handleAuthEvent,
-                    hide: hide,
-                    source
+                    hide: hide
                 });
             });
 
