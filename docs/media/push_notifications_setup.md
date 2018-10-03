@@ -178,8 +178,9 @@ Setup instructions are provided for Android and iOS, and configuration for both 
     $ react-native init myapp
     $ cd myapp
     $ npm install
-    $ npm install aws-amplify --save
+    $ npm install aws-amplify --save && npm install @aws-amplify/pushnotification --save
     $ npm install aws-amplify-react-native --save
+    $ react-native link @aws-amplify/pushnotification
     $ react-native link aws-amplify-react-native
     ```
     Please note that linking `aws-amplify-react-native` but not completing the rest of the configuration steps could break your build process. Please be sure that you have completed all the steps before you build your app.
