@@ -41,7 +41,7 @@ export default function withFacebook(Comp) {
 
         signIn() {
             const fb = window.FB;
-
+            const { onAuthEvent } = this.props;
             fb.getLoginStatus(response => {
                 if (response.status === 'connected') {
                     this.federatedSignIn(response.authResponse);
@@ -50,6 +50,14 @@ export default function withFacebook(Comp) {
                         if (!response || !response.authResponse) {
                             return;
                         }
+                        if (onAuthEvent) {
+                        onAuthEvent(null, {
+                            type: 'source',
+                            payload: {
+                                provider: 'Facebook',
+                            } 
+                        });
+                    }
                         this.federatedSignIn(response.authResponse);
                     }, {scope: 'public_profile,email'});
                 }

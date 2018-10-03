@@ -40,9 +40,19 @@ export default function withGoogle(Comp) {
 
         signIn() {
             const ga = window.gapi.auth2.getAuthInstance();
-            const { onError } = this.props;
+            const { onError, onAuthEvent } = this.props;
             ga.signIn().then(
-                googleUser => this.federatedSignIn(googleUser),
+                googleUser => {
+                    this.federatedSignIn(googleUser);
+                    if (onAuthEvent) {
+                        onAuthEvent(null, {
+                            type: 'source',
+                            payload: {
+                                provider: 'Google',
+                            } 
+                        });
+                    }
+                },
                 error => {
                     if (onError) onError(error);
                     else throw error;

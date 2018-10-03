@@ -45,8 +45,21 @@ export default class Greetings extends AuthPiece {
     }
 
     signOut() {
-        this.googleSignOut();
-        this.facebookSignOut();
+        const { source = { provider: 'Cognito' } } = this.props;
+        logger.debug('sign out from the source', source);
+        switch (source.provider) {
+            case 'Google':
+                this.googleSignOut();
+                break;
+            case 'Facebook':
+                this.facebookSignOut();
+                break;
+            case 'Auth0':
+                this.auth0SignOut();
+                break;
+            default:
+                break;
+        }
         if (!Auth || typeof Auth.signOut !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
@@ -58,13 +71,13 @@ export default class Greetings extends AuthPiece {
     googleSignOut() {
         const authInstance = window.gapi && window.gapi.auth2? window.gapi.auth2.getAuthInstance() : null;
         if (!authInstance) {
-            return Promise.resolve(null);
+            return Promise.resolve();
         }
 
         authInstance.then((googleAuth) => {
             if (!googleAuth) {
                 logger.debug('google Auth undefined');
-                return Promise.resolve(null);
+                return Promise.resolve();
             }
 
             logger.debug('google signing out');
@@ -76,7 +89,7 @@ export default class Greetings extends AuthPiece {
         const fb = window.FB;
         if (!fb) {
             logger.debug('FB sdk undefined');
-            return Promise.resolve(null);
+            return Promise.resolve();
         }
 
         fb.getLoginStatus(response => {
@@ -88,8 +101,24 @@ export default class Greetings extends AuthPiece {
                     });
                 });
             } else {
-                return Promise.resolve(null);
+                return Promise.resolve();
             }
+        });
+    }
+
+    auth0SignOut() {
+        const auth0 = window.auth0;
+        const { source } = this.props;
+        const { returnTo, clientId, federated } = source.opts || {};
+        if (!auth0) {
+            logger.debug('auth0 sdk undefined');
+            return Promise.resolve();
+        }
+
+        auth0.logOut({
+            returnTo,
+            clientId,
+            federated
         });
     }
 

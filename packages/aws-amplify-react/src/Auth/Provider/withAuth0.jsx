@@ -43,7 +43,7 @@ export default function withAuth0(Comp) {
 
         initialize() {
             const config = this.props.auth0_config || Auth.configure().auth0;
-            const { onError, onStateChange, authState } = this.props;
+            const { onError, onStateChange, authState, onAuthEvent } = this.props;
             if (!config) {
                 logger.debug('Auth0 is not configured');
                 return;
@@ -53,14 +53,29 @@ export default function withAuth0(Comp) {
 
             if (!this._auth0) {
                 this._auth0 = new auth0.WebAuth(config);
+                window.auth0 = this._auth0;
             }
             
             if (authState !== 'signedIn') {
                 this._auth0.parseHash((err, authResult) => {
-                    if (err) {
+                    if (err || !authResult) {
                         logger.debug('Failed to parse the url for Auth0', err);
                         return;
                     }
+                    if (onAuthEvent) {
+                        onAuthEvent(null, {
+                            type: 'source',
+                            payload: {
+                                provider: 'Auth0',
+                                opts: {
+                                    returnTo: config.returnTo,
+                                    clientID: config.clientID,
+                                    federated: config.federated
+                                }
+                            } 
+                        });
+                    }
+
                     this._auth0.client.userInfo(authResult.accessToken, (err, user) => {
                         let username = undefined;
                         let email = undefined;
@@ -75,7 +90,7 @@ export default function withAuth0(Comp) {
                             config.domain,
                             {
                                 token: authResult.idToken,
-                                expires_at: authResult.expires_in * 7200 + new Date().getTime()
+                                expires_at: authResult.expiresIn * 1000 + new Date().getTime()
                             },
                             { name: username, email }
                         ).then((cred) => {
@@ -91,7 +106,6 @@ export default function withAuth0(Comp) {
                     });
                 });
             }
-           
         }
 
         async signIn() {
