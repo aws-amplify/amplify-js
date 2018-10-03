@@ -58,7 +58,7 @@ export default class GoogleOAuth {
 
     private _refreshGoogleTokenImpl() {
         let ga = null;
-        if (window) ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+        if (JS.browserOrNode().isBrowser) ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
         if (!ga) {
             logger.debug('no gapi auth2 available');
             return Promise.reject('no gapi auth2 available');
