@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.6-unstable.0"></a>
+## [1.0.6-unstable.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.5-unstable.0...@aws-amplify/ui@1.0.6-unstable.0) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.5"></a>
+## [1.0.5](https://github.com/powerful23/aws-amplify/compare/@aws-amplify/ui@1.0.5-unstable.0...@aws-amplify/ui@1.0.5) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.5-unstable.0"></a>
+## [1.0.5-unstable.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.4...@aws-amplify/ui@1.0.5-unstable.0) (2018-10-02)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.4"></a>
+## [1.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.4-unstable.1...@aws-amplify/ui@1.0.4) (2018-09-27)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.4-unstable.1"></a>
+## [1.0.4-unstable.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.4-unstable.0...@aws-amplify/ui@1.0.4-unstable.1) (2018-09-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
+<a name="1.0.4-unstable.0"></a>
+## [1.0.4-unstable.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.3...@aws-amplify/ui@1.0.4-unstable.0) (2018-09-26)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/ui
+
 <a name="1.0.3"></a>
 ## [1.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.2...@aws-amplify/ui@1.0.3) (2018-09-17)
 
