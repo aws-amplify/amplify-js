@@ -144,7 +144,8 @@ export default class StorageClass {
      * Put a file in S3 bucket specified to configure method
      * @param {Stirng} key - key of the object
      * @param {Object} object - File to be put in Amazon S3 bucket
-     * @param {Object} [options] - { level : private|protected|public, contentType: MIME Types, progressCallback: function }
+     * @param {Object} [options] - { level : private|protected|public, contentType: MIME Types,
+     *  progressCallback: function }
      * @return - promise resolves to object on success
      */
     public async put(key: string, object, options?): Promise<Object> {
