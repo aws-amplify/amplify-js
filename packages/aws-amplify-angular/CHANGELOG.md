@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.8"></a>
+## [2.0.8](https://github.com/powerful23/aws-amplify/compare/aws-amplify-angular@2.0.8-unstable.7...aws-amplify-angular@2.0.8) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
 <a name="2.0.8-unstable.7"></a>
 ## [2.0.8-unstable.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.8-unstable.6...aws-amplify-angular@2.0.8-unstable.7) (2018-10-02)
 
