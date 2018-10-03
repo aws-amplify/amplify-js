@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.15-unstable.1"></a>
+## [1.0.15-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.15-unstable.0...@aws-amplify/pubsub@1.0.15-unstable.1) (2018-10-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** paho-mqtt typescript ([#1821](https://github.com/aws/aws-amplify/issues/1821)) ([4d0802c](https://github.com/aws/aws-amplify/commit/4d0802c))
+
+
+
+
 <a name="1.0.15-unstable.0"></a>
 ## [1.0.15-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.0.14-unstable.1...@aws-amplify/pubsub@1.0.15-unstable.0) (2018-10-03)
 
