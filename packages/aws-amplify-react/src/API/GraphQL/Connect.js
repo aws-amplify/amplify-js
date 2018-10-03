@@ -79,7 +79,9 @@ export default class Connect extends Component {
                     next: ({ value: { data } }) => {
                         const { data: prevData } = this.state;
                         const newData = onSubscriptionMsg(prevData, data);
-                        this.setState({ data: newData });
+                        if (this.mounted) {
+                            this.setState({ data: newData });
+                        }
                     },
                     error: err => console.error(err),
                 });
@@ -99,10 +101,12 @@ export default class Connect extends Component {
 
     async componentDidMount() {
         this._fetchData();
+        this.mounted = true;
     }
 
     componentWillUnmount() {
         this._unsubscribe();
+        this.mounted = false;
     }
 
     componentDidUpdate(prevProps) {
