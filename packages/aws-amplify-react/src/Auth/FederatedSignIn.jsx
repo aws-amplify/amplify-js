@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { JS, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
@@ -96,7 +96,7 @@ export class FederatedButtons extends Component {
                 <div>
                 {this.OAuth(oauth_config)}
                 </div>
-                <Strike>or</Strike>
+                <Strike>{I18n.get('or')}</Strike>
             </div>
         )
     }

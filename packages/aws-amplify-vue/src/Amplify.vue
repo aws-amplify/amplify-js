@@ -43,7 +43,6 @@ export default {
 </script>
 
 <style src='@aws-amplify/ui/dist/style.css'></style>
-<style src='@aws-amplify/ui/src/Angular.css'></style>
 <style>
   .invalid {
     border-color: red;
