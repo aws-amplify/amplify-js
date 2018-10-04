@@ -12,7 +12,7 @@ AWS Amplify provides drop-in UI components with a [style guide](https://aws-ampl
 
 ## Authentication
 
-User interface elements that provide drop-in components for user authentication. By defaulthese copmonents will use Amazon Cognito
+User interface elements that provide drop-in components for user authentication. By default copmonents will use Amazon Cognito
 
 ### Authenticator
 
