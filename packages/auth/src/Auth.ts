@@ -19,7 +19,8 @@ import {
     ConfirmSignUpOptions, 
     SignOutOpts,
     ExternalSession,
-    AuthProvider
+    AuthProvider,
+    SetSessionResult
 } from './types';
 
 import {
@@ -145,7 +146,8 @@ export default class AuthClass {
             userPoolId,
             identityPoolId,
             refreshHandlers,
-            storage: this._storage
+            storage: this._storage,
+            _keyPrefix: this._keyPrefix
         });
 
         // initiailize cognitoauth client if hosted ui options provided
@@ -1090,18 +1092,10 @@ export default class AuthClass {
      */
     public async currentAuthenticatedUser(): Promise<CognitoUser|any> {
         logger.debug('getting current authenticted user');
-        let federatedUser = null;
-        try {
-            federatedUser = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo')).user;
-        } catch (e) {
-            logger.debug('cannot load federated user from auth storage');
-        }
-        
-        if (federatedUser) {
-            this.user = federatedUser;
-            logger.debug('get current authenticated federated user', this.user);
-            return this.user;
-        } else {
+
+        await this._storageSync;
+        const sessionSource = this._storage.getItem(`${this._keyPrefix}_sessionSource`);
+        if (!sessionSource || sessionSource === 'AWSCognito') {
             logger.debug('get current authenticated userpool user');
             let user = null;
             try {
@@ -1112,6 +1106,17 @@ export default class AuthClass {
             }
             this.user = user;
             return this.user;
+        } else {
+            const providerClass: AuthProvider = this._pluggables.filter(
+                pluggable => pluggable.getProviderName() === sessionSource
+            );
+            try {
+                this.user = await providerClass.getUser();
+                return this.user;
+            } catch (e) {
+                logger.debug('The user is not authenticated by the error', e);
+                throw ('not authenticated');
+            }
         }
     }
 
@@ -1180,22 +1185,11 @@ export default class AuthClass {
      * @return - A promise resolves to be current user's credentials
      */
     public currentUserCredentials(): Promise<ICredentials> {
-        const that = this;
         logger.debug('Getting current user credentials');
         
-        // first to check whether there is federation info in the auth storage
-        let federatedInfo = null;
-        try {
-            federatedInfo = JSON.parse(this._storage.getItem('aws-amplify-federatedInfo'));
-        } catch (e) {
-            logger.debug('failed to get or parse item aws-amplify-federatedInfo', e);
-        }
-
-        if (federatedInfo) {
-            // refresh the jwt token here if necessary
-            return Credentials.refreshFederatedToken(federatedInfo);
-        } else {
-            return this.currentSession()
+        const sessionSource = this._storage.getItem(`${this._keyPrefix}_sessionSource`);
+        if (!sessionSource || sessionSource === 'AWSCognito') {
+            this.currentSession()
                 .then(session => {
                     logger.debug('getting session success', session);
                     return Credentials.set(session, 'session');
@@ -1203,6 +1197,11 @@ export default class AuthClass {
                     logger.debug('getting session failed', error);
                     return Credentials.set(null, 'guest');
                 });
+        } else {
+            const providerClass: AuthProvider = this._pluggables.filter(
+                pluggable => pluggable.getProviderName() === sessionSource
+            );
+            return providerClass.getCredentials();
         }
     }
 
@@ -1234,7 +1233,6 @@ export default class AuthClass {
                 } catch (e) {
                     logger.debug('Failed to retrieve credentials while getting current user info', e);
                 }
-                
 
                 const info = {
                     'id': credentials? credentials.identityId : undefined,
@@ -1350,33 +1348,53 @@ export default class AuthClass {
      * and the expiration time (the universal time)
      * @param {String} user - user info
      */
-    public federatedSignIn(
+    public async federatedSignIn(
         provider: 'Google'|'Facebook'|'Amazon'|'Developer'|string, 
         response: FederatedResponse, 
         user: FederatedUser
     ): Promise<ICredentials>{
         const { token, identity_id, expires_at } = response;
-        let authProvider = 'Generic';
-        
-        this.setSession({
+        let authProvider = AuthContants.GENERIC;
+        // for backward compatiblity
+        switch(provider) {
+            case 'google':
+                authProvider = AuthContants.GOOGLE;
+                break;
+            case 'facebook': 
+                authProvider = AuthContants.FACEBOOK;
+                break;
+            case 'amazon':
+                authProvider = AuthContants.AMAZON;
+                break;
+            case 'developer':
+                authProvider = AuthContants.DEVELOPER
+                break;
+            default:
+                break;
+        }
+
+        const idToken = authProvider === AuthContants.FACEBOOK? undefined : token;
+        const accessToken = authProvider === AuthContants.FACEBOOK? token : undefined;
+
+        const { credentials } = await this.setSession({
             username: user.name,
             tokens: {
-                
+                idToken,
+                accessToken,
+                expires_at
             },
-            provider: provider
-        })
+            attributes: {
+                identity_id
+            },
+            provider: authProvider,
+            errorHandler: (e) => {
+                throw e;
+            }
+        });
 
-        return new Promise((res, rej) => {
-            Credentials.set({ provider, token, identity_id, user, expires_at }, 'federation').then((cred) => {
-                dispatchAuthEvent('signIn', this.user);
-                logger.debug('federated sign in credentials', cred);
-                res(cred);
-                return;
-            }).catch(e => {
-                rej(e);
-                return;
-            });
-        });    
+        dispatchAuthEvent('signIn', this.user);
+        logger.debug('federated sign in credentials', credentials);
+        return credentials;
     }
 
     /**
@@ -1427,7 +1445,7 @@ export default class AuthClass {
     }
 
 
-    public async setSession(params: ExternalSession) {
+    public async setSession(params: ExternalSession): Promise<SetSessionResult> {
         const { provider } = params;
 
         const providerClass: AuthProvider = this._pluggables.filter(pluggable => pluggable.getProviderName() === provider);

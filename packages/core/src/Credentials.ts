@@ -18,6 +18,7 @@ export class Credentials {
     private _refreshHandlers = {};
     private _storage;
     private _storageSync;
+    private _keyPrefix;
 
     constructor(config) {
         this.configure(config);
@@ -33,7 +34,7 @@ export class Credentials {
         if (!config) return this._config || {};
 
         this._config = Object.assign({}, this._config, config);
-        const { refreshHandlers } = this._config;
+        const { refreshHandlers, _keyPrefix } = this._config;
          // If the developer has provided an object of refresh handlers,
         // then we can merge the provided handlers with the current handlers.
         if (refreshHandlers) {
@@ -50,6 +51,7 @@ export class Credentials {
             this._storageSync = this._storage['sync']();
         }
 
+        this._keyPrefix = _keyPrefix;
         return this._config;
     }
 
@@ -309,13 +311,6 @@ export class Credentials {
         }
         this._credentials = null;
         this._credentials_source = null;
-        this._storage.removeItem('aws-amplify-federatedInfo');
-
-        if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
-            await Amplify.Cache.removeItem('federatedInfo');
-        } else {
-            return Promise.reject('No Cache module registered in Amplify');
-        }
     }
 
     /**

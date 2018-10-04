@@ -37,7 +37,7 @@ export default class GoogleProvider implements AuthProvider {
 
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
         const { _keyPrefix } = this._config;
-        const { username, attributes, tokens } = params;
+        const { username, attributes, tokens, errorHandler } = params;
         
         const session: FederatedProviderSession = {
             idToken: tokens.idToken,
@@ -53,6 +53,17 @@ export default class GoogleProvider implements AuthProvider {
             attributes
         }
         
+        // cache information
+        await this._storageSync;
+        const sessionSourceKey = `${_keyPrefix}_sessionSource`;
+        const sessionKey = `${_keyPrefix}_session`;
+        const userKey = `${_keyPrefix}_user`;
+        const credentialsKey = `${_keyPrefix}_credentials`;
+
+        this._storage.setItem(sessionSourceKey, this.getProviderName());
+        this._storage.setItem(sessionKey, JSON.stringify(session));
+        this._storage.setItem(userKey, JSON.stringify(user));
+
         let credentials = undefined;
         try {
             credentials = await Credentials.set({
@@ -61,14 +72,13 @@ export default class GoogleProvider implements AuthProvider {
                 identity_id: attributes? attributes['identity_id']: undefined
             }, 'federation');
             user.id = credentials.identityId;
+            this._storage.setItem(credentialsKey, JSON.stringify(credentials));
         } catch (e) {
             logger.debug('Failed to get the aws credentials with the tokens provided', e);
+            if (errorHandler) {
+                errorHandler(e);
+            }
         }
-
-        // cache information
-        this._storageSync.then(() => {
-            this._cacheInfo(session, user);
-        });
         
         return {
             session,
@@ -77,27 +87,37 @@ export default class GoogleProvider implements AuthProvider {
         }
     }
 
-    private _cacheInfo(session, user) {
+    public async getSession(): Promise<any> {
+        // refresh to be implemented, also considering offline
+
+        const { _keyPrefix } = this._config;
+        await this._storageSync;
+        return JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
+    }
+
+    public async clearSession(): Promise<void> {
         const { _keyPrefix } = this._config;
         const sessionSourceKey = `${_keyPrefix}_sessionSource`;
         const sessionKey = `${_keyPrefix}_session`;
         const userKey = `${_keyPrefix}_user`;
 
-        this._storage.setItem(sessionSourceKey, this.getProviderName());
-        this._storage.setItem(sessionKey, JSON.stringify(session));
-        this._storage.setItem(userKey, JSON.stringify(user));
+        this._storage.removeItem(sessionSourceKey);
+        this._storage.removeItem(sessionKey);
+        this._storage.removeItem(userKey);
     }
 
-    public async getSession(): Promise<any> {
+    public async getUser(): Promise<any> {
         const { _keyPrefix } = this._config;
-        const sessionKey = `${_keyPrefix}_session`;
-        this._storageSync.then(() => {
-            return this._storage.getItem(sessionKey);
-        });
+        await this._storageSync;
+        return JSON.parse(this._storage.getItem(`${_keyPrefix}_user`));
     }
 
-    public async clearSession(): Promise<void> {
-        logger.debug('tobe implemented');
-        return;
+    public async getCredentials(): Promise<any> {
+        // refresh to be implemented also considering offline
+        
+
+        const { _keyPrefix } = this._config;
+        await this._storageSync;
+        return JSON.parse(this._storage.getItem(`${_keyPrefix}_credentials`));
     }
 }
