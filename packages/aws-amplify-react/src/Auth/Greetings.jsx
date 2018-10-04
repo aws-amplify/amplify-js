@@ -48,7 +48,8 @@ export default class Greetings extends AuthPiece {
     signOut() {
         let payload = {};
         try {
-            payload = JSON.parse(localStorage.getItem(Constants.AUTH_SOURCE_KEY));
+            payload = JSON.parse(localStorage.getItem(Constants.AUTH_SOURCE_KEY)) || {};
+            localStorage.removeItem(Constants.AUTH_SOURCE_KEY);
         } catch (e) {
             logger.debug(`Failed to parse the info from ${Constants.AUTH_SOURCE_KEY} from localStorage with ${e}`);
         }
@@ -62,7 +63,7 @@ export default class Greetings extends AuthPiece {
                 this.facebookSignOut();
                 break;
             case Constants.AUTH0:
-                this.auth0SignOut();
+                this.auth0SignOut(payload);
                 break;
             default:
                 break;
@@ -113,16 +114,15 @@ export default class Greetings extends AuthPiece {
         });
     }
 
-    auth0SignOut() {
+    auth0SignOut(payload) {
         const auth0 = window.auth0;
-        const { source } = this.props;
-        const { returnTo, clientId, federated } = source.opts || {};
+        const { returnTo, clientId, federated } = payload.opts || {};
         if (!auth0) {
             logger.debug('auth0 sdk undefined');
             return Promise.resolve();
         }
 
-        auth0.logOut({
+        auth0.logout({
             returnTo,
             clientId,
             federated

@@ -28,7 +28,7 @@ import Constants from '../common/constants';
 
 const logger = new Logger('withAuth0');
 
-export default function withAuth0(Comp) {
+export default function withAuth0(Comp, options) {
     return class extends Component {
         constructor(props) {
             super(props);
@@ -43,7 +43,7 @@ export default function withAuth0(Comp) {
         }
 
         initialize() {
-            const config = this.props.auth0_config || Auth.configure().auth0;
+            const config = this.props.auth0 || options || Auth.configure().auth0;
             const { onError, onStateChange, authState, onAuthEvent } = this.props;
             if (!config) {
                 logger.debug('Auth0 is not configured');

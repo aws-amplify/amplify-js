@@ -503,6 +503,116 @@ export default class App extends React.Component {
 }
 ```
 
+#### Federated with Auth0
+
+You can use `Auth0` as one of the provider of your Cognito Federated Identity Pool so that you can allow your Auth0 users to have access to your AWS resources. 
+
+Step 1. Learn [how to integrate Auth0 with Cognito Federated Identity Pool](https://auth0.com/docs/integrations/integrating-auth0-amazon-cognito-mobile-apps)
+
+Step 2. Login with `Auth0` and then use the id token to get the AWS credentials from `Cognito Federated Idneitty Pool` by `Auth.federatedSignIn`, for example:
+```js
+const { idToken, domain, expiresIn, user } = getFromAuth0();
+
+Auth.federatedSignIn({
+    domain, // The Auth0 Domain,
+    {
+        token: idToken // The id token from Auth0
+        expires_at: expiresIn * 1000 + new Date().getTime() // the expiration timestamp
+    },
+    user // the user object, e.x. { name: username, email: email }
+}).then(cred => {
+    console.log(cred);
+});
+```
+
+Step3. Now you can get the current user and current Credentials:
+```js
+Auth.currentAuthenticatedUser().then(user => console.log(user));
+Auth.currentCredentials().then(creds => console.log(creds));
+
+// Unfortunately Auth.currentSession() doesn't support federated identities for now. Please store the auth0 session info manually.
+```
+
+Step4. If you want the credentials not to get expired, you can pass a refresh handler to the Auth module to refresh the id token from `Auth0`:
+```js
+function refreshToken() {
+    // refresh the token here and get the new token info
+    // ......
+
+    return new Promise(res, rej => {
+        const data = {
+            token, // the token from the provider
+            expires_at, // the timestamp for the expiration
+            identity_id, // optional, the identityId for the credentials
+        }
+        res(data);
+    });
+}
+
+Auth.configure({
+    refreshHandlers: {
+        'your_auth0_domain': refreshToken
+    }
+})
+```
+
+This feature is also integrated into `aws-amplify-react`. For example:
+```js
+import { withAuthenticator } from 'aws-amplify-react';
+import { Auth } from 'aws-amplify';
+
+// auth0 configuration, more info in: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
+Auth.configure({
+    auth0: {
+        domain: 'your auth0 domain', 
+        clientID: 'your client id',
+        redirectUri: 'your call back url',
+        audience: 'https://your_domain/userinfo',
+        responseType: 'token id_token', // for now we only support implicit grant flow
+        scope: 'openid profile email', // the scope used by your app
+        returnTo: 'your sign out url'
+    }
+});
+
+class App extends Component {
+
+}
+
+export default withAuthenticator(App);
+```
+
+or you can just use the `withAuth0` HOC:
+```js
+import { withAuth0 } from 'aws-amplify-react';
+import { Auth } from 'aws-amplify';
+
+Auth.configure({
+    auth0: {
+        domain: 'your auth0 domain', 
+        clientID: 'your client id',
+        redirectUri: 'your call back url',
+        audience: 'https://your_domain/userinfo',
+        responseType: 'token id_token', // for now we only support implicit grant flow
+        scope: 'openid profile email', // the scope used by your app
+        returnTo: 'your sign out url'
+    }
+});
+
+const Button = (props) => (
+    <div>
+        <img
+            onClick={props.auth0SignIn}
+            src={auth0_icon}
+        />
+    </div>
+);
+
+export default withAuth0(Button);
+```
+
+
+
+
 #### Customize UI
 
 To customize the UI for Federated Identities sign-in, you can use `withFederated` component (react-js only). The following code shows how you customize the login buttons and the layout for social sign-in.

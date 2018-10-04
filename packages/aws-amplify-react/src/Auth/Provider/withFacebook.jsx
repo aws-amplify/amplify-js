@@ -24,7 +24,6 @@ import {
 } from '../../Amplify-UI/Amplify-UI-Components-React';
 import Constants from '../common/constants';
 
-
 const logger = new Logger('withFacebook');
 
 export default function withFacebook(Comp) {
@@ -44,6 +43,15 @@ export default function withFacebook(Comp) {
             const fb = window.FB;
 
             fb.getLoginStatus(response => {
+                const payload = {
+                    provider: Constants.FACEBOOK
+                }
+                try {
+                    localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
+                } catch (e) {
+                    logger.debug('Failed to cache auth source into localStorage', e);
+                }
+                
                 if (response.status === 'connected') {
                     this.federatedSignIn(response.authResponse);
                 } else {
@@ -51,17 +59,6 @@ export default function withFacebook(Comp) {
                         if (!response || !response.authResponse) {
                             return;
                         }
-
-                        const payload = {
-                            provider: Constants.FACEBOOK
-                        }
-
-                        try {
-                            localStorage.setItem(Constants.authSourceKey, JSON.stringify(payload));
-                        } catch (e) {
-                            logger.debug('Failed to cache auth source into localStorage', e);
-                        }
-
                         this.federatedSignIn(response.authResponse);
                     }, {scope: 'public_profile,email'});
                 }

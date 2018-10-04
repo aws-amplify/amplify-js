@@ -50,7 +50,7 @@ export default function withGoogle(Comp) {
                     }
 
                     try {
-                        localStorage.setItem(Constants.authSourceKey, JSON.stringify(payload));
+                        localStorage.setItem(Constants.AUTH_SOURCE_KEY, JSON.stringify(payload));
                     } catch (e) {
                         logger.debug('Failed to cache auth source into localStorage', e);
                     }

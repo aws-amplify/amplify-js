@@ -64,13 +64,14 @@ export class FederatedButtons extends Component {
               />
     }
 
-    auth0(auth0_config) {
-        if (!auth0_config) { return null;}
+    auth0(auth0) {
+        if (!auth0) { return null;}
         const { theme, onStateChange } = this.props;
         return <Auth0Button
-                label={auth0_config? auth0_config.label : undefined}
+                label={auth0? auth0.label : undefined}
                 theme={theme}
                 onStateChange={onStateChange}
+                auth0={auth0}
               />
     }
 
@@ -88,12 +89,12 @@ export class FederatedButtons extends Component {
             federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
         }
         if (config.auth0) {
-            federated.auth0_config = Object.assign({}, federated.auth0_config, config.auth0);
+            federated.auth0 = Object.assign({}, federated.auth0, config.auth0);
         }
 
         if (JS.isEmpty(federated)) { return null; }
 
-        const { google_client_id, facebook_app_id, amazon_client_id, oauth_config, auth0_config } = federated;
+        const { google_client_id, facebook_app_id, amazon_client_id, oauth_config, auth0 } = federated;
 
         const theme = this.props.theme || AmplifyTheme;
         return (
@@ -111,7 +112,7 @@ export class FederatedButtons extends Component {
                 {this.OAuth(oauth_config)}
                 </div>
                 <div>
-                {this.auth0(auth0_config)}
+                {this.auth0(auth0)}
                 </div>
                 <Strike>or</Strike>
             </div>
@@ -132,7 +133,7 @@ export default class FederatedSignIn extends Component {
             federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
         }
         if (config.auth0) {
-            federated.auth0_config = Object.assign({}, federated.auth0_config, config.auth0);
+            federated.auth0 = Object.assign({}, federated.auth0, config.auth0);
         }
 
         if (!federated) {
