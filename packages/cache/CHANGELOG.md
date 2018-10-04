@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.15-unstable.1"></a>
+## [1.0.15-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.15-unstable.0...@aws-amplify/cache@1.0.15-unstable.1) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+<a name="1.0.15-unstable.0"></a>
+## [1.0.15-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.14-unstable.1...@aws-amplify/cache@1.0.15-unstable.0) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+<a name="1.0.14"></a>
+## [1.0.14](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.14-unstable.1...@aws-amplify/cache@1.0.14) (2018-10-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cache
+
 <a name="1.0.14-unstable.1"></a>
 ## [1.0.14-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/cache@1.0.14-unstable.0...@aws-amplify/cache@1.0.14-unstable.1) (2018-10-01)
 

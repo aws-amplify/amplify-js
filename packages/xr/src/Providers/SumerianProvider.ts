@@ -118,7 +118,7 @@ export class SumerianProvider extends AbstractXRProvider {
     } catch (e) {
       logger.debug('No credentials available, the request will be unsigned');
     }
-    const apiResponse = await fetch(url, fetchOptions)
+    const apiResponse = await fetch(url, fetchOptions);
     const apiResponseJson = await apiResponse.json();
     
     // Get bundle data from scene api response
