@@ -119,7 +119,8 @@ export interface FederatedProviderSession {
     accessToken?: string,
     refreshToken?: string,
     expires_at?: string,
-    type: string
+    type: string,
+    provider: string
 }
 
 export interface AuthProvider {

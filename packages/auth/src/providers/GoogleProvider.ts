@@ -36,18 +36,16 @@ export default class GoogleProvider implements AuthProvider {
     }
 
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
-        const { oauth, _keyPrefix } = this._config;
+        const { _keyPrefix } = this._config;
         const { username, attributes, tokens } = params;
-
-        // if oauth
-        // .....
         
         const session: FederatedProviderSession = {
             idToken: tokens.idToken,
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken,
             expires_at: tokens.expires_at,
-            type: 'FederatedProviderSession'
+            type: 'FederatedProviderSession',
+            provider: this.getProviderName()
         }
 
         const user: FederatedUser = {
@@ -69,9 +67,8 @@ export default class GoogleProvider implements AuthProvider {
 
         // cache information
         this._storageSync.then(() => {
-            this._storage.setItem(`${_keyPrefix}_sessionSource`, this.getProviderName());
+            this._cacheInfo(session, user);
         });
-        this._cacheInfo(session, user);
         
         return {
             session,
@@ -82,16 +79,21 @@ export default class GoogleProvider implements AuthProvider {
 
     private _cacheInfo(session, user) {
         const { _keyPrefix } = this._config;
+        const sessionSourceKey = `${_keyPrefix}_sessionSource`;
         const sessionKey = `${_keyPrefix}_session`;
         const userKey = `${_keyPrefix}_user`;
 
+        this._storage.setItem(sessionSourceKey, this.getProviderName());
         this._storage.setItem(sessionKey, JSON.stringify(session));
         this._storage.setItem(userKey, JSON.stringify(user));
     }
 
     public async getSession(): Promise<any> {
-        logger.debug('tobe implemented');
-        return null;
+        const { _keyPrefix } = this._config;
+        const sessionKey = `${_keyPrefix}_session`;
+        this._storageSync.then(() => {
+            return this._storage.getItem(sessionKey);
+        });
     }
 
     public async clearSession(): Promise<void> {

@@ -31,7 +31,8 @@ import {
     Parser,
     Credentials,
     StorageHelper,
-    ICredentials
+    ICredentials,
+    AuthContants
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import { 
@@ -1350,15 +1351,24 @@ export default class AuthClass {
      * @param {String} user - user info
      */
     public federatedSignIn(
-        provider: 'google'|'facebook'|'amazon'|'developer'|string, 
+        provider: 'Google'|'Facebook'|'Amazon'|'Developer'|string, 
         response: FederatedResponse, 
         user: FederatedUser
     ): Promise<ICredentials>{
         const { token, identity_id, expires_at } = response;
-        const that = this;
+        let authProvider = 'Generic';
+        
+        this.setSession({
+            username: user.name,
+            tokens: {
+                
+            },
+            provider: provider
+        })
+
         return new Promise((res, rej) => {
             Credentials.set({ provider, token, identity_id, user, expires_at }, 'federation').then((cred) => {
-                dispatchAuthEvent('signIn', that.user);
+                dispatchAuthEvent('signIn', this.user);
                 logger.debug('federated sign in credentials', cred);
                 res(cred);
                 return;

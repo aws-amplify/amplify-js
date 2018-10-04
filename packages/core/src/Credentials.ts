@@ -6,6 +6,7 @@ import Platform from './Platform';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
 import Amplify from './Amplify';
+import { AuthConstants } from './Constants';
 
 const logger = new Logger('Credentials');
 
@@ -182,15 +183,22 @@ export class Credentials {
 
     private _setCredentialsFromFederation(params) {
         const { provider, token, identity_id } = params;
-        const domains = {
+        const deprecatedDomains = {
+            // for backward compatibility
             'google': 'accounts.google.com',
             'facebook': 'graph.facebook.com',
             'amazon': 'www.amazon.com',
             'developer': 'cognito-identity.amazonaws.com'
         };
 
+        const domains = {};
+        domains[AuthConstants.GOOGLE] = 'accounts.google.com';
+        domains[AuthConstants.FACEBOOK] = 'graph.facebook.com';
+        domains[AuthConstants.AMAZON] = 'www.amazon.com';
+        domains[AuthConstants.DEVELOPER] = 'cognito-identity.amazonaws.com';
+
         // Use custom provider url instead of the predefined ones
-        const domain = domains[provider] || provider;
+        const domain = domains[provider] || deprecatedDomains[provider] || provider;
         if (!domain) {
             return Promise.reject('You must specify a federated provider');
         }
