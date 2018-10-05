@@ -178,7 +178,11 @@ export default class StorageClass {
                 .upload(params)
                 .on('httpUploadProgress', progress => {
                     if (progressCallback) {
-                        progressCallback(progress);
+                        if (typeof progressCallback === 'function') {
+                            progressCallback(progress);
+                        } else {
+                            logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
+                        }
                     }
                 });
             const data = await upload.promise();
