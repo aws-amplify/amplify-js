@@ -26,9 +26,9 @@ export interface MqttProvidertOptions extends ProvidertOptions {
 }
 
 class ClientsQueue {
-    private promises: Map<string, Promise<Paho.Client>> = new Map();
+    private promises: Map<string, Promise<any>> = new Map();
 
-    async get(clientId: string, clientFactory: (string) => Promise<Paho.Client>) {
+    async get(clientId: string, clientFactory: (string) => Promise<any>) {
         let promise = this.promises.get(clientId);
         if (promise) {
             return promise;
@@ -74,7 +74,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         }
     }
 
-    public async newClient({ url, clientId }: MqttProvidertOptions): Promise<Paho.Client> {
+    public async newClient({ url, clientId }: MqttProvidertOptions): Promise<any> {
         logger.debug('Creating new MQTT client', clientId);
 
         const client = new Paho.Client(url, clientId);
@@ -98,7 +98,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
         return client;
     }
 
-    protected async connect(clientId: string, options: MqttProvidertOptions = {}): Promise<Paho.Client> {
+    protected async connect(clientId: string, options: MqttProvidertOptions = {}): Promise<any> {
         return await this.clientsQueue.get(clientId, clientId => this.newClient({ ...options, clientId }));
     }
 

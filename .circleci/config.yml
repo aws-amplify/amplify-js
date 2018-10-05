@@ -14,7 +14,6 @@ defaults: &defaults
       environment:
           ## this enables colors in the output
           TERM: xterm
-  parallelism: 2
 
 jobs:
   build:
@@ -50,6 +49,7 @@ jobs:
       - run: yarn run test --scope @aws-amplify/interactions
       - run: yarn run test --scope @aws-amplify/pubsub
       - run: yarn run test --scope @aws-amplify/storage
+      - run: yarn run test --scope @aws-amplify/xr
       - run: yarn run test --scope aws-amplify-react
       - run: yarn run test --scope aws-amplify-angular
       - run: yarn run test --scope aws-amplify-vue

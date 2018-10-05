@@ -57,7 +57,7 @@ export default class FacebookOAuth {
 
     private _refreshFacebookTokenImpl() {
         let fb = null;
-        if (window) fb = window['FB'];
+        if (JS.browserOrNode().isBrowser) fb = window['FB'];
         if (!fb) {
             logger.debug('no fb sdk available');
             return Promise.reject('no fb sdk available');

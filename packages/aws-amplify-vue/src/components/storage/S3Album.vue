@@ -81,3 +81,21 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .amplify-album {
+    width: var(--component-width-desktop);
+    margin: 1em auto;
+    border-radius: 6px;
+    background-color: var(--color-white);
+    box-shadow: var(--box-shadow);
+  }
+  .amplify-album-container {
+    width: 400px;
+    margin: 0 auto;
+    padding: 1em;
+  }
+  .amplify-image-container {
+    display: inline;
+  }
+</style>

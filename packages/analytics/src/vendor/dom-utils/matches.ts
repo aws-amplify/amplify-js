@@ -2,7 +2,9 @@
  * Copyright (c) 2017, Philip Walton <philip@philipwalton.com>
  */
 
-const proto = window && window['Element']? window['Element'].prototype: null;
+import { JS } from '@aws-amplify/core';
+
+const proto = JS.browserOrNode().isBrowser && window['Element']? window['Element'].prototype: null;
 const nativeMatches = proto ? proto.matches ||
       proto.matchesSelector ||
       proto.webkitMatchesSelector ||
