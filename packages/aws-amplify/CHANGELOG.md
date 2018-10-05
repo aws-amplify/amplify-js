@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.1.7-unstable.0"></a>
+## [1.1.7-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.6-unstable.2...aws-amplify@1.1.7-unstable.0) (2018-10-05)
+
+
+
+
+**Note:** Version bump only for package aws-amplify
+
 <a name="1.1.6"></a>
 ## [1.1.6](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.6-unstable.2...aws-amplify@1.1.6) (2018-10-04)
 
