@@ -92,7 +92,19 @@ export default class GoogleProvider implements AuthProvider {
 
         const { _keyPrefix } = this._config;
         await this._storageSync;
-        return JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
+        try {
+            const session = JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
+            const { expires_at } = session;
+            if (expires_at > new Date().getTime()) {
+                logger.debug('token not expired');
+                return session;
+            } else {
+                
+            }
+            
+        } catch (e) {
+            throw e;
+        }
     }
 
     public async clearSession(): Promise<void> {
@@ -114,7 +126,7 @@ export default class GoogleProvider implements AuthProvider {
 
     public async getCredentials(): Promise<any> {
         // refresh to be implemented also considering offline
-        
+
 
         const { _keyPrefix } = this._config;
         await this._storageSync;

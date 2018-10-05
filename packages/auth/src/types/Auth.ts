@@ -97,7 +97,7 @@ export interface AuthTokens {
     idToken?: string,
     accessToken?: string,
     refreshToken?: string,
-    expires_at?: number
+    expires_at: number
 }
 
 export interface ExternalSession {
@@ -119,7 +119,7 @@ export interface FederatedProviderSession {
     idToken?: string,
     accessToken?: string,
     refreshToken?: string,
-    expires_at?: number,
+    expires_at: number,
     type: string,
     provider: string
 }
