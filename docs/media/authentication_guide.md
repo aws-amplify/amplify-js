@@ -922,7 +922,7 @@ let result = await Auth.updateUserAttributes(user, {
 console.log(result); // SUCCESS
 ```
 
-If you change the email address, the user you will receive a confirmation code. In your app, you can confirm the verification code:
+If you change the email address, the user will receive a confirmation code. In your app, you can confirm the verification code:
 
 ```js
 let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
