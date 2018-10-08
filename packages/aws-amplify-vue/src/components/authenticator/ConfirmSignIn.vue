@@ -17,7 +17,7 @@
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" placeholder="{{$Amplify.I18n.get('Code')}}" />
+        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Code')" />
         <div v-bind:class="amplifyUI.hint">
           {{$Amplify.I18n.get('Lost your code? ')}}
           <a v-bind:class="amplifyUI.a" v-on:click="send">{{$Amplify.I18n.get('Resend Code')}}</a>

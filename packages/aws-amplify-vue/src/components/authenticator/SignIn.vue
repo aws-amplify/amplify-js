@@ -17,11 +17,11 @@
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
-        <input v-bind:class="amplifyUI.input"  v-model="options.username" placeholder="{{$Amplify.I18n.get('Enter your username')}}" autofocus v-on:keyup.enter="signIn" />
+        <input v-bind:class="amplifyUI.input"  v-model="options.username" :placeholder="$Amplify.I18n.get('Enter your username')" autofocus v-on:keyup.enter="signIn" />
       </div>
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Password')}} *</div>
-        <input  v-bind:class="amplifyUI.input" v-model="password" type="password" placeholder="{{$Amplify.I18n.get('Enter your password')}}" v-on:keyup.enter="signIn" />
+        <input  v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('Enter your password')" v-on:keyup.enter="signIn" />
         <div v-bind:class="amplifyUI.hint">
           {{$Amplify.I18n.get('Forget your password? ')}}
           <a v-bind:class="amplifyUI.a" v-on:click="forgot">{{$Amplify.I18n.get('Reset password')}}</a>

@@ -47,7 +47,7 @@
       <qrcode-vue v-bind:class="amplifyUI.totpQrcode" :value="token" :size="300" level="H"></qrcode-vue>
       <div v-bind:class="amplifyUI.formField" >
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Verification Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" placeholder="{{$Amplify.I18n.get('Verification Code')}}" autofocus />
+        <input v-bind:class="amplifyUI.input" v-model="code" :placeholder="$Amplify.I18n.get('Verification Code')" autofocus />
       </div>
     </div>
     <div v-bind:class="amplifyUI.sectionFooter">

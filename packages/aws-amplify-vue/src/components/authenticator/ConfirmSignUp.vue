@@ -17,11 +17,11 @@
     <div v-bind:class="amplifyUI.sectionBody">
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Username')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" placeholder="{{$Amplify.I18n.get('Username')}}" autofocus />
+        <input v-bind:class="amplifyUI.input" v-model="options.username" name="username" :placeholder="$Amplify.I18n.get('Username')" autofocus />
       </div>
       <div v-bind:class="amplifyUI.formField">
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Confirmation Code')}} *</div>
-        <input v-bind:class="amplifyUI.input" v-model="code" name="code" placeholder="{{$Amplify.I18n.get('Confirmation Code')}}" />
+        <input v-bind:class="amplifyUI.input" v-model="code" name="code" :placeholder="$Amplify.I18n.get('Confirmation Code')" />
         <div v-bind:class="amplifyUI.hint">
           {{$Amplify.I18n.get('Lost your code? ')}}
           <a v-bind:class="amplifyUI.a" v-on:click="resend">{{$Amplify.I18n.get('Resend Code')}}</a>
