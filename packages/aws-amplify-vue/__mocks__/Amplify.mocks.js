@@ -29,4 +29,7 @@ module.exports = {
     put: jest.fn(() => Promise.resolve({ key: 'testKey' })),
     list: jest.fn(() => Promise.resolve({})),
   },
+  I18n: {
+    get: jest.fn(() => Promise.resolve({})),
+  },
 };
