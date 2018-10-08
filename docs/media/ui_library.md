@@ -6,7 +6,7 @@ layout: ui_library
 ## Colors
 
 ### UI Colors
-<span class="excerpt">UI Color for AWS amplify are derived from Amazon’s primary color pallette and examples commonly used through the current AWS websites. Most primary actions are wrapped in Amazon Orange. Dark backgrounds and darker treatments will typically receive the Squid Ink Amazon color treatment.</span>
+<span class="excerpt">UI Color for AWS amplify are derived from Amazon’s primary color palette and examples commonly used through the current AWS websites. Most primary actions are wrapped in Amazon Orange. Dark backgrounds and darker treatments will typically receive the Squid Ink Amazon color treatment.</span>
 
 <span class="title">Primary Colors</span>
 <span class="inline-img">![Amazon Orange]({%if jekyll.environment == 'production'%}{{site.amplify.baseurl}}{%endif%}/images/Style_Guide/pc_amazon_orange.png)</span>
