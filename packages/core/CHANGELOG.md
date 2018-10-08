@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.16-unstable.1"></a>
+## [1.0.16-unstable.1](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.16-unstable.0...@aws-amplify/core@1.0.16-unstable.1) (2018-10-05)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** fix aws-sdk version to 2.329.0 ([#1851](https://github.com/aws/aws-amplify/issues/1851)) ([c6519e7](https://github.com/aws/aws-amplify/commit/c6519e7))
+
+
+
+
 <a name="1.0.16-unstable.0"></a>
 ## [1.0.16-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/core@1.0.15-unstable.1...@aws-amplify/core@1.0.16-unstable.0) (2018-10-05)
 
