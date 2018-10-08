@@ -22,7 +22,7 @@ export default class Connect extends Component {
 
     getDefaultState() {
         return {
-            loading: false,
+            loading: true,
             data: {},
             errors: [],
             mutation: () => console.warn('Not implemented'),

@@ -15,7 +15,7 @@ export default class Connect extends Component {
 
     getDefaultState() {
         return {
-            loading: false,
+            loading: true,
             data: {},
             errors: [],
             mutation: () => console.warn('Not implemented'),
@@ -128,7 +128,6 @@ export default class Connect extends Component {
 
     render() {
         const { data, loading, mutation, errors } = this.state;
-
         return this.props.children({ data, errors, loading, mutation }) || null;
     }
 }
