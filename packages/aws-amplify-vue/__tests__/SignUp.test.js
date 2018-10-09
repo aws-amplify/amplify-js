@@ -76,7 +76,7 @@ describe('SignUp', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Sign Up');
+      expect(wrapper.vm.options.header).toEqual('Sign Up Account');
       expect(wrapper.vm.options.signUpFields).toEqual([
         {
           label: 'Username',
