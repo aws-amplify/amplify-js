@@ -43,7 +43,8 @@ export interface AuthOptions {
     refreshHandlers?: object,
     storage?: ICognitoStorage,
     authenticationFlowType?: string,
-    identityPoolRegion?: string
+    identityPoolRegion?: string,
+    manualParseUrl?: boolean
 }
 
 /**

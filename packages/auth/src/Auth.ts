@@ -103,7 +103,8 @@ export default class AuthClass {
             mandatorySignIn,
             refreshHandlers,
             storage,
-            identityPoolRegion
+            identityPoolRegion,
+            manualParseUrl
         } = this._config;
 
         if (!this._config.storage) {
@@ -160,6 +161,25 @@ export default class AuthClass {
 
             logger.debug('cognito auth params', cognitoAuthParams);
             this._cognitoAuthClient = new CognitoAuth(cognitoAuthParams);
+
+            // This options is to avoid break changes
+            // Will remove it in the next major release
+            // We should not automatically parse the url in the library level
+            if (!manualParseUrl) {
+                // if not logged in, try to parse the url.
+                this.currentAuthenticatedUser().then(() => {
+                    logger.debug('user already logged in');
+                }).catch(e => {
+                    logger.debug('not logged in, try to parse the url');
+                    if (!JS.browserOrNode().isBrowser || !window.location) {
+                        logger.debug('not in the browser');
+                        return;
+                    }
+                    this.parseUrl({
+                        url: window.location.href
+                    });
+                });
+            }
         }
 
         dispatchAuthEvent('configured', null);
@@ -1319,24 +1339,29 @@ export default class AuthClass {
                     } catch (e) {
                         logger.debug('sign in without aws credentials', e);
                     } finally {
-                        onSuccessHandler();
+                        if (onSuccessHandler) onSuccessHandler({user: that.user, session});
                         dispatchAuthEvent('signIn', that.user);
                         dispatchAuthEvent('cognitoHostedUI', that.user);
                     }
                 }).catch(err => {
                     logger.debug("Error when getting currnet session after parsing the url", err);
-                    onFailureHandler();
+                    if (onFailureHandler) onFailureHandler(err);
                     dispatchAuthEvent('signIn_failure', err);
                 });
             },
             onFailure: (err) => {
                 logger.debug("Error in cognito hosted auth response", err);
-                onFailureHandler();
+                if (onFailureHandler) onFailureHandler(err);
                 dispatchAuthEvent('signIn_failure', err);
             }
         };
 
-        this._cognitoAuthClient.parseCognitoWebResponse(url);
+        try {
+            this._cognitoAuthClient.parseCognitoWebResponse(url);
+        } catch (e) {
+            logger.debug('Failed to parse the url', e);
+            if (onFailureHandler) onFailureHandler(e);
+        }
     }
 
     private attributesToObject(attributes) {
