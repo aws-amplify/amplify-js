@@ -63,7 +63,7 @@ User interface elements that provide drop-in components for AI enabled chat bot 
 
 The Chatbot is a drop-in UI component that provides:
 
- - Conversaion UI
+ - Conversation UI
  - Events for conversation complete
 
 Available for [React]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/interactions_guide#using-with-react), [React Native]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/interactions_guide#using-with-react-native), [Angular]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/angular_guide#interactions), [Ionic]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/ionic_guide#interactions), and [Vue]({%if jekyll.environment == 'production'%}{{site.amplify.docs_baseurl}}{%endif%}/media/vue_guide#interaction-components)
