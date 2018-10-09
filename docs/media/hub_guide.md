@@ -44,7 +44,7 @@ class MyClass {
 }
 ```
 
-In order to capture event updates, you need to implement `onHubCapsule` handler function in you listener class.
+In order to capture event updates, you need to implement `onHubCapsule` handler function in your listener class.
 {: .callout .callout--info}
 
 ### Listening Authentication Events
