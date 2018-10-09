@@ -12,22 +12,138 @@
  */
 @import './Theme.css';
 
+.sumerianSceneContainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.sumerianScene {
+  width: 100%;
+  height: 100%;
+}
+
 .sceneBar {
   display: flex;
   align-items: center;
-  height: 40px;
-  background-color: var(--deepSquidInk);
+  height: 50px;
+  /* background-color: var(--deepSquidInk); */
   font-size: 100%;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  margin-bottom: 5px;
 }
 
 .sceneName {
   color: var(--white);
-  margin-left: 1.5em;
+  margin: 0 1.5em;
   font-size: 1em;
 }
 
 .sceneActions {
   margin-left: auto;
-  margin-right: 1.5em;
+  margin-bottom: 10px;
 }
 
+.actionButton {
+  position: relative;
+  padding: 0;
+  background: none;
+  height: 55px;
+  width: 55px;
+  cursor:pointer;
+  outline: none;
+  text-decoration: none;
+  border: none;
+  border-radius: 30px;
+  margin: 0 10px;
+  transition: all .1s ease-in-out;
+}
+
+.actionButton:hover {
+  background-color: var(--deepSquidInk);
+  box-shadow: 0.3px 0.3px 0.3px rgba(0, 0, 0, 0.3);
+}
+
+.actionButton:hover > .tooltip {
+  display: block;
+}
+
+.actionButton > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.actionIcon {
+  fill: var(--white);
+}
+
+.loadingOverlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--lightSquidInk);
+}
+
+.loadingContainer {
+  text-align: center;
+}
+
+.loadingLogo {
+  margin-bottom: 10px;
+}
+
+.loadingLogo > svg {
+  width: 100px;
+}
+
+.loadingIcon {
+  fill: var(--white);
+}
+
+.loadingSceneName {
+  color: var(--white);
+  margin-bottom: 15px;
+}
+
+.loadingBar {
+  height: 20px;
+  width: 150px;
+  border-radius: 2px;
+  background-color: var(--deepSquidInk);
+}
+
+.loadingBarFill {
+  background-color: var(--light-blue);
+  height: 100%;
+  border-radius: 2px;
+}
+
+.tooltip {
+  position: absolute;
+  display: none;
+  background-color: var(--deepSquidInk);
+  transition-delay: 1000ms;
+  top: -40px;
+  z-index: 1001;
+}
+
+.tooltipText {
+  color: var(--white);
+  padding: 10px;
+  white-space: nowrap;
+}
+
+.tooltip .tooltipText::after {
+  content: " ";
+  position: absolute;
+  top: 100%; /* At the bottom of the tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--deepSquidInk) transparent transparent transparent;
+}

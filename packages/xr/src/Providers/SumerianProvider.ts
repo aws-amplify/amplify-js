@@ -118,7 +118,13 @@ export class SumerianProvider extends AbstractXRProvider {
     } catch (e) {
       logger.debug('No credentials available, the request will be unsigned');
     }
+
+ 
     const apiResponse = await fetch(url, fetchOptions);
+    if (apiResponse.status === 403) {
+      logger.error('Failure to authenticate user');
+      throw(new XRSceneLoadFailure('Failure to authenticate user'));
+    }
     const apiResponseJson = await apiResponse.json();
     
     // Get bundle data from scene api response
