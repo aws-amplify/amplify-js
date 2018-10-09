@@ -60,6 +60,7 @@ class AuthDecorator {
 export default class Authenticator extends React.Component {
     constructor(props) {
         super(props);
+        this._initialAuthState = this.props.authState || 'signIn';
         this.state = {
             authState: props.authState || 'loading',
             authData: props.authData
@@ -128,7 +129,9 @@ export default class Authenticator extends React.Component {
                 if (user) {
                     this.checkContact(user);
                 } else {
-                    if (statesJumpToSignIn.includes(authState)) this.handleStateChange('signIn', null);
+                    if (statesJumpToSignIn.includes(authState)) {
+                        this.handleStateChange(this._initialAuthState, null);
+                    } 
                 }
             })
             .catch(err => {
@@ -137,7 +140,7 @@ export default class Authenticator extends React.Component {
                 if (statesJumpToSignIn.includes(authState)) {
                     Auth.signOut()
                         .then(() => {
-                            this.handleStateChange('signIn', null);
+                            this.handleStateChange(this._initialAuthState, null);
                         })
                         .catch(err => this.error(err));       
                 }
