@@ -5,8 +5,7 @@ import API, { graphqlOperation } from '../src/API';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import { Signer, ConsoleLogger as Logger, Credentials, Amplify } from '@aws-amplify/core';
-import { anonOperationNotAloneMessage } from 'graphql/validation/rules/LoneAnonymousOperation';
+import { Signer, Credentials } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 
 jest.mock('axios');
@@ -384,7 +383,6 @@ describe('API test', () => {
         });
 
         test('custom_header', async () => {
-            Logger.LOG_LEVEL = 'DEBUG';
             const custom_config = {
                 API: {
                     endpoints: [
@@ -409,7 +407,6 @@ describe('API test', () => {
                     res({});
                 });
             });
-            console.log('api options', JSON.stringify(api._options, null, 2));
             await api.get('apiName', 'path', {});
 
             expect(spyonRequest).toBeCalledWith({
@@ -653,7 +650,6 @@ describe('API test', () => {
                 });
             });
             const spyon2 = jest.spyOn(RestClient.prototype, 'post').mockImplementationOnce(() => {
-                console.log('spyon2, post');
                 return Promise.resolve();
             });
             const spyon3 = jest.spyOn(RestClient.prototype, 'endpoint').mockImplementationOnce(() => {

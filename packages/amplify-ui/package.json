@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/ui",
-  "version": "1.0.3",
+  "version": "1.0.7-unstable.0",
   "main": "dist/aws-amplify-ui.js",
   "publishConfig": {
     "access": "public"
@@ -31,5 +31,10 @@
     "url-loader": "^0.5.6",
     "webpack": "^1.9.10",
     "webpack-dev-server": "^1.9.0"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
   }
 }

@@ -13,7 +13,6 @@
 
 import { AWS } from './Facet';
 import { ConsoleLogger as Logger } from './Logger';
-import './Polyfills';
 import Amplify from './Amplify';
 
 export * from './Facet';
