@@ -43,8 +43,7 @@ export interface AuthOptions {
     refreshHandlers?: object,
     storage?: ICognitoStorage,
     authenticationFlowType?: string,
-    identityPoolRegion?: string,
-    manualParseUrl?: boolean
+    identityPoolRegion?: string
 }
 
 /**
@@ -81,7 +80,8 @@ export interface OAuth {
 	redirectSignIn : string,
 	redirectSignOut : string,
     responseType: string,
-    options?: object
+    options?: object,
+    manualParseUrl?: boolean
 }
 
 export interface ConfirmSignUpOptions {

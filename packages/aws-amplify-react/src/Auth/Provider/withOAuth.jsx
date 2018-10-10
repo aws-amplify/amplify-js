@@ -24,7 +24,9 @@ export default function withOAuth(Comp, options) {
         }
 
         initialize() {
-            
+            Auth.parseUrl({
+                url: window.location.href
+            });
         }
 
         signIn() {

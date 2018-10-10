@@ -103,8 +103,7 @@ export default class AuthClass {
             mandatorySignIn,
             refreshHandlers,
             storage,
-            identityPoolRegion,
-            manualParseUrl
+            identityPoolRegion
         } = this._config;
 
         if (!this._config.storage) {
@@ -165,7 +164,7 @@ export default class AuthClass {
             // This options is to avoid break changes
             // Will remove it in the next major release
             // We should not automatically parse the url in the library level
-            if (!manualParseUrl) {
+            if (!oauth.manualParseUrl) {
                 // if not logged in, try to parse the url.
                 this.currentAuthenticatedUser().then(() => {
                     logger.debug('user already logged in');
@@ -1332,14 +1331,15 @@ export default class AuthClass {
                 that.user = that.userPool.getCurrentUser();
                 logger.debug("Cognito Hosted authentication result", result);
                 that.currentSession().then(async (session) => {
+                    let credentials = undefined;
                     try {
                         await Credentials.clear();
-                        const cred = await Credentials.set(session, 'session');
-                        logger.debug('sign in succefully with', cred);
+                        credentials = await Credentials.set(session, 'session');
+                        logger.debug('sign in succefully with', credentials);
                     } catch (e) {
                         logger.debug('sign in without aws credentials', e);
                     } finally {
-                        if (onSuccessHandler) onSuccessHandler({user: that.user, session});
+                        if (onSuccessHandler) onSuccessHandler({user: that.user, session, credentials});
                         dispatchAuthEvent('signIn', that.user);
                         dispatchAuthEvent('cognitoHostedUI', that.user);
                     }

@@ -95,7 +95,8 @@ Amplify.configure({
         storage: new MyStorage(),
         
         // OPTIONAL - Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
-        authenticationFlowType: 'USER_PASSWORD_AUTH'
+        authenticationFlowType: 'USER_PASSWORD_AUTH'，
+
     }
 });
 ```
@@ -602,7 +603,10 @@ const oauth = {
     options: {
         // Indicates if the data collection is enabled to support Cognito advanced security features. By default, this flag is set to true.
         AdvancedSecurityDataCollectionFlag : true
-    }
+    },
+
+    // required, will be set to default in next major release
+    manualParseUrl: true
 }
 
 Amplify.configure({
@@ -642,11 +646,75 @@ window.location.assign(url_to_google);
 window.location.assign(url_to_facebook);
 ```
 
+#### After redirecting back
+ After logging in through the Hosted UI, the user will be redirected back to the callback URL. By calling `Auth.parseUrl({url: current_url})`, the Auth module will try to parse the callback URL and construct a user session for you. You can then call `Auth.currentSession()` or `Auth.currentAuthenticatedUser()` to check if the user is logged in or not.
+ Example Code:
+```js
+import Auth from '@aws-amplify/auth';
+import { Hub } from '@aws-amplify/core';
 
+Auth.configure({
+    // ... other configurations
+
+    oauth: {
+        // Domain name
+        domain : 'your-domain-prefix.auth.us-east-1.amazoncognito.com', 
+        // Authorized scopes
+        scope : ['phone', 'email', 'profile', 'openid','aws.cognito.signin.user.admin'], 
+        // Callback URL
+        redirectSignIn : 'http://www.example.com/signin', 
+        // Sign out URL
+        redirectSignOut : 'http://www.example.com/signout',
+        // 'code' for Authorization code grant, 
+        // 'token' for Implicit grant
+        responseType: 'code'
+        // optional, for Cognito hosted ui specified options
+        options: {
+            // Indicates if the data collection is enabled to support Cognito advanced security features. By default, this flag is set to true.
+            AdvancedSecurityDataCollectionFlag : true
+        },
+        // required, will be set to default in next major release
+        manualParseUrl: true
+    }
+});
+
+// try to parse the url when the page is loaded
+Auth.parseUrl({
+    url: window.location.href,
+    onSuccessHandler: () => {
+        // callback when parsing succeeds
+    },
+    onFailureHandler: () => {
+        // callback when parsing fails
+    }
+});
+
+ // you can also listen to the auth event 
+Hub.listen('auth', {
+    onHubCapsule: (capsule) => {
+        const { channel, payload, source } = capsule;
+        if (channel === 'auth' && (payload.event === 'signIn_failure' || payload.event === 'signIn')) { 
+            checkUser(); 
+        }
+    }
+});
+
+checkUser() {
+    Auth.currentAuthenticatedUser()
+        .then(user => {
+            console.log('logged in');
+        })
+        .catch(err => {
+            console.log('not logged in');
+        });
+}
+```
 
 #### Launching the Hosted UI in React 
 
 With React, you can use `withOAuth` HOC to launch the hosted UI experience. Just wrap your app's main component with our HOC:
+
+Note: please make sure `manualParseUrl` is set to `true` in your Amplify configuration.
 
 ```js
 import { withOAuth } from 'aws-amplify-react';
