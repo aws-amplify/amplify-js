@@ -907,6 +907,9 @@ export default class AuthClass {
                         res(user);
                     });
                 });
+            }).catch(e => {
+                logger.debug('Failed to sync cache info into memory', e);
+                return rej(e);
             });
         });
     }
