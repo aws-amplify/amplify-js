@@ -173,6 +173,7 @@ import Cache from '@aws-amplify/cache';
 import { CookieStorage, CognitoUserPool, CognitoUser, CognitoUserSession, CognitoIdToken, CognitoAccessToken } from 'amazon-cognito-identity-js';
 import { CognitoIdentityCredentials } from 'aws-sdk';
 import { Credentials, GoogleOAuth, StorageHelper } from '@aws-amplify/core';
+import { CognitoAuth } from 'amazon-cognito-auth-js';
 
 const authOptions : AuthOptions = {
     userPoolId: "awsUserPoolsId",
@@ -2189,17 +2190,40 @@ describe('auth unit test', () => {
     });
 
     describe('hosted ui test', () => {
-        test('happy case', () => {
-            const oauth = {};
+        test('manualParseUrl is true', () => {
+            const oauth = {
+                manualParseUrl: true
+            };
 
             const authOptions = {
-                Auth: {
                     userPoolId: "awsUserPoolsId",
                     userPoolWebClientId: "awsUserPoolsWebClientId",
                     region: "region",
                     identityPoolId: "awsCognitoIdentityPoolId",
                     oauth
-                }
+            };
+            const spyon = jest.spyOn(Auth.prototype, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.reject('err');
+            });
+
+
+            const auth = new Auth(authOptions);
+            expect(spyon).not.toBeCalled();
+
+            spyon.mockClear();
+        });
+
+        test('manualParseUrl is false', () => {
+            const oauth = {
+                manualParseUrl: false
+            };
+
+            const authOptions = {
+                    userPoolId: "awsUserPoolsId",
+                    userPoolWebClientId: "awsUserPoolsWebClientId",
+                    region: "region",
+                    identityPoolId: "awsCognitoIdentityPoolId",
+                    oauth
             };
             const spyon = jest.spyOn(Auth.prototype, 'currentAuthenticatedUser').mockImplementationOnce(() => {
                 return Promise.reject('err');
@@ -2210,7 +2234,36 @@ describe('auth unit test', () => {
             expect(spyon).toBeCalled();
 
             spyon.mockClear();
-          
+        });
+    });
+
+    describe('parseUrl test', () => {
+        test('happy case', () => {
+             const oauth = {
+                manualParseUrl: true
+            };
+
+            const authOptions = {
+                userPoolId: "awsUserPoolsId",
+                userPoolWebClientId: "awsUserPoolsWebClientId",
+                region: "region",
+                identityPoolId: "awsCognitoIdentityPoolId",
+                oauth
+            };
+
+            const auth = new Auth(authOptions);
+
+            const spyon = jest.spyOn(CognitoAuth.prototype, 'parseCognitoWebResponse').mockImplementationOnce(() => {
+                return;
+            });
+
+            auth.parseUrl({
+                url: 'url'
+            });
+            
+            expect(spyon).toBeCalled();
+            spyon.mockClear();
+
         });
     });
 });
