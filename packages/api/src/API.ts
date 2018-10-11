@@ -428,9 +428,10 @@ export default class APIClass {
                         aws_appsync_authenticationType: authenticationType,
                     } = this._options;
                     const additionalheaders = {
-                        ...((authenticationType === 'API_KEY' || authenticationType === 'AMAZON_COGNITO_USER_POOLS') && {
-                            'x-amz-subscriber-id': this.clientIdentifier
-                        })
+                        ...((authenticationType === 'API_KEY' ||
+                            authenticationType === 'AMAZON_COGNITO_USER_POOLS') && {
+                                'x-amz-subscriber-id': this.clientIdentifier
+                            })
                     };
 
                     try {
