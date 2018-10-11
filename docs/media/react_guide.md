@@ -44,7 +44,7 @@ When you're prompted for information, such as the bucket name or application fil
 
 **Note** You can use an order alias to add or remove category features. You can also run `amplify hosting add`.
 
-Run `amplify status` to see that status (not deployed). Next, build and deploy your site by running `amplify publish` or `amplify publish -invalidate-cache` - for cache invalidation in the distribution network (if Cloudfront is added via the hosting category). After it's complete, your application is available in an S3 hosting bucket for testing. It's also fronted with an Amazon CloudFront distribution. (if it is added via the hosting category in the prior bucket)
+Run `amplify status` to see that status (not deployed). Next, build and deploy your site by running `amplify publish` or `amplify publish --invalidate-cache` - for cache invalidation in the distribution network (if Cloudfront is added via the hosting category). After it's complete, your application is available in an S3 hosting bucket for testing. It's also fronted with an Amazon CloudFront distribution. (if it is added via the hosting category in the prior bucket)
 
 ## Add Auth
 
