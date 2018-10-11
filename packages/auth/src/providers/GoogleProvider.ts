@@ -1,6 +1,6 @@
 import { AuthProvider, ExternalSession, SetSessionResult, FederatedProviderSession, FederatedUser } from '../types';
 import { CognitoUser, CognitoUserPool, CognitoUserSession, CognitoIdToken, CognitoAccessToken, CognitoRefreshToken } from 'amazon-cognito-identity-js';
-import { Credentials, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Credentials, ConsoleLogger as Logger, GoogleOAuth } from '@aws-amplify/core';
 
 const logger = new Logger('GoogleProvider');
 
@@ -10,10 +10,12 @@ export default class GoogleProvider implements AuthProvider {
     private _storageSync;
     private _userPool;
     private _keyPrefix;
+    private _refreshHandler;
 
     constructor(options) {
         this._config = {};
 
+        this._refreshHandler = GoogleOAuth.refreshGoogleToken;
         this.configure(options);
     }
 
@@ -37,7 +39,7 @@ export default class GoogleProvider implements AuthProvider {
 
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
         const { _keyPrefix } = this._config;
-        const { username, attributes, tokens, errorHandler } = params;
+        const { username, attributes, tokens, errorHandler, identityId } = params;
         
         const session: FederatedProviderSession = {
             idToken: tokens.idToken,
@@ -45,7 +47,8 @@ export default class GoogleProvider implements AuthProvider {
             refreshToken: tokens.refreshToken,
             expires_at: tokens.expires_at,
             type: 'FederatedProviderSession',
-            provider: this.getProviderName()
+            provider: this.getProviderName(),
+            identityId
         }
 
         const user: FederatedUser = {
@@ -67,9 +70,9 @@ export default class GoogleProvider implements AuthProvider {
         let credentials = undefined;
         try {
             credentials = await Credentials.set({
-                provider: 'google', 
+                provider: this.getProviderName(), 
                 token: tokens.idToken, 
-                identity_id: attributes? attributes['identity_id']: undefined
+                identity_id: identityId
             }, 'federation');
             user.id = credentials.identityId;
             this._storage.setItem(credentialsKey, JSON.stringify(credentials));
@@ -88,20 +91,37 @@ export default class GoogleProvider implements AuthProvider {
     }
 
     public async getSession(): Promise<any> {
-        // refresh to be implemented, also considering offline
-
         const { _keyPrefix } = this._config;
         await this._storageSync;
         try {
             const session = JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
+            if (!session) throw new Error('Session is not cached.');
             const { expires_at } = session;
             if (expires_at > new Date().getTime()) {
                 logger.debug('token not expired');
                 return session;
             } else {
-                
+                // refresh
+                if (this._refreshHandler && typeof this._refreshHandler === 'function') {
+                    logger.debug('getting refreshed jwt token from federation provider');
+                    return this._refreshHandler().then((data) => {
+                        logger.debug('refresh federated token sucessfully', data);
+                        token = data.token;
+                        identity_id = data.identity_id;
+                        expires_at = data.expires_at;
+                        
+                        return session;
+                    }).catch(e => {
+                        logger.debug('refresh federated token failed', e);
+                        this.clearSession();
+                        throw('refreshing federation token failed: ' + e);
+                    });
+                } else {
+                    logger.debug('no refresh handler for provider:', this.getProviderName());
+                    this.clearSession();
+                    throw('no refresh handler for provider');
+                }
             }
-            
         } catch (e) {
             throw e;
         }
@@ -128,8 +148,6 @@ export default class GoogleProvider implements AuthProvider {
         // refresh to be implemented also considering offline
 
 
-        const { _keyPrefix } = this._config;
-        await this._storageSync;
-        return JSON.parse(this._storage.getItem(`${_keyPrefix}_credentials`));
+
     }
 }

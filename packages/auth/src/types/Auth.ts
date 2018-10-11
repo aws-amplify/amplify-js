@@ -105,6 +105,7 @@ export interface ExternalSession {
     attributes?: Object,
     tokens: AuthTokens,
     provider: string,
+    identityId?: string,
     refreshHandler?: Function,
     errorHandler?: Function
 }
@@ -121,7 +122,8 @@ export interface FederatedProviderSession {
     refreshToken?: string,
     expires_at: number,
     type: string,
-    provider: string
+    provider: string,
+    identityId?: string
 }
 
 export interface AuthProvider {

@@ -355,6 +355,7 @@ export default class AuthClass {
         const that = this;
         return {
             onSuccess: async (session) => {
+                addSessionSource
                 logger.debug(session);
                 delete(user['challengeName']);
                 delete(user['challengeParam']);
@@ -470,6 +471,7 @@ export default class AuthClass {
                 code, {
                     onSuccess: async (session) => {
                         logger.debug(session);
+                        addSessionSource
                         try {
                             await Credentials.clear();
                             const cred = await Credentials.set(session, 'session');
@@ -781,6 +783,7 @@ export default class AuthClass {
         return new Promise((resolve, reject) => {
             user.completeNewPasswordChallenge(password, requiredAttributes, {
                 onSuccess: async (session) => {
+                    addSessionSource
                     logger.debug(session);
                     try {
                         await Credentials.clear();
@@ -1201,7 +1204,14 @@ export default class AuthClass {
             const providerClass: AuthProvider = this._pluggables.filter(
                 pluggable => pluggable.getProviderName() === sessionSource
             );
-            return providerClass.getCredentials();
+            providerClass.getSession()
+                .then(session => {
+                    logger.debug('getting session success', session);
+                    return Credentials.set(session, 'federation');
+                }).catch(error => {
+                    logger.debug('getting session failed', error);
+                    return Credentials.set(null, 'guest');
+                })
         }
     }
 
@@ -1217,7 +1227,7 @@ export default class AuthClass {
      * @return {Object }- current User's information
      */
     public async currentUserInfo() {
-        const source = Credentials.getCredSource();
+        // const source = Credentials.getCredSource();
 
         if (!source || source === 'aws' || source === 'userPool') {
             const user = await this.currentUserPoolUser()
@@ -1383,9 +1393,7 @@ export default class AuthClass {
                 accessToken,
                 expires_at
             },
-            attributes: {
-                identity_id
-            },
+            identityId: identity_id,
             provider: authProvider,
             errorHandler: (e) => {
                 throw e;
@@ -1446,6 +1454,9 @@ export default class AuthClass {
 
 
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
+
+        need a default provider for abitrary provider
+
         const { provider } = params;
 
         const providerClass: AuthProvider = this._pluggables.filter(pluggable => pluggable.getProviderName() === provider);

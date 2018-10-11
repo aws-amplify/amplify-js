@@ -13,7 +13,6 @@ const logger = new Logger('Credentials');
 export class Credentials {
     private _config;
     private _credentials;
-    private _credentials_source;
     private _gettingCredPromise = null;
     private _refreshHandlers = {};
     private _storage;
@@ -24,10 +23,6 @@ export class Credentials {
         this.configure(config);
         this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
         this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
-    }
-
-    public getCredSource() {
-        return this._credentials_source;
     }
 
     public configure(config){
@@ -167,8 +162,17 @@ export class Credentials {
             region
         });
 
-        const that = this;
-        return this._loadCredentials(credentials, 'guest', false);
+        const cred = await this._loadCredentials(credentials, false);
+        try {
+            await this._storageSync;
+            this._storage.setItem(
+                'CognitoIdentityId-' + identityPoolId, 
+                credentials.identityId
+            );
+        } catch (e) {
+            logger.debug('Failed to cache identityId', e);
+        }
+        return cred;
     }
 
     private _setCredentialsFromAWS() {
@@ -176,7 +180,7 @@ export class Credentials {
         logger.debug('setting credentials from aws');
         const that = this;
         if (credentials instanceof AWS.Credentials){
-            return this._loadCredentials(credentials, 'aws', undefined);
+            return this._loadCredentials(credentials, undefined);
         } else {
             logger.debug('AWS.config.credentials is not an instance of AWS Credentials');
             return Promise.reject('AWS.config.credentials is not an instance of AWS Credentials');
@@ -222,11 +226,7 @@ export class Credentials {
             region
         });
 
-        return this._loadCredentials(
-            credentials, 
-            'federated', 
-            true
-        );
+        return this._loadCredentials(credentials, true);
     }
 
     private _setCredentialsFromSession(session): Promise<ICredentials> {
@@ -249,10 +249,10 @@ export class Credentials {
         });
 
         const that = this;
-        return this._loadCredentials(credentials, 'userPool', true);
+        return this._loadCredentials(credentials, true);
     }
 
-    private _loadCredentials(credentials, source, authenticated): Promise<ICredentials> {
+    private _loadCredentials(credentials, authenticated): Promise<ICredentials> {
         const that = this;
         const { identityPoolId } = this._config;
         return new Promise((res, rej) => {
@@ -266,18 +266,6 @@ export class Credentials {
                 logger.debug('Load credentials successfully', credentials);
                 that._credentials = credentials;
                 that._credentials.authenticated = authenticated;
-                that._credentials_source = source;
-                if (source === 'guest') {
-                    try {
-                        await this._storageSync;
-                        this._storage.setItem(
-                            'CognitoIdentityId-' + identityPoolId, 
-                            credentials.identityId
-                        );
-                    } catch (e) {
-                        logger.debug('Failed to cache identityId', e);
-                    }
-                }
                 res(that._credentials);
                 return;
             });
