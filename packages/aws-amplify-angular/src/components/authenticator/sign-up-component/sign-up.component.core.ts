@@ -1,65 +1,54 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { countrylist, country }  from '../../../assets/countries';
+import { stringType } from 'aws-sdk/clients/iam';
 
 
 const template = `
 <div class="amplify-container" *ngIf="_show">
   <div class="amplify-form-container">
     <div class="amplify-form-body">
-
       <div class="amplify-form-header">Create a new account</div>
 
-      <div class="amplify-form-row">
-        <label class="amplify-input-label" for="amplifyUsername"> Username *</label>
-        <input #amplifyUsername
-          (keyup)="setUsername($event.target.value)"
-          class="amplify-form-input"
-          type="text"
-          placeholder="Username"
-        />
-      </div>
-      <div class="amplify-form-row">
-        <label class="amplify-input-label" for="password">Password *</label>
-        <input #password
-          (keyup)="setPassword(password.value)"
-          (keyup.enter)="onSignUp()"
-          class="amplify-form-input"
-          type="password"
-          placeholder="Password"
-        />
-      </div>
-      <div class="amplify-form-row">
-        <label class="amplify-input-label" for="email">Email Address *</label>
-        <input #email
-          (keyup)="setEmail(email.value)"
-          class="amplify-form-input"
-          type="email"
-          placeholder="Email"
-        />
-      </div>
-      <div class="amplify-form-row">
-        <label class="amplify-input-label" for="tel">Phone Number *</label>
-        <div class="amplify-input-group">
-          <div class="amplify-input-group-item">
-          <select #countryCode
-            name="countryCode" 
-            class="amplify-select-phone-country" 
-            (change)="setCountryCode(countryCode.value)"
-            [value]="country_code">
-            <option *ngFor="let country of countries"  
-            value={{country.value}}>{{country.label}} </option>
-          </select>
-        </div>
-        <div class="amplify-input-group-item">
-          <input #phone_number
-            (keyup)="setPhoneNumber(phone_number.value)"
+      <div class="amplify-form-row" *ngFor="let field of signUpFields">
+        <div *ngIf="field.key !== 'phone_number'">
+          <label class="amplify-input-label">
+            {{field.label}} 
+            <span *ngIf="field.required">*</span>
+          </label>
+          <input #{{field.key}}
             class="amplify-form-input"
-            type="text"
-            placeholder="Phone Number"
-          />
+            type={{field.type}}
+            placeholder={{field.label}}
+            [(ngModel)]="user[field.key]" name="field.key" />
         </div>
-      </div>
+        <div *ngIf="field.key === 'phone_number'">
+          <label class="amplify-input-label">
+            {{field.label}} 
+            <span *ngIf="field.required">*</span>
+          </label>
+          
+          <div class="amplify-input-group">
+            <div class="amplify-input-group-item">
+              <select #countryCode
+                name="countryCode" 
+                class="amplify-select-phone-country" 
+                [value]="country_code">
+                <option *ngFor="let country of countries"  
+                  value={{country.value}}>{{country.label}} 
+                </option>
+              </select>
+            </div>
+            <div class="amplify-input-group-item">
+              <input #phone_number
+                class="amplify-form-input"
+                type="text"
+                placeholder="Phone Number"
+                [ngModel]="phone_number"
+              />
+            </div>
+          </div>
+        </div>
       </div>
       <div class="amplify-form-actions">
         
@@ -90,20 +79,60 @@ const template = `
 </div>
 `;
 
+
+export class SignUpField{
+  label: string;
+  key: string;
+  required?: boolean;
+  type?: stringType;
+  displayOrder?:number;
+}
+
+const defaultSignUpFields: SignUpField[] = [
+  {
+    label: 'Username',
+    key: 'username',
+    required: false,
+    displayOrder: 1
+  },
+  {
+    label: 'Password',
+    key: 'password',
+    required: true,
+    type: 'password',
+    displayOrder: 2,
+  },
+  {
+    label: 'Email',
+    key: 'email',
+    required: true,
+    type: 'string',
+    displayOrder: 3
+  },
+  {
+    label: 'Phone Number',
+    key: 'phone_number',
+    required: true,
+    displayOrder: 4
+  }
+];
+
 @Component({
   selector: 'amplify-auth-sign-up-core',
   template,
 })
-export class SignUpComponentCore {
+
+export class SignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
-  username: string;
-  password: string;
-  email: string;
+
+  user: any = {};
+
   phone_number: string;
   _defaultCountryCode: string;
   country_code: string = '1';
   countries: country[];
+  signUpFields: SignUpField[];
   complete_phone_number: string;
   errorMessage: string;
   amplifyService: AmplifyService;
@@ -112,6 +141,10 @@ export class SignUpComponentCore {
   constructor(amplifyService: AmplifyService) {
     this.countries = countrylist;
     this.amplifyService = amplifyService;
+  }
+
+  ngOnInit() {
+    this.sortFields();
   }
 
   @Input()
@@ -128,41 +161,24 @@ export class SignUpComponentCore {
   }
 
   @Input()
+  set customFields(customFields: SignUpField[]) {
+    this.signUpFields = customFields;
+  }
+
+  @Input()
   set defaultCountryCode(defaultCountryCode: string) {
     this.country_code = defaultCountryCode;
   }
 
-  setUsername(username: string) {
-    this.username = username;
-  }
-
-  setPassword(password: string) {
-    this.password = password;
-  }
-
-  setEmail(email: string) {
-    this.email = email;
-  }
-
-  setPhoneNumber(phone_number: string) {
-    this.phone_number = phone_number;
-    this._setFinalPhoneNumber();
-  }
-
-  setCountryCode(country_code: string) {
-    this.country_code = country_code;
-    this._setFinalPhoneNumber();
-  }
-
   onSignUp() {
+    this.user.phone_number = `+${this.country_code}${this.phone_number}`;
+    console.log('this.user', this.user);
     this.amplifyService.auth()
       .signUp(
-        this.username,
-        this.password,
-        this.email,
         this.complete_phone_number
       )
-      .then(user => this.amplifyService.setAuthState({ state: 'confirmSignUp', user: { 'username': this.username } }))
+      .then(user => this.amplifyService
+        .setAuthState({ state: 'confirmSignUp', user: { 'username': this.user.username } }))
       .catch(err => this._setError(err));
   }
 
@@ -171,7 +187,58 @@ export class SignUpComponentCore {
   }
 
   onConfirmSignUp() {
-    this.amplifyService.setAuthState({ state: 'confirmSignUp', user: { 'username': this.username } });
+    this.amplifyService
+      .setAuthState({ state: 'confirmSignUp', user: { 'username': this.user.username } });
+  }
+
+  sortFields() {
+    if (this.signUpFields && this.signUpFields.length > 0) {
+
+      // see if fields passed to component should override defaults
+      defaultSignUpFields.forEach((f, i) => {
+        const matchKey = this.signUpFields.findIndex((d) => {
+          return d.key === f.key;
+        });
+        if (matchKey === -1) {
+          this.signUpFields.push(f);
+        }
+      });
+
+      /* 
+        sort fields based on following rules:
+        1. Fields with displayOrder are sorted before those without displayOrder
+        2. Fields with conflicting displayOrder are sorted alphabetically
+        3. Fields without displayOrder are sorted alphabetically
+      */
+      this.signUpFields.sort((a, b) => {
+        if (a.displayOrder && b.displayOrder) {
+          if (a.displayOrder < b.displayOrder) {
+            return -1;
+          } else if (a.displayOrder > b.displayOrder) {
+            return 1;
+          } else {
+            if (a.key < b.key) {
+              return -1;
+            } else {
+              return 1;
+            }
+          }
+        } else if (!a.displayOrder && b.displayOrder) {
+          return 1;
+        } else if (a.displayOrder && !b.displayOrder) {
+          return -1;
+        } else if (!a.displayOrder && !b.displayOrder) {
+          if (a.key < b.key) {
+            return -1;
+          } else {
+            return 1;
+          }
+        }
+      });
+    } else {
+      this.signUpFields = defaultSignUpFields;
+    }
+
   }
 
   onAlertClose() {
