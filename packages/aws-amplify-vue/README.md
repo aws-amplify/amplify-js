@@ -285,6 +285,110 @@ By default the SignUp Component will display Username, Password, Email and Phone
 Fields passed into the signUpFields array without a displayOrder property will be placed after those fields with defined displayOrders and in alphabetical order by key.
 
 
+## API Components
+
+### Connect
+
+The Connect component can be used to execute a GraphQL query, subscription, or mutation. You can execute GraphQL queries by passing your queries in `query` or `mutation` attributes. For example:
+
+```
+<template>
+  <div>
+    <amplify-connect :query="graphqlQuery">
+      <template slot-scope="{ loading, data, errors }">
+        <ListView :events="data.listEvents.items" />
+      </template>
+    </amplify-connect>
+  </div>
+</template>
+
+<script>
+import Vue from 'vue';
+import { graphqlOperation } from '@aws-amplify';
+
+export default {
+  computed: {
+    graphqlQuery() {
+      return graphqlOperation(`query ListEvents {
+        listEvents {
+          items {
+            id
+            name
+            description
+          }
+        }
+      }`);
+    }
+  }
+};
+</script>
+```
+
+You can also subscribe to changes in query data via the `subscription` and `onSubscriptionMsg` attributes:
+
+```
+<template>
+  <div>
+    <amplify-connect :query="graphqlQuery"
+      :subscription="onNewEventSubsription"
+      :onSubscriptionMsg="onSubscription">
+        <template slot-scope="{ loading, data, errors }">
+          <ListView :events="data.listEvents.items" />
+        </template>
+    </amplify-connect>
+  </div>
+</template>
+
+<script>
+import Vue from 'vue';
+import { graphqlOperation } from '@aws-amplify';
+
+export default {
+  methods: {
+    onSubscription(prevData, newData) {
+      console.log(newData);
+    }
+  }
+  ...
+};
+</script>
+```
+
+The Connect component also supports mutations by passing a GraphQL query and (optionally) variables via the `mutation` attribute. Call the provided `mutate` method to trigger the operation. `mutation` returns a promise that resolves with the result of the GraphQL mutation, use `@done` to listen for it to complete.
+
+```
+<template>
+  <div>
+    <amplify-connect :mutation="graphqlMutation"
+      @done="onMutationDone">
+        <template slot-scope="{ loading, mutate, errors }">
+          <button :disabled="loading" @click="mutate">Click Me to Mutate</button>
+          <p v-if="errors.length > 0">An error occurred: {{ errors }}</p>
+        </template>
+    </amplify-connect>
+  </div>
+</template>
+
+<script>
+import Vue from 'vue';
+import { graphqlOperation } from '@aws-amplify';
+
+export default {
+  methods: {
+    onMutationDone(result) {
+      console.log(result);
+    }
+  }
+  computed: {
+    graphqlMutation() {
+      return graphqlOperation(`...`, { id: myId });
+    }
+  }
+};
+</script>
+```
+
+
 ## Storage Components
 
 ### PhotoPicker
