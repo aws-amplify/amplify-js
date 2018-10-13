@@ -17,7 +17,8 @@ import {
     Auth, 
     Analytics,
     Logger,
-    Hub
+    Hub,
+    JS
 } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
@@ -59,6 +60,7 @@ class AuthDecorator {
 export default class Authenticator extends React.Component {
     constructor(props) {
         super(props);
+        this._initialAuthState = this.props.authState || 'signIn';
         this.state = {
             authState: props.authState || 'loading',
             authData: props.authData
@@ -67,6 +69,7 @@ export default class Authenticator extends React.Component {
         this.handleStateChange = this.handleStateChange.bind(this);
         this.checkUser = this.checkUser.bind(this);
         this.onHubCapsule = this.onHubCapsule.bind(this);
+        this.checkContact = this.checkContact.bind(this);
 
         Hub.listen('auth', this);
     }
@@ -104,6 +107,19 @@ export default class Authenticator extends React.Component {
         }
     }
 
+    checkContact(user) {
+        Auth.verifiedContact(user)
+            .then(data => {
+                logger.debug('verified user attributes', data);
+                if (!JS.isEmpty(data.verified)) {
+                    this.handleStateChange('signedIn', user);
+                } else {
+                    user = Object.assign(user, data);
+                    this.handleStateChange('verifyContact', user);
+                }
+            });
+    }
+
     checkUser() {
         const { authState } = this.state;
         const statesJumpToSignIn = ['signedIn', 'signedOut', 'loading'];
@@ -111,9 +127,11 @@ export default class Authenticator extends React.Component {
             .then(user => {
                 if (!this._isMounted) return;
                 if (user) {
-                    this.handleStateChange('signedIn', null);
+                    this.checkContact(user);
                 } else {
-                    if (statesJumpToSignIn.includes(authState)) this.handleStateChange('signIn', null);
+                    if (statesJumpToSignIn.includes(authState)) {
+                        this.handleStateChange(this._initialAuthState, null);
+                    } 
                 }
             })
             .catch(err => {
@@ -122,7 +140,7 @@ export default class Authenticator extends React.Component {
                 if (statesJumpToSignIn.includes(authState)) {
                     Auth.signOut()
                         .then(() => {
-                            this.handleStateChange('signIn', null);
+                            this.handleStateChange(this._initialAuthState, null);
                         })
                         .catch(err => this.error(err));       
                 }

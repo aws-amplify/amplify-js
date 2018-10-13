@@ -251,14 +251,11 @@ export const PhotoPickerButton = (props) => {
 
 export const SignInButton = (props) => {
     const theme = props.theme || AmplifyTheme;
-    const style = propStyle(props, theme.signInButton);
+    const styles = Object.assign({}, theme.signInButton, theme[props.variant]);    
     const p = JS.objectLessAttributes(props, 'theme');
 
-    const classes = [AmplifyUI.signInButton];
-    if (props.variant) classes.push(props.variant);
-
     return beforeAfter(
-        <button {...p} className={classes.join(' ')} style={style}>
+        <button {...p} className={AmplifyUI.signInButton} style={styles}>
             {props.children}
         </button>
     )
