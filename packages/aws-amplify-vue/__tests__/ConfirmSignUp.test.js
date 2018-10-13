@@ -72,7 +72,7 @@ describe('ConfirmSignUp', () => {
     });
 
     it('...should set the error property when a valid username is not received', () => {
-      expect(wrapper.vm.error).toEqual('Valid username not received.');
+      expect(wrapper.vm.error).toEqual('i18n Valid username not received.');
     });
 
     it('...should call Auth.confirmSignUp when confirm method is called', () => {

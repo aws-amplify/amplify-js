@@ -70,7 +70,7 @@ describe('ConfirmSignIn', () => {
     });
 
     it('...should set the error property when a valid user is not received', () => {
-      expect(wrapper.vm.error).toEqual('Valid user not received.');
+      expect(wrapper.vm.error).toEqual('i18n Valid user not received.');
     });
 
     it('...should call Auth.verifyCurrentUserAttribute when send function is called', () => {
