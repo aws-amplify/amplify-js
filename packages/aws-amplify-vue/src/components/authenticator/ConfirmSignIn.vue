@@ -90,7 +90,7 @@ export default {
       AmplifyEventBus.$emit('authState', 'signedOut');
     },
     setError: function(e) {
-      this.error = e.message || e;
+      this.error = this.$Amplify.I18n.get(e.message || e);
       this.logger.error(this.error);
     }
   }

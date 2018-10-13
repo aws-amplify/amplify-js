@@ -66,7 +66,7 @@ describe('ForgotPassword', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Reset your password');
+      expect(wrapper.vm.options.header).toEqual('i18n Reset your password');
     });
 
     it('...should call Auth.forgotPassword when submit method is called', () => {

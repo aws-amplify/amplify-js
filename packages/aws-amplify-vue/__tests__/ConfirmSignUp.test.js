@@ -67,7 +67,7 @@ describe('ConfirmSignUp', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Confirm Sign Up');
+      expect(wrapper.vm.options.header).toEqual('i18n Confirm Sign Up');
       expect(wrapper.vm.options.username).toEqual('');
     });
 

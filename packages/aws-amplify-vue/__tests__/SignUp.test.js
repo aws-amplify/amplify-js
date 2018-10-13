@@ -76,31 +76,31 @@ describe('SignUp', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Sign Up Account');
+      expect(wrapper.vm.options.header).toEqual('i18n Sign Up Account');
       expect(wrapper.vm.options.signUpFields).toEqual([
         {
-          label: 'Username',
+          label: 'i18n Username',
           key: 'username',
           required: true,
           type: 'string',
           displayOrder: 1,
         },
         {
-          label: 'Password',
+          label: 'i18n Password',
           key: 'password',
           required: true,
           type: 'password',
           displayOrder: 2,
         },
         {
-          label: 'Email',
+          label: 'i18n Email',
           key: 'email',
           required: true,
           type: 'string',
           displayOrder: 3,
         },
         {
-          label: 'Phone Number',
+          label: 'i18n Phone Number',
           key: 'phone_number',
           required: true,
           displayOrder: 4,

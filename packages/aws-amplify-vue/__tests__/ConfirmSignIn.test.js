@@ -65,7 +65,7 @@ describe('ConfirmSignIn', () => {
     });
 
     it('...have default options', () => {
-      expect(wrapper.vm.options.header).toEqual('Confirm Sign In');
+      expect(wrapper.vm.options.header).toEqual('i18n Confirm Sign In');
       expect(Object.keys(wrapper.vm.options.user).length).toEqual(0);
     });
 
