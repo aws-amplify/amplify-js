@@ -13,6 +13,7 @@ const template = `
     <amplify-auth-sign-up-core
       *ngIf="!shouldHide('SignUp')"
       [authState]="authState"
+      [signUpConfig]="_signUpConfig"
     ></amplify-auth-sign-up-core>
 
     <amplify-auth-confirm-sign-up-core
@@ -52,7 +53,7 @@ export class AuthenticatorComponentCore {
     state: 'signIn',
     user: null
   };
-
+  _signUpConfig: any = {};
   amplifyService: AmplifyService;
 
   constructor(amplifyService: AmplifyService) {
@@ -63,12 +64,23 @@ export class AuthenticatorComponentCore {
   @Input()
   hide: string[] = [];
 
+  @Input()
+  set data(data: any) {
+    if (data.signUpConfig) {
+      this._signUpConfig = data.signUpConfig;
+    }
+  }
+
+  @Input()
+  set signUpConfig(signUpConfig: any) {
+    this._signUpConfig = signUpConfig;
+  }
+
   subscribe() {
     this.amplifyService.authStateChange$
       .subscribe(state => {
         this.authState = state;
-      },
-      () => {
+      }, () => {
         this.authState = {
           'state': 'signIn',
           'user': null

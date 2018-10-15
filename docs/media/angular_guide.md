@@ -176,6 +176,42 @@ The Authenticator component creates an drop-in user authentication experience. A
   <amplify-authenticator></amplify-authenticator>
 ```
 
+### SignUp Configuration
+
+The SignUp component provides fields which users can fill out in order to self-register.  This component is included as part the Authenticator component, but can also be used independently using the `<amplify-auth-sign-up>` tag.
+
+By default, the SignUp component provides 4 fields:  
+
+* Username (username)
+* Password (password)
+* Phone Number (phone_number)
+* Email (email)
+
+These fields can be customized by passing a `signUpConfig` prop to either the `amplify-authenticator` or `amplify-auth-sign-up` components.
+
+The signUpConfig prop has three attributes:
+
+| Attribute          | Type    | Description                                         | Default   | Required |
+|--------------------|---------|-----------------------------------------------------|-----------|----------|
+| defaultCountryCode | string  | the country code that is initially selected on init | '1'       | no       |
+| hideDefaults       | boolean | controls whether default fields are displayed       | false     | no       |
+| signUpFields       | array   | array of fields to be displayed in SignUp component | see above | no       |
+
+The signUpFields attribute in turn accepts objects with 5 attributes:
+
+| Attribute    | Type   | Description                                                   | Possible Values                       |
+|--------------|--------|---------------------------------------------------------------|---------------------------------------|
+| label        | string | label for the input field                                     | N/A                                   |
+| key          | string | key name for the attribute as defined in the User Pool        | N/A                                   |
+| required     | bolean | whether or not the field is required                          | N/A                                   |
+| displayOrder | number | number indicating the order in which fields will be displayed | N/A                                   |
+| type         | string | the type attribute for the html input element                 | 'text', 'number', 'password', 'email' |
+
+By default the SignUp Component will display Username, Password, Email and Phone Number fields (all required, and in that order).  You can override the labels, displayOrder or 'required' booleans for these fields by passing objects with 'username', 'password', 'email' or 'phone_number' keys in the signUpConfig.signUpFields array.
+
+Fields passed into the signUpFields array without a displayOrder property will be placed after those fields with defined displayOrders and in alphabetical order by key.
+
+ 
 ### Photo Picker
 
 The Photo Picker component will render a file upload control that will allow choosing a local image and uploading it to Amazon S3. Once an image is selected, a base64 encoded image preview will be displayed automatically. To render photo picker in an Angular view, use *amplify-photo-picker* component:

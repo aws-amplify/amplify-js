@@ -40,11 +40,11 @@ const template = `
               </select>
             </div>
             <div class="amplify-input-group-item">
-              <input #phone_number
+              <input 
                 class="amplify-form-input"
-                type="text"
-                placeholder="Phone Number"
-                [ngModel]="phone_number"
+                placeholder={{field.label}}
+                [(ngModel)]="local_phone_number"
+                name="local_phone_number"
               />
             </div>
           </div>
@@ -53,7 +53,9 @@ const template = `
       <div class="amplify-form-actions">
         
         <div class="amplify-form-cell-left">
-          <div class="amplify-form-signup">Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign in</a></div>
+          <div class="amplify-form-signup">
+            Have an account? <a class="amplify-form-link" (click)="onSignIn()">Sign in</a>
+          </div>
         </div>
 
         <div class="amplify-form-cell-right">
@@ -125,15 +127,12 @@ const defaultSignUpFields: SignUpField[] = [
 export class SignUpComponentCore implements OnInit {
   _authState: AuthState;
   _show: boolean;
-
+  _signUpConfig: any;
   user: any = {};
-
-  phone_number: string;
-  _defaultCountryCode: string;
+  local_phone_number: string;
   country_code: string = '1';
   countries: country[];
   signUpFields: SignUpField[];
-  complete_phone_number: string;
   errorMessage: string;
   amplifyService: AmplifyService;
 
@@ -151,7 +150,15 @@ export class SignUpComponentCore implements OnInit {
   set data(data: any) {
     this._authState = data.authState;
     this._show = data.authState.state === 'signUp';
-    this.country_code = data.defaultCountryCode;
+    if (data.signUpConfig) {
+      this._signUpConfig = data.signUpConfig;
+      if (this._signUpConfig.defaultCountryCode) {
+        this.country_code = this._signUpConfig.defaultCountryCode;
+      }
+      if (this._signUpConfig.signUpFields) {
+        this.signUpFields = this._signUpConfig.signUpFields;
+      }
+    }
   }
 
   @Input()
@@ -161,22 +168,29 @@ export class SignUpComponentCore implements OnInit {
   }
 
   @Input()
-  set customFields(customFields: SignUpField[]) {
-    this.signUpFields = customFields;
-  }
-
-  @Input()
-  set defaultCountryCode(defaultCountryCode: string) {
-    this.country_code = defaultCountryCode;
+  set signUpConfig(signUpConfig: SignUpField[]) {
+    this._signUpConfig = signUpConfig;
+    if (this._signUpConfig.defaultCountryCode) {
+      this.country_code = this._signUpConfig.defaultCountryCode;
+    }
+    if (this._signUpConfig.signUpFields) {
+      this.signUpFields = this._signUpConfig.signUpFields;
+    }
   }
 
   onSignUp() {
-    this.user.phone_number = `+${this.country_code}${this.phone_number}`;
-    console.log('this.user', this.user);
+
+    this.user.attributes = {};
+    this.user.phone_number = `+${this.country_code}${this.local_phone_number}`;
+    const userKeys = Object.keys(this.user);
+    const userValues = userKeys.map(key => this.user[key]);
+    userKeys.forEach((key, index) => {
+      if (key !== 'username' && key !== 'password' && key !== 'attributes') {
+        this.user.attributes[key] = userValues[index];
+      }
+    });
     this.amplifyService.auth()
-      .signUp(
-        this.complete_phone_number
-      )
+      .signUp(this.user)
       .then(user => this.amplifyService
         .setAuthState({ state: 'confirmSignUp', user: { 'username': this.user.username } }))
       .catch(err => this._setError(err));
@@ -192,23 +206,28 @@ export class SignUpComponentCore implements OnInit {
   }
 
   sortFields() {
-    if (this.signUpFields && this.signUpFields.length > 0) {
+    if (this._signUpConfig &&
+      this._signUpConfig.signUpFields &&
+      this._signUpConfig.signUpFields.length > 0
+    ) {
 
-      // see if fields passed to component should override defaults
-      defaultSignUpFields.forEach((f, i) => {
-        const matchKey = this.signUpFields.findIndex((d) => {
-          return d.key === f.key;
+      if (!this._signUpConfig.hideDefaults) {
+        // see if fields passed to component should override defaults
+        defaultSignUpFields.forEach((f, i) => {
+          const matchKey = this.signUpFields.findIndex((d) => {
+            return d.key === f.key;
+          });
+          if (matchKey === -1) {
+            this.signUpFields.push(f);
+          }
         });
-        if (matchKey === -1) {
-          this.signUpFields.push(f);
-        }
-      });
+      }
 
       /* 
         sort fields based on following rules:
         1. Fields with displayOrder are sorted before those without displayOrder
-        2. Fields with conflicting displayOrder are sorted alphabetically
-        3. Fields without displayOrder are sorted alphabetically
+        2. Fields with conflicting displayOrder are sorted alphabetically by key
+        3. Fields without displayOrder are sorted alphabetically by key
       */
       this.signUpFields.sort((a, b) => {
         if (a.displayOrder && b.displayOrder) {
@@ -252,11 +271,5 @@ export class SignUpComponentCore implements OnInit {
     }
 
     this.errorMessage = err.message || err;
-  }
-
-  _setFinalPhoneNumber() {
-    if (this.country_code && this.phone_number) {
-      this.complete_phone_number = "+" + this.country_code + this.phone_number;
-    }
   }
 }

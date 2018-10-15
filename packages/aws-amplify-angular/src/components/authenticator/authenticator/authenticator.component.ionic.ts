@@ -45,7 +45,7 @@ const template = `
 
 @Component({
   selector: 'amplify-authenticator-ionic',
-  template: template
+  template
 })
 export class AuthenticatorIonicComponent extends AuthenticatorComponentCore {
 
