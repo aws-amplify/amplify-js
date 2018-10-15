@@ -1,13 +1,12 @@
 import { AuthProvider } from '../types';
-import { ConsoleLogger as Logger, GoogleOAuth } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import BaseProvider from './BaseProvider';
 
-const logger = new Logger('GoogleProvider');
+const logger = new Logger('GenericProvider');
 
-export default class GoogleProvider extends BaseProvider implements AuthProvider {
+export default class GenericProvider extends BaseProvider implements AuthProvider {
     constructor(options?) {
         super(options);
-        this._credentialsDomain = 'accounts.google.com';
     }
 
     public configure(options) {
@@ -15,12 +14,11 @@ export default class GoogleProvider extends BaseProvider implements AuthProvider
         const { refreshHandlers } = this._config;
 
         this._refreshHandler = 
-            refreshHandlers['google'] || 
             refreshHandlers[this.getProviderName()] || 
-            GoogleOAuth.refreshGoogleToken;
+            refreshHandlers[this._credentialsDomain];
     }
 
     public getProviderName() {
-        return 'Google';
+        return 'Generic';
     } 
 }

@@ -107,7 +107,8 @@ export interface ExternalSession {
     provider: string,
     identityId?: string,
     refreshHandler?: Function,
-    errorHandler?: Function
+    errorHandler?: Function,
+    credentialsDomain?: string
 }
 
 export interface SetSessionResult {
@@ -123,7 +124,8 @@ export interface FederatedProviderSession {
     expires_at: number,
     type: string,
     provider: string,
-    identityId?: string
+    identityId?: string,
+    credentialsDomain?: string
 }
 
 export interface AuthProvider {
@@ -133,5 +135,4 @@ export interface AuthProvider {
     getSession(): Promise<any>;
     clearSession(): Promise<void>;
     getUser(): Promise<any>;
-    getCredentials(): Promise<ICredentials|any>;
 }

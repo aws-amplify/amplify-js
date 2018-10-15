@@ -11,7 +11,7 @@ export default class AWSCognitoProvider implements AuthProvider {
     private _userPool;
     private _keyPrefix;
 
-    constructor(options) {
+    constructor(options?) {
         this._config = {};
 
         this.configure(options);

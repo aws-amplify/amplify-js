@@ -32,8 +32,7 @@ import {
     Parser,
     Credentials,
     StorageHelper,
-    ICredentials,
-    AuthContants
+    ICredentials   
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import { 
@@ -51,7 +50,7 @@ import {
     CognitoUserAttribute
 } from 'amazon-cognito-identity-js';
 import { CognitoAuth } from 'amazon-cognito-auth-js';
-import { AWSCognitoProvider } from './providers';
+import { AWSCognitoProvider, GoogleProvider } from './providers';
 
 const logger = new Logger('AuthClass');
 const dispatchAuthEvent = (event, data) => {
@@ -82,6 +81,10 @@ export default class AuthClass {
         this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
         this._pluggables = [];
+        // add default pluggables
+        this.addPluggable(new AWSCognitoProvider());
+        this.addPluggable(new GoogleProvider());
+
 
         if (AWS.config) {
             AWS.config.update({customUserAgent: Constants.userAgent});
@@ -207,13 +210,14 @@ export default class AuthClass {
             });
         }
 
-        if (!this._pluggables) {
-            this.addPluggable(new AWSCognitoProvider({
-                ...config, 
+        this._pluggables.forEach(pluggable => {
+            pluggable.configure({
+                ...config,
                 storage: this._storage,
                 _keyPrefix: this._keyPrefix
-            }));
-        }
+            });
+        });
+        
 
         dispatchAuthEvent('configured', null);
         return this._config;
@@ -355,7 +359,7 @@ export default class AuthClass {
         const that = this;
         return {
             onSuccess: async (session) => {
-                addSessionSource
+                this._addSessionSource('AWSCognito');
                 logger.debug(session);
                 delete(user['challengeName']);
                 delete(user['challengeParam']);
@@ -471,7 +475,7 @@ export default class AuthClass {
                 code, {
                     onSuccess: async (session) => {
                         logger.debug(session);
-                        addSessionSource
+                        this._addSessionSource('AWSCognito');
                         try {
                             await Credentials.clear();
                             const cred = await Credentials.set(session, 'session');
@@ -783,7 +787,7 @@ export default class AuthClass {
         return new Promise((resolve, reject) => {
             user.completeNewPasswordChallenge(password, requiredAttributes, {
                 onSuccess: async (session) => {
-                    addSessionSource
+                    this._addSessionSource('AWSCognito');
                     logger.debug(session);
                     try {
                         await Credentials.clear();
@@ -1097,7 +1101,7 @@ export default class AuthClass {
         logger.debug('getting current authenticted user');
 
         await this._storageSync;
-        const sessionSource = this._storage.getItem(`${this._keyPrefix}_sessionSource`);
+        const sessionSource = this._getSessionSource();
         if (!sessionSource || sessionSource === 'AWSCognito') {
             logger.debug('get current authenticated userpool user');
             let user = null;
@@ -1110,9 +1114,7 @@ export default class AuthClass {
             this.user = user;
             return this.user;
         } else {
-            const providerClass: AuthProvider = this._pluggables.filter(
-                pluggable => pluggable.getProviderName() === sessionSource
-            );
+            const providerClass: AuthProvider = this._getProvider(sessionSource);
             try {
                 this.user = await providerClass.getUser();
                 return this.user;
@@ -1131,7 +1133,7 @@ export default class AuthClass {
         logger.debug('Getting current session');
         return new Promise((res, rej) => {
             this._storageSync.then(() => {
-                const sessionSource = this._storage.getItem(`${this._keyPrefix}_sessionSource`);
+                const sessionSource = this._getSessionSource();
                 if (!sessionSource || sessionSource === 'AWSCognito') {
                     if (!this.userPool) { 
                         return rej('No userPool'); 
@@ -1148,9 +1150,7 @@ export default class AuthClass {
                         return rej(e);
                     });
                 } else {
-                    const providerClass: AuthProvider = this._pluggables.filter(
-                        pluggable => pluggable.getProviderName() === sessionSource
-                    );
+                    const providerClass: AuthProvider = this._getProvider(sessionSource);
                     return providerClass.getSession();
                 }
             });
@@ -1190,7 +1190,7 @@ export default class AuthClass {
     public currentUserCredentials(): Promise<ICredentials> {
         logger.debug('Getting current user credentials');
         
-        const sessionSource = this._storage.getItem(`${this._keyPrefix}_sessionSource`);
+        const sessionSource = this._getSessionSource();
         if (!sessionSource || sessionSource === 'AWSCognito') {
             this.currentSession()
                 .then(session => {
@@ -1201,9 +1201,7 @@ export default class AuthClass {
                     return Credentials.set(null, 'guest');
                 });
         } else {
-            const providerClass: AuthProvider = this._pluggables.filter(
-                pluggable => pluggable.getProviderName() === sessionSource
-            );
+            const providerClass: AuthProvider = this._getProvider(sessionSource);
             providerClass.getSession()
                 .then(session => {
                     logger.debug('getting session success', session);
@@ -1211,8 +1209,9 @@ export default class AuthClass {
                 }).catch(error => {
                     logger.debug('getting session failed', error);
                     return Credentials.set(null, 'guest');
-                })
+                });
         }
+        return;
     }
 
 
@@ -1227,9 +1226,8 @@ export default class AuthClass {
      * @return {Object }- current User's information
      */
     public async currentUserInfo() {
-        // const source = Credentials.getCredSource();
-
-        if (!source || source === 'aws' || source === 'userPool') {
+        const sessionSource = this._getSessionSource();
+         if (!sessionSource || sessionSource === 'AWSCognito') {
             const user = await this.currentUserPoolUser()
                 .catch(err => logger.debug(err));
             if (!user) { return null; }
@@ -1254,11 +1252,9 @@ export default class AuthClass {
                 logger.debug('currentUserInfo error', err);
                 return {};
             }
-        }
-
-        if (source === 'federated') {
-            const user = this.user;
-            return user? user : {};
+        } else {
+            const providerClass = this._getProvider(sessionSource);
+            return providerClass.getUser();
         }
     }
 
@@ -1281,7 +1277,6 @@ export default class AuthClass {
                             if (this._cognitoAuthClient) {
                                 this._cognitoAuthClient.signOut();
                             }
-                            this._storage.removeItem(`${this._keyPrefix}_sessionSource`);
                             return res();
                         },
                         onFailure: (err) => {
@@ -1296,7 +1291,6 @@ export default class AuthClass {
                 if (this._cognitoAuthClient) {
                     this._cognitoAuthClient.signOut();
                 }
-                this._storage.removeItem(`${this._keyPrefix}_sessionSource`);
                 return res();
             }
         });
@@ -1315,7 +1309,8 @@ export default class AuthClass {
         }
 
         await this._storageSync;
-        const sessionSource = this._storage.getItem(`${this._keyPrefix}_sessionSource`);
+        const sessionSource = this._getSessionSource();
+        this._removeSessionSource();
         if (!sessionSource || sessionSource === 'AWSCognito') {
             if (!this.userPool) {
                 throw('No userPool'); 
@@ -1327,9 +1322,7 @@ export default class AuthClass {
                 logger.debug('no current Cognito user');
             }  
         } else {
-            const providerClass: AuthProvider = this._pluggables.filter(
-                pluggable => pluggable.getProviderName() === sessionSource
-            );
+            const providerClass: AuthProvider = this._getProvider(sessionSource);
             await providerClass.clearSession();
         }
 
@@ -1364,27 +1357,35 @@ export default class AuthClass {
         user: FederatedUser
     ): Promise<ICredentials>{
         const { token, identity_id, expires_at } = response;
-        let authProvider = AuthContants.GENERIC;
+        let authProvider = null;
+        let credentialsDomain = null;
+
         // for backward compatiblity
         switch(provider) {
-            case 'google':
-                authProvider = AuthContants.GOOGLE;
+            case 'google' || 'Google':
+                authProvider = 'Google';
+                credentialsDomain = 'accounts.google.com';
                 break;
-            case 'facebook': 
-                authProvider = AuthContants.FACEBOOK;
+            case 'facebook' || 'Facebook': 
+                authProvider = 'Facebook';
+                credentialsDomain = 'graph.facebook.com';
                 break;
-            case 'amazon':
-                authProvider = AuthContants.AMAZON;
+            case 'amazon' || 'Amazon':
+                authProvider = 'Amazon';
+                credentialsDomain = 'www.amazon.com'
                 break;
-            case 'developer':
-                authProvider = AuthContants.DEVELOPER
+            case 'developer' || 'Developer':
+                authProvider = 'Developer';
+                credentialsDomain = 'cognito-identity.amazonaws.com';
                 break;
             default:
+                authProvider = 'Generic';
+                credentialsDomain = provider;
                 break;
         }
 
-        const idToken = authProvider === AuthContants.FACEBOOK? undefined : token;
-        const accessToken = authProvider === AuthContants.FACEBOOK? token : undefined;
+        const idToken = authProvider === 'Facebook' ? undefined : token;
+        const accessToken = authProvider === 'Facebook' ? token : undefined;
 
         const { credentials } = await this.setSession({
             username: user.name,
@@ -1397,7 +1398,8 @@ export default class AuthClass {
             provider: authProvider,
             errorHandler: (e) => {
                 throw e;
-            }
+            },
+            credentialsDomain
         });
 
         dispatchAuthEvent('signIn', this.user);
@@ -1453,13 +1455,38 @@ export default class AuthClass {
     }
 
 
+    private _getProvider(providerName) {
+        const providerClass: AuthProvider = this._pluggables.filter(
+            pluggable => pluggable.getProviderName() === providerName
+        );
+        if (!providerClass) {
+            throw new Error(`no provider class for ${providerName}`);
+        }
+        return providerClass;
+    }
+
+    private _getSessionSource() {
+        return this._storage.getItem(`${this._keyPrefix}_sessionSource`);
+    }
+
+    private _removeSessionSource() {
+        this._storage.removeItem(`${this._keyPrefix}_sessionSource`);
+    }
+
+    private _addSessionSource(source) {
+        this._storage.setItem(`${this._keyPrefix}_sessionSource`, source);
+    }
+
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
-
-        need a default provider for abitrary provider
-
         const { provider } = params;
-
+        if (!provider) {
+            throw new Error('The provider property must be specified');
+        }
         const providerClass: AuthProvider = this._pluggables.filter(pluggable => pluggable.getProviderName() === provider);
+        if (!providerClass) {
+            throw new Error(`No AuthProvider class for the provider, ${provider}`);
+        }
+
         return await providerClass.setSession(params);
     }
 }
