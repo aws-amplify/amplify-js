@@ -60,3 +60,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .amplify-image {
+    width: 30%;
+    margin: 0.2em;
+    border-radius: 6px;
+    border: 2px solid var(--color-white);
+    cursor: pointer;
+  }
+</style>

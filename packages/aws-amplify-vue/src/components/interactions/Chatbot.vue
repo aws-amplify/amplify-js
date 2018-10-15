@@ -118,3 +118,99 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+	.amplify-interactions {
+		width: var(--component-width-desktop);
+		margin: 1em auto;
+		border-radius: 6px;
+		background-color: var(--color-white);
+		box-shadow: var(--box-shadow);
+	}
+
+	.amplify-interactions-container {
+		width: 400px;
+		margin: 0 auto;
+		padding: 1em;
+	}
+
+	.amplify-interactions-button {
+		background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAApCAYAAABHomvIAAAABHNCSVQICAgIfAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAG2SURBVFiF7dfPKwRhHMfx9+xqhaItIg5KikgOlER2TzhQ4i+QwtndQe4O4uhCSQ57sC6SkotfR1uK2nWgrGJr8yvsjsO2bWtb+8w+88zOYT6nmWfmeebV95lfj6bruo6N4yo1oFAcoGwcoGwcoGwcoGxsDyyz5CqxawhtwPsTNA1C5wxobqGumvJv8d0+HM5B4jvT1jICw1tC3dVO8ds9VNaD25PdHj6A6LnQEOqAkSBs90HsBsZ2wVOVfTweFhpGDTAShMPZ1LQeL+QiNQ1qu0sETOOSidS+ruciu6bB2yE0nLkPyV9c1pU08K9AQx9Ut4AmVhvzKvgfDlKVfDyFmlZhHJgFLIQDaJ+CoVXDQ8sDRXG+dUOVS0cOqBgHMkARXJscDooFiuL8cjgoBmghDoy+B+MR2BmA5I8lODBSQT0JiU/oX8x/jsk4MAJ8CcHeBDQNwcCSJTgwAoxewkcMgpO5SEU4MHIPHs3DbSC1XeGF8QA8nMDzFfjWlODAyC9/9Cyz/fUKF8swvAkuT/4+JkQc2DwKVY3Q0At1PeAuV8jKRP2aRDK2X3Y6QNk4QNk4QNnYHvgLzPueuQw6nCEAAAAASUVORK5CYII=') center no-repeat var(--color-white);
+		border:none;
+		cursor: pointer;
+		width: 32px;
+	}
+
+	.amplify-interactions-actions {
+		display:flex;
+		border-top: var(--input-border);
+		margin-bottom: -1em;
+		margin-left: -1.9em;
+		margin-right: -1.9em;
+	}
+
+	.amplify-interactions-actions > input[type="text"] {
+		border: none;
+		margin-top: 0px;
+		margin-bottom: 0px;
+		margin-left: 0px;
+	}
+
+	.amplify-interactions-actions > input[type="text"]:focus {
+	border: 0px solid var(--color-white) !important;
+	}
+
+	.amplify-interactions-conversation {
+		margin: 1em;
+	}
+
+	.amplify-interactions-input {
+		padding: 1em;
+		margin: 1em;
+		width: 75%;
+		border-radius: 20px 20px 20px 0;
+		background-color: #DBDBDB;
+		box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.1);
+		font-size: 13px;
+		line-height: 16px;
+		color: #4A4A4A;
+	}
+
+	.amplify-interactions-input-timestamp {
+		color: #828282;
+		font-size: 10px;
+		letter-spacing: 0.5px;
+		line-height: 16px;
+		margin-left: 1.5em;
+	}
+
+	.amplify-interactions-response-timestamp {
+		color: #828282;
+		font-size: 10px;
+		letter-spacing: 0.5px;
+		line-height: 16px;
+		text-align:right;
+	}
+
+	.amplify-interactions-response {
+		padding: 1em;
+		margin: 1em;
+		width: 75%;
+		margin-left: 5em;
+		border-radius: 20px 20px 0 20px;
+		background-color: #009ECF;
+		box-shadow: 1px 2px 4px 0 rgba(0,0,0,0.1);
+		color: var(--color-white);
+		font-size: 13px;
+		line-height: 16px;
+	}
+
+	@media (min-width: 320px) and (max-width: 480px) {
+		.amplify-interactions {
+				width: var(--component-width-mobile)
+		}
+		.amplify-interactions-container {
+				width: 85%;
+		}
+	}
+</style>

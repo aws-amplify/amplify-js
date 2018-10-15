@@ -153,8 +153,13 @@ export class Credentials {
             return Promise.reject('No Cognito Federated Identity pool provided');
         }
         
-        await this._storageSync;
-        const identityId = this._storage.getItem('CognitoIdentityId-' + identityPoolId);
+        let identityId = undefined;
+        try {
+            await this._storageSync;
+            identityId = this._storage.getItem('CognitoIdentityId-' + identityPoolId);
+        } catch (e) {
+            logger.debug('Failed to get the cached identityId', e);
+        }
         
         const credentials = new AWS.CognitoIdentityCredentials(
             {
@@ -278,6 +283,8 @@ export class Credentials {
                     } catch(e) {
                         logger.debug('Failed to put federated info into auth storage', e);
                     }
+                    // the Cache module no longer stores federated info
+                    // this is just for backward compatibility
                     if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
                         Amplify.Cache.setItem(
                             'federatedInfo', 
@@ -291,8 +298,7 @@ export class Credentials {
                             { priority: 1 }
                         );
                     } else {
-                        rej('No Cache module registered in Amplify');
-                        return;
+                        logger.debug('No Cache module registered in Amplify');
                     }
                 }
                 if (source === 'guest') {
@@ -341,10 +347,12 @@ export class Credentials {
         this._credentials_source = null;
         this._storage.removeItem('aws-amplify-federatedInfo');
 
+        // the Cache module no longer stores federated info
+        // this is just for backward compatibility
         if (Amplify.Cache && typeof Amplify.Cache.setItem === 'function'){
             await Amplify.Cache.removeItem('federatedInfo');
         } else {
-            return Promise.reject('No Cache module registered in Amplify');
+            logger.debug('No Cache module registered in Amplify');
         }
     }
 
