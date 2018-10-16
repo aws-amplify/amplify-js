@@ -86,43 +86,6 @@ export class Credentials {
         }
     }
 
-    public refreshFederatedToken(federatedInfo) {
-        logger.debug('Getting federated credentials');
-        const { provider, user } = federatedInfo;
-        let token = federatedInfo.token;
-        let expires_at = federatedInfo.expires_at;
-        let identity_id = federatedInfo.identity_id;
-
-        const that = this;
-        logger.debug('checking if federated jwt token expired');
-        if (expires_at > new Date().getTime()) {
-            // if not expired
-            logger.debug('token not expired');
-            return this._setCredentialsFromFederation({provider, token, user, identity_id, expires_at });
-        } else {
-            // if refresh handler exists
-            if (that._refreshHandlers[provider] && typeof that._refreshHandlers[provider] === 'function') {
-                logger.debug('getting refreshed jwt token from federation provider');
-                return that._refreshHandlers[provider]().then((data) => {
-                    logger.debug('refresh federated token sucessfully', data);
-                    token = data.token;
-                    identity_id = data.identity_id;
-                    expires_at = data.expires_at;
-                    
-                    return that._setCredentialsFromFederation({ provider, token, user, identity_id, expires_at });
-                }).catch(e => {
-                    logger.debug('refresh federated token failed', e);
-                    this.clear();
-                    return Promise.reject('refreshing federation token failed: ' + e);
-                });
-            } else {
-                logger.debug('no refresh handler for provider:', provider);
-                this.clear();
-                return Promise.reject('no refresh handler for provider');
-            }
-        }
-    }
-
     private _isExpired(credentials): boolean {
         if (!credentials) {
             logger.debug('no credentials for expiration check');
@@ -188,13 +151,6 @@ export class Credentials {
 
     private _setCredentialsFromFederation(params) {
         const { domain, token, identity_id } = params;
-        // const deprecatedDomains = {
-        //     // for backward compatibility
-        //     'google': 'accounts.google.com',
-        //     'facebook': 'graph.facebook.com',
-        //     'amazon': 'www.amazon.com',
-        //     'developer': 'cognito-identity.amazonaws.com'
-        // };
         if (!domain) {
             return Promise.reject('You must specify a federated provider');
         }

@@ -50,7 +50,14 @@ import {
     CognitoUserAttribute
 } from 'amazon-cognito-identity-js';
 import { CognitoAuth } from 'amazon-cognito-auth-js';
-import { AWSCognitoProvider, GoogleProvider } from './providers';
+import { 
+    AWSCognitoProvider, 
+    GoogleProvider,
+    FacebookProvider,
+    AmazonProvider,
+    DeveloperProvider,
+    GenericProvider
+} from './providers';
 
 const logger = new Logger('AuthClass');
 const dispatchAuthEvent = (event, data) => {
@@ -84,6 +91,10 @@ export default class AuthClass {
         // add default pluggables
         this.addPluggable(new AWSCognitoProvider());
         this.addPluggable(new GoogleProvider());
+        this.addPluggable(new FacebookProvider());
+        this.addPluggable(new AmazonProvider());
+        this.addPluggable(new DeveloperProvider());
+        this.addPluggable(new GenericProvider());
 
 
         if (AWS.config) {
@@ -1372,7 +1383,7 @@ export default class AuthClass {
                 break;
             case 'amazon' || 'Amazon':
                 authProvider = 'Amazon';
-                credentialsDomain = 'www.amazon.com'
+                credentialsDomain = 'www.amazon.com';
                 break;
             case 'developer' || 'Developer':
                 authProvider = 'Developer';
