@@ -285,6 +285,7 @@ const template = `
         <div class="amplify-form-signup">Have an code? <a class="amplify-form-link" (click)="onConfirmSignUp()">Confirm</a></div>
       </div>
     </div>
+
   </div>
 
   <div class="amplify-alert" *ngIf="errorMessage">

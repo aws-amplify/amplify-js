@@ -10,7 +10,8 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import '../Polyfills';
+
+import JS from '../JS';
 
 const Linking = {};
 const AppState = {
@@ -20,6 +21,6 @@ const AppState = {
 };
 
 // if not in react native, just use local storage
-const AsyncStorage = window.localStorage;
+const AsyncStorage = JS.browserOrNode().isBrowser ? window.localStorage : undefined;
 
 export { Linking, AppState, AsyncStorage };

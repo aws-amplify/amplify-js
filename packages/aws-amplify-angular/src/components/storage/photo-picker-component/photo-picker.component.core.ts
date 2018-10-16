@@ -68,9 +68,10 @@ export class PhotoPickerComponentCore {
   @Output()
   loaded: EventEmitter<string> = new EventEmitter<string>();
   
-  constructor( private amplify: AmplifyService ) {
+  @Output()
+  uploaded: EventEmitter<Object> = new EventEmitter<Object>();
 
-  }
+  constructor( private amplify: AmplifyService ) {}
 
   pick(evt) {
     const file = evt.target.files[0];
@@ -101,6 +102,7 @@ export class PhotoPickerComponentCore {
     			'contentType': this.s3ImageFile.type
 		})
 		.then ( result => {
+      this.uploaded.emit(result);
 			this.completeFileUpload();
 		})
 		.catch( error => {

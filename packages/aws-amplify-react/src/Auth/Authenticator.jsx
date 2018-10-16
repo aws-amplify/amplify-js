@@ -12,8 +12,8 @@
  */
 
 import React, { Component } from 'react';
-import { Amplify, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-
+import Amplify, { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 import Greetings from './Greetings';
 import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
@@ -37,14 +37,51 @@ export default class Authenticator extends Component {
 
         this.handleStateChange = this.handleStateChange.bind(this);
         this.handleAuthEvent = this.handleAuthEvent.bind(this);
+        this.onHubCapsule = this.onHubCapsule.bind(this);
 
-        this.state = { auth: props.authState || 'loading' };
+        this._initialAuthState = this.props.authState || 'signIn';
+        this.state = { auth: 'loading' };
+        Hub.listen('auth', this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const config = this.props.amplifyConfig;
         if (config) {
             Amplify.configure(config);
+        }
+        this._isMounted = true;
+        this.checkUser()
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    checkUser() {
+        const { auth } = this.state;
+        if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+        return Auth.currentAuthenticatedUser()
+            .then(user => {
+                if (!this._isMounted) { return; }
+                if (auth !== 'signedIn') {
+                    this.setState({
+                        authState: 'signedIn',
+                        authData: user
+                    });
+                    this.handleStateChange('signedIn', user);
+                }
+            })
+            .catch(err => {
+                if (!this._isMounted) { return; }
+                Auth.signOut().then(() => this.handleStateChange(this._initialAuthState));
+            });
+    }
+
+    onHubCapsule(capsule) {
+        const { channel, payload, source } = capsule;
+        if (channel === 'auth' && (payload.event === 'configured' || payload.event === 'cognitoHostedUI')) { 
+            this.checkUser(); 
         }
     }
 
