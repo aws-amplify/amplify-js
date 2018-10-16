@@ -2,7 +2,7 @@
 
 exports[`SelectMFAType test render test render with totpsetup and with all mfa types and select message 1`] = `
 <div>
-  <FormSection
+  <Component
     theme={
       Object {
         "a": Object {},
@@ -32,7 +32,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
       }
     }
   >
-    <SectionHeader
+    <Component
       theme={
         Object {
           "a": Object {},
@@ -63,8 +63,8 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
       }
     >
       Select MFA Type
-    </SectionHeader>
-    <SectionBody
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {},
@@ -95,7 +95,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
       }
     >
       <div>
-        <RadioRow
+        <Component
           key="sms"
           name="MFAType"
           onChange={[Function]}
@@ -130,7 +130,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
           }
           value="SMS"
         />
-        <RadioRow
+        <Component
           key="totp"
           name="MFAType"
           onChange={[Function]}
@@ -165,7 +165,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
           }
           value="TOTP"
         />
-        <RadioRow
+        <Component
           key="noMFA"
           name="MFAType"
           onChange={[Function]}
@@ -201,9 +201,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
           value="NOMFA"
         />
       </div>
-    </SectionBody>
-    <SectionFooter>
-      <Button
+    </Component>
+    <Component>
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -235,9 +235,9 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
         }
       >
         Verify
-      </Button>
-    </SectionFooter>
-  </FormSection>
+      </Component>
+    </Component>
+  </Component>
   <TOTPSetupComp
     MFATypes={
       Object {
@@ -252,7 +252,7 @@ exports[`SelectMFAType test render test render with totpsetup and with all mfa t
 
 exports[`SelectMFAType test render test render without totpsetup and with 2 mfa types 1`] = `
 <div>
-  <FormSection
+  <Component
     theme={
       Object {
         "a": Object {},
@@ -282,7 +282,7 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
       }
     }
   >
-    <SectionHeader
+    <Component
       theme={
         Object {
           "a": Object {},
@@ -313,8 +313,8 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
       }
     >
       Select MFA Type
-    </SectionHeader>
-    <SectionBody
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {},
@@ -345,7 +345,7 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
       }
     >
       <div>
-        <RadioRow
+        <Component
           key="sms"
           name="MFAType"
           onChange={[Function]}
@@ -380,7 +380,7 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
           }
           value="SMS"
         />
-        <RadioRow
+        <Component
           key="totp"
           name="MFAType"
           onChange={[Function]}
@@ -416,9 +416,9 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
           value="TOTP"
         />
       </div>
-    </SectionBody>
-    <SectionFooter>
-      <Button
+    </Component>
+    <Component>
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -450,15 +450,15 @@ exports[`SelectMFAType test render test render without totpsetup and with 2 mfa 
         }
       >
         Verify
-      </Button>
-    </SectionFooter>
-  </FormSection>
+      </Component>
+    </Component>
+  </Component>
 </div>
 `;
 
 exports[`SelectMFAType test render test render without totpsetup and with all mfa types and select message 1`] = `
 <div>
-  <FormSection
+  <Component
     theme={
       Object {
         "a": Object {},
@@ -488,7 +488,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
       }
     }
   >
-    <SectionHeader
+    <Component
       theme={
         Object {
           "a": Object {},
@@ -519,8 +519,8 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
       }
     >
       Select MFA Type
-    </SectionHeader>
-    <SectionBody
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {},
@@ -551,7 +551,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
       }
     >
       <div>
-        <RadioRow
+        <Component
           key="sms"
           name="MFAType"
           onChange={[Function]}
@@ -586,7 +586,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
           }
           value="SMS"
         />
-        <RadioRow
+        <Component
           key="totp"
           name="MFAType"
           onChange={[Function]}
@@ -621,7 +621,7 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
           }
           value="TOTP"
         />
-        <RadioRow
+        <Component
           key="noMFA"
           name="MFAType"
           onChange={[Function]}
@@ -657,9 +657,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
           value="NOMFA"
         />
       </div>
-    </SectionBody>
-    <SectionFooter>
-      <Button
+    </Component>
+    <Component>
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -691,9 +691,9 @@ exports[`SelectMFAType test render test render without totpsetup and with all mf
         }
       >
         Verify
-      </Button>
-    </SectionFooter>
-  </FormSection>
+      </Component>
+    </Component>
+  </Component>
 </div>
 `;
 
