@@ -10,7 +10,7 @@ import Storage from '@aws-amplify/storage';
 import S3Image from '../../src/Storage/S3Image';
 import { calcKey } from '../../src/Storage/Common';
 import { PhotoPicker } from '../../src/Widget'
-import React from 'react';
+import * as React from 'react';
 
 describe('S3Image', () => {
     describe('render test', () => {

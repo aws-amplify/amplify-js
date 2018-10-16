@@ -9,7 +9,7 @@ import Storage from '@aws-amplify/storage';
 import S3Text from '../../src/Storage/S3Text';
 import { calcKey } from '../../src/Storage/Common';
 import { TextPicker } from '../../src/Widget'
-import React, { Component }from 'react';
+import * as React from 'react';
 
 describe('S3Text test', () => {
     describe('render test', () => {

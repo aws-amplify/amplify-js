@@ -27,7 +27,7 @@ import GetUser from '../../services/getUser';
 
 export default {
   name: 'Authenticator',
-  props: ['authOptions'],
+  props: ['authConfig'],
   data () {
     return {
         user: {
@@ -47,7 +47,7 @@ export default {
         confirmSignInConfig: {},
         forgotPasswordConfig: {}
       };
-      return Object.assign(defaults, this.authOptions || {})
+      return Object.assign(defaults, this.authConfig || {})
     }
   },
   async mounted() {
