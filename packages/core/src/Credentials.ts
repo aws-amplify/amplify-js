@@ -113,8 +113,13 @@ export class Credentials {
             return Promise.reject('No Cognito Federated Identity pool provided');
         }
         
-        await this._storageSync;
-        const identityId = this._storage.getItem('CognitoIdentityId-' + identityPoolId);
+        let identityId = undefined;
+        try {
+            await this._storageSync;
+            identityId = this._storage.getItem('CognitoIdentityId-' + identityPoolId);
+        } catch (e) {
+            logger.debug('Failed to get the cached identityId', e);
+        }
         
         const credentials = new AWS.CognitoIdentityCredentials(
             {

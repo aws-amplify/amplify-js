@@ -13,7 +13,7 @@
 
 import { delegate } from '../vendor/dom-utils';
 import { EventTrackOpts } from '../types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 
 const logger = new Logger('EventTracker');
 
@@ -30,7 +30,7 @@ export default class EventTracker {
     private _delegates;
 
     constructor(tracker, opts) {
-        if (!window || !window.addEventListener) {
+        if (!JS.browserOrNode().isBrowser || !window.addEventListener) {
             logger.debug('not in the supported web environment');
             return;
         }

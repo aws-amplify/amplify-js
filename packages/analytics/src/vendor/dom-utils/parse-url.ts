@@ -2,14 +2,14 @@
  * Copyright (c) 2017, Philip Walton <philip@philipwalton.com>
  */
 
+import { JS } from '@aws-amplify/core';
+
 const HTTP_PORT = '80';
 const HTTPS_PORT = '443';
 const DEFAULT_PORT = RegExp(':(' + HTTP_PORT + '|' + HTTPS_PORT + ')$');
 
-
-const a = document.createElement('a');
+const a = JS.browserOrNode().isBrowser ? document.createElement('a') : null;
 const cache = {};
-
 
 /**
  * Parses the given url and returns an object mimicing a `Location` object.
