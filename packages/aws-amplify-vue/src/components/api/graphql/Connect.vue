@@ -14,7 +14,7 @@
 import Vue from 'vue';
 
 export default {
-  name: 'Connect',
+  name: 'amplify-connect',
 
   props: [
     'query',
