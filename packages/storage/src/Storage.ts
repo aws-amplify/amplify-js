@@ -77,12 +77,13 @@ export default class StorageClass {
     }
 
     /**
-    * Get a presigned URL of the file
+    * Get a presigned URL of the file or the object data when download:true
+    *
     * @param {String} key - key of the object
-    * @param {Object} [options] - { level : private|protected|public }
+    * @param {Object} [options] - { level : private|protected|public, download: true|false }
     * @return - A promise resolves to Amazon S3 presigned URL on success
     */
-    public async get(key: string, options?): Promise<Object> {
+    public async get(key: string, options?): Promise<String|Object> {
         const credentialsOK = await this._ensureCredentials();
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
