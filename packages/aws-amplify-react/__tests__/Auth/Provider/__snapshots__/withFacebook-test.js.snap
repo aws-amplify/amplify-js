@@ -8,7 +8,7 @@ exports[`FacebookButton test render test render correctly 1`] = `
 `;
 
 exports[`withFacebook test render test render correctly 1`] = `
-<MockComp
+<class_1
   facebookSignIn={[Function]}
   fb="fb"
 />

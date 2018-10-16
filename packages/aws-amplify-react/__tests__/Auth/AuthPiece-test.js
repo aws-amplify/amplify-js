@@ -1,5 +1,5 @@
 import AuthPiece from '../../src/Auth/AuthPiece';
-import React from 'react';
+import * as React from 'react';
 
 class TestPiece extends AuthPiece {
     constructor(props) {

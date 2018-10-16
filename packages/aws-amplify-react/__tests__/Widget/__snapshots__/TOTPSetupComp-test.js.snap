@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {},
@@ -31,12 +31,12 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
     }
   }
 >
-  <Toast
+  <Component
     onClose={[Function]}
   >
     message
-  </Toast>
-  <SectionHeader
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {},
@@ -67,8 +67,8 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
     }
   >
     Scan then enter verification code
-  </SectionHeader>
-  <SectionBody
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {},
@@ -111,10 +111,10 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
           value="code"
         />
       </div>
-      <InputLabel>
+      <Component>
         Enter Security Code:
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         autoFocus={true}
         key="totpCode"
         name="totpCode"
@@ -150,9 +150,9 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
       />
     </div>
     message
-  </SectionBody>
-  <SectionFooter>
-    <Button
+  </Component>
+  <Component>
+    <Component
       onClick={[Function]}
       style={
         Object {
@@ -189,13 +189,13 @@ exports[`TOTPSetupComp test render test render with code and setupMessage 1`] = 
       }
     >
       Verify Security Token
-    </Button>
-  </SectionFooter>
-</FormSection>
+    </Component>
+  </Component>
+</Component>
 `;
 
 exports[`TOTPSetupComp test render test render without code or setupMessage 1`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {},
@@ -225,7 +225,7 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
     }
   }
 >
-  <SectionHeader
+  <Component
     theme={
       Object {
         "a": Object {},
@@ -256,8 +256,8 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
     }
   >
     Scan then enter verification code
-  </SectionHeader>
-  <SectionBody
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {},
@@ -287,8 +287,8 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
       }
     }
   />
-  <SectionFooter>
-    <Button
+  <Component>
+    <Component
       onClick={[Function]}
       style={
         Object {
@@ -325,7 +325,7 @@ exports[`TOTPSetupComp test render test render without code or setupMessage 1`] 
       }
     >
       Verify Security Token
-    </Button>
-  </SectionFooter>
-</FormSection>
+    </Component>
+  </Component>
+</Component>
 `;

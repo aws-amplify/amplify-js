@@ -1,5 +1,6 @@
 import { withAuthenticator, AuthenticatorWrapper } from '../../src/Auth/index'
-import React, {Component} from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 describe('hoc tests', () => {
     describe('withAuthenticator test', () => {
