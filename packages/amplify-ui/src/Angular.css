@@ -482,6 +482,10 @@ color: var(--color-primary-highlight);
   clear: both;
 }
 
+.amplify-input-invalid {
+  border-color: red !important;
+}
+
 @media (min-width: 320px) and (max-width: 480px) {
   .amplify-form-input {
       width: 100%;

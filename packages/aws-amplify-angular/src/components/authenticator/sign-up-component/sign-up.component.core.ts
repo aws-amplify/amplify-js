@@ -18,6 +18,7 @@ const template = `
           </label>
           <input #{{field.key}}
             class="amplify-form-input"
+            [ngClass]="{'amplify-input-invalid ': field.invalid}"
             type={{field.type}}
             placeholder={{field.label}}
             [(ngModel)]="user[field.key]" name="field.key" />
@@ -32,6 +33,7 @@ const template = `
             <div class="amplify-input-group-item">
               <select #countryCode
                 name="countryCode" 
+                [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 class="amplify-select-phone-country" 
                 [value]="country_code">
                 <option *ngFor="let country of countries"  
@@ -43,6 +45,7 @@ const template = `
               <input 
                 class="amplify-form-input"
                 placeholder={{field.label}}
+                [ngClass]="{'amplify-input-invalid ': field.invalid}"
                 [(ngModel)]="local_phone_number"
                 name="local_phone_number"
                 type={{field.type}}
@@ -89,6 +92,7 @@ export class SignUpField{
   required?: boolean;
   type?: stringType;
   displayOrder?:number;
+  invalid?: boolean;
 }
 
 const defaultSignUpFields: SignUpField[] = [
@@ -109,7 +113,7 @@ const defaultSignUpFields: SignUpField[] = [
     label: 'Email',
     key: 'email',
     required: true,
-    type: 'string',
+    type: 'email',
     displayOrder: 3
   },
   {
@@ -181,6 +185,10 @@ export class SignUpComponentCore implements OnInit {
 
   onSignUp() {
 
+    const validation = this.validate();
+    if (validation && validation.length > 0) {
+      return this._setError(`The following fields need to be filled out: ${validation.join(', ')}`);
+    }
     this.user.attributes = {};
     this.user.phone_number = `+${this.country_code}${this.local_phone_number}`;
     const userKeys = Object.keys(this.user);
@@ -192,8 +200,12 @@ export class SignUpComponentCore implements OnInit {
     });
     this.amplifyService.auth()
       .signUp(this.user)
-      .then(user => this.amplifyService
-        .setAuthState({ state: 'confirmSignUp', user: { 'username': this.user.username } }))
+      .then((user) => {
+        const username = this.user.username;
+        this.user = {};
+        this.amplifyService
+        .setAuthState({ state: 'confirmSignUp', user: { 'username': username} });
+      })
       .catch(err => this._setError(err));
   }
 
@@ -263,6 +275,28 @@ export class SignUpComponentCore implements OnInit {
 
   onAlertClose() {
     this._setError(null);
+  }
+
+  validate() {
+    const invalids = [];
+    this.signUpFields.map((el) => {
+      if (el.key !== 'phone_number') {
+        if (el.required && !this.user[el.key]) {
+          el.invalid = true;
+          invalids.push(el.label);
+        } else {
+          el.invalid = false;
+        }        
+      } else {
+        if (el.required && (!this.country_code || !this.local_phone_number)) {
+          el.invalid = true;
+          invalids.push(el.label);
+        } else {
+          el.invalid = false;
+        }
+      }
+    });
+    return invalids;
   }
 
   _setError(err) {
