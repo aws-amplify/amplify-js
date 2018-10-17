@@ -9,8 +9,12 @@ import * as AmplifyMocks from '../__mocks__/Amplify.mocks';
 Vue.use(AmplifyPlugin, AmplifyMocks);
 
 describe('Connect', () => {
-  it('has a mounted hook', () => {
-    expect(typeof Connect.mounted).toBe('function');
+  it('has a beforeMount hook', () => {
+    expect(typeof Connect.beforeMount).toBe('function');
+  });
+
+  it('has a beforeDestroy book', () => {
+    expect(typeof Connect.beforeDestroy).toBe('function');
   });
 
   it('sets the correct default data', () => {
