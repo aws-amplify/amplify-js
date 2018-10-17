@@ -8,7 +8,7 @@ exports[`GoogleButton test render test render correctly 1`] = `
 `;
 
 exports[`withGoogle test render test render correctly 1`] = `
-<MockComp
+<class_1
   ga={null}
   googleSignIn={[Function]}
 />

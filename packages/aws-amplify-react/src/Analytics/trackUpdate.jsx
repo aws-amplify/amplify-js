@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import Analytics from '@aws-amplify/analytics';
 
 export function trackUpdate(Comp, trackerName) {

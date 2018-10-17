@@ -2,7 +2,7 @@
 
 exports[`Picker test render test render correcly 1`] = `
 <div>
-  <PhotoPickerButton
+  <Component
     theme={
       Object {
         "a": Object {},
@@ -33,7 +33,7 @@ exports[`Picker test render test render correcly 1`] = `
     }
   >
     Pick a File
-  </PhotoPickerButton>
+  </Component>
   <input
     accept="*/*"
     onChange={[Function]}

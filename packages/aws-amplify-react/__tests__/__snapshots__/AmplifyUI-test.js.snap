@@ -12,7 +12,7 @@ exports[`AmplifyUi test render Button correctly 1`] = `
   className="amplify-button"
   style={Object {}}
 >
-  <ButtonContent
+  <Component
     theme="theme"
   />
 </button>
@@ -28,7 +28,7 @@ exports[`AmplifyUi test render ButtonRow correctly 1`] = `
 <div
   className="amplify-action-row"
 >
-  <Button
+  <Component
     theme="theme"
   />
 </div>
@@ -43,18 +43,18 @@ exports[`AmplifyUi test render Checkbox correctly 1`] = `
 `;
 
 exports[`AmplifyUi test render CheckboxRow correctly 1`] = `
-<FormRow
+<Component
   theme="theme"
 >
-  <Checkbox
+  <Component
     id="_undefined"
     theme="theme"
   />
-  <Label
+  <Component
     htmlFor="_undefined"
     theme="theme"
   />
-</FormRow>
+</Component>
 `;
 
 exports[`AmplifyUi test render Container correctly 1`] = `
@@ -69,7 +69,7 @@ exports[`AmplifyUi test render ErrorSection correctly 1`] = `
   className="amplify-error-section"
   style={Object {}}
 >
-  <ErrorSectionContent />
+  <Component />
 </div>
 `;
 
@@ -88,25 +88,25 @@ exports[`AmplifyUi test render FormRow correctly 1`] = `
 `;
 
 exports[`AmplifyUi test render FormSection correctly 1`] = `
-<FormContainer
+<Component
   theme="theme"
 >
   <div
     className="amplify-form-section"
     style={Object {}}
   />
-</FormContainer>
+</Component>
 `;
 
 exports[`AmplifyUi test render InputRow correctly 1`] = `
-<FormRow
+<Component
   theme="theme"
 >
   <input
     className="amplify-input"
     style={Object {}}
   />
-</FormRow>
+</Component>
 `;
 
 exports[`AmplifyUi test render Label correctly 1`] = `
@@ -124,13 +124,13 @@ exports[`AmplifyUi test render Link correctly 1`] = `
 `;
 
 exports[`AmplifyUi test render MessageRow correctly 1`] = `
-<FormRow
+<Component
   theme="theme"
 >
-  <MessageContent
+  <Component
     theme="theme"
   />
-</FormRow>
+</Component>
 `;
 
 exports[`AmplifyUi test render Nav correctly 1`] = `
@@ -179,18 +179,18 @@ exports[`AmplifyUi test render Radio correctly 1`] = `
 `;
 
 exports[`AmplifyUi test render RadioRow correctly 1`] = `
-<FormRow
+<Component
   theme="theme"
 >
-  <Radio
+  <Component
     id="_undefined"
     theme="theme"
   />
-  <Label
+  <Component
     htmlFor="_undefined"
     theme="theme"
   />
-</FormRow>
+</Component>
 `;
 
 exports[`AmplifyUi test render SectionBody correctly 1`] = `
@@ -205,7 +205,7 @@ exports[`AmplifyUi test render SectionFooter correctly 1`] = `
   className="amplify-section-footer"
   style={Object {}}
 >
-  <SectionFooterContent />
+  <Component />
 </div>
 `;
 
@@ -221,7 +221,7 @@ exports[`AmplifyUi test render SectionHeader correctly 1`] = `
   className="amplify-section-header"
   style={Object {}}
 >
-  <SectionHeaderContent
+  <Component
     theme="theme"
   />
 </div>
