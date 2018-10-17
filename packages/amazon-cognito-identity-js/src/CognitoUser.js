@@ -16,9 +16,7 @@
  */
 
 import { Buffer } from 'buffer/';
-//import createHmac from 'create-hmac';
-import * as crypto from 'crypto-browserify';
-const createHmac = crypto.createHmac;
+import * as CryptoJS from 'crypto-js';
 
 import BigInteger from './BigInteger';
 import AuthenticationHelper from './AuthenticationHelper';
@@ -281,14 +279,16 @@ export default class CognitoUser {
 
             const dateNow = dateHelper.getNowString();
 
-            const signatureString = createHmac('sha256', hkdf)
-              .update(Buffer.concat([
+            const message = CryptoJS.lib.WordArray.create(
+              Buffer.concat([
                 Buffer.from(this.pool.getUserPoolId().split('_')[1], 'utf8'),
                 Buffer.from(this.username, 'utf8'),
                 Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
                 Buffer.from(dateNow, 'utf8'),
-              ]))
-              .digest('base64');
+              ])
+            );
+            const key = CryptoJS.lib.WordArray.create(hkdf);
+            const signatureString = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(message, key));
 
             const challengeResponses = {};
 
@@ -620,14 +620,16 @@ export default class CognitoUser {
 
             const dateNow = dateHelper.getNowString();
 
-            const signatureString = createHmac('sha256', hkdf)
-            .update(Buffer.concat([
-              Buffer.from(this.deviceGroupKey, 'utf8'),
-              Buffer.from(this.deviceKey, 'utf8'),
-              Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
-              Buffer.from(dateNow, 'utf8'),
-            ]))
-            .digest('base64');
+            const message = CryptoJS.lib.WordArray.create(
+              Buffer.concat([
+                Buffer.from(this.deviceGroupKey, 'utf8'),
+                Buffer.from(this.deviceKey, 'utf8'),
+                Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
+                Buffer.from(dateNow, 'utf8'),
+              ])
+            );
+            const key = CryptoJS.lib.WordArray.create(hkdf);
+            const signatureString = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(message, key));
 
             const challengeResponses = {};
 
@@ -864,6 +866,7 @@ export default class CognitoUser {
 
   /**
    * This is used by an authenticated user to enable MFA for himself
+   * @deprecated
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
@@ -918,6 +921,7 @@ export default class CognitoUser {
 
   /**
    * This is used by an authenticated user to disable MFA for himself
+   * @deprecated
    * @param {nodeCallback<string>} callback Called on success or error.
    * @returns {void}
    */
@@ -1290,11 +1294,13 @@ export default class CognitoUser {
     const accessTokenKey = `${keyPrefix}.${this.username}.accessToken`;
     const refreshTokenKey = `${keyPrefix}.${this.username}.refreshToken`;
     const lastUserKey = `${keyPrefix}.LastAuthUser`;
+    const clockDriftKey = `${keyPrefix}.${this.username}.clockDrift`;
 
     this.storage.removeItem(idTokenKey);
     this.storage.removeItem(accessTokenKey);
     this.storage.removeItem(refreshTokenKey);
     this.storage.removeItem(lastUserKey);
+    this.storage.removeItem(clockDriftKey);
   }
 
   /**

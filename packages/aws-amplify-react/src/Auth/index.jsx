@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import { Component } from 'react';
 
 import Authenticator from './Authenticator';
 
@@ -34,7 +34,7 @@ export * from './Provider';
 
 import Greetings from './Greetings';
 
-export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = []) {
+export function withAuthenticator(Comp, includeGreetings = false, authenticatorComponents = [], federated = null, theme = null) {
     return class extends Component {
         constructor(props) {
             super(props);
@@ -78,6 +78,8 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
 
             return <Authenticator
                 {...this.props}
+                theme={theme}
+                federated={federated || this.props.federated}
                 hideDefault={authenticatorComponents.length > 0}
                 onStateChange={this.handleAuthStateChange}
                 children={authenticatorComponents}
@@ -107,8 +109,4 @@ export class AuthenticatorWrapper extends Component {
             </div>
         )
     }
-}
-
-AuthenticatorWrapper.propTypes = {
-    children: PropTypes.func.isRequired
 }

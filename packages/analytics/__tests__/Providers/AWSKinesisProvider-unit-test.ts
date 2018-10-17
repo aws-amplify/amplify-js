@@ -14,6 +14,8 @@ jest.mock('aws-sdk/clients/kinesis', () => {
 import { Pinpoint, AWS, MobileAnalytics, JS, Credentials } from '@aws-amplify/core';
 import KinesisProvider from "../../src/Providers/AWSKinesisProvider";
 
+jest.useFakeTimers();
+
 const credentials = {
     accessKeyId: 'accessKeyId',
     sessionToken: 'sessionToken',
@@ -21,6 +23,8 @@ const credentials = {
     identityId: 'identityId',
     authenticated: true
 }
+
+jest.useFakeTimers()
 
 describe('kinesis provider test', () => {
     describe('getCategory test', () => {

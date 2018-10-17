@@ -1,5 +1,5 @@
 import regeneratorRuntime from 'regenerator-runtime/runtime';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import API from '@aws-amplify/api';
 
 

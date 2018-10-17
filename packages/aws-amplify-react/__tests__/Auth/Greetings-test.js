@@ -1,9 +1,9 @@
 import Auth from '@aws-amplify/auth';
 import Greetings from '../../src/Auth/Greetings';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
+import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'signedIn'
@@ -190,21 +190,5 @@ describe('Greetings', () => {
             
             await greetings.facebookSignOut()
         });
-    });
-
-    describe('checkUser test', () => {
-        test('happy case', async () => {
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
-
-            const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
-                return Promise.resolve('user');
-            })
-
-            await greetings.checkUser();
-
-            expect(spyon).toBeCalled();
-        });
-        
     });
 });
