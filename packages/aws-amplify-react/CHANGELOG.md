@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.8-unstable.2"></a>
+## [2.0.8-unstable.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.8-unstable.1...aws-amplify-react@2.0.8-unstable.2) (2018-10-16)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
+<a name="2.0.8-unstable.1"></a>
+## [2.0.8-unstable.1](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.8-unstable.0...aws-amplify-react@2.0.8-unstable.1) (2018-10-08)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** jump to the initial state if not signed in ([d8779eb](https://github.com/aws/aws-amplify/commit/d8779eb))
+
+
+
+
+<a name="2.0.8-unstable.0"></a>
+## [2.0.8-unstable.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.7-unstable.1...aws-amplify-react@2.0.8-unstable.0) (2018-10-05)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-react
+
 <a name="2.0.7"></a>
 ## [2.0.7](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.0.7-unstable.1...aws-amplify-react@2.0.7) (2018-10-04)
 

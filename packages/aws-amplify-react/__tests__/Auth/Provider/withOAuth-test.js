@@ -1,5 +1,6 @@
 import Auth from '@aws-amplify/auth';
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import withOAuth, { OAuthButton } from '../../../src/Auth/Provider/withOAuth';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
 

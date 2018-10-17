@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import Amplify, { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import Greetings from './Greetings';
@@ -39,7 +40,8 @@ export default class Authenticator extends Component {
         this.handleAuthEvent = this.handleAuthEvent.bind(this);
         this.onHubCapsule = this.onHubCapsule.bind(this);
 
-        this.state = { auth: props.authState || 'loading' };
+        this._initialAuthState = this.props.authState || 'signIn';
+        this.state = { auth: 'loading' };
         Hub.listen('auth', this);
     }
 
@@ -73,7 +75,7 @@ export default class Authenticator extends Component {
             })
             .catch(err => {
                 if (!this._isMounted) { return; }
-                Auth.signOut().then(() => this.handleStateChange('signedOut'));
+                Auth.signOut().then(() => this.handleStateChange(this._initialAuthState));
             });
     }
 
