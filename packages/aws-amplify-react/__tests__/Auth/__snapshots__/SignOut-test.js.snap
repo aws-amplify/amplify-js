@@ -7,12 +7,12 @@ exports[`SignOut normal case render correctly with empty hide 1`] = `""`;
 exports[`SignOut normal case render correctly with hide 1`] = `""`;
 
 exports[`SignOut normal case render name from attributes 1`] = `
-<NavButton
+<Component
   onClick={[Function]}
   theme="theme"
 >
   Sign Out
-</NavButton>
+</Component>
 `;
 
 exports[`SignOut render correctly with other authStates 1`] = `""`;

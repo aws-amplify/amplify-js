@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
 import { ClientDevice, JS, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';

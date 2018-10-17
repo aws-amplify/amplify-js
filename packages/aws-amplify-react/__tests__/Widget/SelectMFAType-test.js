@@ -1,5 +1,5 @@
 import Auth from '@aws-amplify/auth';
-import React, { Component } from 'react';
+import * as React from 'react';
 import SelectMFAType from '../../src/Widget/SelectMFAType';
 import { Header, Footer, Input, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../../src/AmplifyTheme';
