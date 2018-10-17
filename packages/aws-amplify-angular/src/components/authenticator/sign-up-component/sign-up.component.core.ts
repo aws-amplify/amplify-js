@@ -45,6 +45,7 @@ const template = `
                 placeholder={{field.label}}
                 [(ngModel)]="local_phone_number"
                 name="local_phone_number"
+                type={{field.type}}
               />
             </div>
           </div>
