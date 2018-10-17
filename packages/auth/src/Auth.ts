@@ -111,7 +111,7 @@ export default class AuthClass {
 
     configure(config) {
         if (!config) return this._config || {};
-        logger.debug('configure Auth');
+        logger.debug('configure Auth', config);
         const conf = Object.assign({}, this._config, Parser.parseMobilehubConfig(config).Auth, config);
         this._config = conf;
         const { 
@@ -1206,7 +1206,7 @@ export default class AuthClass {
         
         const sessionSource = this._getSessionSource();
         if (!sessionSource || sessionSource === 'AWSCognito') {
-            this.currentSession()
+            return this.currentSession()
                 .then(session => {
                     logger.debug('getting session success', session);
                     return Credentials.set(session, 'session');
@@ -1216,7 +1216,7 @@ export default class AuthClass {
                 });
         } else {
             const providerClass: AuthProvider = this._getProvider(sessionSource);
-            providerClass.getSession()
+            return providerClass.getSession()
                 .then(session => {
                     logger.debug('getting session success', session);
                     return Credentials.set(session, 'federation');
@@ -1225,7 +1225,6 @@ export default class AuthClass {
                     return Credentials.set(null, 'guest');
                 });
         }
-        return;
     }
 
 
@@ -1472,7 +1471,7 @@ export default class AuthClass {
     private _getProvider(providerName) {
         const providerClass: AuthProvider = this._pluggables.filter(
             pluggable => pluggable.getProviderName() === providerName
-        );
+        )[0];
         if (!providerClass) {
             throw new Error(`no provider class for ${providerName}`);
         }
@@ -1496,11 +1495,17 @@ export default class AuthClass {
         if (!provider) {
             throw new Error('The provider property must be specified');
         }
-        const providerClass: AuthProvider = this._pluggables.filter(pluggable => pluggable.getProviderName() === provider);
+        const providerClass: AuthProvider = this._getProvider(provider);
         if (!providerClass) {
             throw new Error(`No AuthProvider class for the provider, ${provider}`);
         }
 
-        return await providerClass.setSession(params);
+        try {
+            const result = await providerClass.setSession(params);
+            this._addSessionSource(provider);
+            return result;
+        } catch (e) {
+            throw e;
+        }
     }
 }

@@ -11,7 +11,7 @@ export default class GenericProvider extends BaseProvider implements AuthProvide
 
     public configure(options) {
         super.configure(options);
-        const { refreshHandlers } = this._config;
+        const { refreshHandlers = {} } = this._config;
 
         this._refreshHandler = 
             refreshHandlers[this.getProviderName()] || 

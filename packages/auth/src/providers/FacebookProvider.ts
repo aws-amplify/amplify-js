@@ -12,7 +12,7 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
 
     public configure(options) {
         super.configure(options);
-        const { refreshHandlers } = this._config;
+        const { refreshHandlers = {} } = this._config;
 
         this._refreshHandler = 
             refreshHandlers['facebook'] || 
@@ -47,7 +47,6 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
         await this._storageSync;
         const sessionKey = `${_keyPrefix}_session`;
         const userKey = `${_keyPrefix}_user`;
-        const credentialsKey = `${_keyPrefix}_credentials`;
 
         this._storage.setItem(sessionKey, JSON.stringify(session));
         this._storage.setItem(userKey, JSON.stringify(user));
@@ -55,12 +54,12 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
         let credentials = undefined;
         try {
             credentials = await Credentials.set({
-                provider: this._credentialsDomain, 
+                domain: this._credentialsDomain, 
                 token: tokens.accessToken, 
                 identity_id: identityId
             }, 'federation');
             user.id = credentials.identityId;
-            this._storage.setItem(credentialsKey, JSON.stringify(credentials));
+            this._storage.setItem(userKey, JSON.stringify(user));
         } catch (e) {
             logger.debug('Failed to get the aws credentials with the tokens provided', e);
             if (errorHandler) {

@@ -14,23 +14,23 @@ export default class AWSCognitoProvider implements AuthProvider {
     constructor(options?) {
         this._config = {};
 
-        this.configure(options);
+        if (options) this.configure(options);
     }
 
 
     public configure(options) {
         Object.assign(this._config, options);
-        const { userPoolId, userPoolWebClientId, storage, authenticationFlowType } = this._config;
+        const { userPoolId, userPoolWebClientId, storage } = this._config;
         this._storage = storage;
-        this._storageSync = Promise.resolve();
-        if (typeof this._storage['sync'] === 'function') {
-            this._storageSync = this._storage['sync']();
-        }
+        this._storageSync = this._storage && typeof this._storage['sync'] === 'function'? 
+            this._storage['sync']() : Promise.resolve();
 
-        this._userPool = new CognitoUserPool({
-            UserPoolId: userPoolId,
-            ClientId: userPoolWebClientId
-        });
+        if (userPoolId) {
+            this._userPool = new CognitoUserPool({
+                UserPoolId: userPoolId,
+                ClientId: userPoolWebClientId
+            });
+        }
     }
 
     public getProviderName() {

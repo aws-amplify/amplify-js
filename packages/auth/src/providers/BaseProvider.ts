@@ -14,17 +14,15 @@ export default class BaseProvider implements AuthProvider {
 
     constructor(options?) {
         this._config = {};
-        this.configure(options);
+        if (options) this.configure(options);
     }
 
     public configure(options) {
         Object.assign(this._config, options);
         const { storage } = this._config;
         this._storage = storage;
-        this._storageSync = Promise.resolve();
-        if (typeof this._storage['sync'] === 'function') {
-            this._storageSync = this._storage['sync']();
-        }
+        this._storageSync = this._storage && typeof this._storage['sync'] === 'function'? 
+            this._storage['sync']() : Promise.resolve();
     }
 
     public getProviderName() {
@@ -60,7 +58,6 @@ export default class BaseProvider implements AuthProvider {
         await this._storageSync;
         const sessionKey = `${_keyPrefix}_session`;
         const userKey = `${_keyPrefix}_user`;
-        const credentialsKey = `${_keyPrefix}_credentials`;
 
         this._storage.setItem(sessionKey, JSON.stringify(session));
         this._storage.setItem(userKey, JSON.stringify(user));
@@ -73,7 +70,7 @@ export default class BaseProvider implements AuthProvider {
                 identity_id: identityId
             }, 'federation');
             user.id = credentials.identityId;
-            this._storage.setItem(credentialsKey, JSON.stringify(credentials));
+            this._storage.setItem(userKey, JSON.stringify(user));
         } catch (e) {
             logger.debug('Failed to get the aws credentials with the tokens provided', e);
             if (errorHandler) {
