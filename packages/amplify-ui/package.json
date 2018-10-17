@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/ui",
-  "version": "1.0.7-unstable.0",
+  "version": "1.0.7",
   "main": "dist/aws-amplify-ui.js",
   "publishConfig": {
     "access": "public"
