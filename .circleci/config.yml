@@ -113,6 +113,7 @@ jobs:
           keys: 
             - amplify-ssh-deps-{{ .Branch }}
             - amplify-ssh-deps
+      - run: yarn run docs
       - run:
           name: "Publish to Amplify Package"
           command: |
@@ -120,8 +121,14 @@ jobs:
               echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
               git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
+              git add docs/api
               yarn run publish:$CIRCLE_BRANCH
             else
+              git config --global user.email $GITHUB_EMAIL
+              git config --global user.name $GITHUB_USER
+              git add docs/api
+              git commit -m "Update API Documentation [ci skip]"
+              git push origin $CIRCLE_BRANCH
               echo "Skipping deploy."
             fi
 
