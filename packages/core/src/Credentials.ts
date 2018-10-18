@@ -155,13 +155,13 @@ export class Credentials {
     }
 
     private _setCredentialsFromFederation(params) {
-        const { credentialsDomain, token, identity_id } = params;
+        const { credentialsDomain, credentialsToken, identityId } = params;
         if (!credentialsDomain) {
             return Promise.reject('You must specify a federated provider');
         }
 
         const logins = {};
-        logins[credentialsDomain] = token;
+        logins[credentialsDomain] = credentialsToken;
 
         const { identityPoolId, region } = this._config;
         if (!identityPoolId) {
@@ -171,7 +171,7 @@ export class Credentials {
         const credentials = new AWS.CognitoIdentityCredentials(
             {
             IdentityPoolId: identityPoolId,
-            IdentityId: identity_id,
+            IdentityId: identityId,
             Logins: logins
         },  {
             region

@@ -36,7 +36,7 @@ export default class BaseProvider implements AuthProvider {
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
         const { _keyPrefix } = this._config;
         const { username, attributes, tokens, errorHandler, identityId, credentialsDomain } = params;
-        this._credentialsDomain = credentialsDomain;
+        this._credentialsDomain = credentialsDomain || this._credentialsDomain;
 
         const session: FederatedProviderSession = {
             idToken: tokens.idToken,
@@ -46,7 +46,8 @@ export default class BaseProvider implements AuthProvider {
             type: 'FederatedProviderSession',
             provider: this.getProviderName(),
             identityId,
-            credentialsDomain
+            credentialsDomain: this._credentialsDomain,
+            credentialsToken: tokens.idToken
         }
 
         const user: FederatedUser = {
@@ -64,11 +65,7 @@ export default class BaseProvider implements AuthProvider {
 
         let credentials = undefined;
         try {
-            credentials = await Credentials.set({
-                credentialsDomain: this._credentialsDomain, 
-                token: tokens.idToken, 
-                identity_id: identityId
-            }, 'federation');
+            credentials = await Credentials.set(session, 'federation');
             user.id = credentials.identityId;
             this._storage.setItem(userKey, JSON.stringify(user));
         } catch (e) {
@@ -91,7 +88,7 @@ export default class BaseProvider implements AuthProvider {
         try {
             const session : FederatedProviderSession = JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
             if (!session) throw new Error('Session is not cached.');
-            const { expires_at, idToken, ...otherSessionInfo } = session;
+            const { expires_at, idToken, credentialsToken, ...otherSessionInfo } = session;
             if (expires_at > new Date().getTime()) {
                 logger.debug('token not expired');
                 return session;
@@ -104,6 +101,7 @@ export default class BaseProvider implements AuthProvider {
                         const session: FederatedProviderSession = {
                             idToken: data.token,
                             expires_at: data.expired,
+                            credentialsToken: data.token,
                             ...otherSessionInfo
                         };
                     

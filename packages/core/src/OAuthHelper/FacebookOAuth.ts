@@ -28,7 +28,7 @@ export default class FacebookOAuth {
         this._fbAsyncInit = this._fbAsyncInit.bind(this);
 
         this._config = {};
-        const waitForInit = new Promise((res, rej) => {
+        this._waitForInit = new Promise((res, rej) => {
             if (!JS.browserOrNode().isBrowser) {
                 logger.debug('not in the browser, directly resolved');
                 return res();

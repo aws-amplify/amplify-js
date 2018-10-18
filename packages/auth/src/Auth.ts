@@ -223,7 +223,7 @@ export default class AuthClass {
 
         this._pluggables.forEach(pluggable => {
             pluggable.configure({
-                ...config,
+                ...this._config,
                 storage: this._storage,
                 _keyPrefix: this._keyPrefix
             });

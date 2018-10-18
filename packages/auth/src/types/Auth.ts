@@ -125,7 +125,8 @@ export interface FederatedProviderSession {
     type: string,
     provider: string,
     identityId?: string,
-    credentialsDomain?: string
+    credentialsDomain?: string,
+    credentialsToken?: string
 }
 
 export interface AuthProvider {

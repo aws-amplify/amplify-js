@@ -16,7 +16,7 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
 
         FacebookOAuth.configure({
             facebookClientId
-        })
+        });
 
         this._refreshHandler = 
             refreshHandlers['facebook'] || 
@@ -30,8 +30,9 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
 
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
         const { _keyPrefix } = this._config;
-        const { username, attributes, tokens, errorHandler, identityId } = params;
-        
+        const { username, attributes, tokens, errorHandler, identityId, credentialsDomain } = params;
+        this._credentialsDomain = credentialsDomain || this._credentialsDomain;
+
         const session: FederatedProviderSession = {
             idToken: tokens.idToken,
             accessToken: tokens.accessToken,
@@ -39,7 +40,9 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
             expires_at: tokens.expires_at,
             type: 'FederatedProviderSession',
             provider: this.getProviderName(),
-            identityId
+            identityId,
+            credentialsDomain: this._credentialsDomain,
+            credentialsToken: tokens.accessToken
         }
 
         const user: FederatedUser = {
@@ -57,11 +60,7 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
 
         let credentials = undefined;
         try {
-            credentials = await Credentials.set({
-                credentialsDomain: this._credentialsDomain, 
-                token: tokens.accessToken, 
-                identity_id: identityId
-            }, 'federation');
+            credentials = await Credentials.set(session, 'federation');
             user.id = credentials.identityId;
             this._storage.setItem(userKey, JSON.stringify(user));
         } catch (e) {
@@ -84,7 +83,7 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
         try {
             const session : FederatedProviderSession = JSON.parse(this._storage.getItem(`${_keyPrefix}_session`));
             if (!session) throw new Error('Session is not cached.');
-            const { expires_at, accessToken, ...otherSessionInfo } = session;
+            const { expires_at, accessToken, credentialsToken, ...otherSessionInfo } = session;
             if (expires_at > new Date().getTime()) {
                 logger.debug('token not expired');
                 return session;
@@ -97,6 +96,7 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
                         const session: FederatedProviderSession = {
                             accessToken: data.token,
                             expires_at: data.expired,
+                            credentialsToken: data.token,
                             ...otherSessionInfo
                         };
                     
