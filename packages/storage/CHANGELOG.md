@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.17-unstable.0"></a>
+## [1.0.17-unstable.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.16...@aws-amplify/storage@1.0.17-unstable.0) (2018-10-18)
+
+
+### Features
+
+* **@aws-amplify/storage:** Added ability to track progress of S3 uploads ([#1830](https://github.com/aws/aws-amplify/issues/1830)) ([5aef207](https://github.com/aws/aws-amplify/commit/5aef207))
+
+
+
+
 <a name="1.0.16"></a>
 ## [1.0.16](https://github.com/aws/aws-amplify/compare/@aws-amplify/storage@1.0.16-unstable.4...@aws-amplify/storage@1.0.16) (2018-10-17)
 
