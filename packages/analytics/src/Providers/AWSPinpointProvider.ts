@@ -421,51 +421,51 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         // config.endpoint
         const defaultEndpointConfig = config.endpoint || {};
         const demographicByClientInfo = {
-            AppVersion: clientInfo.appVersion,
-            Make: clientInfo.make,
-            Model: clientInfo.model,
-            ModelVersion: clientInfo.version,
-            Platform: clientInfo.platform
+            appVersion: clientInfo.appVersion,
+            make: clientInfo.make,
+            model: clientInfo.model,
+            modelVersion: clientInfo.version,
+            platform: clientInfo.platform
         };
-        const demographicByClientContext = {};
-        if (clientContext['make']) demographicByClientContext['Make'] = clientContext['make'];
-        if (clientContext['model']) demographicByClientContext['Model'] = clientContext['model'];
-        if (clientContext['locale']) demographicByClientContext['Locale'] = clientContext['local'];
-        if (clientContext['appVersion']) demographicByClientContext['AppVersion'] = clientContext['appVersion'];
-        if (clientContext['platform']) demographicByClientContext['Platform'] = clientContext['platform'];
-        if (clientContext['platformVersion']) {
-            demographicByClientContext['PlatformVersion'] = clientContext['platformVersion'];
-        }
+        const demographicByClientContext = { ...clientContext };
+        // if (clientContext['make']) demographicByClientContext['Make'] = clientContext['make'];
+        // if (clientContext['model']) demographicByClientContext['Model'] = clientContext['model'];
+        // if (clientContext['locale']) demographicByClientContext['Locale'] = clientContext['local'];
+        // if (clientContext['appVersion']) demographicByClientContext['AppVersion'] = clientContext['appVersion'];
+        // if (clientContext['platform']) demographicByClientContext['Platform'] = clientContext['platform'];
+        // if (clientContext['platformVersion']) {
+        //     demographicByClientContext['PlatformVersion'] = clientContext['platformVersion'];
+        // }
         const ChannelType = event.Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         const tmp = {
-            ChannelType,
-            RequestId: uuid(),
-            EffectiveDate:new Date().toISOString(),
+            channelType,
+            requestId: uuid(),
+            effectiveDate:new Date().toISOString(),
             ...defaultEndpointConfig,
             ...event,
-            Attributes: {
+            attributes: {
                 ...defaultEndpointConfig.Attributes,
                 ...event.Attributes
             },
-            Demographic: {
+            demographic: {
                 ...demographicByClientInfo,
                 ...demographicByClientContext,
                 ...defaultEndpointConfig.Demographic,
                 ...event.Demographic
             },
-            Location: {
+            location: {
                 ...defaultEndpointConfig.Location,
                 ...event.Location
             },
-            Metrics: {
+            metrics: {
                 ...defaultEndpointConfig.Metrics,
                 ...event.Metrics
             },
-            User: {
-                UserId: event.UserId|| defaultEndpointConfig.UserId || credentials.identityId,
-                UserAttributes: {
-                    ...defaultEndpointConfig.UserAttributes,
-                    ...event.UserAttributes
+            user: {
+                userId: event.UserId|| defaultEndpointConfig.userId || credentials.identityId,
+                userAttributes: {
+                    ...defaultEndpointConfig.userAttributes,
+                    ...event.userAttributes
                 }
             }
         };
