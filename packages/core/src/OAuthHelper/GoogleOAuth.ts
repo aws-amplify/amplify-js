@@ -15,40 +15,69 @@ import {
 } from '../Logger';
 import JS from '../JS';
 
-const logger = new Logger('CognitoCredentials');
-
-const waitForInit = new Promise((res, rej) => {
-    if (!JS.browserOrNode().isBrowser) {
-        logger.debug('not in the browser, directly resolved');
-        return res();
-    }
-    const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
-    if (ga) {
-        logger.debug('google api already loaded');
-        return res();
-    } else {
-        setTimeout(
-            () => {
-                return res();
-            }, 
-            2000
-        );
-    }
-    
-});
+const logger = new Logger('GoogleOAuth');
 
 export default class GoogleOAuth {
     public initialized = false;
+    private _waitForInit;
+    private _config;
 
     constructor() {
         this.refreshGoogleToken = this.refreshGoogleToken.bind(this);
         this._refreshGoogleTokenImpl = this._refreshGoogleTokenImpl.bind(this);
+        this._initGapi = this._initGapi.bind(this);
+        this._config = {};
+        this._waitForInit = new Promise((res, rej) => {
+            if (!JS.browserOrNode().isBrowser) {
+                logger.debug('not in the browser, directly resolved');
+                return res();
+            }
+            const ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
+            if (ga) {
+                logger.debug('google api already loaded');
+                return res();
+            } else {
+                setTimeout(
+                    () => {
+                        return res();
+                    }, 
+                    2000
+                );
+            }
+        });
+    }
+
+    private _initGapi() {
+        logger.debug('init gapi');
+        const g = window['gapi'];
+        const { googleClientId } = this._config;
+        g.load('auth2', function() {
+            g.auth2.init({
+                client_id: googleClientId,
+                scope: 'profile email openid'
+            });
+        });
+    }
+
+    private _createScript() {
+        const script = document.createElement('script');
+        script.src = 'https://apis.google.com/js/platform.js';
+        script.async = true;
+        script.onload = this._initGapi;
+        document.body.appendChild(script);
+    }
+
+    public configure(options?) {
+        if (!options) return this._config;
+        this._config = { ...this._config, ...options };
+        if (JS.browserOrNode().isBrowser && !window['gapi'] && this._config.googleClientId) this._createScript();
+        return this._config;
     }
 
     public async refreshGoogleToken() {
         if (!this.initialized) {
             logger.debug('need to wait for the Google SDK loaded');
-            await waitForInit;
+            await this._waitForInit;
             this.initialized = true;
             logger.debug('finish waiting');
         }

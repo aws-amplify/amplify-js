@@ -155,13 +155,13 @@ export class Credentials {
     }
 
     private _setCredentialsFromFederation(params) {
-        const { domain, token, identity_id } = params;
-        if (!domain) {
+        const { credentialsDomain, token, identity_id } = params;
+        if (!credentialsDomain) {
             return Promise.reject('You must specify a federated provider');
         }
 
         const logins = {};
-        logins[domain] = token;
+        logins[credentialsDomain] = token;
 
         const { identityPoolId, region } = this._config;
         if (!identityPoolId) {

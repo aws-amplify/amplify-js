@@ -12,8 +12,12 @@ export default class GoogleProvider extends BaseProvider implements AuthProvider
 
     public configure(options) {
         super.configure(options);
-        const { refreshHandlers = {} } = this._config;
+        const { refreshHandlers = {}, googleClientId } = this._config;
 
+        GoogleOAuth.configure({
+            googleClientId
+        });
+        
         this._refreshHandler = 
             refreshHandlers['google'] || 
             refreshHandlers[this.getProviderName()] || 

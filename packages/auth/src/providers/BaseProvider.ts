@@ -65,7 +65,7 @@ export default class BaseProvider implements AuthProvider {
         let credentials = undefined;
         try {
             credentials = await Credentials.set({
-                domain: this._credentialsDomain, 
+                credentialsDomain: this._credentialsDomain, 
                 token: tokens.idToken, 
                 identity_id: identityId
             }, 'federation');

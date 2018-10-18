@@ -12,7 +12,11 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
 
     public configure(options) {
         super.configure(options);
-        const { refreshHandlers = {} } = this._config;
+        const { refreshHandlers = {}, facebookClientId } = this._config;
+
+        FacebookOAuth.configure({
+            facebookClientId
+        })
 
         this._refreshHandler = 
             refreshHandlers['facebook'] || 
@@ -54,7 +58,7 @@ export default class FacebookProvider extends BaseProvider implements AuthProvid
         let credentials = undefined;
         try {
             credentials = await Credentials.set({
-                domain: this._credentialsDomain, 
+                credentialsDomain: this._credentialsDomain, 
                 token: tokens.accessToken, 
                 identity_id: identityId
             }, 'federation');

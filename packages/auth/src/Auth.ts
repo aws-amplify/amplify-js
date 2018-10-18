@@ -1165,7 +1165,12 @@ export default class AuthClass {
                     });
                 } else {
                     const providerClass: AuthProvider = this._getProvider(sessionSource);
-                    return providerClass.getSession();
+                    providerClass.getSession().then(session => {
+                        return res(session);
+                    }).catch(e => {
+                        logger.debug('Failed to get the current session', e);
+                        return rej(e);
+                    });
                 }
             });
         });

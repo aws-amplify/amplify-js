@@ -15,39 +15,71 @@ import {
 } from '../Logger';
 import JS from '../JS';
 
-const logger = new Logger('CognitoCredentials');
-
-const waitForInit = new Promise((res, rej) => {
-    if (!JS.browserOrNode().isBrowser) {
-        logger.debug('not in the browser, directly resolved');
-        return res();
-    }
-    const fb = window['FB'];
-    if (fb) {
-        logger.debug('FB SDK already loaded');
-        return res();
-    } else {
-        setTimeout(
-            () => {
-                return res();
-            }, 
-            2000
-        );
-    }
-});
+const logger = new Logger('FacebookOAuth');
 
 export default class FacebookOAuth {
     public initialized = false;
+    private _waitForInit;
+    private _config;
 
     constructor() {
         this.refreshFacebookToken = this.refreshFacebookToken.bind(this);
         this._refreshFacebookTokenImpl = this._refreshFacebookTokenImpl.bind(this);
+        this._fbAsyncInit = this._fbAsyncInit.bind(this);
+
+        this._config = {};
+        const waitForInit = new Promise((res, rej) => {
+            if (!JS.browserOrNode().isBrowser) {
+                logger.debug('not in the browser, directly resolved');
+                return res();
+            }
+            const fb = window['FB'];
+            if (fb) {
+                logger.debug('FB SDK already loaded');
+                return res();
+            } else {
+                setTimeout(
+                    () => {
+                        return res();
+                    }, 
+                    2000 
+                );
+            }
+        });
+    }
+
+    private _fbAsyncInit() {
+        logger.debug('init FB');
+        const fb = window['FB'];
+        const { facebookClientId } = this._config;
+        fb.init({
+            appId   : facebookClientId,
+            cookie  : true,
+            xfbml   : true,
+            version : 'v2.11'
+        });
+    }
+
+    private _createScript() {
+        window['fbAsyncInit'] = this._fbAsyncInit;
+
+        const script = document.createElement('script');
+        script.src = 'https://connect.facebook.net/en_US/sdk.js';
+        script.async = true;
+        document.body.appendChild(script);
+    }
+
+    public configure(options?) {
+        if (!options) return this._config;
+        this._config = { ...this._config, ...options };
+        if (JS.browserOrNode().isBrowser && !window['FB'] && this._config.facebookClientId) this._createScript();
+        return this._config;
     }
 
     public async refreshFacebookToken() {
         if (!this.initialized) {
             logger.debug('need to wait for the Facebook SDK loaded');
-            await waitForInit;
+            await this._waitForInit;
             this.initialized = true;
             logger.debug('finish waiting');
         }
