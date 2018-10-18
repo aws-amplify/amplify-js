@@ -144,7 +144,8 @@ export default class StorageClass {
      * Put a file in S3 bucket specified to configure method
      * @param {Stirng} key - key of the object
      * @param {Object} object - File to be put in Amazon S3 bucket
-     * @param {Object} [options] - { level : private|protected|public, contentType: MIME Types }
+     * @param {Object} [options] - { level : private|protected|public, contentType: MIME Types,
+     *  progressCallback: function }
      * @return - promise resolves to object on success
      */
     public async put(key: string, object, options?): Promise<Object> {
@@ -152,7 +153,7 @@ export default class StorageClass {
         if (!credentialsOK) { return Promise.reject('No credentials'); }
 
         const opt = Object.assign({}, this._options, options);
-        const { bucket, region, credentials, level, track } = opt;
+        const { bucket, region, credentials, level, track, progressCallback } = opt;
         const { contentType, contentDisposition, cacheControl, expires, metadata } = opt;
         const type = contentType ? contentType : 'binary/octet-stream';
 
@@ -172,27 +173,38 @@ export default class StorageClass {
         if (expires) { params.Expires = expires; }
         if (metadata) { params.Metadata = metadata; }
 
-        return new Promise<Object>((res, rej) => {
-            s3.upload(params, (err, data) => {
-                if (err) {
-                    logger.warn("error uploading", err);
-                    dispatchStorageEvent(
-                        track,
-                        { method: 'put', result: 'failed' },
-                        null);
-                    rej(err);
-                } else {
-                    logger.debug('upload result', data);
-                    dispatchStorageEvent(
-                        track,
-                        { method: 'put', result: 'success' },
-                        null);
-                    res({
-                        key: data.Key.substr(prefix.length)
-                    });
-                }
-            });
-        });
+        try {
+            const upload = s3
+                .upload(params)
+                .on('httpUploadProgress', progress => {
+                    if (progressCallback) {
+                        if (typeof progressCallback === 'function') {
+                            progressCallback(progress);
+                        } else {
+                            logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
+                        }
+                    }
+                });
+            const data = await upload.promise();
+            
+            logger.debug('upload result', data);
+            dispatchStorageEvent(
+                track,
+                { method: 'put', result: 'success' },
+                null);
+            
+            return {
+                key: data.Key.substr(prefix.length)
+            };
+        } catch (e) {
+            logger.warn("error uploading", e);
+            dispatchStorageEvent(
+                track,
+                { method: 'put', result: 'failed' },
+                null);
+            
+            throw e;
+        }
     }
 
     /**

@@ -1,48 +1,33 @@
-jest.mock('aws-sdk/clients/s3', () => {
-    const S3 = () => {};
-
-    S3.prototype.getSignedUrl = (key, params) => {
-        return 'url';
-    }
-
-    S3.prototype.getObject = (params, callback) => {
-        callback(null, 'data');
-    }
-
-    S3.prototype.upload = (params, callback) => {
-        callback(null, {
-            Key: 'public/path/itemsKey'
-        });
-    }
-
-    S3.prototype.deleteObject = (params, callback) => {
-        callback(null, 'data');
-    }
-
-    S3.prototype.listObjects = (params, callback) => {
-        callback(null, {
-            Contents: [{
-                Key: 'public/path/itemsKey',
-                ETag: 'etag',
-                LastModified: 'lastmodified',
-                Size: 'size'
-            }]
-        });
-    }
-
-    const config = {
-            update: () => {
-                return;
-            }
-    };
-
-    return S3;
-});
-
 import Storage from '../src/Storage';
 import { Hub, Credentials } from '@aws-amplify/core';
 import * as S3 from 'aws-sdk/clients/s3';
 
+S3.prototype.getSignedUrl = jest.fn((key, params) => {
+    return 'url';
+});
+
+S3.prototype.getObject = jest.fn((params, callback) => {
+    callback(null, 'data');
+});
+
+S3.prototype.deleteObject = jest.fn((params, callback) => {
+    callback(null, 'data');
+});
+
+S3.prototype.listObjects = jest.fn((params, callback) => {
+    callback(null, {
+        Contents: [{
+            Key: 'public/path/itemsKey',
+            ETag: 'etag',
+            LastModified: 'lastmodified',
+            Size: 'size'
+        }]
+    });
+});
+
+S3.ManagedUpload.prototype.send = jest.fn(() => { });
+
+S3.ManagedUpload.prototype.promise = jest.fn(async => ({ Key: 'public/path/itemsKey' }));
 const options = {
         bucket: 'bucket',
         region: 'region',
@@ -327,7 +312,7 @@ describe('Storage', () => {
 
             expect.assertions(2);
             expect(await storage.put('key', 'obejct', {})).toEqual({"key": "path/itemsKey"});
-            expect(spyon.mock.calls[0][0]).toEqual({
+            expect(spyon).toBeCalledWith({
                 "Body": "obejct",
                 "Bucket": "bucket",
                 "ContentType": "binary/octet-stream",
@@ -351,7 +336,7 @@ describe('Storage', () => {
 
             expect.assertions(3);
             expect(await storage.put('key', 'obejct', {track: true})).toEqual({"key": "path/itemsKey"});
-            expect(spyon.mock.calls[0][0]).toEqual({
+            expect(spyon).toBeCalledWith({
                 "Body": "obejct",
                 "Bucket": "bucket",
                 "ContentType": "binary/octet-stream",
@@ -373,9 +358,10 @@ describe('Storage', () => {
                 });
 
             const storage = new Storage(options);
-            const spyon = jest.spyOn(S3.prototype, 'upload')
-                .mockImplementationOnce((params, callback) => {
-                    callback('err', null);
+
+            const spyon = jest.spyOn(S3.ManagedUpload.prototype, 'promise')
+                .mockImplementationOnce(() => {
+                    return Promise.reject('err');
                 });
 
             expect.assertions(1);
@@ -404,7 +390,7 @@ describe('Storage', () => {
 
             expect.assertions(2);
             expect(await storage.put('key', 'obejct', {level: 'private', contentType: 'text/plain'})).toEqual({"key": "/itemsKey"});
-            expect(spyon.mock.calls[0][0]).toEqual({
+            expect(spyon).toBeCalledWith({
                 "Body": "obejct",
                 "Bucket": "bucket",
                 "ContentType": "text/plain",
@@ -644,3 +630,4 @@ describe('Storage', () => {
         });
     });
 });
+
