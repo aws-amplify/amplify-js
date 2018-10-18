@@ -436,7 +436,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
         // if (clientContext['platformVersion']) {
         //     demographicByClientContext['PlatformVersion'] = clientContext['platformVersion'];
         // }
-        const ChannelType = event.Address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
+        const channelType = event.address? ((clientInfo.platform === 'android') ? 'GCM' : 'APNS') : undefined;
         const tmp = {
             channelType,
             requestId: uuid(),
@@ -444,28 +444,28 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
             ...defaultEndpointConfig,
             ...event,
             attributes: {
-                ...defaultEndpointConfig.Attributes,
-                ...event.Attributes
+                ...defaultEndpointConfig.attributes,
+                ...event.attributes
             },
             demographic: {
                 ...demographicByClientInfo,
                 ...demographicByClientContext,
-                ...defaultEndpointConfig.Demographic,
-                ...event.Demographic
+                ...defaultEndpointConfig.demographic,
+                ...event.demographic
             },
             location: {
-                ...defaultEndpointConfig.Location,
-                ...event.Location
+                ...defaultEndpointConfig.location,
+                ...event.location
             },
-            metrics: {
+            Metrics: {
                 ...defaultEndpointConfig.Metrics,
                 ...event.Metrics
             },
-            user: {
-                userId: event.UserId|| defaultEndpointConfig.userId || credentials.identityId,
-                userAttributes: {
-                    ...defaultEndpointConfig.userAttributes,
-                    ...event.userAttributes
+            User: {
+                UserId: event.UserId|| defaultEndpointConfig.UserId || credentials.identityId,
+                UserAttributes: {
+                    ...defaultEndpointConfig.UserAttributes,
+                    ...event.UserAttributes
                 }
             }
         };
