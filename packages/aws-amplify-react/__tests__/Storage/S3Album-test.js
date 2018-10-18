@@ -2,7 +2,7 @@ import Storage from '@aws-amplify/storage';
 import S3Album from '../../src/Storage/S3Album';
 import S3Text from '../../src/Storage/S3Text';
 import S3Image from '../../src/Storage/S3Image';
-import React from 'react';
+import * as React from 'react';
 import { JS } from '@aws-amplify/core';
 
 const timespy = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => {

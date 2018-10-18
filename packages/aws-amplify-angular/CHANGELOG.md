@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.11-unstable.0"></a>
+## [2.0.11-unstable.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.10...aws-amplify-angular@2.0.11-unstable.0) (2018-10-18)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
+<a name="2.0.10"></a>
+## [2.0.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.10-unstable.4...aws-amplify-angular@2.0.10) (2018-10-17)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
+<a name="2.0.10-unstable.4"></a>
+## [2.0.10-unstable.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.10-unstable.3...aws-amplify-angular@2.0.10-unstable.4) (2018-10-17)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
+<a name="2.0.10-unstable.3"></a>
+## [2.0.10-unstable.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.10-unstable.2...aws-amplify-angular@2.0.10-unstable.3) (2018-10-16)
+
+
+
+
+**Note:** Version bump only for package aws-amplify-angular
+
 <a name="2.0.10-unstable.2"></a>
 ## [2.0.10-unstable.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@2.0.10-unstable.1...aws-amplify-angular@2.0.10-unstable.2) (2018-10-08)
 
