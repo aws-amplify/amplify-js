@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-vue",
-  "version": "0.1.4-unstable.1",
+  "version": "0.1.4",
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
@@ -16,7 +16,7 @@
     "vue2-filters": "^0.3.0"
   },
   "devDependencies": {
-    "@aws-amplify/ui": "^1.0.7-unstable.0",
+    "@aws-amplify/ui": "^1.0.7",
     "@vue/cli-plugin-babel": "^3.0.1",
     "@vue/cli-plugin-unit-jest": "^3.0.1",
     "@vue/cli-service": "^3.0.1",
