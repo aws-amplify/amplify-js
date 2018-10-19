@@ -47,16 +47,25 @@ export default function withGoogle(Comp) {
 
             const { onStateChange } = this.props;
             if (!Auth || 
-                typeof Auth.federatedSignIn !== 'function' || 
+                typeof Auth.setSession !== 'function' || 
                 typeof Auth.currentAuthenticatedUser !== 'function') {
                 throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
             }
-            
-            await Auth.federatedSignIn(
-                'google',
-                { token: id_token, expires_at },
-                user
-            );
+
+            await Auth.setSession({
+                username: user.name,
+                tokens: {
+                    idToken: id_token,
+                    expires_at
+                },
+                attributes: {
+                    email: user.email
+                },
+                provider: 'Google',
+                errorHandler: (e) => {
+                    throw e;
+                }
+            });
 
             user = await Auth.currentAuthenticatedUser();
 

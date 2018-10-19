@@ -234,11 +234,15 @@ export default class AuthClass {
         return this._config;
     }
 
+    /**
+     * Add a plugin into Auth module
+     * The plugin is aimed to provide provider-specified methods
+     * like setSession, getSession, getUser
+     * @param {AuthProvider} pluggable - the specified provider for Auth
+     */
     public async addPluggable(pluggable: AuthProvider) {
         if (pluggable && pluggable.getCategory() === 'Auth') {
             this._pluggables.push(pluggable);
-            // const config = pluggable.configure(this._options);
-            // return config;
         }
     }
 
@@ -1233,6 +1237,10 @@ export default class AuthClass {
     }
 
 
+    /**
+     * Get the current credentials
+     * @return {Promise<ICredentials>} - a promise which resolves to be credentials
+     */
     public currentCredentials(): Promise<ICredentials> {
         logger.debug('getting current credntials');
         return Credentials.get();
@@ -1495,6 +1503,11 @@ export default class AuthClass {
         this._storage.setItem(`${this._keyPrefix}_sessionSource`, source);
     }
 
+    /**
+     * Manually set the session into Auth module
+     * @param {ExternalSession} params - the external session
+     * @return {Promise<SetSessionResult>} - returns the user, session and credentials
+     */
     public async setSession(params: ExternalSession): Promise<SetSessionResult> {
         const { provider } = params;
         if (!provider) {
