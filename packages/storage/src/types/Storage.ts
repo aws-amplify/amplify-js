@@ -19,4 +19,5 @@ export interface StorageOptions {
     region?: string;
     credentials?: object;
     level?: string;
+    customPrefix?: object;
 }
