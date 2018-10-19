@@ -477,30 +477,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
     /**
      * @private
-     * generate client context with endpoint Id and app Id provided
-     */
-    private _generateEndpointContext(config) {
-        const { endpointId, appId } = config;
-
-        const clientContext = config.clientContext || {};
-        const clientInfo = this._clientInfo;
-
-        const endpointCtx = {
-            Demographic: {
-                Make: clientContext.make || clientInfo.make,
-                Model: clientContext.model || clientInfo.model,
-                Locale: clientContext.locale,
-                AppVersion: clientContext.appVersionName,
-                Platform: clientContext.platform || clientInfo.platform,
-                PlatformVersion: clientContext.platformVersion || clientInfo.version
-            }
-        };
-
-        return endpointCtx;
-    }
-
-    /**
-     * @private
      * check if current credentials exists
      */
     private _getCredentials() {
