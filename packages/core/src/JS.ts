@@ -165,19 +165,24 @@ export default class JS {
      * transfer the first letter of the keys to lowercase
      * @param obj the object
      */
-    static transferKeyToLowerCase(obj, whiteList=[]) {
-        if (typeof obj !== 'object' ) return obj;
+    static transferKeyToLowerCase(obj, whiteListForItself=[], whiteListForChildren=[]) {
+        if (typeof obj !== 'object'  || Array.isArray(obj)) return obj;
 
         let ret = {};
 
         for (let key in obj) {
             if (obj.hasOwnProperty(key)) {
-                let transferedKey = key;
-                if (!whiteList.includes(key)) {
-                    transferedKey = key[0].toLowerCase() + key.slice(1);
-                }
+                const transferedKey = whiteListForItself.includes(key)? 
+                    key : key[0].toLowerCase() + key.slice(1);
 
-                ret[transferedKey] = JS.transferKeyToLowerCase(obj[key], whiteList);
+                ret[transferedKey] = whiteListForChildren.includes(key)?
+                    obj[key] 
+                    : 
+                    JS.transferKeyToLowerCase(
+                        obj[key], 
+                        whiteListForItself, 
+                        whiteListForChildren
+                    );
             }
         }
         
