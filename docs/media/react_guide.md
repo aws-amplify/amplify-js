@@ -16,8 +16,7 @@ If you're using Windows, we recommend the [Windows Subsystem for Linux](https://
 
 - Ensure you have [Create React App](https://github.com/facebook/create-react-app) installed. 
 - Create a new project as follows:<br>
-  `yarn create-react-app -g`<br>
-  `create-react-app myapp`<br>
+  `yarn create react-app myapp`<br>
   `cd myapp`<br>
   **Note** This example uses `yarn`, but you can use `npm` instead.
 
