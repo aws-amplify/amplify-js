@@ -33,37 +33,85 @@ import {
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
 import countryDialCodes from './common/country-dial-codes.js';
+
+const defaultSignUpFields = [
+    {
+        label: 'Username',
+        key: 'username',
+        required: false,
+        displayOrder: 1
+    },
+    {
+        label: 'Password',
+        key: 'password',
+        required: true,
+        type: 'password',
+        displayOrder: 2,
+    },
+    {
+        label: 'Email',
+        key: 'email',
+        required: true,
+        type: 'email',
+        displayOrder: 3
+    },
+    {
+        label: 'Phone Number',
+        key: 'phone_number',
+        required: true,
+        displayOrder: 4
+    }
+];
+
 export default class SignUp extends AuthPiece {
     constructor(props) {
         super(props);
 
         this._validAuthStates = ['signUp'];
         this.signUp = this.signUp.bind(this);
+        this.sortFields = this.sortFields.bind(this);
 
         this.inputs = {
             dial_code: "+1",
         }
+
+        if (this.props.signUpConfig &&
+            this.props.signUpConfig.signUpFields &&
+            this.props.signUpConfig.signUpFields.length > 0
+        ) {
+            this.signUpFields = this.props.signUpConfig.signUpFields;
+        }
     }
 
     signUp() {
-        const { username, password, email, dial_code='+1', phone_line_number } = this.inputs;
+        const validation = this.validate();
+        if (validation && validation.length > 0) {
+          return this.error(`The following fields need to be filled out: ${validation.join(', ')}`);
+        }
         if (!Auth || typeof Auth.signUp !== 'function') {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
         let signup_info = {
-            username,
-            password, 
+            username: this.inputs.username,
+            password: this.inputs.password,
             attributes: {
-                email
+                
             }
         };
 
-        let phone_number = phone_line_number? `${dial_code}${phone_line_number.replace(/[-()]/g, '')}`: null;
+        const inputKeys = Object.keys(this.inputs);
+        const inputVals = Object.values(this.inputs);
 
-        if (phone_number) {
-            signup_info.attributes.phone_number = phone_number;
-        }
+        inputKeys.forEach((key, index) => {
+            if (!['username', 'password', 'checkedValue'].includes(key)) {
+              if (key !== 'phone_line_number' && key !== 'dial_code') {
+                signup_info.attributes[key] = inputVals[index];
+              } else {
+                  signup_info.attributes['phone_number'] = `+${this.inputs.dial_code}${this.inputs.phone_line_number}`
+              }
+            }
+          });
 
         Auth.signUp(signup_info).then(() => this.changeState('confirmSignUp', username))
         .catch(err => this.error(err));
@@ -71,65 +119,50 @@ export default class SignUp extends AuthPiece {
 
     showComponent(theme) {
         const { hide } = this.props;
+        this.sortFields();
         if (hide && hide.includes(SignUp)) { return null; }
-
-        // console.log(countryDialCodes.sort());
 
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Create a new account')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <FormField theme={theme}>
-                        <InputLabel>{I18n.get('Username')} *</InputLabel>
-                        <Input
-                            autoFocus
-                            placeholder={I18n.get('Create a username')}
-                            theme={theme}
-                            key="username"
-                            name="username"
-                            onChange={this.handleInputChange}
-                        />
-                    </FormField>
-                    <FormField theme={theme}>
-                        <InputLabel>{I18n.get('Password')} *</InputLabel>
-                        <Input
-                            placeholder={I18n.get('Create a password')}
-                            theme={theme}
-                            type="password"
-                            key="password"
-                            name="password"
-                            onChange={this.handleInputChange}
-                        />
-                    </FormField>
-                    <FormField theme={theme}>
-                        <InputLabel>{I18n.get('Email Address')} *</InputLabel>
-                        <Input
-                            placeholder="janedoe@email.com"
-                            theme={theme}
-                            key="email"
-                            name="email"
-                            onChange={this.handleInputChange}
-                        />
-                    </FormField>
-                    <FormField theme={theme}>
-                        <InputLabel>{I18n.get('Phone Number')}</InputLabel>
-                        <SelectInput theme={theme}>
-                            <select key="dial_code" name="dial_code" defaultValue="+1" onChange={this.handleInputChange}>
-                                {countryDialCodes.map(dialCode =>
-                                    <option key={dialCode} value={dialCode}>
-                                        {dialCode}
-                                    </option>
-                                )}
-                            </select>
-                            <Input
-                                placeholder="555-555-1212"
-                                theme={theme}
-                                key="phone_line_number"
-                                name="phone_line_number"
-                                onChange={this.handleInputChange}
-                            />
-                        </SelectInput>
-                    </FormField>
+                    {
+                        this.signUpFields.map((field) => {
+                            return field.key !== 'phone_number' ? (
+                                <FormField them={theme}>
+                                    <InputLabel>{I18n.get(field.label)} *</InputLabel>
+                                    <Input
+                                        autoFocus
+                                        placeholder={I18n.get(field.placeholder)}
+                                        theme={theme}
+                                        key={field.key}
+                                        name={field.key}
+                                        onChange={this.handleInputChange}
+                                    />
+                                </FormField>
+                            ) : (
+                                <FormField theme={theme}>
+                                    <InputLabel>{I18n.get('Phone Number')}</InputLabel>
+                                    <SelectInput theme={theme}>
+                                        <select key="dial_code" name="dial_code" defaultValue="+1" onChange={this.handleInputChange}>
+                                            {countryDialCodes.map(dialCode =>
+                                                <option key={dialCode} value={dialCode}>
+                                                    {dialCode}
+                                                </option>
+                                            )}
+                                        </select>
+                                        <Input
+                                            placeholder={I18n.get(field.placeholder)}
+                                            theme={theme}
+                                            key="phone_line_number"
+                                            name="phone_line_number"
+                                            onChange={this.handleInputChange}
+                                        />
+                                    </SelectInput>
+                                </FormField>
+                            )
+                        })
+                    }
                 </SectionBody>
                 <SectionFooter theme={theme}>
                     <SectionFooterPrimaryContent theme={theme}>
@@ -147,4 +180,81 @@ export default class SignUp extends AuthPiece {
             </FormSection>
         )
     }
+
+    validate() {
+        const invalids = [];
+        this.signUpFields.map((el) => {
+          if (el.key !== 'phone_number') {
+            if (el.required && !this.inputs[el.key]) {
+              el.invalid = true;
+              invalids.push(el.label);
+            } else {
+              el.invalid = false;
+            }        
+          } else {
+            if (el.required && (!this.inputs.dial_code || !this.inputs.phone_line_number)) {
+              el.invalid = true;
+              invalids.push(el.label);
+            } else {
+              el.invalid = false;
+            }
+          }
+        });
+        return invalids;
+      }
+
+    sortFields() {
+        if (this.props.signUpConfig &&
+          this.props.signUpConfig.signUpFields &&
+          this.props.signUpConfig.signUpFields.length > 0
+        ) {
+    
+          if (!this.props.signUpConfig.hideDefaults) {
+            // see if fields passed to component should override defaults
+            defaultSignUpFields.forEach((f, i) => {
+              const matchKey = this.signUpFields.findIndex((d) => {
+                return d.key === f.key;
+              });
+              if (matchKey === -1) {
+                this.signUpFields.push(f);
+              }
+            });
+          }
+    
+          /* 
+            sort fields based on following rules:
+            1. Fields with displayOrder are sorted before those without displayOrder
+            2. Fields with conflicting displayOrder are sorted alphabetically by key
+            3. Fields without displayOrder are sorted alphabetically by key
+          */
+          this.signUpFields.sort((a, b) => {
+            if (a.displayOrder && b.displayOrder) {
+              if (a.displayOrder < b.displayOrder) {
+                return -1;
+              } else if (a.displayOrder > b.displayOrder) {
+                return 1;
+              } else {
+                if (a.key < b.key) {
+                  return -1;
+                } else {
+                  return 1;
+                }
+              }
+            } else if (!a.displayOrder && b.displayOrder) {
+              return 1;
+            } else if (a.displayOrder && !b.displayOrder) {
+              return -1;
+            } else if (!a.displayOrder && !b.displayOrder) {
+              if (a.key < b.key) {
+                return -1;
+              } else {
+                return 1;
+              }
+            }
+          });
+        } else {
+          this.signUpFields = defaultSignUpFields;
+        }
+    
+      }
 }
