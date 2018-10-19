@@ -117,8 +117,8 @@ export default class SignIn extends AuthPiece {
     showComponent(theme) {
         const { authState, hide = [], federated, onStateChange, hideLink } = this.props;
         if (hide && hide.includes(SignIn)) { return null; }
-        const hideSignUp = hideLink.includes('SignUp')
-        const hideForgotPassword = hideLink.includes('ForgotPassword');
+        const hideSignUp = hideLink.some(component => component.name === 'SignUp');
+        const hideForgotPassword =hideLink.some(component => component.name === 'ForgotPassword');
         return (
             <FormSection theme={theme}>
                 <SectionHeader theme={theme}>{I18n.get('Sign in to your account')}</SectionHeader>

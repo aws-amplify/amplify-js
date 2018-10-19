@@ -140,7 +140,7 @@ export default class Authenticator extends Component {
         const props_children_names  = React.Children.map(props_children, child => child.type.name);
         hide = hide.filter((component) =>!props_children_names.includes(component.name));
         const hideLink = hide.filter((component) => {
-            return !props_children_names.some(name => name.toLowerCase().indexOf(component.name.toLowerCase()) >= 0);
+            return !props_children_names.some(name => name.match(new RegExp(component.name, 'i')));
         });
         const render_props_children = React.Children.map(props_children, (child, index) => {
             return React.cloneElement(child, {
