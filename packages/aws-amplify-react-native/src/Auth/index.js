@@ -42,7 +42,7 @@ export {
     Greetings
 };
 
-export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = []) {
+export function withAuthenticator(Comp, includeGreetings=false, authenticatorComponents = [], theme=false) {
     class Wrapper extends React.Component {
         constructor(props) {
             super(props);
@@ -94,6 +94,7 @@ export function withAuthenticator(Comp, includeGreetings=false, authenticatorCom
                 hideDefault={authenticatorComponents.length > 0}
                 onStateChange={this.handleAuthStateChange}
                 children={authenticatorComponents}
+                theme={theme}
             />
         }
     }
