@@ -11,13 +11,10 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { Logger } from 'aws-amplify';
+import { Component } from 'react';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
-import AmplifyTheme from '../AmplifyTheme';
-import AmplifyMessageMap from '../AmplifyMessageMap';
-
-const logger = new Logger('AuthPiece');
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 export default class AuthPiece extends Component {
     constructor(props) {
@@ -78,6 +75,7 @@ export default class AuthPiece extends Component {
         const { name, value, type, checked } = evt.target;
         const check_type = ['radio', 'checkbox'].includes(type);
         this.inputs[name] = check_type? checked : value;
+        this.inputs['checkedValue'] = check_type? value: null;
     }
 
     render() {
@@ -87,6 +85,7 @@ export default class AuthPiece extends Component {
         }
 
         if (this._isHidden) {
+            this.inputs = {};
             const { track } = this.props;
             if (track) track();
         }

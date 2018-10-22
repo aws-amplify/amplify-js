@@ -19,140 +19,149 @@ exports[`VerifyContent test render test render null with denied states 7`] = `""
 exports[`VerifyContent test render test render null with denied states 8`] = `""`;
 
 exports[`VerifyContent test render test render submitView if verifyAttr is set 1`] = `
-<FormSection
+<Component
   theme="theme"
 >
-  <SectionHeader
+  <Component
     theme="theme"
   >
-    Verify Contact
-  </SectionHeader>
-  <SectionBody
+    Account recovery requires verified contact information
+  </Component>
+  <Component
     theme="theme"
   >
-    <MessageRow
-      theme="theme"
-    >
-      Account recovery requires verified contact information
-    </MessageRow>
     <div>
-      <InputRow
+      <Component
+        autoComplete="off"
         key="code"
         name="code"
         onChange={[Function]}
         placeholder="Code"
         theme="theme"
       />
-      <ButtonRow
+    </div>
+  </Component>
+  <Component
+    theme="theme"
+  >
+    <Component
+      theme="theme"
+    >
+      <Component
         onClick={[Function]}
         theme="theme"
       >
         Submit
-      </ButtonRow>
-    </div>
-  </SectionBody>
-  <SectionFooter
-    theme="theme"
-  >
-    <Link
-      onClick={[Function]}
+      </Component>
+    </Component>
+    <Component
       theme="theme"
     >
-      Skip
-    </Link>
-  </SectionFooter>
-</FormSection>
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Component>
+    </Component>
+  </Component>
+</Component>
 `;
 
 exports[`VerifyContent test render test render verifyView with empty authData 1`] = `
-<FormSection
+<Component
   theme="theme"
 >
-  <SectionHeader
+  <Component
     theme="theme"
   >
-    Verify Contact
-  </SectionHeader>
-  <SectionBody
+    Account recovery requires verified contact information
+  </Component>
+  <Component
+    theme="theme"
+  />
+  <Component
     theme="theme"
   >
-    <MessageRow
+    <Component
       theme="theme"
     >
-      Account recovery requires verified contact information
-    </MessageRow>
-  </SectionBody>
-  <SectionFooter
-    theme="theme"
-  >
-    <Link
-      onClick={[Function]}
-      theme="theme"
-    >
-      Skip
-    </Link>
-  </SectionFooter>
-</FormSection>
-`;
-
-exports[`VerifyContent test render test render verifyView without phone_number and email 1`] = `
-<FormSection
-  theme="theme"
->
-  <SectionHeader
-    theme="theme"
-  >
-    Verify Contact
-  </SectionHeader>
-  <SectionBody
-    theme="theme"
-  >
-    <MessageRow
-      theme="theme"
-    >
-      Account recovery requires verified contact information
-    </MessageRow>
-    <div>
-      <ButtonRow
+      <Component
         onClick={[Function]}
         theme="theme"
       >
         Verify
-      </ButtonRow>
-    </div>
-  </SectionBody>
-  <SectionFooter
-    theme="theme"
-  >
-    <Link
-      onClick={[Function]}
+      </Component>
+    </Component>
+    <Component
       theme="theme"
     >
-      Skip
-    </Link>
-  </SectionFooter>
-</FormSection>
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Component>
+    </Component>
+  </Component>
+</Component>
+`;
+
+exports[`VerifyContent test render test render verifyView without phone_number and email 1`] = `
+<Component
+  theme="theme"
+>
+  <Component
+    theme="theme"
+  >
+    Account recovery requires verified contact information
+  </Component>
+  <Component
+    theme="theme"
+  >
+    <div />
+  </Component>
+  <Component
+    theme="theme"
+  >
+    <Component
+      theme="theme"
+    >
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Verify
+      </Component>
+    </Component>
+    <Component
+      theme="theme"
+    >
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Component>
+    </Component>
+  </Component>
+</Component>
 `;
 
 exports[`VerifyContent test render test render with accepted states 1`] = `
-<FormSection
+<Component
   theme="theme"
 >
-  <SectionHeader
+  <Component
     theme="theme"
   >
-    Verify Contact
-  </SectionHeader>
-  <SectionBody
+    Account recovery requires verified contact information
+  </Component>
+  <Component
     theme="theme"
   >
-    <MessageRow
-      theme="theme"
-    >
-      Account recovery requires verified contact information
-    </MessageRow>
     <div>
-      <RadioRow
+      <Component
         key="email"
         name="contact"
         onChange={[Function]}
@@ -160,7 +169,7 @@ exports[`VerifyContent test render test render with accepted states 1`] = `
         theme="theme"
         value="email"
       />
-      <RadioRow
+      <Component
         key="phone_number"
         name="contact"
         onChange={[Function]}
@@ -168,23 +177,31 @@ exports[`VerifyContent test render test render with accepted states 1`] = `
         theme="theme"
         value="phone_number"
       />
-      <ButtonRow
+    </div>
+  </Component>
+  <Component
+    theme="theme"
+  >
+    <Component
+      theme="theme"
+    >
+      <Component
         onClick={[Function]}
         theme="theme"
       >
         Verify
-      </ButtonRow>
-    </div>
-  </SectionBody>
-  <SectionFooter
-    theme="theme"
-  >
-    <Link
-      onClick={[Function]}
+      </Component>
+    </Component>
+    <Component
       theme="theme"
     >
-      Skip
-    </Link>
-  </SectionFooter>
-</FormSection>
+      <Component
+        onClick={[Function]}
+        theme="theme"
+      >
+        Skip
+      </Component>
+    </Component>
+  </Component>
+</Component>
 `;

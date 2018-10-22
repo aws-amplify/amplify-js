@@ -1,8 +1,14 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
-import { Auth, Logger } from 'aws-amplify';
-import AmplifyTheme from '../../AmplifyTheme';
-import { SignInButton } from '../../AmplifyUI';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
+import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
+import { oAuthSignInButton } from '@aws-amplify/ui';
+import { 
+    SignInButton, 
+    SignInButtonContent
+} from '../../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('withOAuth');
 
@@ -14,6 +20,10 @@ export default function withOAuth(Comp, options) {
         }
 
         signIn() {
+            if (!Auth || typeof Auth.configure !== 'function') {
+                throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+            }
+
             const config = this.props.oauth_config || options || Auth.configure().oauth;
             logger.debug('withOAuth configuration', config);
             const { 
@@ -41,11 +51,14 @@ export default function withOAuth(Comp, options) {
 
 const Button = (props) => (
     <SignInButton
-        id="OAuth_signin_btn"
+        id={oAuthSignInButton}
         onClick={props.OAuthSignIn}
         theme={props.theme || AmplifyTheme}
+        variant={'oAuthSignInButton'}
     >
-        {props.label || 'Sign in with AWS'}
+        <SignInButtonContent theme={props.theme || AmplifyTheme}>
+            {I18n.get(props.label || 'Sign in with AWS')}
+        </SignInButtonContent>
     </SignInButton>
 )
 

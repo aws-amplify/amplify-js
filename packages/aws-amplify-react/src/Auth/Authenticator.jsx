@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,9 +11,10 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import Amplify, { Auth, Logger } from 'aws-amplify';
-
+import * as React from 'react';
+import { Component } from 'react';
+import Amplify, { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 import Greetings from './Greetings';
 import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
@@ -24,9 +25,10 @@ import VerifyContact from './VerifyContact';
 import ForgotPassword from './ForgotPassword';
 import TOTPSetup from './TOTPSetup';
 
-import AmplifyTheme from '../AmplifyTheme';
-import { Container, ErrorSection, SectionBody } from '../AmplifyUI';
+import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
+
+import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('Authenticator');
 
@@ -36,15 +38,51 @@ export default class Authenticator extends Component {
 
         this.handleStateChange = this.handleStateChange.bind(this);
         this.handleAuthEvent = this.handleAuthEvent.bind(this);
-        this.errorRenderer = this.errorRenderer.bind(this);
+        this.onHubCapsule = this.onHubCapsule.bind(this);
 
-        this.state = { auth: props.authState || 'signIn' };
+        this._initialAuthState = this.props.authState || 'signIn';
+        this.state = { auth: 'loading' };
+        Hub.listen('auth', this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const config = this.props.amplifyConfig;
         if (config) {
             Amplify.configure(config);
+        }
+        this._isMounted = true;
+        this.checkUser()
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    checkUser() {
+        const { auth } = this.state;
+        if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+        return Auth.currentAuthenticatedUser()
+            .then(user => {
+                if (!this._isMounted) { return; }
+                if (auth !== 'signedIn') {
+                    this.setState({
+                        authState: 'signedIn',
+                        authData: user
+                    });
+                    this.handleStateChange('signedIn', user);
+                }
+            })
+            .catch(err => {
+                if (!this._isMounted) { return; }
+                Auth.signOut().then(() => this.handleStateChange(this._initialAuthState));
+            });
+    }
+
+    onHubCapsule(capsule) {
+        const { channel, payload, source } = capsule;
+        if (channel === 'auth' && (payload.event === 'configured' || payload.event === 'cognitoHostedUI')) { 
+            this.checkUser(); 
         }
     }
 
@@ -61,17 +99,9 @@ export default class Authenticator extends Component {
         if (event.type === 'error') {
             const map = this.props.errorMessage || AmplifyMessageMap;
             const message = (typeof map === 'string')? map : map(event.data);
-            this.setState({ error: message });
+            this.setState({ error: message, showToast: true });
+            
         }
-    }
-
-    errorRenderer(err) {
-        const theme = this.props.theme || AmplifyTheme;
-        return (
-            <ErrorSection theme={theme}>
-                <SectionBody theme={theme}>{err}</SectionBody>
-            </ErrorSection>
-        )
     }
 
     render() {
@@ -79,8 +109,7 @@ export default class Authenticator extends Component {
         const theme = this.props.theme || AmplifyTheme;
         const messageMap = this.props.errorMessage || AmplifyMessageMap;
 
-        let { hideDefault, hide, federated } = this.props;
-        if (!hide) { hide = []; }
+        let { hideDefault, hide = [], federated } = this.props;
         if (hideDefault) {
             hide = hide.concat([
                 Greetings,
@@ -95,6 +124,7 @@ export default class Authenticator extends Component {
             ]);
         }
         const props_children = this.props.children || [];
+
         const default_children = [
             <Greetings/>,
             <SignIn federated={federated}/>,
@@ -107,6 +137,8 @@ export default class Authenticator extends Component {
             <TOTPSetup/>
         ];
 
+        const props_children_names  = React.Children.map(props_children, child => child.type.name)
+        hide = hide.filter((component) =>!props_children_names.includes(component.name))
         const render_props_children = React.Children.map(props_children, (child, index) => {
             return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-props-children-' + index,
@@ -115,11 +147,12 @@ export default class Authenticator extends Component {
                     authState: auth,
                     authData: authData,
                     onStateChange: this.handleStateChange,
-                    onAuthEvent: this.handleAuthEvent
+                    onAuthEvent: this.handleAuthEvent,
+                    hide: hide
                 });
         });
-        
-        const render_default_children = React.Children.map(default_children, (child, index) => {
+       
+        const render_default_children = hideDefault ? [] : React.Children.map(default_children, (child, index) => {
                 return React.cloneElement(child, {
                     key: 'aws-amplify-authenticator-default-children-' + index,
                     theme: theme,
@@ -133,13 +166,16 @@ export default class Authenticator extends Component {
             });
 
         const render_children = render_default_children.concat(render_props_children);
+        const error = this.state.error;        
 
-        const errorRenderer = this.props.errorRenderer || this.errorRenderer;
-        const error = this.state.error;
         return (
             <Container theme={theme}>
+                {this.state.showToast && 
+                    <Toast onClose={() => this.setState({showToast: false})}>
+                        { I18n.get(error) }
+                    </Toast>
+                }
                 {render_children}
-                {error? errorRenderer(error) : null}
             </Container>
         )
     }

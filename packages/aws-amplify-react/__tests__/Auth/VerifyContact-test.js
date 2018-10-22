@@ -1,9 +1,9 @@
+import Auth from '@aws-amplify/auth';
 import VerifyContact from '../../src/Auth/VerifyContact';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, RadioRow, MessageRow, ButtonRow, Link } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
+import { Header, Footer, InputRow, RadioRow, MessageRow, Button, Link } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'verifyContact'
@@ -117,7 +117,7 @@ describe.only('VerifyContent test', () => {
 
             wrapper.find(Link).simulate('click');
 
-            expect(spyon).toBeCalledWith('signedIn');
+           expect(spyon).toBeCalled();
 
             spyon.mockClear();
         });
@@ -139,7 +139,7 @@ describe.only('VerifyContent test', () => {
             }
             wrapper.setProps(props);
             
-            wrapper.find(ButtonRow).at(0).simulate('click');
+            wrapper.find(Button).at(0).simulate('click');
 
             //expect(spyon).toBeCalled();
 
@@ -157,11 +157,12 @@ describe.only('VerifyContent test', () => {
             const wrapper = shallow(<VerifyContact/>);
             const verifyContact = wrapper.instance();
             verifyContact.inputs = {
-                contact: 'contact'
+                contact: true,
+                checkedValue: 'email'
             }
 
             await verifyContact.verify();
-            expect(spyon).toBeCalledWith('contact');
+            expect(spyon).toBeCalledWith('email');
 
             spyon.mockClear();
         });

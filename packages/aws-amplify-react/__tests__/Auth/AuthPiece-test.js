@@ -1,5 +1,5 @@
 import AuthPiece from '../../src/Auth/AuthPiece';
-import React from 'react';
+import * as React from 'react';
 
 class TestPiece extends AuthPiece {
     constructor(props) {
@@ -167,7 +167,7 @@ describe('AuthPiece test', () => {
                     name: 'name',
                     value: 'value',
                     type: 'radio',
-                    checked: 'checked'
+                    checked: true
                 }
             }
             const wrapper = shallow(<TestPiece/>);
@@ -175,7 +175,7 @@ describe('AuthPiece test', () => {
 
             testPiece.handleInputChange(event);
 
-            expect(testPiece.inputs).toEqual({ name: 'checked' });
+            expect(testPiece.inputs).toEqual( {"checkedValue": "value", "name": true});
         });
 
         test('happy case without checke_type', () => {
@@ -192,7 +192,7 @@ describe('AuthPiece test', () => {
 
             testPiece.handleInputChange(event);
 
-            expect(testPiece.inputs).toEqual({ name: 'value' });
+            expect(testPiece.inputs).toEqual({"checkedValue": null, "name": "value"});
         });
     });
 });

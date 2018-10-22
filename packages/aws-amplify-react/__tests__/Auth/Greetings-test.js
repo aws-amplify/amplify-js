@@ -1,41 +1,9 @@
-/*
-jest.mock('aws-sdk-mobile-analytics', () => {
-    const Manager = () => {}
-
-    Manager.prototype.recordEvent = () => {
-
-    }
-
-    Manager.prototype.recordMonetizationEvent = () => {
-
-    }
-
-    var ret =  {
-        Manager: Manager
-    }
-    return ret;
-});
-
-jest.mock('aws-sdk/clients/pinpoint', () => {
-    const Pinpoint = () => {
-        var pinpoint = null;
-        return pinpoint;
-    }
-
-    Pinpoint.prototype.updateEndpoint = (params, callback) => {
-        callback(null, 'data');
-    }
-
-    return Pinpoint;
-});
-*/
-
+import Auth from '@aws-amplify/auth';
 import Greetings from '../../src/Auth/Greetings';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
+import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'signedIn'
@@ -60,6 +28,18 @@ describe('Greetings', () => {
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: 'theme'
+                });
+                expect(wrapper).toMatchSnapshot();
+            }
+        });
+
+        test('render correctly with hide', () => {
+            const wrapper = shallow(<Greetings/>);
+            for (var i = 0; i < acceptedStates.length; i += 1){
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: 'theme',
+                    hide: [Greetings]
                 });
                 expect(wrapper).toMatchSnapshot();
             }
@@ -210,21 +190,5 @@ describe('Greetings', () => {
             
             await greetings.facebookSignOut()
         });
-    });
-
-    describe('checkUser test', () => {
-        test('happy case', async () => {
-            const wrapper = shallow(<Greetings/>);
-            const greetings = wrapper.instance();
-
-            const spyon = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
-                return Promise.resolve('user');
-            })
-
-            await greetings.checkUser();
-
-            expect(spyon).toBeCalled();
-        });
-        
     });
 });

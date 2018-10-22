@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import Auth from '@aws-amplify/auth';
+import * as React from 'react';
+import { Component } from 'react';
 import withFacebook, { FacebookButton } from '../../../src/Auth/Provider/withFacebook';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 
 describe('withFacebook test', () => {
@@ -165,6 +166,10 @@ describe('withFacebook test', () => {
             });
             const spyon2 = jest.spyOn(Date.prototype, 'getTime').mockReturnValue(0);
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+
             await comp.federatedSignIn({
                 accessToken: 'accessToken',
                 expiresIn: 0
@@ -174,6 +179,7 @@ describe('withFacebook test', () => {
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon_currentUser.mockClear();
         });
 
         test('happy case with onStateChange exists', async () => {
@@ -198,6 +204,10 @@ describe('withFacebook test', () => {
             const wrapper = shallow(<Comp/>);
             const comp = wrapper.instance();
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return 'user';
+            });
+
             const spyon = jest.spyOn(Auth, 'federatedSignIn').mockImplementationOnce(() => { 
                 return new Promise((res, rej) => {
                     res('credentials');
@@ -215,10 +225,10 @@ describe('withFacebook test', () => {
             });
 
             expect(spyon).toBeCalledWith('facebook', { token: 'accessToken', expires_at: 0 }, { name: 'username' });
-            expect(mockFn).toBeCalledWith('signedIn');
 
             spyon.mockClear();
             spyon2.mockClear();
+            spyon_currentUser.mockClear();
         });
 
         test('directly return if no accesstoken', async () => {
@@ -248,6 +258,10 @@ describe('withFacebook test', () => {
                 });
             });
 
+            const spyon_currentUser = jest.spyOn(Auth, 'currentAuthenticatedUser').mockImplementationOnce(() => {
+                return Promise.resolve('user');
+            });
+
             await comp.federatedSignIn({
                 accessToken: null,
             });
@@ -255,6 +269,7 @@ describe('withFacebook test', () => {
             expect(spyon).not.toBeCalled();
 
             spyon.mockClear();
+            spyon_currentUser.mockClear();
         });
     });
 

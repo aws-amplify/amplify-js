@@ -11,9 +11,10 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
-import { I18n, Logger } from 'aws-amplify';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import AmplifyTheme from '../AmplifyTheme';
 import Picker from './Picker';
 

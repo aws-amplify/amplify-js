@@ -1,8 +1,16 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
-import { Auth, Logger } from 'aws-amplify';
-import AmplifyTheme from '../../AmplifyTheme';
-import { SignInButton } from '../../AmplifyUI';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
+import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
+import { facebookSignInButton } from '@aws-amplify/ui';
+import { 
+    SignInButton,
+    SignInButtonIcon,
+    SignInButtonContent
+} from '../../Amplify-UI/Amplify-UI-Components-React';
+
 
 const logger = new Logger('withFacebook');
 
@@ -49,16 +57,23 @@ export default function withFacebook(Comp) {
 
             const fb = window.FB;
             fb.api('/me', response => {
-                const user = {
+                let user = {
                     name: response.name
                 }
-
+                if (!Auth || 
+                    typeof Auth.federatedSignIn !== 'function' || 
+                    typeof Auth.currentAuthenticatedUser !== 'function') {
+                    throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+                }
+                
                 Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
-                    .then(credentials => {
-                        if (onStateChange) {
-                            onStateChange('signedIn');
-                        }
-                    });
+                .then(credentials => {
+                    return Auth.currentAuthenticatedUser();
+                }).then(authUser => {
+                    if (onStateChange) {
+                        onStateChange('signedIn', authUser);
+                    }
+                });
             });
         }
 
@@ -108,11 +123,17 @@ export default function withFacebook(Comp) {
 
 const Button = (props) => (
     <SignInButton
-        id="facebook_signin_btn"
+        id={facebookSignInButton}
         onClick={props.facebookSignIn}
         theme={props.theme || AmplifyTheme}
+        variant={'facebookSignInButton'}
     >
-        Sign In with Facebook
+        <SignInButtonIcon theme={props.theme || AmplifyTheme}>
+            <svg viewBox='0 0 279 538' xmlns='http://www.w3.org/2000/svg'><g id='Page-1' fill='none' fillRule='evenodd'><g id='Artboard' fill='#FFF'><path d='M82.3409742,538 L82.3409742,292.936652 L0,292.936652 L0,196.990154 L82.2410458,196.990154 L82.2410458,126.4295 C82.2410458,44.575144 132.205229,0 205.252865,0 C240.227794,0 270.306232,2.59855099 279,3.79788222 L279,89.2502322 L228.536175,89.2502322 C188.964542,89.2502322 181.270057,108.139699 181.270057,135.824262 L181.270057,196.89021 L276.202006,196.89021 L263.810888,292.836708 L181.16913,292.836708 L181.16913,538 L82.3409742,538 Z'id='Fill-1' /></g></g></svg>
+        </SignInButtonIcon>
+        <SignInButtonContent theme={props.theme || AmplifyTheme}>
+            {I18n.get('Sign In with Facebook')}
+        </SignInButtonContent>
     </SignInButton>
 )
 

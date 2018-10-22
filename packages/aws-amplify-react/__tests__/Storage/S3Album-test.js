@@ -1,8 +1,9 @@
+import Storage from '@aws-amplify/storage';
 import S3Album from '../../src/Storage/S3Album';
 import S3Text from '../../src/Storage/S3Text';
 import S3Image from '../../src/Storage/S3Image';
-import React from 'react';
-import { Storage, JS } from 'aws-amplify';
+import * as React from 'react';
+import { JS } from '@aws-amplify/core';
 
 const timespy = jest.spyOn(Date.prototype, 'getTime').mockImplementation(() => {
     return 0
@@ -245,10 +246,8 @@ describe('S3Album test', () => {
 
             await s3Album.handlePick(data);
 
-            expect.assertions(3);
             expect(spyon).toBeCalledWith({"file": "file", "name": "name", "size": "size", "type": "type"});
             expect(spyon2).toBeCalledWith('path', 'file', {"contentType": "type", "level": "public", "track": undefined});
-            expect(spyon3).toBeCalledWith([{key: 'path2'}, 'data']);
         
             spyon.mockClear();
             spyon2.mockClear();
@@ -469,12 +468,12 @@ describe('S3Album test', () => {
         test('happy case with contentType string', async () => {
             let spyon = jest.spyOn(Storage, 'list').mockImplementationOnce(() => {
                 return new Promise((res, rej) => {
-                    res([{data: 'data'}]);
+                    res([{data: 'data', key: 'data-1'}]);
                 });
             });
             let wrapper = await mount(<S3Album contentType='string'/>);
 
-            expect(wrapper.state('items')).toEqual([{"contentType": "string", "data": "data"}]);
+            expect(wrapper.state('items')).toEqual([{"contentType": "string", "data": "data", "key": "data-1"}]);
 
             spyon.mockClear();
             await wrapper.unmount();

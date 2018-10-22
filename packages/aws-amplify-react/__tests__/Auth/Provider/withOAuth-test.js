@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import Auth from '@aws-amplify/auth';
+import * as React from 'react';
+import { Component } from 'react';
 import withOAuth, { OAuthButton } from '../../../src/Auth/Provider/withOAuth';
 import { SignInButton, Button } from '../../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
 
 describe('withOAuth test', () => {
     describe('render test', () => {

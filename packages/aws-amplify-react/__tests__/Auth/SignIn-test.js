@@ -1,11 +1,9 @@
-
-
+import Auth from '@aws-amplify/auth';
 import SignIn from '../../src/Auth/SignIn';
-import React from 'react';
+import * as React from 'react';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow } from '../../src/AmplifyUI';
-import { Auth } from 'aws-amplify';
+import { Header, Footer, Input, Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 const acceptedStates = [
     'signIn',  
@@ -30,6 +28,19 @@ describe('SignIn', () => {
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: AmplifyTheme
+                });
+
+                expect(wrapper).toMatchSnapshot();
+            }
+        });
+
+        test('render correctly with hide', () => {
+            for (var i = 0; i < acceptedStates.length; i += 1){
+                const wrapper = shallow(<SignIn/>);
+                wrapper.setProps({
+                    authState: acceptedStates[i],
+                    theme: AmplifyTheme,
+                    hide: [SignIn]
                 });
 
                 expect(wrapper).toMatchSnapshot();
@@ -67,9 +78,9 @@ describe('SignIn', () => {
                 }
             }
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
-            await wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Input).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(1).simulate('change', event_password);
+            await wrapper.find(Button).simulate('click');
 
 
             expect(spyon.mock.calls.length).toBe(1);
@@ -127,9 +138,9 @@ describe('SignIn', () => {
                 }
             }
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
-            await wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Input).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(1).simulate('change', event_password);
+            await wrapper.find(Button).simulate('click');
 
            // expect(spyon_changeState).toBeCalled();
 
@@ -182,9 +193,9 @@ describe('SignIn', () => {
                 }
             }
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
-            await wrapper.find(ButtonRow).simulate('click');
+            wrapper.find(Input).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(1).simulate('change', event_password);
+            await wrapper.find(Button).simulate('click');
 
            // expect(spyon_changeState).toBeCalled();
 
@@ -222,10 +233,10 @@ describe('SignIn', () => {
                 }
             }
 
-            wrapper.find(InputRow).at(0).simulate('change', event_username);
-            wrapper.find(InputRow).at(1).simulate('change', event_password);
+            wrapper.find(Input).at(0).simulate('change', event_username);
+            wrapper.find(Input).at(1).simulate('change', event_password);
         
-            await wrapper.find(ButtonRow).simulate('click');
+            await wrapper.find(Button).simulate('click');
 
             spyon.mockClear();
             spyon2.mockClear();

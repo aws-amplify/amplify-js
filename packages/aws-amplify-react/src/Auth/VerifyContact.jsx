@@ -11,8 +11,9 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import * as React from 'react';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 
 import AuthPiece from './AuthPiece';
 import AmplifyTheme from '../AmplifyTheme';
@@ -21,12 +22,14 @@ import {
     SectionHeader,
     SectionBody,
     SectionFooter,
-    InputRow,
+    Input,
     RadioRow,
     MessageRow,
-    ButtonRow,
-    Link
-} from '../AmplifyUI';
+    Button,
+    Link,
+    SectionFooterPrimaryContent,
+    SectionFooterSecondaryContent
+} from '../Amplify-UI/Amplify-UI-Components-React';
 
 const logger = new Logger('VerifyContact');
 
@@ -42,16 +45,20 @@ export default class VerifyContact extends AuthPiece {
     }
 
     verify() {
-        const { contact } = this.inputs;
+        const { contact, checkedValue } = this.inputs;
         if (!contact) {
             this.error('Neither Email nor Phone Number selected');
             return;
         }
 
-        Auth.verifyCurrentUserAttribute(contact)
+        if (!Auth || typeof Auth.verifyCurrentUserAttribute !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
+
+        Auth.verifyCurrentUserAttribute(checkedValue)
             .then(data => {
                 logger.debug(data);
-                this.setState({ verifyAttr: contact });
+                this.setState({ verifyAttr: checkedValue });
             })
             .catch(err => this.error(err));
     }
@@ -59,6 +66,9 @@ export default class VerifyContact extends AuthPiece {
     submit() {
         const attr = this.state.verifyAttr;
         const { code } = this.inputs;
+        if (!Auth || typeof Auth.verifyCurrentUserAttributeSubmit !== 'function') {
+            throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
+        }
         Auth.verifyCurrentUserAttributeSubmit(attr, code)
             .then(data => {
                 logger.debug(data);
@@ -101,7 +111,6 @@ export default class VerifyContact extends AuthPiece {
                                     onChange={this.handleInputChange}
                                 /> : null
                 }
-                <ButtonRow theme={theme} onClick={this.verify}>{I18n.get('Verify')}</ButtonRow>
             </div>
         )
     }
@@ -110,14 +119,14 @@ export default class VerifyContact extends AuthPiece {
         const theme = this.props.theme || AmplifyTheme;
         return (
             <div>
-                <InputRow
+                <Input
                     placeholder={I18n.get('Code')}
                     theme={theme}
                     key="code"
                     name="code"
+                    autoComplete="off"
                     onChange={this.handleInputChange}
                 />
-                <ButtonRow theme={theme} onClick={this.submit}>{I18n.get('Submit')}</ButtonRow>
             </div>
         )
     }
@@ -128,17 +137,22 @@ export default class VerifyContact extends AuthPiece {
 
         return (
             <FormSection theme={theme}>
-                <SectionHeader theme={theme}>{I18n.get('Verify Contact')}</SectionHeader>
+                <SectionHeader theme={theme}>{I18n.get('Account recovery requires verified contact information')}</SectionHeader>
                 <SectionBody theme={theme}>
-                    <MessageRow theme={theme}>
-                        {I18n.get('Account recovery requires verified contact information')}
-                    </MessageRow>
-                    { this.state.verifyAttr? this.submitView() : this.verifyView() }
+                    { this.state.verifyAttr ? this.submitView() : this.verifyView() }
                 </SectionBody>
                 <SectionFooter theme={theme}>
-                    <Link theme={theme} onClick={() => this.changeState('signedIn')}>
-                        {I18n.get('Skip')}
-                    </Link>
+                    <SectionFooterPrimaryContent theme={theme}>
+                        { this.state.verifyAttr ?
+                            <Button theme={theme} onClick={this.submit}>{I18n.get('Submit')}</Button> :
+                            <Button theme={theme} onClick={this.verify}>{I18n.get('Verify')}</Button>
+                        }
+                    </SectionFooterPrimaryContent>
+                    <SectionFooterSecondaryContent theme={theme}>
+                        <Link theme={theme} onClick={() => this.changeState('signedIn', authData)}>
+                            {I18n.get('Skip')}
+                        </Link>
+                    </SectionFooterSecondaryContent>
                 </SectionFooter>
             </FormSection>
         )
