@@ -44,7 +44,7 @@
         ],
         "indent": [
             true,
-            "spaces",
+            "space",
             2
         ],
         "whitespace": [

@@ -59,7 +59,7 @@ export default function withFacebook(Comp) {
             fb.api('/me', response => {
                 let user = {
                     name: response.name
-                }
+                };
                 if (!Auth || 
                     typeof Auth.federatedSignIn !== 'function' || 
                     typeof Auth.currentAuthenticatedUser !== 'function') {
@@ -116,9 +116,9 @@ export default function withFacebook(Comp) {
             const fb = window.FB;
             return (
                 <Comp {...this.props} fb={fb} facebookSignIn={this.signIn} />
-            )
+            );
         }
-    }
+    };
 }
 
 const Button = (props) => (
@@ -135,6 +135,6 @@ const Button = (props) => (
             {I18n.get('Sign In with Facebook')}
         </SignInButtonContent>
     </SignInButton>
-)
+);
 
 export const FacebookButton = withFacebook(Button);

@@ -37,15 +37,15 @@ export default class TOTPSetup extends AuthPiece {
                 if (!JS.isEmpty(data.verified)) {
                     this.changeState('signedIn', user);
                 } else {
-                    user = Object.assign(user, data);
-                    this.changeState('verifyContact', user);
+                    const newUser = Object.assign(user, data);
+                    this.changeState('verifyContact', newUser);
                 }
             });
     }
 
     onTOTPEvent(event, data, user) {
         logger.debug('on totp event', event, data);
-        //const user = this.props.authData;
+        // const user = this.props.authData;
         if (event === 'Setup TOTP') {
             if (data === 'SUCCESS') {
                 this.checkContact(user);
@@ -59,6 +59,6 @@ export default class TOTPSetup extends AuthPiece {
 
         return (
             <TOTPSetupComp {...this.props} onTOTPEvent={this.onTOTPEvent} />
-        )
+        );
     }
 }

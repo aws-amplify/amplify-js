@@ -24,7 +24,7 @@ describe('Greetings', () => {
     describe('normal case', () => {
         test('render correctly with authState signedIn', () => {
             const wrapper = shallow(<Greetings/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: 'theme'
@@ -35,7 +35,7 @@ describe('Greetings', () => {
 
         test('render correctly with hide', () => {
             const wrapper = shallow(<Greetings/>);
-            for (var i = 0; i < acceptedStates.length; i += 1){
+            for (let i = 0; i < acceptedStates.length; i += 1){
                 wrapper.setProps({
                     authState: acceptedStates[i],
                     theme: 'theme',
@@ -59,17 +59,17 @@ describe('Greetings', () => {
                     }
                 },
                 authState: 'signedIn'
-            })  
+            });
 
             expect(wrapper).toMatchSnapshot();
-        })
+        });
     });
 
    
     test('render corrently with other authStates', () => {
         const wrapper = shallow(<Greetings/>);
         
-        for (var i = 0; i < deniedStates.length; i += 1){
+        for (let i = 0; i < deniedStates.length; i += 1){
             wrapper.setProps({
                 authState: deniedStates[i],
                 theme: 'theme'
@@ -161,12 +161,12 @@ describe('Greetings', () => {
                 getLoginStatus(callback) {
                     callback({
                         status: 'connected'
-                    })
+                    });
                 },
                 logout(callback) {
                     callback('response');
                 }
-            }
+            };
 
             const wrapper = shallow(<Greetings/>);
             const greetings = wrapper.instance();
@@ -184,7 +184,7 @@ describe('Greetings', () => {
                 logout(callback) {
                     callback('response');
                 }
-            }
+            };
             const wrapper = shallow(<Greetings/>);
             const greetings = wrapper.instance();
             
