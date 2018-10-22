@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SignIn normal case render correctly with Props signIn, signedOut or signedUp 1`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {
@@ -245,7 +245,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     }
   }
 >
-  <SectionHeader
+  <Component
     theme={
       Object {
         "a": Object {
@@ -490,8 +490,8 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     }
   >
     Sign in to your account
-  </SectionHeader>
-  <SectionBody
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -980,7 +980,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     />
-    <FormField
+    <Component
       theme={
         Object {
           "a": Object {
@@ -1224,11 +1224,11 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     >
-      <InputLabel>
+      <Component>
         Username
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         autoFocus={true}
         key="username"
         name="username"
@@ -1477,8 +1477,8 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           }
         }
       />
-    </FormField>
-    <FormField
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -1722,11 +1722,11 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     >
-      <InputLabel>
+      <Component>
         Password
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         key="password"
         name="password"
         onChange={[Function]}
@@ -1975,7 +1975,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
         type="password"
       />
-      <Hint
+      <Component
         theme={
           Object {
             "a": Object {
@@ -2220,7 +2220,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         Forget your password? 
-        <Link
+        <Component
           onClick={[Function]}
           theme={
             Object {
@@ -2466,11 +2466,11 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           }
         >
           Reset password
-        </Link>
-      </Hint>
-    </FormField>
-  </SectionBody>
-  <SectionFooter
+        </Component>
+      </Component>
+    </Component>
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -2714,7 +2714,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       }
     }
   >
-    <SectionFooterPrimaryContent
+    <Component
       theme={
         Object {
           "a": Object {
@@ -2958,7 +2958,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     >
-      <Button
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -3204,9 +3204,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         Sign In
-      </Button>
-    </SectionFooterPrimaryContent>
-    <SectionFooterSecondaryContent
+      </Component>
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -3451,7 +3451,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       }
     >
       No account? 
-      <Link
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -3697,14 +3697,14 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         Create account
-      </Link>
-    </SectionFooterSecondaryContent>
-  </SectionFooter>
-</FormSection>
+      </Component>
+    </Component>
+  </Component>
+</Component>
 `;
 
 exports[`SignIn normal case render correctly with Props signIn, signedOut or signedUp 2`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {
@@ -3948,7 +3948,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     }
   }
 >
-  <SectionHeader
+  <Component
     theme={
       Object {
         "a": Object {
@@ -4193,8 +4193,8 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     }
   >
     Sign in to your account
-  </SectionHeader>
-  <SectionBody
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -4683,7 +4683,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     />
-    <FormField
+    <Component
       theme={
         Object {
           "a": Object {
@@ -4927,11 +4927,11 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     >
-      <InputLabel>
+      <Component>
         Username
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         autoFocus={true}
         key="username"
         name="username"
@@ -5180,8 +5180,8 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           }
         }
       />
-    </FormField>
-    <FormField
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -5425,11 +5425,11 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     >
-      <InputLabel>
+      <Component>
         Password
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         key="password"
         name="password"
         onChange={[Function]}
@@ -5678,7 +5678,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
         type="password"
       />
-      <Hint
+      <Component
         theme={
           Object {
             "a": Object {
@@ -5923,7 +5923,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         Forget your password? 
-        <Link
+        <Component
           onClick={[Function]}
           theme={
             Object {
@@ -6169,11 +6169,11 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           }
         >
           Reset password
-        </Link>
-      </Hint>
-    </FormField>
-  </SectionBody>
-  <SectionFooter
+        </Component>
+      </Component>
+    </Component>
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -6417,7 +6417,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       }
     }
   >
-    <SectionFooterPrimaryContent
+    <Component
       theme={
         Object {
           "a": Object {
@@ -6661,7 +6661,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     >
-      <Button
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -6907,9 +6907,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         Sign In
-      </Button>
-    </SectionFooterPrimaryContent>
-    <SectionFooterSecondaryContent
+      </Component>
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -7154,7 +7154,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       }
     >
       No account? 
-      <Link
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -7400,14 +7400,14 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         Create account
-      </Link>
-    </SectionFooterSecondaryContent>
-  </SectionFooter>
-</FormSection>
+      </Component>
+    </Component>
+  </Component>
+</Component>
 `;
 
 exports[`SignIn normal case render correctly with Props signIn, signedOut or signedUp 3`] = `
-<FormSection
+<Component
   theme={
     Object {
       "a": Object {
@@ -7651,7 +7651,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     }
   }
 >
-  <SectionHeader
+  <Component
     theme={
       Object {
         "a": Object {
@@ -7896,8 +7896,8 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
     }
   >
     Sign in to your account
-  </SectionHeader>
-  <SectionBody
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -8386,7 +8386,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     />
-    <FormField
+    <Component
       theme={
         Object {
           "a": Object {
@@ -8630,11 +8630,11 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     >
-      <InputLabel>
+      <Component>
         Username
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         autoFocus={true}
         key="username"
         name="username"
@@ -8883,8 +8883,8 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           }
         }
       />
-    </FormField>
-    <FormField
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -9128,11 +9128,11 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     >
-      <InputLabel>
+      <Component>
         Password
          *
-      </InputLabel>
-      <Input
+      </Component>
+      <Component
         key="password"
         name="password"
         onChange={[Function]}
@@ -9381,7 +9381,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
         type="password"
       />
-      <Hint
+      <Component
         theme={
           Object {
             "a": Object {
@@ -9626,7 +9626,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         Forget your password? 
-        <Link
+        <Component
           onClick={[Function]}
           theme={
             Object {
@@ -9872,11 +9872,11 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
           }
         >
           Reset password
-        </Link>
-      </Hint>
-    </FormField>
-  </SectionBody>
-  <SectionFooter
+        </Component>
+      </Component>
+    </Component>
+  </Component>
+  <Component
     theme={
       Object {
         "a": Object {
@@ -10120,7 +10120,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       }
     }
   >
-    <SectionFooterPrimaryContent
+    <Component
       theme={
         Object {
           "a": Object {
@@ -10364,7 +10364,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       }
     >
-      <Button
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -10610,9 +10610,9 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         Sign In
-      </Button>
-    </SectionFooterPrimaryContent>
-    <SectionFooterSecondaryContent
+      </Component>
+    </Component>
+    <Component
       theme={
         Object {
           "a": Object {
@@ -10857,7 +10857,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
       }
     >
       No account? 
-      <Link
+      <Component
         onClick={[Function]}
         theme={
           Object {
@@ -11103,10 +11103,10 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
         }
       >
         Create account
-      </Link>
-    </SectionFooterSecondaryContent>
-  </SectionFooter>
-</FormSection>
+      </Component>
+    </Component>
+  </Component>
+</Component>
 `;
 
 exports[`SignIn normal case render correctly with hide 1`] = `""`;

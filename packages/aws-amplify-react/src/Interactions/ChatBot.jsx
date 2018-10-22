@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import * as React from 'react';
+import { Component } from 'react';
 import { Container, FormSection, SectionHeader, SectionBody, SectionFooter } from "../AmplifyUI";
 import { Input, Button } from "../AmplifyTheme";
 

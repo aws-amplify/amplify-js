@@ -8,7 +8,7 @@ exports[`AmazonButton test render test render correctly 1`] = `
 `;
 
 exports[`withAmazon test render test render correctly 1`] = `
-<MockComp
+<class_1
   amazonSignIn={[Function]}
   amz="amz"
 />
