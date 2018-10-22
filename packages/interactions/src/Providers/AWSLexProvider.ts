@@ -89,7 +89,49 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
                     }
                 });
             } else {
-                rej("Not implemented yet");
+                const params = {
+                    'botAlias': this._config[botname].alias,
+                    'botName': botname,
+                    'contentType': 'audio/x-l16; sample-rate=16000',
+                    'inputStream': message,
+                    'userId': credentials.identityId,
+                    'accept': 'audio/mpeg',
+                };
+                logger.debug('postContent to lex', message);
+
+                this.aws_lex.postContent(params, (err, data) => {
+                    if (err) {
+                        rej(err);
+                        return;
+
+                    } else {
+                        // Check if state is fulfilled to resolve onFullfilment promise
+                        logger.debug('postContent state', data.dialogState);
+                        if (data.dialogState === 'ReadyForFulfillment' || data.dialogState === 'Fulfilled') {
+                            if (typeof this._botsCompleteCallback[botname] === 'function') {
+                                setTimeout(() => this._botsCompleteCallback[botname](null, { slots: data.slots }), 0);
+                            }
+                            
+                            if (this._config && typeof this._config[botname].onComplete === 'function') {
+                                setTimeout(() => this._config[botname].onComplete(null, { slots: data.slots }), 0);
+                            }
+                        }
+                        
+                        res(data);
+                        if (data.dialogState === 'Failed') {
+
+                            if (typeof this._botsCompleteCallback[botname] === 'function') {
+                                setTimeout(
+                                    () => this._botsCompleteCallback[botname]('Bot conversation failed'), 0);
+                            }
+
+                            if (this._config && typeof this._config[botname].onComplete === 'function') {
+                                setTimeout(() => this._config[botname].onComplete('Bot conversation failed'), 0);
+                            }
+                        }
+
+                    }
+                });
             }
         });
     }
