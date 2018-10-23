@@ -36,7 +36,11 @@ export default function withOAuth(Comp, options) {
                 throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
             }
 
-            const config = this.props.oauth_config || options || Auth.configure().oauth;
+            const { oauth={} } = Auth.configure();
+            // to keep backward compatibility
+            const cognitoHostedUIConfig = oauth? (oauth['domain']? oauth : oauth.awsCognito) : undefined;
+            const config = this.props.oauth_config || options || cognitoHostedUIConfig;
+
             logger.debug('withOAuth configuration', config);
             const { 
                 domain,  
@@ -50,7 +54,7 @@ export default function withOAuth(Comp, options) {
                 + '/login?redirect_uri=' + redirectSignIn 
                 + '&response_type=' + responseType 
                 + '&client_id=' + (options.ClientId || Auth.configure().userPoolWebClientId);
-            window.location.assign(url);            
+            window.location.assign(url);  
         }
 
         render() {

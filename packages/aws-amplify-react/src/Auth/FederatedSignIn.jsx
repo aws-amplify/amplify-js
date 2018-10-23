@@ -84,12 +84,16 @@ export class FederatedButtons extends Component {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
 
-        const config = Auth.configure();
-        if (config.oauth) {
+        const { oauth={} } = Auth.configure();
+        // backward compatibility
+        if (oauth['domain']) {
             federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+        } else if (oauth.awsCognito) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth.awsCognito);
         }
-        if (config.auth0) {
-            federated.auth0 = Object.assign({}, federated.auth0, config.auth0);
+
+        if (oauth.auth0) {
+            federated.auth0 = Object.assign({}, federated.auth0, oauth.auth0);
         }
 
         if (JS.isEmpty(federated)) { return null; }
@@ -128,12 +132,16 @@ export default class FederatedSignIn extends Component {
             throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
         }
         
-        const config = Auth.configure();
-        if (config.oauth) {
+         const { oauth={} } = Auth.configure();
+        // backward compatibility
+        if (oauth['domain']) {
             federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth);
+        } else if (oauth.awsCognito) {
+            federated.oauth_config = Object.assign({}, federated.oauth_config, config.oauth.awsCognito);
         }
-        if (config.auth0) {
-            federated.auth0 = Object.assign({}, federated.auth0, config.auth0);
+
+        if (oauth.auth0) {
+            federated.auth0 = Object.assign({}, federated.auth0, oauth.auth0);
         }
 
         if (!federated) {

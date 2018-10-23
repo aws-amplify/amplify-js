@@ -140,23 +140,23 @@ export default class AuthClass {
         });
 
         // initiailize cognitoauth client if hosted ui options provided
-        if (oauth) {
+        // to keep backward compatibility:
+        const cognitoHostedUIConfig = oauth? (oauth['domain']? oauth : oauth.awsCognito) : undefined;
+        if (cognitoHostedUIConfig) {
             const that = this;
-
             const cognitoAuthParams = Object.assign(
                 {
                     ClientId: userPoolWebClientId,
                     UserPoolId: userPoolId,
-                    AppWebDomain: oauth.domain,
-                    TokenScopesArray: oauth.scope,
-                    RedirectUriSignIn: oauth.redirectSignIn,
-                    RedirectUriSignOut: oauth.redirectSignOut,
-                    ResponseType: oauth.responseType,
+                    AppWebDomain: cognitoHostedUIConfig['domain'],
+                    TokenScopesArray: cognitoHostedUIConfig['scope'],
+                    RedirectUriSignIn: cognitoHostedUIConfig['redirectSignIn'],
+                    RedirectUriSignOut: cognitoHostedUIConfig['redirectSignOut'],
+                    ResponseType: cognitoHostedUIConfig['responseType'],
                     Storage: this._storage
                 },
-                oauth.options
+                cognitoHostedUIConfig['options']
             );
-
             logger.debug('cognito auth params', cognitoAuthParams);
             this._cognitoAuthClient = new CognitoAuth(cognitoAuthParams);
             this._cognitoAuthClient.userhandler = {
